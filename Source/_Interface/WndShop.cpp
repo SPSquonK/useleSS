@@ -220,49 +220,56 @@ std::uint32_t CWndConfirmBuy::GetBuyLimitForItem(const ItemProp & itemProp) {
 	return itemProp.dwPackMax;
 }
 
+std::uint32_t CWndConfirmBuy::GetCostOfItem() const {
+	if (!m_pItemElem) return 0;
+
+	if (m_nBuyType == 0) {
+		if (m_pItemElem->IsPerin()) {
+			return PERIN_VALUE;
+		}
+
+		std::uint32_t dwCost = m_pItemElem->GetCost();
+#ifdef __SHOP_COST_RATE
+		dwCost = static_cast<int>(static_cast<float>(dwCost) * prj.m_fShopBuyRate);
+#endif // __SHOP_COST_RATE
+		if (CTax::GetInstance()->IsApplyTaxRate(g_pPlayer, m_pItemElem)) {
+			dwCost += (static_cast<std::uint32_t>(dwCost * CTax::GetInstance()->GetPurchaseTaxRate(g_pPlayer)));
+		}
+
+		return dwCost;
+	} else if (m_nBuyType == 1) {
+		return m_pItemElem->GetChipCost();
+	} else {
+		return 0;
+	}
+}
+
 // 살려는 수량이 바뀌면, 가격표시도 변경시킨다.
-void CWndConfirmBuy::OnChangeBuyCount( DWORD dwBuy )
-{
-//	TCHAR szString[ 64 ];
+void CWndConfirmBuy::OnChangeBuyCount(std::int32_t dwBuy, bool allowZero) {
+	if (allowZero) {
+		if (dwBuy <= 0) dwBuy = 0;
+	} else {
+		if (dwBuy <= 1) dwBuy = 1;
+	}
+
+	const auto limit = GetBuyLimitForItem(*m_pItemElem->GetProp());
+	if (dwBuy >= limit) dwBuy = static_cast<std::int32_t>(limit);
+
 	CString szString;
 
-	if( dwBuy != atoi(m_pEdit->GetString()) )
-	{
-//		_itot( dwBuy, szString, 10 );	// integer to string
-		szString.Format("%u", dwBuy);
-		m_pEdit->SetString( szString );
+	if (dwBuy != atoi(m_pEdit->GetString())) {
+		szString.Format("%d", dwBuy);
+		m_pEdit->SetString(szString);
 	}
 
-	DWORD dwTotalBuy = 0;
-	DWORD dwCost = 0;
-	if(m_nBuyType == 0)
-	{
-		dwCost = m_pItemElem->GetCost();
-#ifdef __SHOP_COST_RATE
-		dwCost = static_cast< int >( static_cast< float >( dwCost ) * prj.m_fShopBuyRate );
-#endif // __SHOP_COST_RATE
-		if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, m_pItemElem ) )
-			dwCost += ( static_cast<DWORD>(dwCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
-	}
-	else if(m_nBuyType == 1)
-		dwCost = m_pItemElem->GetChipCost();
-	dwTotalBuy = (DWORD)( dwBuy * dwCost * prj.m_fShopCost );
-	if( m_pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN )
-	{
-		dwCost = PERIN_VALUE;
-		dwTotalBuy = dwBuy * dwCost;
-	}
+	const std::uint32_t dwCost = GetCostOfItem();
+	const std::uint64_t dwTotalBuy =
+		static_cast<std::uint64_t>(
+			static_cast<std::uint64_t>(dwBuy) * dwCost
+			// * static_cast<double>(prj.m_fShopCost)
+		);
 
-	if(dwTotalBuy > INT_MAX)
-	{
-		dwBuy--;
-		szString.Format("%u", dwBuy);
-		m_pEdit->SetString( szString );
-		dwTotalBuy = (DWORD)( dwBuy * dwCost * prj.m_fShopCost );
-	}
-	
-	szString.Format("%u", dwTotalBuy);
-//	_itot( dwTotalBuy, szString, 10 );	// integer to string
+	szString.Format("%llu", dwTotalBuy);
 	m_pStaticGold->SetTitle( szString );
 }
 
@@ -282,93 +289,44 @@ BOOL CWndConfirmBuy::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 //	m_pStatic->m_dwColor = m_pStaticGold->m_dwColor = 0xff000000;
 	m_pStaticGold->AddWndStyle(WSS_MONEY);
 	
-	DWORD dwCost;
-	if(m_nBuyType == 0)
-	{
-		dwCost = m_pItemElem->GetCost();
-#ifdef __SHOP_COST_RATE
-		dwCost = static_cast< int >( static_cast< float >( dwCost ) * prj.m_fShopBuyRate );
-#endif // __SHOP_COST_RATE
-		if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, m_pItemElem ) )
-			dwCost += ( static_cast<DWORD>(dwCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
-	}
-	else if(m_nBuyType == 1)
-		dwCost = m_pItemElem->GetChipCost();
-	if( dwCost == 0 )
-	{
-		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0006) ) ); // "다른 사용자에게 팔렸습니다."
-		Destroy();
-		return TRUE;
-	}
+	if (CloseIfNoPrice()) return TRUE;
 
 	OnChangeBuyCount( 1 );
 	return TRUE;
 }
 
-void CWndConfirmBuy::OnDraw( C2DRender* p2DRender ) 
-{ 
-	DWORD dwCost = m_pItemElem->GetCost();
-#ifdef __SHOP_COST_RATE
-	dwCost = static_cast< int >( static_cast< float >( dwCost ) * prj.m_fShopBuyRate );
-#endif // __SHOP_COST_RATE
-	if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, m_pItemElem ) )
-		dwCost += ( static_cast<DWORD>(dwCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
-	if( dwCost == 0 )
-	{
-		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0006) ) );  // 다른 사용자에게 팔렸습니다.
-		Destroy();
-		return;
-	}
+void CWndConfirmBuy::OnDraw(C2DRender * p2DRender) {
+	CloseIfNoPrice();
+}
 
-	return;
-} 
+bool CWndConfirmBuy::CloseIfNoPrice() {
+	const DWORD dwCost = GetCostOfItem();
+	if (dwCost != 0) return false;
+
+	g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0006)));  // 다른 사용자에게 팔렸습니다.
+	Destroy();
+	return true;
+}
 
 BOOL CWndConfirmBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
-	int nBuyNum = 0;
-
 	switch( nID )
 	{
 	case WIDC_PLUS:
-		nBuyNum = atoi(m_pEdit->GetString());
-		++nBuyNum;
-
-		nBuyNum = std::min(
-			nBuyNum,
-			static_cast<int>(GetBuyLimitForItem(*m_pItemElem->GetProp()))
-		);
-
-		OnChangeBuyCount(nBuyNum);
+		OnChangeBuyCount(atoi(m_pEdit->GetString()) + 1);
 		break;
 
 	case WIDC_MINUS:
-		nBuyNum = atoi(m_pEdit->GetString());
-		if ( --nBuyNum < 1 )
-			nBuyNum = 1;
-
-		OnChangeBuyCount(nBuyNum);
+		OnChangeBuyCount(atoi(m_pEdit->GetString()) - 1);
 		break;
 
 	case WIDC_MAX:
-		{
-		const auto limit = GetBuyLimitForItem(*m_pItemElem->GetProp());
-		OnChangeBuyCount(limit);
-		}		
+		OnChangeBuyCount(INT_MAX);
 		break;
 
 	case WIDC_CONTROL2:
-		if( EN_CHANGE == message )
-		{
-			if (m_pEdit == NULL) {
-				nBuyNum = 1;
-			} else {
-				nBuyNum = atoi(m_pEdit->GetString());
-			}
-
-			const DWORD dwMAXCount = GetBuyLimitForItem(*m_pItemElem->GetProp());
-			nBuyNum = std::clamp( nBuyNum, 0, (int)( dwMAXCount ) );
-
-			OnChangeBuyCount(nBuyNum);
+		if (EN_CHANGE == message) {
+			OnChangeBuyCount(m_pEdit ? atoi(m_pEdit->GetString()) : 1, true);
 		}
 		break;
 
@@ -388,19 +346,18 @@ BOOL CWndConfirmBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 void CWndConfirmBuy::OnOK()
 {
 	//아래 메세지 처리 할 것
-	DWORD dwCost;
-	int nBuy;
+	const std::uint32_t dwCost = GetCostOfItem();
+
+	if (m_pItemElem->m_nItemNum < 1 || dwCost == 0)
+	{
+		g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0006)));	// 다른 사용자에게 팔렸습니다.
+		return;
+	}
+
+	int nBuy = atoi(m_pEdit->GetString());
 
 	if(m_nBuyType == 1)
 	{
-		dwCost = m_pItemElem->GetChipCost();
-		if( m_pItemElem->m_nItemNum < 1 || dwCost == 0 )
-		{
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0006) ) );	// 다른 사용자에게 팔렸습니다.
-			return;
-		}
-
-		nBuy = atoi( m_pEdit->GetString() );
 		if( (int)( (nBuy * dwCost) ) > g_pPlayer->m_Inventory.GetAtItemNum( II_CHP_RED ) )
 		{
 			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_GAME_CANNTBUY_REDCHIP) ) );	// 칩이 부족합니다.	
@@ -409,21 +366,9 @@ void CWndConfirmBuy::OnOK()
 	}
 	else if(m_nBuyType == 0)
 	{
-		dwCost = m_pItemElem->GetCost();
-		if( m_pItemElem->m_dwItemId != II_SYS_SYS_SCR_PERIN )
-		{
-			if( CTax::GetInstance()->IsApplyTaxRate( g_pPlayer, m_pItemElem ) )
-				dwCost += ( static_cast<DWORD>(dwCost * CTax::GetInstance()->GetPurchaseTaxRate( g_pPlayer )) );
-		}
-		if( m_pItemElem->m_nItemNum < 1 || dwCost == 0 )
-		{
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0006) ) );	// 다른 사용자에게 팔렸습니다.
-			return;
-		}
+		const std::int64_t cost = static_cast<std::int64_t>(nBuy) * static_cast<std::int64_t>(dwCost);
 
-		nBuy = atoi( m_pEdit->GetString() );
-		if( (int)( (nBuy * dwCost) ) > g_pPlayer->GetGold() )
-		{
+		if (cost > g_pPlayer->GetTotalGold()) {
 			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0009) ) );	// 돈이 부족합니다.	
 			return;
 		}

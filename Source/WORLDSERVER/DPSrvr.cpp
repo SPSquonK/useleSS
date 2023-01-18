@@ -2359,27 +2359,23 @@ void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long
 
 	if (pItemElem->m_dwItemId == II_SYS_SYS_SCR_PERIN) nCost = PERIN_VALUE;
 	nCost = std::max(nCost, 1);
-		
-	int nPracticable = pUser->GetGold() / nCost;
 	
-	if (nNum > nPracticable)
-		nNum = (short)nPracticable;
 
-	if (nNum <= 0) {
-		pUser->AddDefinedText(TID_GAME_LACKMONEY, "");
-		return;
-	}
 
-	int nTax = 0;
+	std::int64_t nTax = 0;
 	if (CTax::GetInstance()->IsApplyTaxRate(pUser, pItemElem))
 		nTax = (int)(nCost * CTax::GetInstance()->GetPurchaseTaxRate(pUser));
 	nCost += nTax;
 	nTax *= nNum;
-	int nGold = nCost * nNum;
 	
-	if (nGold <= 0) return;
+	if (nCost <= 0) return;
 
-	if (pUser->GetGold() < nGold) return;
+	std::int64_t totalCost = static_cast<int64_t>(nCost) * nNum;
+
+	if (totalCost > pUser->GetTotalGold()) {
+		pUser->AddDefinedText(TID_GAME_LACKMONEY, "");
+		return;
+	}
 
 #ifdef __PERIN_BUY_BUG
 	if( pUser->m_dwLastBuyItemTick + 500 > GetTickCount() ) // 아이템 구입시도 후 0.5초이내에 다시 구입시도한 경우
@@ -2405,21 +2401,45 @@ void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long
 		return;
 	}
 
+	constexpr int two_millions = 2000000000;
+
 	LogItemInfo aLogItem;
 	aLogItem.Action = "B";
 	aLogItem.SendName = pUser->GetName();
 	aLogItem.RecvName = pVendor->GetName();
 	aLogItem.WorldId = pUser->GetWorld()->GetID();
 	aLogItem.Gold = pUser->GetGold();
-	aLogItem.Gold2 = pUser->GetGold() - nGold;
-	aLogItem.Gold_1 = pVendor->GetGold();
+	aLogItem.Gold2 = totalCost % two_millions;
+	aLogItem.Gold_1 = totalCost / two_millions;
 
 	pItemElem->SetSerialNumber( itemElem.GetSerialNumber() );
 	OnLogItem( aLogItem, pItemElem, nNum );		// why do not pass &itemElem as argument?
 	pItemElem->SetSerialNumber( 0 );
-	pUser->AddGold( -nGold );	
-	if (nTax)
+
+	if (pItemElem->IsPerin()) {
+		// RemoveTotalGold prioritizes Perin over gold. If we are buying perins, we are
+		// reversing the order
+		while (pUser->GetGold() >= PERIN_VALUE && totalCost >= PERIN_VALUE) {
+			pUser->AddGold(-PERIN_VALUE, TRUE);
+			totalCost -= PERIN_VALUE;
+		}
+
+		pUser->RemoveTotalGold(totalCost);
+
+	} else {
+		pUser->RemoveTotalGold(totalCost);
+	}
+	
+	
+	if (nTax) {
+		// Add taxes by steps of 2 millions max because ints
+		while (nTax > two_millions) {
+			CTax::GetInstance()->AddTax(CTax::GetInstance()->GetContinent(pUser), two_millions, TAX_PURCHASE);
+			nTax -= two_millions;
+		}
+
 		CTax::GetInstance()->AddTax(CTax::GetInstance()->GetContinent(pUser), nTax, TAX_PURCHASE);
+	}
 }
 
 // 칩으로 아이템 구매

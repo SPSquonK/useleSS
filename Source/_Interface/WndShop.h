@@ -17,7 +17,10 @@ public:
 
 private:
 	void		OnOK();
-	void		OnChangeBuyCount(DWORD dwBuy);
+	void		OnChangeBuyCount(std::int32_t dwBuy, bool allowZero = false);
+	bool    CloseIfNoPrice();
+
+	std::uint32_t GetCostOfItem() const;
 
 public:
 	CMover *     m_pMover     = nullptr;
