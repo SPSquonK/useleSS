@@ -5291,25 +5291,12 @@ void CDPClient::OnRemoveAttributeResult( CAr & ar )
 }
 void CDPClient::OnGameRate( CAr & ar )
 {
-	BYTE nFlag;
-	FLOAT fRate;
-	ar >> fRate;
-	ar >> nFlag;
+	const auto [fRate, nFlag] = ar.Extract<FLOAT, BYTE>();
 
 	char chMessage[128] = {0,};
 	BOOL bMessage = FALSE;
 	switch( nFlag )
 	{
-	case GAME_RATE_SHOPCOST:
-		{
-			prj.m_fShopCost = fRate;
-			if( g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
-			{
-				sprintf( chMessage, "Set ShopCost (0.5 ~ 2.0) : %f", prj.m_fShopCost );
-				bMessage = TRUE;
-			}
-		}
-		break;
 	case GAME_RATE_ITEMDROP:
 		{
 			prj.m_fItemDropRate = fRate;

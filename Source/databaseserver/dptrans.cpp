@@ -387,7 +387,7 @@ void CDPTrans::SendBaseGameSetting( BOOL bFirst, DPID dpid )
 	if( prj.m_bBaseGameSetting )
 	{
 		ar << prj.m_fMonsterExpRate	<< prj.m_fGoldDropRate << prj.m_fItemDropRate << prj.m_fMonsterHitRate;
-		ar << prj.m_fShopCost << prj.m_fMonsterRebirthRate << prj.m_fMonsterHitpointRate << prj.m_fMonsterAggressiveRate << prj.m_fMonsterRespawnRate;
+		ar << prj.m_fMonsterRebirthRate << prj.m_fMonsterHitpointRate << prj.m_fMonsterAggressiveRate << prj.m_fMonsterRespawnRate;
 	}
 //	SEND( ar, this, DPID_ALLPLAYERS );
 	SEND( ar, this, dpid );

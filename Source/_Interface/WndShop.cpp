@@ -263,11 +263,7 @@ void CWndConfirmBuy::OnChangeBuyCount(std::int32_t dwBuy, bool allowZero) {
 	}
 
 	const std::uint32_t dwCost = GetCostOfItem();
-	const std::uint64_t dwTotalBuy =
-		static_cast<std::uint64_t>(
-			static_cast<std::uint64_t>(dwBuy) * dwCost
-			// * static_cast<double>(prj.m_fShopCost)
-		);
+	const std::uint64_t dwTotalBuy = static_cast<std::uint64_t>(dwBuy) * dwCost;
 
 	szString.Format("%llu", dwTotalBuy);
 	m_pStaticGold->SetTitle( szString );
@@ -459,8 +455,6 @@ void CWndShop::OnDraw( C2DRender* p2DRender )
 			}
 		}
 	}
-
-	dwCost = (int)((float)dwCost * prj.m_fShopCost );
 
 	if( nIndex >= 0 )
 	{

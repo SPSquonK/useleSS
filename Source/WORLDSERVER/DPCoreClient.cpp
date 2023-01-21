@@ -2049,11 +2049,6 @@ void CDPCoreClient::OnGameRate( CAr & ar, DPID, DPID, OBJID )
 	ar >> nFlag;
 	switch( nFlag )
 	{
-	case GAME_RATE_SHOPCOST:
-		{
-			prj.m_fShopCost = fRate;
-		}
-		break;
 	case GAME_RATE_ITEMDROP:
 		{
 			prj.m_fItemDropRate = fRate;

@@ -83,7 +83,6 @@ FLOAT	CProject::m_fItemDropRate = 1.0f;		// ���� ������ ��
 FLOAT	CProject::m_fGoldDropRate = 1.0f;		// ���� ��� ��ӷ�
 FLOAT	CProject::m_fMonsterExpRate = 1.0f;		// ���� ����ġ��
 FLOAT	CProject::m_fMonsterHitRate = 1.0f;		// ���� ���ݷ�
-FLOAT	CProject::m_fShopCost = 1.0f;			// ��������
 FLOAT	CProject::m_fSkillExpRate = 1.0f;		
 DWORD	CProject::m_dwVagSP = 1;				// ����� ��ų�� �������� �ʿ��� SP����Ʈ
 DWORD	CProject::m_dwExpertSP = 2;				// 1������ ��ų�� �������� �ʿ��� SP����Ʈ

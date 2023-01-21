@@ -703,7 +703,6 @@ public:
 	static FLOAT				m_fGoldDropRate;			// 몬스터 페냐 드롭률
 	static FLOAT				m_fMonsterExpRate;			// 몬스터 경험치룰
 	static FLOAT				m_fMonsterHitRate;			// 몬스터 공격률
-	static FLOAT				m_fShopCost;				// 상점가격
 	static FLOAT				m_fSkillExpRate;		
 	static DWORD				m_dwVagSP;					// 방랑자 스킬의 레벨업때 필요한 SP포인트
 	static DWORD				m_dwExpertSP;				// 1차직업 스킬의 레벨업때 필요한 SP포인트

@@ -2352,7 +2352,6 @@ void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long
 #endif // __OCCUPATION_SHOPITEM
 		
 	int nCost = (int)pItemElem->GetCost();
-	nCost = (int)( prj.m_fShopCost * nCost );
 #ifdef __SHOP_COST_RATE
 	nCost = (int)( prj.m_EventLua.GetShopBuyFactor() * nCost );
 #endif // __SHOP_COST_RATE

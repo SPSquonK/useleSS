@@ -38,7 +38,6 @@ CProject::CProject()
 	m_fGoldDropRate = 1.0f;
 	m_fMonsterExpRate = 1.0f;
 	m_fMonsterHitRate = 1.0f;
-	m_fShopCost	= 1.0f;
 #ifdef __S1108_BACK_END_SYSTEM
 	m_fMonsterRebirthRate = 1.0f;	
 	m_fMonsterHitpointRate = 1.0f;	

@@ -1396,14 +1396,13 @@ void CDPDatabaseClient::OnBaseGameSetting( CAr & ar, DPID, DPID )
 	if( bBaseGameSetting )
 	{
 		ar >> prj.m_fMonsterExpRate	>> prj.m_fGoldDropRate >> prj.m_fItemDropRate >> prj.m_fMonsterHitRate;
-		ar >> prj.m_fShopCost >> prj.m_fMonsterRebirthRate >> prj.m_fMonsterHitpointRate >> prj.m_fMonsterAggressiveRate >> prj.m_fMonsterRespawnRate;
+		ar >> prj.m_fMonsterRebirthRate >> prj.m_fMonsterHitpointRate >> prj.m_fMonsterAggressiveRate >> prj.m_fMonsterRespawnRate;
 	}
 
 	g_UserMng.AddGameRate( prj.m_fMonsterExpRate, GAME_RATE_MONSTEREXP );
 	g_UserMng.AddGameRate( prj.m_fGoldDropRate, GAME_RATE_GOLDDROP );
 	g_UserMng.AddGameRate( prj.m_fItemDropRate, GAME_RATE_ITEMDROP );	
 	g_UserMng.AddGameRate( prj.m_fMonsterHitRate, GAME_RATE_MONSTERHIT );
-	g_UserMng.AddGameRate( prj.m_fShopCost, GAME_RATE_SHOPCOST );
 	g_UserMng.AddGameRate( prj.m_fMonsterRebirthRate, GAME_RATE_REBIRTH );
 	g_UserMng.AddGameRate( prj.m_fMonsterHitpointRate, GAME_RATE_HITPOINT );
 	g_UserMng.AddGameRate( prj.m_fMonsterAggressiveRate, GAME_RATE_AGGRESSIVE );

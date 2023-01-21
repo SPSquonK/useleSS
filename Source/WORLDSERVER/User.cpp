@@ -5413,16 +5413,8 @@ void CUser::AddChttingRoomState( BOOL bState )
 	
 }
 
-void CUser::AddGameRate( FLOAT fRate, BYTE nFlag )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_GAMERATE;
-	m_Snapshot.ar << fRate;
-	m_Snapshot.ar << nFlag;
-	
+void CUser::AddGameRate(FLOAT fRate, BYTE nFlag) {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_GAMERATE, FLOAT, BYTE>(fRate, nFlag);
 }
 
 
@@ -5430,7 +5422,6 @@ void CUser::AddGameSetting()
 {
 	if( IsDelete() )	return;
 
-	AddGameRate( prj.m_fShopCost, GAME_RATE_SHOPCOST );
 	AddGameRate( (float)( prj.m_dwVagSP ), GAME_SKILL_VAGSP );
 	AddGameRate( (float)( prj.m_dwExpertSP ), GAME_SKILL_EXPERTSP );
 	AddGameRate( (float)( prj.m_dwProSP ), GAME_SKILL_PROSP );
@@ -5438,7 +5429,8 @@ void CUser::AddGameSetting()
 	AddGameRate( prj.m_EventLua.GetShopBuyFactor(), GAME_RATE_SHOP_BUY );
 	AddGameRate( prj.m_EventLua.GetShopSellFactor(), GAME_RATE_SHOP_SELL );
 #endif // __SHOP_COST_RATE
-	if( ((CMover*)this)->IsAuthHigher( AUTH_GAMEMASTER ) )
+
+	if( IsAuthHigher( AUTH_GAMEMASTER ) )
 	{
 		AddGameRate( prj.m_fItemDropRate, GAME_RATE_ITEMDROP );
 		AddGameRate( prj.m_fGoldDropRate, GAME_RATE_GOLDDROP );

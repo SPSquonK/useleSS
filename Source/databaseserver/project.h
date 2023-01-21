@@ -94,7 +94,6 @@ public:
 	FLOAT m_fGoldDropRate;			// 몬스터 페냐 드롭률
 	FLOAT m_fMonsterExpRate;		// 몬스터 경험치룰
 	FLOAT m_fMonsterHitRate;		// 몬스터 공격률
-	FLOAT m_fShopCost;				// 상점가격
 #ifdef __ITEM_REMOVE_LIST
 	DWORD	m_dwConvMode;
 #endif // __ITEM_REMOVE_LIST

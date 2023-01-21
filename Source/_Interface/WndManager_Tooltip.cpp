@@ -961,7 +961,7 @@ namespace WndMgr {
 						nCost = pItemElem.GetChipCost();
 					}
 				}
-				nCost = (int)(nCost * prj.m_fShopCost);
+				
 				if (pItemElem.m_dwItemId == II_SYS_SYS_SCR_PERIN)
 					nCost = PERIN_VALUE;
 

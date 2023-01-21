@@ -235,8 +235,9 @@ BOOL CDbManager::GetBaseGameSetting( CQuery* pQuery, const char * lpstrTime )
 			else
 			if( strcmp( chBufName, "Price" ) == 0 )
 			{
-				prj.m_fShopCost = (float)nBufValue / 100.0f;
-				TRACE( "Price GAME_SETTING %f\n", prj.m_fShopCost );
+				if (nBufValue != 100.0f) {
+					Error("Attempted to change Shop cost (Price) but this is not supported");
+				}
 			}
 		}
 		else if( lpstrTime[0] != '\0' )
@@ -291,8 +292,9 @@ BOOL CDbManager::GetBaseGameSetting( CQuery* pQuery, const char * lpstrTime )
 			else
 			if( strcmp( chBufName, "Price" ) == 0 )
 			{
-				prj.m_fShopCost = 1.0f;
-				TRACE( "Price GAME_SETTING %f\n", prj.m_fShopCost );
+				if (nBufValue != 100.0f) {
+					Error("Attempted to change Shop cost (Price) but this is not supported");
+				}
 			}
 		}
 		prj.m_bBaseGameSetting = TRUE;

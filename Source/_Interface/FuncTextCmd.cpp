@@ -143,28 +143,6 @@ BOOL TextCmd_Time( CScanner& scanner )
 	return TRUE;
 }
 
-BOOL TextCmd_ChangeShopCost(CScanner & scanner) {
-#ifdef __WORLDSERVER
-	FLOAT f = scanner.GetFloat();
-	int nAllServer = scanner.GetNumber();
-
-	if( f > 2.0f )
-		f = 1.0f;
-	else if( f < 0.5f )
-		f = 1.0f;
-
-	if( nAllServer != 0 )
-	{
-		g_DPCoreClient.SendGameRate( f, GAME_RATE_SHOPCOST );
-		return TRUE;
-	}
-
-	prj.m_fShopCost = f;	
-	g_UserMng.AddGameRate( prj.m_fShopCost, GAME_RATE_SHOPCOST );
-#endif	// __WORLDSERVER
-	return TRUE;
-}
-
 BOOL TextCmd_SetMonsterRespawn(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 	D3DXVECTOR3 vPos	= pUser->GetPos();
@@ -4681,8 +4659,6 @@ CmdFunc::AllCommands::AllCommands() {
 
 #ifdef __S1108_BACK_END_SYSTEM
 	ON_TEXTCMDFUNC( TextCmd_PropMonster,           "monstersetting",     "ms",             "몬스터설정",     "몬설",    TCM_CLIENT, AUTH_ADMINISTRATOR   , "몬스터 설정 보기" )
-#else
-	ON_TEXTCMDFUNC( TextCmd_ChangeShopCost,	       "changeshopcost",	 "csc",	           "상점가격조정",   "상가조",  TCM_SERVER, AUTH_ADMINISTRATOR, "상점가격조정 Min(0.5) ~ Max(2.0)"  )
 #endif // __S1108_BACK_END_SYSTEM
 
 #ifdef __EVENT_1101
