@@ -776,7 +776,6 @@ public:
 
 // Attributes
 	// for entire combo box
-	int GetCount() const;
 	int GetCurSel() const;
 	int SetCurSel(int nSelect);
 

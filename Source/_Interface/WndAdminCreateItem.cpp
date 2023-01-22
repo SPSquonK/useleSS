@@ -54,7 +54,7 @@ void CWndAdminCreateItem::OnInitialUpdate()
 
 	strArray.RemoveAll();
 	CScript::GetFindIdToArray( "JOB_", &strArray );
-	CWndListBox::LISTITEM & allJobs = pWndItemKind->AddString("ALL");
+	CWndListBox::LISTITEM & allJobs = pWndItemJob->AddString("ALL");
 	allJobs.m_dwData = -1;
 	for( int i = 0; i < strArray.GetSize(); i++ )
 	{
@@ -67,11 +67,43 @@ void CWndAdminCreateItem::OnInitialUpdate()
 	pWndItemJob->SetCurSel( nIndex );
 	// 좌표 이동 
 
+	BoundListBoxOfComboBoxSize(*pWndItemKind, std::nullopt, 20);
+	BoundListBoxOfComboBoxSize(*pWndItemJob, std::nullopt, 20);
+
 	MoveParentCenter();
 } 
+
+// TODO: this should be a member function of CWndComboBox
+void CWndAdminCreateItem::BoundListBoxOfComboBoxSize(
+	CWndComboBox & comboBox, std::optional<int> minSize, std::optional<int> maxSize
+) {
+	int size = comboBox.m_wndListBox.GetCount();
+
+	std::optional<int> newSize = std::nullopt;
+
+	if (minSize && size < *minSize) newSize = *minSize;
+	if (maxSize && size > *maxSize) newSize = *maxSize;
+
+	if (!newSize) return;
+
+	CRect rect = comboBox.m_wndListBox.GetWindowRect(TRUE);
+	rect.bottom = rect.top + (*newSize * (comboBox.m_pFont->GetMaxHeight() + 3)) + 8;
+	comboBox.m_wndListBox.SetWndRect(rect);
+}
+
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndAdminCreateItem::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
 	return CWndNeuz::InitDialog(APP_ADMIN_CREATEITEM, pWndParent, 0, CPoint(0, 0));
+}
+
+std::optional<DWORD> CWndAdminCreateItem::GetSelectedInComboBox(UINT comboBoxId) /* const */ {
+	CWndComboBox * const pWnd = GetDlgItem<CWndComboBox>(comboBoxId);
+	if (!pWnd) return std::nullopt;
+
+	const int curSel = pWnd->GetCurSel();
+	if (curSel == -1) return std::nullopt;
+
+	return pWnd->GetItemData(curSel);
 }
 
 BOOL CWndAdminCreateItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -80,18 +112,13 @@ BOOL CWndAdminCreateItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 	{
 		if( message == WNM_SELCHANGE || message == EN_CHANGE )
 		{
-			CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem( WIDC_LEVEL );
-			CString string = pWndEdit->GetString();
-			const DWORD dwLevel = atoi( string );
+			CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_LEVEL);
+			LPCTSTR string = pWndEdit->GetString();
+			const DWORD dwLevel = atoi(string);
 
-			CWndComboBox* pWndItemKind = (CWndComboBox*)GetDlgItem( WIDC_ITEM_KIND );
-			const DWORD dwKind = pWndItemKind->GetItemData(pWndItemKind->GetCurSel());
-
-			CWndComboBox* pWndItemSex = (CWndComboBox*)GetDlgItem( WIDC_ITEM_SEX );
-			const DWORD dwSex = pWndItemSex->GetItemData(pWndItemSex->GetCurSel());
-
-			CWndComboBox* pWndItemJob = (CWndComboBox*)GetDlgItem( WIDC_ITEM_JOB );
-			const DWORD dwJob = pWndItemJob->GetItemData(pWndItemJob->GetCurSel());
+			const DWORD dwKind = GetSelectedInComboBox(WIDC_ITEM_KIND).value_or(-1);
+			const DWORD dwSex = GetSelectedInComboBox(WIDC_ITEM_SEX).value_or(SEX_SEXLESS);
+			const DWORD dwJob = GetSelectedInComboBox(WIDC_ITEM_JOB).value_or(-1);
 
 			UpdateItems(dwKind, dwSex, dwJob, dwLevel);
 		}

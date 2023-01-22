@@ -24,6 +24,9 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 
+	static void BoundListBoxOfComboBoxSize(CWndComboBox & comboBox, std::optional<int> minSize, std::optional<int> maxSize);
+
 private:
+	[[nodiscard]] std::optional<DWORD> GetSelectedInComboBox(UINT comboBoxId) /* const */;
 	void UpdateItems(DWORD kind, DWORD sex, DWORD job, DWORD level);
 }; 
