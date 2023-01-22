@@ -92,7 +92,7 @@ void CWndTaskBar::SetTaskBarTexture( SHORTCUT & shortcut )
 	}
 	else if (shortcut.m_dwShortcut == ShortcutType::PartySkill) {
 		ItemProp * pProp = prj.GetPartySkill(shortcut.m_dwId);
-		shortcut.m_pTexture = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff);
+		if (pProp) shortcut.m_pTexture = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff);
 	}
 	else if ( shortcut.m_dwShortcut == ShortcutType::Skill)
 	{
