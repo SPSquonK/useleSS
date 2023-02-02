@@ -279,6 +279,8 @@ int CMover::GetExpPercent() const {
 	EXPINTEGER exp = GetExp1();
 	EXPINTEGER maxExp = GetMaxExp1();
 
+	if (maxExp == 0) [[unlikely]] return 0;
+
 	if (maxExp >= EXPINTEGER(1024 * 1024 * 1024)) {
 		// Avoid overflow when multiplying. 1024 is a power of 2 so it is fast
 		exp /= EXPINTEGER(1024 * 1024 * 1024);
