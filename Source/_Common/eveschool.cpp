@@ -934,9 +934,8 @@ void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 				}
 			}
 		}
-		u_long uBestPlayerGuild;
-		int nGetPoint;
-		m_uBestPlayer = GetBestPlayer( &uBestPlayerGuild, &nGetPoint );
+
+		m_uBestPlayer = GetBestPlayer();
 
 		
 		++m_nGuildCombatIndex;
@@ -1297,100 +1296,53 @@ u_long CGuildCombat::GetDefender( u_long uidGuild )
 		uidDefender = pGCMember->m_uidDefender;
 	return uidDefender;
 }
-u_long CGuildCombat::GetBestPlayer( u_long* dwGetGuildId, int* nGetPoint )
-{
-	u_long uBestPlayer = 0;
-	std::map<u_long, int> mapSame;	// 동점자 발생시 처리하기 위한 playerId
-	// 포인트 검사
-	BOOL bResult = FALSE;
-	int nMaxPoint = -1;
-	for( int nVeci = 0 ; nVeci < (int)( vecRequestRanking.size() ) ; ++nVeci )
-	{
-		if( nVeci >= m_nMaxGuild )
-			break;
+
+u_long CGuildCombat::GetBestPlayer() {
+	std::vector<u_long> sameScorePlayers;
+	std::optional<int> maxPoint = std::nullopt;
+
+	int seenGuilds = 0;
+	for (const __REQUESTGUILD & RequestGuild : vecRequestRanking) {
+		++seenGuilds;
+		if (seenGuilds >= m_nMaxGuild) break;
 		
-		__REQUESTGUILD RequestGuild = vecRequestRanking[nVeci];
-		__GuildCombatMember* pGCMember = FindGuildCombatMember( RequestGuild.uidGuild );
-		if( pGCMember != NULL )
-		{
-			for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-			{
-				__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
-				if( nMaxPoint < pJoinPlayer->nPoint )
-				{
-					nMaxPoint = pJoinPlayer->nPoint;
-					uBestPlayer = pJoinPlayer->uidPlayer;
-					*nGetPoint = pJoinPlayer->nPoint;
-					*dwGetGuildId = pGCMember->uGuildId;
-					bResult = TRUE;
-					mapSame.clear();
-					mapSame.emplace( pJoinPlayer->uidPlayer, nVeci);
+		if (__GuildCombatMember * pGCMember = FindGuildCombatMember(RequestGuild.uidGuild)) {
+			for (__JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
+				if (maxPoint && *maxPoint < pJoinPlayer->nPoint) {
+					sameScorePlayers.clear();
+					maxPoint = std::nullopt;
 				}
-				else if( nMaxPoint == pJoinPlayer->nPoint )
-				{
-					bResult = FALSE;
-					mapSame.emplace( pJoinPlayer->uidPlayer, nVeci);
-				}
+
+				maxPoint = pJoinPlayer->nPoint;
+				sameScorePlayers.emplace_back(pJoinPlayer->uidPlayer);
 			}
 		}
 	}
 
-	// 레벨 & 경험치 검사
-	int nMinLevel = 0x7fffffff;
-	EXPINTEGER nMinExp = (EXPINTEGER)0x7fffffffffffffff;
+	if (sameScorePlayers.size() == 0) return 0;
+	if (sameScorePlayers.size() == 1) return sameScorePlayers[0];
 
-	if( bResult == FALSE )
-	{
-		for( int nVeci = 0 ; nVeci < (int)( vecRequestRanking.size() ) ; ++nVeci )
-		{
-			if( nVeci >= m_nMaxGuild )
-				break;
-
-			__REQUESTGUILD RequestGuild = vecRequestRanking[nVeci];
-			__GuildCombatMember* pGCMember = FindGuildCombatMember( RequestGuild.uidGuild );
-			if( pGCMember != NULL )
-			{
-				for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-				{
-					__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
-					// 최고 점수의 동점자가 아닌 경우 continue
-					if( !pJoinPlayer || mapSame.find( pJoinPlayer->uidPlayer ) == mapSame.end() )
-						continue;
-					
-					CMover* pMover = prj.GetUserByID( pJoinPlayer->uidPlayer );
-					if( IsValidObj( pMover ) )
-					{
-						//if( nMaxLevel < pMover->GetLevel() )
-						if( nMinLevel > pMover->GetLevel() )
-						{
-							//nMaxLevel = pMover->GetLevel();
-							//nMaxExp = pMover->GetExp1();
-							nMinLevel = pMover->GetLevel();
-							nMinExp = pMover->GetExp1();
-							uBestPlayer = pJoinPlayer->uidPlayer;
-							*nGetPoint = pJoinPlayer->nPoint;
-							*dwGetGuildId = pGCMember->uGuildId;
-						}
-						//else if( nMaxLevel == pMover->GetLevel() )
-						else if( nMinLevel == pMover->GetLevel() )
-						{
-							if( nMinExp > pMover->GetExp1() )
-							{
-								//nMaxLevel = pMover->GetLevel();
-								//nMaxExp = pMover->GetExp1();
-								nMinLevel = pMover->GetLevel();
-								nMinExp = pMover->GetExp1();
-								uBestPlayer = pJoinPlayer->uidPlayer;
-								*nGetPoint = pJoinPlayer->nPoint;
-								*dwGetGuildId = pGCMember->uGuildId;
-							}
-						}
-					}
-				}
-			}
-		}
+	std::vector<std::pair<u_long, CUser *>> players;
+	for (const u_long playerId : sameScorePlayers) {
+		players.emplace_back(playerId, prj.GetUserByID(playerId));
 	}
-	return uBestPlayer;
+
+	std::sort(
+		players.begin(), players.end(),
+		[](const std::pair<u_long, CUser *> & lhs, const std::pair<u_long, CUser *> & rhs) {
+			if (!lhs.second) {
+				if (!rhs.second) return lhs.first < rhs.first;
+				return false;
+			} else if (!rhs.second) {
+				return true;
+			}
+			
+			return std::tuple(lhs.second->GetLevel(), lhs.second->GetExp1())
+				> std::tuple(rhs.second->GetLevel(), rhs.second->GetExp1());
+		}
+	);
+
+	return players[0].first;
 }
 
 // 지금까지의 총 상금

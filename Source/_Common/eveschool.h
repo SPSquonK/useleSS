@@ -262,7 +262,7 @@ public:
 	void	SetDefender( u_long uidGuild, u_long uidDefender );
 	void	SetPlayerChange( CUser* pUser, CUser* pLeader );
 	u_long	GetDefender( u_long uidGuild );
-	u_long	GetBestPlayer( u_long* dwGetGuildId, int* nGetPoint );
+	[[nodiscard]] u_long GetBestPlayer();
 	DWORD	GetRequstPenya( u_long uidGuild );
 	void	GetPoint( CUser* pAttacker, CUser* pDefender );
 	__int64	GetPrizePenya( int nFlag );
