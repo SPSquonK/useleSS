@@ -18,12 +18,6 @@ extern const int MAX_APPLETTASKBAR;
 extern const int MAX_ITEMTASKBAR;   
 extern const char NullStr[2];
 
-#if defined( __VERIFY_PLAYER ) || defined( __PROVIDE ) || defined( __S0707_ITEM_CONV ) || defined(__RECOVER0816)
-#define	MAX_QUERY_SIZE	1024 * 64
-#include "resource.h"
-BOOL	CALLBACK	VerifyPlayerDlgProc( HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam );
-#endif	// __VERIFY_PLAYER OR __PROVIDE
-
 extern	CProject			prj;
 
 void CDbManager::SendJoin( CMover* pMover, LPDB_OVERLAPPED_PLUS lpDBOP, DWORD dwAuthKey, 

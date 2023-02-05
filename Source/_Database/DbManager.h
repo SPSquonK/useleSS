@@ -914,18 +914,7 @@ public:
 	int		GetOneItem( CItemElem* pItemElem, char* pstrItem, int *pLocation );
 	void	GetOneSkill( LPSKILL pSkill, char* pstrSkill, int *pLocation );
 	QUEST GetOneQuest( const char* pstrQuest, int *pLocation );
-
-#ifdef __VERIFY_PLAYER
-	BOOL	VerifyPlayer( void );
-#endif	// __VERIFY_PLAYER
 	
-#ifdef __S0707_ITEM_CONV
-	BOOL	ConvItem( void );
-#endif // __S0707_ITEM_CONV
-	BOOL	ConvItem050615( void );
-	void	ConvChangeItem050615( CMover* pMover );
-	void	ConvChangeGuild050615( CMover* pMover );
-	void	ConvChangeGuild050615( CItemContainer*  GuildBank );
 	BOOL	GetBankMover( CMover* pMover, CQuery *qry, int nSlot );
 	void	GetGuildBank( CItemContainer*  GuildBank, CQuery *qry );
 	BOOL	RemoveItemInvenBank( CMover* pMover, int* nCountItem0, int* nCountItem1 );
@@ -958,14 +947,6 @@ public:
 	BOOL	ConvItemStart( void );
 #endif // __ITEM_REMOVE_LIST
 
-#ifdef __RECOVER0816
-	BOOL	RecoverCharacter( void );
-#endif	// __RECOVER0816
-
-#ifdef __INITITEMHITPOINT
-	BOOL	InitItemHitPoint( void );
-#endif	// __INITITEMHITPOINT
-
 	BOOL	OpenWanted( CAr& ar );
 
 	static	void	MakeQueryAddMail( char* szSql, CMail* pMail, u_long idReceiver );
@@ -983,7 +964,7 @@ private:
 	void	InsertTag( CQuery *qry, CAr & arRead);
 	[[nodiscard]] static CTime GetStrTime(const char * strbuf);
 	BOOL	VerifyString( const char* lpString, const char* lpFileName, int nLine, const char* lpName, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus = NULL );
-	BOOL	SN( void );
+	
 	void	LogPlayConnect(CQuery *qry, CAr & arRead);
 	void	LogPlayDeath(CQuery *qry, CAr & arRead);
 	void	LogLevelUp(CQuery *qry, CAr & arRead);

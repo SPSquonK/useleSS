@@ -28,14 +28,14 @@
 #include "sqktd/algorithm.h"
 #include "DbSerializer.h"
 
-#if defined( __VERIFY_PLAYER ) || defined( __PROVIDE ) || defined( __S0707_ITEM_CONV ) || defined(__RECOVER0816) || defined(__ITEM_REMOVE_LIST)
+#if defined(__ITEM_REMOVE_LIST)
 #define	MAX_QUERY_SIZE	1024 * 64
 #ifdef IDC_STATIC
 #undef IDC_STATIC
 #endif
 #include "resource.h"
-BOOL	CALLBACK	VerifyPlayerDlgProc( HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam );
-#endif	// __VERIFY_PLAYER OR __PROVIDE
+
+#endif
 
 extern	CProject			prj;
 

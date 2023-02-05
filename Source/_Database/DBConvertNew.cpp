@@ -36,7 +36,7 @@ HWND hItemConvDlg, hItemConvWndPB;
 #define	MAX_QUERY_SIZE	1024 * 64
 #include "resource.h"
 BOOL	CALLBACK	VerifyPlayerDlgProc( HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam );
-#endif	// __VERIFY_PLAYER OR __PROVIDE
+#endif
 
 
 #ifdef __ITEM_REMOVE_LIST
@@ -411,7 +411,7 @@ BOOL CDbManager::RemoveGuildBankList( char* pszSQL, int nGuildId, CItemContainer
 
 BOOL CDbManager::RemoveGuildBankListPanya( char* pszSQL, int nGuildId, CQuery* pQueryChar, CQuery* pQuerySave, int nCountItem0, int nCountItem1 )
 {
-	if( prj.IsConvMode( REMOVE_ITEM_ALL_PAY ) )
+	if( prj.IsConvMode(  REMOVE_ITEM_ALL_PAY ) )
 	{
 		DWORD dwAddGold = GetRemoveItemPanya( nCountItem0, nCountItem1 );
 		sprintf( pszSQL, "UPDATE GUILD_TBL"

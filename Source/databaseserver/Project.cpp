@@ -336,22 +336,6 @@ BOOL CProject::LoadExpTable( LPCTSTR lpszFileName )
 				dwVal	= s.GetNumber();
 			}
 		}
-#ifdef __RECOVER0816
-		else if( s.Token == _T( "expCharacter" ) )
-		{
-			ZeroMemory( m_aExpCharacter, sizeof( m_aExpCharacter ) );
-			s.GetToken(); // { 
-			DWORD dwVal = s.GetNumber();
-			while( *s.token != '}' )
-			{
-				m_aExpCharacter[i].dwExp1 = dwVal;
-				m_aExpCharacter[i].dwExp2 = s.GetNumber();
-				m_aExpCharacter[i].dwLPPoint = s.GetNumber();
-				m_aExpCharacter[i++].dwLimitExp = s.GetNumber();
-				dwVal	= s.GetNumber();
-			}
-		}
-#endif	// __RECOVER0816
 
 		s.GetToken();	// type name or }
 	}

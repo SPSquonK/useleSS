@@ -15,10 +15,6 @@
 #include "xutil.h"
 #include "guild.h"
 
-#ifdef __PROVIDE
-#include "defineitem.h"
-#endif	// __PROVIDE
-
 #include "post.h"
 
 #include <mmsystem.h>
@@ -191,32 +187,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	SetTimer(  hWnd, TID_QUERY_REMOVE_GUILD_BANK_TBL, MIN( 10 ), NULL );
 #endif	// __INTERNALSERVER
 
-#ifdef __VERIFY_PLAYER
-	g_DbManager.VerifyPlayer();
-	return FALSE;
-#endif	// __VERIFY_PLAYER
-#ifdef __PROVIDE
-	return TRUE;
-#endif	// __PROVIDE
 //______________________________________________________________________
-
-#ifdef __CONV_SERIAL_NUMBER
-	g_DbManager.SN();
-	return FALSE;
-#endif	// __CONV_SERIAL_NUMBER
-	
-#ifdef __S0707_ITEM_CONV
-	if( g_DbManager.ConvItem() )	// // 아이템 프로퍼티가 바뀌었을시 사용
-	{
-		if( MB_OK != AfxMessageBox( "완료 컨버트 Item", MB_OK ) )
-			return FALSE;
-	}
-	else
-	{
-		if( MB_OK != AfxMessageBox( "실패 컨버트 Item", MB_OK ) )
-			return FALSE;
-	}
-#endif // __S0707_ITEM_CONV
 		
 #ifdef __ITEM_REMOVE_LIST
 	if( prj.IsConvMode( CONVER_ITEM_START ) )
@@ -237,18 +208,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	}
 #endif // __ITEM_REMOVE_LIST
 	
-
-#ifdef __RECOVER0816
-	if( g_DbManager.RecoverCharacter() )
-	{
-		AfxMessageBox( "3" );
-		return FALSE;
-	}
-	else
-	{
-		AfxMessageBox( "4" );
-	}
-#endif	// __RECOVER0816
 //______________________________________________________________________
 
 
