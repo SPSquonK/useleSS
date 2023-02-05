@@ -20,7 +20,7 @@
 #pragma warning(disable: 4996)
 
 // Other things
-#pragma warning(error: 4045 4098 4138 4146 4156 4179 5030 5222)
+#pragma warning(error: 4045 4066 4067 4068 4098 4138 4146 4156 4179 5030 5222)
 
 
 namespace std_ {
