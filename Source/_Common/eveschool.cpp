@@ -1303,14 +1303,13 @@ u_long CGuildCombat::GetBestPlayer() {
 
 	int seenGuilds = 0;
 	for (const __REQUESTGUILD & RequestGuild : vecRequestRanking) {
-		++seenGuilds;
 		if (seenGuilds >= m_nMaxGuild) break;
+		++seenGuilds;
 		
-		if (__GuildCombatMember * pGCMember = FindGuildCombatMember(RequestGuild.uidGuild)) {
-			for (__JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
+		if (const __GuildCombatMember * pGCMember = FindGuildCombatMember(RequestGuild.uidGuild)) {
+			for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
 				if (maxPoint && *maxPoint < pJoinPlayer->nPoint) {
 					sameScorePlayers.clear();
-					maxPoint = std::nullopt;
 				}
 
 				maxPoint = pJoinPlayer->nPoint;
