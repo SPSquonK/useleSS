@@ -31,15 +31,12 @@ namespace sqktd {
 		maybe_owned_ptr() = default;
 		maybe_owned_ptr(const maybe_owned_ptr &) = delete;
 		maybe_owned_ptr & operator=(const maybe_owned_ptr &) = delete;
-		maybe_owned_ptr(maybe_owned_ptr && other) { operator=(std::move(other)); }
-		maybe_owned_ptr & operator=(maybe_owned_ptr && other) {
+		maybe_owned_ptr(maybe_owned_ptr && other) noexcept { operator=(std::move(other)); }
+		maybe_owned_ptr & operator=(maybe_owned_ptr && other) noexcept {
 			if (this == &other) return *this;
 
-			ensure_owns_nothing();
-
-			m_rawPtr = other.m_rawPtr;
-			m_isOwned = other.m_isOwned;
-			other.m_rawPtr = nullptr;
+			std::swap(m_rawPtr, other.m_rawPtr);
+			std::swap(m_isOwned, other.m_isOwned);
 			return *this;
 		}
 		~maybe_owned_ptr() { if (m_rawPtr && m_isOwned) { delete m_rawPtr; } }
