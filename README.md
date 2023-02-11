@@ -8,9 +8,9 @@ https://www.elitepvpers.com/forum/flyff-pserver-guides-releases/4244222-visual-s
 Some v22 resource compatiblity have been added. See [Documentation/v15plus.md](Documentation/v15plus.md).
 
 This source is developped on Visual Studio 2022 with the C++lastest option.
-C++latest is used instead of C++20 because MSVC doesn't have range support
-with the C++20 option for some reasons. A recent version of C++ is used because I want to improve in modern
-C++, and it is dumb to not use it in a project that does not have any restriction that goes against it.
+
+- This repository **does not** provide a production ready of the source code. Many exploits are not (yet) fixed.
+- If you encounter a bug, please use the Github issue system, or in the worst case send a mail.
 
 
 ## Getting started
@@ -44,7 +44,7 @@ You can use the modifications done here on your own project. But if you copy
 the code, you must cite me (SquonK) as the original author of the code somewhere
 in your project code.
 
-This repository does not provide a production ready version of a FlyFF server.
+**This repository does not provide a production ready version of a FlyFF server.**
 
 In particular, specific code that is explicitely commented with a reference to
 the
