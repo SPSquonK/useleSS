@@ -4353,16 +4353,16 @@ BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 			+ (defender ? 1 : 0)
 			+ (bLastLife ? 1 : 0);
 
-		CGuildCombat::__GCGETPOINT gc;
-		gc.uidGuildAttack = gAtk->GetGuildId();
-		gc.uidGuildDefence = gDef->GetGuildId();
-		gc.uidPlayerAttack = pAtk;
-		gc.uidPlayerDefence = pDef;
-		gc.nPoint = points;
-		gc.bKillDiffernceGuild = FALSE;
-		gc.bMaster = master;
-		gc.bDefender = defender;
-		gc.bLastLife = bLastLife;
+		CGuildCombat::__GCGETPOINT gc{
+			.uidGuildAttack = gAtk->GetGuildId(),
+			.uidGuildDefence = gDef->GetGuildId(),
+			.uidPlayerAttack = pAtk,
+			.uidPlayerDefence = pDef,
+			.nPoint = points,
+			.bMaster = master,
+			.bDefender = defender,
+			.bLastLife = bLastLife
+		};
 
 		kills.emplace_back(gc);
 

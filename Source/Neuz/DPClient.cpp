@@ -6181,7 +6181,6 @@ void CDPClient::OnGCLog( CAr & ar )
 		strTemp = prj.GetText(TID_GAME_GC_LOG1);
 		if (GCGetPoint.bMaster)             strTemp.AppendFormat(", %s", prj.GetText(TID_GAME_GC_LOG2));
 		if (GCGetPoint.bDefender)           strTemp.AppendFormat(", %s", prj.GetText(TID_GAME_GC_LOG3));
-		if (GCGetPoint.bKillDiffernceGuild) strTemp.AppendFormat(", %s", prj.GetText(TID_GAME_GC_LOG4));
 		if (GCGetPoint.bLastLife)           strTemp.AppendFormat(", %s", prj.GetText(TID_GAME_GC_LOG5));
 
 		textualLog.AppendFormat("< %s >\n\r\n", strTemp.GetString());
@@ -6194,77 +6193,48 @@ void CDPClient::OnGCLogRealTime( CAr & ar )
 {
 	char szAttacker[MAX_NAME], szDefender[MAX_NAME];
 	CGuildCombat::__GCGETPOINT GCGetPoint;
-	ar >>GCGetPoint.uidGuildAttack;			// 공격한 길드 아이디
-	ar >>GCGetPoint.uidGuildDefence;		// 죽은 길드 아이디
+	ar >> GCGetPoint;
 	ar.ReadString( szAttacker, MAX_NAME );
 	ar.ReadString( szDefender, MAX_NAME );
-	ar >>GCGetPoint.uidPlayerAttack;		// 공격한 유저 아이디
-	ar >>GCGetPoint.uidPlayerDefence;		// 죽은 유저 아이디
-	ar >>GCGetPoint.nPoint;					// 얻은 포인트
-	ar >>GCGetPoint.bKillDiffernceGuild;	// 전에 죽인 길드와 요번에 죽인 길드가 다르면 +1
-	ar >>GCGetPoint.bMaster;				// 마스터 이면 +1
-	ar >>GCGetPoint.bDefender;				// 디펜터 +1
-	ar >>GCGetPoint.bLastLife;				// 마지막 생명일때 +1
 	
-	CString strAtk, strDef;
-	CString strGuild1, strGuild2;
-	CString strTemp2;
+	LPCTSTR strGuild1; LPCTSTR strGuild2;
 
 	CGuild* pGuildAtk = g_GuildMng.GetGuild( GCGetPoint.uidGuildAttack );
 	CGuild* pGuildDef = g_GuildMng.GetGuild( GCGetPoint.uidGuildDefence );
-	
-	BOOL bAtkMaster = pGuildAtk->IsMaster( GCGetPoint.uidPlayerAttack );
-	BOOL bDefMaster = pGuildDef->IsMaster( GCGetPoint.uidPlayerDefence );
-				
-	if( bAtkMaster && bDefMaster )
-	{
-		strGuild1 = prj.GetText(TID_GAME_GC_LOG_MASTER);
-		strGuild2 = strGuild1;
-	}
-	else
-	if( !bAtkMaster && bDefMaster )
-	{
-		strGuild1 = "";
-		strGuild2 = prj.GetText(TID_GAME_GC_LOG_MASTER);
-	}
-	else
-	if( bAtkMaster && !bDefMaster )
-	{
-		strGuild1 = prj.GetText(TID_GAME_GC_LOG_MASTER);
-		strGuild2 = "";
-	}
-	else
-	if( !bAtkMaster && !bDefMaster )
-	{
-		strGuild1 = "";
-		strGuild2 = "";
-	}
-	
-	strAtk.Format( prj.GetText(TID_GAME_GC_FROM3), szAttacker );
-	strDef.Format( prj.GetText(TID_GAME_GC_FROM4), szDefender );
-	
-	if( GCGetPoint.bDefender )
-	{
-		strGuild2 = prj.GetText(TID_GAME_GC_LOG_DEFENDER);
-	}
-	
-	CString szTempGuild;
-	szTempGuild.Format( prj.GetText(TID_GAME_GC_LOG_GUILD), pGuildAtk->m_szGuild );
-	CString szTempPoint;
-	szTempPoint.Format( prj.GetText(TID_GAME_GC_ATTACK_POINT), GCGetPoint.nPoint );
-	CString szTempGuildDef;
-	szTempGuildDef.Format( prj.GetText(TID_GAME_GC_LOG_GUILD), pGuildDef->m_szGuild );
-	CString szTempAttack;
-	szTempAttack = prj.GetText(TID_GAME_ATTACK);
 
+	
 	//[abc] 길드마스터 홍길동 님이 [울랄라] 엉터리 님을 쓰러뜨려 4점 획득!!
 	if( ::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN )
 	{
-		sprintf( szChat, "[%s][%s] has killed [%s][%s] and has gained %d points.", pGuildAtk->m_szGuild, szAttacker, pGuildDef->m_szGuild, szDefender, GCGetPoint.nPoint );
+		sprintf( szChat, "[%s][%s] has killed [%s][%s] and has gained %d points.",
+			pGuildAtk->m_szGuild, szAttacker, pGuildDef->m_szGuild, szDefender, GCGetPoint.nPoint );
 	}
 	else
-	{	
-		sprintf( szChat, "%s %s %s %s %s %s %s", szTempGuild, strGuild1, strAtk, szTempGuildDef, strGuild2, strDef, szTempPoint) ;
+	{
+		const bool bAtkMaster = pGuildAtk->IsMaster(GCGetPoint.uidPlayerAttack);
+		strGuild1 = bAtkMaster ? prj.GetText(TID_GAME_GC_LOG_MASTER) : "";
+
+		const bool bDefMaster = pGuildDef->IsMaster(GCGetPoint.uidPlayerDefence);
+		strGuild2 =
+			GCGetPoint.bDefender ? prj.GetText(TID_GAME_GC_LOG_DEFENDER) :
+			bDefMaster           ? prj.GetText(TID_GAME_GC_LOG_MASTER)   :
+			                       "";
+
+		CString strAtk; strAtk.Format(prj.GetText(TID_GAME_GC_FROM3), szAttacker);
+		CString strDef; strDef.Format(prj.GetText(TID_GAME_GC_FROM4), szDefender);
+
+		CString szTempGuild;
+		szTempGuild.Format(prj.GetText(TID_GAME_GC_LOG_GUILD), pGuildAtk->m_szGuild);
+		CString szTempPoint;
+		szTempPoint.Format(prj.GetText(TID_GAME_GC_ATTACK_POINT), GCGetPoint.nPoint);
+		CString szTempGuildDef;
+		szTempGuildDef.Format(prj.GetText(TID_GAME_GC_LOG_GUILD), pGuildDef->m_szGuild);
+
+		sprintf( szChat, "%s %s %s %s %s %s %s",
+			szTempGuild.GetString(), strGuild1, strAtk.GetString(),
+			szTempGuildDef.GetString(), strGuild2, strDef.GetString(),
+			szTempPoint.GetString()
+		);
 	}
 
 	g_WndMng.PutString( (LPCTSTR)szChat, NULL, 0xffffffff, CHATSTY_GENERAL );

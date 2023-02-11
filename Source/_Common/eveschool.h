@@ -72,11 +72,9 @@ public:
 	};
 	struct __JOINPLAYER
 	{
-		u_long	uidPlayer;		// 캐릭터 아이디
+		u_long	uidPlayer;
 		int		nlife;			// 남은 생명
-//		BOOL	bEntry;			// 참가 유/무
 		int		nPoint;			// 포인트
-		int		uKillidGuild;	// 전에 죽인 길드
 		int		nMap;			// 대전 텔레포트 맵
 		DWORD	dwTelTime;		// 대전 텔레포트 시간
 		__JOINPLAYER()
@@ -84,7 +82,6 @@ public:
 			uidPlayer	= 0;
 			nlife	= 0;
 			nPoint	= 0;
-			uKillidGuild	= 0;
 			nMap	= 0;
 			dwTelTime	= 0;
 		}
@@ -159,8 +156,7 @@ public:
 		u_long uidPlayer;		// 플레이어 아이디
 		__int64 nReward;			// 보상금
 	};
-	struct __GCGETPOINT
-	{
+	struct __GCGETPOINT {
 		static constexpr bool Archivable = true;
 
 		u_long uidGuildAttack;
@@ -168,16 +164,9 @@ public:
 		u_long uidPlayerAttack;
 		u_long uidPlayerDefence;
 		int nPoint;
-		BOOL bKillDiffernceGuild;
 		BOOL bMaster;
 		BOOL bDefender;
 		BOOL bLastLife;
-
-		__GCGETPOINT()
-		{
-			uidGuildAttack = uidGuildDefence = uidPlayerAttack = uidPlayerDefence = nPoint = 0;
-			bKillDiffernceGuild = bMaster = bDefender = bLastLife = FALSE;
-		}
 	};
 	struct __GCPLAYERPOINT
 	{
@@ -241,8 +230,7 @@ public:
 	void	GuildCombatClear( int Clear = 1 );
 	void	GuildCombatGameClear();
 	void	SelectPlayerClear( u_long uidGuild );
-	void	AddvecGCGetPoint( u_long uidGuildAttack, u_long uidGuildDefence, u_long uidPlayerAttack, u_long uidPlayerDefence, int nPoint,
-							BOOL bKillDiffernceGuild, BOOL bMaster, BOOL bDefender, BOOL bLastLife );
+	void	AddvecGCGetPoint(__GCGETPOINT gcGetPoint);
 	void	AddvecGCPlayerPoint( u_long uidPlayer, int nJob, int nPoint );
 #ifdef __WORLDSERVER
 	BOOL	LoadScript( LPCSTR lpszFileName );

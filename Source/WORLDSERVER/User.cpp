@@ -4901,9 +4901,7 @@ void CUserMng::AddGCLogWorld( void )
 	arBlock << NULL_ID << SNAPSHOTTYPE_GUILDCOMBAT;
 	arBlock << GC_LOG;
 	arBlock << (u_long)g_GuildCombatMng.m_vecGCGetPoint.size();
-	for( int veci = 0 ; veci < (int)( g_GuildCombatMng.m_vecGCGetPoint.size() ) ; ++veci )
-	{
-		CGuildCombat::__GCGETPOINT GCGetPoint = g_GuildCombatMng.m_vecGCGetPoint[ veci ];
+	for (const CGuildCombat::__GCGETPOINT & GCGetPoint : g_GuildCombatMng.m_vecGCGetPoint) {
 		arBlock << GCGetPoint;
 	}
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
@@ -4920,26 +4918,17 @@ void CUserMng::AddGCLogWorld( void )
 }
 void CUserMng::AddGCLogRealTimeWorld( CGuildCombat::__GCGETPOINT GCGetPoint )
 {
-	LPCSTR szAttacker, szDefender;
-	szAttacker	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerAttack );
-	szDefender	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerDefence );
+	LPCSTR szAttacker	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerAttack );
+	LPCSTR szDefender	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerDefence );
 	if( szAttacker == NULL || szDefender == NULL )
 		return;
 
 	CAr arBlock;
 	arBlock << NULL_ID << SNAPSHOTTYPE_GUILDCOMBAT;
 	arBlock << GC_LOG_REALTIME;
-	arBlock << GCGetPoint.uidGuildAttack;
-	arBlock << GCGetPoint.uidGuildDefence;
+	arBlock << GCGetPoint;
 	arBlock.WriteString( szAttacker );
 	arBlock.WriteString( szDefender );
-	arBlock << GCGetPoint.uidPlayerAttack;
-	arBlock << GCGetPoint.uidPlayerDefence;
-	arBlock << GCGetPoint.nPoint;
-	arBlock << GCGetPoint.bKillDiffernceGuild;
-	arBlock << GCGetPoint.bMaster;
-	arBlock << GCGetPoint.bDefender;
-	arBlock << GCGetPoint.bLastLife;
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 	
 	for(auto it = m_users.begin(); it != m_users.end(); ++it )
@@ -5846,11 +5835,9 @@ void CUser::AddGCLog( void )
 	m_Snapshot.ar << SNAPSHOTTYPE_GUILDCOMBAT;
 	m_Snapshot.ar << GC_LOG;
 	m_Snapshot.ar << (u_long)g_GuildCombatMng.m_vecGCGetPoint.size();
-	for (int veci = 0; veci < (int)(g_GuildCombatMng.m_vecGCGetPoint.size()); ++veci) {
-		CGuildCombat::__GCGETPOINT GCGetPoint = g_GuildCombatMng.m_vecGCGetPoint[veci];
+	for (const CGuildCombat::__GCGETPOINT & GCGetPoint : g_GuildCombatMng.m_vecGCGetPoint) {
 		m_Snapshot.ar << GCGetPoint;
 	}
-	
 }
 void CUser::AddGCPlayerPoint( void )
 {

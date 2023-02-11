@@ -352,22 +352,11 @@ void CGuildCombat::GuildCombatGameClear()
 	GuildCombatClear( 2 );
 }
 
-void CGuildCombat::AddvecGCGetPoint( u_long uidGuildAttack, u_long uidGuildDefence, u_long uidPlayerAttack, u_long uidPlayerDefence, int nPoint,
-									BOOL bKillDiffernceGuild, BOOL bMaster, BOOL bDefender, BOOL bLastLife )
+void CGuildCombat::AddvecGCGetPoint(__GCGETPOINT gcGetPoint)
 {
-	__GCGETPOINT GCGetPoint;
-	GCGetPoint.uidGuildAttack = uidGuildAttack;
-	GCGetPoint.uidGuildDefence = uidGuildDefence;
-	GCGetPoint.uidPlayerAttack = uidPlayerAttack;
-	GCGetPoint.uidPlayerDefence = uidPlayerDefence;
-	GCGetPoint.nPoint = nPoint;
-	GCGetPoint.bKillDiffernceGuild = bKillDiffernceGuild;
-	GCGetPoint.bMaster = bMaster;
-	GCGetPoint.bDefender = bDefender;
-	GCGetPoint.bLastLife = bLastLife;
-	m_vecGCGetPoint.push_back( GCGetPoint );
+	m_vecGCGetPoint.emplace_back(gcGetPoint);
 #ifdef __WORLDSERVER
-	g_UserMng.AddGCLogRealTimeWorld( GCGetPoint );
+	g_UserMng.AddGCLogRealTimeWorld(gcGetPoint);
 #endif // __WORLDSERVER
 }
 
@@ -445,7 +434,6 @@ void CGuildCombat::AddSelectPlayer( u_long idGuild, u_long uidPlayer )
 		pJoinPlayer->uidPlayer = uidPlayer;
 		pJoinPlayer->nMap = 99;
 		pJoinPlayer->nPoint = 0;
-		pJoinPlayer->uKillidGuild = 0;
 		pJoinPlayer->dwTelTime = 0;
 		pGCMember->vecGCSelectMember.push_back( pJoinPlayer );
 	}
@@ -1516,7 +1504,6 @@ void CGuildCombat::SetMaintenance()
 					if( IsValidObj( pMover ) && pMover->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 					{
 						pGCMember->nWarCount++;
-//						pJoinPlayer->bEntry	= TRUE;
 						pJoinPlayer->dwTelTime	= timeGetTime();
 						((CUser*)pMover)->AddGCJoinWarWindow( pJoinPlayer->nMap, m_nMaxMapTime );
 						pGCMember->lspFifo.pop_front();
@@ -2289,7 +2276,6 @@ void CGuildCombat::SetPlayerChange( CUser* pUser, CUser* pLeader )
 					if( pJoinPlayer == *i1 )
 						return;
 				}
-//				pJoinPlayer->bEntry	= FALSE;
 				pJoinPlayer->dwTelTime	= 0;
 				pUser->m_nGuildCombatState	= 0;
 				g_UserMng.AddGuildCombatUserState( pUser );
@@ -2307,7 +2293,6 @@ void CGuildCombat::SetPlayerChange( CUser* pUser, CUser* pLeader )
 					if( IsValidObj( pMover ) && pMover->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 					{
 						pGCMember->nWarCount++;
-//						pJoinPlayer->bEntry	= TRUE;
 						pJoinPlayer->dwTelTime	= timeGetTime();
 						((CUser*)pMover)->AddGCJoinWarWindow( pJoinPlayer->nMap, m_nMaxMapTime );
 						pGCMember->lspFifo.pop_front();
@@ -2335,7 +2320,6 @@ void CGuildCombat::GetPoint( CUser* pAttacker, CUser* pDefender )
 	BOOL bMaster = FALSE;
 	BOOL bDefender = FALSE;
 	BOOL bLastLife = FALSE;
-	BOOL bKillDiffernceGuild = FALSE;
 	int nGetPoint = 2;
 	__JOINPLAYER* pJoinPlayerAttacker = NULL;
 	__JOINPLAYER* pJoinPlayerDefender = NULL;
@@ -2358,9 +2342,6 @@ void CGuildCombat::GetPoint( CUser* pAttacker, CUser* pDefender )
 		}
 		if( pJoinPlayerAttacker == NULL )
 			return;
-
-		if( pJoinPlayerAttacker->uKillidGuild != 0 && pJoinPlayerAttacker->uKillidGuild != pDefender->m_idGuild )
-			bKillDiffernceGuild = TRUE;
 
 		if( pJoinPlayerAttacker->nlife == 1 )
 			bLastLife = TRUE;
@@ -2388,9 +2369,6 @@ void CGuildCombat::GetPoint( CUser* pAttacker, CUser* pDefender )
 			bDefender = TRUE;
 	}	
 
-	// 이전과 다른 길드원을 Kill 했을 경우
-	if( bKillDiffernceGuild )
-		++nGetPoint;
 	// 길드마스터가 적 길드원을 Kill 했을 경우
 	if( bMaster )
 		++nGetPoint;
@@ -2442,7 +2420,16 @@ void CGuildCombat::GetPoint( CUser* pAttacker, CUser* pDefender )
 			}
 		}
 	}
-	AddvecGCGetPoint( pAttacker->m_idGuild, pDefender->m_idGuild, pAttacker->m_idPlayer, pDefender->m_idPlayer, nGetPoint, bKillDiffernceGuild, bMaster, bDefender, bLastLife );
+	AddvecGCGetPoint(__GCGETPOINT{
+			.uidGuildAttack = pAttacker->m_idGuild,
+			.uidGuildDefence = pDefender->m_idGuild,
+			.uidPlayerAttack = pAttacker->m_idPlayer,
+			.uidPlayerDefence = pDefender->m_idPlayer,
+			.nPoint = nGetPoint,
+			.bMaster = bMaster,
+			.bDefender = bDefender,
+			.bLastLife = bLastLife
+		});
 	g_UserMng.AddGCGuildPrecedence();
 	g_UserMng.AddGCPlayerPrecedence();
 }
