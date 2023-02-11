@@ -271,7 +271,6 @@ CGuildCombat::CGuildCombat()
 	m_vecGCGetPoint.clear();
 	m_vecGCPlayerPoint.clear();
 #ifdef __WORLDSERVER
-	vecGCSendItem.clear();
 	m_vecGuildCombatMem.clear();
 	vecRequestRanking.clear();
 	m_dwTime = 0;
@@ -885,15 +884,15 @@ void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 				nBufWinGuildCount = m_nMaxGCSendItem;
 			// 연승 아이템 주기
 			CString strGuildMsg;
-			for( int si = 0 ; si < (int)( vecGCSendItem.size() ) ; ++si )
-			{
-				if( vecGCSendItem[si].nWinCount != nBufWinGuildCount )
+			for (const __GCSENDITEM & gcSendItem : vecGCSendItem) {
+				if (gcSendItem.dwItemId != nBufWinGuildCount) {
 					continue;
+				}
 
 				// 길드창고에 넣기
 				CItemElem itemElem;
-				itemElem.m_dwItemId = vecGCSendItem[si].dwItemId;
-				itemElem.m_nItemNum	= vecGCSendItem[si].nItemNum;
+				itemElem.m_dwItemId = gcSendItem.dwItemId;
+				itemElem.m_nItemNum	= gcSendItem.nItemNum;
 				itemElem.m_nHitPoint = itemElem.GetProp()->dwEndurance;
 				itemElem.SetSerialNumber();
 				if ( pGuild->m_GuildBank.Add( &itemElem ) )
@@ -902,14 +901,14 @@ void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 					aLogItem.Action = "W";
 					aLogItem.SendName = "GUILDCOMBAT";
 					aLogItem.RecvName = "GUILDBANK";
-					g_DPSrvr.OnLogItem( aLogItem, &itemElem, vecGCSendItem[si].nItemNum );
+					g_DPSrvr.OnLogItem( aLogItem, &itemElem, gcSendItem.nItemNum );
 					
-					g_DPSrvr.UpdateGuildBank( pGuild, GUILD_PUT_ITEM, 0, 0, &itemElem, 0, vecGCSendItem[si].nItemNum );
+					g_DPSrvr.UpdateGuildBank( pGuild, GUILD_PUT_ITEM, 0, 0, &itemElem, 0, gcSendItem.nItemNum );
 					g_UserMng.AddPutItemElem( vecSameidGuildWin[0], &itemElem );
 
 					CString strItemMsg;
 					strItemMsg.Format( prj.GetText(TID_UPGRADE_SUPPORTM), itemElem.m_nItemNum );					
-					strGuildMsg.Format("  - %s %s", itemElem.GetProp()->szName, strItemMsg );
+					strGuildMsg.Format("  - %s %s", itemElem.GetProp()->szName, strItemMsg.GetString() );
 					m_vecstrGuildMsg.push_back( strGuildMsg );
 				}
 				else
@@ -918,7 +917,7 @@ void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 					aLogItem.Action = "W";
 					aLogItem.SendName = "GUILDCOMBAT_NOT";
 					aLogItem.RecvName = "GUILDBANK";
-					g_DPSrvr.OnLogItem( aLogItem, &itemElem, vecGCSendItem[si].nItemNum );
+					g_DPSrvr.OnLogItem( aLogItem, &itemElem, gcSendItem.nItemNum );
 				}
 			}
 		}
@@ -2136,10 +2135,11 @@ BOOL CGuildCombat::LoadScript( LPCSTR lpszFileName )
 				return FALSE;
 			}
 			int nItemNum = s.GetNumber();
-			__GCSENDITEM GCSendItem;
-			GCSendItem.nWinCount = nWinCount;
-			GCSendItem.dwItemId = dwItemId;
-			GCSendItem.nItemNum = nItemNum;
+			__GCSENDITEM GCSendItem{
+				.nWinCount = nWinCount,
+				.dwItemId = dwItemId,
+				.nItemNum = nItemNum
+			};
 			vecGCSendItem.push_back( GCSendItem );
 		}
 		else if( s.Token == _T( "OPEN" ) )

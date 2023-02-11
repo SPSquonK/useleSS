@@ -72,39 +72,23 @@ public:
 	};
 	struct __JOINPLAYER
 	{
-		u_long	uidPlayer;
-		int		nlife;			// 남은 생명
-		int		nPoint;			// 포인트
-		int		nMap;			// 대전 텔레포트 맵
-		DWORD	dwTelTime;		// 대전 텔레포트 시간
-		__JOINPLAYER()
-		{
-			uidPlayer	= 0;
-			nlife	= 0;
-			nPoint	= 0;
-			nMap	= 0;
-			dwTelTime	= 0;
-		}
+		u_long	uidPlayer = 0;
+		int		nlife       = 0;
+		int		nPoint      = 0;
+		int		nMap        = 0;
+		DWORD	dwTelTime   = 0;
 	};
-	struct __GCSENDITEM
-	{
-		int nWinCount;
+
+	struct __GCSENDITEM {
+		int   nWinCount;
 		DWORD dwItemId;
-		int nItemNum;
-		__GCSENDITEM()
-		{
-			nWinCount = 0;
-			dwItemId = 0;
-			nItemNum = 0;
-		}
+		int   nItemNum;
 	};
+
 	struct __GuildCombatMember
 	{
 		u_long	uGuildId;
 		std::vector<__JOINPLAYER*> vecGCSelectMember;	// 대전에 선택된 멤버 정보
-//		set<u_long> GuildCombatJoinMember;		// 길드전에 참가한멤버
-//		set<u_long> GuildCombatOutMember;		// 참가했는데 죽었던가 나간 멤버
-//		FLOAT fAvgLevel;		// 평균 레벨
 		DWORD dwPenya;			// 참가비
 		BOOL  bRequest;			// 참가 유/무
 		u_long	m_uidDefender;	// 디펜더
