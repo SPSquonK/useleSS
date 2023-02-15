@@ -761,204 +761,168 @@ void CGuildCombat::UserOutGuildCombatResult( CUser* pUser )
 	}
 }
 
+std::pair<u_long, u_long> CGuildCombat::GetBestGuildAndPlayer() {
+	sqktd::BestFinder<u_long, std::pair<int, int>> bestGuild;
+	sqktd::BestFinder<u_long, int> bestPlayer;
+
+	int seenGuilds = 0;
+	for (const __REQUESTGUILD & RequestGuild : vecRequestRanking) {
+		if (seenGuilds >= m_nMaxGuild) break;
+		++seenGuilds;
+
+		if (const __GuildCombatMember * pGCMember = FindGuildCombatMember(RequestGuild.uidGuild)) {
+			int points = 0;
+			int lifes = 0;
+			for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
+				bestPlayer.Add(pJoinPlayer->uidPlayer, pJoinPlayer->nPoint);
+				points += pJoinPlayer->nPoint;
+				lifes += pJoinPlayer->nlife;
+			}
+			bestGuild.Add(RequestGuild.uidGuild, std::pair(points, lifes));
+		}
+	}
+
+	std::map<u_long, float> guildAverageLevels;
+	const auto GetGuildAverageLevel = [&](const u_long guildId) {
+		auto it = guildAverageLevels.find(guildId);
+		if (it != guildAverageLevels.end()) return it->second;
+
+		float averageLevel = 0.0f;
+		int nbOfMembers = 0;
+
+		if (__GuildCombatMember * pGCMember = FindGuildCombatMember(guildId)) {
+			for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
+				CUser * pUser = prj.GetUserByID(pJoinPlayer->uidPlayer);
+				if (IsValidObj(pUser)) {
+					averageLevel += pUser->GetLevel();
+					++nbOfMembers;
+				}
+			}
+		}
+
+		if (nbOfMembers > 0) {
+			averageLevel /= nbOfMembers;
+		}
+
+		guildAverageLevels.emplace(guildId, averageLevel);
+		return averageLevel;
+	};
+
+	const u_long bestGuildId = bestGuild.Finalize(
+		[&](const u_long lhsGuildId, const u_long rhsGuildId) {
+			// GetGuildAverageLevel in descending order
+			// guildId in ascending order
+			return std::pair(GetGuildAverageLevel(lhsGuildId), rhsGuildId)
+				> std::pair(GetGuildAverageLevel(rhsGuildId), lhsGuildId);
+		}
+	).value_or(0);
+
+	const u_long mvp = bestGuildId == 0 ? 0 : bestPlayer.Finalize(
+		[](const u_long lhsPlayerId, const u_long rhsPlayerId) {
+			CUser * lhsUser = prj.GetUserByID(lhsPlayerId);
+			CUser * rhsUser = prj.GetUserByID(rhsPlayerId);
+
+			if (IsValidObj(lhsUser) && IsValidObj(rhsUser)) {
+				return std::tuple(lhsUser->GetLevel(), lhsUser->GetExp1())
+					< std::tuple(rhsUser->GetLevel(), rhsUser->GetExp1());
+			} else if (IsValidObj(lhsUser)) {
+				return true;
+			} else if (IsValidObj(rhsUser)) {
+				return false;
+			} else {
+				return lhsPlayerId < rhsPlayerId;
+			}
+		}
+	).value_or(0);
+
+	return { bestGuildId, mvp };
+}
+
 void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 {
-	std::vector<u_long> vecSameidGuildWin; 
-	
-	int nMaxPoint = -1;
-
-	// 최고 점수를 가지고 옴( 최고 점수가 공동으로 가지고 있으면 vecSameidGuildWin에 넣음 )
-	for( int nVeci = 0 ; nVeci < (int)( vecRequestRanking.size() ) ; ++nVeci )
-	{
-		if( nVeci >= m_nMaxGuild )
-			break;
+	const auto [bestGuildId, mvp] = GetBestGuildAndPlayer();
 		
-		__REQUESTGUILD RequestGuild = vecRequestRanking[nVeci];
-		__GuildCombatMember* pGCMember = FindGuildCombatMember( RequestGuild.uidGuild );
-		if( pGCMember != NULL )
-		{
-			int nPoint = 0;
-			for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-			{
-				__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
-				nPoint += pJoinPlayer->nPoint + pJoinPlayer->nlife;
-			}
-			pGCMember->nGuildPoint = nPoint;
-			// 순위 바뀜
-			if( nMaxPoint < nPoint )
-			{
-				nMaxPoint = nPoint;
-				vecSameidGuildWin.clear();
-				vecSameidGuildWin.push_back( pGCMember->uGuildId );
-			}
-			else if( nMaxPoint == nPoint )
-			{
-				vecSameidGuildWin.push_back( pGCMember->uGuildId );
-			}
-		}
-	}
+	if (bestGuildId == 0) return;
 
-	// 공동우승이 있으면 부활기회의 합의 값이 가장 큰 길드 승리
-	int nMaxLife = 0;
-	if( 1 < vecSameidGuildWin.size() )
-	{
-		std::vector<u_long> vecSameidGuildWinTmp;
-
-		for( int vecSame = 0 ; vecSame < (int)( vecSameidGuildWin.size() ) ; ++vecSame )
-		{
-			int nLife = 0;
-			__GuildCombatMember* pGCMember = FindGuildCombatMember( vecSameidGuildWin[vecSame] );
-			if( pGCMember != NULL )
-			{
-				for( int veci2 = 0 ; veci2 < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci2 )
-				{
-					__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci2];
-					nLife += pJoinPlayer->nlife;
-				}
-				
-				// 순위 바뀜
-				if( nMaxLife < nLife )
-				{
-					nMaxLife = nLife;
-					vecSameidGuildWinTmp.clear();
-					vecSameidGuildWinTmp.push_back( pGCMember->uGuildId );
-				}
-				else if( nMaxLife == nLife )
-				{
-					vecSameidGuildWinTmp.push_back( pGCMember->uGuildId );
-				}
-			}
-		}
-		vecSameidGuildWin = vecSameidGuildWinTmp;
-	}
-
-	// 공동우승이 있으면 생명이 있는 유저의 평균레벨이 큰 길드 승리
-	float fMaxAvgLv = 0.0f;
-	if( 1 < vecSameidGuildWin.size() )
-	{
-		std::vector<u_long> vecSameidGuildWinTmp;
-		vecSameidGuildWinTmp.clear();
-		for( int vecSame = 0 ; vecSame < (int)( vecSameidGuildWin.size() ) ; ++vecSame )
-		{
-			float fAvgLv = 0.0f;
-			int nSubLevel = 0;
-			int nValidObjCount = 0;
-			__GuildCombatMember* pGCMember = FindGuildCombatMember( vecSameidGuildWin[vecSame] );
-			if( pGCMember != NULL )
-			{
-				for( int veci2 = 0 ; veci2 < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci2 )
-				{
-					__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci2];
-					if( 0 < pJoinPlayer->nlife )
-					{
-						CUser* pUsertmp = (CUser*)prj.GetUserByID( pJoinPlayer->uidPlayer );
-						if( IsValidObj( pUsertmp ) )
-						{
-							nSubLevel += pUsertmp->GetLevel();
-							++nValidObjCount;
-						}
-					}
-				}
-				
-				if( nValidObjCount )
-				{
-					fAvgLv = (float)( nSubLevel / nValidObjCount );
-				}
-				
-				// 순위 바뀜
-				if( fMaxAvgLv < fAvgLv )
-				{
-					fMaxAvgLv = fAvgLv;
-					vecSameidGuildWinTmp.clear();
-					vecSameidGuildWinTmp.push_back( pGCMember->uGuildId );
-				}
-				else if( fMaxAvgLv == fAvgLv )
-				{
-					vecSameidGuildWinTmp.push_back( pGCMember->uGuildId );
-				}
-			}
-		}
-		vecSameidGuildWin = vecSameidGuildWinTmp;
-	}
-
-	char str[512] = {0,};
-	CString strPrizeMsg;
 
 	// 걍 맨처음 길드가 우승( 공동우승이어도.. )
-	if( 0 < vecSameidGuildWin.size() )
+
+	
+	if(CGuild * pGuild = g_GuildMng.GetGuild(bestGuildId))
 	{
-		CGuild* pGuild	= g_GuildMng.GetGuild( vecSameidGuildWin[0] );
-		if( pGuild )
+		if( g_eLocal.GetState( EVE_GUILDCOMBAT ) )
 		{
-			if( g_eLocal.GetState( EVE_GUILDCOMBAT ) )
-			{
-				g_UserMng.AddWorldCreateSfxObj( XI_NAT_ROCKET02, 1291.0f, 85.0f, 1279.0f, FALSE, WI_WORLD_GUILDWAR );
-				g_DPCoreClient.SendPlayMusic( WI_WORLD_GUILDWAR, BGM_IN_FITUP );
+			g_UserMng.AddWorldCreateSfxObj( XI_NAT_ROCKET02, 1291.0f, 85.0f, 1279.0f, FALSE, WI_WORLD_GUILDWAR );
+			g_DPCoreClient.SendPlayMusic( WI_WORLD_GUILDWAR, BGM_IN_FITUP );
+		}
+			
+		// 연승 계산
+		if( m_uWinGuildId == bestGuildId)
+			++m_nWinGuildCount;
+		else
+			m_nWinGuildCount = 1;
+			
+		m_uWinGuildId = bestGuildId;
+
+		const char * guildCombatEndMessage = prj.GetText(TID_GAME_GUILDCOMBAT_END);
+		g_DPCoreClient.SendSystem(guildCombatEndMessage);
+		g_DPCoreClient.SendCaption(guildCombatEndMessage);
+
+		char str[512] = { 0, };
+		sprintf( str, prj.GetText(TID_GAME_GUILDCOMBAT_WINNER), pGuild->m_szGuild );
+		int nBufWinGuildCount = m_nWinGuildCount;
+		if( m_nMaxGCSendItem < m_nWinGuildCount )
+			nBufWinGuildCount = m_nMaxGCSendItem;
+		// 연승 아이템 주기
+		
+		for (const __GCSENDITEM & gcSendItem : vecGCSendItem) {
+			if (gcSendItem.dwItemId != nBufWinGuildCount) {
+				continue;
 			}
-			
-			// 연승 계산
-			if( m_uWinGuildId == vecSameidGuildWin[0] )
-				++m_nWinGuildCount;
-			else
-				m_nWinGuildCount = 1;
-			
-			m_uWinGuildId = vecSameidGuildWin[0];
-			sprintf( str, prj.GetText(TID_GAME_GUILDCOMBAT_END) );
-			g_DPCoreClient.SendSystem( str );
-			g_DPCoreClient.SendCaption( str );
-			sprintf( str, prj.GetText(TID_GAME_GUILDCOMBAT_WINNER), pGuild->m_szGuild );
-			int nBufWinGuildCount = m_nWinGuildCount;
-			if( m_nMaxGCSendItem < m_nWinGuildCount )
-				nBufWinGuildCount = m_nMaxGCSendItem;
-			// 연승 아이템 주기
-			CString strGuildMsg;
-			for (const __GCSENDITEM & gcSendItem : vecGCSendItem) {
-				if (gcSendItem.dwItemId != nBufWinGuildCount) {
-					continue;
-				}
 
-				// 길드창고에 넣기
-				CItemElem itemElem;
-				itemElem.m_dwItemId = gcSendItem.dwItemId;
-				itemElem.m_nItemNum	= gcSendItem.nItemNum;
-				itemElem.m_nHitPoint = itemElem.GetProp()->dwEndurance;
-				itemElem.SetSerialNumber();
-				if ( pGuild->m_GuildBank.Add( &itemElem ) )
-				{
-					LogItemInfo aLogItem;
-					aLogItem.Action = "W";
-					aLogItem.SendName = "GUILDCOMBAT";
-					aLogItem.RecvName = "GUILDBANK";
-					g_DPSrvr.OnLogItem( aLogItem, &itemElem, gcSendItem.nItemNum );
+			// 길드창고에 넣기
+			CItemElem itemElem;
+			itemElem.m_dwItemId = gcSendItem.dwItemId;
+			itemElem.m_nItemNum	= gcSendItem.nItemNum;
+			itemElem.m_nHitPoint = itemElem.GetProp()->dwEndurance;
+			itemElem.SetSerialNumber();
+			if ( pGuild->m_GuildBank.Add( &itemElem ) )
+			{
+				LogItemInfo aLogItem;
+				aLogItem.Action = "W";
+				aLogItem.SendName = "GUILDCOMBAT";
+				aLogItem.RecvName = "GUILDBANK";
+				g_DPSrvr.OnLogItem( aLogItem, &itemElem, gcSendItem.nItemNum );
 					
-					g_DPSrvr.UpdateGuildBank( pGuild, GUILD_PUT_ITEM, 0, 0, &itemElem, 0, gcSendItem.nItemNum );
-					g_UserMng.AddPutItemElem( vecSameidGuildWin[0], &itemElem );
+				g_DPSrvr.UpdateGuildBank( pGuild, GUILD_PUT_ITEM, 0, 0, &itemElem, 0, gcSendItem.nItemNum );
+				g_UserMng.AddPutItemElem(bestGuildId, &itemElem );
 
-					CString strItemMsg;
-					strItemMsg.Format( prj.GetText(TID_UPGRADE_SUPPORTM), itemElem.m_nItemNum );					
-					strGuildMsg.Format("  - %s %s", itemElem.GetProp()->szName, strItemMsg.GetString() );
-					m_vecstrGuildMsg.push_back( strGuildMsg );
-				}
-				else
-				{
-					LogItemInfo aLogItem;
-					aLogItem.Action = "W";
-					aLogItem.SendName = "GUILDCOMBAT_NOT";
-					aLogItem.RecvName = "GUILDBANK";
-					g_DPSrvr.OnLogItem( aLogItem, &itemElem, gcSendItem.nItemNum );
-				}
+				CString strItemMsg;
+				strItemMsg.Format( prj.GetText(TID_UPGRADE_SUPPORTM), itemElem.m_nItemNum );					
+				
+				CString strGuildMsg;
+				strGuildMsg.Format("  - %s %s", itemElem.GetProp()->szName, strItemMsg.GetString() );
+				m_vecstrGuildMsg.push_back( strGuildMsg );
+			}
+			else
+			{
+				LogItemInfo aLogItem;
+				aLogItem.Action = "W";
+				aLogItem.SendName = "GUILDCOMBAT_NOT";
+				aLogItem.RecvName = "GUILDBANK";
+				g_DPSrvr.OnLogItem( aLogItem, &itemElem, gcSendItem.nItemNum );
 			}
 		}
+	}
 
-		m_uBestPlayer = GetBestPlayer();
+	m_uBestPlayer = mvp;
 
 		
-		++m_nGuildCombatIndex;
-		g_UserMng.AddGCWinGuild();
-		g_UserMng.AddGCBestPlayer();
+	++m_nGuildCombatIndex;
+	g_UserMng.AddGCWinGuild();
+	g_UserMng.AddGCBestPlayer();
 
-		g_UserMng.AddGCLogWorld();
-	}
+	g_UserMng.AddGCLogWorld();
 }
 
 void CGuildCombat::GuildCombatResultRanking()
@@ -1149,8 +1113,9 @@ void CGuildCombat::GuildCombatCloseTeleport()
 
 	g_UserMng.ReplaceWorld( WI_WORLD_GUILDWAR, WI_WORLD_MADRIGAL, 6968.0f, 3328.8f, nDefaultLayer);
 
-	for( int i = 0 ; i < (int)( m_vecstrGuildMsg.size() ) ; ++i )
-		g_UserMng.AddGuildMsg( m_uWinGuildId, m_vecstrGuildMsg[i] );
+	for (const CString & guildMessage : m_vecstrGuildMsg) {
+		g_UserMng.AddGuildMsg(m_uWinGuildId, guildMessage);
+	}
 
 	m_nState = CLOSE_STATE;
 	m_nGCState = WAR_CLOSE_STATE;
@@ -1310,40 +1275,6 @@ u_long CGuildCombat::GetDefender( u_long uidGuild )
 	if( pGCMember != NULL )
 		uidDefender = pGCMember->m_uidDefender;
 	return uidDefender;
-}
-
-u_long CGuildCombat::GetBestPlayer() {
-	sqktd::BestFinder<u_long, int> bestFinder;
-
-	int seenGuilds = 0;
-	for (const __REQUESTGUILD & RequestGuild : vecRequestRanking) {
-		if (seenGuilds >= m_nMaxGuild) break;
-		++seenGuilds;
-		
-		if (const __GuildCombatMember * pGCMember = FindGuildCombatMember(RequestGuild.uidGuild)) {
-			for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
-				bestFinder.Add(pJoinPlayer->uidPlayer, pJoinPlayer->nPoint);
-			}
-		}
-	}
-
-	return bestFinder.Finalize(
-		[](const u_long lhsPlayerId, const u_long rhsPlayerId) {
-			CUser * lhsUser = prj.GetUserByID(lhsPlayerId);
-			CUser * rhsUser = prj.GetUserByID(rhsPlayerId);
-
-			if (lhsUser && rhsUser) {
-				return std::tuple(lhsUser->GetLevel(), lhsUser->GetExp1())
-						< std::tuple(rhsUser->GetLevel(), rhsUser->GetExp1());
-			} else if (lhsUser && !rhsUser) {
-				return true;
-			} else if (!lhsUser && rhsUser) {
-				return false;
-			} else {
-				return lhsPlayerId < rhsPlayerId;
-			}
-		}
-	).value_or(0);
 }
 
 // 지금까지의 총 상금

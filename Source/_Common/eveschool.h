@@ -234,7 +234,8 @@ public:
 	void	SetDefender( u_long uidGuild, u_long uidDefender );
 	void	SetPlayerChange( CUser* pUser, CUser* pLeader );
 	u_long	GetDefender( u_long uidGuild );
-	[[nodiscard]] u_long GetBestPlayer();
+
+	[[nodiscard]] std::pair<u_long, u_long> GetBestGuildAndPlayer();
 	DWORD	GetRequstPenya( u_long uidGuild );
 	void	GetPoint( CUser* pAttacker, CUser* pDefender );
 	__int64	GetPrizePenya( int nFlag );
