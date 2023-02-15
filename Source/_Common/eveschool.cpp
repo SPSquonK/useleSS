@@ -282,10 +282,8 @@ namespace sqktd {
 
 		template<typename Comparator>
 		std::optional<Element> Finalize(Comparator comparator = std::less<Element>()) {
-			std::sort(m_values.begin(), m_values.end(), comparator);
-
 			if (m_values.empty()) return std::nullopt;
-			return m_values[0];
+			return *std::min_element(m_values.begin(), m_values.end(), comparator);
 		}
 	};
 }
@@ -1336,7 +1334,7 @@ u_long CGuildCombat::GetBestPlayer() {
 
 			if (lhsUser && rhsUser) {
 				return std::tuple(lhsUser->GetLevel(), lhsUser->GetExp1())
-						> std::tuple(rhsUser->GetLevel(), rhsUser->GetExp1());
+						< std::tuple(rhsUser->GetLevel(), rhsUser->GetExp1());
 			} else if (lhsUser && !rhsUser) {
 				return true;
 			} else if (!lhsUser && rhsUser) {
@@ -1344,8 +1342,6 @@ u_long CGuildCombat::GetBestPlayer() {
 			} else {
 				return lhsPlayerId < rhsPlayerId;
 			}
-
-			return true;
 		}
 	).value_or(0);
 }
