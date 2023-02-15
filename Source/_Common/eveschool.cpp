@@ -260,6 +260,36 @@ CEveSchool* CEveSchool::GetInstance()
 }
 #endif // __WORLDSERVER
 
+namespace sqktd {
+	template<typename Element, typename Score>
+	struct BestFinder {
+		std::vector<Element> m_values;
+		std::optional<Score> m_currentBestScore;
+
+		void Add(const Element & value, const Score score) {
+			if (m_currentBestScore && m_currentBestScore.value() > score) {
+				return;
+			}
+
+			if (m_currentBestScore && m_currentBestScore.value() < score) {
+				m_currentBestScore = std::nullopt;
+				m_values.clear();
+			}
+
+			m_currentBestScore = score;
+			m_values.emplace_back(value);
+		}
+
+		template<typename Comparator>
+		std::optional<Element> Finalize(Comparator comparator = std::less<Element>()) {
+			std::sort(m_values.begin(), m_values.end(), comparator);
+
+			if (m_values.empty()) return std::nullopt;
+			return m_values[0];
+		}
+	};
+}
+
 CGuildCombat::CGuildCombat()
 {
 	m_nState = CLOSE_STATE;
@@ -1285,8 +1315,7 @@ u_long CGuildCombat::GetDefender( u_long uidGuild )
 }
 
 u_long CGuildCombat::GetBestPlayer() {
-	std::vector<u_long> sameScorePlayers;
-	std::optional<int> maxPoint = std::nullopt;
+	sqktd::BestFinder<u_long, int> bestFinder;
 
 	int seenGuilds = 0;
 	for (const __REQUESTGUILD & RequestGuild : vecRequestRanking) {
@@ -1295,40 +1324,30 @@ u_long CGuildCombat::GetBestPlayer() {
 		
 		if (const __GuildCombatMember * pGCMember = FindGuildCombatMember(RequestGuild.uidGuild)) {
 			for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
-				if (maxPoint && *maxPoint < pJoinPlayer->nPoint) {
-					sameScorePlayers.clear();
-				}
-
-				maxPoint = pJoinPlayer->nPoint;
-				sameScorePlayers.emplace_back(pJoinPlayer->uidPlayer);
+				bestFinder.Add(pJoinPlayer->uidPlayer, pJoinPlayer->nPoint);
 			}
 		}
 	}
 
-	if (sameScorePlayers.size() == 0) return 0;
-	if (sameScorePlayers.size() == 1) return sameScorePlayers[0];
+	return bestFinder.Finalize(
+		[](const u_long lhsPlayerId, const u_long rhsPlayerId) {
+			CUser * lhsUser = prj.GetUserByID(lhsPlayerId);
+			CUser * rhsUser = prj.GetUserByID(rhsPlayerId);
 
-	std::vector<std::pair<u_long, CUser *>> players;
-	for (const u_long playerId : sameScorePlayers) {
-		players.emplace_back(playerId, prj.GetUserByID(playerId));
-	}
-
-	std::sort(
-		players.begin(), players.end(),
-		[](const std::pair<u_long, CUser *> & lhs, const std::pair<u_long, CUser *> & rhs) {
-			if (!lhs.second) {
-				if (!rhs.second) return lhs.first < rhs.first;
-				return false;
-			} else if (!rhs.second) {
+			if (lhsUser && rhsUser) {
+				return std::tuple(lhsUser->GetLevel(), lhsUser->GetExp1())
+						> std::tuple(rhsUser->GetLevel(), rhsUser->GetExp1());
+			} else if (lhsUser && !rhsUser) {
 				return true;
+			} else if (!lhsUser && rhsUser) {
+				return false;
+			} else {
+				return lhsPlayerId < rhsPlayerId;
 			}
-			
-			return std::tuple(lhs.second->GetLevel(), lhs.second->GetExp1())
-				> std::tuple(rhs.second->GetLevel(), rhs.second->GetExp1());
-		}
-	);
 
-	return players[0].first;
+			return true;
+		}
+	).value_or(0);
 }
 
 // 지금까지의 총 상금
