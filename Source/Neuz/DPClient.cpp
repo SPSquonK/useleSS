@@ -6260,9 +6260,7 @@ void CDPClient::OnGCPlayerPoint( CAr & ar )
 		for( int i = 0 ; i < (int)( uSize ) ; ++i )
 		{
 			CGuildCombat::__GCPLAYERPOINT GCPlayerPoint;
-			ar >> GCPlayerPoint.uidPlayer;	// 유저 아이디
-			ar >> GCPlayerPoint.nJob;		// 직업
-			ar >> GCPlayerPoint.nPoint;		// 포인트
+			ar >> GCPlayerPoint;
 			g_GuildCombatMng.m_vecGCPlayerPoint.push_back( GCPlayerPoint );
 			PDVer pdv( GCPlayerPoint.uidPlayer, CPlayerDataCenter::GetInstance()->GetPlayerData( GCPlayerPoint.uidPlayer, FALSE )->data.nVer );
 			vecPlayer.push_back( pdv );

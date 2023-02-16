@@ -389,10 +389,11 @@ void CGuildCombat::AddvecGCGetPoint(__GCGETPOINT gcGetPoint)
 
 void CGuildCombat::AddvecGCPlayerPoint( u_long uidPlayer, int nJob, int nPoint )
 {
-	__GCPLAYERPOINT GCPlayerPoint;
-	GCPlayerPoint.uidPlayer = uidPlayer;
-	GCPlayerPoint.nJob = nJob;
-	GCPlayerPoint.nPoint = nPoint;
+	__GCPLAYERPOINT GCPlayerPoint{
+		.uidPlayer = uidPlayer,
+		.nJob = nJob,
+		.nPoint = nPoint
+	};
 	m_vecGCPlayerPoint.push_back( GCPlayerPoint );
 }
 

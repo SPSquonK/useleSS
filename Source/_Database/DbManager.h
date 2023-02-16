@@ -631,16 +631,11 @@ class CDbManager
 		u_long uidPlayer;		// 플레이어 아이디
 		__int64 nReward;			// 보상금
 	};
-	struct __GCPLAYERPOINT
-	{
-		u_long	uidPlayer;
-		int		nJob;
-		int		nPoint;
-		
-		__GCPLAYERPOINT()
-		{
-			uidPlayer = nJob = nPoint = 0;
-		}
+	struct __GCPLAYERPOINT {
+		static constexpr bool Archivable = true;
+		u_long	uidPlayer = 0;
+		int		nJob = 0;
+		int		nPoint = 0;
 	};
 	
 	struct __MAIL_REALTIME

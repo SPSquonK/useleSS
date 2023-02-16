@@ -5850,10 +5850,7 @@ void CUser::AddGCPlayerPoint( void )
 	m_Snapshot.ar << (u_long)g_GuildCombatMng.m_vecGCPlayerPoint.size();
 	for( int veci = 0 ; veci < (int)( g_GuildCombatMng.m_vecGCPlayerPoint.size() ) ; ++veci )
 	{
-		CGuildCombat::__GCPLAYERPOINT GCPlayerPoint = g_GuildCombatMng.m_vecGCPlayerPoint[ veci ];
-		m_Snapshot.ar << GCPlayerPoint.uidPlayer;
-		m_Snapshot.ar << GCPlayerPoint.nJob;
-		m_Snapshot.ar << GCPlayerPoint.nPoint;
+		m_Snapshot.ar << g_GuildCombatMng.m_vecGCPlayerPoint[veci];
 	}	
 }
 void CUser::AddQuestTextTime( BOOL bFlag, GroupQuest::ProcessState nState, DWORD dwTime )

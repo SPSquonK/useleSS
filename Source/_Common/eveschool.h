@@ -152,16 +152,12 @@ public:
 		BOOL bDefender;
 		BOOL bLastLife;
 	};
-	struct __GCPLAYERPOINT
-	{
-		u_long	uidPlayer;
-		int		nJob;
-		int		nPoint;
+	struct __GCPLAYERPOINT {
+		static constexpr bool Archivable = true;
 
-		__GCPLAYERPOINT()
-		{
-			uidPlayer = nJob = nPoint = 0;
-		}
+		u_long	uidPlayer = 0;
+		int		nJob = 0;
+		int		nPoint = 0;
 	};
 	int		m_nGuildCombatIndex;
 	u_long	m_uWinGuildId;

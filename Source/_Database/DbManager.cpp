@@ -722,10 +722,11 @@ BOOL CDbManager::OpenGuildCombat( void )
 		{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return FALSE; }
 		while( qry.Fetch() )
 		{
-			__GCPLAYERPOINT GCPlayerPoint;
-			GCPlayerPoint.uidPlayer = qry.GetInt( "PlayerID" );
-			GCPlayerPoint.nJob = qry.GetInt( "Job" );
-			GCPlayerPoint.nPoint = qry.GetInt( "PointSummary" );
+			__GCPLAYERPOINT GCPlayerPoint{
+				.uidPlayer = static_cast<u_long>(qry.GetInt("PlayerID")),
+				.nJob = qry.GetInt("Job"),
+				.nPoint = qry.GetInt("PointSummary")
+			};
 			m_vecGCPlayerPoint.push_back( GCPlayerPoint );
 		}
 	}
@@ -3870,10 +3871,7 @@ void CDbManager::SerializePlayerPoint( CAr & ar )
 	ar << (u_long)m_vecGCPlayerPoint.size();
 	for( DWORD veci = 0 ; veci < m_vecGCPlayerPoint.size() ; ++veci )
 	{
-		__GCPLAYERPOINT GCPlayerPoint = m_vecGCPlayerPoint[veci];
-		ar << GCPlayerPoint.uidPlayer;
-		ar << GCPlayerPoint.nJob;
-		ar << GCPlayerPoint.nPoint;
+		ar << m_vecGCPlayerPoint[veci];
 	}
 }
 
@@ -4239,10 +4237,11 @@ void CDbManager::ResultGuildCombat( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOve
 	{	WriteLog( "ResultGuildCombat()");	TRACE("ERROR: ResultGuildCombat()\n");	}
 	while( pQuery->Fetch() )
 	{
-		__GCPLAYERPOINT GCPlayerPoint;
-		GCPlayerPoint.uidPlayer = pQuery->GetInt( "PlayerID" );
-		GCPlayerPoint.nJob = pQuery->GetInt( "Job" );
-		GCPlayerPoint.nPoint = pQuery->GetInt( "PointSummary" );
+		__GCPLAYERPOINT GCPlayerPoint{
+			.uidPlayer = static_cast<u_long>(pQuery->GetInt("PlayerID")),
+			.nJob = pQuery->GetInt("Job"),
+			.nPoint = pQuery->GetInt("PointSummary")
+		};
 		m_vecGCPlayerPoint.push_back( GCPlayerPoint );
 	}
 	

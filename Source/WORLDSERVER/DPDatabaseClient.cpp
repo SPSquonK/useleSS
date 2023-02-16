@@ -1064,9 +1064,7 @@ void CDPDatabaseClient::OnGCPlayerPoint( CAr & ar )
 	for( int i = 0 ; i < (int)( uSize ) ; ++i )
 	{
 		CGuildCombat::__GCPLAYERPOINT GCPlayerPoint;
-		ar >> GCPlayerPoint.uidPlayer;
-		ar >> GCPlayerPoint.nJob;
-		ar >> GCPlayerPoint.nPoint;
+		ar >> GCPlayerPoint;
 		g_GuildCombatMng.m_vecGCPlayerPoint.push_back( GCPlayerPoint );
 	}
 }
