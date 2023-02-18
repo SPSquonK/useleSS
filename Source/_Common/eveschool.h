@@ -232,7 +232,6 @@ public:
 	void	SetPlayerChange( CUser* pUser, CUser* pLeader );
 	u_long	GetDefender( u_long uidGuild );
 
-	[[nodiscard]] std::pair<u_long, u_long> GetBestGuildAndPlayer();
 	DWORD	GetRequstPenya( u_long uidGuild );
 	void	GetPoint( CUser* pAttacker, CUser* pDefender );
 	__int64	GetPrizePenya( int nFlag );
@@ -248,7 +247,6 @@ public:
 	void	GuildCombatEnter( CUser* pUser );
 	void	SetSelectMap( CUser* pUser, int nMap );
 	void	UserOutGuildCombatResult( CUser* pUser );
-	void	GuildCombatResult( BOOL nResult = FALSE, u_long idGuildWin = 0 );
 	void	Process();
 	void	ProcessCommand();
 	void	ProcessJoinWar();
@@ -257,12 +255,21 @@ public:
 	void	SendGCLog( void );
 	void	SerializeGCWarPlayerList( CAr & ar );
 
-	void	GuildCombatResultRanking();
+	struct Rankings {
+		boost::container::small_vector<u_long, 3> bestGuilds;
+		size_t numberOfParticipantGuilds;
+		u_long bestPlayer = 0;
+	};
+
+	[[nodiscard]] Rankings ComputeRankings() const;
+	void	GuildCombatResult(const Rankings & rankings);
+	void	GuildCombatResultRanking(const Rankings & rankings);
 
 	CTime	GetNextGuildCobmatTime(void);
 	int		m_nDay;
 
 	__GuildCombatMember* FindGuildCombatMember( u_long GuildId );
+	const __GuildCombatMember * FindGuildCombatMember(u_long GuildId) const;
 	void RefreshFifo(__GuildCombatMember & guildCombatMember) const;
 #endif // __WORLDSERVER
 };

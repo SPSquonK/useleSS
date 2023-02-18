@@ -462,12 +462,11 @@ void CGuildCombat::AddSelectPlayer( u_long idGuild, u_long uidPlayer )
 void CGuildCombat::GetSelectPlayer( u_long idGuild, std::vector<__JOINPLAYER> &vecSelectPlayer )
 {
 	__GuildCombatMember* pGCMember = FindGuildCombatMember( idGuild );
-	if( pGCMember != NULL )
-	{
-		for (const __JOINPLAYER* pJoinPlayer : pGCMember->vecGCSelectMember) {
-			vecSelectPlayer.push_back( *pJoinPlayer );
-		}
-	}	
+	if (!pGCMember) return;
+
+	for (const __JOINPLAYER* pJoinPlayer : pGCMember->vecGCSelectMember) {
+		vecSelectPlayer.push_back( *pJoinPlayer );
+	}
 }
 
 void CGuildCombat::JoinWar( CUser* pUser, int nMap , BOOL bWar)
@@ -703,70 +702,54 @@ void CGuildCombat::GuildCombatCancel( CUser* pUser )
 // 중간에 캐릭터가 죽거나 로그아웃시에 승리길드가 나오면 대전 종료
 void CGuildCombat::UserOutGuildCombatResult( CUser* pUser )
 {
-	int nCount = 0;
 	__GuildCombatMember* pGCMember = FindGuildCombatMember( pUser->m_idGuild );
-	if( pGCMember != NULL )
+	if (!pGCMember) return;
+	
+	const auto hasAliveTeammate = std::ranges::any_of(pGCMember->vecGCSelectMember,
+		[](const __JOINPLAYER * pJoinPlayer) { return pJoinPlayer->nlife > 0; }
+		);
+	if (hasAliveTeammate) return;
+
+	// 다른길드의 상태 파악( 길드의 전투작 1개이상인지 검사 1개의 길드만 나오면 게임 종료 )
+	int nCount = 0;
+	for( int nVeci = 0 ; nVeci < (int)( vecRequestRanking.size() ) ; ++nVeci )
 	{
-		for (const __JOINPLAYER* pJoinPlayer : pGCMember->vecGCSelectMember) {
-			// 생명이 있는 캐릭이 있으면 검사 안해도 됨.
-			if( pJoinPlayer->nlife > 0 )
-				return;
-		}
-
-		// 다른길드의 상태 파악( 길드의 전투작 1개이상인지 검사 1개의 길드만 나오면 게임 종료 )
-		for( int nVeci = 0 ; nVeci < (int)( vecRequestRanking.size() ) ; ++nVeci )
-		{
-			if( nVeci >= m_nMaxGuild )
-				break;
+		if( nVeci >= m_nMaxGuild )
+			break;
 			
-			__REQUESTGUILD RequestGuild = vecRequestRanking[nVeci];
-			__GuildCombatMember *pGCMember2 = FindGuildCombatMember( RequestGuild.uidGuild );
-			if( pGCMember2 != NULL )
-			{
-				if( pUser->m_idGuild != pGCMember2->uGuildId )
-				{
-					const bool bLive = std::ranges::any_of(pGCMember2->vecGCSelectMember,
-						[](const __JOINPLAYER * pJoinPlayer) { return pJoinPlayer->nlife > 0; }
-						);
+		__REQUESTGUILD RequestGuild = vecRequestRanking[nVeci];
+		__GuildCombatMember *pGCMember2 = FindGuildCombatMember( RequestGuild.uidGuild );
+		if (!pGCMember2) continue;
+		if (pUser->m_idGuild == pGCMember2->uGuildId) continue;
 
-					if( bLive )
-					{
-						++nCount;
-						if( nCount == 2 )
-						{
-							return; // 2개 이상이므로 계속 진행
-						}
-					}
-				}
+		const bool bLive = std::ranges::any_of(pGCMember2->vecGCSelectMember,
+			[](const __JOINPLAYER * pJoinPlayer) { return pJoinPlayer->nlife > 0; }
+			);
+
+		if( bLive )
+		{
+			++nCount;
+			if( nCount == 2 )
+			{
+				return; // 2개 이상이므로 계속 진행
 			}
 		}
-		// 길드가 하나밖에 없으므로 게임 종료
-		if( nCount == 1 )
-			m_nStopWar = 1;
 	}
+	// 길드가 하나밖에 없으므로 게임 종료
+	if( nCount == 1 )
+		m_nStopWar = 1;
+	
 }
 
-std::pair<u_long, u_long> CGuildCombat::GetBestGuildAndPlayer() {
-	sqktd::BestFinder<u_long, std::pair<int, int>> bestGuild;
+CGuildCombat::Rankings CGuildCombat::ComputeRankings() const {
 	sqktd::BestFinder<u_long, int> bestPlayer;
 
-	int seenGuilds = 0;
-	for (const __REQUESTGUILD & RequestGuild : vecRequestRanking) {
-		if (seenGuilds >= m_nMaxGuild) break;
-		++seenGuilds;
+	struct GuildWithPoints {
+		u_long guildId;
+		std::pair<int, int> points;
+	};
 
-		if (const __GuildCombatMember * pGCMember = FindGuildCombatMember(RequestGuild.uidGuild)) {
-			int points = 0;
-			int lifes = 0;
-			for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
-				bestPlayer.Add(pJoinPlayer->uidPlayer, pJoinPlayer->nPoint);
-				points += pJoinPlayer->nPoint;
-				lifes += pJoinPlayer->nlife;
-			}
-			bestGuild.Add(RequestGuild.uidGuild, std::pair(points, lifes));
-		}
-	}
-
+	std::vector<GuildWithPoints> guilds;
 	std::map<u_long, float> guildAverageLevels;
 	const auto GetGuildAverageLevel = [&](const u_long guildId) {
 		auto it = guildAverageLevels.find(guildId);
@@ -775,7 +758,7 @@ std::pair<u_long, u_long> CGuildCombat::GetBestGuildAndPlayer() {
 		float averageLevel = 0.0f;
 		int nbOfMembers = 0;
 
-		if (__GuildCombatMember * pGCMember = FindGuildCombatMember(guildId)) {
+		if (const __GuildCombatMember * pGCMember = FindGuildCombatMember(guildId)) {
 			for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
 				CUser * pUser = prj.GetUserByID(pJoinPlayer->uidPlayer);
 				if (IsValidObj(pUser)) {
@@ -793,16 +776,57 @@ std::pair<u_long, u_long> CGuildCombat::GetBestGuildAndPlayer() {
 		return averageLevel;
 	};
 
-	const u_long bestGuildId = bestGuild.Finalize(
-		[&](const u_long lhsGuildId, const u_long rhsGuildId) {
-			// GetGuildAverageLevel in descending order
-			// guildId in ascending order
-			return std::pair(GetGuildAverageLevel(lhsGuildId), rhsGuildId)
-				> std::pair(GetGuildAverageLevel(rhsGuildId), lhsGuildId);
-		}
-	).value_or(0);
 
-	const u_long mvp = bestGuildId == 0 ? 0 : bestPlayer.Finalize(
+	int seenGuilds = 0;
+	for (const __REQUESTGUILD & RequestGuild : vecRequestRanking) {
+		if (seenGuilds >= m_nMaxGuild) break;
+		++seenGuilds;
+
+		const __GuildCombatMember * pGCMember = FindGuildCombatMember(RequestGuild.uidGuild);
+		if (!pGCMember) continue;
+
+		int points = 0;
+		int lifes = 0;
+		for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
+			bestPlayer.Add(pJoinPlayer->uidPlayer, pJoinPlayer->nPoint);
+			points += pJoinPlayer->nPoint;
+			lifes += pJoinPlayer->nlife;
+		}
+		
+		guilds.emplace_back(GuildWithPoints{ RequestGuild.uidGuild, std::pair(points, lifes) });
+	}
+
+	if (guilds.empty()) return Rankings{};
+
+	const auto thirdPlace = guilds.begin() + std::min<size_t>(3, guilds.size());
+
+	std::partial_sort(
+		guilds.begin(),
+		thirdPlace,
+		guilds.end(),
+		[&](const GuildWithPoints & lhs, const GuildWithPoints & rhs) {
+			if (lhs.points > rhs.points) return true;
+			if (lhs.points < rhs.points) return false;
+
+			const float leftAverage  = GetGuildAverageLevel(lhs.guildId);
+			const float rightAverage = GetGuildAverageLevel(rhs.guildId);
+
+			if (leftAverage > rightAverage) return true;
+			if (leftAverage < rightAverage) return false;
+
+			return lhs.guildId < rhs.guildId;
+		}
+	);
+
+
+	Rankings retval;
+	retval.numberOfParticipantGuilds = guilds.size();
+
+	for (auto it = guilds.begin(); it != thirdPlace; ++it) {
+		retval.bestGuilds.emplace_back(it->guildId);
+	}
+
+	retval.bestPlayer = bestPlayer.Finalize(
 		[](const u_long lhsPlayerId, const u_long rhsPlayerId) {
 			CUser * lhsUser = prj.GetUserByID(lhsPlayerId);
 			CUser * rhsUser = prj.GetUserByID(rhsPlayerId);
@@ -820,19 +844,16 @@ std::pair<u_long, u_long> CGuildCombat::GetBestGuildAndPlayer() {
 		}
 	).value_or(0);
 
-	return { bestGuildId, mvp };
+	return retval;
 }
 
-void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
+void CGuildCombat::GuildCombatResult(const Rankings & rankings)
 {
-	const auto [bestGuildId, mvp] = GetBestGuildAndPlayer();
-		
-	if (bestGuildId == 0) return;
+	if (rankings.bestGuilds.empty()) return;
 
 
 	// 걍 맨처음 길드가 우승( 공동우승이어도.. )
-
-	
+	const u_long bestGuildId = rankings.bestGuilds[0];
 	if(CGuild * pGuild = g_GuildMng.GetGuild(bestGuildId))
 	{
 		if( g_eLocal.GetState( EVE_GUILDCOMBAT ) )
@@ -900,7 +921,7 @@ void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 		}
 	}
 
-	m_uBestPlayer = mvp;
+	m_uBestPlayer = rankings.bestPlayer;
 
 		
 	++m_nGuildCombatIndex;
@@ -910,135 +931,26 @@ void CGuildCombat::GuildCombatResult( BOOL nResult, u_long idGuildWin )
 	g_UserMng.AddGCLogWorld();
 }
 
-void CGuildCombat::GuildCombatResultRanking()
-{
-	std::vector<__REQUESTGUILD> vecGCRanking = vecRequestRanking;
-	
-	for( int i=0; i<(int)( vecGCRanking.size()-1 ); i++ )
-	{
-		if( i >= m_nMaxGuild )
-			break;
-		// 순위별로 정렬
-		for( int j=0; j<(int)( vecGCRanking.size()-1-i ); j++ )
-		{
-			__REQUESTGUILD RequestGuild1 = vecGCRanking[j];
-			__GuildCombatMember* pGCMember1 = FindGuildCombatMember( RequestGuild1.uidGuild );
-			__REQUESTGUILD RequestGuild2 = vecGCRanking[j+1];
-			__GuildCombatMember* pGCMember2 = FindGuildCombatMember( RequestGuild2.uidGuild );
-			
-			if( !pGCMember1 || !pGCMember2 )
-			{
-				Error( "GuildCombatResultRanking() - pGCMember1 or pGCMember2 is NULL" );
-				return;
-			}
-
-			// 점수가 많은 길드가 높은 순위
-			if( pGCMember1->nGuildPoint < pGCMember2->nGuildPoint )
-			{
-				__REQUESTGUILD temp = vecGCRanking[j];
-				vecGCRanking[j] = vecGCRanking[j+1];
-				vecGCRanking[j+1] = temp;
-			}
-			// 점수가 같을 때 생명이 많은쪽이 높은 순위
-			else if( pGCMember1->nGuildPoint == pGCMember2->nGuildPoint )
-			{
-				int nLife1=0, nLife2=0;
-				for (const __JOINPLAYER* pJoinPlayer : pGCMember1->vecGCSelectMember) {
-					if( pJoinPlayer )
-						nLife1 += pJoinPlayer->nlife;
-				}
-
-				for (const __JOINPLAYER * pJoinPlayer : pGCMember2->vecGCSelectMember) {
-					if( pJoinPlayer )
-						nLife2 += pJoinPlayer->nlife;
-				}
-	
-				if( nLife1 < nLife2 )
-				{
-					__REQUESTGUILD temp = vecGCRanking[j];
-					vecGCRanking[j] = vecGCRanking[j+1];
-					vecGCRanking[j+1] = temp;
-				}
-				// 생명도 같을 때 생명이 남은 길드원들의 평균레벨이 높은 길드
-				else if( nLife1 == nLife2 )
-				{
-					int nLevel=0, nCount = 0;
-					float fAvg1=0, fAvg2=0;
-					for (const __JOINPLAYER * pJoinPlayer : pGCMember1->vecGCSelectMember) {
-						if( pJoinPlayer && 0 < pJoinPlayer->nlife )
-						{
-							CUser* pUsertmp = (CUser*)prj.GetUserByID( pJoinPlayer->uidPlayer );
-							if( IsValidObj( pUsertmp ) )
-							{
-								nLevel += pUsertmp->GetLevel();
-								nCount++;
-							}
-						}
-					}
-					if( nCount )
-						fAvg1 = (float)( nLevel/nCount );
-					else
-						fAvg1 = 1.0f;
-					nLevel = nCount = 0;
-
-					for (const __JOINPLAYER* pJoinPlayer : pGCMember2->vecGCSelectMember) {
-						if( pJoinPlayer && 0 < pJoinPlayer->nlife )
-						{
-							CUser* pUsertmp = prj.GetUserByID( pJoinPlayer->uidPlayer );
-							if( IsValidObj( pUsertmp ) )
-							{
-								nLevel += pUsertmp->GetLevel();
-								nCount++;
-							}
-						}
-					}
-					if( nCount )
-						fAvg2 = (float)( nLevel/nCount );
-					else
-						fAvg2 = 1.0f;
-
-					if( fAvg1 < fAvg2 )
-					{
-						__REQUESTGUILD temp = vecGCRanking[j];
-						vecGCRanking[j] = vecGCRanking[j+1];
-						vecGCRanking[j+1] = temp;
-					}
-				} //if 생명
-			} //if 점수
-		} //for j
-	} //for i
-
+void CGuildCombat::GuildCombatResultRanking(const Rankings & rankings) {
 	// 아이템(레드칩) 지급
-	for( int i=0; i<(int)( vecGCRanking.size() ); i++ )
-	{
-		if( i >= 3 ) break;
+	for (size_t i = 0; i < rankings.bestGuilds.size(); ++i) {
+		if (i >= 3) break;
 
-		__REQUESTGUILD RequestGuild = vecGCRanking[i];
-		__GuildCombatMember* pGCMember = FindGuildCombatMember( RequestGuild.uidGuild );
-		if( !pGCMember )
-		{
-			Error( "GuildCombatResultRanking() - pGCMember is NULL" );
+		__GuildCombatMember* pGCMember = FindGuildCombatMember(rankings.bestGuilds[i]);
+		if (!pGCMember) {
+			Error("GuildCombatResultRanking() - pGCMember is NULL");
 			continue;
 		}
 
 		CItemElem itemElem;
 		itemElem.m_dwItemId = II_CHP_RED;
-		float fChipNum = m_nJoinPanya * vecGCRanking.size() * 0.9f * 0.00001f * 0.1f;
-		switch( i )
-		{
-			case 0 :	// 1위 
-				fChipNum *= 0.7f;
-				break;
-			case 1 :	// 2위
-				fChipNum *= 0.2f;
-				break;
-			case 2 :	// 3위
-				fChipNum *= 0.1f;
-				break;
+		float fChipNum = m_nJoinPanya * rankings.numberOfParticipantGuilds * 0.9f * 0.00001f * 0.1f;
+		switch(i) {
+			case 0: fChipNum *= 0.7f; break;
+			case 1: fChipNum *= 0.2f; break;
+			case 2: fChipNum *= 0.1f; break;
 		}
-		itemElem.m_nItemNum = (int)fChipNum;
-		if( itemElem.m_nItemNum < 1 )
-			itemElem.m_nItemNum		= 1;
+		itemElem.m_nItemNum = std::max(1, static_cast<int>(fChipNum));
 		itemElem.m_bCharged = itemElem.GetProp()->bCharged;
 
 		LogItemInfo aLogItem;
@@ -1169,67 +1081,27 @@ void CGuildCombat::GuildCombatOpen( void )
 		}
 	}
 }
-void CGuildCombat::SetRequestRanking( void )
-{
-	vecRequestRanking.clear();
-	for( int gcmi = 0 ; gcmi < (int)( m_vecGuildCombatMem.size() ) ; ++gcmi )
-	{
-		__GuildCombatMember* pGCMember = m_vecGuildCombatMem[gcmi];
 
+void CGuildCombat::SetRequestRanking( void ) {
+	vecRequestRanking.clear();
+	for (const __GuildCombatMember * pGCMember : m_vecGuildCombatMem) {
 		if( pGCMember->bRequest == FALSE )
 			continue;
 		
-		__REQUESTGUILD RequstGuild;
-		RequstGuild.dwPenya = pGCMember->dwPenya;
-		RequstGuild.uidGuild = pGCMember->uGuildId;
-		if( 0 == vecRequestRanking.size() )
-		{
-			vecRequestRanking.push_back( RequstGuild );
-		}
-		else
-		{
-			BOOL bInsert = FALSE;
-			for( auto  itv = vecRequestRanking.begin() ; itv != vecRequestRanking.end() ; ++itv )
-			{
-				if( ((__REQUESTGUILD)*itv).dwPenya  == pGCMember->dwPenya )
-				{
-					BOOL bSamPenya = FALSE;
-					while( ((__REQUESTGUILD)*itv).dwPenya == pGCMember->dwPenya )
-					{
-						++itv;
-						if( itv == vecRequestRanking.end() )
-						{
-							bSamPenya = TRUE; 
-							--itv;
-							break;
-						}							
-					}
-					
-					if( bSamPenya )
-					{
-						vecRequestRanking.push_back( RequstGuild );
-					}
-					else
-					{
-						vecRequestRanking.insert( itv, RequstGuild );
-					}
-					bInsert = TRUE;
-					break;
-				}
-				else
-				if( ((__REQUESTGUILD)*itv).dwPenya  < pGCMember->dwPenya )
-				{
-					vecRequestRanking.insert( itv, RequstGuild );
-					bInsert = TRUE;
-					break;
-				}				
-			}
-			if( bInsert == FALSE )
-			{
-				vecRequestRanking.push_back( RequstGuild );
-			}
-		}
+		__REQUESTGUILD RequstGuild{
+			.uidGuild = pGCMember->uGuildId,
+			.dwPenya = pGCMember->dwPenya
+		};
+
+		vecRequestRanking.emplace_back(RequstGuild);
 	}
+
+	std::ranges::stable_sort(
+		vecRequestRanking,
+		[](const __REQUESTGUILD & lhs, const __REQUESTGUILD & rhs) {
+			return rhs.dwPenya < lhs.dwPenya;
+		}
+	);
 }
 void CGuildCombat::SetDefender(u_long uidGuild, u_long uidDefender) {
 	if (__GuildCombatMember * pGCMember = FindGuildCombatMember(uidGuild)) {
@@ -1306,6 +1178,18 @@ CTime CGuildCombat::GetNextGuildCobmatTime()
 }
 
 CGuildCombat::__GuildCombatMember * CGuildCombat::FindGuildCombatMember(const u_long GuildId) {
+	const auto it = std::find_if(
+		m_vecGuildCombatMem.begin(),
+		m_vecGuildCombatMem.end(),
+		[GuildId](const __GuildCombatMember * gcMember) {
+			return gcMember->uGuildId == GuildId;
+		}
+	);
+
+	return it != m_vecGuildCombatMem.end() ? *it : nullptr;
+}
+
+const CGuildCombat::__GuildCombatMember * CGuildCombat::FindGuildCombatMember(const u_long GuildId) const {
 	const auto it = std::find_if(
 		m_vecGuildCombatMem.begin(),
 		m_vecGuildCombatMem.end(),
@@ -1571,8 +1455,9 @@ void CGuildCombat::SetGuildCombatCloseWait( BOOL bGM )
 	}
 	else
 	{
-		GuildCombatResult();
-		GuildCombatResultRanking();
+		Rankings rankings = ComputeRankings();
+		GuildCombatResult(rankings);
+		GuildCombatResultRanking(rankings);
 	}	
 }
 // 신청한 길드중에 출전할수 있는 길드인지?

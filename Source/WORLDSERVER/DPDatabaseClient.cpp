@@ -377,9 +377,7 @@ void CDPDatabaseClient::SendGuildCombatResult( void )
 	
 	// 길드 저장
 	ar << (u_long)g_GuildCombatMng.m_vecGuildCombatMem.size();
-	for( int gcmi = 0 ; gcmi != g_GuildCombatMng.m_vecGuildCombatMem.size() ; ++gcmi )
-	{
-		CGuildCombat::__GuildCombatMember* pGCMember = g_GuildCombatMng.m_vecGuildCombatMem[gcmi];
+	for (const CGuildCombat::__GuildCombatMember * pGCMember : g_GuildCombatMng.m_vecGuildCombatMem) {
 
 		BOOL bSelectGuild = FALSE; // 출전한 길드인가
 		for( int veci = 0 ; veci < (int)( g_GuildCombatMng.vecRequestRanking.size() ) ; ++veci )

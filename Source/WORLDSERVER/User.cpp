@@ -5129,9 +5129,7 @@ void CUserMng::AddGCGuildPrecedence( CUser* pSendUser )
 	arBlock << GC_GUILDPRECEDENCE;
 
 	arBlock << (int)g_GuildCombatMng.m_vecGuildCombatMem.size();
-	for( int gcmi = 0 ; gcmi < (int)( g_GuildCombatMng.m_vecGuildCombatMem.size() ) ; ++gcmi )
-	{
-		CGuildCombat::__GuildCombatMember* pGCMember = g_GuildCombatMng.m_vecGuildCombatMem[gcmi];
+	for (const CGuildCombat::__GuildCombatMember * pGCMember : g_GuildCombatMng.m_vecGuildCombatMem) {
 		if( !pGCMember->vecGCSelectMember.empty() )
 		{			
 			arBlock << (BOOL)TRUE; // bSend;
@@ -5175,9 +5173,7 @@ void CUserMng::AddGCPlayerPrecedence( CUser* pSendUser )
 	arBlock << GC_PLAYERPRECEDENCE;
 
 	arBlock << (int)g_GuildCombatMng.m_vecGuildCombatMem.size();
-	for( int gcmi = 0 ; gcmi < (int)( g_GuildCombatMng.m_vecGuildCombatMem.size() ) ; ++gcmi )
-	{
-		CGuildCombat::__GuildCombatMember* pGCMember = g_GuildCombatMng.m_vecGuildCombatMem[gcmi];
+	for (const CGuildCombat::__GuildCombatMember * pGCMember : g_GuildCombatMng.m_vecGuildCombatMem) {
 		arBlock << (int)pGCMember->vecGCSelectMember.size();
 		for (const CGuildCombat::__JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
 			arBlock << pJoinPlayer->uidPlayer;
