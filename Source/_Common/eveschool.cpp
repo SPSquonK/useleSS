@@ -152,19 +152,15 @@ BOOL CEveSchool::End( void )
 	SCHOOL_ENTRY	school[MAX_SCHOOL];
 
 	int iIndex	= 0;
-	for( auto i = m_pSchoolMng->m_mapPGuild.begin(); i != m_pSchoolMng->m_mapPGuild.end(); ++i )
-	{
-		CGuild* pSchool	= i->second;
+	for (CGuild * pSchool : m_pSchoolMng->m_mapPGuild | std::views::values) {
 		
 		school[iIndex].id	= pSchool->m_idGuild;
 		lstrcpy( school[iIndex].lpName, pSchool->m_szGuild );
 		school[iIndex].nDead	= pSchool->m_nDead;
 
-		for( auto i2 = pSchool->m_mapPMember.begin(); i2 != pSchool->m_mapPMember.end(); ++i2 )
-		{
-			CGuildMember* pMember	= i2->second;
+		for (CGuildMember * pMember : pSchool->m_mapPMember | std::views::values) {
 			CUser* pUser	= g_UserMng.GetUserByPlayerID( pMember->m_idPlayer );
-			if( IsValidObj( (CObj*)pUser ) )
+			if( IsValidObj( pUser ) )
 			{
 				if( pUser->IsRegionAttr( RA_FIGHT ) )
 				{
@@ -398,11 +394,10 @@ void CGuildCombat::AddvecGCPlayerPoint( u_long uidPlayer, int nJob, int nPoint )
 }
 
 #ifdef __WORLDSERVER
-void CGuildCombat::SelectPlayerClear( u_long uidGuild )
-{
-	__GuildCombatMember* pGCMember = FindGuildCombatMember( uidGuild );
-	if( pGCMember != NULL )
+void CGuildCombat::SelectPlayerClear(const u_long uidGuild) {
+	if (__GuildCombatMember * pGCMember = FindGuildCombatMember(uidGuild)) {
 		pGCMember->SelectMemberClear();
+	}
 }
 
 // 참가 신청
@@ -439,10 +434,8 @@ void CGuildCombat::OutGuildCombat( u_long idGuild )
 		if( pGuild && pGCMember->bRequest )
 		{
 			CItemElem itemElem;
-			char szMsg[1000];
-			sprintf( szMsg, "%s", prj.GetText( TID_GAME_GC_CANCELREQUEST ) );
-			char szMsg1[1000];
-			sprintf( szMsg1, "%s", prj.GetText( TID_GAME_GC_CANCELREQUEST1 ) );
+			LPCTSTR szMsg = prj.GetText( TID_GAME_GC_CANCELREQUEST );
+			LPCTSTR szMsg1 = prj.GetText( TID_GAME_GC_CANCELREQUEST1 );
 			g_dpDBClient.SendQueryPostMail( pGuild->m_idMaster, 0, itemElem, MulDiv( pGCMember->dwPenya, m_nRequestCanclePercent, 100 ), szMsg, szMsg1 );
 		}		
 		pGCMember->bRequest = FALSE;
@@ -1147,10 +1140,8 @@ void CGuildCombat::GuildCombatOpen( void )
 	g_dpDBClient.SendGuildCombatStart();
 	m_nGCState = NOTENTER_STATE;
 	m_nProcessGo	= 0;
-	CString strOK;
-	CString strCancle;
-	strOK.Format( "%s", prj.GetText(TID_GAME_GUILDCOMBAT_JOIN_OK) );
-	strCancle.Format( "%s", prj.GetText(TID_GAME_GUILDCOMBAT_JOIN_CANCLE) );
+	LPCTSTR strOK = prj.GetText(TID_GAME_GUILDCOMBAT_JOIN_OK);
+	LPCTSTR strCancle = prj.GetText(TID_GAME_GUILDCOMBAT_JOIN_CANCLE);
 
 	for( int veci = 0 ; veci < (int)( vecRequestRanking.size() ) ; ++veci )
 	{
@@ -1240,19 +1231,15 @@ void CGuildCombat::SetRequestRanking( void )
 		}
 	}
 }
-void CGuildCombat::SetDefender( u_long uidGuild, u_long uidDefender )
-{
-	__GuildCombatMember* pGCMember = FindGuildCombatMember( uidGuild );
-	if( pGCMember != NULL )
+void CGuildCombat::SetDefender(u_long uidGuild, u_long uidDefender) {
+	if (__GuildCombatMember * pGCMember = FindGuildCombatMember(uidGuild)) {
 		pGCMember->m_uidDefender = uidDefender;
+	}
 }
-u_long CGuildCombat::GetDefender( u_long uidGuild )
-{
-	u_long uidDefender = 0;
-	__GuildCombatMember* pGCMember = FindGuildCombatMember( uidGuild );
-	if( pGCMember != NULL )
-		uidDefender = pGCMember->m_uidDefender;
-	return uidDefender;
+
+u_long CGuildCombat::GetDefender(const u_long uidGuild) {
+	__GuildCombatMember * pGCMember = FindGuildCombatMember(uidGuild);
+	return pGCMember ? pGCMember->m_uidDefender : 0;
 }
 
 // 지금까지의 총 상금
@@ -1318,29 +1305,27 @@ CTime CGuildCombat::GetNextGuildCobmatTime()
 	return tNextCombat;
 }
 
-CGuildCombat::__GuildCombatMember* CGuildCombat::FindGuildCombatMember( u_long GuildId )
-{
-	__GuildCombatMember* pGCMem = NULL;
-	for( int i = 0 ; i < (int)( m_vecGuildCombatMem.size() ) ; ++i )
-	{
-		if( GuildId == m_vecGuildCombatMem[i]->uGuildId )
-		{
-			pGCMem = m_vecGuildCombatMem[i];
-			break;
+CGuildCombat::__GuildCombatMember * CGuildCombat::FindGuildCombatMember(const u_long GuildId) {
+	const auto it = std::find_if(
+		m_vecGuildCombatMem.begin(),
+		m_vecGuildCombatMem.end(),
+		[GuildId](const __GuildCombatMember * gcMember) {
+			return gcMember->uGuildId == GuildId;
 		}
-	}
-	return pGCMem;
+	);
+
+	return it != m_vecGuildCombatMem.end() ? *it : nullptr;
 }
+
 void CGuildCombat::SetSelectMap( CUser* pUser, int nMap )
 {
 	__GuildCombatMember* pGCMember = FindGuildCombatMember( pUser->m_idGuild );
-	if( pGCMember != NULL )
-	{	
-		__JOINPLAYER * pJoinPlayer = pGCMember->FindByPlayerId(pUser->m_idPlayer);
-		if (pJoinPlayer) {
-			pJoinPlayer->nMap = nMap;
-		}
-	}
+	if (!pGCMember) return;
+	
+	__JOINPLAYER * pJoinPlayer = pGCMember->FindByPlayerId(pUser->m_idPlayer);
+	if (!pJoinPlayer) return;
+
+	pJoinPlayer->nMap = nMap;
 }
 void CGuildCombat::GuildCombatEnter( CUser* pUser )
 {
@@ -1381,9 +1366,9 @@ void CGuildCombat::GuildCombatEnter( CUser* pUser )
 // 전쟁 준비 시간
 void CGuildCombat::SetMaintenance()
 {
-	CString strMsgMaster = prj.GetText( TID_GAME_GUILDCOMBAT_JOIN_MSG_MASTER );
-	CString strMsgDefender = prj.GetText( TID_GAME_GUILDCOMBAT_JOIN_MSG_DEFENDER );
-	CString strMsgGeneral = prj.GetText( TID_GAME_GUILDCOMBAT_JOIN_MSG_GENERAL );
+	LPCTSTR strMsgMaster = prj.GetText( TID_GAME_GUILDCOMBAT_JOIN_MSG_MASTER );
+	LPCTSTR strMsgDefender = prj.GetText( TID_GAME_GUILDCOMBAT_JOIN_MSG_DEFENDER );
+	LPCTSTR strMsgGeneral = prj.GetText( TID_GAME_GUILDCOMBAT_JOIN_MSG_GENERAL );
 	
 	BOOL bWinGuild_Continue = FALSE;		// 요번게임이 취소 되었다면 연승을 연장 여부
 	int nCount = 0;
