@@ -1414,29 +1414,7 @@ void CGuildCombat::SetMaintenance()
 					}
 				}
 
-				while( pGCMember->lspFifo.size() > 0 )
-				{
-					__JOINPLAYER* pJoinPlayer	= pGCMember->lspFifo.front();
-					CMover* pMover	= prj.GetUserByID( pJoinPlayer->uidPlayer );
-					if( IsValidObj( pMover ) && pMover->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
-					{
-						pGCMember->nWarCount++;
-						pJoinPlayer->dwTelTime	= timeGetTime();
-						((CUser*)pMover)->AddGCJoinWarWindow( pJoinPlayer->nMap, m_nMaxMapTime );
-						pGCMember->lspFifo.pop_front();
-					}
-					else
-					{
-						pGCMember->lspFifo.pop_front();
-						pJoinPlayer->nlife--;
-						if( pJoinPlayer->nlife > 0 )
-							pGCMember->lspFifo.push_back( pJoinPlayer );
-						if( pJoinPlayer->nlife < 0 )
-							pJoinPlayer->nlife	= 0;
-					}
-					if( pGCMember->nWarCount == m_nMaxWarPlayer )
-						break;
-				}
+				RefreshFifo(*pGCMember);
 
 				g_UserMng.AddGCGuildStatus( pGCMember->uGuildId );
 
@@ -2116,26 +2094,6 @@ void CGuildCombat::SendJoinMsg( LPCTSTR lpszString  )
 void CGuildCombat::SendGuildCombatEnterTime( void )
 {
 	g_UserMng.AddGuildCombatEnterTime( GuildCombatProcess[m_nProcessGo].dwTime );
-/*	for( map<u_long, __GuildCombatMember*>::iterator ita = m_GuildCombatMem.begin() ; ita != m_GuildCombatMem.end() ; ++ita )
-	{
-		CGuild* pGuild = g_GuildMng.GetGuild( ita->first );
-		if( pGuild )
-		{
-			CGuildMember*	pMember;
-			CUser*			pUsertmp;
-			for( map<u_long, CGuildMember*>::iterator i = pGuild->m_mapPMember.begin();
-			i != pGuild->m_mapPMember.end(); ++i )
-			{
-				pMember		= i->second;
-				pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
-				if( IsValidObj( pUsertmp ) )
-				{
-					pUsertmp->AddGuildCombatEnterTime( GuildCombatProcess[m_nProcessGo].dwTime );
-				}
-			}
-		}
-	}
-*/
 }
 
 void CGuildCombat::SetPlayerChange( CUser* pUser, CUser* pLeader )
@@ -2159,30 +2117,30 @@ void CGuildCombat::SetPlayerChange( CUser* pUser, CUser* pLeader )
 	if( pJoinPlayer->nlife < 0 )
 		pJoinPlayer->nlife	= 0;
 
-	while( pGCMember->lspFifo.size() > 0 )
-	{
-		__JOINPLAYER* pJoinPlayer	= pGCMember->lspFifo.front();
-		CUser * pMover	= prj.GetUserByID( pJoinPlayer->uidPlayer );
-		if( IsValidObj( pMover ) && pMover->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
-		{
-			pGCMember->nWarCount++;
-			pJoinPlayer->dwTelTime	= timeGetTime();
-			pMover->AddGCJoinWarWindow( pJoinPlayer->nMap, m_nMaxMapTime );
-			pGCMember->lspFifo.pop_front();
-		}
-		else
-		{
-			pGCMember->lspFifo.pop_front();
+	RefreshFifo(*pGCMember);
+}
+
+void CGuildCombat::RefreshFifo(__GuildCombatMember & gcMember) const {
+	while (!gcMember.lspFifo.empty() && gcMember.nWarCount < m_nMaxWarPlayer) {
+		__JOINPLAYER * pJoinPlayer = gcMember.lspFifo.front();
+		
+		CUser * pMover = prj.GetUserByID(pJoinPlayer->uidPlayer);
+		if (IsValidObj(pMover) && pMover->GetWorld()->GetID() == WI_WORLD_GUILDWAR) {
+			gcMember.nWarCount++;
+			pJoinPlayer->dwTelTime = timeGetTime();
+			pMover->AddGCJoinWarWindow(pJoinPlayer->nMap, m_nMaxMapTime);
+			gcMember.lspFifo.pop_front();
+		} else {
+			gcMember.lspFifo.pop_front();
 			pJoinPlayer->nlife--;
-			if( pJoinPlayer->nlife > 0 )
-				pGCMember->lspFifo.push_back( pJoinPlayer );
-			if( pJoinPlayer->nlife < 0 )
-				pJoinPlayer->nlife	= 0;
+			if (pJoinPlayer->nlife > 0)
+				gcMember.lspFifo.push_back(pJoinPlayer);
+			if (pJoinPlayer->nlife < 0)
+				pJoinPlayer->nlife = 0;
 		}
-		if( pGCMember->nWarCount == m_nMaxWarPlayer )
-			break;
 	}
 }
+
 void CGuildCombat::GetPoint( CUser* pAttacker, CUser* pDefender )
 {
 	// 선택한 넘들 가지고 오기

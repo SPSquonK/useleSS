@@ -263,6 +263,7 @@ public:
 	int		m_nDay;
 
 	__GuildCombatMember* FindGuildCombatMember( u_long GuildId );
+	void RefreshFifo(__GuildCombatMember & guildCombatMember) const;
 #endif // __WORLDSERVER
 };
 
