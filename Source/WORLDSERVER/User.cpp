@@ -5064,34 +5064,15 @@ void CUserMng::AddGCGuildStatus( u_long uidGuild, CUser* pSendUser )
 	if( pGCMember != NULL )
 	{
 		// 순서에 맞게 vecPlayerList에 넣기 : 선수 -> 대기자(들어갈수 있음) -> 대기자(못들어감)
-		std::list<CGuildCombat::__JOINPLAYER*> lspPlyaerList;
-
-		CGuildCombat::__JOINPLAYER* pJoinPlayer;
 		// 대기자(들어갈수 잇음) 넣음
-		for( auto i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
-		{
-			pJoinPlayer = *i1;
-			lspPlyaerList.push_back( pJoinPlayer );
-		}
+		std::list<CGuildCombat::__JOINPLAYER *> lspPlyaerList = pGCMember->lspFifo;
 
 		// 선수 및 대기자(못들어감) 넣음
-		for( int veci = pGCMember->vecGCSelectMember.size()-1 ; veci >= 0 ; --veci )
-		{
-			pJoinPlayer = pGCMember->vecGCSelectMember[veci];
-			if( 0 < pJoinPlayer->nlife )	// 선수
+		for (CGuildCombat::__JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember | std::views::reverse) {
+			if( pJoinPlayer->nlife > 0 )	// 선수
 			{
-				BOOL bFind = FALSE;
-				for( auto i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
-				{
-					if( pJoinPlayer == *i1 )
-					{
-						bFind	= TRUE;
-						break;
-					}
-				}				
-				if( bFind == FALSE )
-				{
-					lspPlyaerList.push_front( pJoinPlayer );
+				if (!pGCMember->IsInFifo(pJoinPlayer)) {
+					lspPlyaerList.push_front(pJoinPlayer);
 				}
 			}
 			else // 대기자(못들어감)
@@ -5107,9 +5088,7 @@ void CUserMng::AddGCGuildStatus( u_long uidGuild, CUser* pSendUser )
 			arBlock << (int)0;
 		
 		arBlock << (int)lspPlyaerList.size();
-		for( auto i1 = lspPlyaerList.begin(); i1 != lspPlyaerList.end(); ++i1 )
-		{
-			pJoinPlayer = *i1;
+		for( const CGuildCombat::__JOINPLAYER * pJoinPlayer : lspPlyaerList) {
 			arBlock << pJoinPlayer->uidPlayer;
 			arBlock << pJoinPlayer->nlife;
 		}	
@@ -5153,7 +5132,7 @@ void CUserMng::AddGCGuildPrecedence( CUser* pSendUser )
 	for( int gcmi = 0 ; gcmi < (int)( g_GuildCombatMng.m_vecGuildCombatMem.size() ) ; ++gcmi )
 	{
 		CGuildCombat::__GuildCombatMember* pGCMember = g_GuildCombatMng.m_vecGuildCombatMem[gcmi];
-		if( 0 < pGCMember->vecGCSelectMember.size() )
+		if( !pGCMember->vecGCSelectMember.empty() )
 		{			
 			arBlock << (BOOL)TRUE; // bSend;
 			CGuild* pGuild = g_GuildMng.GetGuild( pGCMember->uGuildId );
@@ -5200,9 +5179,7 @@ void CUserMng::AddGCPlayerPrecedence( CUser* pSendUser )
 	{
 		CGuildCombat::__GuildCombatMember* pGCMember = g_GuildCombatMng.m_vecGuildCombatMem[gcmi];
 		arBlock << (int)pGCMember->vecGCSelectMember.size();
-		for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-		{
-			CGuildCombat::__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
+		for (const CGuildCombat::__JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
 			arBlock << pJoinPlayer->uidPlayer;
 			arBlock << pJoinPlayer->nPoint;
 		}

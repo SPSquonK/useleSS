@@ -471,9 +471,7 @@ void CGuildCombat::GetSelectPlayer( u_long idGuild, std::vector<__JOINPLAYER> &v
 	__GuildCombatMember* pGCMember = FindGuildCombatMember( idGuild );
 	if( pGCMember != NULL )
 	{
-		for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-		{
-			__JOINPLAYER* pJoinPlayer =  pGCMember->vecGCSelectMember[veci];
+		for (const __JOINPLAYER* pJoinPlayer : pGCMember->vecGCSelectMember) {
 			vecSelectPlayer.push_back( *pJoinPlayer );
 		}
 	}	
@@ -531,26 +529,24 @@ void CGuildCombat::OutWar( CUser* pUser, CUser* pLeader, BOOL bLogOut )
 				CGuild* pGuild = g_GuildMng.GetGuild( pUser->m_idGuild  );
 				if( pGuild )
 				{
-					std::vector<int> vecDefender;
+					std::vector<u_long> vecDefender;
 					
-					for( int vecii0 = 0 ; vecii0 < (int)( pGCMember->vecGCSelectMember.size() ) ; ++vecii0 )
-					{
-						__JOINPLAYER* pJoinPlayer3 = pGCMember->vecGCSelectMember[vecii0];
+					for (const __JOINPLAYER* pJoinPlayer3 : pGCMember->vecGCSelectMember) {
 						CMover* pMover = prj.GetUserByID( pJoinPlayer3->uidPlayer );
 						if( IsValidObj( pMover ) )
 						{						
 							if( pGuild->IsMaster( pMover->m_idPlayer ) == FALSE && pGCMember->m_uidDefender != pMover->m_idPlayer && 0 < pJoinPlayer3->nlife )
 							{
-								vecDefender.push_back( vecii0 );
+								vecDefender.push_back(pJoinPlayer3->uidPlayer);
 							}
 						}
 					}
-					if( 0 < vecDefender.size() )
+
+					if(!vecDefender.empty())
 					{
 						int nPlayerPos = xRandom( vecDefender.size() );
-						int nDefender = vecDefender[nPlayerPos];
-						__JOINPLAYER* pJoinPlayer4 = pGCMember->vecGCSelectMember[nDefender];
-						pGCMember->m_uidDefender = pJoinPlayer4->uidPlayer;
+						u_long nDefender = vecDefender[nPlayerPos];
+						pGCMember->m_uidDefender = nDefender;
 					}
 				}
 			}	// if( pUser->m_idPlayer == pGCMember->m_uidDefender )	// 디펜더 검사
@@ -718,11 +714,9 @@ void CGuildCombat::UserOutGuildCombatResult( CUser* pUser )
 	__GuildCombatMember* pGCMember = FindGuildCombatMember( pUser->m_idGuild );
 	if( pGCMember != NULL )
 	{
-		for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-		{
-			__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
+		for (const __JOINPLAYER* pJoinPlayer : pGCMember->vecGCSelectMember) {
 			// 생명이 있는 캐릭이 있으면 검사 안해도 됨.
-			if( 0 < pJoinPlayer->nlife )
+			if( pJoinPlayer->nlife > 0 )
 				return;
 		}
 
@@ -738,13 +732,10 @@ void CGuildCombat::UserOutGuildCombatResult( CUser* pUser )
 			{
 				if( pUser->m_idGuild != pGCMember2->uGuildId )
 				{
-					BOOL bLive = FALSE;
-					for( int veci2 = 0 ; veci2 < (int)( pGCMember2->vecGCSelectMember.size() ) ; ++veci2 )
-					{
-						__JOINPLAYER* pJoinPlayer = pGCMember2->vecGCSelectMember[veci2];
-						if( 0 < pJoinPlayer->nlife )
-							bLive = TRUE;
-					}
+					const bool bLive = std::ranges::any_of(pGCMember2->vecGCSelectMember,
+						[](const __JOINPLAYER * pJoinPlayer) { return pJoinPlayer->nlife > 0; }
+						);
+
 					if( bLive )
 					{
 						++nCount;
@@ -959,15 +950,12 @@ void CGuildCombat::GuildCombatResultRanking()
 			else if( pGCMember1->nGuildPoint == pGCMember2->nGuildPoint )
 			{
 				int nLife1=0, nLife2=0;
-				for( int k=0 ; k<(int)( pGCMember1->vecGCSelectMember.size() ); k++ )
-				{
-					__JOINPLAYER* pJoinPlayer = pGCMember1->vecGCSelectMember[k];
+				for (const __JOINPLAYER* pJoinPlayer : pGCMember1->vecGCSelectMember) {
 					if( pJoinPlayer )
 						nLife1 += pJoinPlayer->nlife;
 				}
-				for( int k=0 ; k<(int)( pGCMember2->vecGCSelectMember.size() ); k++ )
-				{
-					__JOINPLAYER* pJoinPlayer = pGCMember2->vecGCSelectMember[k];
+
+				for (const __JOINPLAYER * pJoinPlayer : pGCMember2->vecGCSelectMember) {
 					if( pJoinPlayer )
 						nLife2 += pJoinPlayer->nlife;
 				}
@@ -983,9 +971,7 @@ void CGuildCombat::GuildCombatResultRanking()
 				{
 					int nLevel=0, nCount = 0;
 					float fAvg1=0, fAvg2=0;
-					for( int k=0 ; k<(int)( pGCMember1->vecGCSelectMember.size() ); k++ )
-					{
-						__JOINPLAYER* pJoinPlayer = pGCMember1->vecGCSelectMember[k];
+					for (const __JOINPLAYER * pJoinPlayer : pGCMember1->vecGCSelectMember) {
 						if( pJoinPlayer && 0 < pJoinPlayer->nlife )
 						{
 							CUser* pUsertmp = (CUser*)prj.GetUserByID( pJoinPlayer->uidPlayer );
@@ -1001,12 +987,11 @@ void CGuildCombat::GuildCombatResultRanking()
 					else
 						fAvg1 = 1.0f;
 					nLevel = nCount = 0;
-					for( int k=0 ; k<(int)( pGCMember2->vecGCSelectMember.size() ); k++ )
-					{
-						__JOINPLAYER* pJoinPlayer = pGCMember2->vecGCSelectMember[k];
+
+					for (const __JOINPLAYER* pJoinPlayer : pGCMember2->vecGCSelectMember) {
 						if( pJoinPlayer && 0 < pJoinPlayer->nlife )
 						{
-							CUser* pUsertmp = (CUser*)prj.GetUserByID( pJoinPlayer->uidPlayer );
+							CUser* pUsertmp = prj.GetUserByID( pJoinPlayer->uidPlayer );
 							if( IsValidObj( pUsertmp ) )
 							{
 								nLevel += pUsertmp->GetLevel();
@@ -1066,17 +1051,9 @@ void CGuildCombat::GuildCombatResultRanking()
 		LogItemInfo aLogItem;
 		aLogItem.Action = "W";
 		aLogItem.Gold_1 = i;
-					
-		for( int j=0 ; j<(int)( pGCMember->vecGCSelectMember.size() ); j++ )
-		{
-			__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[j];
-			if( !pJoinPlayer )
-			{
-				Error( "GuildCombatResultRanking() - pJoinPlayer is NULL" );
-				continue;
-			}
-
-			CUser* pUsertmp = (CUser*)prj.GetUserByID( pJoinPlayer->uidPlayer );
+		
+		for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
+			CUser* pUsertmp = prj.GetUserByID( pJoinPlayer->uidPlayer );
 			if( IsValidObj( pUsertmp ) )
 			{
 				aLogItem.SendName = pUsertmp->GetName();
@@ -1359,14 +1336,9 @@ void CGuildCombat::SetSelectMap( CUser* pUser, int nMap )
 	__GuildCombatMember* pGCMember = FindGuildCombatMember( pUser->m_idGuild );
 	if( pGCMember != NULL )
 	{	
-		for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-		{
-			__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
-			if( pJoinPlayer->uidPlayer == pUser->m_idPlayer )
-			{
-				pJoinPlayer->nMap = nMap;
-				break;
-			}
+		__JOINPLAYER * pJoinPlayer = pGCMember->FindByPlayerId(pUser->m_idPlayer);
+		if (pJoinPlayer) {
+			pJoinPlayer->nMap = nMap;
 		}
 	}
 }
@@ -1436,11 +1408,10 @@ void CGuildCombat::SetMaintenance()
 				pGCMember->nWarCount = 0;
 				BOOL bMaxWarCount = FALSE;
 
-				for( int i = 0; i < (int)( pGCMember->vecGCSelectMember.size() ) ; ++i )
-				{
-					__JOINPLAYER* pJoinPlayer	= pGCMember->vecGCSelectMember[i];
-					if( 0 < pJoinPlayer->nlife )
-						pGCMember->lspFifo.push_back( pJoinPlayer );
+				for (__JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
+					if (pJoinPlayer->nlife > 0) {
+						pGCMember->lspFifo.push_back(pJoinPlayer);
+					}
 				}
 
 				while( pGCMember->lspFifo.size() > 0 )
@@ -1469,23 +1440,21 @@ void CGuildCombat::SetMaintenance()
 
 				g_UserMng.AddGCGuildStatus( pGCMember->uGuildId );
 
-				for( int veci = 0; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-				{
-					__JOINPLAYER* pJoinPlayer	= pGCMember->vecGCSelectMember[veci];
-					CMover* pMover	= prj.GetUserByID( pJoinPlayer->uidPlayer );
+				for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
+					CUser * pMover	= prj.GetUserByID( pJoinPlayer->uidPlayer );
 					if( IsValidObj( pMover ) && pMover->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 					{
 						// Message
 						if( pGuild->IsMaster( pMover->m_idPlayer ) )	// Master
-							((CUser*)pMover)->AddDiagText( strMsgMaster );
+							pMover->AddDiagText( strMsgMaster );
 						else if( pGCMember->m_uidDefender == pMover->m_idPlayer )	// Defender
-							((CUser*)pMover)->AddDiagText( strMsgDefender );
+							pMover->AddDiagText( strMsgDefender );
 						else
-							((CUser*)pMover)->AddDiagText( strMsgGeneral );
+							pMover->AddDiagText( strMsgGeneral );
 					}
 				}
 
-				if( 0 < pGCMember->vecGCSelectMember.size() )
+				if( !pGCMember->vecGCSelectMember.empty() )
 					++nCount;
 			}
 		}
@@ -1511,10 +1480,11 @@ void CGuildCombat::SetMaintenance()
 
 void CGuildCombat::SetEnter()
 {
-	char str[512] = {0,};
-	sprintf( str, prj.GetText(TID_GAME_GUILDCOMBAT_ENTER) );
+	LPCTSTR str = prj.GetText(TID_GAME_GUILDCOMBAT_ENTER);
 	g_DPCoreClient.SendSystem( str );
 	g_DPCoreClient.SendCaption( str, 0, TRUE );
+
+	LPCTSTR guildCombatTeleText = prj.GetText(TID_GAME_GUILDCOMBAT_TELE);
 
 	for( int nVeci = 0 ; nVeci < (int)( vecRequestRanking.size() ) ; ++nVeci )
 	{
@@ -1526,14 +1496,11 @@ void CGuildCombat::SetEnter()
 		__GuildCombatMember* pGCMember = FindGuildCombatMember( RequestGuild.uidGuild );
 		if( pGCMember != NULL )
 		{
-			for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-			{
-				__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
-				CMover* pMover = prj.GetUserByID( pJoinPlayer->uidPlayer );
+			for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
+				CUser * pMover = prj.GetUserByID( pJoinPlayer->uidPlayer );
 				if( IsValidObj( pMover ) )
 				{
-					sprintf( str, "%s", prj.GetText(TID_GAME_GUILDCOMBAT_TELE) );
-					((CUser*)pMover)->AddGCTele( str );
+					pMover->AddGCTele(guildCombatTeleText);
 				}
 			}
 		}
@@ -1542,31 +1509,18 @@ void CGuildCombat::SetEnter()
 // 대전 시작
 void CGuildCombat::SetGuildCombatStart()
 {
-	__GuildCombatMember* pGuildCombatMem;
-	__JOINPLAYER* pJoinPlayer;
-	__REQUESTGUILD RequestGuild;
-
 	for( int nVeci = 0 ; nVeci < (int)( vecRequestRanking.size() ) ; ++nVeci )
 	{
 		if( nVeci >= m_nMaxGuild )
 			break;
-		
-		RequestGuild = vecRequestRanking[nVeci];
-		pGuildCombatMem = FindGuildCombatMember( RequestGuild.uidGuild );
+	
+		__REQUESTGUILD RequestGuild = vecRequestRanking[nVeci];
+		__GuildCombatMember * pGuildCombatMem = FindGuildCombatMember( RequestGuild.uidGuild );
 		if( pGuildCombatMem != NULL )
 		{
-			for( int veci = 0 ; veci < (int)( pGuildCombatMem->vecGCSelectMember.size() ) ; ++veci )
-			{
-				pJoinPlayer = pGuildCombatMem->vecGCSelectMember[veci];
-				BOOL bFind	= FALSE;
-				for( auto i1 = pGuildCombatMem->lspFifo.begin(); i1 != pGuildCombatMem->lspFifo.end(); ++i1 )
-				{
-					if( pJoinPlayer == *i1 )
-					{
-						bFind	= TRUE;
-						break;
-					}
-				}				
+			for (__JOINPLAYER * pJoinPlayer : pGuildCombatMem->vecGCSelectMember) {
+				const bool bFind = pGuildCombatMem->IsInFifo(pJoinPlayer);
+				
 				if( pJoinPlayer->nlife > 0 && !bFind )
 				{
 					CMover* pMover = prj.GetUserByID( pJoinPlayer->uidPlayer );
@@ -1601,9 +1555,7 @@ void CGuildCombat::SetGuildCombatClose( BOOL bGM )
 		__GuildCombatMember* pGCMember = FindGuildCombatMember( RequestGuild.uidGuild );
 		if( pGCMember != NULL )
 		{
-			for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-			{
-				__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
+			for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
 				CMover* pMover = prj.GetUserByID( pJoinPlayer->uidPlayer );
 				if( IsValidObj( pMover ) )
 				{
@@ -1625,23 +1577,16 @@ void CGuildCombat::SetGuildCombatClose( BOOL bGM )
 		if( pGCMember != NULL )
 		{
 			int nRevivalPoint = 0;
-			for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-			{
-				__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
+			for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
 				nRevivalPoint += pJoinPlayer->nlife;
 			}
 			pGCMember->nGuildPoint += nRevivalPoint;
 
-			CGuild* pGuildMsg;
-			CGuildMember*	pMember;
-			CUser*			pUsertmp;
-			pGuildMsg = g_GuildMng.GetGuild( RequestGuild.uidGuild );
+			CGuild * pGuildMsg = g_GuildMng.GetGuild( RequestGuild.uidGuild );
 			if( pGuildMsg )
 			{
-				for( auto iGuild = pGuildMsg->m_mapPMember.begin(); iGuild != pGuildMsg->m_mapPMember.end(); ++iGuild )
-				{
-					pMember		= iGuild->second;
-					pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+				for (const CGuildMember * pMember : pGuildMsg->m_mapPMember | std::views::values) {
+					CUser * pUsertmp	= prj.GetUserByID( pMember->m_idPlayer );
 					if( IsValidObj( pUsertmp ) && pUsertmp->GetWorld() && pUsertmp->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 						pUsertmp->AddDefinedCaption( TRUE, TID_GAME_GUILDCOMBAT_POINT_REVIVAL, "%d", nRevivalPoint );
 				}
@@ -1688,30 +1633,21 @@ BOOL CGuildCombat::IsRequestWarGuild( u_long uidGuild, BOOL bAll )
 // 참가한 선수인지?
 BOOL CGuildCombat::IsSelectPlayer( CUser* pUser )
 {
-	__GuildCombatMember* pGuildCombatMem;
-	__JOINPLAYER* pJoinPlayer;
-	__REQUESTGUILD RequestGuild;
-
 	for( int nVeci = 0 ; nVeci < (int)( vecRequestRanking.size() ) ; ++nVeci )
 	{
 		if( nVeci >= m_nMaxGuild )
 			break;
 
-		RequestGuild = vecRequestRanking[nVeci];
+		__REQUESTGUILD RequestGuild = vecRequestRanking[nVeci];
 		if( RequestGuild.uidGuild == pUser->m_idGuild )
 		{
-			pGuildCombatMem = FindGuildCombatMember( RequestGuild.uidGuild );
+			__GuildCombatMember * pGuildCombatMem = FindGuildCombatMember( RequestGuild.uidGuild );
 			if( pGuildCombatMem != NULL )
 			{
-				for( int veci = 0 ; veci < (int)( pGuildCombatMem->vecGCSelectMember.size() ) ; ++veci )
-				{
-					pJoinPlayer = pGuildCombatMem->vecGCSelectMember[veci];
-					if( pJoinPlayer->uidPlayer == pUser->m_idPlayer )
-					{
-						if( pJoinPlayer->nlife > 0 )
-							return TRUE;
-						break;
-					}
+				__JOINPLAYER * pJoinPlayer = pGuildCombatMem->FindByPlayerId(pUser->m_idPlayer);
+
+				if (pJoinPlayer && pJoinPlayer->nlife > 0) {
+					return TRUE;
 				}
 			}
 			break;
@@ -1778,18 +1714,16 @@ void CGuildCombat::ProcessJoinWar()
 		__GuildCombatMember* pGCMember = FindGuildCombatMember( RequestGuild.uidGuild );
 		if( pGCMember != NULL )
 		{
-			for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-			{
-				__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
+			for (__JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
 				if( pJoinPlayer->dwTelTime != 0 )
 				{
 					if( pJoinPlayer->dwTelTime + m_nMaxMapTime * 1000 <= timeGetTime()  )
 					{
 						pJoinPlayer->dwTelTime = 0;
-						CMover* pMover = prj.GetUserByID( pJoinPlayer->uidPlayer );					
+						CUser * pMover = prj.GetUserByID( pJoinPlayer->uidPlayer );					
 						if( IsValidObj( pMover ) )
 						{
-							JoinWar( (CUser*)pMover, pJoinPlayer->nMap );
+							JoinWar( pMover, pJoinPlayer->nMap );
 						}
 					}
 				}
@@ -2165,12 +2099,9 @@ void CGuildCombat::SendGCLog( void )
 		__GuildCombatMember* pGCMember = FindGuildCombatMember( RequestGuild.uidGuild );
 		if( pGCMember != NULL )
 		{
-			int nPoint = 0;
-			for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-			{
-				__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
-				CUser* pUser = (CUser*)prj.GetUserByID( pJoinPlayer->uidPlayer );
-				if( IsValidObj( pUser ) )
+			for (const __JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
+				CUser * pUser = prj.GetUserByID(pJoinPlayer->uidPlayer);
+				if (IsValidObj(pUser))
 					pUser->AddGCLog();
 			}
 		}
@@ -2210,111 +2141,71 @@ void CGuildCombat::SendGuildCombatEnterTime( void )
 void CGuildCombat::SetPlayerChange( CUser* pUser, CUser* pLeader )
 {
 	__GuildCombatMember* pGCMember = FindGuildCombatMember( pUser->m_idGuild );
-	if( pGCMember != NULL )
-	{
-		for( int i = 0; i < (int)( pGCMember->vecGCSelectMember.size() ) ; ++i )
-		{
-			__JOINPLAYER* pJoinPlayer	= pGCMember->vecGCSelectMember[i];
-			if( pJoinPlayer->uidPlayer == pUser->m_idPlayer )
-			{
-				// 대기열에 존재 하는  pUser는 전투와 무관하므로 무시
-				for( auto i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
-				{
-					if( pJoinPlayer == *i1 )
-						return;
-				}
-				pJoinPlayer->dwTelTime	= 0;
-				pUser->m_nGuildCombatState	= 0;
-				g_UserMng.AddGuildCombatUserState( pUser );
-				--pGCMember->nWarCount;
-				pJoinPlayer->nlife--;
-				if( pJoinPlayer->nlife > 0 )
-					pGCMember->lspFifo.push_back( pJoinPlayer );
-				if( pJoinPlayer->nlife < 0 )
-					pJoinPlayer->nlife	= 0;
+	if (!pGCMember) return;
 
-				while( pGCMember->lspFifo.size() > 0 )
-				{
-					__JOINPLAYER* pJoinPlayer	= pGCMember->lspFifo.front();
-					CMover* pMover	= prj.GetUserByID( pJoinPlayer->uidPlayer );
-					if( IsValidObj( pMover ) && pMover->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
-					{
-						pGCMember->nWarCount++;
-						pJoinPlayer->dwTelTime	= timeGetTime();
-						((CUser*)pMover)->AddGCJoinWarWindow( pJoinPlayer->nMap, m_nMaxMapTime );
-						pGCMember->lspFifo.pop_front();
-					}
-					else
-					{
-						pGCMember->lspFifo.pop_front();
-						pJoinPlayer->nlife--;
-						if( pJoinPlayer->nlife > 0 )
-							pGCMember->lspFifo.push_back( pJoinPlayer );
-						if( pJoinPlayer->nlife < 0 )
-							pJoinPlayer->nlife	= 0;
-					}
-					if( pGCMember->nWarCount == m_nMaxWarPlayer )
-						break;
-				}	// while
-				break;
-			}	// if
-		}	// for
-	}	// if
+	__JOINPLAYER * pJoinPlayer = pGCMember->FindByPlayerId(pUser->m_idPlayer);
+	if (!pJoinPlayer) return;
+
+	// 대기열에 존재 하는  pUser는 전투와 무관하므로 무시
+	if (pGCMember->IsInFifo(pJoinPlayer)) return;
+
+	pJoinPlayer->dwTelTime	= 0;
+	pUser->m_nGuildCombatState	= 0;
+	g_UserMng.AddGuildCombatUserState( pUser );
+	--pGCMember->nWarCount;
+	pJoinPlayer->nlife--;
+	if( pJoinPlayer->nlife > 0 )
+		pGCMember->lspFifo.push_back( pJoinPlayer );
+	if( pJoinPlayer->nlife < 0 )
+		pJoinPlayer->nlife	= 0;
+
+	while( pGCMember->lspFifo.size() > 0 )
+	{
+		__JOINPLAYER* pJoinPlayer	= pGCMember->lspFifo.front();
+		CUser * pMover	= prj.GetUserByID( pJoinPlayer->uidPlayer );
+		if( IsValidObj( pMover ) && pMover->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
+		{
+			pGCMember->nWarCount++;
+			pJoinPlayer->dwTelTime	= timeGetTime();
+			pMover->AddGCJoinWarWindow( pJoinPlayer->nMap, m_nMaxMapTime );
+			pGCMember->lspFifo.pop_front();
+		}
+		else
+		{
+			pGCMember->lspFifo.pop_front();
+			pJoinPlayer->nlife--;
+			if( pJoinPlayer->nlife > 0 )
+				pGCMember->lspFifo.push_back( pJoinPlayer );
+			if( pJoinPlayer->nlife < 0 )
+				pJoinPlayer->nlife	= 0;
+		}
+		if( pGCMember->nWarCount == m_nMaxWarPlayer )
+			break;
+	}
 }
 void CGuildCombat::GetPoint( CUser* pAttacker, CUser* pDefender )
 {
 	// 선택한 넘들 가지고 오기
-	BOOL bMaster = FALSE;
-	BOOL bDefender = FALSE;
-	BOOL bLastLife = FALSE;
-	int nGetPoint = 2;
-	__JOINPLAYER* pJoinPlayerAttacker = NULL;
-	__JOINPLAYER* pJoinPlayerDefender = NULL;
-	__GuildCombatMember* pGCMemberAttacker = NULL;
-	CGuild* pGuild	= g_GuildMng.GetGuild( pAttacker->m_idGuild );
-	if( pGuild && pGuild->IsMaster( pAttacker->m_idPlayer ) )
-		bMaster = TRUE;
+	CGuild * pGuild = g_GuildMng.GetGuild( pAttacker->m_idGuild );
+	const BOOL bMaster = (pGuild && pGuild->IsMaster(pAttacker->m_idPlayer)) ? TRUE : FALSE;
 
-	pGCMemberAttacker = FindGuildCombatMember( pAttacker->m_idGuild );
-	if( pGCMemberAttacker != NULL )
-	{
-		for( int veci = 0 ; veci < (int)( pGCMemberAttacker->vecGCSelectMember.size() ) ; ++veci )
-		{
-			__JOINPLAYER* pJoinPlayer = pGCMemberAttacker->vecGCSelectMember[veci];
-			if( pJoinPlayer->uidPlayer == pAttacker->m_idPlayer )
-			{
-				pJoinPlayerAttacker = pJoinPlayer;
-				break;
-			}
-		}
-		if( pJoinPlayerAttacker == NULL )
-			return;
+	__GuildCombatMember * pGCMemberAttacker = FindGuildCombatMember( pAttacker->m_idGuild );
+	if (!pGCMemberAttacker) return;
+	
+	__JOINPLAYER * pJoinPlayerAttacker = pGCMemberAttacker->FindByPlayerId(pAttacker->m_idPlayer);
+	if (!pJoinPlayerAttacker) return;
 
-		if( pJoinPlayerAttacker->nlife == 1 )
-			bLastLife = TRUE;
-	}
-
-	if( pGCMemberAttacker == NULL )
-		return;
+	const BOOL bLastLife = pJoinPlayerAttacker->nlife == 1 ? TRUE : FALSE;
 
 	__GuildCombatMember* pGCMember = FindGuildCombatMember( pDefender->m_idGuild );
-	if( pGCMember != NULL )
-	{
-		for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-		{
-			__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
-			if( pJoinPlayer->uidPlayer == pDefender->m_idPlayer )
-			{
-				pJoinPlayerDefender = pJoinPlayer;
-				break;
-			}
-		}
-		if( pJoinPlayerDefender == NULL )
-			return;
+	if (!pGCMember) return;
+	
+	__JOINPLAYER * pJoinPlayerDefender = pGCMember->FindByPlayerId(pDefender->m_idPlayer);
+	if (!pJoinPlayerDefender) return;
 
-		if( pDefender->m_idPlayer == pGCMember->m_uidDefender )
-			bDefender = TRUE;
-	}	
+	const BOOL bDefender = (pDefender->m_idPlayer == pGCMember->m_uidDefender) ? TRUE : FALSE;
+
+	int nGetPoint = 2;
 
 	// 길드마스터가 적 길드원을 Kill 했을 경우
 	if( bMaster )
@@ -2329,17 +2220,11 @@ void CGuildCombat::GetPoint( CUser* pAttacker, CUser* pDefender )
 	pJoinPlayerAttacker->nPoint += nGetPoint;
 	pGCMemberAttacker->nGuildPoint += nGetPoint;
 	
-	CGuild* pGuildMsg;
-	CGuildMember*	pMember;
-	CUser*			pUsertmp;
-
-	pGuildMsg = pAttacker->GetGuild();
+	CGuild* pGuildMsg = pAttacker->GetGuild();
 	if( pGuildMsg )
 	{
-		for( auto i = pGuildMsg->m_mapPMember.begin(); i != pGuildMsg->m_mapPMember.end(); ++i )
-		{
-			pMember		= i->second;
-			pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+		for (CGuildMember * pMember : pGuildMsg->m_mapPMember | std::views::values) {
+			CUser * pUsertmp	= prj.GetUserByID( pMember->m_idPlayer );
 			if( IsValidObj( pUsertmp ) && pUsertmp->GetWorld() && pUsertmp->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 			{
 				if( bMaster )
@@ -2352,13 +2237,11 @@ void CGuildCombat::GetPoint( CUser* pAttacker, CUser* pDefender )
 
 	if( bDefender )
 	{
-		pGuildMsg = pDefender->GetGuild();
+		CGuild * pGuildMsg = pDefender->GetGuild();
 		if( pGuildMsg )
 		{
-			for( auto i = pGuildMsg->m_mapPMember.begin(); i != pGuildMsg->m_mapPMember.end(); ++i )
-			{
-				pMember		= i->second;
-				pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+			for (CGuildMember * pMember : pGuildMsg->m_mapPMember | std::views::values) {
+				CUser * pUsertmp	= prj.GetUserByID( pMember->m_idPlayer );
 				if( IsValidObj( pUsertmp ) && pUsertmp->GetWorld() && pUsertmp->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 				{
 					if( pGuild )
@@ -2397,26 +2280,14 @@ void CGuildCombat::SerializeGCWarPlayerList( CAr & ar )
 		__GuildCombatMember* pGCMember = FindGuildCombatMember( RequestGuild.uidGuild );
 		if( pGCMember != NULL )
 		{
-			__JOINPLAYER* pJoinPlayer1;
-
 			ar << pGCMember->m_uidDefender;
 			ar << (int)pGCMember->vecGCSelectMember.size();
-			for( int vecSi = 0 ; vecSi < (int)( pGCMember->vecGCSelectMember.size() ) ; ++vecSi )
-			{
-				pJoinPlayer1 = pGCMember->vecGCSelectMember[vecSi];
+			for (const __JOINPLAYER * pJoinPlayer1 : pGCMember->vecGCSelectMember) {
 
 				ar << pJoinPlayer1->uidPlayer;
 				if( 0 < pJoinPlayer1->nlife )
 				{
-					BOOL bFind	= FALSE;
-					for( auto i1 = pGCMember->lspFifo.begin(); i1 != pGCMember->lspFifo.end(); ++i1 )
-					{
-						if( pJoinPlayer1 == *i1 )
-						{
-							bFind	= TRUE;
-							break;
-						}
-					}
+					const bool bFind = pGCMember->IsInFifo(pJoinPlayer1);
 				
 					if( bFind )	// 대기중
 					{
@@ -2440,6 +2311,21 @@ void CGuildCombat::SerializeGCWarPlayerList( CAr & ar )
 		}
 	}
 }
+
+CGuildCombat::__JOINPLAYER * CGuildCombat::__GuildCombatMember::FindByPlayerId(u_long playerId) {
+	const auto it = std::find_if(
+		vecGCSelectMember.begin(),
+		vecGCSelectMember.end(),
+		[playerId](const __JOINPLAYER * pJoinPlayer) { return pJoinPlayer->uidPlayer == playerId; }
+	);
+
+	return it != vecGCSelectMember.end() ? *it : nullptr;
+}
+
+bool CGuildCombat::__GuildCombatMember::IsInFifo(const __JOINPLAYER * pJoinPlayer) const {
+	return std::find(lspFifo.begin(), lspFifo.end(), pJoinPlayer) != lspFifo.end();
+}
+
 #endif	// __WORLDSERVER
 
 CGuildCombat	g_GuildCombatMng;

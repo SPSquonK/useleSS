@@ -442,9 +442,7 @@ void CDPDatabaseClient::SendGuildCombatResult( void )
 
 		// 참가자 포인트
 		ar << (u_long)pGCMember->vecGCSelectMember.size();
-		for( int veci = 0 ; veci < (int)( pGCMember->vecGCSelectMember.size() ) ; ++veci )
-		{
-			CGuildCombat::__JOINPLAYER* pJoinPlayer = pGCMember->vecGCSelectMember[veci];
+		for (const CGuildCombat::__JOINPLAYER * pJoinPlayer : pGCMember->vecGCSelectMember) {
 			ar << pJoinPlayer->uidPlayer;
 			ar << pJoinPlayer->nPoint;
 			if( pJoinPlayer->uidPlayer == g_GuildCombatMng.m_uBestPlayer )

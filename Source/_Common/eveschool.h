@@ -110,14 +110,15 @@ public:
 		};
 		void SelectMemberClear()
 		{
-			for( int veci = 0 ; veci < (int)( vecGCSelectMember.size() ) ; ++veci )
-			{
-				__JOINPLAYER* pJoinPlayer = vecGCSelectMember[veci];
+			for (__JOINPLAYER * pJoinPlayer : vecGCSelectMember) {
 				SAFE_DELETE( pJoinPlayer );
 			}
 			vecGCSelectMember.clear();
 			lspFifo.clear();
 		}
+
+		[[nodiscard]] __JOINPLAYER * FindByPlayerId(u_long playerId);
+		[[nodiscard]] bool IsInFifo(const __JOINPLAYER * pJoinPlayer) const;
 	};
 	struct __GuildCombatProcess
 	{
