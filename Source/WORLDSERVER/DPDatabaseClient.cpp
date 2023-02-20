@@ -347,24 +347,18 @@ void CDPDatabaseClient::SendLogConnect( CUser* pUser )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendInGuildCombat( u_long idGuild, DWORD dwPenya, DWORD dwExistingPenya )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_IN_GUILDCOMBAT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idGuild << dwPenya << dwExistingPenya;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendInGuildCombat(u_long idGuild, DWORD dwPenya, DWORD dwExistingPenya) {
+	SendPacket<PACKETTYPE_IN_GUILDCOMBAT, u_long, DWORD, DWORD>(idGuild, dwPenya, dwExistingPenya);
 }
 
-void CDPDatabaseClient::SendOutGuildCombat( u_long idGuild )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_OUT_GUILDCOMBAT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idGuild;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendOutGuildCombat( u_long idGuild ) {
+	SendPacket<PACKETTYPE_OUT_GUILDCOMBAT, u_long>(idGuild);
 }
-void CDPDatabaseClient::SendGuildCombatStart( void )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_START_GUILDCOMBAT, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+
+void CDPDatabaseClient::SendGuildCombatStart() {
+	SendPacket<PACKETTYPE_START_GUILDCOMBAT>();
 }
+
 void CDPDatabaseClient::SendGuildCombatResult( void )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_RESULT_GUILDCOMBAT, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -377,21 +371,11 @@ void CDPDatabaseClient::SendGuildCombatResult( void )
 	
 	// 길드 저장
 	ar << (u_long)g_GuildCombatMng.m_vecGuildCombatMem.size();
+
+	const auto contenders = g_GuildCombatMng.GetContenders();
 	for (const CGuildCombat::__GuildCombatMember * pGCMember : g_GuildCombatMng.m_vecGuildCombatMem) {
-
-		BOOL bSelectGuild = FALSE; // 출전한 길드인가
-		for( int veci = 0 ; veci < (int)( g_GuildCombatMng.vecRequestRanking.size() ) ; ++veci )
-		{
-			if( veci >= g_GuildCombatMng.m_nMaxGuild )
-				break;
-
-			CGuildCombat::__GuildCombatMember * RequestGuild = g_GuildCombatMng.vecRequestRanking[veci];
-			if( RequestGuild == pGCMember )
-			{
-				bSelectGuild = TRUE;
-				break;
-			}
-		}
+		// 출전한 길드인가
+		const bool bSelectGuild = std::find(contenders.begin(), contenders.end(), pGCMember) != contenders.end();
 
 		ar << pGCMember->uGuildId;
 		ar << pGCMember->nGuildPoint;
@@ -423,10 +407,8 @@ void CDPDatabaseClient::SendGuildCombatResult( void )
 				if( pGuild )
 				{
 					CItemElem pItemElem;
-					char szMsg[1000];
-					sprintf( szMsg, "%s", prj.GetText( TID_GAME_GC_NOTREQUEST ) );
-					char szMsg1[1000];
-					sprintf( szMsg1, "%s", prj.GetText( TID_GAME_GC_NOTREQUEST1 ) );
+					LPCTSTR szMsg  = prj.GetText(TID_GAME_GC_NOTREQUEST);
+					LPCTSTR szMsg1 = prj.GetText(TID_GAME_GC_NOTREQUEST1);
 					SendQueryPostMail( pGuild->m_idMaster, 0, pItemElem, (int)( pGCMember->dwPenya * fNotRequestPercent ), szMsg, szMsg1 );
 				}
 			}
@@ -456,29 +438,16 @@ void CDPDatabaseClient::SendGuildCombatResult( void )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendGuildcombatContinue( int nGuildCombatID,  u_long uidGuild, int nWinCount )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_CONTINUE_GUILDCOMBAT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << nGuildCombatID;
-	ar << uidGuild;
-	ar << nWinCount;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendGuildcombatContinue(int nGuildCombatID, u_long uidGuild, int nWinCount) {
+	SendPacket<PACKETTYPE_CONTINUE_GUILDCOMBAT, int, u_long, int>(nGuildCombatID, uidGuild, nWinCount);
 }
-void CDPDatabaseClient::SendGCGetPenyaGuild( u_long uidPlayer, int nGuildCombatID, u_long uidGuild )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GETPENYAGUILD_GUILDCOMBAT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uidPlayer;
-	ar << nGuildCombatID;
-	ar << uidGuild;
-	SEND( ar, this, DPID_SERVERPLAYER );
+
+void CDPDatabaseClient::SendGCGetPenyaGuild(u_long uidPlayer, int nGuildCombatID, u_long uidGuild) {
+	SendPacket<PACKETTYPE_GETPENYAGUILD_GUILDCOMBAT, u_long, int, u_long>(uidPlayer, nGuildCombatID, uidGuild);
 }
-void CDPDatabaseClient::SendGCGetPenyaPlayer( u_long uidPlayer, int nGuildCombatID, u_long uidGuild )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GETPENYAPLAYER_GUILDCOMBAT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uidPlayer;
-	ar << nGuildCombatID;
-	ar << uidGuild;
-	SEND( ar, this, DPID_SERVERPLAYER );
+
+void CDPDatabaseClient::SendGCGetPenyaPlayer(u_long uidPlayer, int nGuildCombatID, u_long uidGuild) {
+	SendPacket<PACKETTYPE_GETPENYAPLAYER_GUILDCOMBAT, u_long, int, u_long>(uidPlayer, nGuildCombatID, uidGuild);
 }
 
 void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )

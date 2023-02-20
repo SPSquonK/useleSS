@@ -106,6 +106,7 @@ public:
 		}
 
 		[[nodiscard]] __JOINPLAYER * FindByPlayerId(u_long playerId);
+		[[nodiscard]] const __JOINPLAYER * FindByPlayerId(u_long playerId) const;
 		[[nodiscard]] bool IsInFifo(const __JOINPLAYER * pJoinPlayer) const;
 	};
 	struct __GuildCombatProcess
@@ -224,7 +225,7 @@ public:
 	void	GetPoint( CUser* pAttacker, CUser* pDefender );
 	__int64	GetPrizePenya( int nFlag );
 	BOOL	IsRequestWarGuild( u_long uidGuild, BOOL bAll );
-	BOOL	IsSelectPlayer( CUser* pUser );
+	[[nodiscard]] BOOL	IsSelectPlayer(const CUser * pUser) const;
 	
 	void	JoinWar( CUser* pUser, int nMap = 99, BOOL bWar = TRUE );
 	void	OutWar( CUser* pUser, CUser* pLeader, BOOL bLogOut = FALSE );
@@ -259,6 +260,8 @@ public:
 	__GuildCombatMember* FindGuildCombatMember( u_long GuildId );
 	const __GuildCombatMember * FindGuildCombatMember(u_long GuildId) const;
 	void RefreshFifo(__GuildCombatMember & guildCombatMember) const;
+	std::span<const __GuildCombatMember * const> GetContenders() const;
+	std::span<      __GuildCombatMember * const> GetContenders();
 #endif // __WORLDSERVER
 };
 
