@@ -412,7 +412,7 @@ public:
 	void			AddRunScriptFunc( const RunScriptFunc & runScriptFunc );
 	void			AddRemoveSkillInfluence( WORD wType, WORD wID );
 	void			AddGCWindow( __int64 dwPrizePenya, DWORD dwRequstPenya, DWORD dwMinRequestPenya );
-	void			AddGCRequestStatus( __int64 nPrizePenya, std::vector<CGuildCombat::__REQUESTGUILD> vecRequestStatus );
+	void			AddGCRequestStatus( __int64 nPrizePenya, std::vector<CGuildCombat::__GuildCombatMember *> & vecRequestStatus );
 	void			AddGCSelectPlayerWindow(std::vector<CGuildCombat::__JOINPLAYER> &vecSelectPlayer, u_long uidDefender, BOOL bWindow, BOOL bRequestWar );
 	void			AddGCJoinWarWindow( int nMap, int nTelTime );
 	void			AddGuildCombatNextTime( DWORD dwTime, DWORD dwState );

@@ -5591,7 +5591,7 @@ void CUser::AddGCWindow( __int64 nPrizePenya, DWORD dwRequstPenya, DWORD dwMinRe
 	
 }
 
-void CUser::AddGCRequestStatus( __int64 nPrizePenya, std::vector<CGuildCombat::__REQUESTGUILD> vecRequestStatus )
+void CUser::AddGCRequestStatus( __int64 nPrizePenya, std::vector<CGuildCombat::__GuildCombatMember *> & vecRequestStatus )
 {
 	DWORD dwRequstPenya = 0;
 	if( IsDelete() )	return;
@@ -5608,15 +5608,15 @@ void CUser::AddGCRequestStatus( __int64 nPrizePenya, std::vector<CGuildCombat::_
 	m_Snapshot.ar << nSize;
 	for( int i = 0 ; i < nSize ; ++i )
 	{
-		CGuildCombat::__REQUESTGUILD RequestGuild = vecRequestStatus[i];
-		CGuild* pGuild = g_GuildMng.GetGuild( RequestGuild.uidGuild );
+		CGuildCombat::__GuildCombatMember * RequestGuild = vecRequestStatus[i];
+		CGuild* pGuild = g_GuildMng.GetGuild( RequestGuild->uGuildId );
 		if( pGuild )
 			m_Snapshot.ar.WriteString( pGuild->m_szGuild );
 		else
 			m_Snapshot.ar.WriteString( "NotGuild" );
 
-		if( m_idGuild == RequestGuild.uidGuild )
-			dwRequstPenya = RequestGuild.dwPenya;
+		if( m_idGuild == RequestGuild->uGuildId )
+			dwRequstPenya = RequestGuild->dwPenya;
 	}	
 	m_Snapshot.ar << dwRequstPenya;
 	

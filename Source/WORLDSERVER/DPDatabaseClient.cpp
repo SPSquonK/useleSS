@@ -385,8 +385,8 @@ void CDPDatabaseClient::SendGuildCombatResult( void )
 			if( veci >= g_GuildCombatMng.m_nMaxGuild )
 				break;
 
-			CGuildCombat::__REQUESTGUILD RequestGuild = g_GuildCombatMng.vecRequestRanking[veci];
-			if( RequestGuild.uidGuild == pGCMember->uGuildId )
+			CGuildCombat::__GuildCombatMember * RequestGuild = g_GuildCombatMng.vecRequestRanking[veci];
+			if( RequestGuild == pGCMember )
 			{
 				bSelectGuild = TRUE;
 				break;

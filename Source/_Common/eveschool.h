@@ -65,11 +65,6 @@ public:
 	enum { OPEN_STATE, CLOSE_STATE, WAR_STATE, COMPLET_CLOSE_STATE, GM_COLSE_STATE };
 	enum { NOTENTER_STATE = 100, NOTENTER_COUNT_STATE, ENTER_STATE, MAINTENANCE_STATE, WAR_WAR_STATE, WAR_CLOSE_STATE, WAR_CLOSE_WAIT_STATE, WAR_TELEPORT_STATE };
 	enum { ALLMSG = 1000, GUILDMSG, JOINMSG, WORLDMSG, STATE, WARSTATE, WAIT };
-	struct __REQUESTGUILD
-	{
-		u_long uidGuild;
-		DWORD dwPenya;
-	};
 	struct __JOINPLAYER
 	{
 		u_long	uidPlayer = 0;
@@ -187,7 +182,7 @@ public:
 	std::vector< CString > m_vecstrGuildMsg;
 	std::vector<__GCSENDITEM>	vecGCSendItem;
 	
-	std::vector<__REQUESTGUILD>	vecRequestRanking;	// 참가 순위
+	std::vector</* Observing, Not Null */__GuildCombatMember *>	vecRequestRanking;	// 참가 순위
 	std::vector<__GCRESULTVALUEGUILD>			m_GCResultValueGuild;		// 길드대전 결과값
 	std::vector<__GCRESULTVALUEPLAYER>			m_GCResultValuePlayer;		// 길드대전 결과값
 #endif // __WORLDSERVER
