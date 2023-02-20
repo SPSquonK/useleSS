@@ -1367,7 +1367,7 @@ public:
 	CSfx*			CreateSfxArrow( DWORD dwSfxObjArrow, DWORD dwSfxObjHit, D3DXVECTOR3 vPosDest, int idTarget );
 	void			SetDmgCnt( int nDmgCnt ) { m_nDmgCnt = nDmgCnt; }
 	void			CreateAbilityOption_SetItemSFX( int nAbilityOption );
-	BOOL			GetEquipFlag( int nParts, BYTE* pbyFlag );
+	[[nodiscard]] bool HasEquippedSlot(int nParts) const;
 	void			OverCoatItemRenderCheck(CModelObject* pModel);
 	void			PlayCombatMusic();
 	BOOL			IsLoot( CItem *pItem ) { return TRUE; }

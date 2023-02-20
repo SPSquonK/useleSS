@@ -1911,29 +1911,14 @@ BOOL CMover::DropEquipedItem( int nParts )
 
 
 #ifdef __CLIENT
-BOOL CMover::GetEquipFlag( int nParts, BYTE* pbyFlag )
-{
-	if( IsActiveMover() )
-	{
-		CItemElem* pItemElem	= GetEquipItem( nParts );
-		if( pItemElem )
-		{
-			*pbyFlag	= pItemElem->m_byFlag;
-			return TRUE;
-		}
-		return FALSE;
-	}
-	else
-	{
-		if( nParts < 0 || nParts >= MAX_HUMAN_PARTS )
-			return FALSE;
+bool CMover::HasEquippedSlot(const int nParts) const {
+	if (IsActiveMover()) {
+		return GetEquipItem(nParts) != nullptr;
+	} else {
+		if (nParts < 0 || nParts >= MAX_HUMAN_PARTS)
+			return false;
 
-		if( m_aEquipInfo[nParts].dwId != NULL_ID )
-		{
-			*pbyFlag	= m_aEquipInfo[nParts].byFlag;
-			return TRUE;
-		}
-		return FALSE;
+		return m_aEquipInfo[nParts].dwId != NULL_ID;
 	}
 }
 #endif	// __CLIENT

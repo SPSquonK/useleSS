@@ -4201,8 +4201,8 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_SUMMONANGELUSING), NULL, prj.GetTextColor(TID_GAME_SUMMONANGELUSING) );
 					break;
 				}
-				BYTE pbyFlag;
-				if(g_pPlayer->GetEquipFlag(PARTS_HAT, &pbyFlag) || g_pPlayer->GetEquipFlag(PARTS_CAP, &pbyFlag))
+				
+				if(g_pPlayer->HasEquippedSlot(PARTS_HAT) || g_pPlayer->HasEquippedSlot(PARTS_CAP))
 				{
 					//가발 및 기타 머리에 쓰는 아이템 착용 시 진입이 안됨.
 					g_WndMng.PutString( prj.GetText(TID_GAME_NOTREADY_USESHOP), NULL, prj.GetTextColor(TID_GAME_NOTREADY_USESHOP) );
@@ -4276,8 +4276,8 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.PutString( prj.GetText(TID_GAME_FACESHOPUSING), NULL, prj.GetTextColor(TID_GAME_FACESHOPUSING) );
 					break;
 				}
-				BYTE pbyFlag;
-				if(g_pPlayer->GetEquipFlag(PARTS_HAT, &pbyFlag) || g_pPlayer->GetEquipFlag(PARTS_CAP, &pbyFlag))				
+				
+				if(g_pPlayer->HasEquippedSlot(PARTS_HAT) || g_pPlayer->HasEquippedSlot(PARTS_CAP))
 				{
 					//가발 및 기타 머리에 쓰는 아이템 착용 시 진입이 안됨.
 					g_WndMng.PutString( prj.GetText(TID_GAME_NOTREADY_USESHOP), NULL, prj.GetTextColor(TID_GAME_NOTREADY_USESHOP) );
