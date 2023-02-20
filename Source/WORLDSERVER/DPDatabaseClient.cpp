@@ -1067,26 +1067,19 @@ void CDPDatabaseClient::OnGCPlayerPoint( CAr & ar )
 void CDPDatabaseClient::OnAllGuildCombat( CAr & ar, DPID, DPID )
 {
 	g_GuildCombatMng.GuildCombatClear(1);
-	u_long uSize, idGuild;
-	DWORD dwPenya;
-	BOOL bRequest;
+	
 	ar >> g_GuildCombatMng.m_nGuildCombatIndex;
 	ar >> g_GuildCombatMng.m_uWinGuildId;
 	ar >> g_GuildCombatMng.m_nWinGuildCount;
 	ar >> g_GuildCombatMng.m_uBestPlayer;
 
 	// 참가한 인원수
-	ar >> uSize;
-	for( u_long i = 0 ; i < uSize ; ++i )
-	{
-		ar >> idGuild;
-		ar >> dwPenya;
-		ar >> bRequest;
-		
-		CGuild* pGuild = g_GuildMng.GetGuild( idGuild );
-		if( pGuild )
-		{
-			g_GuildCombatMng.JoinGuildCombat( idGuild, dwPenya, bRequest );
+	u_long uSize; ar >> uSize;
+	for (u_long i = 0; i < uSize; ++i) {
+		const auto [idGuild, dwPenya, bRequest] = ar.Extract<u_long, DWORD, BOOL>();
+
+		if (g_GuildMng.GetGuild(idGuild)) {
+			g_GuildCombatMng.JoinGuildCombat(idGuild, dwPenya, bRequest);
 		}
 	}
 

@@ -403,21 +403,15 @@ void CGuildCombat::SelectPlayerClear(const u_long uidGuild) {
 // 참가 신청
 void CGuildCombat::JoinGuildCombat( u_long idGuild, DWORD dwPenya, BOOL bRequest )
 {
-	__GuildCombatMember* pGCMember = FindGuildCombatMember( idGuild );
-	if( pGCMember != NULL )
-	{
-		pGCMember->dwPenya = dwPenya;		
-		pGCMember->bRequest = bRequest;
+	__GuildCombatMember * pGCMember = FindGuildCombatMember( idGuild );
+	
+	if (pGCMember == nullptr) {
+		pGCMember = new __GuildCombatMember(idGuild);
+		m_vecGuildCombatMem.push_back(pGCMember);
 	}
-	else
-	{
-		pGCMember	= new __GuildCombatMember;
-		pGCMember->Clear();
-		pGCMember->uGuildId = idGuild;
-		pGCMember->dwPenya = dwPenya;
-		pGCMember->bRequest = bRequest;
-		m_vecGuildCombatMem.push_back( pGCMember );
-	}
+
+	pGCMember->dwPenya = dwPenya;		
+	pGCMember->bRequest = bRequest;
 
 	SetRequestRanking();
 }

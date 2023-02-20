@@ -85,29 +85,22 @@ public:
 		int   nItemNum;
 	};
 
-	struct __GuildCombatMember
-	{
+	struct __GuildCombatMember final {
 		u_long	uGuildId;
 		std::vector<__JOINPLAYER*> vecGCSelectMember;	// 대전에 선택된 멤버 정보
-		DWORD dwPenya;			// 참가비
-		BOOL  bRequest;			// 참가 유/무
-		u_long	m_uidDefender;	// 디펜더
-		int	  nJoinCount;		// 참가 카운터
-		int	  nWarCount;		// 전투 인원수
-		int   nGuildPoint;		// 길드 포인트
+		DWORD dwPenya         = 0;     // 참가비
+		BOOL  bRequest        = FALSE; // 참가 유/무
+		u_long	m_uidDefender = 0;     // 디펜더
+		int	  nJoinCount      = 0;     // 참가 카운터
+		int	  nWarCount       = 0;     // 전투 인원수
+		int   nGuildPoint     = 0;     // 길드 포인트
 		std::list<__JOINPLAYER*>	lspFifo;
 
-		void Clear()
-		{
-			uGuildId = 0;
-			SelectMemberClear();
-			dwPenya = 0;
-			bRequest = FALSE;
-			m_uidDefender = 0;
-			nJoinCount = 0;
-			nWarCount = 0;
-			nGuildPoint = 0;
-		};
+		explicit __GuildCombatMember(u_long guildId) : uGuildId(guildId) {}
+		__GuildCombatMember(const __GuildCombatMember &) = delete;
+		__GuildCombatMember & operator=(const __GuildCombatMember &) = delete;
+		~__GuildCombatMember() { SelectMemberClear(); }
+
 		void SelectMemberClear()
 		{
 			for (__JOINPLAYER * pJoinPlayer : vecGCSelectMember) {
