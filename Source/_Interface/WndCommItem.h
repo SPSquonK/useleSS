@@ -4,14 +4,14 @@ class C2DRender;
 class CItemElem;
 
 #include "WndComponentSlots.h"
+#include <boost/container/small_vector.hpp>
 
 class CWndCommItemCtrl final : public CWndBase {
 	int           m_nFontHeight;
 	CWndScrollBar m_wndScrollBar;
 
 	CWndWorld * pWndWorld;
-	int			m_dwDraw[SM_MAX + MAX_SKILLINFLUENCE];
-	int			m_nMaxDraw;
+	boost::container::small_vector<DWORD, SM_MAX * 2> m_dwDraw;
 
 	CTexture m_texGauEmptyNormal;
 	CTexture m_texGauFillNormal;
@@ -22,7 +22,7 @@ public:
 	CRect         m_rect;
 	DWORD         m_dwListCtrlStyle;
 
-	int		GetMaxBuff();			// 출력해야할 MAX값얻어오기
+	[[nodiscard]] int GetMaxBuff() const;			// 출력해야할 MAX값얻어오기
 	void	DrawSM(C2DRender * p2DRender, CPoint * pPoint, int x, int & nScroll);
 	void	DrawSkill(C2DRender * p2DRender, CPoint * pPoint, int x, int & nScroll);
 

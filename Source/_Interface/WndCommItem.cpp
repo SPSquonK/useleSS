@@ -19,7 +19,7 @@ void CWndCommItem::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 
-	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
+	CWndTabCtrl * pWndTabCtrl = GetDlgItem<CWndTabCtrl>(WIDC_TABCTRL1);
 	CRect rect = GetClientRect();
 	rect.left = 5;
 	rect.top = 0;
@@ -49,8 +49,6 @@ CWndCommItemCtrl::CWndCommItemCtrl()
 {
 	m_pVBGauge = NULL;
 	pWndWorld = NULL;
-	memset( m_dwDraw, 0, sizeof( int ) * (SM_MAX+MAX_SKILLINFLUENCE) );
-	m_nMaxDraw = 0;
 }
 CWndCommItemCtrl::~CWndCommItemCtrl()
 {
@@ -106,8 +104,8 @@ void CWndCommItemCtrl::OnMouseWndSurface( CPoint point )
 	}
 	
 	int nCountinueCount = 0;
-	for( int i = 0; i < m_nMaxDraw; i++ ) 
-	{
+
+	for (const DWORD itemId : m_dwDraw) {
 		int x = 0, nWidth = m_rectClient.Width();// - 1;
 		CRect rectHittest = CRect( x + 3, pt.y, x + 3 + nWidth, pt.y + 32 );// pt.x, pt.y+ 12, pt.x + m_rectWindow.Width() - m_wndScrollBar.GetClientRect().Width(), pt.y + m_nFontHeight+ 12 );
 
@@ -115,7 +113,7 @@ void CWndCommItemCtrl::OnMouseWndSurface( CPoint point )
 		{
 			ClientToScreen( &point );
 			ClientToScreen( &rectHittest );
-			ItemProp* pItem = prj.GetItemProp( m_dwDraw[i] );
+			ItemProp* pItem = prj.GetItemProp(itemId);
 			if( pItem == NULL )
 				continue;
 
@@ -266,23 +264,19 @@ void CWndCommItemCtrl::OnMouseWndSurface( CPoint point )
 			str += strEnter;
 			strTemp.Format( prj.GetText( TID_TOOLTIP_USE ), pItem->szCommand );	// 용도 :
 			str += strTemp;
-			g_toolTip.PutToolTip( m_dwDraw[i], str, rectHittest, point, 0 );
+			g_toolTip.PutToolTip(itemId, str, rectHittest, point, 0);
 		}
 		pt.y += m_nFontHeight;
 	}
 }
 
 // 출력해야할 MAX값얻어오기
-int CWndCommItemCtrl::GetMaxBuff()
-{
+int CWndCommItemCtrl::GetMaxBuff() const {
 	int nMaxCount = 0;
-	ItemProp* pItem = NULL;
-	int i=0;
-
-	for( i=0 ; i<SM_MAX ; ++i )
-	{
-		if( 0 < g_pPlayer->m_dwSMTime[i] )
+	for (int i = 0; i < SM_MAX; ++i) {
+		if (g_pPlayer->m_dwSMTime[i] > 0) {
 			++nMaxCount;
+		}
 	}
 
 	nMaxCount	+= g_pPlayer->m_buffs.GetCommercialCount();
@@ -297,10 +291,10 @@ void CWndCommItemCtrl::DrawSM( C2DRender* p2DRender, CPoint* pPoint, int x, int 
 			continue;
 		
 		++nScroll;
-		if( ( m_wndScrollBar.GetScrollPos() >= nScroll ) )
+		if(m_wndScrollBar.GetScrollPos() >= nScroll)
 			continue;
 		
-		ItemProp* pItem = prj.GetItemProp( g_AddSMMode.dwSMItemID[i] );
+		const ItemProp * pItem = prj.GetItemProp(g_AddSMMode.dwSMItemID[i]);
 		
 		int nResistTexture = 1000;
 		if( i == SM_RESIST_ATTACK_LEFT )
@@ -319,13 +313,13 @@ void CWndCommItemCtrl::DrawSM( C2DRender* p2DRender, CPoint* pPoint, int x, int 
 				p2DRender->RenderTexture( CPoint( 2, pPoint->y ), pWndWorld->m_dwSMResistItemTexture[nResistTexture], 192 );
 			else
 				p2DRender->RenderTexture( CPoint( 2, pPoint->y ), pWndWorld->m_dwSMItemTexture[i], 192 );
-			m_dwDraw[m_nMaxDraw] = g_AddSMMode.dwSMItemID[i];
-			++m_nMaxDraw;
+
+			m_dwDraw.emplace_back(g_AddSMMode.dwSMItemID[i]);
 		}
 			
 		DWORD dwColor = 0xff000000;
 		CString string;
-		string.Format( "#cff0000ff%s#nc", pItem->szName );
+		string.Format( "#cff0000ff%s#nc", pItem ? pItem->szName : "???");
 		CEditString strEdit;
 		strEdit.SetParsingString( string );
 		p2DRender->TextOut_EditString( x + 40, pPoint->y + 3, strEdit, 0, 0, 2 );
@@ -578,7 +572,7 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 			{
 
 #ifdef __BS_ITEM_UNLIMITEDTIME
-				if( pItem->dwSkillTime >= 0x3b9ac9ff )		//gmpbigsun : (999999999) 시간제한 없음 
+				if( pItem->dwSkillTime >= 999999999)		//gmpbigsun : (999999999) 시간제한 없음 
 				{
 					string = prj.GetText( TID_GAME_TOOLTIP_PERMANENTTIME_1 ); // 시간 무제한
 				}
@@ -596,8 +590,7 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 		p2DRender->TextOut( x + 40, pPoint->y + 18, string, dwColor );
 		
 		pPoint->y += m_nFontHeight;// + 3;
-		m_dwDraw[m_nMaxDraw] = pItem->dwID;
-		++m_nMaxDraw;
+		m_dwDraw.emplace_back(pItem->dwID);
 
 		if( dwSkillID == II_SYS_SYS_SCR_AMPESA )
 			bExpRander[0] = FALSE;
@@ -614,64 +607,31 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 	}
 }
 
-void CWndCommItemCtrl::OnDraw( C2DRender* p2DRender ) 
-{
-	if( NULL == pWndWorld )
-	{
-		pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
+void CWndCommItemCtrl::OnDraw( C2DRender* p2DRender ) {
+	if (!pWndWorld) {
+		pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
 		return;
 	}
-	if( NULL == g_pPlayer )
-		return;
+
+	if (!g_pPlayer) return;
 	
-	CPoint pt( 3, 3 );
-	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
+	m_dwDraw.clear();
 
-	int nMaxCount = GetMaxBuff();
-	int nMax = nMaxCount;
-
-	// 눈에 보이는 갯수가 페이지라인수 보다 크면 보이는 갯수를 페이지라인수로 조정 
-	if( nMax - m_wndScrollBar.GetScrollPos() > m_wndScrollBar.GetScrollPage() )
-		nMax = m_wndScrollBar.GetScrollPage() + m_wndScrollBar.GetScrollPos();
-	if( nMax < m_wndScrollBar.GetScrollPos() )
-		nMax = 0;
-	
-	for( int i = 0; i < m_wndScrollBar.GetScrollPos() && i < nMaxCount; ++i );
-
-	int x = 0, nWidth = m_rectClient.Width();// - 1;
-	CRect rect( x, pt.y, x + nWidth, pt.y + m_nFontHeight );
-	rect.SetRect( x + 3, pt.y + 6, x + 3 + 32, pt.y + 6 + 32 ); 
-
-	memset( m_dwDraw, 0, sizeof(m_dwDraw));
-	m_nMaxDraw = 0;
-	
+	CPoint pt(3, 3);
+	int x = 0;
 	int nScroll = 0;
 	DrawSM( p2DRender, &pt, x, nScroll );
 	DrawSkill( p2DRender, &pt, x, nScroll );
-
 }
 
 void CWndCommItemCtrl::OnSize( UINT nType, int cx, int cy )
 {
-	ItemProp* pItem = NULL;
 	CRect rect = GetWindowRect();
 	rect.left = rect.right - 15;
 	m_wndScrollBar.SetWndRect( rect );
 
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
-	int nCount = 0;
-	for( int k = 0 ; k < SM_MAX ; ++k )
-	{
-		if( 0 < g_pPlayer->m_dwSMTime[k] )
-		{
-			++nCount;
-		}
-	}
-
-	nCount	+= g_pPlayer->m_buffs.GetCommercialCount();
-
-	nRange = nCount;//m_pItemContainer->m_dwIndexNum;// - nPage;
+	const int nPage = GetClientRect().Height() / m_nFontHeight;
+	const int nRange = GetMaxBuff();
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 	
@@ -688,22 +648,9 @@ void CWndCommItemCtrl::SetWndRect( CRect rectWnd, BOOL bOnSize )
 }
 void CWndCommItemCtrl::PaintFrame( C2DRender* p2DRender )
 {
-	int nPage, nRange;
-	ItemProp* pItem = NULL;
-	if( 1 )
-	{
-		nPage = GetClientRect().Height() / ( m_nFontHeight );
-		int nCount = 0;
-		for( int k = 0 ; k < SM_MAX ; ++k )
-		{
-			if( 0 < g_pPlayer->m_dwSMTime[k] )
-			{
-				++nCount;
-			}
-		}
-		nCount	+= g_pPlayer->m_buffs.GetCommercialCount();
-		nRange = nCount;
-	}
+	const int nPage = GetClientRect().Height() / ( m_nFontHeight );
+	const int nRange = GetMaxBuff();
+
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 }
