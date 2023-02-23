@@ -5011,64 +5011,47 @@ BOOL CWndReWanted::CheckWantedInfo( int nGold, LPCTSTR szMsg )
 ////////////////////////////////////////////////////////////////////////////////////////
 // CWndWantedConfirm
 ////////////////////////////////////////////////////////////////////////////////////////
-CWndWantedConfirm::CWndWantedConfirm() 
-{ 
-	memset( m_szName, 0, sizeof(m_szName) );
-} 
 
-void CWndWantedConfirm::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// ������ �߾����� �ű��? �κ�.
+void CWndWantedConfirm::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
-} 
-BOOL CWndWantedConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	InitDialog( APP_WANTED_CONFIRM, nullptr, WBS_MODAL );
-	
+}
+
+BOOL CWndWantedConfirm::Initialize(CWndBase *, DWORD) {
+	InitDialog(APP_WANTED_CONFIRM, nullptr, WBS_MODAL);
 	return TRUE;
-} 
+}
 
 void CWndWantedConfirm::SetInfo(const char szName[], const int nGold)
 {
 	m_nGold  = nGold;
 	_tcscpy( m_szName, szName );
 	
-	CWndStatic* pWndStatic = (CWndStatic*)GetDlgItem( WIDC_STATIC1 );
+	CWndStatic* pWndStatic = GetDlgItem<CWndStatic>( WIDC_STATIC1 );
 	pWndStatic->SetTitle(szName);
 
-	pWndStatic = (CWndStatic*)GetDlgItem( WIDC_STATIC2 );
+	pWndStatic = GetDlgItem<CWndStatic>(WIDC_STATIC2);
 
-	CString strMsg1, strMsg2;
+	CString strMsg = prj.GetText(TID_PK_POINT_SHOW);
+	strMsg.AppendFormat(prj.GetText(TID_PK_WASTE_SHOW), REQ_WANTED_GOLD);
 
-	strMsg1 = prj.GetText( TID_PK_POINT_SHOW );
-	strMsg2.Format( prj.GetText(TID_PK_WASTE_SHOW), REQ_WANTED_GOLD );
-
-	pWndStatic->SetTitle( strMsg1 + strMsg2 );	
-
-	 
+	pWndStatic->SetTitle(strMsg);	
 }
-BOOL CWndWantedConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	switch( nID )
-	{
-		case  WIDC_BUTTON1:
-			{
-				if( strlen(m_szName) > 0 )
-				{
-					g_DPlay.SendWantedInfo(m_szName);
-				}
-				Destroy();
+
+BOOL CWndWantedConfirm::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	switch (nID) {
+		case WIDC_BUTTON1:
+			if (strlen(m_szName) > 0) {
+				g_DPlay.SendWantedInfo(m_szName);
 			}
+			Destroy();
 			break;
-		case  WIDC_BUTTON2:
-			{
-				Destroy();
-			}
+		case WIDC_BUTTON2:
+			Destroy();
 			break;
 	}
-	
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
+
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -5077,23 +5060,12 @@ BOOL CWndWantedConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 
 const int MAX_WANTED_PER_PAGE = 20;
 
-CWndWanted::CWndWanted() 
-{ 
-	Init( 0 );
-} 
-
-CWndWanted::~CWndWanted() 
-{ 
-	SAFE_DELETE(m_pWantedConfirm);
-} 
-
-void CWndWanted::Init( time_t lTime )
-{
-	memset( m_aList, 0, sizeof(m_aList) );
+CWndWanted::CWndWanted(const time_t lTime) {
 	m_recvTime = lTime;
-	m_pWantedConfirm  = NULL;
-	m_nMax = 0;
-	m_nSelect = -1;
+}
+
+CWndWanted::~CWndWanted() {
+	SAFE_DELETE(m_pWantedConfirm);
 }
 
 void CWndWanted::OnInitialUpdate() 
@@ -5106,13 +5078,11 @@ void CWndWanted::OnInitialUpdate()
 	rect.left    = rect.right - 30;
 	rect.right   -= 10;
 
-	if( m_nMax > 0 )
+	if(!m_aList.empty())
 	{
-		m_wndScrollBar.SetScrollRange( 0, m_nMax );
-		if( m_nMax < MAX_WANTED_PER_PAGE )
-			m_wndScrollBar.SetScrollPage( m_nMax );
-		else
-			m_wndScrollBar.SetScrollPage( MAX_WANTED_PER_PAGE );
+		const int listSize = static_cast<int>(m_aList.size());
+		m_wndScrollBar.SetScrollRange(0, listSize);
+		m_wndScrollBar.SetScrollPage(std::min(listSize, MAX_WANTED_PER_PAGE));
 	}
 	else
 	{
@@ -5125,7 +5095,6 @@ void CWndWanted::OnInitialUpdate()
 
 	CString strTitle = GetTitle();
 	CTime tm( m_recvTime );
-//	strTitle += tm.Format( " - %H�� %M�� %S���� ����Ÿ�Դϴ�." );
 	strTitle += tm.Format( prj.GetText(TID_PK_DATA_SHOWTIME) );
 	SetTitle( strTitle );
 
@@ -5148,7 +5117,7 @@ int CWndWanted::GetSelectIndex( const CPoint& point )
 	if( 0 <= nIndex && nIndex < MAX_WANTED_PER_PAGE ) // 0 - 19���� 
 	{
 		int nSelect = nBase + nIndex;
-		if( 0 <= nSelect && nSelect < m_nMax )
+		if( nSelect >= 0 && std::cmp_less(nSelect, m_aList.size()))
 			return nSelect;
 	}
 	return -1;
@@ -5156,8 +5125,7 @@ int CWndWanted::GetSelectIndex( const CPoint& point )
 
 void CWndWanted::OnLButtonDown( UINT nFlags, CPoint point ) 
 { 
-	if( m_nMax <= 0 )
-		return;
+	if (m_aList.empty()) return;
 
 	int nSelect = GetSelectIndex( point );
 	if( nSelect != -1 )
@@ -5178,38 +5146,38 @@ void CWndWanted::OnLButtonDblClk( UINT nFlags, CPoint point)
 	}
 }
 
-void CWndWanted::InsertWanted( const char szName[], __int64 nGold, int nTime, const char szMsg[] )
-{
-	if( m_nMax >= MAX_WANTED_LIST )
-	{
-		Error( "CWndWanted::InsertWanted - range over" );
-		return;
+void CWndWanted::InsertWanted(const WANTED_ENTRY & entry) {
+	if (m_aList.size() < m_aList.max_size()) {
+		m_aList.emplace_back(entry);
+	} else {
+		Error("CWndWanted::InsertWanted - range over");
 	}
+}
 
-	_tcscpy( m_aList[m_nMax].szName, szName );
-	m_aList[m_nMax].nGold = nGold;
+WANTEDLIST::WANTEDLIST(const WANTED_ENTRY & entry) {
+	_tcscpy(szName, entry.szPlayer);
+	nGold = entry.nGold;
 
-	CTime cTime( (time_t)nTime );		
+	CTime cTime((time_t)entry.nEnd);
 	SYSTEMTIME st;
-	st.wYear= cTime.GetYear(); 
-	st.wMonth= cTime.GetMonth(); 
-	st.wDay= cTime.GetDay();  
+	st.wYear = cTime.GetYear();
+	st.wMonth = cTime.GetMonth();
+	st.wDay = cTime.GetDay();
 
-	if( GetDateFormat( LOCALE_USER_DEFAULT, 0, &st, NULL, m_aList[m_nMax].szDate, sizeof(m_aList[m_nMax].szDate) ) == 0 )
-		m_aList[m_nMax].szDate[0] = '\0';
+	if (GetDateFormat(LOCALE_USER_DEFAULT, 0, &st, NULL, szDate, sizeof(szDate)) == 0)
+		szDate[0] = '\0';
 
-	_tcscpy( m_aList[m_nMax].szMsg, szMsg );
-	m_nMax++;
+	_tcscpy(szMsg, entry.szMsg);
 }
 
 void CWndWanted::OnDraw( C2DRender* p2DRender ) 
 { 
 	const DWORD dwColor = D3DCOLOR_XRGB(0, 0, 0);
-	int	sx, sy;
+	int	sy;
 	char szNum[8], szGold[16];
 	CString strGold;
 
-	sx = 8;
+	const int sx = 8;
 	sy = 35;	
 
 	CRect rc( sx, 5, sx+570, 7 ); 	
@@ -5227,8 +5195,9 @@ void CWndWanted::OnDraw( C2DRender* p2DRender )
 
 	for( int i=nBase; i<nBase + MAX_WANTED_PER_PAGE; ++i )
 	{
-		if( i >= m_nMax )	
+		if (std::cmp_greater_equal(i, m_aList.size())) {
 			break;
+		}
 		
 		sprintf( szNum, "%3d", i+1 );
 		sprintf( szGold, "%I64d", m_aList[i].nGold );

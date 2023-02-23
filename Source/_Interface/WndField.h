@@ -10,6 +10,7 @@
 
 #include "post.h"
 #include "guild.h"
+#include "misc.h"  // WANTED_ENTRY
 
 #include "couple.h"
 #include "couplehelper.h"
@@ -505,13 +506,10 @@ public:
 	virtual	void OnInitialUpdate(); 
 }; 
 
-class CWndWantedConfirm : public CWndNeuz 
-{ 
+class CWndWantedConfirm final : public CWndNeuz {
 	int		 m_nGold = 0;
-	char	 m_szName[ MAX_NAME ];
+	char	 m_szName[MAX_NAME] = "";
 public: 
-	CWndWantedConfirm(); 
-	
 	void		 SetInfo( const char szName[], const int nGold );
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
@@ -519,8 +517,9 @@ public:
 }; 
 
 
-struct WANTEDLIST
-{
+struct WANTEDLIST {
+	explicit WANTEDLIST(const WANTED_ENTRY & entry);
+
 	char	 szName[ MAX_NAME ];		// 이름.
 	__int64	 nGold;						// 현상금
 	char     szDate[32];
@@ -530,20 +529,18 @@ struct WANTEDLIST
 class CWndWanted : public CWndNeuz 
 { 
 private: 
-	CWndWantedConfirm*  m_pWantedConfirm;
+	CWndWantedConfirm*  m_pWantedConfirm = nullptr;
 	time_t				m_recvTime;
 	CWndScrollBar		m_wndScrollBar;
-	int					m_nMax;
-	WANTEDLIST			m_aList[MAX_WANTED_LIST];
-	int					m_nSelect;
+	boost::container::static_vector<WANTEDLIST, MAX_WANTED_LIST> m_aList;
+	int					m_nSelect = -1;
 
 public: 
-	CWndWanted(); 
+	CWndWanted(time_t lTime);
 	virtual ~CWndWanted(); 
 	
 	int          GetSelectIndex( const CPoint& point );	
-	void		 Init( time_t lTime );
-	void		 InsertWanted( const char szName[], __int64 nGold,  int nTime, const char szMsg[] );	
+	void InsertWanted(const WANTED_ENTRY & entry);
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

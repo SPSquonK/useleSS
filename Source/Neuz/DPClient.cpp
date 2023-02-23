@@ -7310,37 +7310,23 @@ void CDPClient::OnWantedName( CAr & ar )
 }
 
 // 현상범의 리스트를 요청하면 그 응답으로 
-void CDPClient::OnWantedList( CAr & ar )		
-{
-	int nCount;						// 리스트의 갯수 
-	long lTime;
+void CDPClient::OnWantedList(CAr & ar) {
+	const auto [lTime, nCount] = ar.Extract<int, long>();
 
-	WANTED_ENTRY	entry;
+	SAFE_DELETE(g_WndMng.m_pWanted);
+	g_WndMng.m_pWanted = new CWndWanted(static_cast<time_t>(lTime));
 
-	ar >> lTime;
-	ar >> nCount;	
-	
-	ASSERT( g_WndMng.m_pWanted == NULL );
-	g_WndMng.m_pWanted = new CWndWanted;
+	for (int i = 0; i < nCount; i++) {
+		WANTED_ENTRY entry;
+		ar.ReadString(entry.szPlayer);
+		ar >> entry.nGold;
+		ar >> entry.nEnd;
+		ar.ReadString(entry.szMsg);
 
-	CWndWanted* pWndWanted	= g_WndMng.m_pWanted;
-
-	if( pWndWanted )
-	{		
-		pWndWanted->Init( (time_t)lTime );
-
-		for( int i=0; i<nCount; i++ )
-		{
-			ar.ReadString( entry.szPlayer, 64 );
-			ar >> entry.nGold;
-			ar >> entry.nEnd;
-			ar.ReadString( entry.szMsg, WANTED_MSG_MAX + 1 );
-
-			pWndWanted->InsertWanted( entry.szPlayer, entry.nGold, entry.nEnd, entry.szMsg );
-		}
+		g_WndMng.m_pWanted->InsertWanted(entry);
 	}
 
-	g_WndMng.m_pWanted->Initialize( &g_WndMng, APP_WANTED );				
+	g_WndMng.m_pWanted->Initialize(&g_WndMng, APP_WANTED);
 }
 
 // Sender
@@ -12708,11 +12694,10 @@ void CDPClient::SendWantedName()
 }
 
 // 현상범 자세한정보 요청 패킷 
-void CDPClient::SendWantedInfo( LPCTSTR szPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_NW_WANTED_INFO, DPID_UNKNOWN );
-	ar.WriteString( szPlayer );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendWantedInfo(LPCTSTR szPlayer) {
+	BEFORESENDSOLE(ar, PACKETTYPE_NW_WANTED_INFO, DPID_UNKNOWN);
+	ar.WriteString(szPlayer);
+	SEND(ar, this, DPID_SERVERPLAYER);
 }
 
 // 접속 종료시도를 알린다. 
@@ -12843,12 +12828,10 @@ void CDPClient::OnWantedInfo( CAr & ar )
 		if( pWorld && dwWorldID == pWorld->GetID() )
 		{
 			g_WndMng.m_pWndWorld->SetRenderArrowWanted( TRUE, vPos );
-//			sprintf( szBuffer, "현상범은 현재 위치(X=%.2f, Y=%.2f, Z=%.2f)에 있습니다.\n화살표는 1시간 동안 해당 좌표를 가리킵니다.(접속 종료시 사라짐)", vPos.x, vPos.y, vPos.z );
 			sprintf( szBuffer, prj.GetText(TID_PK_POINT_SAME), vPos.x, vPos.y, vPos.z );
 		}
 		else
 		{
-//			sprintf( szBuffer, "현상범은 현재 %s의 위치(X=%.2f, Y=%.2f, Z=%.2f)에 있습니다.", szWorld, vPos.x, vPos.y, vPos.z );
 			sprintf( szBuffer, prj.GetText(TID_PK_POINT_DIFFER), szWorld, vPos.x, vPos.y, vPos.z );
 		}
 		g_WndMng.OpenMessageBoxUpper( szBuffer );		

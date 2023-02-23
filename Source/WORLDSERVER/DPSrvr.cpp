@@ -5103,10 +5103,7 @@ void CDPSrvr::OnNWWantedList( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 
 	{
 		BEFORESENDSOLE( out, PACKETTYPE_WN_WANTED_LIST, pUser->m_Snapshot.dpidUser );
-
-		CWantedListSnapshot& wantedListSnapshot = CWantedListSnapshot::GetInstance();
-		wantedListSnapshot.Write( out );
-
+		out << CWantedListSnapshot::GetInstance();
 		SEND( out, this, dpidCache );
 	}
 }
@@ -5143,39 +5140,33 @@ void CDPSrvr::OnNWWantedInfo( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 	if( !IsValidObj( pUser ) )
 		return;
 
-	CWantedListSnapshot& wantedListSnapshot = CWantedListSnapshot::GetInstance();
-	int nIndex = wantedListSnapshot.GetPlayerIndex( szPlayer );
-	if( nIndex < 0 )
+	const bool isWanted = CWantedListSnapshot::GetInstance().IsWantedPlayer(szPlayer);
+	if (!isWanted) return;
+
+	const int nGold = REQ_WANTED_GOLD;
+	if (pUser->GetGold() < nGold) {
+		pUser->AddDefinedText(TID_GAME_LACKMONEY, "");	// 인벤에 돈이부족
 		return;
-
-	{
-		int nGold = REQ_WANTED_GOLD;
-		if( pUser->GetGold() >= nGold ) 
-		{
-			D3DXVECTOR3 vPos( 0.0f, 0.0f, 0.0f );		// 현상범의 위치 
-			BYTE		byOnline = 0;					// 1 이면 online
-			DWORD		dwWorldID = 0;
-			LPCTSTR		lpszWorld = "";
-
-			u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( szPlayer );
-			CUser* pTarget	= g_UserMng.GetUserByPlayerID( idPlayer );	
-			if( IsValidObj(pTarget) && pTarget->GetWorld() )
-			{
-				vPos      = pTarget->GetPos();
-				byOnline  = 1;
-				dwWorldID = pTarget->GetWorld()->GetID();
-				lpszWorld = pTarget->GetWorld()->m_szWorldName;
-
-				pUser->AddGold( -nGold );
-			}
-
-			pUser->AddWantedInfo( vPos, byOnline, dwWorldID, lpszWorld );
-		} 
-		else
-		{
-			pUser->AddDefinedText( TID_GAME_LACKMONEY, "" );	// 인벤에 돈이부족
-		}
 	}
+
+	D3DXVECTOR3 vPos( 0.0f, 0.0f, 0.0f );		// 현상범의 위치 
+	BYTE		byOnline = 0;					// 1 이면 online
+	DWORD		dwWorldID = 0;
+	LPCTSTR		lpszWorld = "";
+
+	u_long idPlayer		= CPlayerDataCenter::GetInstance()->GetPlayerId( szPlayer );
+	CUser* pTarget	= g_UserMng.GetUserByPlayerID( idPlayer );	
+	if( IsValidObj(pTarget) && pTarget->GetWorld() )
+	{
+		vPos      = pTarget->GetPos();
+		byOnline  = 1;
+		dwWorldID = pTarget->GetWorld()->GetID();
+		lpszWorld = pTarget->GetWorld()->m_szWorldName;
+
+		pUser->AddGold( -nGold );
+	}
+
+	pUser->AddWantedInfo( vPos, byOnline, dwWorldID, lpszWorld );
 }
 
 void CDPSrvr::OnReqLeave(CAr & ar, CUser & pUser) {

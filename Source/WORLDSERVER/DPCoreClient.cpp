@@ -2140,10 +2140,8 @@ void CDPCoreClient::OnSetMonsterRespawn( CAr & ar, DPID, DPID, OBJID )
 
 
 // 코어서버로부터 리스트를 받을 때 
-void CDPCoreClient::OnCWWantedList( CAr & ar, DPID, DPID, DPID )
-{
-	CWantedListSnapshot& wantedListSnapshot = CWantedListSnapshot::GetInstance();
-	wantedListSnapshot.Read( ar );
+void CDPCoreClient::OnCWWantedList(CAr & ar, DPID, DPID, DPID) {
+	ar >> CWantedListSnapshot::GetInstance();
 }
 
 // 코어서버로 부터 현상금을 받을 때 
@@ -2296,9 +2294,6 @@ void CDPCoreClient::OnSetPlayerName( CAr& ar, DPID, DPID, OBJID )
 		char lpOutputString[128]	= { 0, };
 		sprintf( lpOutputString, "WORLDSERVER.EXE\tPACKETTYPE_QUERYSETPLAYERNAME\t//%d:%s\t-%08x", idPlayer, lpszPlayer, dwData );
 		OutputDebugString( lpOutputString );
-//		char* lpszOldPlayer	= prj.GetPlayerString( idPlayer );
-//		if( lpszOldPlayer )
-//			CWantedListSnapshot::GetInstance().Rename( lpszOldPlayer, lpszPlayer );
 		CPlayerDataCenter*	pPlayerDataCenter	= CPlayerDataCenter::GetInstance();
 		PlayerData* pPlayerData	= pPlayerDataCenter->GetPlayerData( idPlayer );
 		if( pPlayerData )

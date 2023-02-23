@@ -1,73 +1,54 @@
 #include "stdafx.h"
 #include "WantedListSnapshot.h"
+#include <algorithm>
 
-CWantedListSnapshot& CWantedListSnapshot::GetInstance()
-{
-	static CWantedListSnapshot wantedList;
-	return wantedList;
-}
 //////////////////////////////////////////////////////////////////////
 // CWantedListSnapshot
 //////////////////////////////////////////////////////////////////////
 
-CWantedListSnapshot::CWantedListSnapshot()
-{
-	m_lRecvTime = 0;
+CWantedListSnapshot & CWantedListSnapshot::GetInstance() {
+	static CWantedListSnapshot wantedList;
+	return wantedList;
 }
 
-CWantedListSnapshot::~CWantedListSnapshot()
-{
-}
+CAr & operator>>(CAr & ar, CWantedListSnapshot & self) {
+	self.m_wantedList.clear();
 
-//////////////////////////////////////////////////////////////////////
-// members
-//////////////////////////////////////////////////////////////////////
+	ar >> self.m_lRecvTime;
 
-void CWantedListSnapshot::Read( CAr& ar )
-{
-	m_wantedList.clear();
-
-	int nCount;				// 리스트의 갯수 
-
-	ar >> m_lRecvTime;
+	int nCount;
 	ar >> nCount;						
-	for( int i=0; i<nCount; i++)
-	{
-		WANTED_ENTRY	entry;
-		ar.ReadString( entry.szPlayer, 64 );
+	for (int i = 0; i < nCount; i++) {
+		WANTED_ENTRY entry;
+		ar.ReadString(entry.szPlayer);
 		ar >> entry.nGold;
-		ar >> entry.nEnd; 
-		ar.ReadString( entry.szMsg, WANTED_MSG_MAX + 1 );
+		ar >> entry.nEnd;
+		ar.ReadString(entry.szMsg);
 
-		m_wantedList.push_back( entry );
-	}	
-}
-
-void CWantedListSnapshot::Write( CAr& ar )
-{
-	ar << m_lRecvTime;
-	ar << (int)m_wantedList.size();
-
-	WANTED_ENTRY_VECTOR::iterator it;
-	for( it = m_wantedList.begin(); it != m_wantedList.end(); ++it )
-	{
-		ar.WriteString( (*it).szPlayer );
-		ar << (*it).nGold;
-		ar << (*it).nEnd; 
-		ar.WriteString( (*it).szMsg );
-	}
-}
-
-// nIndex에 해당되는 플레이어의 이름을 얻는다.
-int CWantedListSnapshot::GetPlayerIndex( LPCTSTR szPlayer )
-{
-	int nCount = m_wantedList.size();
-
-	for( int i=0; i<nCount; ++i )
-	{
-		if( strcmp( szPlayer, m_wantedList[i].szPlayer) == 0 )
-			return i;
+		self.m_wantedList.push_back(entry);
 	}
 
-	return -1;
+	return ar;
+}
+
+CAr & operator<<(CAr & ar, const CWantedListSnapshot & self) {
+	ar << self.m_lRecvTime;
+
+	ar << static_cast<int>(self.m_wantedList.size());
+	for (const WANTED_ENTRY & entry : self.m_wantedList) {
+		ar.WriteString(entry.szPlayer);
+		ar << entry.nGold;
+		ar << entry.nEnd;
+		ar.WriteString(entry.szMsg);
+	}
+
+	return ar;
+}
+
+bool CWantedListSnapshot::IsWantedPlayer(LPCTSTR lpszPlayer) const {
+	return std::any_of(m_wantedList.begin(), m_wantedList.end(), 
+		[lpszPlayer](const WANTED_ENTRY & wanted) {
+			return strcmp(lpszPlayer, wanted.szPlayer) == 0;
+		}
+	);
 }
