@@ -293,7 +293,7 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 				break;
 			}
 
-			BOOL bSuccess = DoUseSkill( 0, nSkillIdx, idTarget, sutType, FALSE );		// 목표지점에 도착하면 스킬 사용시작.
+			BOOL bSuccess = DoUseSkillPre( nSkillIdx, idTarget, sutType, FALSE );		// 목표지점에 도착하면 스킬 사용시작.
 			if( bSuccess == FALSE )
 				if( IsPlayer() )
 					((CUser *)this)->m_playTaskBar.OnEndSkillQueue( (CUser *)this );
