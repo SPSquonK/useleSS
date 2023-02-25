@@ -12650,11 +12650,8 @@ void CDPClient::OnSetNaviPoint( OBJID objid, CAr & ar )
 		g_pPlayer->m_vOtherPoint.push_back( nv );
 }
 
-void CDPClient::SendSetNaviPoint( const D3DXVECTOR3 & Pos, OBJID objidTarget )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_SETNAVIPOINT, DPID_UNKNOWN );
-	ar.Accumulate<D3DXVECTOR3, OBJID>(Pos, objidTarget);
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendSetNaviPoint(const D3DXVECTOR3 & Pos, OBJID objidTarget) {
+	SendPacket<PACKETTYPE_SETNAVIPOINT, D3DXVECTOR3, OBJID>(Pos, objidTarget);
 }
 
 
