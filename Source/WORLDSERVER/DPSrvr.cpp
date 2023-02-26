@@ -1536,7 +1536,7 @@ void CDPSrvr::OnDuelRequest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 			return;
 
 
-		if( pUser->IsPVPInspection( pDstUser, 1 ) )
+		if( pUser->IsPVPInspection( pDstUser, CUser::PVPInspection::Solo ) )
 		{
 			if( pDstUser->IsMode( PVPCONFIRM_MODE ) )
 			{
@@ -1587,7 +1587,7 @@ void CDPSrvr::OnDuelYes( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 		}
 
 
-		if( pSrc->IsPVPInspection( pDst, 1 ) )
+		if( pSrc->IsPVPInspection( pDst, CUser::PVPInspection::Solo) )
 		{
 #ifdef __HACK_1130
 			if( pSrc->m_tmDuelRequest + SEC( 10 ) < GetTickCount() )	// 듀얼 신청 시간을 10초 초과하면
@@ -1645,7 +1645,7 @@ void CDPSrvr::OnDuelPartyRequest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 		else
 		{
 
-			if( pSrcUser->IsPVPInspection( pDstUser, 2 ) )
+			if( pSrcUser->IsPVPInspection( pDstUser, CUser::PVPInspection::Party) )
 			{
 				CParty* pSrcParty = g_PartyMng.GetParty( pSrcUser->m_idparty );		// 신청자의 파티꺼냄
 				if( pSrcParty == NULL || pSrcParty->IsLeader( pSrcUser->m_idPlayer ) == FALSE )
@@ -1677,7 +1677,7 @@ void CDPSrvr::OnDuelPartyYes( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 	if( IsValidObj(pSrc) && IsValidObj(pDst) )
 	{
 
-		if( pSrc->IsPVPInspection( pDst, 2 ) )
+		if( pSrc->IsPVPInspection( pDst, CUser::PVPInspection::Party) )
 		{
 			CParty* pSrcParty = g_PartyMng.GetParty( pSrc->m_idparty );		// 신청자의 파티꺼냄
 			if( pSrcParty == NULL || pSrcParty->IsLeader( pSrc->m_idPlayer ) == FALSE )

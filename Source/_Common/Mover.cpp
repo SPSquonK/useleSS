@@ -5088,116 +5088,82 @@ BOOL CMover::IsPKInspection( CMover* pOther )
 #endif // CLIENT
 
 #ifdef __WORLDSERVER
-BOOL CMover::IsPVPInspection( CMover* pMover, int nFlag )
-{
-	int nError	= 0;
-
+bool CUser::IsPVPInspection(CMover * pMover, const PVPInspection nFlag) {
 	DWORD dwAttr	= GetPKPVPRegionAttr();
-	DWORD dwWorldIDtmp = 0;
-	DWORD dwDestWorldIDtmp = 1;
-
-	if( GetWorld() && pMover->GetWorld() )
-	{
-		dwWorldIDtmp = GetWorld()->GetID();
-		dwDestWorldIDtmp = pMover->GetWorld()->GetID();
-	}
+	DWORD dwWorldIDtmp = GetWorld() ? GetWorld()->GetID() : 0;
+	DWORD dwDestWorldIDtmp = pMover->GetWorld() ? pMover->GetWorld()->GetID() : 1;
 	
-	switch( nFlag )
-	{
-		case 1:		// 개인 PVP
-			{
-//				1
-				if( abs( GetLevel() - pMover->GetLevel() ) >= 30 )	// 레벨 30이상 나는것
-				{
-					((CUser*)this)->AddDefinedText( TID_PK_LEVEL_GAP, "" );	// 레벨이 30이상 차이가 나면 PVP를 할수 없습니다
-					return FALSE;
-				}
-//				1	// 2	// 3	// 4	// 5
+	if (nFlag == PVPInspection::Solo) {
+		//				1
+		if (abs(GetLevel() - pMover->GetLevel()) >= 30)	// 레벨 30이상 나는것
+		{
+			AddDefinedText(TID_PK_LEVEL_GAP, "");	// 레벨이 30이상 차이가 나면 PVP를 할수 없습니다
+			return FALSE;
+		}
+		//				1	// 2	// 3	// 4	// 5
+		int nError = IsPVPInspectionBase(dwAttr, dwDestWorldIDtmp);
+		if (nError == 0) {
+			nError = pMover->IsPVPInspectionBase(dwAttr, dwWorldIDtmp);
+		}
 
-				if( ( nError = IsPVPInspectionBase( dwAttr,dwDestWorldIDtmp ) ) == 0 )
-				{
-					nError = pMover->IsPVPInspectionBase( dwAttr ,dwWorldIDtmp);
-				}
-				if( nError != 0 )
-				{
-					switch( nError )
-					{
-					case 1:
-						((CUser*)this)->AddDefinedText( TID_PK_SAFETY_NO, "" );	// 안전영역에서는 PVP할수 없습니다
-						break;
-					case 2:
-						((CUser*)this)->AddDefinedText( TID_PK_SAME_NO, "" );	// 같은영역에 있어야 PVP를 할수 있습니다
-						break;
-					case 3:
-						((CUser*)this)->AddDefinedText( TID_PK_CHANGEJOB_NO, "" );	// 1차전직 이후에 PVP를 할수 있습니다
-						break;
-					}
-					return FALSE;
-				}
-				return TRUE;
+		if (nError != 0) {
+			switch (nError) {
+				case 1: AddDefinedText(TID_PK_SAFETY_NO, "");    break;
+				case 2: AddDefinedText(TID_PK_SAME_NO, "");      break;
+				case 3: AddDefinedText(TID_PK_CHANGEJOB_NO, ""); break;
 			}
-		case 2:		// 극단 PVP
-			{
-				CParty* pSrc	= g_PartyMng.GetParty( m_idparty );
-				CParty* pDest	= g_PartyMng.GetParty( pMover->m_idparty );
-				if( pSrc && pDest )
-				{
-					DWORD dwTick	= GetTickCount();
-					u_long anPlayer[MAX_PTMEMBER_SIZE*2];
-					int	nSize	= 0;
-					for( int i = 0; i < pSrc->GetSizeofMember(); i++ )
-						anPlayer[nSize++]	= pSrc->GetPlayerId( i );
-					for( int i = 0; i < pDest->GetSizeofMember(); i++ )
-						anPlayer[nSize++]	= pDest->GetPlayerId( i );
+			return false;
+		}
 
-					CUser* pLeaderSrc	= (CUser*)pSrc->GetLeader();
-					CUser* pLeaderDest	= (CUser*)pDest->GetLeader();
-					if( IsValidObj( (CObj*)pLeaderSrc ) && IsValidObj( (CObj*)pLeaderDest ) )
-					{
-						if( abs( pLeaderSrc->GetLevel() - pLeaderDest->GetLevel() ) >= 30 )
-						{
-							((CUser*)this)->AddDefinedText( TID_PK_LEVEL_GAP, "" );	// 레벨이 30이상 차이가 나면 PVP를 할수 없습니다
-							return FALSE;
-						}
-					}
-					else
-					{
-						//
-						return FALSE;
-					}
+		return true;
+	} else if (nFlag == PVPInspection::Party) {
+		CParty * pSrc = g_PartyMng.GetParty(m_idparty);
+		CParty * pDest = g_PartyMng.GetParty(pMover->m_idparty);
+		if (!pSrc || !pDest) return false;
 
-					for( int i = 0; i < nSize; i++ )
-					{
-						CUser* pPlayer	= g_UserMng.GetUserByPlayerID( anPlayer[i] );
-						if( IsValidObj( (CObj*)pPlayer ) )
-						{
-							if( ( nError = pPlayer->IsPVPInspectionBase( dwAttr,dwWorldIDtmp ) ) )
-							{
-								if( nError != 0 )
-								{
-									switch( nError )
-									{
-									case 1:
-										((CUser*)this)->AddDefinedText( TID_PK_SAFETY_NO, "" );	// 안전영역에서는 PVP할수 없습니다
-										break;
-									case 2:
-										((CUser*)this)->AddDefinedText( TID_PK_SAME_NO, "" );	// 같은영역에 있어야 PVP를 할수 있습니다
-										break;
-									case 3:
-										((CUser*)this)->AddDefinedText( TID_PK_CHANGEJOB_NO, "" );	// 1차전직 이후에 PVP를 할수 있습니다
-										break;
-									}
-									return FALSE;
-								}
-							}
-						}
-					}
-					return TRUE;
+		boost::container::small_vector<u_long, MAX_PTMEMBER_SIZE * 2> anPlayer;
+
+		for (int i = 0; i < pSrc->GetSizeofMember(); i++) {
+			anPlayer.emplace_back(pSrc->GetPlayerId(i));
+		}
+
+		for (int i = 0; i < pDest->GetSizeofMember(); i++) {
+			anPlayer.emplace_back(pDest->GetPlayerId(i));
+		}
+
+		CMover * pLeaderSrc = pSrc->GetLeader();
+		CMover * pLeaderDest = pDest->GetLeader();
+
+		if (!IsValidObj(pLeaderSrc) || !IsValidObj(pLeaderDest)) {
+			return false;
+		}
+
+		if (abs(pLeaderSrc->GetLevel() - pLeaderDest->GetLevel()) >= 30) {
+			AddDefinedText(TID_PK_LEVEL_GAP, "");
+			return false;
+		}
+		
+		for (const u_long playerId : anPlayer) {
+			CUser * pPlayer = g_UserMng.GetUserByPlayerID(playerId);
+			if (!IsValidObj(pPlayer)) continue;
+
+			int nError = pPlayer->IsPVPInspectionBase(dwAttr, dwWorldIDtmp);
+			if (nError != 0) {
+				switch (nError) {
+					case 1: AddDefinedText(TID_PK_SAFETY_NO, "");    break;
+					case 2: AddDefinedText(TID_PK_SAME_NO, "");      break;
+					case 3: AddDefinedText(TID_PK_CHANGEJOB_NO, ""); break;
 				}
-				return FALSE;
+				return false;
 			}
+
+			return false;
+		}
+
+		return true;
+	} else {
+		return true;
 	}
-	return TRUE;
 }
 
 
@@ -5241,7 +5207,7 @@ int CMover::IsPKPVPInspectionBase( DWORD dwRegionAttr, BOOL bPVP )
 }
 
 //8차 듀얼존에 관계없이 PVP가능하게함   Neuz, World
-int CMover::IsPVPInspectionBase( DWORD dwRegionAttr,DWORD dwWorldID, BOOL bPVP )
+int CMover::IsPVPInspectionBase( DWORD ,DWORD dwWorldID, BOOL bPVP)
 {
 
 #ifdef __CLIENT

@@ -243,6 +243,10 @@ public:
 #pragma endregion
 
 public:
+	enum class PVPInspection { Solo, Party };
+	bool IsPVPInspection(CMover * pMover, PVPInspection nFlag);
+
+
 
 	void			AddPostMail( CMail* pMail );
 	void			AddRemoveMail( u_long nMail, int nType );
