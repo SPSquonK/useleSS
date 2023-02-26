@@ -45,7 +45,6 @@
 
 #define		__PROP_0827					// 아이템 프로퍼티 적용 파라미터 확장
 
-#define		__PKSERVER_USE_ANGEL		// PK서버에서만 엔젤관련 아이템,버프 사용
 #define		__CSC_ENCHANT_EFFECT_2		// 기존 이펙트 + 향상된 이펙트
 
 //11차

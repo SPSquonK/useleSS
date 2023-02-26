@@ -58,8 +58,6 @@
 #define		__RIGHTHAND_SKILL				// 스마이트 엑스, 엑스 마스터리, 블레이징소드, 소드 마스터리 오른손의 무기만을 기준으로 스킬사용
 #define		__LOG_MATCHLESS					// 일반 유저가 무적상태가 되는 경우가 가끔 발생하여 로그 남김.
 
-#define		__PKSERVER_USE_ANGEL			// PK서버에서만 엔젤관련 아이템,버프 사용
-
 //	#define		__EVENTLUA_ATKDEF			// 루아 이벤트 - 공격력, 방어력 증가(9차로 변경됨)
 
 

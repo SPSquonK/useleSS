@@ -1194,7 +1194,6 @@ BOOL CMover::IsDoUseBuff( ItemProp* pItemProp )
 		if( HasBuffByIk3( pItemProp->dwItemKind3 ) )
 			nResult = 1;
 
-#ifdef __PKSERVER_USE_ANGEL
 		if( pItemProp->dwItemKind3 == IK3_ANGEL_BUFF )
 		{
 			if(g_eLocal.GetState( EVE_PK ))	
@@ -1213,21 +1212,6 @@ BOOL CMover::IsDoUseBuff( ItemProp* pItemProp )
 			else
 				nResult = 5;
 		}
-#else //__PKSERVER_USE_ANGEL
-		if( pItemProp->dwItemKind3 == IK3_ANGEL_BUFF )
-		{
-			if( 0 >= GetPKValue() )
-				nResult = 2;
-			if( GetQuest( QUEST_PKMINUS ) == NULL )
-				nResult = 3;
-			if( m_Inventory.GetAtItemId( II_SYS_SYS_QUE_ANGEL_RED100 ) != NULL 
-				|| m_Inventory.GetAtItemId( II_SYS_SYS_QUE_ANGEL_BLUE100 ) != NULL 
-				|| m_Inventory.GetAtItemId( II_SYS_SYS_QUE_ANGEL_GREEN100 ) != NULL 
-				|| m_Inventory.GetAtItemId( II_SYS_SYS_QUE_ANGEL_WHITE100 ) != NULL 
-				)
-				nResult = 4;
-		}
-#endif //__PKSERVER_USE_ANGEL
 	}
 	else if( pItemProp->dwID == II_SYS_SYS_SCR_DEFENSE20 || pItemProp->dwID == II_SYS_SYS_SCR_DEFENSE50 )
 	{

@@ -737,10 +737,8 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		nOnError	= 701;
 #endif	// __ON_ERROR
 
-#ifdef __PKSERVER_USE_ANGEL
 		if( !g_eLocal.GetState( EVE_PK ) || pUser->GetPKValue() == 0 )
 			pUser->RemoveIk3Buffs( IK3_ANGEL_BUFF );
-#endif // __PKSERVER_USE_ANGEL
 
 #ifdef __ON_ERROR
 		nOnError	= 702;
