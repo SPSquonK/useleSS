@@ -14,7 +14,8 @@
 #define theParameters CAr & ar, DPID, DPID
 
 class CUser;
-class CDPDatabaseClient : public CDPClientDual
+class CDPDatabaseClient : public CDPMng,
+	public DPMngFeatures::SendPacketDual<CDPDatabaseClient>
 {
 private:
 	int		m_cbPing;

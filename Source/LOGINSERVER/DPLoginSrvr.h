@@ -16,7 +16,8 @@ typedef	struct	tagCACHESTRUCT
 CACHESTRUCT, *LPCACHESTRUCT;
 #define	MAX_CACHE_SIZE	4
 
-class CDPLoginSrvr : public CDPClientNone
+class CDPLoginSrvr : public CDPMng,
+	public DPMngFeatures::SendPacketNone<CDPLoginSrvr>
 {
 private:
 	CACHESTRUCT		m_aCache[MAX_CACHE_SIZE];

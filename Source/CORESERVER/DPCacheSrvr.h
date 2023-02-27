@@ -18,7 +18,8 @@
 
 class CGuild;
 
-class CDPCacheSrvr : public CDPServerSole
+class CDPCacheSrvr : public CDPMng,
+	public DPMngFeatures::BroadcastPacketSole<CDPCacheSrvr>
 {
 private:
 	struct ClientInfo {

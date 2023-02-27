@@ -75,7 +75,8 @@ typedef struct tagSNAPSHOT
 SNAPSHOT, *LPSNAPSHOT;
 
 class CWndGuildVote;
-class CDPClient : public CDPClientSole
+class CDPClient : public CDPMng,
+	public DPMngFeatures::SendPacketSole<CDPClient>
 {
 private:
 	SNAPSHOT	m_ss;

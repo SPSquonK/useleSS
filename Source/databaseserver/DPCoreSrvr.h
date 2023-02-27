@@ -14,7 +14,8 @@
 
 #include "playerdata.h"
 
-class CDPCoreSrvr : public CDPServerNone
+class CDPCoreSrvr : public CDPMng,
+	public DPMngFeatures::BroadcastPacketNone<CDPCoreSrvr>
 {
 public:
 //	Constructions

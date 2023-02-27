@@ -10,7 +10,8 @@
 #undef theParameters
 #define theParameters	CAr & ar
 
-class CDPCoreClient : public CDPClientNone
+class CDPCoreClient : public CDPMng,
+	public DPMngFeatures::SendPacketNone<CDPCoreClient>
 {
 
 public:

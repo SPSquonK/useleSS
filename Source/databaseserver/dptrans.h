@@ -26,7 +26,8 @@ class CCoupleMgr;
 #ifdef __QUIZ
 #include "Quiz.h"
 #endif // __QUIZ
-class CDPTrans : public CDPServerDual
+class CDPTrans : public CDPMng,
+	public DPMngFeatures::BroadcastPacketDual<CDPTrans>
 {
 public:
 //	Constructions

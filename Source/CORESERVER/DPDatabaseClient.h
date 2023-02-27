@@ -11,7 +11,8 @@
 #define theParameters	CAr & ar
 
 
-class CDPDatabaseClient : public CDPClientNone
+class CDPDatabaseClient : public CDPMng,
+	public DPMngFeatures::SendPacketNone<CDPDatabaseClient>
 {
 public:
 //	Constructions

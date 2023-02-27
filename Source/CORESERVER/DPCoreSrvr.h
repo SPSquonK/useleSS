@@ -19,7 +19,8 @@
 #undef	theParameters
 #define theParameters	CAr & ar, DPID, DPID, DPID, u_long
 	
-class CDPCoreSrvr : public CDPServerDual
+class CDPCoreSrvr : public CDPMng,
+	public DPMngFeatures::BroadcastPacketDual<CDPCoreSrvr>
 {
 public:
 	int					m_nGCState;
