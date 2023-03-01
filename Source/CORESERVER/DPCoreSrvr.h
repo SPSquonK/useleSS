@@ -20,7 +20,7 @@
 #define theParameters	CAr & ar, DPID, DPID, DPID, u_long
 	
 class CDPCoreSrvr : public CDPMng,
-	public DPMngFeatures::BroadcastPacketDual<CDPCoreSrvr>
+	public DPMngFeatures::BroadcastPacketDual
 {
 public:
 	int					m_nGCState;

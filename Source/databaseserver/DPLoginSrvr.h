@@ -13,7 +13,7 @@
 
 //class CAccount;
 class CDPLoginSrvr : public CDPMng,
-	public DPMngFeatures::BroadcastPacketSole<CDPLoginSrvr>
+	public DPMngFeatures::BroadcastPacketSole
 {
 public:
 //	Constructions

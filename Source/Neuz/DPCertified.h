@@ -12,7 +12,7 @@
 #define theParameters	CAr & ar, DPID
 
 class CDPCertified : public CDPMng,
-	public DPMngFeatures::SendPacketNone<CDPCertified>
+	public DPMngFeatures::SendPacketNone
 {
 private:
 	BOOL	m_fConn;

@@ -8,7 +8,7 @@
 #define theParameters	CAr & ar
 
 class CDPLoginSrvr : public CDPMng,
-	public DPMngFeatures::BroadcastPacketNone<CDPLoginSrvr>
+	public DPMngFeatures::BroadcastPacketNone
 {
 public:
 //	Constructions

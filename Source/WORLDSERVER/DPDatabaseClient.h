@@ -15,7 +15,7 @@
 
 class CUser;
 class CDPDatabaseClient : public CDPMng,
-	public DPMngFeatures::SendPacketDual<CDPDatabaseClient>
+	public DPMngFeatures::SendPacketDual
 {
 private:
 	int		m_cbPing;

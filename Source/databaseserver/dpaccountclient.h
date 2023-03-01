@@ -10,7 +10,7 @@
 #define theParameters	CAr & ar, LPBYTE lpBuf, u_long uBufSize
 
 class CDPAccountClient : public CDPMng,
-	public DPMngFeatures::SendPacketNone<CDPAccountClient>
+	public DPMngFeatures::SendPacketNone
 {
 public:
 /*

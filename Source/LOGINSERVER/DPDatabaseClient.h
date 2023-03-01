@@ -11,7 +11,7 @@
 #define theParameters	CAr & ar, DPID, LPBYTE, u_long
 
 class CDPDatabaseClient : public CDPMng,
-	public DPMngFeatures::SendPacketSole<CDPDatabaseClient>
+	public DPMngFeatures::SendPacketSole
 {
 public:
 //	Constructions

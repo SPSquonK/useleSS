@@ -159,70 +159,63 @@ inline BOOL CDPMng::Send( LPVOID lpData, DWORD dwDataSize, DPID dpidTo )
 
 namespace DPMngFeatures {
 
-template<typename Derived>
 class SendPacketNone {
 public:
 	template<DWORD PacketId, typename ... Ts>
-	void SendPacket(const Ts & ... ts) {
+	void SendPacket(this auto && self, const Ts & ... ts) {
 		BEFORESEND(ar, PacketId);
 		ar.Accumulate(ts...);
-		SEND(ar, static_cast<Derived *>(this), DPID_SERVERPLAYER);
+		SEND(ar, &self, DPID_SERVERPLAYER);
 	}
 };
 
-template<typename Derived>
 class SendPacketSole {
 public:
 	template<DWORD PacketId, typename ... Ts>
-	void SendPacket(const Ts & ... ts) {
+	void SendPacket(this auto && self, const Ts & ... ts) {
 		BEFORESENDSOLE(ar, PacketId, DPID_UNKNOWN);
 		ar.Accumulate(ts...);
-		SEND(ar, static_cast<Derived *>(this), DPID_SERVERPLAYER);
+		SEND(ar, &self, DPID_SERVERPLAYER);
 	}
 };
 
-template<typename Derived>
 class SendPacketDual {
 public:
 	template<DWORD PacketId, typename ... Ts>
-	void SendPacket(const Ts & ... ts) {
+	void SendPacket(this auto && self, const Ts & ... ts) {
 		BEFORESENDDUAL(ar, PacketId, DPID_UNKNOWN, DPID_UNKNOWN);
 		ar.Accumulate(ts...);
-		SEND(ar, static_cast<Derived *>(this), DPID_SERVERPLAYER);
+		SEND(ar, &self, DPID_SERVERPLAYER);
 	}
 };
 
-
-template<typename Derived>
 class BroadcastPacketNone {
 public:
 	template<DWORD PacketId, typename ... Ts>
-	void BroadcastPacket(const Ts & ... ts) {
+	void BroadcastPacket(this auto && self, const Ts & ... ts) {
 		BEFORESEND(ar, PacketId);
 		ar.Accumulate(ts...);
-		SEND(ar, static_cast<Derived *>(this), DPID_ALLPLAYERS);
+		SEND(ar, &self, DPID_ALLPLAYERS);
 	}
 };
 
-template<typename Derived>
 class BroadcastPacketSole {
 public:
 	template<DWORD PacketId, typename ... Ts>
-	void BroadcastPacket(const Ts & ... ts) {
+	void BroadcastPacket(this auto && self, const Ts & ... ts) {
 		BEFORESENDSOLE(ar, PacketId, DPID_ALLPLAYERS);
 		ar.Accumulate(ts...);
-		SEND(ar, static_cast<Derived *>(this), DPID_ALLPLAYERS);
+		SEND(ar, &self, DPID_ALLPLAYERS);
 	}
 };
 
-template<typename Derived>
 class BroadcastPacketDual {
 public:
 	template<DWORD PacketId, typename ... Ts>
-	void BroadcastPacket(const Ts & ... ts) {
+	void BroadcastPacket(this auto && self, const Ts & ... ts) {
 		BEFORESENDDUAL(ar, PacketId, DPID_ALLPLAYERS, DPID_ALLPLAYERS);
 		ar.Accumulate(ts...);
-		SEND(ar, static_cast<Derived *>(this), DPID_ALLPLAYERS);
+		SEND(ar, &self, DPID_ALLPLAYERS);
 	}
 };
 

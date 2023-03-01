@@ -11,7 +11,7 @@
 #define theParameters	CAr & ar
 
 class CDPCoreClient : public CDPMng,
-	public DPMngFeatures::SendPacketNone<CDPCoreClient>
+	public DPMngFeatures::SendPacketNone
 {
 
 public:

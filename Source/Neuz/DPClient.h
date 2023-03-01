@@ -76,7 +76,7 @@ SNAPSHOT, *LPSNAPSHOT;
 
 class CWndGuildVote;
 class CDPClient : public CDPMng,
-	public DPMngFeatures::SendPacketSole<CDPClient>
+	public DPMngFeatures::SendPacketSole
 {
 private:
 	SNAPSHOT	m_ss;

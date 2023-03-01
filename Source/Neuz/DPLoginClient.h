@@ -10,7 +10,7 @@
 #define theParameters	CAr & ar
 
 class CDPLoginClient : public CDPMng,
-	public DPMngFeatures::SendPacketSole<CDPLoginClient>
+	public DPMngFeatures::SendPacketSole
 {
 private:
 	BOOL	m_fDestroy; 

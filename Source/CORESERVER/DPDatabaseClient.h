@@ -12,7 +12,7 @@
 
 
 class CDPDatabaseClient : public CDPMng,
-	public DPMngFeatures::SendPacketNone<CDPDatabaseClient>
+	public DPMngFeatures::SendPacketNone
 {
 public:
 //	Constructions

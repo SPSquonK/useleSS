@@ -18,7 +18,7 @@
 #define theParameters CAr & ar, DPID, DPID, OBJID objid
 
 class CDPCoreClient : public CDPMng,
-	public DPMngFeatures::SendPacketDual<CDPCoreClient>
+	public DPMngFeatures::SendPacketDual
 {
 private:
 	WSAEVENT	m_hWait;
