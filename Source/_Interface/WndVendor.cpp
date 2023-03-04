@@ -140,7 +140,13 @@ void CWndVendor::ReloadItemList()
 	// 백업해 둔 리스트를 로드한다 	
 	if (g_pPlayer->m_vtInfo.IsVendorOpen()) return;
 	
-	for (auto & [i, saved] : g_Neuz.m_savedInven | boost::adaptors::indexed(0)) {
+	static_assert(
+		std::numeric_limits<BYTE>::max() > g_Neuz.m_savedInven.max_size(),
+		"More items in player shop saved inventory than the system can support. Please lower MAX_VENDITEM."
+		);
+	for (size_t i = 0; i < g_Neuz.m_savedInven.size(); ++i) {
+		SavedSoldItem & saved = g_Neuz.m_savedInven[i];
+
 		if (saved.IsEmpty()) continue;
 
 		for (int nIndex = 0; nIndex < g_pPlayer->m_Inventory.GetMax(); nIndex++) {
@@ -154,7 +160,7 @@ void CWndVendor::ReloadItemList()
 				if (saved.extra > pItemElem->m_nItemNum) {
 					saved.Clear();
 				} else {
-					g_DPlay.SendRegisterPVendorItem(i, 0, (BYTE)saved.objid, saved.extra, saved.cost);
+					g_DPlay.SendRegisterPVendorItem(static_cast<BYTE>(i), 0, (BYTE)saved.objid, saved.extra, saved.cost);
 				}
 			}
 		}
@@ -395,8 +401,14 @@ void CWndVendor::OnDestroyChildWnd( CWndBase* pWndChild )
 void CWndVendor::OnDestroy( void )
 {
 	// 리스트를 백업해둔다
-	for (auto & [i, saved] : g_Neuz.m_savedInven | boost::adaptors::indexed(0)) {
-		CItemElem * pItemBase = g_pPlayer->m_vtInfo.GetItem(i);
+	static_assert(
+		std::numeric_limits<BYTE>::max() > g_Neuz.m_savedInven.max_size(),
+		"More items in player shop saved inventory than the system can support. Please lower MAX_VENDITEM."
+		);
+	for (size_t i = 0; i < g_Neuz.m_savedInven.size(); ++i) {
+		SavedSoldItem & saved = g_Neuz.m_savedInven[i];
+
+		CItemElem * pItemBase = g_pPlayer->m_vtInfo.GetItem(static_cast<BYTE>(i));
 		if (!pItemBase) continue;
 
 		saved.objid  = pItemBase->m_dwObjId;
