@@ -31,8 +31,10 @@ void CDPAccountClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSiz
 
 	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
 //	ASSERT( pfn );
-	if( pfn )
-		( this->*( pfn ) )( ar, dpid2 );
+	if (pfn) {
+		(this->*(pfn))(ar, dpid2);
+		if (ar.IsOverflow()) Error("Certifier-Account: Packet %08x overflowed", dw);
+	}
 }
 
 

@@ -47,6 +47,7 @@ void CDPLoginSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	
 	if( pfn ) {
 		( this->*( pfn ) )( ar );
+		if (ar.IsOverflow()) Error("Core-Login: Packet %08x overflowed", dw);
 	}
 	else {
 		ASSERT( 0 );

@@ -450,6 +450,8 @@ bool CDPSrvrHandlers::Handle(CDPSrvr & self, CAr & ar, DPID dpidCache, DPID dpid
 	};
 
 	std::visit(Visitor{ self, ar, dpidCache, dpidUser }, pfn);
+
+	if (ar.IsOverflow()) Error("World-Neuz: Packet %08x overflowed", packetId);
 	return true;
 }
 

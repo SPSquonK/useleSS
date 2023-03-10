@@ -81,6 +81,7 @@ void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	
 	if( pfn ) {
 		( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg, dwMsgSize - sizeof(DPID) - sizeof(DWORD) );
+		if (ar.IsOverflow()) Error("Core-Cache: Packet %08x overflowed", dw);
 	} else {
 		TRACE( "Handler not found(%08x)\n", lpMsg->dwType );
 	}

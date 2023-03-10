@@ -78,8 +78,10 @@ void CDPCoreSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 		=	GetHandler( dw );
 	//	ASSERT( pfn );
 
-	if( pfn )
-		( this->*( pfn ) )( ar, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD) );
+	if (pfn) {
+		(this->*(pfn))(ar, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD));
+		if (ar.IsOverflow()) Error("Database-Core: Packet %08x overflowed", dw);
+	}
 }
 
 void CDPCoreSrvr::OnAddConnection( DPID dpid )

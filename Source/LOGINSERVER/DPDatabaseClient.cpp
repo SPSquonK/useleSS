@@ -48,8 +48,8 @@ void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSi
 	
 	if( pfn ) {
 		( this->*( pfn ) )( ar, dpidUser, lpBuf, uBufSize );
-	}
-	else {
+		if (ar.IsOverflow()) Error("Login-Database: Packet %08x overflowed", dw);
+	} else {
 		g_dpLoginSrvr.Send( lpBuf, uBufSize, dpidUser );
 	}
 }

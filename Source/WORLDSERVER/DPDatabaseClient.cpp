@@ -197,10 +197,12 @@ void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSi
 
 	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
 	
-	if( pfn ) 
-		( this->*( pfn ) )( ar, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)( (LPBYTE)lpMsg + sizeof(DPID) ) );
-	else 
-		Error( "Handler not found(%08x)\n",dw );
+	if (pfn) {
+		(this->*(pfn))(ar, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + sizeof(DPID)));
+		if (ar.IsOverflow()) Error("World-Database: Packet %08x overflowed", dw);
+	} else {
+		Error("Handler not found(%08x)\n", dw);
+	}
 }
 
 #ifdef __LAYER_1015

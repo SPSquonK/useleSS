@@ -40,6 +40,7 @@ void CDPAccountClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSiz
 		=	GetHandler( dw );
 	ASSERT( pfn );
 	( this->*( pfn ) )( ar, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD) );
+	if (ar.IsOverflow()) Error("Database-Account: Packet %08x overflowed", dw);
 }
 
 #ifdef __SERVERLIST0911

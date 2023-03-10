@@ -59,6 +59,8 @@ void CDPSrvr_AccToCert::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSi
 	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
 	ASSERT( pfn );
 	( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg );
+
+	if (ar.IsOverflow()) Error("Account-Certifier: Packet %08x overflowed", dw);
 }
 
 void CDPSrvr_AccToCert::OnAddConnection( DPID dpid )

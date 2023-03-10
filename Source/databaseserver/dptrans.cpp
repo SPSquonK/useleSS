@@ -295,6 +295,7 @@ void CDPTrans::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID 
 	
 	if( pfn ) {
 		( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)( (LPBYTE)lpMsg + nSize ), (LPBYTE)lpMsg + nSize + nSize + nSize, dwMsgSize - ( nSize + nSize + nSize ) );
+		if (ar.IsOverflow()) Error("Database-World: Packet %08x overflowed", dw);
 	}
 	else {
 

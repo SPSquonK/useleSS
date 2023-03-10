@@ -38,6 +38,8 @@ void CDPWldSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPI
 	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
 	ASSERT( pfn );
 	( this->*( pfn ) )( ar, idFrom );
+
+	if (ar.IsOverflow()) Error("Account-World: Packet %08x overflowed", dw);
 }
 
 CDPWldSrvr*	CDPWldSrvr::GetInstance( void )

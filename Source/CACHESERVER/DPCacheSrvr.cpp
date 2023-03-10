@@ -89,6 +89,7 @@ void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 
 	if( pfn ) {
 		( this->*( pfn ) )( ar, idFrom, (BYTE*)lpMsg + sizeof(DPID), dwMsgSize - sizeof(DPID) );
+		if (ar.IsOverflow()) Error("Cache-World: Packet %08x overflowed", dw);
 	}
 	else {
 		switch( dw )

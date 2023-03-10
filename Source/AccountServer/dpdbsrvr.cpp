@@ -45,6 +45,8 @@ void CDPDBSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID
 		=	GetHandler( dw );
 	ASSERT( pfn );
 	( this->*( pfn ) )( ar, dpId, (LPBYTE)lpMsg, (u_long)dwMsgSize );
+
+	if (ar.IsOverflow()) Error("Account-Database: Packet %08x overflowed", dw);
 }
 
 void CDPDBSrvr::OnAddConnection( CAr & ar, DPID dpid, LPBYTE, u_long )

@@ -53,6 +53,9 @@ public:
 
 	LPBYTE	GetBuffer( int* pnBufSize );
 	u_long	GetOffset( void );
+#ifndef __CLIENT
+	[[nodiscard]] bool IsOverflow() const noexcept { return m_overflow; }
+#endif
 
 	// -- Trivial Types
 	template<ArHelper::UnitTypes Type> CAr & operator<<(Type value);
@@ -111,6 +114,9 @@ protected:
 	LPBYTE	m_lpBufMax;
 	LPBYTE	m_lpBufStart;
 	BYTE	m_lpBuf[nGrowSize] = { '\0' };
+#ifndef __CLIENT
+	bool m_overflow = false;
+#endif
 };
 
 inline BOOL CAr::IsLoading() const { return m_nMode == Mode::load; }
@@ -135,6 +141,9 @@ CAr & CAr::operator>>(Type & value) {
 	} else {
 		value = Type(0);
 		m_lpBufCur = m_lpBufMax;
+#ifndef __CLIENT
+		m_overflow = true;
+#endif
 	}
 	return *this;
 }
