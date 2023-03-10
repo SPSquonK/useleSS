@@ -76,7 +76,7 @@ void CDPLoginSrvr::OnQueryTickCount( CAr & ar )
 	DWORD dwTime;
 	ar >> dwTime;
 
-	BroadcastPacket<PACKETTYPE_QUERYTICKCOUNT, __int64>(dwTime, g_TickCount.GetTickCount());
+	BroadcastPacket<PACKETTYPE_QUERYTICKCOUNT, DWORD, __int64>(dwTime, g_TickCount.GetTickCount());
 }
 
 void CDPLoginSrvr::OnPreJoin( CAr & ar )
