@@ -1890,7 +1890,6 @@ CWndText::CWndText()
 	
 	m_strTexture = DEF_CTRL_TEXT;
 	m_bTile = TRUE;
-	m_ptDeflateRect = CPoint( 6, 6 );
 }
 CWndText::~CWndText()
 {
@@ -1916,7 +1915,6 @@ void CWndText::OnInitialUpdate()
 	UpdateScrollBar();
 	m_wndScrollBar.SetVisible( IsWndStyle( WBS_VSCROLL ) );
 	
-	m_bScr = TRUE;
 	m_nLineRefresh = 0;
 }
 void CWndText::OnSize( UINT nType, int cx, int cy )
@@ -1936,7 +1934,7 @@ void CWndText::SetWndRect(CRect rectWnd, BOOL bOnSize )
 	m_rectWindow = rectWnd;
 	m_rectClient = m_rectWindow;
 	if( !IsWndStyle( WBS_NOFRAME ) )
-		m_rectClient.DeflateRect( m_ptDeflateRect.x, m_ptDeflateRect.y );
+		m_rectClient.DeflateRect( 6, 6 );
 
 	if( IsWndStyle( WBS_VSCROLL ) ) 
 		m_rectClient.right -= 15;
@@ -2420,24 +2418,6 @@ void CWndText::AddString(LPCTSTR pszString, DWORD dwColor, DWORD dwPStyle )
 	m_dwOffset = m_string.GetLength();
 	CPoint ptCaret = OffsetToPoint( m_dwOffset );
 	SetCaretPos( ptCaret );
-}
-
-void CWndText::Insert(int nIndex, LPCTSTR pstr)
-{
-	m_string.Insert( nIndex, pstr );
-	UpdateScrollBar();
-	m_dwOffset = m_string.GetLength();
-	CPoint ptCaret = OffsetToPoint( m_dwOffset );
-	SetCaretPos( ptCaret );	
-}
-
-void CWndText::Delete(int nIndex, int nLen)
-{
-	m_string.Delete( nIndex, nLen );
-	UpdateScrollBar();
-	m_dwOffset = m_string.GetLength();
-	CPoint ptCaret = OffsetToPoint( m_dwOffset );
-	SetCaretPos( ptCaret );		
 }
 
 void CWndText::ResetString()

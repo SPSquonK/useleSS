@@ -296,13 +296,9 @@ protected:
 	DWORD m_dwBlockEnd;
 	DWORD m_dwOffset;
 	
-	BOOL	m_bScr;
 	int		m_nLineRefresh;
 
 public:
-	void Delete( int nIndex, int nLen );
-	
-	void Insert( int nIndex, LPCTSTR pstr );
 	void BlockSetStyle( DWORD dwStyle );
 	void BlockClearStyle( DWORD dwStyle );
 	void BlockSetColor( DWORD dwColor );
@@ -317,7 +313,6 @@ public:
 	CWndText();
 	~CWndText();
 	BOOL Create( DWORD dwTextStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID );
-	CPoint m_ptDeflateRect;
 
 	virtual	void OnInitialUpdate();
 	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE );
@@ -340,7 +335,6 @@ public:
 	void UpdateScrollBar();
 	BOOL IsEmptyBlock() { return m_dwBlockBegin == m_dwBlockEnd; }
 	CPoint OffsetToPoint( DWORD dwOffset );
-	CPoint GetCaretPos() { return m_ptCaret; }
 virtual void DrawCaret( C2DRender* p2DRender );
 	void SetCaretPos( CPoint ptCaret ) { m_ptCaret = ptCaret; m_timerCaret.Reset(); }
 
