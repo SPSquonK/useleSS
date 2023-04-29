@@ -350,6 +350,7 @@ virtual void DrawCaret( C2DRender* p2DRender );
 	void ResetString();
 
 	static void SetupDescription(CWndText * self, LPCTSTR filename);
+	[[nodiscard]] std::pair<DWORD, DWORD> GetSelectionRange() const;
 };
 
 //////////////////////////////////////////////////////////////////////////////

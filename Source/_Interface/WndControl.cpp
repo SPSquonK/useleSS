@@ -2025,13 +2025,7 @@ void CWndText::OnDraw( C2DRender* p2DRender )
 
 				if( m_bEnableClipboard )
 				{
-					DWORD dwBlockBegin;
-					DWORD dwBlockEnd;
-					if(m_dwBlockBegin > m_dwBlockEnd)
-						dwBlockBegin = m_dwBlockEnd, dwBlockEnd = m_dwBlockBegin;
-					else
-						dwBlockBegin = m_dwBlockBegin, dwBlockEnd = m_dwBlockEnd;
-
+					const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
 
 					if(dwCurOffset >= dwBlockBegin && dwCurOffset < dwBlockEnd)
 					{
@@ -2063,10 +2057,6 @@ void CWndText::OnDraw( C2DRender* p2DRender )
 	}
 	else
 	{
-		if( nLines == 6 )
-		{
-			int a = 0;
-		}
 		BlockSetStyle(ESSTY_BLOCK);
 		//ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
 		p2DRender->TextOut_EditString( 0, 0, m_string, nPos, nLines, m_nLineSpace );
@@ -2080,12 +2070,8 @@ void CWndText::BlockSetStyle(DWORD dwStyle)
 {
 	if( m_bEnableClipboard )
 	{
-		DWORD dwBlockBegin;
-		DWORD dwBlockEnd;
-		if(m_dwBlockBegin > m_dwBlockEnd) 
-			dwBlockBegin = m_dwBlockEnd, dwBlockEnd = m_dwBlockBegin;
-		else
-			dwBlockBegin = m_dwBlockBegin, dwBlockEnd = m_dwBlockEnd;
+		const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
+
 		if( dwBlockEnd - dwBlockBegin )
 		{
 			m_string.SetStyle( dwBlockBegin, dwBlockEnd - dwBlockBegin, dwStyle );
@@ -2097,12 +2083,8 @@ void CWndText::BlockSetColor( DWORD dwColor )
 {
 	if( m_bEnableClipboard )
 	{
-		DWORD dwBlockBegin;
-		DWORD dwBlockEnd;
-		if(m_dwBlockBegin > m_dwBlockEnd) 
-			dwBlockBegin = m_dwBlockEnd, dwBlockEnd = m_dwBlockBegin;
-		else
-			dwBlockBegin = m_dwBlockBegin, dwBlockEnd = m_dwBlockEnd;
+		const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
+
 		if( dwBlockEnd - dwBlockBegin )
 		{
 			m_string.SetColor( dwBlockBegin, dwBlockEnd - dwBlockBegin, dwColor );
@@ -2115,12 +2097,8 @@ void CWndText::BlockClearStyle(DWORD dwStyle)
 {
 	if( m_bEnableClipboard )
 	{
-		DWORD dwBlockBegin;
-		DWORD dwBlockEnd;
-		if(m_dwBlockBegin > m_dwBlockEnd) 
-			dwBlockBegin = m_dwBlockEnd, dwBlockEnd = m_dwBlockBegin;
-		else
-			dwBlockBegin = m_dwBlockBegin, dwBlockEnd = m_dwBlockEnd;
+		const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
+
 		if( dwBlockEnd - dwBlockBegin )
 		{
 			m_string.ClearStyle( dwBlockBegin, dwBlockEnd - dwBlockBegin, dwStyle );
@@ -2286,14 +2264,9 @@ void CWndText::OnChar( UINT nChar  )
 	{
 		if( m_dwBlockBegin != m_dwBlockEnd )
 		{
-			DWORD dwBlockBegin;
-			DWORD dwBlockEnd;
-			if(m_dwBlockBegin > m_dwBlockEnd)
-				dwBlockBegin = m_dwBlockEnd, dwBlockEnd = m_dwBlockBegin;
-			else
-				dwBlockBegin = m_dwBlockBegin, dwBlockEnd = m_dwBlockEnd;
-			CString strClipboard;
-			strClipboard = m_string.Mid( dwBlockBegin, dwBlockEnd - dwBlockBegin );
+			const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
+
+			CString strClipboard = m_string.Mid( dwBlockBegin, dwBlockEnd - dwBlockBegin );
 			if( m_bEnableClipboard ) 
 				CClipboard::SetText( strClipboard );
 		}
@@ -2487,9 +2460,6 @@ void CWndText::SetString( LPCTSTR pszString, DWORD dwColor )
 	SetCaretPos( ptCaret );
 	
 	m_dwBlockBegin = m_dwBlockEnd = 0;
-	//m_dwBlockBegin = m_dwBlockEnd = m_dwOffset = 0;
-	//SetCaretPos( CPoint(0,0) );
-	//m_string.Reset( m_pFont, &GetClientRect() );
 }
 void CWndText::AddString(LPCTSTR pszString, DWORD dwColor, DWORD dwPStyle )
 {
@@ -2539,6 +2509,10 @@ void CWndText::SetupDescription(CWndText * self, LPCTSTR filename) {
 	self->m_string.SetString("");
 	self->m_string.AddParsingString(scanner.m_pProg);
 	self->ResetString();
+}
+
+std::pair<DWORD, DWORD> CWndText::GetSelectionRange() const {
+	return std::minmax(m_dwBlockBegin, m_dwBlockEnd);
 }
 
 ////////////////////////////

@@ -1762,9 +1762,8 @@ void CWndEdit::DeleteBlock( )
 	{
 		CRect rect = GetClientRect();
 		m_string.Init( m_pFont, &rect );
-		
-		DWORD dwBlockBegin = std::min(m_dwBlockBegin, m_dwBlockEnd);
-		DWORD dwBlockEnd = std::max(m_dwBlockBegin, m_dwBlockEnd);
+
+		const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
 
 		m_string.Delete( dwBlockBegin, dwBlockEnd - dwBlockBegin );
 
@@ -1903,7 +1902,7 @@ void CWndEdit::OnChar_(UINT nChar)
 	{
 		if( m_dwBlockBegin != m_dwBlockEnd  && m_bEnableClipboard)
 		{
-			const auto [dwBlockBegin, dwBlockEnd] = std::minmax(m_dwBlockBegin, m_dwBlockEnd);
+			const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
 
 			CString strClipboard = m_string.Mid( dwBlockBegin, dwBlockEnd - dwBlockBegin );
 
