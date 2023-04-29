@@ -311,10 +311,10 @@ void CWndLordTender::OnDraw( C2DRender* p2DRender )
 { 
 	CCElection* pElection	= static_cast<CCElection*>( CCLord::Instance()->GetElection() );
 	CWndText*	pWndText = (CWndText*)GetDlgItem( WIDC_TEXT2 );
-	CString		strTemp, strResult;
 
 	pWndText->ResetString();
 	
+	CString strResult;
 	for(int i = 1; i < (int)( pElection->GetCandidatesSize() + 1 ); ++i)
 	{
 		SPC pRanker = pElection->GetRanker(i);
@@ -322,15 +322,9 @@ void CWndLordTender::OnDraw( C2DRender* p2DRender )
 		{
 			if(pRanker->GetIdPlayer() > 0)
 			{
-				PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData(pRanker->GetIdPlayer());
-				if(pPlayerData->szPlayer)
-				{
-					if(i  >= 10) strTemp.Format("  %d           %s \n", i, pPlayerData->szPlayer);
-					else         strTemp.Format("  %d            %s \n", i, pPlayerData->szPlayer);
-				}
-				else
-					strTemp.Format("  %d            %s \n", i, "....");
-				strResult.Insert(INT_MAX, strTemp);
+				PlayerData * pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData(pRanker->GetIdPlayer());
+				const char * playerName = pPlayerData ? pPlayerData->szPlayer : "....";
+				strResult.AppendFormat("  %-2d           %s \n", i, playerName);
 			}
 		}
 	}

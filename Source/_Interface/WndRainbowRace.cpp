@@ -11,21 +11,16 @@
 // RainbowRace Offer Window
 //////////////////////////////////////////////////////////////////////////
 
-CWndRainbowRaceOffer::CWndRainbowRaceOffer()
-{
-	m_pText = NULL;
+CWndRainbowRaceOffer::CWndRainbowRaceOffer() {
 	m_nOfferCount = 0;
 }
 
-CWndRainbowRaceOffer::~CWndRainbowRaceOffer()
-{
-}
 
 void CWndRainbowRaceOffer::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
+	CWndText * m_pText = GetDlgItem<CWndText>( WIDC_TEXT1 );
 	
 	CScript scanner;
 	BOOL checkflag;
@@ -68,31 +63,14 @@ BOOL CWndRainbowRaceOffer::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 // RainbowRace Information Window
 //////////////////////////////////////////////////////////////////////////
 
-CWndRainbowRaceInfo::CWndRainbowRaceInfo()
-{
-	m_pText = NULL;
-}
-
-CWndRainbowRaceInfo::~CWndRainbowRaceInfo()
-{
-}
-
 void CWndRainbowRaceInfo::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "RainbowRaceInfo.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("RainbowRaceInfo.inc")
+	);
 
 	MoveParentCenter();
 } 
@@ -115,31 +93,14 @@ BOOL CWndRainbowRaceInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 // RainbowRace Rule Window
 //////////////////////////////////////////////////////////////////////////
 
-CWndRainbowRaceRule::CWndRainbowRaceRule()
-{
-	m_pText = NULL;
-}
-
-CWndRainbowRaceRule::~CWndRainbowRaceRule()
-{
-}
-
 void CWndRainbowRaceRule::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "RainbowRaceRule.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("RainbowRaceRule.inc")
+	);
 
 	MoveParentCenter();
 } 
@@ -243,31 +204,14 @@ void CWndRainbowRaceRanking::SetRankingPlayer(u_long* dwPlayerId)
 // RainbowRace Prize Window
 //////////////////////////////////////////////////////////////////////////
 
-CWndRainbowRacePrize::CWndRainbowRacePrize()
-{
-	m_pText = NULL;
-}
-
-CWndRainbowRacePrize::~CWndRainbowRacePrize()
-{
-}
-
 void CWndRainbowRacePrize::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "RainbowRacePrize.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("RainbowRacePrize.inc")
+	);
 
 	MoveParentCenter();
 } 
@@ -592,18 +536,10 @@ void CWndRainbowRaceMiniGameInfo::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate();
 	// 여기에 코딩하세요
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  m_strFileName ));
-	CHAR* szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		m_strFileName
+	);
 
 	CWndRainbowRaceMiniGame* pWndGame = (CWndRainbowRaceMiniGame*)GetWndBase( APP_RAINBOWRACE_MINIGAME );
 	if(pWndGame != NULL)
@@ -910,7 +846,6 @@ BOOL CWndRainbowRaceMiniGameEnd::OnChildNotify( UINT message, UINT nID, LRESULT*
 
 CWndRRMiniGameKawiBawiBo::CWndRRMiniGameKawiBawiBo() 
 {
-	m_pText = NULL;
 	m_nWinningCount = 0;
 	m_nCount = 0;
 	m_nDelay = 1;
@@ -1119,18 +1054,10 @@ void CWndRRMiniGameKawiBawiBo::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "RRMinigameKawiBawiBo.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("RRMinigameKawiBawiBo.inc")
+	);
 
 	m_pStWinningCount = (CWndStatic*)GetDlgItem( WIDC_WINNING_COUNT );
 	m_pStMyChoice = (CWndStatic*)GetDlgItem( WIDC_MY_CHOICE1 );
@@ -1210,7 +1137,6 @@ void CWndRRMiniGameKawiBawiBo::EnableAllBtn()
 
 CWndRRMiniGameDice::CWndRRMiniGameDice()
 {
-	m_pText = NULL;
 	m_nTargetNum = 0;
 	m_nTargetNumBackup = 0;
 	m_nDiceNum1 = 0;
@@ -1234,18 +1160,10 @@ void CWndRRMiniGameDice::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "RRMinigameDice.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("RRMinigameDice.inc")
+	);
 
 	m_strPathDice[0] = MakePath( DIR_ICON, "Icon_1Dice90X90.dds");
 	m_strPathDice[1] = MakePath( DIR_ICON, "Icon_2Dice90X90.dds");
@@ -1512,7 +1430,6 @@ void CWndRRMiniGameDice::ReceiveResult(int nResult, int nDice1, int nDice2)
 
 CWndRRMiniGameArithmetic::CWndRRMiniGameArithmetic()
 {
-	m_pText = NULL;
 	m_pWndRRMiniGameArithmeticTimeOver = NULL;
 	m_dwTime = 0;
 	m_nCorrectCount = 0;
@@ -1520,26 +1437,17 @@ CWndRRMiniGameArithmetic::CWndRRMiniGameArithmetic()
 
 CWndRRMiniGameArithmetic::~CWndRRMiniGameArithmetic()
 {
-	if(m_pWndRRMiniGameArithmeticTimeOver)
-		SAFE_DELETE(m_pWndRRMiniGameArithmeticTimeOver);
+	SAFE_DELETE(m_pWndRRMiniGameArithmeticTimeOver);
 }
 
 void CWndRRMiniGameArithmetic::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate();
 	// 여기에 코딩하세요
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT2 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "RRMinigameArithmetic.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("RRMinigameArithmetic.inc")
+	);
 
 	MoveParentCenter();
 } 
@@ -1645,7 +1553,6 @@ BOOL CWndRRMiniGameArithmeticTimeOver::OnChildNotify( UINT message, UINT nID, LR
 
 CWndRRMiniGameStopWatch::CWndRRMiniGameStopWatch()
 {
-	m_pText = NULL;
 	m_dwTargetTime = 0;
 	m_dwStartTime = 0;
 	m_dwTime = 0;
@@ -1654,26 +1561,14 @@ CWndRRMiniGameStopWatch::CWndRRMiniGameStopWatch()
 	m_nUSec = 0;
 }
 
-CWndRRMiniGameStopWatch::~CWndRRMiniGameStopWatch()
-{
-}
-
 void CWndRRMiniGameStopWatch::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "RRMinigameStopwatch.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("RRMinigameStopwatch.inc")
+	);
 
 	if(!m_texStopWatchNum.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "RainbowStopWatchNumber.inc" ) ))
 		Destroy();
@@ -1816,31 +1711,14 @@ void CWndRRMiniGameStopWatch::SetTargetTime(DWORD dwTargetTime)
 // RainbowRace Minigame - Typing Window
 //////////////////////////////////////////////////////////////////////////
 
-CWndRRMiniGameTyping::CWndRRMiniGameTyping()
-{
-	m_pText = NULL;
-}
-
-CWndRRMiniGameTyping::~CWndRRMiniGameTyping()
-{
-}
-
 void CWndRRMiniGameTyping::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT4 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "RRMinigameTyping.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("RRMinigameTyping.inc")
+	);
 
 	m_QuestionStaticID[0] = WIDC_STATIC1;
 	m_QuestionStaticID[1] = WIDC_STATIC2;
@@ -1907,7 +1785,6 @@ void CWndRRMiniGameTyping::ResetQuestion()
 
 CWndRRMiniGameCard::CWndRRMiniGameCard()
 {
-	m_pText = NULL;
 	m_texCardBack = NULL;
 	m_nPair[0] = -1;
 	m_nPair[1] = -1;
@@ -1923,18 +1800,11 @@ void CWndRRMiniGameCard::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
 	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "RRMinigameCard.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("RRMinigameCard.inc")
+	);
 
 	m_strCard[0] = "RainbowRaceCard1.tga";
 	m_strCard[1] = "RainbowRaceCard2.tga";
@@ -2155,7 +2025,6 @@ BOOL CWndRRMiniGameLadderFail::OnChildNotify( UINT message, UINT nID, LRESULT* p
 
 CWndRRMiniGameLadder::CWndRRMiniGameLadder()
 {
-	m_pText = NULL;
 	m_nResult = -1;
 	m_nStart = 0;
 	m_nTarget = 0;
@@ -2190,18 +2059,11 @@ void CWndRRMiniGameLadder::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
 	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "RRMinigameLadder.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
-
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("RRMinigameLadder.inc")
+	);
 
 	m_nStartCustomID[0] = WIDC_CUSTOM1;
 	m_nStartCustomID[1] = WIDC_CUSTOM2;

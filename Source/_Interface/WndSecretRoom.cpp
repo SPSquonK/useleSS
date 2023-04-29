@@ -428,18 +428,10 @@ void CWndSecretRoomOffer::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	
-	CWndText* pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "SecretRoomDesc.inc" ) ));
-	char* szChar = scanner.m_pProg;
-	
-	if(pText != NULL && checkflag)
-	{
-		pText->m_string.AddParsingString( szChar );
-		pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("SecretRoomDesc.inc")
+	);
 	
 	MoveParentCenter();
 } 
@@ -580,18 +572,10 @@ void CWndSecretRoomChangeTaxRate::OnInitialUpdate()
 	pStatic->SetTitle(strTex);
 
 	// 세율 변경 안내 설정
-	CWndText* pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "SecretRoomChangeTaxRate.inc" ) ));
-	char* szChar = scanner.m_pProg;
-	
-	if(pText != NULL && checkflag)
-	{
-		pText->m_string.AddParsingString( szChar );
-		pText->ResetString();
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("SecretRoomChangeTaxRate.inc")
+	);
 
 	MoveParentCenter();
 } 
@@ -751,18 +735,10 @@ void CWndSecretRoomCheckTaxRate::OnInitialUpdate()
 	}
 
 	// 세율 확인 안내 설정
-	CWndText* pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "SecretRoomCheckTaxRate.inc" ) ));
-	char* szChar = scanner.m_pProg;
-	
-	if(pText != NULL && checkflag)
-	{
-		pText->m_string.AddParsingString( szChar );
-		pText->ResetString();
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("SecretRoomCheckTaxRate.inc")
+	);
 
 	MoveParentCenter();
 } 
@@ -1044,19 +1020,11 @@ BOOL CWndSecretRoomInfoMsgBox::OnChildNotify( UINT message, UINT nID, LRESULT* p
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-void CWndSecretRoomInfoMsgBox::SetString( CHAR* szChar )
+void CWndSecretRoomInfoMsgBox::SetString(const CHAR* szChar )
 {
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 
 	pWndText->m_string.AddParsingString( szChar  );
-	pWndText->ResetString();	
-}
-
-void CWndSecretRoomInfoMsgBox::SetString( CString strMsg )
-{
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-
-	pWndText->m_string.AddParsingString( strMsg  );
 	pWndText->ResetString();	
 }
 
@@ -1220,18 +1188,7 @@ BOOL CWndSecretRoomBoard::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 
 void CWndSecretRoomBoard::SetString()
 {
-	CWndText* pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "SecretRoomBoard.inc" ) ));
-	char* szChar = scanner.m_pProg;
-	
-	if(pText != NULL && checkflag)
-	{
-		pText->m_string.AddParsingString( szChar );
-		pText->ResetString();
-	}
+	CWndText::SetupDescription(GetDlgItem<CWndText>(WIDC_TEXT1), _T("SecretRoomBoard.inc"));
 }
 /*
 //////////////////////////////////////////////////////////////////////////

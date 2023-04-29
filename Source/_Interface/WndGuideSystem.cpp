@@ -946,7 +946,7 @@ void CWndGuideTextMgr::_SetGuideText(GUIDE_STRUCT guide, bool bIsNext)
 	m_strHelpKey = guide.m_str;
 	pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 	pWndText->SetString("");
-	pWndText->m_string.AddParsingString(LPCTSTR(guide.m_str));
+	pWndText->m_string.AddParsingString(guide.m_str.GetString());
 	pWndText->ResetString();
 	CRect rect = pWndText->GetWndRect();
 

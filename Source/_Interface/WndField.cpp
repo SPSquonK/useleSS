@@ -7393,7 +7393,7 @@ BOOL CWndGuildCombatBoard::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 }
 
-void CWndGuildCombatBoard::SetString( CHAR* szChar )
+void CWndGuildCombatBoard::SetString( const CHAR* szChar )
 {
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 	
@@ -7463,19 +7463,11 @@ BOOL CGuildCombatInfoMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT*
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-void CGuildCombatInfoMessageBox::SetString( CHAR* szChar )
+void CGuildCombatInfoMessageBox::SetString( const CHAR* szChar )
 {
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 	
 	pWndText->m_string.AddParsingString( szChar  );
-	pWndText->ResetString();	
-}
-
-void CGuildCombatInfoMessageBox::SetString( CString strMsg )
-{
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	
-	pWndText->m_string.AddParsingString( strMsg  );
 	pWndText->ResetString();	
 }
 
@@ -11920,7 +11912,6 @@ void CWndRemoveJewel::UpdateStartButtonStatus() {
 
 CWndChangeAttribute::CWndChangeAttribute()
 {
-	m_pText = NULL;
 	m_nAttributeNum = -1;
 	m_pItemElem = NULL;
 	m_pChangeItem = NULL;
@@ -11939,18 +11930,11 @@ void CWndChangeAttribute::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// ���⿡ �ڵ��ϼ���
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "ChangeAttribute.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
 
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("ChangeAttribute.inc")
+	);
 
 	m_nAttributeStaticID[0] = WIDC_CUSTOM1;
 	m_nAttributeStaticID[1] = WIDC_CUSTOM2;
@@ -12424,32 +12408,16 @@ void CWndCoupleTabInfo::OnDraw(C2DRender* p2DRender)
 //////////////////////////////////////////////////////////////////////////
 // Couple Manager Tab Skill Window
 //////////////////////////////////////////////////////////////////////////
-CWndCoupleTabSkill::CWndCoupleTabSkill()
-{
-	m_pText = NULL;
-	m_pSkillBgTexture = NULL;
-}
-
-CWndCoupleTabSkill::~CWndCoupleTabSkill()
-{
-}
 
 void CWndCoupleTabSkill::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// ���⿡ �ڵ��ϼ���
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "CoupleSkillInfo.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
 
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("CoupleSkillInfo.inc")
+	);
 
 	m_pSkillBgTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "Bg_Couple_Skill.tga"), 0xffff00ff );
 
