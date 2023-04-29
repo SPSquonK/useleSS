@@ -495,7 +495,6 @@ void C2DRender::TextOut_EditString( int x,int y, CEditString& strEditString, int
 	CRect rect( x + m_ptOrigin.x, y + m_ptOrigin.y, x + m_ptOrigin.x + size.cx, y + m_ptOrigin.y + size.cy );
 	if( m_clipRect.RectLapRect( rect ) )
 	{
-		TCHAR strHan[3];
 		int nLength	 = strEditString.GetLength();
 		DWORD dwCurOffset;
 		x += m_ptOrigin.x;
@@ -514,7 +513,6 @@ void C2DRender::TextOut_EditString( int x,int y, CEditString& strEditString, int
 		{
 			CString string = strEditString.GetLine( i );
 			DWORD dwOffset = strEditString.GetLineOffset( i );
-			strHan[0] = 0;
 			dwCurOffset = 0;
 			const char* begin = string;
 			const char* end = begin + string.GetLength();

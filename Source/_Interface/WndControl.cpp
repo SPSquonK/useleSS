@@ -1887,9 +1887,7 @@ CWndText::CWndText()
 		m_nLineSpace	= 0;
 	m_byWndType = WTYPE_TEXT;
 	m_bEnableClipboard = FALSE;
-	memset(m_szCaret, 0, sizeof(char) * 3);
 	
-	m_szCaret[0] = 0;
 	m_strTexture = DEF_CTRL_TEXT;
 	m_bTile = TRUE;
 	m_ptDeflateRect = CPoint( 6, 6 );
@@ -1945,7 +1943,7 @@ void CWndText::SetWndRect(CRect rectWnd, BOOL bOnSize )
 	m_wndScrollBar.SetVisible( IsWndStyle( WBS_VSCROLL ) );
 	if( bOnSize )
 		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
+	CPoint ptCaret = OffsetToPoint( m_dwOffset );
 	SetCaretPos( ptCaret );
 	
 }
@@ -1959,7 +1957,6 @@ void CWndText::OnDraw( C2DRender* p2DRender )
 	CString string;
 	DWORD dwMaxHeight = GetFontHeight();
 	DWORD dwOffset = 0;
-	TCHAR strHan[3];
 	DWORD dwBegin = 0;
 	DWORD dwCurOffset = 0;
 	DWORD dwOffsetLine = m_string.OffsetToLine( m_dwOffset );
@@ -2013,8 +2010,7 @@ void CWndText::OnDraw( C2DRender* p2DRender )
 
 				const char* next = CharNextEx( iter, wCodePage );
 
-				strHan[0] = '*';
-				strHan[1] = 0;
+				const char * strHan = "*";
 
 				CSize size;
 				p2DRender->m_pFont->GetTextExtent( "*", &size );
@@ -2044,7 +2040,6 @@ void CWndText::OnDraw( C2DRender* p2DRender )
 				// 문장 내에서 캐럿과 위치가 같다면 출력 위치다.
 				if(dwCurOffset == m_dwOffset)
 				{
-					strcpy( m_szCaret, strHan );
 					ptCaret = CPoint( dwBegin, 0 + y * dwMaxHeight );
 				}
 				dwBegin += size.cx;
@@ -2058,7 +2053,6 @@ void CWndText::OnDraw( C2DRender* p2DRender )
 	else
 	{
 		BlockSetStyle(ESSTY_BLOCK);
-		//ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
 		p2DRender->TextOut_EditString( 0, 0, m_string, nPos, nLines, m_nLineSpace );
 	}
 	//SetCaretPos( ptCaret );
@@ -2128,12 +2122,11 @@ void CWndText::UpdateScrollBar()
 	}
 
 }
-CPoint CWndText::OffsetToPoint( DWORD dwSetOffset, TCHAR* pszStr )
+CPoint CWndText::OffsetToPoint( DWORD dwSetOffset )
 {
 	CString string;
 	DWORD dwMaxHeight = GetFontHeight();
 	DWORD dwOffset = 0;
-	TCHAR strHan[3];
 	DWORD dwBegin = 0;
 	DWORD dwCurOffset = 0;
 	DWORD dwOffsetLine = m_string.OffsetToLine( m_dwOffset );
@@ -2143,7 +2136,6 @@ CPoint CWndText::OffsetToPoint( DWORD dwSetOffset, TCHAR* pszStr )
 		dwOffset = m_string.GetLineOffset( i );
 		string = m_string.GetLine(i);
 		dwBegin = 0;
-		strHan[0] = 0;
 		const char* begin = string;
 		const char* end = begin + string.GetLength();
 		const char* iter = begin;
@@ -2171,8 +2163,6 @@ CPoint CWndText::OffsetToPoint( DWORD dwSetOffset, TCHAR* pszStr )
 			// 문장 내에서 캐럿과 위치가 같다면 출력 위치다.
 			if( dwCurOffset == dwSetOffset )
 			{
-				if( pszStr )
-					strcpy( pszStr, strHan );
 				return CPoint( dwBegin, 0 + i * dwMaxHeight );// + GetScreenRect().TopLeft();
 			}
 			dwBegin += size.cx;
@@ -2184,14 +2174,10 @@ CPoint CWndText::OffsetToPoint( DWORD dwSetOffset, TCHAR* pszStr )
 		{
 			if( !m_dwOffset || m_string.GetAt( m_dwOffset - 1 ) != '\n' )
 			{
-				if( pszStr )
-					pszStr[0] = 0;
 				ptCaret = CPoint( dwBegin, i * dwMaxHeight );// + GetScreenRect().TopLeft();
 			}
 			else
 			{
-				if( pszStr )
-					pszStr[0] = 0;
 				ptCaret = CPoint( 0, ( i + 1 ) * dwMaxHeight );// + GetScreenRect().TopLeft();
 			}
 		}
@@ -2281,7 +2267,7 @@ void CWndText::OnLButtonDown( UINT nFlags, CPoint point )
 	m_bLButtonDown = TRUE;
 	SetCapture();
 
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
+	CPoint ptCaret = OffsetToPoint( m_dwOffset );
 	SetCaretPos( ptCaret );
 }
 void CWndText::OnLButtonUp(UINT nFlags, CPoint point)
@@ -2456,7 +2442,7 @@ void CWndText::SetString( LPCTSTR pszString, DWORD dwColor )
 	if( IsWndStyle( WBS_VSCROLL ) )
 		UpdateScrollBar();
 	m_dwOffset = m_string.GetLength();
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
+	CPoint ptCaret = OffsetToPoint( m_dwOffset );
 	SetCaretPos( ptCaret );
 	
 	m_dwBlockBegin = m_dwBlockEnd = 0;
@@ -2468,7 +2454,7 @@ void CWndText::AddString(LPCTSTR pszString, DWORD dwColor, DWORD dwPStyle )
 	//m_string.Align( m_pFont, nLine );
 	UpdateScrollBar();
 	m_dwOffset = m_string.GetLength();
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
+	CPoint ptCaret = OffsetToPoint( m_dwOffset );
 	SetCaretPos( ptCaret );
 }
 
@@ -2478,7 +2464,7 @@ void CWndText::Insert(int nIndex, LPCTSTR pstr)
 	m_string.Insert( nIndex, pstr );
 	UpdateScrollBar();
 	m_dwOffset = m_string.GetLength();
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
+	CPoint ptCaret = OffsetToPoint( m_dwOffset );
 	SetCaretPos( ptCaret );	
 }
 
@@ -2488,14 +2474,14 @@ void CWndText::Delete(int nIndex, int nLen)
 	m_string.Delete( nIndex, nLen );
 	UpdateScrollBar();
 	m_dwOffset = m_string.GetLength();
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
+	CPoint ptCaret = OffsetToPoint( m_dwOffset );
 	SetCaretPos( ptCaret );		
 }
 
 void CWndText::ResetString()
 {
 	//m_string.Reset( m_pFont, &GetClientRect() );
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
+	CPoint ptCaret = OffsetToPoint( m_dwOffset );
 	SetCaretPos( ptCaret );
 	UpdateScrollBar();
 }

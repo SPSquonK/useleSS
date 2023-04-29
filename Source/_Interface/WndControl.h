@@ -308,7 +308,6 @@ public:
 	void BlockSetColor( DWORD dwColor );
 	CWndMenu m_wndMenu;
 	
-	TCHAR m_szCaret[ 3 ];
 	BOOL m_bEnableClipboard;
 
 	int m_nLineSpace; 
@@ -340,7 +339,7 @@ public:
 	LONG GetOffset( CPoint point );
 	void UpdateScrollBar();
 	BOOL IsEmptyBlock() { return m_dwBlockBegin == m_dwBlockEnd; }
-	CPoint OffsetToPoint( DWORD dwOffset, TCHAR* pszStr );
+	CPoint OffsetToPoint( DWORD dwOffset );
 	CPoint GetCaretPos() { return m_ptCaret; }
 virtual void DrawCaret( C2DRender* p2DRender );
 	void SetCaretPos( CPoint ptCaret ) { m_ptCaret = ptCaret; m_timerCaret.Reset(); }
