@@ -1536,11 +1536,6 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 		case WM_KEYUP:
 			{
 				TRACE( "WM_KEYUP %x\n", wparam );
-				if( wparam == 0x0d )
-				{
-					int a = 0;
-					a++;
-				}
 				OnKeyUp(wparam, LOWORD(lparam), HIWORD(lparam));
 				return TRUE;
 				break;
@@ -1694,11 +1689,6 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 		}
 		case WM_KEYUP:
 			TRACE( "WM_KEYUP %x\n", wparam );
-			if( wparam == 0x0d )
-			{
-				int a = 0;
-				a++;
-			}
 			OnKeyUp(wparam, LOWORD(lparam), HIWORD(lparam));
 			return TRUE;
 			break;

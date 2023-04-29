@@ -2318,51 +2318,15 @@ void CWndText::OnMouseMove(UINT nFlags, CPoint point)
 		if(lOffset != -1)
 			m_dwBlockEnd = m_dwOffset = lOffset; 
 	}
-	else
-	{
-		int dwOffset;
-		int dwBlockBegin;
-		int dwBlockEnd;
-		LONG lOffset = GetOffset( point );
-		BYTE chr1, chr2;
-
-		if(lOffset >= 0 && lOffset < m_string.GetLength() ) 
-		{
-			if( !IsWhite( m_string.GetAt( lOffset ) ) ) 
-			{
-				dwBlockBegin = lOffset;
-				dwBlockEnd = lOffset;
-
-				while( dwBlockBegin > 1 )
-				{
-					chr1 = m_string.GetAt ( dwBlockBegin - 1 );
-					chr2 = m_string.GetAt ( dwBlockBegin - 2 ); 
-
-					if( IsDBCSLeadByte( chr1 ) && IsDBCSLeadByte( chr2 ) )
-						dwBlockBegin -= 2;
-					else
-					if( !IsWhite( chr1 ) )
-						dwBlockBegin -= 1;
-					else
-						break;
-				}
-
-				dwOffset = dwBlockEnd; 
-
-			}
-		}
-	}
 }
 void CWndText::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	LONG lOffset = GetOffset(point);
-	BYTE chr1;
 
 	if(lOffset >= 0 && lOffset < m_string.GetLength() ) 
 	{
 		if( !IsWhite( m_string.GetAt( lOffset ) ) ) 
 		{
-			chr1 = 0;
 			const char* begin = m_string;
 			const char* end = begin + m_string.GetLength();
 			const char* iter = begin;
@@ -2450,8 +2414,8 @@ void CWndText::SetString( LPCTSTR pszString, DWORD dwColor )
 void CWndText::AddString(LPCTSTR pszString, DWORD dwColor, DWORD dwPStyle )
 {
 	int nLine = m_string.GetLineCount() - 1;
-	m_string.AddParsingString( pszString, dwColor, 0x00000000, 0, dwPStyle );//+= pszString;
-	//m_string.Align( m_pFont, nLine );
+	m_string.AddParsingString( pszString, dwColor, 0x00000000, 0, dwPStyle );
+
 	UpdateScrollBar();
 	m_dwOffset = m_string.GetLength();
 	CPoint ptCaret = OffsetToPoint( m_dwOffset );
@@ -2460,7 +2424,6 @@ void CWndText::AddString(LPCTSTR pszString, DWORD dwColor, DWORD dwPStyle )
 
 void CWndText::Insert(int nIndex, LPCTSTR pstr)
 {
-	int nLine = m_string.GetLineCount() - 1;
 	m_string.Insert( nIndex, pstr );
 	UpdateScrollBar();
 	m_dwOffset = m_string.GetLength();
@@ -2470,7 +2433,6 @@ void CWndText::Insert(int nIndex, LPCTSTR pstr)
 
 void CWndText::Delete(int nIndex, int nLen)
 {
-	int nLine = m_string.GetLineCount() - 1;
 	m_string.Delete( nIndex, nLen );
 	UpdateScrollBar();
 	m_dwOffset = m_string.GetLength();
@@ -2480,7 +2442,6 @@ void CWndText::Delete(int nIndex, int nLen)
 
 void CWndText::ResetString()
 {
-	//m_string.Reset( m_pFont, &GetClientRect() );
 	CPoint ptCaret = OffsetToPoint( m_dwOffset );
 	SetCaretPos( ptCaret );
 	UpdateScrollBar();

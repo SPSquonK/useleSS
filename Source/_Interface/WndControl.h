@@ -346,6 +346,7 @@ virtual void DrawCaret( C2DRender* p2DRender );
 
 	void SetString( LPCTSTR pszString, DWORD dwColor = 0xff000000 );
 	void AddString( LPCTSTR pszString, DWORD dwColor = 0xff000000, DWORD dwPStyle = 0x00000001 );
+	// Reset the carret position and the scrollbar. DOES NOT MODIFY THE STRING
 	void ResetString();
 
 	static void SetupDescription(CWndText * self, LPCTSTR filename);
