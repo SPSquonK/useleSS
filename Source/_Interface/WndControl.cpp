@@ -1941,9 +1941,8 @@ void CWndText::SetWndRect(CRect rectWnd, BOOL bOnSize )
 	m_wndScrollBar.SetVisible( IsWndStyle( WBS_VSCROLL ) );
 	if( bOnSize )
 		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
-	CPoint ptCaret = OffsetToPoint( m_dwOffset );
-	SetCaretPos( ptCaret );
-	
+
+	ReplaceCaret();
 }
 
 
@@ -2045,15 +2044,13 @@ void CWndText::OnDraw( C2DRender* p2DRender )
 				iter = next;
 			}
 		}
-		 //m_ptCaret = ptCaret; 
-		 //m_timerCaret.Reset(); 
 	}
 	else
 	{
 		BlockSetStyle(ESSTY_BLOCK);
 		p2DRender->TextOut_EditString( 0, 0, m_string, nPos, nLines, m_nLineSpace );
 	}
-	//SetCaretPos( ptCaret );
+
 	DrawCaret( p2DRender );
 	p2DRender->SetFont( pOldFont );
 }
@@ -2269,9 +2266,7 @@ void CWndText::OnLButtonDown( UINT nFlags, CPoint point )
 		m_dwBlockBegin = m_dwBlockEnd = m_dwOffset = lOffset; 
 	m_bLButtonDown = TRUE;
 	SetCapture();
-
-	CPoint ptCaret = OffsetToPoint( m_dwOffset );
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 }
 void CWndText::OnLButtonUp(UINT nFlags, CPoint point)
 {
@@ -2384,8 +2379,11 @@ void CWndText::OnLButtonDblClk(UINT, CPoint point)
 		m_dwBlockBegin = wordStartedAt;
 		m_dwBlockEnd = iter - begin;
 		m_dwOffset = m_dwBlockEnd;
+
+		ReplaceCaret();
 	}
 }
+
 BOOL CWndText::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
 {
 	if( m_wndScrollBar.GetScrollPage() >= m_wndScrollBar.GetMaxScrollPos() )
@@ -2428,8 +2426,7 @@ void CWndText::SetString( LPCTSTR pszString, DWORD dwColor )
 	if( IsWndStyle( WBS_VSCROLL ) )
 		UpdateScrollBar();
 	m_dwOffset = m_string.GetLength();
-	CPoint ptCaret = OffsetToPoint( m_dwOffset );
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 	
 	m_dwBlockBegin = m_dwBlockEnd = 0;
 }
@@ -2440,14 +2437,12 @@ void CWndText::AddString(LPCTSTR pszString, DWORD dwColor, DWORD dwPStyle )
 
 	UpdateScrollBar();
 	m_dwOffset = m_string.GetLength();
-	CPoint ptCaret = OffsetToPoint( m_dwOffset );
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 }
 
 void CWndText::ResetString()
 {
-	CPoint ptCaret = OffsetToPoint( m_dwOffset );
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 	UpdateScrollBar();
 }
 

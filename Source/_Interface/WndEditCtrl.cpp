@@ -1518,8 +1518,7 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 						{
 							m_string.Insert( m_dwOffset, '\n', EDIT_COLOR, 0, g_imeMgr.m_codePage );
 							m_dwOffset++;
-							CPoint ptCaret = OffsetToPoint( m_dwOffset );
-							SetCaretPos( ptCaret );
+							ReplaceCaret();
 						}
 						CloseCandidate();
 						g_imeMgr.CancelComposition( m_hWnd );
@@ -1529,8 +1528,7 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 				case VK_ESCAPE:
 					break;
 				}
-				CPoint ptCaret = OffsetToPoint( m_dwOffset );
-				SetCaretPos( ptCaret );
+				ReplaceCaret();
 				OnKeyDown(wparam, LOWORD(lparam), HIWORD(lparam));
 			}
 		case WM_KEYUP:
@@ -1650,8 +1648,7 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 						if( m_pParentWnd->OnChildNotify( EN_UP, m_nIdWnd, (LRESULT*)this ))
 						{
 							OnKeyEnd();
-							CPoint ptCaret = OffsetToPoint( m_dwOffset );
-							SetCaretPos( ptCaret );
+							ReplaceCaret();
 							return FALSE;
 						}
 					}
@@ -1673,8 +1670,7 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 					{
 						m_string.Insert( m_dwOffset, '\n', EDIT_COLOR, 0, g_imeMgr.m_codePage );
 						m_dwOffset++;
-						CPoint ptCaret = OffsetToPoint( m_dwOffset );
-						SetCaretPos( ptCaret );
+						ReplaceCaret();
 					}
 					CloseCandidate();
 					g_imeMgr.CancelComposition( m_hWnd );
@@ -1683,8 +1679,7 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 				case VK_ESCAPE:
 					break;
 			}
-			CPoint ptCaret = OffsetToPoint( m_dwOffset );
-			SetCaretPos( ptCaret );
+			ReplaceCaret();
 			OnKeyDown(wparam, LOWORD(lparam), HIWORD(lparam));
 		}
 		case WM_KEYUP:
@@ -1780,8 +1775,7 @@ LONG CWndEdit::OnInputLangChange(WPARAM dwCommand, LPARAM dwData)
 LONG CWndEdit::OnIMEStartComposition(WPARAM dwCommand, LPARAM dwData)
 {
 	m_stringBack = m_string;
-	CPoint ptCaret = OffsetToPoint( m_dwOffset );
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 
 	return TRUE;
 }
@@ -1955,8 +1949,7 @@ void CWndEdit::OnChar_(UINT nChar)
 		
 		m_pParentWnd->OnChildNotify( EN_CHANGE, m_nIdWnd, (LRESULT*)this ); 
 	}
-	CPoint ptCaret = OffsetToPoint( m_dwOffset );
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 }
 // GCS_RESULTSTR
 BOOL CWndEdit::GetResultString()
@@ -1979,8 +1972,7 @@ BOOL CWndEdit::GetResultString()
 	m_dwOffset+=len;
 
 	m_pParentWnd->OnChildNotify( EN_CHANGE, m_nIdWnd, (LRESULT*)this ); 
-	CPoint ptCaret = OffsetToPoint( m_dwOffset );
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 	m_stringBack = m_string;
 
 	return TRUE;
@@ -2041,9 +2033,7 @@ BOOL CWndEdit::GetCompString(LONG flag)
 	m_ptInputPos = OffsetToPoint( m_dwOffset + inputPos );
 	
 	m_pParentWnd->OnChildNotify( EN_CHANGE, m_nIdWnd, (LRESULT*)this ); 
-	CPoint ptCaret = OffsetToPoint( m_dwOffset + curPos );
-
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 
 	return TRUE;
 }

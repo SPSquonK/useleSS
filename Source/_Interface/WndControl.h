@@ -337,6 +337,7 @@ public:
 	CPoint OffsetToPoint( DWORD dwOffset );
 virtual void DrawCaret( C2DRender* p2DRender );
 	void SetCaretPos( CPoint ptCaret ) { m_ptCaret = ptCaret; m_timerCaret.Reset(); }
+	void ReplaceCaret() { SetCaretPos(OffsetToPoint(m_dwOffset)); }
 
 	void SetString( LPCTSTR pszString, DWORD dwColor = 0xff000000 );
 	void AddString( LPCTSTR pszString, DWORD dwColor = 0xff000000, DWORD dwPStyle = 0x00000001 );
