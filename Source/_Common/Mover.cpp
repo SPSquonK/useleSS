@@ -1670,7 +1670,7 @@ BOOL CMover::ReplaceInspection(const REGIONELEM * pPortkey )
 	if( bResult != FALSE && pPortkey->m_uItemId != 0xffffffff )
 	{
 		int nCount = GetItemNum( pPortkey->m_uItemId );
-		if( (DWORD)( nCount ) <= pPortkey->m_uiItemCount )
+		if( (DWORD)( nCount ) >= pPortkey->m_uiItemCount )
 		{
 			bResult = TRUE;
 		}

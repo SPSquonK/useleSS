@@ -443,7 +443,7 @@ void CCommonCtrl::_ProcessAction()
 
 	
 	// 아이템, 몬스터 드롭
-	if( m_CtrlElem.m_dwMinItemNum > 0 && m_CtrlElem.m_dwMaxiItemNum > m_CtrlElem.m_dwMinItemNum )
+	if( m_CtrlElem.m_dwMinItemNum > 0 && m_CtrlElem.m_dwMaxiItemNum >= m_CtrlElem.m_dwMinItemNum )
 	{
 		DropItem();
 	}
@@ -641,66 +641,53 @@ void CCommonCtrl::SetActionPlay()
 	m_bAniPlay = TRUE;
 }
 
-void CCommonCtrl::DropItem()
-{
-	int nTotalNum = (xRandom(m_CtrlElem.m_dwMaxiItemNum - m_CtrlElem.m_dwMinItemNum) + m_CtrlElem.m_dwMinItemNum) + 1;
-	DWORD	dwAdjRand;
+void CCommonCtrl::DropItem() {
+	int nTotalNum = 1 + xRandom(m_CtrlElem.m_dwMinItemNum, m_CtrlElem.m_dwMaxiItemNum);
 
-	for( int i=0; i<MAX_CTRLDROPITEM; i++ )
-	{
-		ItemProp* pItemProp = prj.GetItemProp( m_CtrlElem.m_dwInsideItemKind[i] );
+	for (int i = 0; i < MAX_CTRLDROPITEM; i++) {
+		if (nTotalNum == 0) break;
+
+		const DWORD dwAdjRand = xRandom(3000000000);
+
+		if (dwAdjRand > m_CtrlElem.m_dwInsideItemPer[i]) {
+			continue;
+		}
+
+		const ItemProp * const pItemProp = prj.GetItemProp(m_CtrlElem.m_dwInsideItemKind[i]);
 		
-		if( pItemProp == NULL )
-		{
-	#ifdef __YDEBUG
-			Error( "CtrlProp(%s)의 ItemKind(%d)값이 잘못되었다.", GetName(), m_CtrlElem.m_dwInsideItemKind[i] );
-	#endif // __YDEBUG
+		if (!pItemProp || pItemProp->dwID == 0) {
+			Error("CCommonCtrl::DropItem (%s) ItemKind %lu is bad",
+				GetName(), m_CtrlElem.m_dwInsideItemKind[i]
+			);
+			m_CtrlElem.m_dwInsideItemPer[i] = 3000000000;
 			return;
 		}
 
-		dwAdjRand	= xRandom( 3000000000 );
+		CItemElem* pItemElem	= new CItemElem;
+		pItemElem->m_dwItemId	= pItemProp->dwID;
+		pItemElem->m_nItemNum	= 1;
 
-		if( m_CtrlElem.m_dwInsideItemPer[i] >= dwAdjRand && nTotalNum )
-		{
-			CItemElem* pItemElem	= new CItemElem;
-			pItemElem->m_dwItemId	= pItemProp->dwID;
-			pItemElem->m_nItemNum	= 1;
+		nTotalNum -= pItemElem->m_nItemNum;
+		pItemElem->m_nHitPoint = pItemProp->dwEndurance;
 
-			// 마지막 슬롯은 레어아이템용슬롯 레어아이템은 1개를 초과할수 없다.
-			if( i == MAX_CTRLDROPITEM-1 )
-			{
-				if( pItemElem->m_nItemNum > 1 )
-					pItemElem->m_nItemNum = 1;
-			}
+		pItemElem->SetAbilityOption( 0 );
+		pItemElem->SetSerialNumber();
+		CItem* pItem	= new CItem;
 
-			nTotalNum -= pItemElem->m_nItemNum;
-			pItemElem->m_nHitPoint		= pItemProp->dwEndurance;
+		pItem->m_pItemBase	= pItemElem;
+		pItem->m_idOwn			= m_nMoverID;
+		pItem->m_dwDropTime		= timeGetTime();
 
-			pItemElem->SetAbilityOption( 0 );
-			pItemElem->SetSerialNumber();
-			CItem* pItem	= new CItem;
-
-			pItem->m_pItemBase	= pItemElem;
-			{
-				pItem->m_idOwn			= m_nMoverID;
-				pItem->m_dwDropTime		= timeGetTime();
-			}
-			pItem->m_bDropMob	= FALSE;
-			if( pItem->m_pItemBase->m_dwItemId == 0 ) Error( "CCommonCtrl::DropItem SetIndex\n" );
-			pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
+		pItem->m_bDropMob	= FALSE;
+		pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
 			
-			D3DXVECTOR3	v3Pos = GetPos();
+		D3DXVECTOR3	v3Pos = GetPos();
+		v3Pos.x += static_cast<float>(xRandom(30) - 15) * 0.1f;
+		v3Pos.z += static_cast<float>(xRandom(30) - 15) * 0.1f;
+		pItem->SetPos(v3Pos);
+		pItem->SetAngle(static_cast<float>(xRandom(360)));
 
-			FLOAT fRange = (float)xRandom(30)-15;
-
-			fRange*=0.1f;
-
-			v3Pos.x += fRange;
-			v3Pos.z += fRange;
-			pItem->SetPos( v3Pos );
-			pItem->SetAngle( (float)( xRandom(360) ) );
-			GetWorld()->ADDOBJ( pItem, TRUE, GetLayer() );
-		}
+		GetWorld()->ADDOBJ( pItem, TRUE, GetLayer() );
 	}
 
 	m_CtrlElem.m_dwMaxiItemNum = 0;
