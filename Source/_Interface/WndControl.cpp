@@ -2195,6 +2195,11 @@ LONG CWndText::GetOffset(CPoint point)
 	CPoint pt = point;
 	pt.y /= dwMaxHeight;
 	pt.y += m_wndScrollBar.GetScrollPos();
+
+	if (pt.y >= m_string.GetLineCount() && m_string.GetLineCount() > 0) {
+		pt.y = m_string.GetLineCount() - 1;
+	}
+
 	DWORD dwOffset1 = m_string.GetLineOffset( pt.y );
 	DWORD dwOffset2 = m_string.GetLineOffset( pt.y + 1);
 	DWORD dwBegin = 0;
@@ -2317,49 +2322,68 @@ void CWndText::OnMouseMove(UINT nFlags, CPoint point)
 			m_dwBlockEnd = m_dwOffset = lOffset; 
 	}
 }
-void CWndText::OnLButtonDblClk(UINT nFlags, CPoint point)
+void CWndText::OnLButtonDblClk(UINT, CPoint point)
 {
-	LONG lOffset = GetOffset(point);
+	const LONG lOffset = GetOffset(point);
+	if (lOffset < 0 || lOffset > m_string.GetLength()) {
+		return;
+	}
 
-	if(lOffset >= 0 && lOffset < m_string.GetLength() ) 
-	{
-		if( !IsWhite( m_string.GetAt( lOffset ) ) ) 
-		{
-			const char* begin = m_string;
-			const char* end = begin + m_string.GetLength();
-			const char* iter = begin;
+	// On double click:
+	// - A unit = a word and its subsequent spaces until newline or a new word
+	// - Select the current unit
+	// - If on a word, must select the word + the spaces until next word or /n
+	// - If on a space, must select previous word + the spaces until next word or /n
+	// Cursor is at the end
 
-			m_dwBlockBegin = 0;
+	const char * begin = m_string;
+	const char * end = begin + m_string.GetLength();
+	const char * iter = begin;
 
-			// Get m_dwBlockBegin
-			while(*iter && iter < end) {
+	enum class State { OnWord, OnSpace };
+	State state = State::OnSpace;
+	DWORD wordStartedAt = 0;
+	bool foundPosition = false;
 
-				if( IsWhite( *iter ) )
-					m_dwBlockBegin = iter - begin;
+	while (*iter && iter < end) {
+		if (begin + lOffset == iter) {
+			foundPosition = true;
+		}
 
-				WORD wCodePage = m_string.m_awCodePage[iter-begin];
-
-				iter = CharNextEx( iter, wCodePage );
-				if(iter - begin > lOffset) break;
+		if (IsWhite(*iter)) {
+			if (*iter == '\r' || *iter == '\n') {
+				if (foundPosition) {
+					break;
+				}
+				
+				// New unit
+				wordStartedAt = iter - begin;
 			}
 
-			m_dwBlockEnd = m_dwBlockBegin;
-
-			while(*iter && iter < end) {
-
-				if( IsWhite( *iter ) ) {
-					m_dwBlockEnd = iter - begin;
+			state = State::OnSpace;
+		} else {
+			if (state == State::OnSpace) {
+				if (foundPosition) {
+					// Moved past what we want to select
 					break;
 				}
 
-				WORD wCodePage = m_string.m_awCodePage[iter-begin];
-
-				iter = CharNextEx( iter, wCodePage );
-				if(iter - begin > lOffset) break;
+				// New unit
+				wordStartedAt = iter - begin;
 			}
 
-			m_dwOffset = m_dwBlockEnd;
+			state = State::OnWord;
 		}
+
+		// ++iter
+		const WORD wCodePage = m_string.m_awCodePage[iter - begin];
+		iter = CharNextEx(iter, wCodePage);
+	}
+
+	if (foundPosition || (iter == end && lOffset == end - begin)) {
+		m_dwBlockBegin = wordStartedAt;
+		m_dwBlockEnd = iter - begin;
+		m_dwOffset = m_dwBlockEnd;
 	}
 }
 BOOL CWndText::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
