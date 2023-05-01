@@ -1881,29 +1881,35 @@ void CWndEdit::OnChar_(UINT nChar)
 		
 		return;
 	}
+
+	// CTRL-A: Select all
+	if (nChar == 1) {
+		m_dwBlockBegin = 0;
+		m_dwBlockEnd = m_dwOffset = m_string.GetLength();
+		ReplaceCaret();
+		return;
+	}
 	
-	if( nChar == 3 ) // CTRL-C : copy
-	{
-		if( m_dwBlockBegin != m_dwBlockEnd  && m_bEnableClipboard)
-		{
+	// CTRL-C: Copy
+	if (nChar == 3) {
+		if (m_dwBlockBegin != m_dwBlockEnd && m_bEnableClipboard) {
 			const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
-
-			CString strClipboard = m_string.Mid( dwBlockBegin, dwBlockEnd - dwBlockBegin );
-
+			const CString strClipboard = m_string.Mid(dwBlockBegin, dwBlockEnd - dwBlockBegin);
 			CClipboard::SetText(strClipboard.GetString());
 		}
 		return;
 	}
-	if( nChar == 22 && m_bEnableClipboard ) // Ctrl-V : Paste
-	{
+
+	// CTRL-V: Paste
+	if (nChar == 22 && m_bEnableClipboard) {
 		DeleteBlock();
 
-		if (const auto str = CClipboard::GetText()) {
-			CRect rect = GetClientRect();
-			m_string.Init( m_pFont, &rect );
-			m_string.Insert( m_dwOffset, str->c_str(), EDIT_COLOR, 0, g_imeMgr.m_codePage);
-			m_dwOffset += str->size() - 1;
-		}
+		const std::string str = CClipboard::GetText();
+		CRect rect = GetClientRect();
+		m_string.Init( m_pFont, &rect );
+		m_string.Insert( m_dwOffset, str.c_str(), EDIT_COLOR, 0, g_imeMgr.m_codePage);
+		m_dwOffset += str.size() - 1;
+
 		m_pParentWnd->OnChildNotify(EN_CHANGE, m_nIdWnd, (LRESULT *)this);
 		ReplaceCaret();
 		return;

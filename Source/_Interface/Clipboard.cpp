@@ -14,7 +14,10 @@
 #include "stdafx.h"
 #include "Clipboard.h"
 
-std::optional<std::string> CClipboard::GetText()
+// Disable "nullptr dereferenced"
+#pragma warning(disable:6011)
+
+std::string CClipboard::GetText()
 {
 	// First, open the clipboard. OpenClipboard() takes one
 	// parameter, the handle of the window that will temporarily
@@ -29,7 +32,8 @@ std::optional<std::string> CClipboard::GetText()
 	// If there was no text on the clipboard, we have
 	// been returned a NULL handle.	
 	if (hGlobal == NULL) {
-		return std::nullopt;
+		CloseClipboard();
+		return "";
 	}
 
 	// Now we have a global memory handle to the text
@@ -41,9 +45,12 @@ std::optional<std::string> CClipboard::GetText()
 
 	// Copy data in string
 	std::string result;
-	result.reserve(nSize + 1);
-	for (SIZE_T i = 0; i != nSize; ++i) {
-		result.push_back(lpszData[i]);
+
+	if (lpszData) {
+		result.reserve(nSize + 1);
+		for (SIZE_T i = 0; i != nSize; ++i) {
+			result.push_back(lpszData[i]);
+		}
 	}
 
 	// Now, simply unlock the global memory pointer

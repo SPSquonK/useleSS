@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <optional>
 
 // CClipboard Class
 // ----------------
@@ -18,6 +17,6 @@
 class CClipboard
 {
 public:
-	static std::optional<std::string> GetText();
+	static std::string GetText();
 	static bool SetText(LPCTSTR lpszBuffer);
 };
