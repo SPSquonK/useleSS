@@ -407,9 +407,6 @@ struct EditStringIterator {
 	private:
 		void ComputeEnd();
 	};
-
-
-
 };
 
 

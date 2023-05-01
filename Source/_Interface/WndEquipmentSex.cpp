@@ -2,6 +2,7 @@
 #include "AppDefine.h"
 #include "WndEquipmentSex.h"
 #include "ItemMorph.h"
+#include "Clipboard.h"
 #include <array>
 
 BOOL CWndEquipmentSex::Initialize(CWndBase * pWndParent, DWORD) {
@@ -36,20 +37,6 @@ void CWndEquipmentSex::AddQuantity(UINT widgetId, size_t size) {
 	widget->SetTitle(title.GetString());
 }
 
-static void CopyToClipboard(const CString & str) {
-	HWND hwnd = GetDesktopWindow();
-	if (OpenClipboard(hwnd)) {
-		const size_t length = str.GetLength();
-		EmptyClipboard();
-		HGLOBAL clipbuffer = GlobalAlloc(GMEM_DDESHARE, length + 1);
-		char * const buffer = static_cast<char *>(GlobalLock(clipbuffer));
-		std::strcpy(buffer, str.GetString());
-		GlobalUnlock(clipbuffer);
-		SetClipboardData(CF_TEXT, clipbuffer);
-		CloseClipboard();
-	}
-}
-
 BOOL CWndEquipmentSex::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	if (nID == WIDC_RADIO1) {
 		ChangeMode(Mode::Vanilla);
@@ -81,7 +68,7 @@ BOOL CWndEquipmentSex::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult)
 				}
 			}
 
-			CopyToClipboard(str);
+			CClipboard::SetText(str.GetString());
 		}
 	}
 

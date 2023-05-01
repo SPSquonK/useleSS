@@ -1890,7 +1890,7 @@ void CWndEdit::OnChar_(UINT nChar)
 
 			CString strClipboard = m_string.Mid( dwBlockBegin, dwBlockEnd - dwBlockBegin );
 
-			CClipboard::SetText( strClipboard );
+			CClipboard::SetText(strClipboard.GetString());
 		}
 		return;
 	}
@@ -1898,19 +1898,14 @@ void CWndEdit::OnChar_(UINT nChar)
 	{
 		DeleteBlock();
 
-		DWORD dwSize;
-		CClipboard::GetTextLength( &dwSize );
-		if( dwSize )
-		{
-			std::unique_ptr<CHAR[]> buf = std::make_unique<CHAR[]>(dwSize + 1);
-			CClipboard::GetText( buf.get(), dwSize + 1);
-			buf[ dwSize ] = 0; 
+		if (const auto str = CClipboard::GetText()) {
 			CRect rect = GetClientRect();
-			m_string.Init( m_pFont, &rect );//, IsWndStyle( EBS_AUTOHSCROLL ), IsWndStyle( EBS_AUTOVSCROLL ) );
-			m_string.Insert( m_dwOffset, buf.get(), EDIT_COLOR, 0, g_imeMgr.m_codePage);
-			m_dwOffset += dwSize - 1;
-			m_pParentWnd->OnChildNotify( EN_CHANGE, m_nIdWnd, (LRESULT*)this ); 
+			m_string.Init( m_pFont, &rect );
+			m_string.Insert( m_dwOffset, str->c_str(), EDIT_COLOR, 0, g_imeMgr.m_codePage);
+			m_dwOffset += str->size() - 1;
 		}
+		m_pParentWnd->OnChildNotify(EN_CHANGE, m_nIdWnd, (LRESULT *)this);
+		ReplaceCaret();
 		return;
 	}
 	if( nChar == 24 ) // Ctrl-X : Paste

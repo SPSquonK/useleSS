@@ -2187,13 +2187,15 @@ void CWndText::DrawCaret(C2DRender* p2DRender)
 }
 LONG CWndText::GetOffset(CPoint point)
 {
-	CString string;
 	int dwMaxHeight = GetFontHeight();
 	CPoint pt = point;
 	pt.y /= dwMaxHeight;
 	pt.y += m_wndScrollBar.GetScrollPos();
 
-	if (pt.y >= m_string.GetLineCount() && m_string.GetLineCount() > 0) {
+	if (pt.y < 0) {
+		pt.y = 0;
+	} else if (std::cmp_greater_equal(pt.y, m_string.GetLineCount())
+		&& m_string.GetLineCount() > 0) {
 		pt.y = m_string.GetLineCount() - 1;
 	}
 
@@ -2324,23 +2326,9 @@ void CWndText::OnLButtonDblClk(UINT, CPoint point)
 		return;
 	}
 
-	// On double click:
-	// - A unit = a word and its subsequent spaces until newline or a new word
-	// - Select the current unit
-	// - If on a word, must select the word + the spaces until next word or /n
-	// - If on a space, must select previous word + the spaces until next word or /n
-	// Cursor is at the end
-
-
-
-
 	EditStringIterator::WordSpace iterator(m_string);
 
-	while (iterator) {
-		if (iterator.ContainsPosition(lOffset)) {
-			break;
-		}
-
+	while (iterator && !iterator.ContainsPosition(lOffset)) {
 		++iterator;
 	}
 
