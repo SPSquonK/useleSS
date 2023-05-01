@@ -348,6 +348,44 @@ virtual void DrawCaret( C2DRender* p2DRender );
 	[[nodiscard]] std::pair<DWORD, DWORD> GetSelectionRange() const;
 };
 
+struct EditStringIterator {
+	enum SymbolType { Blank, Whitespace, Other };
+
+	struct Character {
+	private:
+		CEditString * m_string;
+		LPCSTR m_position;
+		LPCSTR m_endAt;
+
+	public:
+		explicit Character(CEditString & editString);
+		Character & operator++();
+		[[nodiscard]] bool operator==(const Character & other) const;
+		[[nodiscard]] bool operator!=(const Character & other) const {
+			return !(*this == other);
+		}
+
+		[[nodiscard]] operator bool() const { return !IsAtEnd(); }
+
+		[[nodiscard]] int GetPosition() const {
+			return m_position - m_string->GetString();
+		}
+
+		[[nodiscard]] SymbolType GetSymbolType();
+		
+	private:
+		[[nodiscard]] bool IsAtEnd() const;
+		void EnsureHasEnd();
+	};
+
+//	struct WordSpace {
+//	};
+
+
+
+};
+
+
 //////////////////////////////////////////////////////////////////////////////
 // CWndViewCtrl
 //////////////////////////////////////////////////////////////////////////////

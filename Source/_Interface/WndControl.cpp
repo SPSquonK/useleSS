@@ -2331,29 +2331,31 @@ void CWndText::OnLButtonDblClk(UINT, CPoint point)
 	// - If on a space, must select previous word + the spaces until next word or /n
 	// Cursor is at the end
 
-	const char * begin = m_string;
-	const char * end = begin + m_string.GetLength();
-	const char * iter = begin;
+	EditStringIterator::Character iterator(m_string);
 
 	enum class State { OnWord, OnSpace };
 	State state = State::OnSpace;
 	DWORD wordStartedAt = 0;
 	bool foundPosition = false;
 
-	while (*iter && iter < end) {
-		if (begin + lOffset == iter) {
+	using SymbolType = EditStringIterator::SymbolType;
+
+	while (iterator) {
+		if (iterator.GetPosition() == lOffset) {
 			foundPosition = true;
 		}
 
-		if (IsWhite(*iter)) {
-			if (*iter == '\r' || *iter == '\n') {
-				if (foundPosition) {
-					break;
-				}
-				
-				// New unit
-				wordStartedAt = iter - begin;
+		const SymbolType symbolType = iterator.GetSymbolType();
+
+		if (symbolType == SymbolType::Blank) {
+			state = State::OnSpace;
+		} else if (symbolType == SymbolType::Whitespace) {
+			if (foundPosition) {
+				break;
 			}
+
+			// New unit
+			wordStartedAt = iterator.GetPosition();
 
 			state = State::OnSpace;
 		} else {
@@ -2364,20 +2366,18 @@ void CWndText::OnLButtonDblClk(UINT, CPoint point)
 				}
 
 				// New unit
-				wordStartedAt = iter - begin;
+				wordStartedAt = iterator.GetPosition();
 			}
 
 			state = State::OnWord;
 		}
 
-		// ++iter
-		const WORD wCodePage = m_string.m_awCodePage[iter - begin];
-		iter = CharNextEx(iter, wCodePage);
+		++iterator;
 	}
 
-	if (foundPosition || (iter == end && lOffset == end - begin)) {
+	if (foundPosition || (!iterator && lOffset == iterator.GetPosition())) {
 		m_dwBlockBegin = wordStartedAt;
-		m_dwBlockEnd = iter - begin;
+		m_dwBlockEnd = iterator.GetPosition();
 		m_dwOffset = m_dwBlockEnd;
 
 		ReplaceCaret();
@@ -2459,6 +2459,56 @@ void CWndText::SetupDescription(CWndText * self, LPCTSTR filename) {
 
 std::pair<DWORD, DWORD> CWndText::GetSelectionRange() const {
 	return std::minmax(m_dwBlockBegin, m_dwBlockEnd);
+}
+
+////////////////////////////
+
+EditStringIterator::Character::Character(CEditString & editString)
+	: m_string(&editString)
+	, m_position(editString.GetString())
+	, m_endAt(nullptr) {
+
+}
+
+EditStringIterator::Character & EditStringIterator::Character::operator++() {
+	if (IsAtEnd()) {
+		return *this;
+	}
+
+	EnsureHasEnd();
+
+	m_position = m_endAt;
+	m_endAt = nullptr;
+
+	return *this;
+}
+
+bool EditStringIterator::Character::operator==(const Character & other) const {
+	return m_string == other.m_string && m_position == other.m_position;
+}
+
+
+bool EditStringIterator::Character::IsAtEnd() const {
+	return *m_position == '\0'
+		|| m_position >= m_string->GetString() + m_string->GetLength();
+}
+
+
+void EditStringIterator::Character::EnsureHasEnd() {
+	if (m_endAt) return;
+
+	const WORD wCodePage = m_string->m_awCodePage[m_position - m_string->GetString()];
+	m_endAt = CharNextEx(m_position, wCodePage);
+}
+
+EditStringIterator::SymbolType EditStringIterator::Character::GetSymbolType() {
+	if (IsAtEnd()) return SymbolType::Whitespace;
+	EnsureHasEnd();
+	if (m_position + 1 != m_endAt) return SymbolType::Other;
+
+	if (iswblank(*m_position)) return SymbolType::Blank;
+	if (iswspace(*m_position)) return SymbolType::Whitespace;
+	return SymbolType::Other;
 }
 
 ////////////////////////////
