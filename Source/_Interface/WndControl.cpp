@@ -2331,53 +2331,23 @@ void CWndText::OnLButtonDblClk(UINT, CPoint point)
 	// - If on a space, must select previous word + the spaces until next word or /n
 	// Cursor is at the end
 
-	EditStringIterator::Character iterator(m_string);
 
-	enum class State { OnWord, OnSpace };
-	State state = State::OnSpace;
-	DWORD wordStartedAt = 0;
-	bool foundPosition = false;
 
-	using SymbolType = EditStringIterator::SymbolType;
+
+	EditStringIterator::WordSpace iterator(m_string);
 
 	while (iterator) {
-		if (iterator.GetPosition() == lOffset) {
-			foundPosition = true;
-		}
-
-		const SymbolType symbolType = iterator.GetSymbolType();
-
-		if (symbolType == SymbolType::Blank) {
-			state = State::OnSpace;
-		} else if (symbolType == SymbolType::Whitespace) {
-			if (foundPosition) {
-				break;
-			}
-
-			// New unit
-			wordStartedAt = iterator.GetPosition();
-
-			state = State::OnSpace;
-		} else {
-			if (state == State::OnSpace) {
-				if (foundPosition) {
-					// Moved past what we want to select
-					break;
-				}
-
-				// New unit
-				wordStartedAt = iterator.GetPosition();
-			}
-
-			state = State::OnWord;
+		if (iterator.ContainsPosition(lOffset)) {
+			break;
 		}
 
 		++iterator;
 	}
 
-	if (foundPosition || (!iterator && lOffset == iterator.GetPosition())) {
-		m_dwBlockBegin = wordStartedAt;
-		m_dwBlockEnd = iterator.GetPosition();
+	if (iterator.ContainsPosition(lOffset)) {
+		const auto [begin, end] = iterator.GetRange();
+		m_dwBlockBegin = begin;
+		m_dwBlockEnd = end;
 		m_dwOffset = m_dwBlockEnd;
 
 		ReplaceCaret();
@@ -2510,6 +2480,46 @@ EditStringIterator::SymbolType EditStringIterator::Character::GetSymbolType() {
 	if (iswspace(*m_position)) return SymbolType::Whitespace;
 	return SymbolType::Other;
 }
+
+EditStringIterator::WordSpace::WordSpace(CEditString & editString)
+: m_begin(editString), m_end(editString) {
+	ComputeEnd();
+}
+
+EditStringIterator::WordSpace & EditStringIterator::WordSpace::operator++() {
+	if (!m_begin) return *this;
+
+	m_begin = m_end;
+
+	// Pass new lines
+	// TODO: this should only pass one newline
+	while (m_begin && m_begin.GetSymbolType() == SymbolType::Whitespace) {
+		++m_begin;
+	}
+
+	ComputeEnd();
+
+	return *this;
+}
+
+bool EditStringIterator::WordSpace::operator==(const WordSpace & other) const {
+	return m_begin == other.m_begin;
+}
+
+void EditStringIterator::WordSpace::ComputeEnd() {
+	m_end = m_begin;
+
+	// Pass letters
+	while (m_end && m_end.GetSymbolType() == SymbolType::Other) {
+		++m_end;
+	}
+
+	// Pass blanks
+	while (m_end && m_end.GetSymbolType() == SymbolType::Blank) {
+		++m_end;
+	}
+}
+
 
 ////////////////////////////
 

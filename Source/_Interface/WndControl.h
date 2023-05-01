@@ -378,8 +378,35 @@ struct EditStringIterator {
 		void EnsureHasEnd();
 	};
 
-//	struct WordSpace {
-//	};
+	struct WordSpace {
+	private:
+		Character m_begin;
+		Character m_end;
+
+	public:
+		explicit WordSpace(CEditString & editString);
+
+		WordSpace & operator++();
+		[[nodiscard]] bool operator==(const WordSpace & other) const;
+		[[nodiscard]] bool operator!=(const WordSpace & other) const {
+			return !(*this == other);
+		}
+
+		[[nodiscard]] bool ContainsPosition(int position) const {
+			return position >= m_begin.GetPosition() && position <= m_end.GetPosition();
+		}
+
+		[[nodiscard]] operator bool() const {
+			return m_begin;
+		}
+
+		[[nodiscard]] std::pair<int, int> GetRange() const {
+			return { m_begin.GetPosition(), m_end.GetPosition() };
+		}
+
+	private:
+		void ComputeEnd();
+	};
 
 
 
