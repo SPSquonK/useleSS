@@ -1440,15 +1440,11 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 		{
 		case WM_CHAR:
 			{
-				switch(wparam)
-				{
-				case 8:case 27:case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':case '8':case '9':
-					{
-						if( static_cast< DWORD >( strlen( m_string ) ) < m_dwMaxStringNumber )
-							OnChar_(wparam);
-						break;
-					}
+			if (wparam == 8 || wparam == 27 || (wparam >= '0' && wparam <= '9')) {
+				if (static_cast<DWORD>(strlen(m_string)) < m_dwMaxStringNumber) {
+					OnChar_(wparam);
 				}
+			}
 				break;
 			}
 		case WM_KEYDOWN:
@@ -1902,22 +1898,33 @@ void CWndEdit::OnChar_(UINT nChar)
 
 	// CTRL-V: Paste
 	if (nChar == 22 && m_bEnableClipboard) {
-		DeleteBlock();
-
 		const std::string str = CClipboard::GetText();
-		CRect rect = GetClientRect();
-		m_string.Init( m_pFont, &rect );
-		m_string.Insert( m_dwOffset, str.c_str(), EDIT_COLOR, 0, g_imeMgr.m_codePage);
-		m_dwOffset += str.size() - 1;
+		if (str != "") {
+			DeleteBlock();
 
-		m_pParentWnd->OnChildNotify(EN_CHANGE, m_nIdWnd, (LRESULT *)this);
-		ReplaceCaret();
+			CRect rect = GetClientRect();
+			m_string.Init(m_pFont, &rect);
+			m_string.Insert(m_dwOffset, str.c_str(), EDIT_COLOR, 0, g_imeMgr.m_codePage);
+			m_dwOffset += str.size() - 1;
+
+			m_pParentWnd->OnChildNotify(EN_CHANGE, m_nIdWnd, (LRESULT *)this);
+			ReplaceCaret();
+		}
 		return;
 	}
-	if( nChar == 24 ) // Ctrl-X : Paste
-	{
+	
+	// CTRL-X: Cut
+	if (nChar == 24 && m_bEnableClipboard) {
+		if (m_dwBlockBegin != m_dwBlockEnd) {
+			const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
+			const CString strClipboard = m_string.Mid(dwBlockBegin, dwBlockEnd - dwBlockBegin);
+			CClipboard::SetText(strClipboard.GetString());
+			DeleteBlock();
+			ReplaceCaret();
+		}
+		return;
 	}
-	else
+
 	if( nChar != 9 ) // !tab
 	{
 		DeleteBlock();
