@@ -150,6 +150,9 @@ public:
 	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 	virtual LRESULT DefWindowProc(UINT message,WPARAM wParam,LPARAM lParam);
+
+private:
+	void ParentUncheckGroup();
 };
 
 //////////////////////////////////////////////////////////////////////////////

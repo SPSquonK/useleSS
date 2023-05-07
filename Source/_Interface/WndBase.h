@@ -225,7 +225,6 @@ public:
 	[[nodiscard]] CPoint GetMousePoint() const noexcept { return m_ptMouse; } 
 	void SetGroup(BOOL bGroup) { m_bGroup = bGroup; }
 	BOOL IsGroup() { return m_bGroup; }
-	CPtrArray* GetWndArray() { return &m_wndArray; }
 	void SetFont(CD3DFont* pFont) { m_pFont = pFont; }
 	CD3DFont* GetFont() { return m_pFont; }
 	void SetAutoFree(BOOL bFree) { m_bAutoFree = (bFree != FALSE ); }

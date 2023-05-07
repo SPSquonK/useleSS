@@ -474,52 +474,72 @@ void CWndButton::SetButtonStyle(UINT nStyle, BOOL bRedraw) // Changes the style 
 */
 void CWndButton::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	if( IsPush() )
-	{
-///		PLAYSND( m_strSndEffect, NULL );
+	if (!IsPush()) return;
 
-		if( m_dwStyle & WBS_CHECK )
-			m_bCheck = !m_bCheck;
+	if (m_dwStyle & WBS_CHECK) {
+		m_bCheck = !m_bCheck;
+	}
 
-		CWndBase* pWnd = m_pParentWnd;
-		//if( ! (pWnd->GetStyle() & WBS_CHILD ) )
-			pWnd->OnChildNotify( WNM_CLICKED, m_nIdWnd, (LRESULT*)this); 
+	CWndBase* pWnd = m_pParentWnd;
+	pWnd->OnChildNotify(WNM_CLICKED, m_nIdWnd, (LRESULT *)this);
 
-		if( (m_dwStyle & WBS_RADIO) && m_pParentWnd)
-		{
-			CPtrArray* pWndArray = m_pParentWnd->GetWndArray();
-			// 내 버튼의 인덱스를 페어런트로부터 찾는다.
-			for( int i = 0; i < pWndArray->GetSize(); i++)
-			{
-				CWndButton* pWndBase = (CWndButton*)pWndArray->GetAt(i);
-				if( pWndBase == this )
-				{
-					// 앞쪽으로 그룹 선언을 찾는다.
-					for( int i2 = i; i2 >= 0; i2-- )
-					{
-						pWndBase = (CWndButton*)pWndArray->GetAt(i2);
-						if(pWndBase->IsGroup() && pWndBase->IsWndStyle(WBS_RADIO))
-						{
-							// 라디오 버튼이 아니거나 새로운 그룹이 나타날 때까지 검색 
-							for(int i3 = i2; i3 < pWndArray->GetSize(); i3++)
-							{
-								pWndBase = (CWndButton*)pWndArray->GetAt(i3);
-								if(i3 > i2 && pWndBase->IsGroup())
-									break;
-								if(pWndBase->IsWndStyle(WBS_RADIO))
-									((CWndButton*)pWndBase)->SetCheck(0);
-								else
-									break;
-							}
-							SetCheck(TRUE);
-							return;
-						}
-					}
-				}
-			}
-		}
+	if ((m_dwStyle & WBS_RADIO) && m_pParentWnd) {
+		ParentUncheckGroup();
 	}
 }
+
+void CWndButton::ParentUncheckGroup() {
+	CPtrArray * pWndArray = &m_pParentWnd->m_wndArray;
+
+	// 1: Search the start of the group of this
+	std::optional<int> startGroup;
+	bool foundThis = false;
+
+	for (int i = 0; i != pWndArray->GetSize(); ++i) {
+		CWndBase * pWnd = (CWndBase *) pWndArray->GetAt(i);
+
+		if (pWnd->IsGroup() && pWnd->IsWndStyle(WBS_RADIO)) {
+			startGroup = i;
+		}
+
+		if (pWnd == this) {
+			foundThis = true;
+			break;
+		}
+	}
+
+	if (!startGroup) {
+		return;
+	}
+
+	if (!foundThis) {
+		Error(
+			__FUNCTION__" did not found this in parent (this = %lu, parent = %lu)",
+			m_nIdWnd,
+			m_pParentWnd->GetWndId()
+			);
+	}
+
+	// 2: Uncheck all members of groupe except this
+	for (int i = startGroup.value(); i != pWndArray->GetSize(); ++i) {
+		CWndBase * pWnd = (CWndBase *)pWndArray->GetAt(i);
+
+		// M.C. Hammer - U Can't Touch This
+		if (pWnd == this) continue;
+
+		// Start of next group
+		if (i != startGroup.value() && pWnd->IsGroup()) break;
+		
+		// Uncheck if radio button
+		if (pWnd->IsWndStyle(WBS_RADIO)) {
+			dynamic_cast<CWndButton *>(pWnd)->SetCheck(FALSE);
+		}
+	}
+
+	// 3: Check this
+	SetCheck(TRUE);
+}
+
 void CWndButton::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	PLAYSND( SND_INF_CLICK );
