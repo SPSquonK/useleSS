@@ -208,22 +208,10 @@ void CWndNeuz::AdditionalSkinTexture( LPWORD pDest, CSize size1, D3DFORMAT d3dFo
 	int nImgBit = IMGBIT_32;
 	for( int i = 0; i < 12; i++ )
 	{
-		CString strTemp1 = m_strTexture.Left( m_strTexture.GetLength() - 6 );
-		CString strTemp2 = m_strTexture.Right( 4 );
-		strFileName.Format( "%s%02d%s", strTemp1, i, strTemp2 );
-		if( m_strWndTileMap.Lookup( strFileName, (void*&)lpImage[i] ) == FALSE )
-		{
-			lpImage[i] = new IMAGE;
-			lpImage[i]->size.cx = 99;
-			if( LoadImage( MakePath( DIR_THEME, strFileName ), lpImage[i] ) == FALSE )
-				Error( "CWndNeuz::AdditionalSkinTexture에서 %s Open1 실패", strFileName );
-
-			m_strWndTileMap.SetAt( strFileName, lpImage[i] );
-		}
-		//else
-		//{
-		//	sizeBmp[i] = CSize(16,16);
-		//}
+		CString strTemp1 = m_strTexture.Left(m_strTexture.GetLength() - 6);
+		CString strTemp2 = m_strTexture.Right(4);
+		strFileName.Format("%s%02d%s", strTemp1.GetString(), i, strTemp2.GetString());
+		lpImage[i] = GetTileImage(strFileName.GetString());
 	}
 	sizeBmp[0] = CSize(16,16);
 	CSize sizeDiv = size2;

@@ -3223,16 +3223,8 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
 	{
 		CString strTemp1 = m_strTile.Left( m_strTile.GetLength() - 6 );
 		CString strTemp2 = m_strTile.Right( 4 );
-		strFileName.Format( "%s%02d%s", strTemp1, i, strTemp2 );
-		if( m_strWndTileMap.Lookup( strFileName, (void*&)lpImage[i] ) == FALSE )
-		{
-			lpImage[i] = new IMAGE;
-			
-			if( LoadImage( MakePath( DIR_THEME, strFileName ), lpImage[i] ) == FALSE )
-				Error( "CWndTabCtrl::AdditionalSkinTexture에서 %s Open1 실패", strFileName );
-
-			m_strWndTileMap.SetAt( strFileName, lpImage[i] );
-		}
+		strFileName.Format("%s%02d%s", strTemp1.GetString(), i, strTemp2.GetString());
+		lpImage[i] = GetTileImage(strFileName.GetString());
 	}
 	///////////////////////////////////////////////////////
 	CRect rect = GetWindowRect( TRUE );
@@ -3287,29 +3279,15 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
 	{
 		CString strTemp1 = m_strTile.Left( m_strTile.GetLength() - 6 );
 		CString strTemp2 = m_strTile.Right( 4 );
-		strFileName.Format( "%s%02d%s", strTemp1, i, strTemp2 );
-		if( m_strWndTileMap.Lookup( strFileName, (void*&)lpImage[i] ) == FALSE )
-		{
-			lpImage[i] = new IMAGE;
-			if( LoadImage( MakePath( DIR_THEME, strFileName ), lpImage[i] ) == FALSE )
-				Error( "CWndTabCtrl::AdditionalSkinTexture에서 %s Open1 실패", strFileName );
-
-			m_strWndTileMap.SetAt( strFileName, lpImage[i] );
-		}
+		strFileName.Format("%s%02d%s", strTemp1.GetString(), i, strTemp2.GetString());
+		lpImage[i] = GetTileImage(strFileName.GetString());
 	}
 	for( int i = 10; i < 16; i++ )
 	{
 		CString strTemp1 = m_strTile.Left( m_strTile.GetLength() - 6 );
 		CString strTemp2 = m_strTile.Right( 4 );
-		strFileName.Format( "%s%02d%s", strTemp1, i, strTemp2 );
-		if( m_strWndTileMap.Lookup( strFileName, (void*&)lpImage[i] ) == FALSE )
-		{
-			lpImage[i] = new IMAGE;
-			if( LoadImage( MakePath( DIR_THEME, strFileName ), lpImage[i] ) == FALSE )
-				Error( "CWndTabCtrl::AdditionalSkinTexture에서 %s Open1 실패", strFileName );
-
-			m_strWndTileMap.SetAt( strFileName, lpImage[i] );
-		}
+		strFileName.Format("%s%02d%s", strTemp1.GetString(), i, strTemp2.GetString());
+		lpImage[i] = GetTileImage(strFileName.GetString());
 	}
 	///////////////////////////////////////////////////////
 	nHeight -= 2;

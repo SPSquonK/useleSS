@@ -262,22 +262,6 @@ void PaintTexture( LPVOID pDestData, LPIMAGE pImage, CPoint pt, CSize sizeSurfac
 				{
 					if( dwOffsetDest >= 0 && (DWORD)dwOffsetDest < (DWORD)nSizeSurface )
 					{
-						DWORD bitcount = pImage->nImgBit / 8;
-//						if( dwOffsetSrc >= pImage->dwSize )
-						if( pImage->dwSize != pImage->dwSizeBak )
-						{
-							
-							char szFile[2048] = { 0 };
-
-							sprintf( szFile, "D3DFMT_A4R4G4B4 ERROR IMGBIT_24\n Current = %d   Tex X = %d, Y = %d  [%d,%d]\n LINE = %d\n Size = %d", dwOffsetSrc, sizeTexture.cx, sizeTexture.cy, sizeSurface.cx, sizeSurface.cy, dwLine, pImage->dwSize );
-							//if( byData4 )
-							//	pDest[ dwOffsetDest ] = ( byData4 << 12 ) | ( byData3 << 8 ) | ( byData2 << 4 ) | byData1;
-							AfxMessageBox(szFile, MB_OKCANCEL);
-
-//							dwOffsetSrc = si
-							break;
-						}
-
 						BYTE byData1 = pSrc[ dwOffsetSrc + 0 ] >> 4; 
 						BYTE byData2 = pSrc[ dwOffsetSrc + 1 ] >> 4; 
 						BYTE byData3 = pSrc[ dwOffsetSrc + 2 ] >> 4; 
@@ -484,7 +468,6 @@ BOOL LoadBMP( LPCTSTR lpszFileName, LPIMAGE lpImage ) //LPBYTE* lppData, SIZE* p
 	}
 
 	LPBYTE lpNewData = new BYTE[ nLgWidth * nLgHeight * bitCount * 2 ]; // 버그 때문에 2 곱했음. 사이즈가 4의 배수가 아니어서 문제 생겨서 * 2 했음 
-	lpImage->dwSizeBak	= lpImage->dwSize = nLgWidth * nLgHeight * bitCount * 2;
 
 	int nPgHeight = abs( infoHeader.biHeight );
 	int nPgWidth  = infoHeader.biWidth;

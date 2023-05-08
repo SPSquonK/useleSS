@@ -40,20 +40,24 @@ CTextureMng CWndBase::m_textureMng;
 std::map<CWndBase *, std::unique_ptr<CTexture>> CWndBase::m_backgroundTextureMng;
 CResManager CWndBase::m_resMng;
 CWndBase* CWndBase::m_pWndCapture;
-CMapStringToPtr CWndBase::m_strWndTileMap;
+CTileMapManager CWndBase::m_strWndTileMap;
 
-void CWndBase::FreeTileTexture()
-{
-	POSITION pos = m_strWndTileMap.GetStartPosition();
-	CString string;
-	LPIMAGE lpImage;
-	while(pos)
-	{
-		m_strWndTileMap.GetNextAssoc( pos, string, (void*&)lpImage );
-		safe_delete( lpImage );
+IMAGE * CTileMapManager::GetImage(std::string_view lpszFileName) {
+	const auto it = m_map.find(lpszFileName);
+	if (it != m_map.end()) {
+		return it->second.get();
 	}
-	m_strWndTileMap.RemoveAll();
+
+	IMAGE * image = new IMAGE;
+
+	if (LoadImage(MakePath(DIR_THEME, lpszFileName.data()), image) == FALSE) {
+		Error("CWndBase::AdditionalSkinTexture - failed loading image %s", lpszFileName.data());
+	}
+
+	m_map.emplace(lpszFileName, std::unique_ptr<IMAGE>(image));
+	return image;
 }
+
 BOOL CWndBase::SetForbidTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName )
 {
 	m_pTexForbid = CWndBase::m_textureMng.AddTexture( pd3dDevice, lpszFileName, 0xffff00ff );
@@ -2184,15 +2188,8 @@ void CWndBase::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFORMAT
 
 	if( m_bTile == FALSE )
 	{
-		LPIMAGE lpImage;
+		IMAGE * lpImage = GetTileImage(m_strTexture.GetString());
 
-		if( m_strWndTileMap.Lookup( m_strTexture, (void*&)lpImage ) == FALSE )
-		{
-			lpImage = new IMAGE;
-			if( LoadImage( MakePath( DIR_THEME, m_strTexture ), lpImage ) == FALSE )
-				Error( "CWndBase::AdditionalSkinTexture에서 %s Open1 실패", m_strTexture );
-			m_strWndTileMap.SetAt( m_strTexture, lpImage );
-		}
 		///////////////////////////////////////////////////////
 		CRect rect = GetWindowRect( TRUE );
 		rect += ( m_pParentWnd->GetClientRect( TRUE ).TopLeft() - m_pParentWnd->GetWindowRect( TRUE ).TopLeft() );
@@ -2210,14 +2207,8 @@ void CWndBase::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFORMAT
 	{
 		CString strTemp1 = strTile.Left( strTile.GetLength() - 6 );
 		CString strTemp2 = strTile.Right( 4 );
-		strFileName.Format( "%s%02d%s", strTemp1, i, strTemp2 );
-		if( m_strWndTileMap.Lookup( strFileName, (void*&)lpImage[i] ) == FALSE )
-		{
-			lpImage[i] = new IMAGE;
-			if( LoadImage( MakePath( DIR_THEME, strFileName ), lpImage[i] ) == FALSE )
-				Error( "CWndBase::AdditionalSkinTexture에서 %s Open2 실패", strFileName );
-			m_strWndTileMap.SetAt( strFileName, lpImage[i] );
-		}
+		strFileName.Format("%s%02d%s", strTemp1.GetString(), i, strTemp2.GetString());
+		lpImage[i] = GetTileImage(strFileName.GetString());
 	}
 	///////////////////////////////////////////////////////
 	CRect rect;
