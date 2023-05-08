@@ -180,8 +180,6 @@ public:
 	CTexture* m_pTexButtVScrPUp  ;
 	CTexture* m_pTexButtVScrPDown;
 	CTexture* m_pTexButtVScrPBar ;
-
-//static CTexturePack m_texturePack;
 	
 	CWndScrollBar();
 	~CWndScrollBar();

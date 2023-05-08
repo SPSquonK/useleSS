@@ -71,7 +71,7 @@ static CWndBase* m_pWndCapture;
 
 //oid AddWnd(CWndBase* pWnd); 
 	//void RemoveWnd(CWndBase* pWnd);
-	void DestroyAllWnd(CWndBase* pWndRoot); // 모든 윈도를 강제 삭제 ; 종료할때 호출 
+	void DestroyAllWnd(); // Force delete all windows ; called when exiting
 	void SetChildFocus( CWndBase* pWndBase, POINT point );
 	[[nodiscard]] CWndBase * GetChildFocus(POINT point);
 //protected:
@@ -126,7 +126,6 @@ static CWndBase*      m_pCurFocus       ; // 다이얼로그, 차일드 중 최종 현재 포�
 
 static std::vector<CWndBase *> m_wndRemove;
 static std::vector<WNDMESSAGE> m_postMessage;
-//static CTexturePack   m_texturePack     ;
 static CTexture*      m_pTexForbid;
 static CTimer         m_timerForbid;
 static BOOL           m_bForbid;

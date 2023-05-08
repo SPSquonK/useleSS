@@ -1278,12 +1278,9 @@ void CWndScrollBar::OnDraw(C2DRender* p2DRender)
 		}
 	}
 }
-//CTexturePack CWndScrollBar::m_texturePack;
 
 void CWndScrollBar::OnInitialUpdate()
 {
-	//m_pTexButtVScrUp    = m_texturePack.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrUp.bmp"    ), 0xffff00ff );
-	//m_pTexButtVScrDown  = m_texturePack.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrDown.bmp"  ), 0xffff00ff );
 	m_pTexButtVScrBar   = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrBar.bmp"   ), 0xffff00ff );
 	m_pTexButtVScrPUp   = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrPUp.bmp"   ), 0xffff00ff );
 	m_pTexButtVScrPDown = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrPDown.bmp" ), 0xffff00ff );
@@ -3357,7 +3354,7 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
 	}
  	for( int i = 0; i < m_wndArray.GetSize(); i++ )
 	{
-		CWndBase* pWndBase = (CWndBase*)m_wndArray.GetAt( i );
+		CWndBase* pWndBase = (CWndBase*)m_wndArray[i];
 		CRect rectOld = m_rectWindow;
 		m_rectWindow.OffsetRect( rect.TopLeft() );
 		if( pWndBase->IsDestroy() == FALSE && pWndBase->IsVisible() )
@@ -3365,7 +3362,7 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
  			pWndBase->AdditionalSkinTexture( pDest, sizeSurface, d3dFormat );
 			for( int i = 0; i < pWndBase->m_wndArray.GetSize(); i++ )
 			{
-				CWndBase* pWndChild = (CWndBase*)pWndBase->m_wndArray.GetAt( i );
+				CWndBase* pWndChild = (CWndBase*)pWndBase->m_wndArray[i];
 				CRect rectOldChild = pWndChild->m_rectWindow;
 				pWndChild->m_rectWindow.OffsetRect( rect.TopLeft() );
 				if( pWndChild->IsDestroy() == FALSE && pWndChild->IsVisible() )

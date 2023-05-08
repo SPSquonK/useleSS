@@ -423,30 +423,6 @@ void CWndNeuz::OnSize(UINT nType, int cx, int cy)
 	m_wndTitleBar.Replace(); 
 
 	CWndBase::OnSize( nType, cx, cy );
-
-//	if( rectOld.Width() != m_rectClient.Width() || rectOld.Height() != m_rectClient.Height() )
-
-
-	// 차일드 윈도우들의 사이즈를 조절 
-	/*
-	for(int i = 0; i < m_wndArray.GetSize(); i++)
-	{
-		CWndBase* pWnd = (CWndBase*)m_wndArray.GetAt(i);
-		if(pWnd->IsWndStyle(WBS_DOCKED))// && pWnd->IsWndStyle(WBS_CHILD))
-		{
-			CRect rect = pWnd->GetWindowRect(TRUE);
-			rect.SetRect(0,0,cx,cy);
-			pWnd->SetWndRect(rect);
-		}
-	}
-	*/
-	/*
-	if(IsWndStyle(WBS_DOCKED))// && IsWndStyle(WBS_CHILD))
-	{
-		m_wndTitleBar.m_wndMinimize.SetVisible(FALSE);
-		m_wndTitleBar.m_wndMaximize.SetVisible(FALSE);
-	}
-	*/
 }
 void CWndNeuz::OnNonClientLButtonDblClk( UINT nFlags, CPoint point )
 {
