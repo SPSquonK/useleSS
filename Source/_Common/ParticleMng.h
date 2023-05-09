@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <utility>
+
 struct PARTICLE {
 	D3DXVECTOR3 m_vPos;       // Current position
 	D3DXVECTOR3 m_vVel;       // Current velocity
@@ -13,27 +16,24 @@ struct PARTICLE {
 };
 
 class CParticles final {
-	PARTICLE	*m_pPool;
-	int			m_nPoolPtr;
 private:
-	int		m_nType;
-    DWORD	m_dwBase;
-	DWORD	m_dwFlush;
-    DWORD	m_dwDiscard;
-	
-    DWORD     m_dwParticles;
-    DWORD     m_dwParticlesLim;
-    PARTICLE* m_pParticles;
-    PARTICLE* m_pParticlesFree;
-	
-    // Geometry
-    LPDIRECT3DVERTEXBUFFER9 m_pVB;
+	PARTICLE * m_pPool;
 
-	void Init( void );
+	int		m_nType;
+	DWORD	m_dwBase;
+	DWORD	m_dwFlush;
+	DWORD	m_dwDiscard;
 	
+	// Intrusive single linked lists
+	PARTICLE * m_pParticles;
+	PARTICLE * m_pParticlesFree;
+	
+  // Geometry
+  LPDIRECT3DVERTEXBUFFER9 m_pVB;
+
 public:
-	BOOL	m_bActive;
-	BOOL	m_bGravity;
+	bool	m_bActive;
+	bool	m_bGravity;
 	FLOAT	m_fSize;
 	LPDIRECT3DTEXTURE9 m_pParticleTexture;
 	
@@ -52,6 +52,8 @@ public:
 	HRESULT Update( void );
 		
   HRESULT Render( LPDIRECT3DDEVICE9 pd3dDevice );
+
+	[[nodiscard]] static std::pair<float, const char *> GetParticleTypeInfo(int nType);
 };
 
 class CParticleMng final {

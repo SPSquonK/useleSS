@@ -15,7 +15,22 @@ struct POINTVERTEX {
 //-----------------------------------------------------------------------------
 
 CParticles::CParticles() {
-	Init();
+	m_pPool = nullptr;
+
+	m_nType = 0;
+	m_dwBase = 0;
+	m_dwFlush = 0;
+	m_dwDiscard = 0;
+	
+	m_pParticles = nullptr;
+	m_pParticlesFree = nullptr;
+
+	m_pVB = nullptr;
+
+	m_bActive = FALSE;
+	m_bGravity = false;
+	m_fSize = 0.3f;
+	m_pParticleTexture = nullptr;
 }
 
 
@@ -29,59 +44,40 @@ CParticles::~CParticles() {
 	SAFE_DELETE_ARRAY(m_pPool);
 }
 
+void CParticles::Create( DWORD dwFlush, DWORD dwDiscard, int nType ) {
+	assert(!m_bActive);
 
-void CParticles::Init( void )
-{
-	m_bActive = 0;	
-	m_bGravity = 0;
-    m_dwBase		= 0;
-    m_dwFlush		= 0;
-	m_dwDiscard		= 0;
-	m_fSize			= 0.3f;
+	m_bActive   = true;	
+	m_dwBase    = dwDiscard;
+	m_dwFlush   = dwFlush;
+	m_dwDiscard = dwDiscard;
 	
-    m_dwParticles    = 0;
-    m_dwParticlesLim = 0;
-	m_nType = 0;
-	
-    m_pParticles     = NULL;
-    m_pParticlesFree = NULL;
-	m_pVB            = NULL;
-	m_pParticleTexture = NULL;
-	m_pPool	= NULL;
-	m_nPoolPtr = 0;
-}
-
-void CParticles::Create( DWORD dwFlush, DWORD dwDiscard, int nType )
-{
-	Init();
-
-	m_bActive = TRUE;	
-    m_dwBase         = dwDiscard;
-    m_dwFlush        = dwFlush;
-	m_dwDiscard      = dwDiscard;
-	
-    m_dwParticlesLim = dwDiscard;
 	m_nType = nType;
 	
-	m_pPool = new PARTICLE[ m_dwParticlesLim ];
-	memset( m_pPool, 0, sizeof(PARTICLE) * m_dwParticlesLim );
+	m_pPool = new PARTICLE[dwDiscard];
+	memset(m_pPool, 0, sizeof(PARTICLE) * dwDiscard);
+
+	for (DWORD i = 0; i < dwDiscard; ++i) {
+		m_pPool[i].m_pNext = m_pParticlesFree;
+		m_pParticlesFree = &m_pPool[i];
+	}
 }
 
 
 
 HRESULT CParticles::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
 {
-	if( m_bActive == FALSE )	return S_OK;
+	if (!m_bActive)	return S_OK;
 				
 	// Create the texture using D3DX
 	HRESULT hr = LoadTextureFromRes( pd3dDevice, MakePath( DIR_MODELTEX, szFileName ),
 									   D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, 
 									   D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 									   D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 0, NULL, NULL, &m_pParticleTexture );
-	if( hr == E_FAIL )
-	{
-		Error( "%s 읽기 실패", MakePath( DIR_MODELTEX, szFileName ) );
-		m_bActive = FALSE;
+	
+	if (hr == E_FAIL) {
+		Error("%s 읽기 실패", MakePath(DIR_MODELTEX, szFileName));
+		m_bActive = false;
 	}
 
 	return hr;
@@ -95,7 +91,7 @@ HRESULT CParticles::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szF
 //-----------------------------------------------------------------------------
 HRESULT CParticles::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 {
-	if( m_bActive == FALSE )			return S_OK;
+	if (!m_bActive)			return S_OK;
 	if( m_pParticleTexture == NULL )	return S_OK;
     HRESULT hr;
 
@@ -139,48 +135,41 @@ HRESULT CParticles::InvalidateDeviceObjects()
 // Desc:
 //-----------------------------------------------------------------------------
 
-HRESULT CParticles::Update( void )
+HRESULT CParticles::Update(void)
 {
-	if( m_bActive == FALSE )	return S_OK;
-	if( m_pParticleTexture == NULL )	return S_OK;
+	if (!m_bActive)	return S_OK;
+	if (m_pParticleTexture == NULL)	return S_OK;
 
-    PARTICLE *pParticle, **ppParticle;
+	PARTICLE ** ppParticle = &m_pParticles;
 
-    ppParticle = &m_pParticles;
+	while (*ppParticle) {
+		PARTICLE * pParticle = *ppParticle;
 
-    while( *ppParticle )
-    {
-        pParticle = *ppParticle;
-
-        // Calculate new position
+		// Calculate new position
 		pParticle->m_fFade -= 0.015f;
 
-        pParticle->m_vPos	+= pParticle->m_vVel;
-		if( m_bGravity )
-			pParticle->m_vVel.y	-= 0.005f;		// 중력.
+		pParticle->m_vPos += pParticle->m_vVel;
+		if (m_bGravity)
+			pParticle->m_vVel.y -= 0.005f;		// 중력.
 
-        if( pParticle->m_fFade < 0.0f )
-            pParticle->m_fFade = 0;
+		if (pParticle->m_fFade < 0.0f)
+			pParticle->m_fFade = 0;
 
-        // Kill old particles
+		// Kill old particles
 		// 희미해져 사라졌을때나 바닥에 떨어졌을때는 삭제됨.
-        if( pParticle->m_fFade <= 0 || (m_bGravity && pParticle->m_vPos.y < pParticle->m_fGroundY) )
-        {
-            // Kill particle
-            *ppParticle = pParticle->m_pNext;
-            pParticle->m_pNext = m_pParticlesFree;
-            m_pParticlesFree = pParticle;
-
-                m_dwParticles--;
-        }
-        else
-        {
-            ppParticle = &pParticle->m_pNext;
-        }
-    }
+		if (pParticle->m_fFade <= 0 || (m_bGravity && pParticle->m_vPos.y < pParticle->m_fGroundY))
+		{
+			// Kill particle
+			*ppParticle = pParticle->m_pNext;
+			pParticle->m_pNext = m_pParticlesFree;
+			m_pParticlesFree = pParticle;
+		} else {
+			ppParticle = &pParticle->m_pNext;
+		}
+	}
 
 
-    return S_OK;
+	return S_OK;
 }
 
 
@@ -189,30 +178,18 @@ HRESULT CParticles::Update( void )
 // vVel : 날아갈 방향.
 HRESULT CParticles::CreateParticle( int nType, const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vVel, FLOAT fGroundY )
 {
-	if( m_bActive == FALSE )	return S_OK;
+	if (!m_bActive)	return S_OK;
 	if( m_pParticleTexture == NULL )	return S_OK;
+
+	// Find free particle
+	if (m_pParticlesFree == nullptr) return E_FAIL;
+
 	
-	PARTICLE *pParticle;
-	
-    // Emit new particles - 새로운 파티클을 뿜어내다.
-	// 파티클 갯수가 맥스치를 넘치 않게.
-	if( m_dwParticles >= m_dwParticlesLim )		return E_FAIL;
-    
-    if( m_pParticlesFree )		// 비어있는 파티클 포인터가 있는가.
-    {
-        pParticle = m_pParticlesFree;		// 생성될 파티클을 비어있는 포인터로 설정.
-        m_pParticlesFree = pParticle->m_pNext;	// 파티클 리스트에 추가.
-    }
-    else
-    {
-		pParticle = &m_pPool[ m_nPoolPtr++ ];
-		if( m_nPoolPtr >= (int)m_dwParticlesLim )
-			m_nPoolPtr = 0;
-    }
-	
-    pParticle->m_pNext = m_pParticles;	// 새로 생성된 파티클의 다음노드에 현재 파티클 설정.
-    m_pParticles = pParticle;			// 새로 생성된 파티클을 현재 노드에 설정.
-    m_dwParticles++;					// 파티클 개수 증가.
+	PARTICLE * pParticle = m_pParticlesFree;
+	m_pParticlesFree = pParticle->m_pNext;
+
+	pParticle->m_pNext = m_pParticles;
+	m_pParticles = pParticle;
 	
   // Emit new particle
 	
@@ -244,59 +221,58 @@ HRESULT CParticles::CreateParticle( int nType, const D3DXVECTOR3 &vPos, const D3
 // Desc: Renders the particle system using either pointsprites (if supported)
 //       or using 4 vertices per particle
 //-----------------------------------------------------------------------------
-HRESULT CParticles::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CParticles::Render(LPDIRECT3DDEVICE9 pd3dDevice)
 {
-	if( m_bActive == FALSE )	return S_OK;
-	if( m_pParticleTexture == NULL )	return S_OK;
-	if( m_dwParticles <= 0 )	return S_OK;
+	if (!m_bActive)	return S_OK;
+	if (m_pParticleTexture == nullptr)	return S_OK;
+	if (m_pParticles == nullptr) return S_OK;
 
 	D3DXMATRIX mWorld;
-	D3DXMatrixIdentity( &mWorld );
-	pd3dDevice->SetTransform( D3DTS_WORLD, &mWorld );		// Set World Transform 
-	
+	D3DXMatrixIdentity(&mWorld);
+	pd3dDevice->SetTransform(D3DTS_WORLD, &mWorld);		// Set World Transform 
+
 	// Draw particles
-	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1,   D3DTA_TEXTURE );
-	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG2,   D3DTA_CURRENT );
-	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
-	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
-	pd3dDevice->SetTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_DISABLE );
-	pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
-	
-	pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_ONE );
-	pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
-	pd3dDevice->SetRenderState( D3DRS_LIGHTING,  FALSE );
-	pd3dDevice->SetRenderState( D3DRS_CULLMODE,  D3DCULL_CCW );
-    pd3dDevice->SetRenderState( D3DRS_AMBIENT, 0xffffffff );
-//	pd3dDevice->SetRenderState( D3DRS_SHADEMODE, D3DSHADE_FLAT );
-	
-	//
-	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
-	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-	pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, FALSE );
-	
-	pd3dDevice->SetTexture(0, m_pParticleTexture );
-	
-    HRESULT hr;
+	pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_CURRENT);
+	pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	pd3dDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	pd3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	pd3dDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 
-    // Set the render states for using point sprites
-    pd3dDevice->SetRenderState( D3DRS_POINTSPRITEENABLE, TRUE );
-    pd3dDevice->SetRenderState( D3DRS_POINTSCALEENABLE,  TRUE );
-	pd3dDevice->SetRenderState( D3DRS_POINTSIZE, FtoDW(m_fSize) );
-		
-    pd3dDevice->SetRenderState( D3DRS_POINTSIZE_MIN, FtoDW(1.00f) );
-    pd3dDevice->SetRenderState( D3DRS_POINTSCALE_A,  FtoDW(0.00f) );
-    pd3dDevice->SetRenderState( D3DRS_POINTSCALE_B,  FtoDW(0.00f) );
-    pd3dDevice->SetRenderState( D3DRS_POINTSCALE_C,  FtoDW(1.00f) );
+	pd3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+	pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+	pd3dDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+	pd3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	pd3dDevice->SetRenderState(D3DRS_AMBIENT, 0xffffffff);
+	//	pd3dDevice->SetRenderState( D3DRS_SHADEMODE, D3DSHADE_FLAT );
 
-    // Set up the vertex buffer to be rendered
-    pd3dDevice->SetStreamSource( 0, m_pVB, 0, sizeof(POINTVERTEX) );
-	pd3dDevice->SetVertexShader( NULL );
-	pd3dDevice->SetVertexDeclaration( NULL );
-    pd3dDevice->SetFVF( POINTVERTEX::FVF );
+		//
+	pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	pd3dDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 
-    PARTICLE*    pParticle = m_pParticles;
-    POINTVERTEX* pVertices;
-    DWORD        dwNumParticlesToRender = 0;
+	pd3dDevice->SetTexture(0, m_pParticleTexture);
+
+	HRESULT hr;
+
+	// Set the render states for using point sprites
+	pd3dDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
+	pd3dDevice->SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
+	pd3dDevice->SetRenderState(D3DRS_POINTSIZE, FtoDW(m_fSize));
+
+	pd3dDevice->SetRenderState(D3DRS_POINTSIZE_MIN, FtoDW(1.00f));
+	pd3dDevice->SetRenderState(D3DRS_POINTSCALE_A, FtoDW(0.00f));
+	pd3dDevice->SetRenderState(D3DRS_POINTSCALE_B, FtoDW(0.00f));
+	pd3dDevice->SetRenderState(D3DRS_POINTSCALE_C, FtoDW(1.00f));
+
+	// Set up the vertex buffer to be rendered
+	pd3dDevice->SetStreamSource(0, m_pVB, 0, sizeof(POINTVERTEX));
+	pd3dDevice->SetVertexShader(NULL);
+	pd3dDevice->SetVertexDeclaration(NULL);
+	pd3dDevice->SetFVF(POINTVERTEX::FVF);
+
+	POINTVERTEX * pVertices;
+	DWORD        dwNumParticlesToRender = 0;
 
 
 
@@ -308,84 +284,79 @@ HRESULT CParticles::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 
 	m_dwBase += m_dwFlush;
 
-	if(m_dwBase >= m_dwDiscard)
+	if (m_dwBase >= m_dwDiscard)
 		m_dwBase = 0;
 
-	if( FAILED( hr = m_pVB->Lock( m_dwBase * sizeof(POINTVERTEX), m_dwFlush * sizeof(POINTVERTEX),
-		(void**) &pVertices, m_dwBase ? D3DLOCK_NOOVERWRITE : D3DLOCK_DISCARD ) ) )
-    {
+	if (FAILED(hr = m_pVB->Lock(m_dwBase * sizeof(POINTVERTEX), m_dwFlush * sizeof(POINTVERTEX),
+		(void **)&pVertices, m_dwBase ? D3DLOCK_NOOVERWRITE : D3DLOCK_DISCARD)))
+	{
 		return hr;
 	}
 
-		
-	D3DXCOLOR clrDiffuse;
-	D3DXVECTOR3 vPos;
-	D3DXVECTOR3 vVel;
-	
-    // 파티클 리스트를 따라 파티클을 렌더링한다.
-    while( pParticle )
-    {
-        vPos = pParticle->m_vPos;
-        vVel = pParticle->m_vVel;
 
-        D3DXColorLerp( &clrDiffuse, &pParticle->m_clrFade, &pParticle->m_clrDiffuse, pParticle->m_fFade );
-        DWORD dwDiffuse = (DWORD) clrDiffuse;
+	// 파티클 리스트를 따라 파티클을 렌더링한다.
+	PARTICLE * pParticle = m_pParticles;
+	while (pParticle) {
+		D3DXVECTOR3 vPos = pParticle->m_vPos;
+		D3DXVECTOR3 vVel = pParticle->m_vVel;
 
-        // Render each particle a bunch of times to get a blurring effect
+		D3DXCOLOR clrDiffuse;
+		D3DXColorLerp(&clrDiffuse, &pParticle->m_clrFade, &pParticle->m_clrDiffuse, pParticle->m_fFade);
+		DWORD dwDiffuse = (DWORD)clrDiffuse;
 
-            pVertices->v     = vPos;
-            pVertices->color = dwDiffuse;
-            pVertices++;
+		// Render each particle a bunch of times to get a blurring effect
+		pVertices->v = vPos;
+		pVertices->color = dwDiffuse;
+		pVertices++;
 
-            if( ++dwNumParticlesToRender == m_dwFlush )
-            {
-                // Done filling this chunk of the vertex buffer.  Lets unlock and
-                // draw this portion so we can begin filling the next chunk.
+		if (++dwNumParticlesToRender == m_dwFlush) {
+			// Done filling this chunk of the vertex buffer.  Lets unlock and
+			// draw this portion so we can begin filling the next chunk.
 
-                m_pVB->Unlock();
+			m_pVB->Unlock();
 
-                if(FAILED(hr = pd3dDevice->DrawPrimitive( D3DPT_POINTLIST, m_dwBase, dwNumParticlesToRender)))
-					return hr;
+			if (FAILED(hr = pd3dDevice->DrawPrimitive(D3DPT_POINTLIST, m_dwBase, dwNumParticlesToRender)))
+				return hr;
 
-                // Lock the next chunk of the vertex buffer.  If we are at the 
-                // end of the vertex buffer, DISCARD the vertex buffer and start
-                // at the beginning.  Otherwise, specify NOOVERWRITE, so we can
-                // continue filling the VB while the previous chunk is drawing.
-				m_dwBase += m_dwFlush;
+			// Lock the next chunk of the vertex buffer.  If we are at the 
+			// end of the vertex buffer, DISCARD the vertex buffer and start
+			// at the beginning.  Otherwise, specify NOOVERWRITE, so we can
+			// continue filling the VB while the previous chunk is drawing.
+			m_dwBase += m_dwFlush;
 
-				if(m_dwBase >= m_dwDiscard)
-					m_dwBase = 0;
+			if (m_dwBase >= m_dwDiscard)
+				m_dwBase = 0;
 
-				if( FAILED( hr = m_pVB->Lock( m_dwBase * sizeof(POINTVERTEX), m_dwFlush * sizeof(POINTVERTEX),
-		            (void**) &pVertices, m_dwBase ? D3DLOCK_NOOVERWRITE : D3DLOCK_DISCARD ) ) )
-                {
-					return hr;
-                }
+			if (FAILED(hr = m_pVB->Lock(m_dwBase * sizeof(POINTVERTEX), m_dwFlush * sizeof(POINTVERTEX),
+				(void **)&pVertices, m_dwBase ? D3DLOCK_NOOVERWRITE : D3DLOCK_DISCARD)))
+			{
+				return hr;
+			}
 
-                dwNumParticlesToRender = 0;
-            }
+			dwNumParticlesToRender = 0;
+		}
 
-        pParticle = pParticle->m_pNext;
-    } // particle list
+		pParticle = pParticle->m_pNext;
+	}
 
-    // Unlock the vertex buffer
-    m_pVB->Unlock();
+	// Unlock the vertex buffer
+	m_pVB->Unlock();
 
-    // Render any remaining particles
-    if( dwNumParticlesToRender )		// 위에서 512개씩 출력해주고 남은 파티클을 여기서 마저 다 그려줌.
-    {
-        if(FAILED(hr = pd3dDevice->DrawPrimitive( D3DPT_POINTLIST, m_dwBase, dwNumParticlesToRender )))
+	// Render any remaining particles
+	if (dwNumParticlesToRender)		// 위에서 512개씩 출력해주고 남은 파티클을 여기서 마저 다 그려줌.
+	{
+		if (FAILED(hr = pd3dDevice->DrawPrimitive(D3DPT_POINTLIST, m_dwBase, dwNumParticlesToRender)))
 			return hr;
-    }
+	}
 
-    // Reset render states
-    pd3dDevice->SetRenderState( D3DRS_POINTSPRITEENABLE, FALSE );
-    pd3dDevice->SetRenderState( D3DRS_POINTSCALEENABLE,  FALSE );
+	// Reset render states
+	pd3dDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, FALSE);
+	pd3dDevice->SetRenderState(D3DRS_POINTSCALEENABLE , FALSE);
 
-	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
-	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, FALSE );
-	
-    return S_OK;
+	pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE     , TRUE);
+	pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE , FALSE);
+
+	return S_OK;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -403,54 +374,17 @@ CParticleMng	g_ParticleMng;
 //
 CParticles *CParticleMng::CreateParticle( int nType, const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vVel, FLOAT fGroundY )
 {
-	if( nType < 0 || nType >= MAX_PARTICLE_TYPE )
-		return NULL;
-	CParticles	*pParticles = &m_Particles[ nType ];
+	if (nType < 0 || nType >= MAX_PARTICLE_TYPE) {
+		return nullptr;
+	}
 
-	if( pParticles->m_bActive == FALSE )		// 생성시킨적이 없는 파티클이면 최초 생성.
-	{
+	CParticles * pParticles = &m_Particles[nType];
+
+	if (!pParticles->m_bActive) { 	// 생성시킨적이 없는 파티클이면 최초 생성.
 		pParticles->Create( 512, 512, nType );
-		char szFileName[32];
-		switch( nType )
-		{
-		case 0:	pParticles->m_fSize = 0.3f;	strcpy( szFileName, "Sfx_ItemPatical01.dds" );	break;
-		case 1:	pParticles->m_fSize = 0.2f;	strcpy( szFileName, "etc_Particle2.bmp" );	break;
-		case 2:	pParticles->m_fSize = 0.5f;	strcpy( szFileName, "etc_Particle11.bmp" );	break;
-		case 3:	pParticles->m_fSize = 0.3f;	strcpy( szFileName, "etc_Particle11.bmp" );	break;
-		case 4:	pParticles->m_fSize = 0.2f;	strcpy( szFileName, "etc_Particle11.bmp" );	break;
-		case 5:	pParticles->m_fSize = 0.3f;	strcpy( szFileName, "Sfx_ItemPatical06-01.dds" );	break;
-		case 6:	pParticles->m_fSize = 0.3f;	strcpy( szFileName, "Sfx_ItemPatical06-02.dds" );	break;
-		case 7:	pParticles->m_fSize = 0.3f;	strcpy( szFileName, "Sfx_ItemPatical06-03.dds" );	break;
-		case 8:	pParticles->m_fSize = 0.3f;	strcpy( szFileName, "Sfx_ItemPatical06-04.dds" );	break;
-		case 9:	pParticles->m_fSize = 0.3f;	strcpy( szFileName, "Sfx_ItemPatical06-05.dds" );	break;
-		case 10:	pParticles->m_fSize = 0.5f;	strcpy( szFileName, "etc_ParticleCloud01.bmp" );	break;
-		case 11:	pParticles->m_fSize = 0.3f;	strcpy( szFileName, "etc_ParticleCloud01.bmp" );	break;
-		case 12:	pParticles->m_fSize = 0.2f;	strcpy( szFileName, "etc_ParticleCloud01.bmp" );	break;
 
-		// blue
-		case 13:	pParticles->m_fSize = 0.15f;		strcpy( szFileName, "etc_Particle11.bmp" );	break;
-		case 14:	pParticles->m_fSize = 0.1f;	strcpy( szFileName, "etc_Particle11.bmp" );	break;
-		case 15:	pParticles->m_fSize = 0.07f;	strcpy( szFileName, "etc_Particle11.bmp" );	break;
-
-		// red
-		case 16:	pParticles->m_fSize = 0.15f;		strcpy( szFileName, "etc_Particle12.bmp" );	break;
-		case 17:	pParticles->m_fSize = 0.1f;	strcpy( szFileName, "etc_Particle12.bmp" );	break;
-		case 18:	pParticles->m_fSize = 0.07f;	strcpy( szFileName, "etc_Particle12.bmp" );	break;
-
-		// white
-		case 19:	pParticles->m_fSize = 0.15f;		strcpy( szFileName, "etc_Particle13.bmp" );	break;
-		case 20:	pParticles->m_fSize = 0.1f;	strcpy( szFileName, "etc_Particle13.bmp" );	break;
-		case 21:	pParticles->m_fSize = 0.07f;	strcpy( szFileName, "etc_Particle13.bmp" );	break;
-
-		// green
-		case 22:	pParticles->m_fSize = 0.15f;		strcpy( szFileName, "etc_Particle14.bmp" );	break;
-		case 23:	pParticles->m_fSize = 0.1f;	strcpy( szFileName, "etc_Particle14.bmp" );	break;
-		case 24:	pParticles->m_fSize = 0.07f;	strcpy( szFileName, "etc_Particle14.bmp" );	break;
-
-		default:
-				strcpy( szFileName, "etc_Particle2.bmp" );	break;
-		}
-
+		const auto [fSize, szFileName] = CParticles::GetParticleTypeInfo(nType);
+		pParticles->m_fSize = fSize;
 		pParticles->InitDeviceObjects( m_pd3dDevice, szFileName );		// 파티클 텍스쳐 로딩.
 		pParticles->RestoreDeviceObjects( m_pd3dDevice );
 	}
@@ -458,6 +392,42 @@ CParticles *CParticleMng::CreateParticle( int nType, const D3DXVECTOR3 &vPos, co
 	pParticles->CreateParticle( nType, vPos, vVel, fGroundY );		// nType의 파티클 하나 생성.
 
 	return pParticles;
+}
+
+std::pair<float, const char *> CParticles::GetParticleTypeInfo(const int nType) {
+	switch (nType) {
+		case 0:  return { 0.3f, "Sfx_ItemPatical01.dds"    };
+		case 1:  return { 0.2f, "etc_Particle2.bmp"        };
+		case 2:  return { 0.5f, "etc_Particle11.bmp"       };
+		case 3:  return { 0.3f, "etc_Particle11.bmp"       };
+		case 4:  return { 0.2f, "etc_Particle11.bmp"       };
+		case 5:  return { 0.3f, "Sfx_ItemPatical06-01.dds" };
+		case 6:  return { 0.3f, "Sfx_ItemPatical06-02.dds" };
+		case 7:  return { 0.3f, "Sfx_ItemPatical06-03.dds" };
+		case 8:  return { 0.3f, "Sfx_ItemPatical06-04.dds" };
+		case 9:  return { 0.3f, "Sfx_ItemPatical06-05.dds" };
+		case 10: return { 0.5f, "etc_ParticleCloud01.bmp"  };
+		case 11: return { 0.3f, "etc_ParticleCloud01.bmp"  };
+		case 12: return { 0.2f, "etc_ParticleCloud01.bmp"  };
+		// blue
+		case 13: return { 0.15f, "etc_Particle11.bmp" };
+		case 14: return { 0.1f , "etc_Particle11.bmp" };
+		case 15: return { 0.07f, "etc_Particle11.bmp" };
+		// red
+		case 16: return { 0.15f, "etc_Particle12.bmp" };
+		case 17: return { 0.1f , "etc_Particle12.bmp" };
+		case 18: return { 0.07f, "etc_Particle12.bmp" };
+		// white
+		case 19: return { 0.15f, "etc_Particle13.bmp" };
+		case 20: return { 0.1f , "etc_Particle13.bmp" };
+		case 21: return { 0.07f, "etc_Particle13.bmp" };
+		// green
+		case 22: return { 0.15f, "etc_Particle14.bmp" };
+		case 23: return { 0.1f , "etc_Particle14.bmp" };
+		case 24: return { 0.07f, "etc_Particle14.bmp" };
+		// default
+		default: return { 0.3f , "etc_Particle2.bmp" };
+	}
 }
 
 void CParticleMng::Process() {
