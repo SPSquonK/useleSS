@@ -3969,7 +3969,6 @@ void	CDPSrvr::OnLogItem( LogItemInfo & info, CItemElem* pItemElem, int nItemCoun
 		info.nAbilityOption = pItemElem->GetAbilityOption();
 		info.Negudo = pItemElem->m_nHitPoint;
 		info.MaxNegudo	= pItemElem->m_nRepair;
-		info.m_bCharged = pItemElem->m_bCharged;
 		info.m_dwKeepTime = pItemElem->m_dwKeepTime;
 		info.nPiercedSize = pItemElem->GetPiercingSize();
 		for( int i=0; i<pItemElem->GetPiercingSize(); i++ )
@@ -4023,7 +4022,6 @@ void	CDPSrvr::OnLogItem( LogItemInfo & info, CItemElem* pItemElem, int nItemCoun
 	ar << info.nSlot1;
 	ar << info.nItemResist;
 	ar << info.nResistAbilityOption;
-	ar << info.m_bCharged;
 	ar << info.m_dwKeepTime;
 	ar << info.nPiercedSize;
 	for( int i=0; i<info.nPiercedSize; i++ )

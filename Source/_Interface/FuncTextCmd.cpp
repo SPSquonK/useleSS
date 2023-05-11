@@ -2126,14 +2126,11 @@ BOOL TextCmd_CreateItem(CScanner & scanner, CPlayer_ * pUser) {
 
 		dwNum	= scanner.GetNumber();
 		dwNum	= ( dwNum == 0? 1: dwNum );
-		dwCharged	= scanner.GetNumber();
-		dwCharged	= ( dwCharged == 0 ? 0 : 1 );
 		
 		CItemElem itemElem;
 		itemElem.m_dwItemId		= pProp->dwID;
 		itemElem.m_nItemNum		= (short)( dwNum );
 		itemElem.m_nHitPoint	= -1;
-		itemElem.m_bCharged		= dwCharged;
 
 		pUser->CreateItem( &itemElem );
 	}

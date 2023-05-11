@@ -2726,7 +2726,6 @@ namespace UI {
 	namespace PetVis {
 		void TransformToVisPet::operator()(CItemElem & itemElem) const {
 			itemElem.m_bTranformVisPet = TRUE;
-			itemElem.m_bCharged = TRUE;
 		}
 
 		// == Size

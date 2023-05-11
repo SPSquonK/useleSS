@@ -42,7 +42,6 @@ CAr & operator<<(CAr & ar, const CItemElem & self) {
 	ar << self.m_nResistAbilityOption;	// 속성 추가 능력치 가변 옵션
 	ar << self.m_nResistSMItemId;
 	ar << self.m_piercing;
-	ar << self.m_bCharged;
 	ar << self.m_iRandomOptItemId;
 	ar << self.m_dwKeepTime;
 	if (self.m_dwKeepTime) {
@@ -76,7 +75,6 @@ CAr & operator>>(CAr & ar, CItemElem & self) {
 	ar >> self.m_nResistAbilityOption;
 	ar >> self.m_nResistSMItemId;
 	ar >> self.m_piercing;
-	ar >> self.m_bCharged;
 	ar >> self.m_iRandomOptItemId;
 	ar >> self.m_dwKeepTime;
 

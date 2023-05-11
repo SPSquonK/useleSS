@@ -939,7 +939,6 @@ BOOL CDbManager::SendItemtoCharacter( int nSlot, CMover* pMover, CQuery *qry, CQ
 		{
 			__SendItemContents SendItemContents;
 			CItemElem* pItemElem = &SendItemContents.itemElem;
-			pItemElem->m_bCharged = TRUE;
 			pItemElem->SetRandomOptItemId( 0 );
 
 			if( GetSendItem( qry, &SendItemContents ) == FALSE )
@@ -1068,7 +1067,6 @@ BOOL CDbManager::GetSendItem( CQuery *pQry, __SendItemContents * pSendItemConten
 	// mirchang_100514 TransformVisPet_Log
 
 	pItemElem->m_nResistAbilityOption	= pQry->GetInt( "m_nResistAbilityOption" ) <= CQuery::CQUERYNULL ? 0 : pQry->GetInt( "m_nResistAbilityOption" );
-	pItemElem->m_bCharged				= pQry->GetInt( "m_bCharged" ) <= 0 ? TRUE : FALSE;
 	//pItemElem->m_dwKeepTime			= pQry->GetInt64( "m_dwKeepTime" ) <= CQuery::CQUERYNULL ? 0 : pQry->GetInt64( "m_dwKeepTime" );
 	pSendItemContents->m_dwKeepTime		= pQry->GetInt64( "m_dwKeepTime" ) <= CQuery::CQUERYNULL ? 0 : pQry->GetInt64( "m_dwKeepTime" );
 	
@@ -2639,9 +2637,7 @@ void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 		VERIFYSTRING( ExtBank, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
 		while( '$' != ExtBank[CountStr] )
 		{
-			GuildBank.m_apItem[nExtBank].m_bCharged					= (BOOL)GetIntPaFromStr( ExtBank, &CountStr );
-			if( GuildBank.m_apItem[nExtBank].m_bCharged != 1 )
-				GuildBank.m_apItem[nExtBank].m_bCharged	= 0;
+			GetIntPaFromStr(ExtBank, &CountStr);
 			GuildBank.m_apItem[nExtBank].m_dwKeepTime				= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
 			GuildBank.m_apItem[nExtBank].SetRandomOptItemId( GetInt64PaFromStr( ExtBank, &CountStr ) );
 			GuildBank.m_apItem[nExtBank].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
@@ -3392,7 +3388,7 @@ void CDbManager::MakeQueryAddMail( char* szSql, CMail* pMail, u_long idReceiver 
 
 			pMail->m_nMail, g_appInfo.dwSys, idReceiver, pMail->m_idSender, pMail->m_nGold, pMail->m_tmCreate, pMail->m_byRead,
 			item.m_dwItemId, item.m_nItemNum, item.m_nRepairNumber, item.m_nHitPoint, item.m_nRepair, 0, item.m_byFlag, item.GetSerialNumber(),
-			item.GetOption(), item.m_bItemResist, item.m_nResistAbilityOption, item.m_idGuild, item.m_nResistSMItemId, item.m_bCharged, item.m_dwKeepTime,
+			item.GetOption(), item.m_bItemResist, item.m_nResistAbilityOption, item.m_idGuild, item.m_nResistSMItemId, 0, item.m_dwKeepTime,
 			item.GetRandomOptItemId(),
 			item.GetUltimatePiercingSize(), item.GetUltimatePiercingItem( 0 ), item.GetUltimatePiercingItem( 1 ), item.GetUltimatePiercingItem( 2 ), item.GetUltimatePiercingItem( 3 ),
 			bPet, pet.GetKind(), pet.GetLevel(), pet.GetExp(), pet.GetEnergy(), pet.GetLife(),
@@ -3419,7 +3415,7 @@ void CDbManager::MakeQueryAddMail( char* szSql, CMail* pMail, u_long idReceiver 
 
 			pMail->m_nMail, g_appInfo.dwSys, idReceiver, pMail->m_idSender, pMail->m_nGold, pMail->m_tmCreate, pMail->m_byRead,
 			item.m_dwItemId, item.m_nItemNum, item.m_nRepairNumber, item.m_nHitPoint, item.m_nRepair, 0, item.m_byFlag, item.GetSerialNumber(),
-			item.GetOption(), item.m_bItemResist, item.m_nResistAbilityOption, item.m_idGuild, item.m_nResistSMItemId, item.m_bCharged, item.m_dwKeepTime,
+			item.GetOption(), item.m_bItemResist, item.m_nResistAbilityOption, item.m_idGuild, item.m_nResistSMItemId, 0, item.m_dwKeepTime,
 			item.GetRandomOptItemId(),
 			item.GetPiercingSize(), item.GetPiercingItem( 0 ), item.GetPiercingItem( 1 ), item.GetPiercingItem( 2 ), item.GetPiercingItem( 3 ),
 			bPet, pet.GetKind(), pet.GetLevel(), pet.GetExp(), pet.GetEnergy(), pet.GetLife(),
@@ -5024,9 +5020,6 @@ BOOL CDbManager::LoadPost( void )
 
 void CDbManager::GetItemFromMail( CQuery* pQuery, CItemElem* pItemElem )
 {
-	pItemElem->m_bCharged	= pQuery->GetInt( "bCharged" );
-	if( pItemElem->m_bCharged != 1 )
-		pItemElem->m_bCharged	= 0;
 	pItemElem->m_bItemResist	= pQuery->GetInt( "bItemResist" );
 	pItemElem->m_byFlag	= pQuery->GetInt( "byFlag" );
 	pItemElem->m_dwKeepTime	= pQuery->GetInt( "dwKeepTime" );

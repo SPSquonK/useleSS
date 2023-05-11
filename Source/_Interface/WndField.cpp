@@ -1936,8 +1936,6 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						bAble = FALSE;
 					}
 
-					if( pFocusItem->m_bCharged != 1 )
-					{
 						switch( pProp->dwID )
 						{
 						case II_SYS_SYS_SCR_BLESSING:
@@ -1979,7 +1977,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							break;
 						}
 						}
-					}
+
 				}
 			}
 			if( bAble )	// �������� �������� ����.

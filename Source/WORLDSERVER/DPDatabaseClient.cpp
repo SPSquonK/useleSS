@@ -1693,7 +1693,6 @@ void CDPDatabaseClient::SendLogSMItemUse( const char *Action, CUser* pUser, CIte
 		ar << (int)0;
 		ar << (int)0;
 		ar << (int)0;
-		ar << (BOOL)0;
 		ar << (DWORD)0;
 		ar << (int)0;
 		ar << (int)0;
@@ -1715,7 +1714,6 @@ void CDPDatabaseClient::SendLogSMItemUse( const char *Action, CUser* pUser, CIte
 		ar << (int)0;
 		ar << (int)pItemElem->m_bItemResist;
 		ar << (int)pItemElem->m_nResistAbilityOption;
-		ar << pItemElem->m_bCharged;
 		ar << pItemElem->m_dwKeepTime;
 		ar << pItemElem->GetPiercingSize();
 		for( int i=0; i<pItemElem->GetPiercingSize(); i++ )

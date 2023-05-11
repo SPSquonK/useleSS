@@ -60,7 +60,6 @@ public:
 	__int64		m_n64NewRandomOption;
 #endif
 
-	BOOL	m_bCharged;			// Can't be traded?
 	DWORD	m_dwKeepTime;		// Mobile game mechanic
 
 #ifndef __CORESERVER

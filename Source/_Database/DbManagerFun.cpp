@@ -198,9 +198,7 @@ BOOL CDbManager::GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDb
 	CountStr	= 0;	nExtBankCount	= 0;
 	while( '$' != ExtBank[CountStr] )
 	{
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bCharged			= (BOOL)GetIntPaFromStr( ExtBank, &CountStr );
-		if( pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bCharged != 1 )
-			pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bCharged	= 0;
+		GetIntPaFromStr( ExtBank, &CountStr );
 		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_dwKeepTime		= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
 		__int64 iRandomOptItemId	= GetInt64PaFromStr( ExtBank, &CountStr );
 		if( iRandomOptItemId == -102 )
@@ -331,9 +329,7 @@ BOOL CDbManager::GetBankMover( CMover* pMover, CQuery *qry, int nSlot )
 	VERIFYSTRING_BANK( ExtBank, pMover->m_szName );
 	while( '$' != ExtBank[CountStr] )
 	{
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bCharged			= (BOOL)GetIntPaFromStr( ExtBank, &CountStr );
-		if( pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bCharged != 1 )
-			pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bCharged	= 0;
+		GetIntPaFromStr( ExtBank, &CountStr );
 		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_dwKeepTime		= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
 		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].SetRandomOptItemId( GetInt64PaFromStr( ExtBank, &CountStr ) );
 		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
@@ -426,9 +422,7 @@ void CDbManager::GetGuildBank( CItemContainer*  GuildBank, CQuery *qry )
 	qry->GetStr( "m_extGuildBank", ExtBank );
 	while( '$' != ExtBank[CountStr] )
 	{
-		GuildBank->m_apItem[nExtBank].m_bCharged				= (BOOL)GetIntPaFromStr( ExtBank, &CountStr );
-		if( GuildBank->m_apItem[nExtBank].m_bCharged != 1 )
-			GuildBank->m_apItem[nExtBank].m_bCharged	= 0;
+		GetIntPaFromStr( ExtBank, &CountStr );
 		GuildBank->m_apItem[nExtBank].m_dwKeepTime				= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
 		__int64 iRandomOptItemId	= GetInt64PaFromStr( ExtBank, &CountStr );
 		if( iRandomOptItemId == -102 )
@@ -571,9 +565,7 @@ BOOL CDbManager::GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS
 		nOffset		= i	= 0;
 		while( '$' != szExt[nOffset] )
 		{
-			pPocket->m_apItem[i].m_bCharged		= (BOOL)GetIntPaFromStr( szExt, &nOffset );
-			if( pPocket->m_apItem[i].m_bCharged != 1 )
-				pPocket->m_apItem[i].m_bCharged		= 0;
+			GetIntPaFromStr( szExt, &nOffset );
 			pPocket->m_apItem[i].m_dwKeepTime	= (DWORD)GetIntPaFromStr( szExt, &nOffset );
 			__int64 iRandomOptItemId	= GetInt64PaFromStr( szExt, &nOffset );
 			pPocket->m_apItem[i].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( szExt, &nOffset ) );
@@ -698,9 +690,7 @@ BOOL CDbManager::GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS
 	VERIFYSTRING_RETURN( ExtInven, szPlayerName );
 	while( '$' != ExtInven[CountStr] )
 	{
-		pMover->m_Inventory.m_apItem[nExtInven].m_bCharged					= (BOOL)GetIntPaFromStr( ExtInven, &CountStr );
-		if( pMover->m_Inventory.m_apItem[nExtInven].m_bCharged != 1 )
-			pMover->m_Inventory.m_apItem[nExtInven].m_bCharged	= 0;
+		GetIntPaFromStr( ExtInven, &CountStr );
 		pMover->m_Inventory.m_apItem[nExtInven].m_dwKeepTime				= (DWORD)GetIntPaFromStr( ExtInven, &CountStr );
 		__int64 iRandomOptItemId	= GetInt64PaFromStr( ExtInven, &CountStr );
 		if( iRandomOptItemId == -102 )

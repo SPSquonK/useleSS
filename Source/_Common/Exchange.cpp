@@ -471,7 +471,6 @@ int CExchange::ResultExchange( CUser* pUser, int nMMIId, int nListNum )
 		itemElem.m_nItemNum	= vecPayItem[i].nItemNum;
 		itemElem.m_byFlag = vecPayItem[i].byFalg;
 		itemElem.SetSerialNumber();
-		itemElem.m_bCharged = itemElem.GetProp()->bCharged;
 		if( pUser->CreateItem( &itemElem ) )
 		{
 			LogItemInfo aLogItem;

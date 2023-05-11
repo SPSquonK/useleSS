@@ -263,7 +263,7 @@ BOOL CItemContainer::IsFull(CItemElem * pElem, ItemProp * pItemProp, short nNum)
 			else
 				return FALSE;
 		} else if (pElem->m_dwItemId == pElemtmp->m_dwItemId
-			&& pElem->m_byFlag == pElemtmp->m_byFlag && pElem->m_bCharged == pElemtmp->m_bCharged) {
+			&& pElem->m_byFlag == pElemtmp->m_byFlag ) {
 			if (pElemtmp->m_nItemNum + nNumtmp > (short)pItemProp->dwPackMax)
 				nNumtmp -= ((short)pItemProp->dwPackMax - pElemtmp->m_nItemNum);
 			else
@@ -337,7 +337,7 @@ void CItemContainer::Swap(DWORD dwSrcIndex, DWORD dwDstIndex) {
 	CItemElem * pItemElemSrc = GetAtId(m_apIndex[dwSrcIndex]);
 	CItemElem * pItemElemDst = GetAtId(m_apIndex[dwDstIndex]);
 
-	if (pItemElemSrc && pItemElemDst && pItemElemSrc->m_dwItemId == pItemElemDst->m_dwItemId && pItemElemSrc->m_byFlag == pItemElemDst->m_byFlag && pItemElemSrc->m_bCharged == pItemElemDst->m_bCharged) {
+	if (pItemElemSrc && pItemElemDst && pItemElemSrc->m_dwItemId == pItemElemDst->m_dwItemId && pItemElemSrc->m_byFlag == pItemElemDst->m_byFlag ) {
 		ItemProp * pItemProp;
 		int nPackMax;
 		if ((pItemProp = pItemElemSrc->GetProp()) && (nPackMax = pItemProp->dwPackMax) > 1) {
@@ -382,7 +382,7 @@ BOOL CItemContainer::Add(CItemElem * pElem, BYTE * pnId, short * pnNum, BYTE * p
 			pElemtmp = (CItemElem *)&m_apItem[nId];
 
 			if (pElemtmp->IsEmpty() == FALSE && pElemtmp->m_dwItemId == pElem->m_dwItemId && pElemtmp->m_nItemNum < (short)pItemProp->dwPackMax
-				&& pElem->m_byFlag == pElemtmp->m_byFlag && pElem->m_bCharged == pElemtmp->m_bCharged) {
+				&& pElem->m_byFlag == pElemtmp->m_byFlag ) {
 				if (pElemtmp->m_nItemNum + nNumtmp > (short)pItemProp->dwPackMax) {
 					nNumtmp -= ((short)pItemProp->dwPackMax - pElemtmp->m_nItemNum);
 					pElemtmp->m_nItemNum = (short)pItemProp->dwPackMax;

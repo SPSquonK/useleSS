@@ -2617,7 +2617,6 @@ void CDPCoreClient::OnBuyingInfo( CAr & ar, DPID, DPID, DPID)
 		CItemElem itemElem;
 		itemElem.m_dwItemId = bi2.dwItemId;
 		itemElem.m_nItemNum = (short)bi2.dwItemNum;
-		itemElem.m_bCharged = TRUE;
 		BYTE nId;
 		bi2.dwRetVal = pUser->CreateItem(&itemElem, &nId);
 #ifdef __LAYER_1015
@@ -2629,7 +2628,6 @@ void CDPCoreClient::OnBuyingInfo( CAr & ar, DPID, DPID, DPID)
 			CItemElem * pItemElem = pUser->m_Inventory.GetAtId(nId);
 			if (pItemElem) {
 				iSerialNumber = pItemElem->GetSerialNumber();
-				pItemElem->m_bCharged = TRUE;
 				if (bi2.dwSenderId > 0) {
 					// %s was a gift from %s.
 				}

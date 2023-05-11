@@ -52,7 +52,6 @@ CItemElem::CItemElem()
 
 //	memset( &m_piercingInfo, 0x00, sizeof(m_piercingInfo) );
 
-	m_bCharged	= FALSE;
 	m_dwKeepTime = 0;
 	m_iRandomOptItemId	= 0;
 
@@ -535,7 +534,6 @@ CItemElem& CItemElem::operator =( CItemElem & ie )
 	m_nResistSMItemId		= ie.m_nResistSMItemId;
 	m_dwKeepTime			= ie.m_dwKeepTime;
 	m_piercing	= ie.m_piercing;
-	m_bCharged				= ie.m_bCharged;
 	m_iRandomOptItemId		= ie.GetRandomOptItemId();
 	m_nRepair				= ie.m_nRepair;
 

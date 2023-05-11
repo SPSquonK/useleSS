@@ -253,7 +253,6 @@ void IBuffItemBase::Release( CBuffMgr* pBuffMgr )
 			{
 				CItemElem itemElem;
 				itemElem.m_dwItemId = pItemProp->dwID;
-				itemElem.m_bCharged = pItemProp->bCharged;
 				itemElem.m_nItemNum = 1;
 				itemElem.SetSerialNumber();
 				if( pUser->CreateItem( &itemElem ) )

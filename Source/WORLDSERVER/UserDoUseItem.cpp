@@ -183,21 +183,6 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 						AddDefinedText(TID_GAME_NOTOVERLAP_USE, ""); // 이 아이템과는 중복하여 사용할 수 없습니다
 					}
 					return FALSE;
-				} else {
-					if (pItemBase->m_dwItemId == II_SYS_SYS_SCR_RECCURENCE_LINK) {
-						g_dpDBClient.SendLogSMItemUse("1", this, pItemBase, pItemProp);
-					}
-
-					//////////////////////////////////////////////////////////////////////////
-					//	mulcom	BEGIN100125	이벤트용 리스킬 및 이벤트용 리스테트 사용 내역에 대한 로그 추가
-					//						( e-mail : [유럽] 아이템 로그 추가 ( 2010-01-25 17:33 ) 참고 )
-					else if (pItemBase->m_dwItemId == II_SYS_SYS_SCR_RECCURENCE && pItemBase->m_bCharged != TRUE) {
-						g_DPSrvr.PutItemLog(this, "w", "USE_RECCURENCE_ITEM", pItemBase, 1);
-					} else if (pItemBase->m_dwItemId == II_CHR_SYS_SCR_RESTATE && pItemBase->m_bCharged != TRUE) {
-						g_DPSrvr.PutItemLog(this, "w", "USE_RESTATE_ITEM", pItemBase, 1);
-					}
-					//	mulcom	END100125	이벤트용 리스킬 및 이벤트용 리스테트 사용 내역에 대한 로그 추가
-					//////////////////////////////////////////////////////////////////////////
 				}
 			}
 		}
@@ -369,9 +354,6 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 
 	OnAfterUseItem(pItemProp);	// raiders 06.04.20
 	pItemBase->UseItem();			// --m_nItemNum;
-
-	if (pItemBase->m_bCharged)		// 상용화 아이템 로그
-		g_dpDBClient.SendLogSMItemUse("1", this, pItemBase, pItemProp);
 
 	UI::Num operation = UI::Num::Sync(*pItemBase);
 	if (cooldownType == CCooltimeMgr::CooldownType::Available)	// 쿨타임 아이템이면 사용시각을 기록한다.

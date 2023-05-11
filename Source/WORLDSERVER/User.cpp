@@ -2215,7 +2215,6 @@ void CUser::DoUsePackItem( CItemElem* pItemElem, const CPackItem::PACKITEMELEM &
 		itemElem.m_dwItemId = item.dwItem;
 		itemElem.SetAbilityOption(item.nAbilityOption);
 		itemElem.m_nItemNum	= item.nNum;
-		itemElem.m_bCharged		= itemElem.GetProp()->bCharged;
 		itemElem.m_dwKeepTime	= (DWORD)t;
 
 		if (pItemElem->IsBinds()) itemElem.SetFlag(CItemElem::binds);
@@ -2255,7 +2254,6 @@ BOOL CUser::DoUseGiftbox( CItemElem* pItemElem, const DWORD dwItemId ) {
 
 	if (result->nFlag != CItemElem::isusing) {	// ignore property
 		itemElem.m_byFlag = result->nFlag & ~(CItemElem::isusing);
-		itemElem.m_bCharged = itemElem.GetProp()->bCharged;
 	}
 
 	time_t t	= 0;

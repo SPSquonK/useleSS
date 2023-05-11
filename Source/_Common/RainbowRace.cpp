@@ -628,7 +628,6 @@ void CRainbowRaceMng::SetPrize()
 			itemElem.m_dwItemId = dwItemId;
 			itemElem.m_nItemNum = static_cast<int>( m_Lua.GetFieldToNumber( -1, "nItemNum" ) );
 			itemElem.SetFlag( static_cast<BYTE>( m_Lua.GetFieldToNumber( -2, "byFlag" ) ) );
-			itemElem.m_bCharged = itemElem.GetProp()->bCharged;
 		}
 		nPenya = static_cast<int>( m_Lua.GetFieldToNumber( -1, "nPenya" ) * GetApplicantNum() );
 		if( nPenya < 0 ) // overflow이면 0페냐
@@ -680,7 +679,6 @@ void CRainbowRaceMng::SetMiniGamePrize( DWORD dwTick )
 				itemElem.m_dwItemId = static_cast<DWORD>( CScript::GetDefineNum( m_Lua.GetFieldToString( -1, "strItemId" ) ) );
 				itemElem.m_nItemNum = static_cast<int>( m_Lua.GetFieldToNumber( -1, "nItemNum" ) );
 				itemElem.SetFlag( static_cast<BYTE>( m_Lua.GetFieldToNumber( -1, "byFlag" ) ) );
-				itemElem.m_bCharged = itemElem.GetProp()->bCharged;
 				char szText[128] = {0,};
 				strcpy( szText, GETTEXT( TID_GAME_RAINBOWRACE_MINIGAMEPRIZE ) );
 				g_dpDBClient.SendQueryPostMail( (*it).dwPlayerId, 0, itemElem, 0, szText, szText );

@@ -332,7 +332,6 @@ typedef	struct	_LogItemInfo	// ItemLog쓰임
 	int		nSlot1;
 	int		nItemResist;
 	int		nResistAbilityOption;
-	BOOL	m_bCharged;
 	DWORD	m_dwKeepTime;
 	__int64	m_iRandomOptItemId;
 	int 	nPiercedSize;
@@ -368,7 +367,6 @@ typedef	struct	_LogItemInfo	// ItemLog쓰임
 		nSlot1 = 100;
 		nItemResist = 0;
 		nResistAbilityOption = 0;
-		m_bCharged = FALSE;
 		m_dwKeepTime = 0;
 		m_iRandomOptItemId = 0;
 		nPiercedSize = 0;

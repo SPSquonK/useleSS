@@ -917,7 +917,6 @@ void CGuildCombat::GuildCombatResultRanking(const Rankings & rankings) {
 			case 2: fChipNum *= 0.1f; break;
 		}
 		itemElem.m_nItemNum = std::max(1, static_cast<int>(fChipNum));
-		itemElem.m_bCharged = itemElem.GetProp()->bCharged;
 
 		LogItemInfo aLogItem;
 		aLogItem.Action = "W";

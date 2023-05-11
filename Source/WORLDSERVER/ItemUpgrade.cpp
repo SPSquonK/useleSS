@@ -1519,8 +1519,6 @@ void CItemUpgrade::PetVisSize( CUser* pUser, OBJID objIdMaterial )
 	}
 		
 	g_DPSrvr.PutItemLog( pUser, "!", "VIS_SLOT_MATERIAL", pItemElemMaterial );
-	if( pItemElemMaterial->m_bCharged )
-		g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElemMaterial, pItemElemMaterial->GetProp() );	
 	pUser->UpdateItem(*pItemElemPet, UI::PetVis::Size::Increase);
 	g_DPSrvr.PutItemLog( pUser, "#", "VIS_SLOT_SIZE", pItemElemPet );
 	pUser->RemoveItem( (BYTE)( objIdMaterial ), 1 );
@@ -1585,8 +1583,6 @@ void CItemUpgrade::SetPetVisItem( CUser* pUser, OBJID objIdVis )
 		}
 	);
 	PutPetVisItemLog( pUser, "!", "VIS_MATERIAL", pItemElemPet, nFirstEmptySlot );
-	if( pItemElemVis->m_bCharged )		// 상용화 아이템 로그
-		g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElemVis, pVisProp );		
 	g_DPSrvr.PutItemLog( pUser, "$", "VIS_PIERCING", pItemElemPet );
 	pUser->RemoveItem( (BYTE)( objIdVis ), 1 );
 	pUser->SetPetVisDST( pItemElemPet );
@@ -1675,8 +1671,6 @@ void CItemUpgrade::TransFormVisPet( CUser* pUser, OBJID objIdMaterial )
 					return;
 				}
 								
-				if( pItemMaterial->m_bCharged )		// 상용화 아이템 로그
-					g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemMaterial, pItemMaterial->GetProp() );
 				pUser->RemoveItem( (BYTE)( objIdMaterial ), 1 );
 				pUser->UpdateItem(*pItemEatPet, UI::PetVis::TransformToVisPet());
 				g_DPSrvr.PutItemLog( pUser, "!", "TRANSFORM_VISPET", pItemEatPet );

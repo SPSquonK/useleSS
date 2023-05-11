@@ -145,7 +145,6 @@ CItemElem::CItemElem()
 #endif	// __WORLDSERVER
 
 //	memset( &m_piercingInfo, 0, sizeof(m_piercingInfo) );
-	m_bCharged	= FALSE;
 	m_dwKeepTime	= 0;
 	m_iRandomOptItemId	= 0;
 
@@ -225,7 +224,6 @@ CItemElem& CItemElem::operator =( CItemElem & ie )
 	m_nResistSMItemId      = ie.m_nResistSMItemId;
 	m_dwKeepTime           = ie.m_dwKeepTime;
 	m_piercing	= ie.m_piercing;
-	m_bCharged	           = ie.m_bCharged;
 	m_iRandomOptItemId     = ie.GetRandomOptItemId();
 
 	//	mulcom	BEGIN100405	각성 보호의 두루마리
@@ -246,7 +244,7 @@ CItemElem& CItemElem::operator =( CItemElem & ie )
 // 유료아이템인가?
 BOOL CItemElem::IsCharged()
 {
-	if( m_bCharged == 1 || m_nResistSMItemId != 0 )
+	if( m_nResistSMItemId != 0 )
 		return TRUE;
 
 	return FALSE;
