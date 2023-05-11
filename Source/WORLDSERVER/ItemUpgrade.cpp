@@ -909,7 +909,7 @@ BYTE	CItemUpgrade::SmeltSafetyAttribute(CUser* pUser, CItemElem* pItemMain, CIte
 	aLogItem.Gold2 = pUser->GetGold();
 
 	g_DPSrvr.OnLogItem( aLogItem, pItemMaterial, pItemMaterial->m_nItemNum );
-	DWORD dwValue = pItemMaterial->GetProp()->eItemType;
+	SAI79::ePropType dwValue = pItemMaterial->GetProp()->eItemType;
 	pUser->RemoveItem( (BYTE)( pItemMaterial->m_dwObjId ), (short)1 );
 
 	ItemProp* pItemProp = pItemProtScr->GetProp();
@@ -942,7 +942,7 @@ BYTE	CItemUpgrade::SmeltSafetyAttribute(CUser* pUser, CItemElem* pItemMain, CIte
 		if( !pUser->IsMode( TRANSPARENT_MODE ) )
 			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
 
-		pUser->UpdateItem(*pItemMain, UI::Element::Increase);
+		pUser->UpdateItem(*pItemMain, UI::Element::Increase(*pItemMain, dwValue));
 		aLogItem.Action = "O";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
 
@@ -1115,10 +1115,12 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 	if( pAbilityOption == NULL )
 		return;
 
+	const SAI79::ePropType eItemType = pItemMaterial->GetProp()->eItemType;
+
 	// 2가지 속성은 제련할수 없음
 	if( pItemMain->m_bItemResist != SAI79::NO_PROP )
 	{
-		if( pItemMain->m_bItemResist != pItemMaterial->GetProp()->eItemType )
+		if( pItemMain->m_bItemResist != eItemType)
 		{
 			pUser->AddDefinedText( TID_UPGRADE_ERROR_TWOELEMENT );								
 			return;
@@ -1132,7 +1134,7 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 	}
 
 	// 속성 당 하나의 속성 제련 카드를 사용하도록 수정
-	DWORD dwReqCard	= WhatEleCard( pItemMaterial->GetProp()->eItemType );
+	DWORD dwReqCard	= WhatEleCard(eItemType);
 
 	if( pItemMaterial->GetProp()->dwID != dwReqCard )
 	{
@@ -1247,7 +1249,7 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
 			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
 
-		pUser->UpdateItem(*pItemMain, UI::Element::Increase);
+		pUser->UpdateItem(*pItemMain, UI::Element::Increase(*pItemMain, eItemType));
 		aLogItem.Action = "O";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
 	}

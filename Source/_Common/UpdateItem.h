@@ -56,7 +56,7 @@ namespace UI {
     int abilityOption;
 
     [[nodiscard]] static Element None();
-    [[nodiscard]] static Element Increase(const CItemElem & itemElem);
+    [[nodiscard]] static Element Increase(const CItemElem & itemElem, SAI79::ePropType target);
     [[nodiscard]] static Element Decrease(const CItemElem & itemElem);
     [[nodiscard]] static Element Change(SAI79::ePropType target);
 

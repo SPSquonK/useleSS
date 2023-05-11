@@ -2650,9 +2650,9 @@ namespace UI {
 		return Element{ .kind = SAI79::ePropType::NO_PROP, .abilityOption = 0 };
 	}
 
-	Element Element::Increase(const CItemElem & itemElem) {
+	Element Element::Increase(const CItemElem & itemElem, SAI79::ePropType target) {
 		return Element{
-			.kind = itemElem.m_bItemResist,
+			.kind = static_cast<BYTE>(target),
 			.abilityOption = itemElem.m_nResistAbilityOption + 1
 		};
 	}
