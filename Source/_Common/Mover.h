@@ -122,13 +122,7 @@ enum SKILLUSETYPE
 ////////////////////////////////////////////////////////////////////////////////
 
 /// Player vs Player mode
-enum PVP_MODE
-{
-	PVP_MODE_NONE,
-	PVP_MODE_GUILDWAR,
-	PVP_MODE_PK,
-	PVP_MODE_DUEL
-};
+enum class PVP_MODE { NONE, GUILDWAR, PK, DUEL };
 
 
 /// Transaction Confirmation Type
@@ -612,7 +606,7 @@ public:
 	CTimer          m_timerQuestLimitTime;		/// 퀘스트 제한 시간 타이머 
 	DWORD	        m_dwPKTargetLimit;			/// PK선공제한시각
 	DWORD			m_dwTickCreated;			/// 생성 시각 
-	BOOL			m_bLastPK;					/// 마지막으로 죽었을때 플레이어에게(듀얼포함) 죽은건가 그외의 경우로 죽은건가.
+	bool			m_bLastPK;					/// 마지막으로 죽었을때 플레이어에게(듀얼포함) 죽은건가 그외의 경우로 죽은건가.
 	BOOL			m_bLastDuelParty;			/// 파티듀얼로 사망?
 	CTime			m_tGuildMember;				/// 길드 탈퇴 시각 
 	BOOL			m_bGuildCombat;				/// 길드 대전 중?
@@ -1190,7 +1184,7 @@ public:
 	int				DoDie( CCtrl *pAttackCtrl, DWORD dwMsg = 0 );	// 뒈져라.	
 	void			ChangeFame( CMover *pLose );
 	int				DuelResult( CMover *pLose );
-	PVP_MODE		GetPVPCase( CMover *pAttacker );
+	[[nodiscard]] PVP_MODE GetPVPCase(const CMover * pAttacker) const;
 	void			SubPVP( CMover *pAttacker, int nReflect );	// 사람과 사람의 싸움에서 죽었을때.
 	int				SubDuel( CMover *pAttacker );	// 듀얼중에 죽었을때 
 	int				SubPK( CMover *pAttacker, int nReflect );		// PK에의해 죽었을때.

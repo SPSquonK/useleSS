@@ -318,7 +318,7 @@ void CMover::Init()
 	m_nDefenseResist = (BYTE)0xff;
 
 #ifdef __WORLDSERVER
-	m_bLastPK		= FALSE;
+	m_bLastPK		= false;
 	m_bLastDuelParty = FALSE;
 	m_bGuildCombat = FALSE;
 	m_tGuildMember	= CTime::GetCurrentTime();
@@ -4192,31 +4192,16 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 	}
 
 	// 클라이언트는 이쪽으로 오지 않음.
-	BOOL	bBehavior = FALSE;
-	CMover *pAttacker = NULL;
+	CMover *pAttacker = pAttackCtrl->ToMover();
 
-	if( pAttackCtrl && pAttackCtrl->GetType() == OT_MOVER )		// 어태커가 무버라면 무버 포인터 만들어 둔다.
-		pAttacker = (CMover *)pAttackCtrl;
-
-	m_bLastPK = FALSE;
+	m_bLastPK = false;
 	if( pAttacker && pAttacker != this && pAttacker->IsPlayer() )		// 자살한게 아니고, 플레이어에게 죽었냐 아니냐.
 	{
-		PVP_MODE mode = GetPVPCase( pAttacker ); 
-		if( mode == PVP_MODE_PK )	// PK경우
-		{
-#ifdef __JEFF_11_4
-#endif	// __JEFF_11_4
-			if( g_eLocal.GetState( EVE_PKCOST )
-#ifdef __JEFF_11_4
-				&& GetWorld()->IsArena() == FALSE
-#endif	// __JEFF_11_4
-				)
-				m_bLastPK = FALSE;	// 경험치 다운 
-			else
-				m_bLastPK = TRUE;	// 경험치 다운 없음 						
-		}
-		else
-			m_bLastPK = TRUE;	// 경험치 다운 없음 
+		const PVP_MODE mode = GetPVPCase( pAttacker ); 
+		
+		m_bLastPK = mode != PVP_MODE::PK
+			|| !g_eLocal.GetState(EVE_PKCOST)
+			|| GetWorld()->IsArena();
 		
 		m_bGuildCombat = FALSE;
 		if( GetWorld()->GetID() == WI_WORLD_GUILDWAR && g_GuildCombatMng.m_nState != CGuildCombat::CLOSE_STATE )
@@ -4225,7 +4210,7 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 			m_bGuildCombat = TRUE;
 		if(IsNPC())
 		{
-            ((CUser*)pAttacker)->SetHonorAdd(GetIndex(),HI_HUNT_MONSTER);
+			((CUser*)pAttacker)->SetHonorAdd(GetIndex(),HI_HUNT_MONSTER);
 		}
 	}
 
@@ -4272,7 +4257,6 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 			g_dpDBClient.SendLogPlayDeath( this, pAttacker );
 			// 캐릭터간의 전투로 인한 모든 캐릭터의 사망 시 펫은 사망하지 않는다.	// 0723
 			if( IsValidObj( pAttacker ) == FALSE || pAttacker->IsNPC() )
-//			if( m_bLastPK == FALSE && m_bGuildCombat == FALSE )
 			{
 				// 캐릭터 사망 시 소환중인 펫도 사망
 				CPet* pPet	= GetPet();
@@ -4309,18 +4293,9 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 		// 양 파티원들에게 결과를 통보함.
 	}
 	
-	if( bBehavior ) {
-		g_UserMng.AddMoverBehavior2
-			( this, GetPos(), m_pActMover->m_vDelta, GetAngle(), GetAngleX(), m_pActMover->m_fAccPower, m_pActMover->m_fTurnAngle, 
-			m_pActMover->GetState(), m_pActMover->GetStateFlag(), m_dwMotion, m_pActMover->m_nMotionEx, m_pModel->m_nLoop, m_dwMotionOption, 
-			g_TickCount.GetTickCount(), TRUE );
-	}
-	if( fValid )
-	{
-//		g_DPCoreClient.SendMoverDeath( this, pAttacker, dwMsg );
+	if( fValid ) {
 		g_UserMng.AddMoverDeath( this, pAttacker, dwMsg );
-		
-		RemoveAllEnemies();		// pAttacker->SendAIMsg( AIMSG_DSTDIE, GetId() );
+		RemoveAllEnemies();
 	}	// fValid
 	
 	if( pAttacker )
@@ -4600,35 +4575,17 @@ int CMover::SubWar( CMover *pAttacker )
 	return 1;
 }
 
-PVP_MODE CMover::GetPVPCase( CMover *pAttacker )
-{
-	BOOL bPKEnable = FALSE;
-	if( g_eLocal.GetState( EVE_18 ) == 1 )			// 18세 서버 
-		bPKEnable = TRUE;
+PVP_MODE CMover::GetPVPCase(const CMover * pAttacker) const {
+	if (g_eLocal.GetState(EVE_18) != 1) return PVP_MODE::NONE;
 
-	if( bPKEnable == FALSE || 
-		pAttacker == NULL  || 
-		pAttacker->IsNPC() || // 죽인놈이 NPC면 걍 리턴.
-		IsNPC() )			  // 죽은놈이 NPC면 걍리턴
-		return PVP_MODE_NONE;
-
-	// 이건 사람대 사람의 싸움이다!
-	if( m_idWar != WarIdNone && pAttacker->m_idWar == m_idWar )	// 나랑 같은 전쟁에 참가중인 놈인가.
-	{
-		return PVP_MODE_GUILDWAR;
-	}
-				
-	if( m_nDuel == 0 || m_nDuelState == 300 )	// PK
-	{
-/*		if( GetTickCount() < m_dwPKTargetLimit )		// PK선공불가시간동안에는 선공이 안됨  
-		{
-			return PVP_MODE_NONE;
-		}	*/	// mirchang 100114 듀얼중 타 유저에게 PK당한경우 경험치 하락이 되지 않는다. 내가 카오일 경우 카오수치만 떨어지기 때문에 악용의 소지가 있음..
-		return PVP_MODE_PK;
-	} 
-	else				//듀얼 상황.	
-	{
-		return PVP_MODE_DUEL; 
+	if (pAttacker == NULL || pAttacker->IsNPC() || IsNPC()) {
+		return PVP_MODE::NONE;
+	} else if (m_idWar != WarIdNone && pAttacker->m_idWar == m_idWar) {
+		return PVP_MODE::GUILDWAR;
+	} else if (m_nDuel == 0 || m_nDuelState == 300) {
+		return PVP_MODE::PK;
+	} else {
+		return PVP_MODE::DUEL;
 	}
 }
 
@@ -4668,19 +4625,18 @@ void CMover::SubPVP( CMover *pAttacker, int nReflect )
 		}
 	}
 
-	PVP_MODE mode = GetPVPCase( pAttacker );
-	switch( mode )
-	{
-	case PVP_MODE_GUILDWAR:
-		SubWar( pAttacker );
-		break;
-	case PVP_MODE_NONE:
-	case PVP_MODE_PK:
-		SubPK( pAttacker, nReflect );		// PK의 서브루틴.
-		break;
-	case PVP_MODE_DUEL:
-		SubDuel( pAttacker );
-		break;
+	const PVP_MODE mode = GetPVPCase(pAttacker);
+	switch (mode) {
+		case PVP_MODE::GUILDWAR:
+			SubWar(pAttacker);
+			break;
+		case PVP_MODE::NONE:
+		case PVP_MODE::PK:
+			SubPK(pAttacker, nReflect);
+			break;
+		case PVP_MODE::DUEL:
+			SubDuel(pAttacker);
+			break;
 	}
 }
 
