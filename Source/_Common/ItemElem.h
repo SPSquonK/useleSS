@@ -219,7 +219,6 @@ public:
 	void	SetFlag(BYTE byFlag) { m_byFlag |= byFlag; }
 	BOOL	IsBinds();
 	BOOL	IsUndestructable(void);
-	BOOL	IsCharged();
 	BOOL	IsLogable();
 
 	static BOOL	IsDiceRefineryAble(const ItemProp * pProp);

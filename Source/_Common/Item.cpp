@@ -241,15 +241,6 @@ CItemElem& CItemElem::operator =( CItemElem & ie )
 	return *this;
 }
 
-// 유료아이템인가?
-BOOL CItemElem::IsCharged()
-{
-	if( m_nResistSMItemId != 0 )
-		return TRUE;
-
-	return FALSE;
-}
-
 SmallDstList CItemElem::GetPiercingAvail() const {
 	SmallDstList result;
 

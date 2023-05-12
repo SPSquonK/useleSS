@@ -6128,14 +6128,7 @@ BOOL CWndPostSend::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	
 	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½( ï¿½ï¿½î±?, ï¿½ï¿½ï¿½â±¸ )
 	if( PtInRect(&(pCustom->rect), point) )
-	{
-		if( pItemElem->IsCharged() )//&& pItemElem->GetProp()->dwItemRare == 200 || pItemElem->GetProp()->dwItemRare == 300 )
-		{
-			g_WndMng.PutString(TID_GAME_CHARGED_NOTUSE);
-			pItemElem = NULL;
-			return FALSE;
-		}
-		
+	{		
 		if( pItemElem->m_nItemNum > 1 )
 		{ 
 			SetItemId( (BYTE)( pItemElem->m_dwObjId ) );

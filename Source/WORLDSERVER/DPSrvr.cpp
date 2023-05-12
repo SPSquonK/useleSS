@@ -3031,9 +3031,6 @@ void CDPSrvr::OnPutItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 			return;
 		}
 
-		if( pItemElem->IsCharged() )
-			return;
-	
 		if( (int)( nItemNum ) > pItemElem->m_nItemNum )
 			nItemNum = pItemElem->m_nItemNum;
 		if( nItemNum < 1 )
@@ -5632,11 +5629,6 @@ void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 					return;
 				if( pItemElem->m_nItemNum < nItemNum )
 					nItemNum	= pItemElem->m_nItemNum;
-				if( pItemElem->IsCharged() )
-				{
-					pUser->AddDiagText( prj.GetText( TID_GAME_CANNOT_POST ) );
-					return;
-				}
 			}
 			if( pUser->GetGold() < (int)( ( nPostGold + nGold ) ) )
 			{
@@ -8176,12 +8168,6 @@ void CDPSrvr::OnMakePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		if( pProp == NULL )
 		{
 			// error
-			return;
-		}
-
-		if( pMaterial->IsCharged() )
-		{
-			pUser->AddDefinedText( TID_GAME_PET_FEED_CHARGED );
 			return;
 		}
 

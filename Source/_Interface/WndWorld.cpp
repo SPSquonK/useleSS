@@ -7080,12 +7080,6 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 				if( pItemBase->GetProp()->dwItemKind3 == IK3_CLOAK && pItemBase->m_idGuild != 0 )
 					return FALSE;
-				
-				if( pItemBase->IsCharged() )
-				{
-					g_WndMng.PutString(TID_GAME_NOTDROP);
-					return FALSE;
-				}
 
 				if( IsUsingItem( pItemBase ) )
 				{

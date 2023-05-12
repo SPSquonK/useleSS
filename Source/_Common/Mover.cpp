@@ -1951,81 +1951,59 @@ void CMover::UpdateItemBank(int nSlot, BYTE nId, short newQuantity) {
 
 #ifdef __WORLDSERVER
 // 인벤토리내에서 1개 아이템을 떨어트린다.
-int	CMover::DoDropItemRandom( BOOL bExcludeEquip, CMover* pAttacker, BOOL bOnlyEquip )
-{
-	int i, nMax, nRealMax, nDropCnt;
-	CItemElem* pItemElem;
-	CItemElem *pElemBuff[ MAX_INVENTORY + MAX_EQUIPMENT ] = { NULL, };
+void	CMover::DoDropItemRandom(unsigned int fromInventory, unsigned int fromEquipement) {
+	if (fromInventory == 0 && fromEquipement == 0);
 
-	nRealMax = nDropCnt = 0;
+	std::vector<CItemElem *> pElemInventory;
+	std::vector<CItemElem *> pElemEquipement;
 
-	nMax = m_Inventory.GetMax();
-	for( i = 0; i < nMax; ++i ) 		// 인벤 갯수만큼 돌면서 아이템이 있는칸만 포인터를 뽑아놓는다.
-	{
-		pItemElem = m_Inventory.GetAtId( i );
-		if( pItemElem == NULL )
-			continue;
-			
-		if( pItemElem->IsQuest() )					// 퀘스트 아이템 제외 
-			continue;
+	const int nMax = m_Inventory.GetMax();
+	for (int i = 0; i < nMax; ++i) {
+		CItemElem * pItemElem = m_Inventory.GetAtId(i);
+		if (!pItemElem) continue;
+		if (pItemElem->IsQuest()) continue;
+		if (pItemElem->m_nResistSMItemId != 0) continue;
+		if (pItemElem->GetProp()->bCharged) continue;
+		if (pItemElem->IsEatPet() || IsUsing(pItemElem)) continue;
+		if (pItemElem->IsBinds()) continue;
 
-		if( pItemElem->IsCharged() )	// 유료 상품아이템 제외
-			continue;
-
-		if( pItemElem->IsEatPet()
-			|| IsUsing( pItemElem )
-			)
-			continue;
-
-		if( pItemElem->IsBinds() )
-			continue;
-
-		if( bOnlyEquip )
-		{
-			if( m_Inventory.IsEquip( pItemElem->m_dwObjId ) )		// 장착된 아이템 제외  
-				pElemBuff[ nRealMax++ ] = pItemElem;
-		}
-		else
-		{
-			if( bExcludeEquip && m_Inventory.IsEquip( pItemElem->m_dwObjId ) )		// 장착된 아이템 제외  
-				continue;
-			
-			pElemBuff[ nRealMax++ ] = pItemElem;
+		if (m_Inventory.IsEquip(pItemElem->m_dwObjId)) {
+			pElemEquipement.emplace_back(pItemElem);
+		} else {
+			pElemInventory.emplace_back(pItemElem);
 		}
 	}
 
-	while( nRealMax )	// 검색대상 아이템이 더이상 없을경우 끝.
-	{
-		int nIdx = xRandom( nRealMax );
-		pItemElem = pElemBuff[ nIdx ];		// 아이템 리스트에서 랜덤으로 하나를 뽑아옴
+	const auto DropItems = [&](unsigned int quantity, std::vector<CItemElem *> & items) {
+		while (quantity > 0 && !items.empty()) {
+			const DWORD nIdx = xRandom(items.size());
+			CItemElem * pItemElem = items[nIdx];
 
-		int nPartBuf = -1;
-		CItemElem* pItemElemLWepon = m_Inventory.GetEquip( PARTS_LWEAPON );
-		CItemElem* pItemElemRWepon = m_Inventory.GetEquip( PARTS_RWEAPON );
-		if( pItemElem == pItemElemLWepon )
-			nPartBuf = PARTS_LWEAPON;
-		else if( pItemElem == pItemElemRWepon )
-			nPartBuf = PARTS_RWEAPON; 
-		if( m_Inventory.IsEquip( pItemElem->m_dwObjId ) )	// 장착하고 있으면 벗김 			
-		{
-			if( DoEquip( pItemElem, FALSE, nPartBuf ) )
-				g_UserMng.AddDoEquip( this, nPartBuf, pItemElem, FALSE );
+			if (m_Inventory.IsEquip(pItemElem->m_dwObjId)) {
+				int nPartBuf;
+				if (pItemElem == m_Inventory.GetEquip(PARTS_LWEAPON)) {
+					nPartBuf = PARTS_LWEAPON;
+				} else if (pItemElem == m_Inventory.GetEquip(PARTS_RWEAPON)) {
+					nPartBuf = PARTS_RWEAPON;
+				} else {
+					nPartBuf = -1;
+				}
+
+				if (DoEquip(pItemElem, FALSE, nPartBuf)) {
+					g_UserMng.AddDoEquip(this, nPartBuf, pItemElem, FALSE);
+				}
+			}
+
+			if (DropItem(pItemElem->m_dwObjId, 0, GetPos(), TRUE)) {
+				quantity -= 1;
+			}
+			
+			items.erase(items.begin() + nIdx);
 		}
+	};
 
-		CItem* pItem = DropItem( pItemElem->m_dwObjId, 0, GetPos(), TRUE );
-		if( pItem )	
-		{
-			UNUSED_ALWAYS( pAttacker );
-			return 1;
-		}
-
-		// drop에 실패한 아이템이라도 리스트에서 빼주자.
-		for( int j = nIdx; j < nRealMax-1; j ++ )		// 앞으로 한칸씩 땡김.
-			pElemBuff[j] = pElemBuff[j+1];
-		nRealMax --;	// 하나를 떨어트렸으니 버퍼의 크기를 하나 줄임
-	}		
-
-	return 0;
+	DropItems(fromInventory, pElemInventory);
+	DropItems(fromEquipement, pElemEquipement);
 }
 #endif // __WORLDSERVER
 
@@ -2116,12 +2094,12 @@ BOOL CMover::IsDropableState( BOOL bPK )
 }	
 
 
+#ifdef __WORLDSERVER
 // 인벤의 아이템을 바닥에 내려놓을때 사용한다.
 // dwType, dwID의 아이템을 vPos에 떨어트린다.
 // bPK == YES면 플레이어가 PK당해서 떨어트린 아이템이다.
 CItem* CMover::DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BOOL bPK )
 {
-#ifdef __WORLDSERVER
 	if( IsPlayer() == FALSE )	
 		return _DropItemNPC( 0, dwID, nDropNum, vPos );	// 몹이 떨어뜨릴땐 이걸사용.
 	
@@ -2173,9 +2151,9 @@ CItem* CMover::DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BO
 		SAFE_DELETE( pItem );
 	}
 
-#endif // WORLDSERVER
 	return NULL;
 }
+#endif // WORLDSERVER
 
 // TODO_OPTIMIZE: 좌표가 변경될 때 호출되게한다. ( rect를 트리구조로 갖고 찾게 하는 것도 좋겠다.)
 const REGIONELEM * CMover::UpdateRegionAttr()
@@ -4544,21 +4522,11 @@ int	CMover::SubPK( CMover *pAttacker, int nReflect )
 			{
 				// 아이템 드롭 
 				// - 인벤 드롭( 장착부터 드롭하면 안됨 - 인벤공간이 부족하여 드롭할수 없음 )
-				CHAO_PROPENSITY Propensity = prj.GetPropensityPenalty( GetPKPropensity() );
-				int nInvenDrop = xRandom( Propensity.nInvenDorpMin, Propensity.nInvenDorpMax + 1 );
-				for( int i=0; i < nInvenDrop; ++i )
-				{
-					if( DoDropItemRandom( TRUE, pAttacker ) == 0 )	
-						break;
-				}
+				const CHAO_PROPENSITY & Propensity = prj.GetPropensityPenalty( GetPKPropensity() );
+				const int nInvenDrop = xRandom( Propensity.nInvenDorpMin, Propensity.nInvenDorpMax + 1 );
+				const int nEquipDrop = xRandom(Propensity.nEquipDorpMin, Propensity.nEquipDorpMax + 1);
 
-				// - 장착 드롭
-				int nEquipDrop = xRandom( Propensity.nEquipDorpMin, Propensity.nEquipDorpMax + 1 );
-				for( int i=0; i < nEquipDrop; ++i )
-				{
-					if( DoDropItemRandom( FALSE, pAttacker, TRUE ) == 0 )	
-						break;
-				}				
+				DoDropItemRandom(nInvenDrop, nEquipDrop);
 			}
 		}				
 	}
@@ -7218,7 +7186,8 @@ BOOL CMover::IsDropable( CItemElem* pItemElem, BOOL bPK )
 		&& !m_Inventory.IsEquip( pItemElem->m_dwObjId )
 		&& !IsUsing( pItemElem )
 		&& !( pItemElem->GetProp()->dwParts == PARTS_RIDE && pItemElem->GetProp()->dwItemJob == JOB_VAGRANT )
-		&& !pItemElem->IsCharged()
+		&& pItemElem->m_nResistSMItemId != 0
+		&& !pItemElem->GetProp()->bCharged
 		&& pItemElem->GetProp()->dwItemKind3 != IK3_EGG
 #ifdef __JEFF_11
 		&& pItemElem->m_dwItemId != II_CHP_RED

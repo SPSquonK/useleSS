@@ -182,12 +182,6 @@ BOOL CWndGuildBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							}
 							CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
 							
-							if( itemElem->IsCharged() )
-							{
-								g_WndMng.PutString( prj.GetText( TID_GAME_NOTTRADE ), NULL, prj.GetTextColor( TID_GAME_NOTTRADE ) );
-								return FALSE;
-							}
-
 							if( itemElem->m_nItemNum > 1 )
 							{ 
 								g_WndMng.m_pWndTradeGold = new CWndTradeGold;

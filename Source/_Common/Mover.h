@@ -1126,7 +1126,7 @@ private:
 public:
 	CItem*			_DropItemNPC( DWORD dwItemType, DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos );
 	CItem*			DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BOOL bPlayer = FALSE );
-	int				DoDropItemRandom( BOOL bExcludeEquip, CMover* pAttacker, BOOL bOnlyEquip = FALSE );
+	void DoDropItemRandom( unsigned int fromInventory, unsigned int fromEquipement );
 	int				GetItemNum( DWORD dwItemId );
 #ifdef __CLIENT
 	int				GetItemNumForClient( DWORD dwItemId ); // Client에서만 사용하는 아이템 갯수 구하기(Null check 이외의 Usable check안함)
