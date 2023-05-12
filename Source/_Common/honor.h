@@ -1,33 +1,19 @@
 #pragma once
 
 #include <map>
-#include <vector>
+#include <boost/container/flat_set.hpp>
 #include <string>
-
-
 
 #include "defineHonor.h"
 
-typedef struct HonorData
-{
-	int		nID;			// 인덱스
-	int		nLGrouping;		// 대분류
-	int		nSGrouping;		// 소분류
-	int		nNeed;			// 타이틀 획득 조건
-	int		nValue;			// 현재 수치
+struct HonorData {
+	int		nID = -1;			// 인덱스
+	int		nLGrouping = 0;		// 대분류
+	int		nSGrouping = 0;		// 소분류
+	int		nNeed = 0;			// 타이틀 획득 조건
+	int		nValue = 0;			// 현재 수치
 	CString	strTitle;		// 타이틀명
-	HonorData() {Init();};
-	~HonorData() {};
-	void Init() {nID = -1;nLGrouping =  nSGrouping = nNeed = nValue = 0; strTitle.Empty(); };
-}PHonorData, *PPHonorData;
-
-#ifdef __CLIENT
-struct EarnedTitle
-{
-	int	nId;
-	CString	strTitle;
 };
-#endif	// __CLIENT
 
 class CTitleManager
 {
@@ -40,12 +26,11 @@ private:
 
 public:
 	CTitleManager();
-	~CTitleManager();
 	static	CTitleManager*	Instance();
 
 	int		m_nCurrentTitleCount;
 	BOOL	LoadTitle(LPCTSTR lpszFileName);
-	char*	GetTitle(int nId);
+	const char*	GetTitle(int nId);
 	int		GetNeedCount(int nId,int nGroup);
 	int		GetIdxType(int nId);
 	int		GetIdx(int nId,int nGroup);
@@ -55,11 +40,12 @@ public:
 
 #ifdef __CLIENT
 	// 획득한 타이틀 인덱스
-	std::vector<EarnedTitle>	m_vecEarned;
+	boost::container::flat_set<int> m_vecEarned;
 
-	BOOL	IsEarned(int nId);
-	void	AddEarned(int nId);
-	BOOL	RemoveEarned(int nId);
+	// Updates `m_vecEarned` for honor nId considering the current advancement is
+	// nCurrentCount. Return true if the player just earned the title.
+	bool UpdateEarned(int nId, int nCurrentCount);
+
 	void	InitEarned();
 #endif	// __CLIENT
 

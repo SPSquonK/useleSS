@@ -73,8 +73,8 @@ private:
 
 class CWndHonor final : public CWndNeuz {
 private:
-	int						m_nSelectedId = 0;
-	std::vector<EarnedTitle>		m_vecTitle;
+	int m_nSelectedId = 0;
+	std::vector<int> m_vecTitle;
 public:
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;

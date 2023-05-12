@@ -14319,64 +14319,37 @@ void CDPClient::OnSealCharGet( CAr & ar )
 	}
 }
 
-void CDPClient::SendReqHonorList()
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_HONOR_LIST_REQ, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendReqHonorList() {
+	SendPacket<PACKETTYPE_HONOR_LIST_REQ>();
 }
-void CDPClient::SendReqHonorTitleChange( int nChange )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_HONOR_CHANGE_REQ, DPID_UNKNOWN );
-	ar << nChange;
-	SEND( ar, this, DPID_SERVERPLAYER );
+
+void CDPClient::SendReqHonorTitleChange( int nChange ) {
+	SendPacket<PACKETTYPE_HONOR_CHANGE_REQ, int>(nChange);
 }
 
 void CDPClient::OnHonorListAck( CAr & ar )
 {
-	int nHonorTitle[MAX_HONOR_TITLE];
-	
-    for(int i = 0 ; i<MAX_HONOR_TITLE ; i++)
-	{
-		ar >> nHonorTitle[i];
-		
-		int nNeed = CTitleManager::Instance()->GetNeedCount(i, -1);
-		if(nHonorTitle[i] >= nNeed && (0 < nNeed))
-		{
-			if(!CTitleManager::Instance()->IsEarned(i))
-			{
-				CTitleManager::Instance()->AddEarned(i);
-				// 공지날림
-				CString	strNotice;
-				strNotice.Format( prj.GetText( TID_GAME_GET_TITLE ), CTitleManager::Instance()->GetTitle(i));
-				g_WndMng.PutString( (LPCTSTR)strNotice, NULL, prj.GetTextColor( TID_GAME_GET_TITLE ) );	
-			}
-		}
-		else
-		{
-			// 획득된 타이틀이지만 요구사항을 충족못하게 될때
-			if(CTitleManager::Instance()->IsEarned(i))
-			{
-				CTitleManager::Instance()->RemoveEarned(i);
-			}
-		}
-		
-	}
-	
-	CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_CHARACTER3 );
+	for(int i = 0 ; i<MAX_HONOR_TITLE ; i++) {
+		int honorTitle;
+		ar >> honorTitle;
 
-	if( pWndBase )
-		( (CWndCharacter*)pWndBase )->m_wndHonor.RefreshList();
-	
+		if (g_pPlayer) g_pPlayer->m_aHonorTitle[i] = honorTitle;
+
+		if (CTitleManager::Instance()->UpdateEarned(i, honorTitle)) {
+			g_WndMng.PutString(TID_GAME_GET_TITLE, CTitleManager::Instance()->GetTitle(i));
+		}
+	}
+
+	if (CWndCharacter * pWndBase = g_WndMng.GetWndBase<CWndCharacter>(APP_CHARACTER3)) {
+		pWndBase->m_wndHonor.RefreshList();
+	}
 }
 
-void CDPClient::OnHonorChangeAck( OBJID objid ,CAr & ar )
-{
-	int nChange;
-	ar >> nChange;
-	
-	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj( pMover ) )
-	{	
+void CDPClient::OnHonorChangeAck(OBJID objid, CAr & ar) {
+	int nChange; ar >> nChange;
+
+	CMover * pMover = prj.GetMover(objid);
+	if (IsValidObj(pMover)) {
 		pMover->m_nHonor = nChange;
 		pMover->SetTitle(CTitleManager::Instance()->GetTitle(pMover->m_nHonor));
 	}
