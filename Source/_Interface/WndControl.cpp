@@ -415,7 +415,7 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 				CSize size = m_pTexture->m_size;
 				m_pTexture->m_size.cx = 20;
 				m_pTexture->m_size.cy = 20;
-				m_pTexture->Render( p2DRender, CPoint( pt.x, pt.y ), m_nAlphaCount );
+				m_pTexture->Render( p2DRender, pt, m_nAlphaCount );
 				m_pTexture->m_size = size;
 			}
 			// üũ 
@@ -428,7 +428,7 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 			p2DRender->TextOut( pt.x + 4 + 20, pt.y + 4, m_strTitle, 0xff000000 );
 			if( m_cHotkey )
 			{
-				CString strHotkey = m_cHotkey;
+				CHAR strHotkey[2] = { m_cHotkey, '\0' };
 				p2DRender->TextOut( m_rectClient.right - 32, pt.y + 4, strHotkey, 0xff000000 );
 			}
 		}
