@@ -5,9 +5,7 @@
 #include "stdafx.h"
 //#include  "version.h"
 
-#ifdef __LANG_1013
 #include "langman.h"
-#endif	// __LANG_1013
 
 #ifdef __FLYFF_INITPAGE_EXT
 #include "ResData.h"
@@ -88,380 +86,80 @@ BOOL CTheme::LoadTheme( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName)
 	m_pGameGradeTexture = CWndBase::m_textureMng.AddTexture( m_pd3dDevice, MakePath( DIR_THEME, _T( "GameGradeMark.bmp" ) ), 0xffff00ff );
 #endif // __GAME_GRADE_SYSTEM
 
-#ifdef __LANG_1013
 	PLANG_DATA pLangData	= CLangMan::GetInstance()->GetLangData( ::GetLanguage() );
 	CD3DFont* pFont;
 	pFont = new CD3DFont( pLangData->font.afi[0].szFont, 9 );
-	m_mapFont.SetAt( _T( "gulim9"), pFont );
+	m_mapFont.emplace( _T( "gulim9"), pFont );
 	pFont = new CD3DFont( pLangData->font.afi[1].szFont, 8 );
-	m_mapFont.SetAt( _T( "gulim8"), pFont );
+	m_mapFont.emplace( _T( "gulim8"), pFont );
 	pFont = new CD3DFont( pLangData->font.afi[2].szFont, 13 );
-	m_mapFont.SetAt( _T( "gulim13"), pFont );
+	m_mapFont.emplace( _T( "gulim13"), pFont );
 	pFont = new CD3DFont( pLangData->font.afi[3].szFont, 9);
 	pFont->m_nOutLine	= pLangData->font.afi[3].nOutLine;
 	pFont->m_dwColor	= 0xffffffff;
 	pFont->m_dwBgColor	= pLangData->font.afi[3].dwBgColor;
-	m_mapFont.SetAt( _T( "Arial Black9"), pFont );
+	m_mapFont.emplace( _T( "Arial Black9"), pFont );
 	pFont = new CD3DFont( pLangData->font.afi[4].szFont, 9);
 	pFont->m_nOutLine	= pLangData->font.afi[4].nOutLine;
 	pFont->m_dwColor	= 0xffffffff;
 	pFont->m_dwBgColor	= pLangData->font.afi[4].dwBgColor;
-	m_mapFont.SetAt( _T( "FontWorld"), pFont );
+	m_mapFont.emplace( _T( "FontWorld"), pFont );
 	pFont = new CD3DFont( pLangData->font.afi[5].szFont, 15 );
 	pFont->m_nOutLine = pLangData->font.afi[5].nOutLine;
 	pFont->m_dwColor	= 0xffffffff;
 	pFont->m_dwBgColor	= pLangData->font.afi[5].dwBgColor;
 	pFont->m_dwFlags	= pLangData->font.afi[5].dwFlags;
-	m_mapFont.SetAt( _T( "gulim20"), pFont );
+	m_mapFont.emplace( _T( "gulim20"), pFont );
 	pFont = new CD3DFont( pLangData->font.afi[2].szFont, 11, D3DFONT_BOLD );
 	pFont->m_nOutLine = 1;
-	m_mapFont.SetAt( _T( "gulim11"), pFont );
+	m_mapFont.emplace( _T( "gulim11"), pFont );
 	pFont = new CD3DFont( pLangData->font.afi[2].szFont, 9, D3DFONT_BOLD );
 	pFont->m_nOutLine = 1;
-	m_mapFont.SetAt( _T( "gulim9_2"), pFont );
-#else	// __LANG_1013
-	if( ::GetLanguage() == LANG_KOR )
-	{
-		CD3DFont* pFont;
-		// 폰트 로드 생성 
-		pFont = new CD3DFont( _T("gulim"), 9 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim9"), pFont );
-		
-		pFont = new CD3DFont( _T("gulim"), 13 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim13"), pFont );
-
-		pFont = new CD3DFont( _T("gulim"), 8 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim8"), pFont );
-		
-		pFont = new CD3DFont( _T("Arial Black"), 9);//, D3DFONT_BOLD );
-		//pFont = new CD3DFont( _T("gulim"), 9 );//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = 0xffffffff;
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 217, 91, 51);
-		m_mapFont.SetAt( _T( "Arial Black9"), pFont );
-		
-		pFont = new CD3DFont( _T("Arial Black"), 9);//, D3DFONT_BOLD );
-		//pFont = new CD3DFont( _T("gulim"), 9 );//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = 0xffffffff;
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 60, 60, 60 );
-		m_mapFont.SetAt( _T( "FontWorld"), pFont );
-		
-		pFont = new CD3DFont( _T("가을체"), 15 );//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
-		pFont->m_dwFlags = D3DFONT_FILTERED;
-		m_mapFont.SetAt( _T( "gulim20"), pFont );
-
-		/*
-		m_pFontAPICaption = new CD3DFontAPI( _T("휴먼매직체"), rectClient.Width() / 50 );//, D3DFONT_BOLD );
-		m_pFontAPICaption->m_nOutLine = 2;
-		m_pFontAPICaption->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		m_pFontAPICaption->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
-		m_pFontAPICaption->m_dwFlags = D3DFONT_FILTERED;
-		m_pFontAPICaption->InitDeviceObjects( m_pApp->m_pd3dDevice );
-
-		m_pFontAPITitle = new CD3DFontAPI( _T("휴먼매직체"), rectClient.Width() / 20 );//, D3DFONT_BOLD );
-		m_pFontAPITitle->m_nOutLine = 2;
-		m_pFontAPITitle->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		m_pFontAPITitle->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
-		m_pFontAPITitle->m_dwFlags = D3DFONT_FILTERED;
-		m_pFontAPITitle->InitDeviceObjects( m_pApp->m_pd3dDevice );
-		*/
-	}
-	else	
-	if( ::GetLanguage() == LANG_JAP )
-	{
-		CD3DFont* pFont;
-		// 폰트 로드 생성 
-		pFont = new CD3DFont( _T("MS Gothic"), 9 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim9"), pFont );
-		
-		pFont = new CD3DFont( _T("MS Gothic"), 8 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim8"), pFont );
-		
-		pFont = new CD3DFont( _T("gulim"), 13 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim13"), pFont );
-		
-		
-		pFont = new CD3DFont( _T("MS Gothic"), 9);//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = 0xffffffff;
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 217, 91, 51);
-		m_mapFont.SetAt( _T( "Arial Black9"), pFont );
-		
-		pFont = new CD3DFont( _T("MS Gothic"), 9);//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = 0xffffffff;
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 60, 60, 60 );
-		m_mapFont.SetAt( _T( "FontWorld"), pFont );
-		
-		pFont = new CD3DFont( _T("MS Gothic"), 15 );//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
-		pFont->m_dwFlags = D3DFONT_FILTERED;
-		m_mapFont.SetAt( _T( "gulim20"), pFont );
-
-		/*
-		m_pFontAPICaption = new CD3DFontAPI( _T("휴먼매직체"), rectClient.Width() / 50 );//, D3DFONT_BOLD );
-		m_pFontAPICaption->m_nOutLine = 2;
-		m_pFontAPICaption->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		m_pFontAPICaption->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
-		m_pFontAPICaption->m_dwFlags = D3DFONT_FILTERED;
-		m_pFontAPICaption->InitDeviceObjects( m_pApp->m_pd3dDevice );
-
-		m_pFontAPITitle = new CD3DFontAPI( _T("휴먼매직체"), rectClient.Width() / 20 );//, D3DFONT_BOLD );
-		m_pFontAPITitle->m_nOutLine = 2;
-		m_pFontAPITitle->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		m_pFontAPITitle->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
-		m_pFontAPITitle->m_dwFlags = D3DFONT_FILTERED;
-		m_pFontAPITitle->InitDeviceObjects( m_pApp->m_pd3dDevice );
-		*/
-	}
-	else	
-	if( ::GetLanguage() == LANG_THA )
-	{
-		CD3DFont* pFont;
-		// 폰트 로드 생성 
-		pFont = new CD3DFont( _T("MS Sans Serif"), 9 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim9"), pFont );
-		
-		pFont = new CD3DFont( _T("MS Sans Serif"), 8 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim8"), pFont );
-
-		pFont = new CD3DFont( _T("MS Sans Serif"), 13 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim13"), pFont );
-		
-		pFont = new CD3DFont( _T("MS Sans Serif"), 9);//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = 0xffffffff;
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 217, 91, 51);
-		m_mapFont.SetAt( _T( "Arial Black9"), pFont );
-		
-		pFont = new CD3DFont( _T("MS Sans Serif"), 9);//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = 0xffffffff;
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 60, 60, 60 );
-		m_mapFont.SetAt( _T( "FontWorld"), pFont );
-		
-		pFont = new CD3DFont( _T("MS Sans Serif"), 13 );//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 250 );
-		pFont->m_dwFlags = D3DFONT_FILTERED;
-		m_mapFont.SetAt( _T( "gulim20"), pFont );
-
-		/*
-		m_pFontAPICaption = new CD3DFontAPI( _T("휴먼매직체"), rectClient.Width() / 50 );//, D3DFONT_BOLD );
-		m_pFontAPICaption->m_nOutLine = 2;
-		m_pFontAPICaption->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		m_pFontAPICaption->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
-		m_pFontAPICaption->m_dwFlags = D3DFONT_FILTERED;
-		m_pFontAPICaption->InitDeviceObjects( m_pApp->m_pd3dDevice );
-
-		m_pFontAPITitle = new CD3DFontAPI( _T("휴먼매직체"), rectClient.Width() / 20 );//, D3DFONT_BOLD );
-		m_pFontAPITitle->m_nOutLine = 2;
-		m_pFontAPITitle->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		m_pFontAPITitle->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
-		m_pFontAPITitle->m_dwFlags = D3DFONT_FILTERED;
-		m_pFontAPITitle->InitDeviceObjects( m_pApp->m_pd3dDevice );
-
-  */
-	}
-	else
-	if( ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK )
-	{
-		CD3DFont* pFont;
-		// 폰트 로드 생성 
-		pFont = new CD3DFont( _T("MingLiU"), 9 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim9"), pFont );
-		
-		pFont = new CD3DFont( _T("MingLiU"), 8 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim8"), pFont );
-
-		pFont = new CD3DFont( _T("MingLiU"), 13 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim13"), pFont );
-		
-		pFont = new CD3DFont( _T("MingLiU"), 9);//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = 0xffffffff;
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 217, 91, 51);
-		m_mapFont.SetAt( _T( "Arial Black9"), pFont );
-		
-		pFont = new CD3DFont( _T("MingLiU"), 9);//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = 0xffffffff;
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 60, 60, 60 );
-		m_mapFont.SetAt( _T( "FontWorld"), pFont );
-		
-		pFont = new CD3DFont( _T("MingLiU"), 13 );//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 250 );
-		pFont->m_dwFlags = D3DFONT_FILTERED;
-		m_mapFont.SetAt( _T( "gulim20"), pFont );
-	}			
-	else	
-	if( ::GetLanguage() == LANG_CHI )
-	{
-		CD3DFont* pFont;
-		// 폰트 로드 생성 
-		pFont = new CD3DFont( _T("MingLiU"), 9 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim9"), pFont );
-		
-		pFont = new CD3DFont( _T("MingLiU"), 8 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim8"), pFont );
-
-		pFont = new CD3DFont( _T("MingLiU"), 13 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim13"), pFont );
-		
-		pFont = new CD3DFont( _T("MingLiU"), 9);//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = 0xffffffff;
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 217, 91, 51);
-		m_mapFont.SetAt( _T( "Arial Black9"), pFont );
-		
-		pFont = new CD3DFont( _T("MingLiU"), 9);//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = 0xffffffff;
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 60, 60, 60 );
-		m_mapFont.SetAt( _T( "FontWorld"), pFont );
-		
-		pFont = new CD3DFont( _T("MingLiU"), 13 );//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 250 );
-		pFont->m_dwFlags = D3DFONT_FILTERED;
-		m_mapFont.SetAt( _T( "gulim20"), pFont );
-
-		/*
-		m_pFontAPICaption = new CD3DFontAPI( _T("휴먼매직체"), rectClient.Width() / 50 );//, D3DFONT_BOLD );
-		m_pFontAPICaption->m_nOutLine = 2;
-		m_pFontAPICaption->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		m_pFontAPICaption->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
-		m_pFontAPICaption->m_dwFlags = D3DFONT_FILTERED;
-		m_pFontAPICaption->InitDeviceObjects( m_pApp->m_pd3dDevice );
-
-		m_pFontAPITitle = new CD3DFontAPI( _T("휴먼매직체"), rectClient.Width() / 20 );//, D3DFONT_BOLD );
-		m_pFontAPITitle->m_nOutLine = 2;
-		m_pFontAPITitle->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		m_pFontAPITitle->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
-		m_pFontAPITitle->m_dwFlags = D3DFONT_FILTERED;
-		m_pFontAPITitle->InitDeviceObjects( m_pApp->m_pd3dDevice );
-		*/
-	}
-	else	
-	if( ::GetLanguage() == LANG_ENG )
-	{
-		CD3DFont* pFont;
-		// 폰트 로드 생성 
-		pFont = new CD3DFont( _T("Arial"), 9 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim9"), pFont );
-		
-		pFont = new CD3DFont( _T("Arial"), 8 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim8"), pFont );
-
-		pFont = new CD3DFont( _T("Arial"), 13 );//, D3DFONT_BOLD );
-		//pFont->m_nOutLine = 3;
-		m_mapFont.SetAt( _T( "gulim13"), pFont );
-		
-		
-		pFont = new CD3DFont( _T("Arial"), 9);//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = 0xffffffff;
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 217, 91, 51);
-		m_mapFont.SetAt( _T( "Arial Black9"), pFont );
-		
-		pFont = new CD3DFont( _T("Arial"), 9);//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = 0xffffffff;
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 60, 60, 60 );
-		m_mapFont.SetAt( _T( "FontWorld"), pFont );
-		
-		pFont = new CD3DFont( _T("Arial"), 15 );//, D3DFONT_BOLD );
-		pFont->m_nOutLine = 2;
-		pFont->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
-		pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
-		pFont->m_dwFlags = D3DFONT_FILTERED;
-		m_mapFont.SetAt( _T( "gulim20"), pFont );
-	}
-#endif	// __LANG_1013
+	m_mapFont.emplace( _T( "gulim9_2"), pFont );
 
 	SetVersion( ::GetLanguage() ); 
 
 	// 폰트 세팅 
-	m_mapFont.Lookup( _T("gulim9"), (void*&)m_pFontChat );
-	m_mapFont.Lookup( _T("gulim9"), (void*&)m_pFontText );
-	m_mapFont.Lookup( _T("gulim8"), (void*&)m_pFontStatus );
-	m_mapFont.Lookup( _T("Arial Black9"), (void*&)m_pFontWndTitle );
-	m_mapFont.Lookup( _T("FontWorld"), (void*&)m_pFontWorld );
-	m_mapFont.Lookup( _T("gulim20"), (void*&)m_pFontCaption );
-	m_mapFont.Lookup( _T("gulim13"), (void*&)m_pFontGuildCombatText );
-	m_mapFont.Lookup( _T("gulim11"), (void*&)m_pFontSRMyGiuld );
-	m_mapFont.Lookup( _T("gulim9_2"), (void*&)m_pFontSRGiuld );	
+	m_pFontChat            = m_mapFont.find(_T("gulim9"))->second;
+	m_pFontText            = m_mapFont.find(_T("gulim9"))->second;
+	m_pFontStatus          = m_mapFont.find(_T("gulim8"))->second;
+	m_pFontWndTitle        = m_mapFont.find(_T("Arial Black9"))->second;
+	m_pFontWorld           = m_mapFont.find(_T("FontWorld"))->second;
+	m_pFontCaption         = m_mapFont.find(_T("gulim20"))->second;
+	m_pFontGuildCombatText = m_mapFont.find(_T("gulim13"))->second;
+	m_pFontSRMyGiuld       = m_mapFont.find(_T("gulim11"))->second;
+	m_pFontSRGiuld         = m_mapFont.find(_T("gulim9_2"))->second;
 	
 #ifdef __FLYFF_INITPAGE_EXT
 	ReadTitleWorld();
 #endif //__FLYFF_INITPAGE_EXT
 	return TRUE;
 }
-BOOL CTheme::SaveTheme(LPCTSTR lpszFileName)
-{
-	return TRUE;
-}
+
 void CTheme::DeleteTheme()
 {
 	DeleteDeviceObjects();
 } 
-HRESULT CTheme::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
-{
-	m_pd3dDevice = pd3dDevice;
-	POSITION pos = m_mapFont.GetStartPosition();
-	CString strFont; CD3DFont* pFont;
-	while(pos)
-	{
-		m_mapFont.GetNextAssoc( pos, strFont, (void*&)pFont );
-		pFont->InitDeviceObjects( pd3dDevice );
-	}
-//	g_mesh.InitDeviceObjects( m_pd3dDevice );
-	//g_mesh.OpenMesh( _T("obj_rideferriswheel.mes") );
 
-//	g_mesh.OpenMesh( _T("obj_starship.mes") );
-	
-	return TRUE;//m_pFontGameTitle->InitDeviceObjects( pd3dDevice );
+HRESULT CTheme::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
+	m_pd3dDevice = pd3dDevice;
+	for (CD3DFont * pFont : m_mapFont | std::views::values) {
+		pFont->InitDeviceObjects(pd3dDevice);
+	}
+
+	return TRUE;
 }
+
 HRESULT CTheme::InvalidateDeviceObjects()
 {
 	HRESULT h = S_OK;
-    SAFE_RELEASE( m_pVBTexture );
+	SAFE_RELEASE( m_pVBTexture );
 	SAFE_RELEASE( m_pVBGauge );
-	//g_mesh.InvalidateDeviceObjects();
-	POSITION pos = m_mapFont.GetStartPosition();
-	CString strFont; CD3DFont* pFont;
-	while(pos)
-	{
-		m_mapFont.GetNextAssoc( pos, strFont, (void*&)pFont );
+
+	for (CD3DFont * pFont : m_mapFont | std::views::values) {
 		pFont->InvalidateDeviceObjects();
 	}
+
 	return h;
 }
 HRESULT CTheme::DeleteDeviceObjects()
@@ -472,16 +170,12 @@ HRESULT CTheme::DeleteDeviceObjects()
 #ifdef __GAME_GRADE_SYSTEM
 	m_GameGradeScreenTexture.DeleteDeviceObjects();
 #endif // __GAME_GRADE_SYSTEM
-	//g_mesh.DeleteDeviceObjects();
-	POSITION pos = m_mapFont.GetStartPosition();
-	CString strFont; CD3DFont* pFont;
-	while(pos)
-	{
-		m_mapFont.GetNextAssoc( pos, strFont, (void*&)pFont );
+	
+	for (CD3DFont * pFont : m_mapFont | std::views::values) {
 		pFont->DeleteDeviceObjects();
-		SAFE_DELETE( pFont );
+		SAFE_DELETE(pFont);
 	}
-	m_mapFont.RemoveAll();
+	m_mapFont.clear();
 
 #ifdef __FLYFF_INITPAGE_EXT
 	if(m_pTitleWorld != NULL)
@@ -498,14 +192,11 @@ HRESULT CTheme::RestoreDeviceObjects( )
 {	
 	if( m_pVBTexture ) 
 		return S_OK;
-	//g_mesh.RestoreDeviceObjects();
-	POSITION pos = m_mapFont.GetStartPosition();
-	CString strFont; CD3DFont* pFont;
-	while(pos)
-	{
-		m_mapFont.GetNextAssoc( pos, strFont, (void*&)pFont );
+	
+	for (CD3DFont * pFont : m_mapFont | std::views::values) {
 		pFont->RestoreDeviceObjects();
 	}
+
 	HRESULT hr = S_OK;
 	m_pd3dDevice->CreateVertexBuffer( sizeof(TEXTUREVERTEX)*24, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_SYSTEMMEM, &m_pVBTexture      , NULL);
 	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX)*42, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX, D3DPOOL_SYSTEMMEM, &m_pVBGauge       , NULL );
@@ -742,8 +433,7 @@ void CTheme::RenderDesktop( C2DRender* p2DRender )
 	int xOffset = 0;
 	int rectWidth = 0;
 	BOOL isWide = FALSE;
-	CTexture texture
-		= m_texWallPaper;
+	CTexture texture = m_texWallPaper;
 	texture.SetAutoFree( FALSE );
 	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
 	CRect rectWindow = p2DRender->m_clipRect;

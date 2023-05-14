@@ -24,9 +24,7 @@
 #include "eveschool.h"
 #include "WndSummonFriend.h"
 
-#ifdef __LANG_1013
 #include "langman.h"
-#endif	// __LANG_1013
 
 #include "yUtil.h"
 #include "defineskill.h"
@@ -3079,20 +3077,6 @@ TCHAR g_aszMoverMenu[ MAX_MOVER_MENU ][ 32 ] =
 
 };
 */
-#ifndef __LANG_1013
-struct LANGFONT
-{
-	CHAR szFontFirst[ 32 ], szFontSecond[ 32 ],nDivTitle,nDivCaption;
-} g_langFont[ LANG_MAX ] =
-{ 
-	"ÈÞ¸Õ¸ÅÁ÷Ã¼"   , "±¼¸²"            , 20,  50,
-	"Arial"        , "Arial"           , 20,  50, //eng
-	"MS Gothic"    , "‚l‚r ‚oƒSƒVƒbƒN" , 40, 100, // jap
-	"MS Sans Serif", "MS Sans Serif"   , 20,  50, //tha
-	"MingLiU"      , "MingLiU"         , 20,  50, // twn
-	"SimSun"       , "SimSun"          , 20,  50  // chi
-};
-#endif	// __LANG_1013
 
 void CWndWorld::OnInitialUpdate()
 {
@@ -3106,57 +3090,37 @@ void CWndWorld::OnInitialUpdate()
 
 	if( ::GetLanguage() != LANG_JAP )
 	{
-		CString strFont;
-#ifdef __LANG_1013
-		LANGFONT* plfCaption	= &CLangMan::GetInstance()->GetLangData( ::GetLanguage() )->font.lfCaption;
-#endif	__LANG_1013
+		const LANGFONT & plfCaption	= CLangMan::GetInstance()->GetLangData( ::GetLanguage() )->font.lfCaption;
 
-#ifdef __LANG_1013
-		strFont = plfCaption->szFontFirst;
+		const char * strFont = plfCaption.szFontFirst;
 		if( IsFontInstalled( strFont ) == FALSE )
-			strFont = plfCaption->szFontSecond;
-#else	// __LANG_1013
-		strFont = g_langFont[ ::GetLanguage() ].szFontFirst;
-		if( IsFontInstalled( strFont ) == FALSE )
-			strFont = g_langFont[ ::GetLanguage() ].szFontSecond;
-#endif	// __LANG_1013
+			strFont = plfCaption.szFontSecond;
+
 		if( g_osVersion > WINDOWS_ME )
 		{
-#ifdef __LANG_1013
-			if(::GetLanguage() == LANG_VTN)
-				m_pFontAPICaption = new CD3DFontAPIVTN( strFont, rectClient.Width() / plfCaption->nDivCaption );
-			else
-				m_pFontAPICaption = new CD3DFontAPI( strFont, rectClient.Width() / plfCaption->nDivCaption );
-#else	// __LANG_1013
-			m_pFontAPICaption = new CD3DFontAPI( strFont, rectClient.Width() / g_langFont[ ::GetLanguage() ].nDivCaption );//, D3DFONT_BOLD );
-#endif	// __LANG_1013
+			constexpr auto MakeFont = [](const TCHAR * strFontName, DWORD dwHeight) -> CD3DFontAPI * {
+				if (::GetLanguage() != LANG_VTN) {
+					return new CD3DFontAPI(strFontName, dwHeight);
+				} else {
+					return new CD3DFontAPIVTN(strFontName, dwHeight);
+				}
+			};
+
+			m_pFontAPICaption = MakeFont( strFont, rectClient.Width() / plfCaption.nDivCaption );
 			m_pFontAPICaption->m_nOutLine = 2;
 			m_pFontAPICaption->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPICaption->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
 			m_pFontAPICaption->m_dwFlags = D3DFONT_FILTERED;
 			m_pFontAPICaption->InitDeviceObjects( m_pApp->m_pd3dDevice );
 
-#ifdef __LANG_1013
-			if(::GetLanguage() == LANG_VTN)
-				m_pFontAPITitle	= new CD3DFontAPIVTN( strFont, rectClient.Width() / plfCaption->nDivCaption );
-			else
-				m_pFontAPITitle	= new CD3DFontAPI( strFont, rectClient.Width() / plfCaption->nDivCaption );
-#else	// __LANG_1013
-			m_pFontAPITitle = new CD3DFontAPI( strFont, rectClient.Width() / g_langFont[ ::GetLanguage() ].nDivTitle );//, D3DFONT_BOLD );
-#endif	// __LANG_1013
+			m_pFontAPITitle	= MakeFont( strFont, rectClient.Width() / plfCaption.nDivCaption );
 			m_pFontAPITitle->m_nOutLine = 2;
 			m_pFontAPITitle->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPITitle->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
 			m_pFontAPITitle->m_dwFlags = D3DFONT_FILTERED;
 			m_pFontAPITitle->InitDeviceObjects( m_pApp->m_pd3dDevice );
-#ifdef __LANG_1013
-			if(::GetLanguage() == LANG_VTN)
-				m_pFontAPITime	= new CD3DFontAPIVTN( plfCaption->szFontSecond, rectClient.Width() / 40 );
-			else
-				m_pFontAPITime	= new CD3DFontAPI( plfCaption->szFontSecond, rectClient.Width() / 40 );
-#else	// __LANG_1013
-			m_pFontAPITime	= new CD3DFontAPI( g_langFont[ ::GetLanguage() ].szFontSecond, rectClient.Width() / 40 );//, D3DFONT_BOLD );
-#endif	// __LANG_1013
+
+			m_pFontAPITime	= MakeFont( plfCaption.szFontSecond, rectClient.Width() / 40 );
 			m_pFontAPITime->m_nOutLine = 2;
 			m_pFontAPITime->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPITime->m_dwBgColor = D3DCOLOR_ARGB( 255, 220, 100, 40 );

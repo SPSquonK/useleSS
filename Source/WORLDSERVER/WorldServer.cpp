@@ -35,9 +35,7 @@
 #include "ProfileInfo.h"
 #endif // __NEW_PROFILE
 
-#ifdef __LANG_1013
 #include "langman.h"
-#endif	// __LANG_1013
 
 LRESULT	CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -360,21 +358,7 @@ void ExitInstance( void )
 
 void SetTitle()
 {
-	char szLang[MAX_PATH]	= { 0, };
-#ifdef __LANG_1013
-	sprintf( szLang, CLangMan::GetInstance()->GetLangData( ::GetLanguage() )->szTitle );
-#else	// __LANG_1013
-	switch( ::GetLanguage() )
-	{
-		case 0:	sprintf( szLang, "Korean" );	break;
-		case 1:	sprintf( szLang, "English" );	break;
-		case 2:	sprintf( szLang, "Japanese" );	break;
-		case 3:	sprintf( szLang, "Chinese" );	break;
-		case 4:	sprintf( szLang, "Thailand" );	break;
-		case 5:	sprintf( szLang, "Taiwan" );	break;
-		default:	break;
-	}
-#endif	// __LANG_1013
+	const char * szLang = CLangMan::GetInstance()->GetLangData( ::GetLanguage() )->szTitle;
 
 	char szTitle[256];
 	sprintf( szTitle, "%s(%d)-%s", g_szTitle, g_uKey, szLang );

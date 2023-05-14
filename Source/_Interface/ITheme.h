@@ -23,7 +23,10 @@ class CWndBase;
 class CTheme
 {
 	LPDIRECT3DDEVICE9 m_pd3dDevice; 
-	CMapStringToPtr m_mapFont;
+
+	// Owning pointers to fonts
+	std::map<std::string, CD3DFont *, std::less<>> m_mapFont;
+	CTheme(const CTheme &) = delete; CTheme & operator=(const CTheme &) = delete;
 
 #ifdef __FLYFF_INITPAGE_EXT
 public:
@@ -123,7 +126,6 @@ public:
 	~CTheme();
 
 	BOOL LoadTheme( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName );
-	BOOL SaveTheme( LPCTSTR lpszFileName );
 
 	void DeleteTheme();
 	void RenderTitle( C2DRender* p2DRender );

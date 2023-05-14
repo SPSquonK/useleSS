@@ -9,9 +9,7 @@
 #include "guild.h"
 #include "Tax.h"
 
-#ifdef __LANG_1013
 #include "langman.h"
-#endif	// __LANG_1013
 
 #include "tlord.h"
 

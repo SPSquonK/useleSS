@@ -14,9 +14,7 @@
 #include "D3DUtil.h"
 #include "DXUtil.h"
 
-#ifdef __LANG_1013
 #include "langman.h"
-#endif	// __LANG_1013
 
 //-----------------------------------------------------------------------------
 // Name: CD3DFontAPI()
@@ -425,33 +423,8 @@ HRESULT CD3DFontAPI::DrawText( FLOAT sx, FLOAT sy, FLOAT fXScale, FLOAT fYScale,
 }
 #endif // not COLA
 
-#ifndef __LANG_1013
-struct FONT_DATA {
-	int			charset;
-	WORD		wCodePage;
-	const char*	faceNT;
-	const char*	face9x;
-} g_fontData[] = {
-	{ HANGUL_CHARSET,		949,	"Gulim",		"±¼¸²" },
-	{ ANSI_CHARSET,			1252,	"Arial",	"Arial" },
-//	{ ANSI_CHARSET,			1252,	"Arial Black",	"Arial Black" },
-	{ SHIFTJIS_CHARSET,		932,	"MS Gothic",	"‚l‚r ‚oƒSƒVƒbƒN" },
-	{ CHINESEBIG5_CHARSET,	950,	"MingLiU",		"²Ó©úÅé" },     //´ë¸¸¾î
-//	{ GB2312_CHARSET,		936,	"SimSun",		"ËÎÌå" },       //Áß±¹¾î
-	{ THAI_CHARSET,			874,	"Microsoft Sans Serif",		"Microsoft Sans Serif" },
-	{ CHINESEBIG5_CHARSET,	950,	"MingLiU",		"²Ó©úÅé" },     //´ë¸¸¾î
-	///	{ THAI_CHARSET,			874,	"Tahoma",		"Tahoma" },
-};
-#endif	// __LANG_1013
-
-
 void    SetCodePage( int nLang )
 {
-#ifdef __LANG_1013
-//	g_codePage	= CLangMan::GetInstance()->GetLangData( nLang )->font.fdLang.wCodePage;
-#else	// __LANG_1013
-	g_codePage = g_fontData[nLang].wCodePage;
-#endif	// __LANG_1013
 }
 
 
@@ -1070,7 +1043,6 @@ HFONT CD3DFont::GetFont(WORD wCodePage)
 		}
 		else
 		{
-#ifdef __LANG_1013
 			PLANG_DATA	pLangData	= CLangMan::GetInstance()->GetLangData( ::GetLanguage() );
 			const char* fontFace = m_strFontName;
 
@@ -1101,43 +1073,6 @@ HFONT CD3DFont::GetFont(WORD wCodePage)
 			m_fontMap.insert(font_map::value_type(wCodePage, hFont));
 
 				return hFont;
-#else	// __LANG_1013
-			for( int i = 0; i < sizeof(g_fontData)/sizeof(FONT_DATA); ++i )
-			{
-				if(g_fontData[i].wCodePage == wCodePage)
-				{
-					const char* fontFace = m_strFontName;
-
-					LOGFONT logFont;
-					memset(&logFont, 0, sizeof(logFont));
-					logFont.lfCharSet = g_fontData[i].charset;
-
-					if(EnumFontFamiliesEx(GetDC(NULL), &logFont, (FONTENUMPROC)EnumFontFamExProc, (LONG)g_fontData[i].faceNT, 0) == 0) 
-					{
-						fontFace = g_fontData[i].faceNT;
-					} 
-					else if(EnumFontFamiliesEx(GetDC(NULL), &logFont, (FONTENUMPROC)EnumFontFamExProc, (LONG)g_fontData[i].face9x, 0) == 0) 
-					{
-						fontFace = g_fontData[i].face9x;
-					}
-
-					INT nHeight    = -MulDiv( m_dwFontHeight, 
-											  (INT)(GetDeviceCaps(m_hDC, LOGPIXELSY) * m_fTextScale), 
-											  72 );
-					DWORD dwBold   = (m_dwFontFlags & D3DFONT_BOLD)   ? FW_BOLD : FW_NORMAL;
-					DWORD dwItalic = (m_dwFontFlags & D3DFONT_ITALIC) ? TRUE    : FALSE;
-
-					HFONT hFont = CreateFont( nHeight, 0, 0, 0, dwBold, dwItalic,
-									 FALSE, FALSE, g_fontData[i].charset, OUT_DEFAULT_PRECIS,
-									 CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
-									 VARIABLE_PITCH, fontFace );
-
-					m_fontMap.insert(font_map::value_type(wCodePage, hFont));
-
-					return hFont;
-				}
-			}
-#endif	// __LANG_1013
 		}
 	}
 

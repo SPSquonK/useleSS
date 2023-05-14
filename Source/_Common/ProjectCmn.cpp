@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "lang.h"
-#ifdef __LANG_1013
 #include "langman.h"
-#endif	// __LANG_1013
 #include <algorithm>
 #include <ranges>
 
@@ -24,43 +22,7 @@ CString GetLangFileName( int nLang, int nType )
 		};
 
 	CString fileName = file[nType];
-
-#ifdef __LANG_1013
 	fileName	= fileName + CLangMan::GetInstance()->GetLangData( nLang )->szFileName;
-#else	// __LANG_1013
-	switch( nLang )
-	{
-	case LANG_KOR:
-		fileName = fileName+"_KOR.inc";
-		break;
-	case LANG_ENG:
-		fileName = fileName+"_ENG.inc";
-		break;
-	case LANG_JAP:
-		fileName = fileName+"_JAP.inc";
-		break;
-	case LANG_CHI:
-		fileName = fileName+"_CHI.inc";
-		break;
-	case LANG_THA:
-		fileName = fileName+"_THA.inc";
-		break;
-	case LANG_TWN:
-	case LANG_HK:
-		fileName = fileName+"_TWN.inc";
-		break;
-	case LANG_VTN:
-		fileName = fileName+"_VTN.inc";
-		break;
-	case LANG_RUS:
-		fileName = fileName+"_RUS.inc";
-		break;
-	default:
-		Error( "%s File Error = %d", file[nType], nLang );
-		break;
-	}
-#endif	// __LANG_1013
-
 	return fileName;
 }
 
@@ -685,9 +647,7 @@ void CProject::LoadPreFiles()
 	LoadDefines();
 	LoadStrings();
 	
-#ifdef __LANG_1013
 	CLangMan::GetInstance()->Load( "propLang.txt" );
-#endif	// __LANG_1013
 }
 
 

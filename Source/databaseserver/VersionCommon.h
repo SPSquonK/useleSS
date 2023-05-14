@@ -14,7 +14,6 @@
 // 해외 6차 적용
 //	#define		__VERIFY_0201
 
-#define		__LANG_1013
 //	mulcom	BEGIN100415	DB_OVERLAPPED_PLUS 메모리 풀 사용.
 //#define		__TRANS_0413				// 트랜스 서버 메로리 최적화
 //	mulcom	END100415	DB_OVERLAPPED_PLUS 메모리 풀 사용.
@@ -109,7 +108,6 @@
 //	#define		__2ND_PASSWORD_SYSTEM		// 로그인 시 2차 비밀번호 입력
 
 #if	  defined(__INTERNALSERVER)	// 내부 사무실 테스트서버 
-//	#define	__LANG_1013
 //	#define	__RULE_0615
 
 	#define		__SKILL_0205

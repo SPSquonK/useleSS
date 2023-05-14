@@ -4,9 +4,7 @@
 
 #include "lang.h"
 
-#ifdef __LANG_1013
 #include "langman.h"
-#endif	// __LANG_1013
 
 /*
 static TCHAR g_szResourcePath[ MAX_PATH ];
@@ -43,43 +41,7 @@ void MakePath( CString& strFullPath, LPCTSTR lpszDirName, LPCTSTR lpszFileName )
 CString MakePath( LPCTSTR lpDir, DWORD dwLan, LPCTSTR lpFile )
 {
 	CString	strFullPath( lpDir );
-
-#ifdef __LANG_1013
 	strFullPath		+= CLangMan::GetInstance()->GetLangData( dwLan )->szPath;
-#else	// __LANG_1013
-	switch( dwLan )
-	{
-		case LANG_KOR:
-			strFullPath += "Korean\\";
-			break;
-		case LANG_ENG:
-			strFullPath += "English\\";
-			break;
-		case LANG_JAP:
-			strFullPath += "Japanese\\";
-			break;
-		case LANG_CHI:
-			strFullPath += "Chinese\\";
-			break;
-		case LANG_THA:
-			strFullPath += "Thailand\\";
-			break;
-		case LANG_TWN:
-		case LANG_HK:
-			strFullPath += "Taiwan\\";
-			break;
-		case LANG_VTN:
-			strFullPath += "Vietnam\\";
-			break;
-		case LANG_RUS:
-			strFullPath += "Russian\\";
-			break;
-		default:
-			AfxMessageBox( "unknown language setting" );
-			break;
-	}
-#endif	// __LANG_1013
-
 	strFullPath		+= lpFile;
 	return strFullPath;
 }

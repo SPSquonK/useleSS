@@ -48,9 +48,7 @@
 
 #include "CreateMonster.h"
 
-#ifdef __LANG_1013
 #include "langman.h"
-#endif	// __LANG_1013
 
 
 #ifdef __WORLDSERVER

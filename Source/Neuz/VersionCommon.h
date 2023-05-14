@@ -23,7 +23,6 @@
 
 #define		__NEWYEARDAY_EVENT_COUPON	// 설 이벤트 - 헤어샾, 성형 무료이용권 관련.
 // 해외 6차 적용
-#define		__LANG_1013					// 해외 버전 신규 추가 스크립트
 
 #define		__ITEMDROPRATE				// 이벤트 아이템 드롭률 조정
 
@@ -265,7 +264,6 @@
 	#define		__Y_MAPVIEW_EX
 	#define		__Y_BEAUTY_SHOP_CHARGE		// 뷰티샵, 개인상점 유료아이템화..Neuz, World
 //	#define		__EVENT_FALL				// 단풍 이벤트 - 모델교체 Neuz, World
-//	#define		__LANG_1013					// 해외 버전 추가 스크립트
 //	#define		__KWCSC_UPDATE				// 스킬 발동 관련 문제 수정 Neuz
 //	#define		__CSC_VER8_1				// 8차 'T'키 사용, 상대방 레벨 안보이기, 화면 모든 창 On/Off Neuz
 //	#define		__CSC_VER8_2				// 8차 파티창 관련 적용 Neuz
