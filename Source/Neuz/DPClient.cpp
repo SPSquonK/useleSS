@@ -2647,46 +2647,40 @@ void CDPClient::OnErrorBankIsFull(OBJID objid, CAr & ar) {
 
 void CDPClient::OnBank( OBJID , CAr & ar )
 {
-	Subsnapshot::Bank nMode;
-	ar >> nMode;
-	DWORD dwId, dwItemId;
-	ar >> dwId >> dwItemId;
+	Subsnapshot::Bank nMode; ar >> nMode;
 
-	SAFE_DELETE( g_WndMng.m_pWndBank );
-	SAFE_DELETE( g_WndMng.m_pWndConfirmBank );
-	SAFE_DELETE( g_WndMng.m_pWndBankPassword );
+	SAFE_DELETE(g_WndMng.m_pWndBank);
+	SAFE_DELETE(g_WndMng.m_pWndConfirmBank);
+	SAFE_DELETE(g_WndMng.m_pWndBankPassword);
+
+	if (nMode == Subsnapshot::Bank::ValidateBankAccess) {
+		g_WndMng.CreateApplet(APP_INVENTORY);
+		g_WndMng.m_pWndBank = new CWndBank;
+		g_WndMng.m_pWndBank->Initialize(&g_WndMng, APP_COMMON_BANK);
+		return;
+	}
+
+	OBJID dwId; ar >> dwId;
 
 	switch (nMode) {
 		case Subsnapshot::Bank::AskCurrentPassword:
 		case Subsnapshot::Bank::OkForNewPassword:
-			g_WndMng.m_pWndConfirmBank = new CWndConfirmBank;
-			g_WndMng.m_pWndConfirmBank->SetItem(dwId, dwItemId);
-			g_WndMng.m_pWndConfirmBank->Initialize(NULL, APP_CONFIRM_BANK);
+			g_WndMng.m_pWndConfirmBank = new CWndConfirmBank(dwId);
+			g_WndMng.m_pWndConfirmBank->Initialize(NULL);
 			break;
 		case Subsnapshot::Bank::InitialRequirePassword:
-			g_WndMng.m_pWndBankPassword = new CWndBankPassword;
-			g_WndMng.m_pWndBankPassword->SetItem(dwId, dwItemId);
-			g_WndMng.m_pWndBankPassword->SetBankPassword(0);
-			g_WndMng.m_pWndBankPassword->Initialize(NULL, APP_BANK_PASSWORD);
+			g_WndMng.m_pWndBankPassword = new CWndBankPassword(false, dwId);
+			g_WndMng.m_pWndBankPassword->Initialize(NULL);
 			break;
 		case Subsnapshot::Bank::InvalidNewPasswordQuery:
-			g_WndMng.m_pWndBankPassword = new CWndBankPassword;
-			g_WndMng.m_pWndBankPassword->SetItem(dwId, dwItemId);
-			g_WndMng.m_pWndBankPassword->SetBankPassword(1);
-			g_WndMng.m_pWndBankPassword->Initialize(NULL, APP_BANK_PASSWORD);
+			g_WndMng.m_pWndBankPassword = new CWndBankPassword(true, dwId);
+			g_WndMng.m_pWndBankPassword->Initialize(NULL);
 
 			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0028)));
 			break;
-		case Subsnapshot::Bank::ValidateBankAccess:
-			g_WndMng.CreateApplet(APP_INVENTORY);
-			g_WndMng.m_pWndBank = new CWndBank;
-			g_WndMng.m_pWndBank->Initialize(&g_WndMng, APP_COMMON_BANK);
-
-			break;
 		case Subsnapshot::Bank::InvalidCurrentPassword:
-			g_WndMng.m_pWndConfirmBank = new CWndConfirmBank;
-			g_WndMng.m_pWndConfirmBank->SetItem(dwId, dwItemId);
-			g_WndMng.m_pWndConfirmBank->Initialize(NULL, APP_CONFIRM_BANK);
+			g_WndMng.m_pWndConfirmBank = new CWndConfirmBank(dwId);
+			g_WndMng.m_pWndConfirmBank->Initialize(NULL);
 			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0028)));
 			break;
 	}

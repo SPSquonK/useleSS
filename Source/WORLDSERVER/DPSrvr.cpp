@@ -3404,9 +3404,7 @@ void CDPSrvr::OnMoveBankItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 }
 
 void CDPSrvr::OnChangeBankPass( CAr & ar, CUser & pUser ) {
-	const auto [szLastPass, szNewPass, dwId, dwItemId] = ar.Extract<
-		char[5], char[5], DWORD, DWORD
-	>();
+	const auto [szLastPass, szNewPass, dwId] = ar.Extract<char[5], char[5], OBJID>();
 
 	constexpr auto IsValidBankPassword = [](const char * const str) {
 		return std::strlen(str) == 4 && std::all_of(str, str + 4, isdigit2);
@@ -3414,8 +3412,8 @@ void CDPSrvr::OnChangeBankPass( CAr & ar, CUser & pUser ) {
 
 	if (!IsValidBankPassword(szNewPass)) {
 		pUser.SendSnapshotNoTarget<
-			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
-		>(Subsnapshot::Bank::InvalidNewPasswordQuery, dwId, dwItemId);
+			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID
+		>(Subsnapshot::Bank::InvalidNewPasswordQuery, dwId);
 		return;
 	}
 
@@ -3427,71 +3425,62 @@ void CDPSrvr::OnChangeBankPass( CAr & ar, CUser & pUser ) {
 		g_dpDBClient.SendChangeBankPass( pUser.GetName(), szNewPass, pUser.m_idPlayer );
 		
 		pUser.SendSnapshotNoTarget<
-			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
-		>(Subsnapshot::Bank::OkForNewPassword, dwId, dwItemId);
+			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID
+		>(Subsnapshot::Bank::OkForNewPassword, dwId);
 	}
 	else
 	{
 		pUser.SendSnapshotNoTarget<
-			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
-		>(Subsnapshot::Bank::InvalidNewPasswordQuery, dwId, dwItemId);
+			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID
+		>(Subsnapshot::Bank::InvalidNewPasswordQuery, dwId);
 	}
 }
 
 void CDPSrvr::OnConfirmBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-	char szPass[5] ={0,};
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		if( pUser->m_vtInfo.GetOther() )
-			return;
-		if( pUser->m_vtInfo.VendorIsVendor() )
-			return;
-		if( pUser->m_bGuildBank )
-			return;
+	if (!IsValidObj(pUser)) return;
+	if( pUser->m_vtInfo.GetOther() ) return;
+	if( pUser->m_vtInfo.VendorIsVendor() ) return;
+	if( pUser->m_bGuildBank ) return;
 #ifdef __S_SERVER_UNIFY
-		if( pUser->m_bAllAction == FALSE )
-			return;
+	if( pUser->m_bAllAction == FALSE ) return;
 #endif // __S_SERVER_UNIFY
 
-		// 여기서 비밀번호 확인작업
-		ar.ReadString( szPass );
+	// 여기서 비밀번호 확인작업
+	char szPass[5] = { 0, };
+	ar >> szPass;
+	OBJID dwId;
+	ar >> dwId;
 
-		DWORD dwId, dwItemId;
-		ar >> dwId >> dwItemId;
+	if( dwId == NULL_ID && !CNpcChecker::GetInstance()->IsCloseNpc<MMI_BANKING>(pUser) )
+			return;
 
-		if( dwId == NULL_ID && !CNpcChecker::GetInstance()->IsCloseNpc<MMI_BANKING>(pUser) )
-				return;
-
-		if( 0 == strcmp( szPass, pUser->m_szBankPass ) )
-		{
-			// 비밀번호를 확인 하였으므로 은행을 열수 잇게 해줌
-			if( dwId != NULL_ID )
-			{
-				CItemElem* pItemElem = pUser->m_Inventory.GetAtId( dwId );
-				if( IsUsableItem( pItemElem ) == FALSE || pItemElem->m_dwItemId != II_SYS_SYS_SCR_CUSTODY)
-				{
-					return;
-				}
-				else
-				{
-					pUser->m_bInstantBank	= TRUE;
-					pUser->RemoveItem( (BYTE)( pItemElem->m_dwObjId ), 1 );
-				}
-			}
-			pUser->m_bBank = TRUE;
-
-			pUser->SendSnapshotNoTarget<
-				SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
-			>(Subsnapshot::Bank::ValidateBankAccess, dwId, dwItemId);		}
-		else
-		{
-			pUser->SendSnapshotNoTarget<
-				SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
-			>(Subsnapshot::Bank::InvalidCurrentPassword, dwId, dwItemId);
-		}
+	if (0 != strcmp(szPass, pUser->m_szBankPass))
+	{
+		pUser->SendSnapshotNoTarget<
+			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID
+		>(Subsnapshot::Bank::InvalidCurrentPassword, dwId);
+		return;
 	}
+
+	// 비밀번호를 확인 하였으므로 은행을 열수 잇게 해줌
+	if( dwId != NULL_ID )
+	{
+		CItemElem* pItemElem = pUser->m_Inventory.GetAtId( dwId );
+		if( IsUsableItem( pItemElem ) == FALSE || pItemElem->m_dwItemId != II_SYS_SYS_SCR_CUSTODY)
+		{
+			return;
+		}
+
+		pUser->m_bInstantBank	= TRUE;
+		pUser->RemoveItem( (BYTE)( pItemElem->m_dwObjId ), 1 );
+	}
+	pUser->m_bBank = TRUE;
+
+	pUser->SendSnapshotNoTarget<SNAPSHOTTYPE_BANK, Subsnapshot::Bank>(
+		Subsnapshot::Bank::ValidateBankAccess
+	);
 }
 
 void CDPSrvr::OnSfxHit( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

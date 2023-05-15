@@ -314,11 +314,6 @@ void CWndBankPassword::CopyPassword(char * buffer, const char * text) {
 //---------------------------------------------------------------------------------------------------------------------------
 // 패스워드 확인창
 //---------------------------------------------------------------------------------------------------------------------------
-CWndConfirmBank::CWndConfirmBank() 
-{ 
-	m_dwId	= NULL_ID;
-	m_dwItemId	= 0;
-}
 
 void CWndConfirmBank::OnInitialUpdate() { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -348,18 +343,15 @@ BOOL CWndConfirmBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			CWndBankPassword::CopyPassword(szPass, m_pPass->GetString());
 
 			if (CWndBankPassword::IsValidPassword(szPass)) {
-				g_DPlay.SendPacket<PACKETTYPE_CONFIRMBANK,
-					char[5], DWORD, DWORD
-				>(szPass, m_dwId, m_dwItemId);
+				g_DPlay.SendPacket<PACKETTYPE_CONFIRMBANK, char[5], OBJID>(szPass, m_dwId);
 			} else {
 				m_pPass->SetString("");
 				g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0025)));
 			}
 		}
 	} else if( nID == WIDC_CHANGE_PASS ) {
-		g_WndMng.m_pWndBankPassword = new CWndBankPassword;
-		g_WndMng.m_pWndBankPassword->SetBankPassword( 1 );
-		g_WndMng.m_pWndBankPassword->Initialize( NULL, APP_BANK_PASSWORD );	
+		g_WndMng.m_pWndBankPassword = new CWndBankPassword(true, m_dwId);
+		g_WndMng.m_pWndBankPassword->Initialize( NULL );	
 
 		Destroy();
 	} else if( nID == WIDC_CANCEL ) {
@@ -373,17 +365,7 @@ BOOL CWndConfirmBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 //---------------------------------------------------------------------------------------------------------------------------
 // 패스워드 변경창
 //---------------------------------------------------------------------------------------------------------------------------
-CWndBankPassword::CWndBankPassword() 
-{ 
-	m_nFlags = 0;
-	m_dwId	= NULL_ID;
-	m_dwItemId	= 0;
-} 
 
-void CWndBankPassword::SetBankPassword( int nFlags )
-{
-	m_nFlags = nFlags;
-}
 void CWndBankPassword::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -398,7 +380,7 @@ void CWndBankPassword::OnInitialUpdate()
 		m_pNewPass->AddWndStyle( EBS_PASSWORD );
 		m_pConfirmPass->AddWndStyle( EBS_PASSWORD );
 
-		if( m_nFlags == 0 )
+		if(!m_needCurrentPassword)
 		{
 			m_pLastPass->SetString( "0000" );
 			m_pNewPass->SetFocus();
@@ -437,7 +419,7 @@ BOOL CWndBankPassword::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 				|| !IsValidPassword(szNewPass)
 				|| !IsValidPassword(szConfirmPass)) {
 
-				if (m_nFlags == 0) {
+				if (!m_needCurrentPassword) {
 					m_pLastPass->SetString("0000");
 				} else {
 					m_pLastPass->SetString("");
@@ -447,9 +429,9 @@ BOOL CWndBankPassword::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 				g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0025)));
 			} else {
 				if (0 == strcmp(szNewPass, szConfirmPass)) {
-					g_DPlay.SendPacket<PACKETTYPE_CHANGEBANKPASS,
-						char[5], char[5], DWORD, DWORD
-					>(szLastPass, szNewPass, m_dwId, m_dwItemId);
+					g_DPlay.SendPacket<PACKETTYPE_CHANGEBANKPASS, char[5], char[5], OBJID>(
+						szLastPass, szNewPass, m_dwId
+					);
 				} else {
 					m_pNewPass->SetString("");
 					m_pConfirmPass->SetString("");
@@ -462,7 +444,7 @@ BOOL CWndBankPassword::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 	{
 		Destroy();
 	}
-	else if( m_nFlags == 0 && message == 0 && nID == WIDC_EDIT1 )
+	else if( !m_needCurrentPassword && message == 0 && nID == WIDC_EDIT1 )
 	{
 		CWndBase *m_pNewPass = GetDlgItem( WIDC_EDIT2 );
 		m_pNewPass->SetFocus();

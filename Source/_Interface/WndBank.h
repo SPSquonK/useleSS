@@ -29,31 +29,28 @@ public:
 	BYTE GetPosOfGold(const CWndBase * pWnd, BYTE defaultValue = 2) const;
 }; 
 
-class CWndConfirmBank : public CWndNeuz 
-{ 
-public:
-	DWORD	m_dwId;
-	DWORD	m_dwItemId;
-	void	SetItem( DWORD dwId, DWORD dwItemId )	{	m_dwId	= dwId;	m_dwItemId	= dwItemId;		}
+class CWndConfirmBank final : public CWndNeuz {
+private:
+	OBJID	m_dwId;
 public: 
-	CWndConfirmBank(); 
+	explicit CWndConfirmBank(OBJID dwId = NULL_ID) : m_dwId(dwId) {}
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual	void OnInitialUpdate(); 
+	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override; 
+	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override; 
+	virtual	void OnInitialUpdate() override;
 }; 
 
 class CWndBankPassword : public CWndNeuz 
 { 
-public:
-	int m_nFlags;
-	DWORD	m_dwId;
-	DWORD	m_dwItemId;
-	void	SetItem( DWORD dwId, DWORD dwItemId )	{	m_dwId	= dwId;		m_dwItemId	= dwItemId;		}
+private:
+	bool m_needCurrentPassword;
+	OBJID	m_dwId;
 public: 
-	CWndBankPassword(); 
-	
-	void SetBankPassword( int nFlags );	
+	CWndBankPassword(bool needCurrentPassword, OBJID dwId = NULL_ID)
+		: m_needCurrentPassword(needCurrentPassword)
+		, m_dwId(dwId) {
+	}
+
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
