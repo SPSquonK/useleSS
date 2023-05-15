@@ -452,14 +452,12 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_MOVEBANKITEM:	OnMoveBankItem( objid, ar );	break;
 			case SNAPSHOTTYPE_UPDATE_BANKITEM: OnUpdateBankItem( objid, ar );	break;
 			case SNAPSHOTTYPE_BANKISFULL:	OnErrorBankIsFull( objid, ar ); break;
-			case SNAPSHOTTYPE_BANKWINDOW:	OnBankWindow( objid, ar ); break;
+			case SNAPSHOTTYPE_BANK:	OnBank( objid, ar ); break;
 			case SNAPSHOTTYPE_REMOVESKILLINFULENCE: OnRemoveSkillInfluence( objid, ar ); break;
 			case SNAPSHOTTYPE_REMOVEALLSKILLINFULENCE: OnRemoveAllSkillInfluence( objid, ar ); break;				
 			case SNAPSHOTTYPE_GUILD_BANK_WND:	OnGuildBankWindow( objid, ar ); break;
 			case SNAPSHOTTYPE_PUTITEMGUILDBANK:	OnPutItemGuildBank( objid, ar ); break;
 			case SNAPSHOTTYPE_GETITEMGUILDBANK: OnGetItemGuildBank( objid, ar ); break;
-			case SNAPSHOTTYPE_CHANGEBANKPASS: OnChangeBankPass( objid, ar ); break;
-			case SNAPSHOTTYPE_CONFIRMBANKPASS: OnConfirmBankPass( objid, ar ); break;
 			case SNAPSHOTTYPE_QUERY_PLAYER_DATA:	OnQueryPlayerData( ar );	break;
 			case SNAPSHOTTYPE_FOCUSOBJ:				OnFocusObj( ar );	break;
 				
@@ -2647,9 +2645,9 @@ void CDPClient::OnErrorBankIsFull(OBJID objid, CAr & ar) {
 	g_WndMng.PutString(TID_GAME_SLOTFULL);
 }
 
-void CDPClient::OnBankWindow( OBJID objid, CAr & ar )
+void CDPClient::OnBank( OBJID , CAr & ar )
 {
-	int nMode;
+	Subsnapshot::Bank nMode;
 	ar >> nMode;
 	DWORD dwId, dwItemId;
 	ar >> dwId >> dwItemId;
@@ -2657,21 +2655,43 @@ void CDPClient::OnBankWindow( OBJID objid, CAr & ar )
 	SAFE_DELETE( g_WndMng.m_pWndBank );
 	SAFE_DELETE( g_WndMng.m_pWndConfirmBank );
 	SAFE_DELETE( g_WndMng.m_pWndBankPassword );
-	if( nMode ) // 확인창
-	{
-		g_WndMng.m_pWndConfirmBank = new CWndConfirmBank;
-		g_WndMng.m_pWndConfirmBank->SetItem( dwId, dwItemId );
-		g_WndMng.m_pWndConfirmBank->Initialize( NULL, APP_CONFIRM_BANK );
-	}
-	else // 변경창
-	{
-		g_WndMng.m_pWndBankPassword = new CWndBankPassword;
-		g_WndMng.m_pWndBankPassword->SetItem( dwId, dwItemId );
-		g_WndMng.m_pWndBankPassword->SetBankPassword( 0 );
-		g_WndMng.m_pWndBankPassword->Initialize( NULL, APP_BANK_PASSWORD );
 
+	switch (nMode) {
+		case Subsnapshot::Bank::AskCurrentPassword:
+		case Subsnapshot::Bank::OkForNewPassword:
+			g_WndMng.m_pWndConfirmBank = new CWndConfirmBank;
+			g_WndMng.m_pWndConfirmBank->SetItem(dwId, dwItemId);
+			g_WndMng.m_pWndConfirmBank->Initialize(NULL, APP_CONFIRM_BANK);
+			break;
+		case Subsnapshot::Bank::InitialRequirePassword:
+			g_WndMng.m_pWndBankPassword = new CWndBankPassword;
+			g_WndMng.m_pWndBankPassword->SetItem(dwId, dwItemId);
+			g_WndMng.m_pWndBankPassword->SetBankPassword(0);
+			g_WndMng.m_pWndBankPassword->Initialize(NULL, APP_BANK_PASSWORD);
+			break;
+		case Subsnapshot::Bank::InvalidNewPasswordQuery:
+			g_WndMng.m_pWndBankPassword = new CWndBankPassword;
+			g_WndMng.m_pWndBankPassword->SetItem(dwId, dwItemId);
+			g_WndMng.m_pWndBankPassword->SetBankPassword(1);
+			g_WndMng.m_pWndBankPassword->Initialize(NULL, APP_BANK_PASSWORD);
+
+			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0028)));
+			break;
+		case Subsnapshot::Bank::ValidateBankAccess:
+			g_WndMng.CreateApplet(APP_INVENTORY);
+			g_WndMng.m_pWndBank = new CWndBank;
+			g_WndMng.m_pWndBank->Initialize(&g_WndMng, APP_COMMON_BANK);
+
+			break;
+		case Subsnapshot::Bank::InvalidCurrentPassword:
+			g_WndMng.m_pWndConfirmBank = new CWndConfirmBank;
+			g_WndMng.m_pWndConfirmBank->SetItem(dwId, dwItemId);
+			g_WndMng.m_pWndConfirmBank->Initialize(NULL, APP_CONFIRM_BANK);
+			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0028)));
+			break;
 	}
 }
+
 
 void CDPClient::OnGuildBankWindow( OBJID objid, CAr & ar )
 {
@@ -2700,58 +2720,6 @@ void CDPClient::OnGuildBankWindow( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::OnChangeBankPass( OBJID objid, CAr & ar )
-{
-	int nMode;
-	ar >> nMode;
-	DWORD dwId, dwItemId;
-	ar >> dwId >> dwItemId;
-
-	SAFE_DELETE( g_WndMng.m_pWndBank );
-	SAFE_DELETE( g_WndMng.m_pWndConfirmBank );
-	SAFE_DELETE( g_WndMng.m_pWndBankPassword );
-	if( nMode ) // 패스워드가 바꿨음..
-	{
-		g_WndMng.m_pWndConfirmBank = new CWndConfirmBank;
-		g_WndMng.m_pWndConfirmBank->SetItem( dwId, dwItemId );
-		g_WndMng.m_pWndConfirmBank->Initialize( NULL, APP_CONFIRM_BANK );
-	}
-	else	// 암호가 틀려서 못 바꿈
-	{
-		g_WndMng.m_pWndBankPassword = new CWndBankPassword;
-		g_WndMng.m_pWndBankPassword->SetItem( dwId, dwItemId );
-		g_WndMng.m_pWndBankPassword->SetBankPassword( 1 );
-		g_WndMng.m_pWndBankPassword->Initialize( NULL, APP_BANK_PASSWORD );				
-
-		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0028) ) );
-//		g_WndMng.OpenMessageBox( "암호가 틀렸습니다. 다시 입력해주세요" );
-	}
-}
-
-void CDPClient::OnConfirmBankPass( OBJID objid, CAr & ar )
-{
-	int nMode;
-	ar >> nMode;
-	DWORD dwId, dwItemId;
-	ar >> dwId >> dwItemId;
-	
-	SAFE_DELETE( g_WndMng.m_pWndBank );
-	SAFE_DELETE( g_WndMng.m_pWndConfirmBank );
-	SAFE_DELETE( g_WndMng.m_pWndBankPassword );
-	if( nMode ) // 패스워드 확인 됬음.
-	{
-		g_WndMng.CreateApplet( APP_INVENTORY );
-		g_WndMng.m_pWndBank = new CWndBank;
-		g_WndMng.m_pWndBank->Initialize( &g_WndMng, APP_COMMON_BANK );
-	}
-	else	// 암호가 틀려서 못 바꿈
-	{
-		g_WndMng.m_pWndConfirmBank = new CWndConfirmBank;
-		g_WndMng.m_pWndConfirmBank->SetItem( dwId, dwItemId );
-		g_WndMng.m_pWndConfirmBank->Initialize( NULL, APP_CONFIRM_BANK );			
-		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0028) ) );
-	}
-}
 
 void CDPClient::OnVendor(OBJID objid, CAr & ar) {
 	CMover * pVendor = prj.GetMover(objid);

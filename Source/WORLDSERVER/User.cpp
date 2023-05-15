@@ -898,18 +898,6 @@ void CUser::AddRemoveSkillInfluence( WORD wType, WORD wID )
 	
 }
 
-void CUser::AddBankWindow( int nMode, DWORD dwId, DWORD dwItemId )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_BANKWINDOW;
-	m_Snapshot.ar << nMode;
-	m_Snapshot.ar << dwId << dwItemId;
-
-}
-
 void CUser::AddGuildBankWindow( int nMode )
 {
 	if( IsDelete() )	return;
@@ -926,28 +914,6 @@ void CUser::AddGuildBankWindow( int nMode )
 		m_Snapshot.ar << pGuild->m_nGoldGuild;
 		m_Snapshot.ar << pGuild->m_GuildBank;
 	}
-}
-
-void CUser::AddChangeBankPass( int nMode, DWORD dwId, DWORD dwItemId )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_CHANGEBANKPASS;
-	m_Snapshot.ar << nMode;
-	m_Snapshot.ar << dwId << dwItemId;
-}
-
-void CUser::AddconfirmBankPass( int nMode, DWORD dwId, DWORD dwItemId )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_CONFIRMBANKPASS;
-	m_Snapshot.ar << nMode;
-	m_Snapshot.ar << dwId << dwItemId;
 }
 
 void CUser::AddUpdateBankItem( BYTE nSlot, BYTE nId, short newQuantity ) {

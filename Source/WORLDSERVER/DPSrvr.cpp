@@ -2684,13 +2684,13 @@ void CDPSrvr::OnOpenBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		}
 		if( 0 == strcmp( pUser->m_szBankPass, "0000") )
 		{
-			// 변경창을 띄우라고 함
-			pUser->AddBankWindow( 0, dwId, dwItemId );
-		}
-		else
-		{
-			// 확인창을 띄우라고 함
-			pUser->AddBankWindow( 1, dwId, dwItemId );
+			pUser->SendSnapshotNoTarget<
+				SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
+			>(Subsnapshot::Bank::InitialRequirePassword, dwId, dwItemId);
+		} else {
+			pUser->SendSnapshotNoTarget<
+				SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
+			>(Subsnapshot::Bank::AskCurrentPassword, dwId, dwItemId);
 		}
 	}
 }
@@ -3413,7 +3413,9 @@ void CDPSrvr::OnChangeBankPass( CAr & ar, CUser & pUser ) {
 	};
 
 	if (!IsValidBankPassword(szNewPass)) {
-		pUser.AddChangeBankPass(0, dwId, dwItemId);
+		pUser.SendSnapshotNoTarget<
+			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
+		>(Subsnapshot::Bank::InvalidNewPasswordQuery, dwId, dwItemId);
 		return;
 	}
 
@@ -3423,13 +3425,16 @@ void CDPSrvr::OnChangeBankPass( CAr & ar, CUser & pUser ) {
 		// 패스워드가 바꿨으므로 DB와 클라이언트에 게 바뀠다고 보내줌
 		strcpy( pUser.m_szBankPass, szNewPass );
 		g_dpDBClient.SendChangeBankPass( pUser.GetName(), szNewPass, pUser.m_idPlayer );
-		pUser.AddChangeBankPass( 1, dwId, dwItemId );
+		
+		pUser.SendSnapshotNoTarget<
+			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
+		>(Subsnapshot::Bank::OkForNewPassword, dwId, dwItemId);
 	}
 	else
 	{
-		// 다시 입력하라고 알려줌
-		// 패스워드가 틀렸음
-		pUser.AddChangeBankPass( 0, dwId, dwItemId );
+		pUser.SendSnapshotNoTarget<
+			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
+		>(Subsnapshot::Bank::InvalidNewPasswordQuery, dwId, dwItemId);
 	}
 }
 
@@ -3476,13 +3481,15 @@ void CDPSrvr::OnConfirmBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 				}
 			}
 			pUser->m_bBank = TRUE;
-			pUser->AddconfirmBankPass( 1, dwId, dwItemId );
-		}
+
+			pUser->SendSnapshotNoTarget<
+				SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
+			>(Subsnapshot::Bank::ValidateBankAccess, dwId, dwItemId);		}
 		else
 		{
-			// 다시 입력하라고 알려줌
-			// 패스워드가 틀렸음
-			pUser->AddconfirmBankPass( 0, dwId, dwItemId );
+			pUser->SendSnapshotNoTarget<
+				SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
+			>(Subsnapshot::Bank::InvalidCurrentPassword, dwId, dwItemId);
 		}
 	}
 }

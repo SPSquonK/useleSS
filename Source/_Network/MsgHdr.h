@@ -943,9 +943,7 @@
 #define SNAPSHOTTYPE_MOVEBANKITEM		(WORD)0x0053
 #define SNAPSHOTTYPE_UPDATE_BANKITEM	(WORD)0x0054
 #define	SNAPSHOTTYPE_BANKISFULL			(WORD)0x0055
-#define SNAPSHOTTYPE_BANKWINDOW			(WORD)0x0056
-#define SNAPSHOTTYPE_CHANGEBANKPASS		(WORD)0x0057
-#define SNAPSHOTTYPE_CONFIRMBANKPASS	(WORD)0x0058
+#define SNAPSHOTTYPE_BANK			(WORD)0x0056
 #define SNAPSHOTTYPE_SETSTUN			(WORD)0x0059
 #define SNAPSHOTTYPE_SETPOISON			(WORD)0x005a
 #define SNAPSHOTTYPE_SETDARK			(WORD)0x005b
@@ -1544,5 +1542,13 @@ const BYTE SECRETROOM_GUILDLIST		= 0x01;
 const BYTE SECRETROOM_KILLCOUNT		= 0x02;
 const BYTE SECRETROOM_WARSTATE		= 0x03;
 
-
-
+namespace Subsnapshot {
+	enum class Bank : std::uint8_t {
+		InitialRequirePassword,
+		AskCurrentPassword,
+		InvalidNewPasswordQuery,
+		OkForNewPassword,
+		InvalidCurrentPassword,
+		ValidateBankAccess
+	};
+}

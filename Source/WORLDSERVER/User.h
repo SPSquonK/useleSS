@@ -327,9 +327,6 @@ public:
 	void			AddMoveBankItem( BYTE nSrcIndex, BYTE nDestIndex );
 	void			AddBankIsFull();
 	void			AddRemoveGuildBankItem( u_long idGuild, DWORD dwId, DWORD dwItemNum );
-	void			AddChangeBankPass( int nMode, DWORD dwId, DWORD dwItemId );
-	void			AddBankWindow( int nMode, DWORD dwId, DWORD dwItemId );
-	void			AddconfirmBankPass( int nMode, DWORD dwId, DWORD dwItemId );
 	void			AddTaskBar();
 	void			AddSendErrorParty( DWORD dw, DWORD dwSkill = 0 );
 	void			AddPartyMember( CParty *pParty, u_long idPlayer, const char* pszLeader, const char* pszMember );

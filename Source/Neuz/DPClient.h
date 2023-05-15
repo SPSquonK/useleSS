@@ -501,15 +501,13 @@ public:
 	void	OnMoveBankItem( OBJID objid, CAr & ar );
 	void	OnUpdateBankItem( OBJID objid, CAr & ar );
 	void	OnErrorBankIsFull( OBJID objid, CAr & ar );
-	void	OnBankWindow( OBJID objid, CAr & ar );
+	void	OnBank(OBJID objid, CAr & ar);
 
 	void    OnFocusObj( CAr & ar );
 	
 	void	OnGuildBankWindow( OBJID objid, CAr & ar );
 	void	OnPutItemGuildBank( OBJID objid, CAr & ar );
 	void	OnGetItemGuildBank( OBJID objid, CAr & ar );
-	void	OnChangeBankPass( OBJID objid, CAr & ar );
-	void	OnConfirmBankPass( OBJID objid, CAr & ar );
 	void	OnVendor( OBJID objid, CAr & ar );
 	void	OnUpdateVendor( OBJID objid, CAr & ar );
 	void	OnUpdateItemVariant( OBJID objid, CAr & ar );
