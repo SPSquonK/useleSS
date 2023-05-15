@@ -14,34 +14,25 @@
   CtrlId : WIDC_COST - 0
 ****************************************************/
 
-CWndBank::CWndBank() 
-{ 
-} 
-CWndBank::~CWndBank() 
-{
+CWndBank::~CWndBank() {
 	g_DPlay.SendCloseBankWnd();
 	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 } 
 
 void CWndBank::OnDraw( C2DRender* p2DRender ) 
 { 
-	int     nIndex[3] = { WIDC_CUSTOM4, WIDC_CUSTOM5, WIDC_CUSTOM6 };
+	static constexpr int nIndex[3] = { WIDC_CUSTOM4, WIDC_CUSTOM5, WIDC_CUSTOM6 };
 	CString str;
 	
-	for( int i = 0 ; i < 3 ; ++i )
-	{
-		str.Format( _T( "%d" ),g_pPlayer->m_dwGoldBank[i] );
-		pCost[i]->SetTitle( str );	
+	for (int i = 0 ; i < 3 ; ++i) {
+		str.Format(_T("%d"), g_pPlayer->m_dwGoldBank[i]);
+		m_slots[i].pCost->SetTitle( str );
 		
-		if( bUse[i] == FALSE )
-		{
+		if (!m_slots[i].bUse) {
 			LPWNDCTRL lpWndCtrl = GetWndCtrl( nIndex[i] );
 			m_pTexture->Render( p2DRender, lpWndCtrl->rect.TopLeft(), 50 );
 		}
 	}
-	
-	
-	
 } 
 
 void CWndBank::OnInitialUpdate() 
@@ -54,50 +45,36 @@ void CWndBank::OnInitialUpdate()
 		return;
 	}
 
-	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*) GetDlgItem( WIDC_BANK_0 );
-	
-	m_wndItemCtrl[0].Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl, 11 );
-	m_wndItemCtrl[0].InitItem( &g_pPlayer->m_Bank[0], APP_COMMON_BANK );
-
-	CWndTabCtrl* pTabCtrl1 = (CWndTabCtrl*) GetDlgItem( WIDC_BANK_1 );
-
-	m_wndItemCtrl[1].Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl1, 11 );
-	m_wndItemCtrl[1].InitItem( &g_pPlayer->m_Bank[1], APP_COMMON_BANK );
-
-	CWndTabCtrl* pTabCtrl2 = (CWndTabCtrl*) GetDlgItem( WIDC_BANK_3 );
-	
-	m_wndItemCtrl[2].Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl2, 11 );
-	m_wndItemCtrl[2].InitItem( &g_pPlayer->m_Bank[2], APP_COMMON_BANK );
+	static constexpr int WIDCBanks[3] = { WIDC_BANK_0, WIDC_BANK_1, WIDC_BANK_3 };
+	static constexpr int WIDCBankGo[3] = { WIDC_BANKGO_0, WIDC_BANKGO_1, WIDC_BANKGO_2 };
+	static constexpr int WIDCBankGold[3] = { WIDC_BANKGOLD_0, WIDC_BANKGOLD_1, WIDC_BANKGOLD_2 };
 
 	LPCTSTR pszText = prj.GetText(TID_GAME_ITEM);
-	pTabCtrl->InsertItem(&m_wndItemCtrl[0], pszText);
-	pTabCtrl1->InsertItem(&m_wndItemCtrl[1], pszText);
-	pTabCtrl2->InsertItem(&m_wndItemCtrl[2], pszText);
-	
 
-	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_BANKGO_0 );
-	m_wndGold[0].Create( "g", WBS_NODRAWFRAME, lpWndCtrl->rect, this, WIDC_BANKGO_0 );
-	m_wndGold[0].AddWndStyle( WBS_NODRAWFRAME );
+	for (int i = 0; i != 3; ++i) {
+		BankSlot & slot = m_slots[i];
 
-	lpWndCtrl = GetWndCtrl( WIDC_BANKGO_1 );
-	m_wndGold[1].Create( "g", WBS_NODRAWFRAME, lpWndCtrl->rect, this, WIDC_BANKGO_1 );
-	m_wndGold[1].AddWndStyle( WBS_NODRAWFRAME );
+		slot.pTabCtrl = GetDlgItem<CWndTabCtrl>(WIDCBanks[i]);
 
-	lpWndCtrl = GetWndCtrl( WIDC_BANKGO_2 );
-	m_wndGold[2].Create( "g", WBS_NODRAWFRAME, lpWndCtrl->rect, this, WIDC_BANKGO_2 );
-	m_wndGold[2].AddWndStyle( WBS_NODRAWFRAME );
+		slot.wndItemCtrl.Create(WLVS_ICON, CRect(0, 0, 250, 250), slot.pTabCtrl, 11);
+		slot.wndItemCtrl.InitItem(&g_pPlayer->m_Bank[i], APP_COMMON_BANK);
 
-	pCost[0] = (CWndStatic*) GetDlgItem( WIDC_BANKGOLD_0 );
-	pCost[1] = (CWndStatic*) GetDlgItem( WIDC_BANKGOLD_1 );
-	pCost[2] = (CWndStatic*) GetDlgItem( WIDC_BANKGOLD_2 );
+		slot.pTabCtrl->InsertItem(&slot.wndItemCtrl, pszText);
+
+		LPWNDCTRL lpWndCtrl = GetWndCtrl(WIDCBankGo[i]);
+		slot.wndGold.Create("g", WBS_NODRAWFRAME, lpWndCtrl->rect, this, WIDCBankGo[i]);
+		slot.wndGold.AddWndStyle(WBS_NODRAWFRAME);
+
+		slot.pCost = GetDlgItem<CWndStatic>(WIDCBankGold[i]);
+	}
 
 	ReSetBank();
 	
-	RectItemCtrl[0] = pTabCtrl->m_rectClient + CRect( -3, 2, -18, -20 );
-	RectItemCtrl[1] = pTabCtrl1->m_rectClient + CRect( -3, 2, -19, -20 );
-	RectItemCtrl[2] = pTabCtrl2->m_rectClient + CRect( -3, 2, -20, -20 );
+	m_slots[0].rectItemCtrl = m_slots[0].pTabCtrl->m_rectClient + CRect(-3, 2, -18, -20);
+	m_slots[1].rectItemCtrl = m_slots[1].pTabCtrl->m_rectClient + CRect(-3, 2, -19, -20);
+	m_slots[2].rectItemCtrl = m_slots[2].pTabCtrl->m_rectClient + CRect(-3, 2, -20, -20);
 
-	CWndInventory* pWndInventory = (CWndInventory*)GetWndBase( APP_INVENTORY );
+	CWndBase * pWndInventory = GetWndBase( APP_INVENTORY );
 	CRect rectInventory = pWndInventory->GetWindowRect( TRUE );
 	CPoint ptInventory = rectInventory.TopLeft();
 	CPoint ptMove;
@@ -111,30 +88,25 @@ void CWndBank::OnInitialUpdate()
 	m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "WndCommonBankNotUse.tga" ), 0xffff00ff );
 } 
 
-void CWndBank::ReSetBank( )
-{
-	for( int i = 0 ; i < 3 ; ++i )
-	{
-		if( g_pPlayer->m_nSlot == i )
-		{
-			bUse[i] = TRUE;
+void CWndBank::ReSetBank() {
+	for (int i = 0 ; i < 3 ; ++i) {
+		BankSlot & slot = m_slots[i];
+
+		if( g_pPlayer->m_nSlot == i ) {
+			slot.bUse = true;
+		} else if( g_pPlayer->m_idPlayerBank[i] == 0 || !g_pPlayer->IsCommBank() ) {
+			slot.wndItemCtrl.SetScrollBarVisible( FALSE );
+			slot.wndItemCtrl.EnableWindow( FALSE );
+			slot.wndGold.EnableWindow( FALSE );
+			slot.bUse = false;
+		} else {
+			slot.wndItemCtrl.SetScrollBarVisible( TRUE );
+			slot.wndItemCtrl.EnableWindow( TRUE );
+			slot.wndGold.EnableWindow( TRUE );
+			slot.bUse = true;
 		}
-		else
-		if( g_pPlayer->m_idPlayerBank[i] == 0 || !g_pPlayer->IsCommBank() )
-		{
-			m_wndItemCtrl[i].SetScrollBarVisible( FALSE );
-			m_wndItemCtrl[i].EnableWindow( FALSE );
-			m_wndGold[i].EnableWindow( FALSE );
-			bUse[i] = FALSE;
-		}
-		else
-		{
-			m_wndItemCtrl[i].SetScrollBarVisible( TRUE );
-			m_wndItemCtrl[i].EnableWindow( TRUE );
-			m_wndGold[i].EnableWindow( TRUE );
-			bUse[i] = TRUE;
-		}
-		RectGold[i] = pCost[i]->m_rectClient;
+
+		slot.rectGold = slot.pCost->m_rectClient;
 	}	
 }
 
@@ -153,20 +125,27 @@ BOOL CWndBank::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( APP_COMMON_BANK, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-BOOL CWndBank::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndBank::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndBank::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndBank::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+BYTE CWndBank::GetPosOfItemCtrl(const CWndBase * pWnd, BYTE defaultValue) const {
+	for (BYTE i = 0; i != 3; ++i) {
+		if (pWnd == &(m_slots[i].wndItemCtrl)) {
+			return i;
+		}
+	}
+
+	return defaultValue;
+}
+
+BYTE CWndBank::GetPosOfGold(const CWndBase * pWnd, BYTE defaultValue) const {
+	for (BYTE i = 0; i != 3; ++i) {
+		if (pWnd == &(m_slots[i].wndGold)) {
+			return i;
+		}
+	}
+
+	return defaultValue;
+}
+
+
 BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
 	// 인벤토리에서 Bank로 아이템이 Drop되었다. 어디서 왔는지 확인한후 적절히 대응하라.
@@ -176,21 +155,9 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		CWndBase* pWndFrame = lpShortcut->m_pFromWnd->GetFrameWnd();
 		CWndBase* pWndTarget = pWndFrame->m_pWndOnMouseMove;
 		CWndBase* pWndPut = pWndFrame->m_pCurFocus;
-		BYTE nSlot;
-		if( pWndTarget == &(m_wndItemCtrl[0]) )
-		{
-			nSlot = 0;
-		}
-		else if( pWndTarget == &(m_wndItemCtrl[1]) )
-		{
-			nSlot = 1;
-		}
-		else
-		{
-			nSlot = 2;
-		}
-		
-		BOOL bForbid = TRUE;
+
+		const BYTE nSlot = GetPosOfItemCtrl(pWndTarget);
+				
 		if( nID == 11 ) // item
 		{
 			if( pWndFrame->GetWndId() == APP_INVENTORY )
@@ -202,17 +169,12 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					UINT SelectCount = pWndItemCtrl->GetSelectedCount();
 					if( SelectCount != 1)
 					{
-						//g_WndMng.PutString( "장착 되어 있는것은 넣을수 없습니다", NULL, 0xffffff00 );
-						g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor( TID_GAME_EQUIPPUT ) );
+						g_WndMng.PutString(TID_GAME_EQUIPPUT);
 						
 					}
 					else
 					{
-						for( int i = 0; i < (int)( SelectCount ); i++ )
-						{
-							int nItem = pWndItemCtrl->GetSelectedItem( i );
-							pWndItemCtrl->GetItem( nItem );
-						}
+
 						CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
 						if( itemElem->m_nItemNum > 1 )
 						{ 
@@ -227,10 +189,8 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							g_WndMng.m_pWndTradeGold->MoveParentCenter();
 							CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
 							CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-							CString strMain = prj.GetText(TID_GAME_MOVECOUNT);//"몇개를 이동하시겠습니까?";
-							CString strCount = prj.GetText(TID_GAME_NUMCOUNT);// " 갯수 : ";
-							pStatic->m_strTitle = strMain;
-							pStaticCount->m_strTitle = strCount;
+							pStatic->m_strTitle = prj.GetText(TID_GAME_MOVECOUNT);
+							pStaticCount->m_strTitle = prj.GetText(TID_GAME_NUMCOUNT);
 						}
 						else
 						{
@@ -253,12 +213,9 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					g_WndMng.m_pWndTradeGold->MoveParentCenter();
 					CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
 					CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-					//CString strMain = "얼마를 이동하시겠습니까?";
-					//CString strCount = " SEED : ";
-					CString strMain = prj.GetText(TID_GAME_MOVEPENYA);//"얼마를 이동하시겠습니까?";
-					CString strCount = prj.GetText(TID_GAME_PENYACOUNT );// " pennya : ";
-					pStatic->m_strTitle = strMain;
-					pStaticCount->m_strTitle = strCount;
+
+					pStatic->m_strTitle = prj.GetText(TID_GAME_MOVEPENYA);
+					pStaticCount->m_strTitle = prj.GetText(TID_GAME_PENYACOUNT);
 				}
 			}
 			else if( pWndFrame->GetWndId() == APP_COMMON_BANK )
@@ -268,34 +225,18 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 				if( lpShortcut->m_dwData != 0 )
 				{
-					if( pWndPut == &(m_wndItemCtrl[0]) )
-					{
-						nPutSolt = 0;
-					}
-					else if( pWndPut == &(m_wndItemCtrl[1]) )
-					{
-						nPutSolt = 1;
-					}
-					else
-					{
-						nPutSolt = 2;
-					}
+					nPutSolt = GetPosOfItemCtrl(pWndPut);
 
 					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 					UINT SelectCount = pWndItemCtrl->GetSelectedCount();
 					if( SelectCount != 1)
 					{
-						//g_WndMng.PutString( "장착 되어 있는것은 넣을수 없습니다", NULL, 0xffffff00 );
-						g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor( TID_GAME_EQUIPPUT ) );
+						g_WndMng.PutString(TID_GAME_EQUIPPUT);
 						
 					}
 					else
 					{
-						for( int i = 0; i < (int)( SelectCount ); i++ )
-						{
-							int nItem = pWndItemCtrl->GetSelectedItem( i );
-							pWndItemCtrl->GetItem( nItem );
-						}
+
 						CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
 						if( itemElem->m_nItemNum > 1 )
 						{ 
@@ -311,10 +252,8 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							g_WndMng.m_pWndTradeGold->MoveParentCenter();
 							CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
 							CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-							CString strMain = prj.GetText(TID_GAME_MOVECOUNT);//"몇개를 이동하시겠습니까?";
-							CString strCount = prj.GetText(TID_GAME_NUMCOUNT);// " 갯수 : ";
-							pStatic->m_strTitle = strMain;
-							pStaticCount->m_strTitle = strCount;
+							pStatic->m_strTitle = prj.GetText(TID_GAME_MOVECOUNT);
+							pStaticCount->m_strTitle = prj.GetText(TID_GAME_NUMCOUNT);
 						}
 						else
 						{
@@ -325,33 +264,7 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				}
 				else
 				{
-
-					if( pWndPut == &(m_wndItemCtrl[0]) )
-					{
-						nPutSolt = 0;
-					}
-					else if( pWndPut == &(m_wndItemCtrl[1]) )
-					{
-						nPutSolt = 1;
-					}
-					else
-					{
-						nPutSolt = 2;
-					}
-
-
-					if( pWndPut == &(m_wndGold[0]) )
-					{
-						nPutSolt = 0;
-					}
-					else if( pWndPut == &(m_wndGold[1]) )
-					{
-						nPutSolt = 1;
-					}
-					else
-					{
-						nPutSolt = 2;
-					}
+					nPutSolt = GetPosOfGold(pWndPut);
 					
 					// 페냐 (돈)
 					g_WndMng.m_pWndTradeGold = new CWndTradeGold;
@@ -366,32 +279,14 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					g_WndMng.m_pWndTradeGold->MoveParentCenter();
 					CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
 					CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-					//CString strMain = "얼마를 이동하시겠습니까?";
-					//CString strCount = " SEED : ";
-					CString strMain = prj.GetText(TID_GAME_MOVEPENYA);//"얼마를 이동하시겠습니까?";
-					CString strCount = prj.GetText(TID_GAME_PENYACOUNT );// " pennya : ";
-					pStatic->m_strTitle = strMain;
-					pStaticCount->m_strTitle = strCount;
+
+					pStatic->m_strTitle = prj.GetText(TID_GAME_MOVEPENYA);
+					pStaticCount->m_strTitle = prj.GetText(TID_GAME_PENYACOUNT);
 				}
 			}
 		}
 	}
-	if( message == WNM_CLICKED )
-	{
-		switch( nID )
-		{
-			case 100: // icon
-//				m_wndItemCtrl.SetWndRect( m_wndItemCtrl.GetWindowRect( TRUE ) );
-				break;
-			case WTBID_REPORT:
-				break;
-			case WTBID_CLOSE: // 종료
-				{
-//					g_DPlay.SendCloseBankWnd();
-				}
-				break;
-		}
-	}	
+
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 

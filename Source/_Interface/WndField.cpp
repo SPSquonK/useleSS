@@ -1403,27 +1403,10 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 				if( lpShortcut->m_dwData != 0 )
 				{
-					if( pWndTaget == &(g_WndMng.m_pWndBank->m_wndItemCtrl[0]) )
-					{					
-						nSlot = 0;
-					}
-					else if( pWndTaget == &(g_WndMng.m_pWndBank->m_wndItemCtrl[1]) )
-					{
-						nSlot = 1;
-					}
-					else
-					{
-						nSlot = 2;
-					}
+					nSlot = g_WndMng.m_pWndBank->GetPosOfItemCtrl(pWndTaget);
 					
 					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 					
-					for( int i = 0; i < (int)( pWndItemCtrl->GetSelectedCount() ); i++ )
-					{
-						int nItem = pWndItemCtrl->GetSelectedItem( i );
-						pWndItemCtrl->GetItem( nItem );
-					}
-
 					CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
 					if( itemElem->m_nItemNum > 1 )
 					{ 
@@ -1438,10 +1421,8 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						g_WndMng.m_pWndTradeGold->MoveParentCenter();
 						CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
 						CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-						CString strMain = prj.GetText( TID_GAME_MOVECOUNT );//"��� �̵��Ͻðڽ��ϱ�?";
-						CString strCount = prj.GetText(TID_GAME_NUMCOUNT);//" ���� : ";
-						pStatic->m_strTitle = strMain;
-						pStaticCount->m_strTitle = strCount;
+						pStatic->m_strTitle = prj.GetText(TID_GAME_MOVECOUNT);
+						pStaticCount->m_strTitle = prj.GetText(TID_GAME_NUMCOUNT);
 					}
 					else
 					{
@@ -1450,18 +1431,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				}
 				else
 				{
-					if( pWndTaget == &(g_WndMng.m_pWndBank->m_wndGold[0]) )
-					{					
-						nSlot = 0;
-					}
-					else if( pWndTaget == &(g_WndMng.m_pWndBank->m_wndGold[1]) )
-					{
-						nSlot = 1;
-					}
-					else
-					{
-						nSlot = 2;
-					}
+					nSlot = g_WndMng.m_pWndBank->GetPosOfGold(pWndTaget);
 
 					// ���? (��)
 					g_WndMng.m_pWndTradeGold = new CWndTradeGold;
@@ -1475,10 +1445,8 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					g_WndMng.m_pWndTradeGold->MoveParentCenter();
 					CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
 					CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-					CString strMain = prj.GetText( TID_GAME_MOVEPENYA );//"�󸶸� �̵��Ͻðڽ��ϱ�?";
-					CString strCount = prj.GetText(TID_GAME_PENYACOUNT);//" SEED : ";
-					pStatic->m_strTitle = strMain;
-					pStaticCount->m_strTitle = strCount;
+					pStatic->m_strTitle = prj.GetText(TID_GAME_MOVEPENYA);
+					pStaticCount->m_strTitle = prj.GetText(TID_GAME_PENYACOUNT);
 				}
 				bForbid = FALSE;
 			}
@@ -1509,12 +1477,6 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					
 					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 					
-					for( int i = 0; i < (int)( pWndItemCtrl->GetSelectedCount() ); i++ )
-					{
-						int nItem = pWndItemCtrl->GetSelectedItem( i );
-						pWndItemCtrl->GetItem( nItem );
-					}
-
 					CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
 					if( itemElem->m_nItemNum > 1 )
 					{ 
@@ -1573,11 +1535,6 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 						
-						for( int i = 0; i < (int)( pWndItemCtrl->GetSelectedCount() ); i++ )
-						{
-							int nItem = pWndItemCtrl->GetSelectedItem( i );
-							pWndItemCtrl->GetItem( nItem );
-						}
 						CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
 						if( itemElem->m_nItemNum > 1 )
 						{ 
