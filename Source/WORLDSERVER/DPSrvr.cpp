@@ -3465,7 +3465,7 @@ void CDPSrvr::OnConfirmBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 			if( dwId != NULL_ID )
 			{
 				CItemElem* pItemElem = pUser->m_Inventory.GetAtId( dwId );
-				if( IsUsableItem( pItemElem ) == FALSE || pItemElem->m_dwItemId != dwItemId )
+				if( IsUsableItem( pItemElem ) == FALSE || pItemElem->m_dwItemId != II_SYS_SYS_SCR_CUSTODY)
 				{
 					return;
 				}
