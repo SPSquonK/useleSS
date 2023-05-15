@@ -291,31 +291,44 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 } 
 
 //---------------------------------------------------------------------------------------------------------------------------
+
+bool CWndBankPassword::IsValidPassword(const char * text) {
+	size_t size = std::strlen(text);
+	if (size != 4) return false;
+
+	for (size_t i = 0; i != 4; ++i) {
+		if (!isdigit2(text[i])) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void CWndBankPassword::CopyPassword(char * buffer, const char * text) {
+	std::strncpy(buffer, text, 5);
+	buffer[4] = '\0';
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------------
 // 패스워드 확인창
 //---------------------------------------------------------------------------------------------------------------------------
 CWndConfirmBank::CWndConfirmBank() 
 { 
 	m_dwId	= NULL_ID;
 	m_dwItemId	= 0;
-} 
-CWndConfirmBank::~CWndConfirmBank() 
-{ 
-} 
-void CWndConfirmBank::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndConfirmBank::OnInitialUpdate() 
-{ 
+}
+
+void CWndConfirmBank::OnInitialUpdate() { 
 	CWndNeuz::OnInitialUpdate(); 
-	// 여기에 코딩하세요
 	
-	CWndEdit *m_pPass   = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
-	if( m_pPass )
-	{
-		m_pPass->AddWndStyle( EBS_PASSWORD );
+	CWndEdit * m_pPass = GetDlgItem<CWndEdit>( WIDC_EDIT1 );
+	if (m_pPass) {
+		m_pPass->AddWndStyle(EBS_PASSWORD);
 		m_pPass->SetFocus();
 	}
-	// 윈도를 중앙으로 옮기는 부분.
+	
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
@@ -323,81 +336,33 @@ BOOL CWndConfirmBank::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_CONFIRM_BANK, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndConfirmBank::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndConfirmBank::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndConfirmBank::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndConfirmBank::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndConfirmBank::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+}
+
 BOOL CWndConfirmBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_OK || message == EN_RETURN )
 	{
-		CWndEdit *m_pPass   = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
-		if( m_pPass )
-		{
-			// 여기서 공백이 있는지 혹은 숫자이외의 것이 오는지 확인
-			char szPass[10] ={0,};
-			strncpy( szPass, m_pPass->GetString(), 10 );
-			if( strlen( szPass ) == 4 )
-			{
-				BOOL bDigit = TRUE;
-				for( int i = 0 ; i < 4 ; i++ )
-				{
-					if( isdigit2( szPass[i] ) == FALSE )
-					{
-						bDigit = FALSE;	
-						break;
-					}
-				}
-				if( bDigit )
-				{ 
-					g_DPlay.SendConfirmBank( szPass, m_dwId, m_dwItemId );
-				} 
-				else
-				{
-					m_pPass->SetString( "" );
-					g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0025) ) );
-//					g_WndMng.OpenMessageBox( "숫자 4자리로만 넣어야 합니다. 다시 입력해주세요" );
-				}
-			}
-			else
-			{
-				m_pPass->SetString( "" );
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0025) ) );
-//				g_WndMng.OpenMessageBox( "숫자 4자리로만 넣어야 합니다. 다시 입력해주세요" );
+		CWndEdit * m_pPass = GetDlgItem<CWndEdit>(WIDC_EDIT1);
+		if (m_pPass) {
+			char szPass[5];
+			CWndBankPassword::CopyPassword(szPass, m_pPass->GetString());
+
+			if (CWndBankPassword::IsValidPassword(szPass)) {
+				g_DPlay.SendPacket<PACKETTYPE_CONFIRMBANK,
+					char[5], DWORD, DWORD
+				>(szPass, m_dwId, m_dwItemId);
+			} else {
+				m_pPass->SetString("");
+				g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0025)));
 			}
 		}
-	}
-	else if( nID == WIDC_CHANGE_PASS )
-	{
+	} else if( nID == WIDC_CHANGE_PASS ) {
 		g_WndMng.m_pWndBankPassword = new CWndBankPassword;
 		g_WndMng.m_pWndBankPassword->SetBankPassword( 1 );
 		g_WndMng.m_pWndBankPassword->Initialize( NULL, APP_BANK_PASSWORD );	
 
 		Destroy();
-	}
-	else if( nID == WIDC_CANCEL )
-	{
+	} else if( nID == WIDC_CANCEL ) {
 		Destroy();
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
@@ -414,12 +379,7 @@ CWndBankPassword::CWndBankPassword()
 	m_dwId	= NULL_ID;
 	m_dwItemId	= 0;
 } 
-CWndBankPassword::~CWndBankPassword() 
-{ 
-} 
-void CWndBankPassword::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
+
 void CWndBankPassword::SetBankPassword( int nFlags )
 {
 	m_nFlags = nFlags;
@@ -458,30 +418,7 @@ BOOL CWndBankPassword::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_BANK_PASSWORD, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndBankPassword::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndBankPassword::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndBankPassword::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndBankPassword::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndBankPassword::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndBankPassword::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_OK || message == EN_RETURN )
@@ -492,73 +429,32 @@ BOOL CWndBankPassword::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 		if( m_pLastPass && m_pNewPass && m_pConfirmPass )
 		{
 			// 여기서 공백이 있는지 혹은 숫자이외의 것이 오는지 확인
-			char szLastPass[10] ={0,};
-			char szNewPass[10] ={0,};
-			char szConfirmPass[10] ={0,};
-//			strncpy( szLastPass, m_pLastPass->GetString(), 10 );
-//			strncpy( szNewPass, m_pNewPass->GetString(), 10 );
-//			strncpy( szConfirmPass, m_pConfirmPass->GetString(), 10 );
-			strcpy( szLastPass, m_pLastPass->GetString() );
-			strcpy( szNewPass, m_pNewPass->GetString() );
-			strcpy( szConfirmPass, m_pConfirmPass->GetString() );
-			if( strlen( szLastPass ) == 4 && strlen( szNewPass ) == 4 && strlen( szConfirmPass ) == 4)
-			{
-				if( 0 == strcmp( szNewPass, szConfirmPass ) )
-				{
-					BOOL bDigit = TRUE;
-					for( int i = 0 ; i < 4 ; i++ )
-					{
-						if( (isdigit2( szLastPass[i] ) == FALSE) || (isdigit2( szNewPass[i] ) == FALSE) || (isdigit2( szConfirmPass[i] ) == FALSE) )
-						{
-							bDigit = FALSE;
-							break;
-						}
-					}
-					if( bDigit )
-					{
-						g_DPlay.SendPacket<PACKETTYPE_CHANGEBANKPASS,
-							char[10], char[10], DWORD, DWORD
-						>(szLastPass, szNewPass, m_dwId, m_dwItemId);
-					}
-					else
-					{
-						if( m_nFlags == 0 )
-						{
-							m_pLastPass->SetString( "0000" );
-						}
-						else
-						{
-							m_pLastPass->SetString( "" );
-						}
+			char szLastPass[5]; CopyPassword(szLastPass, m_pLastPass->GetString());
+			char szNewPass[5]; CopyPassword(szNewPass, m_pNewPass->GetString());
+			const char * szConfirmPass = m_pConfirmPass->GetString();
 
-						m_pNewPass->SetString( "" );
-						m_pConfirmPass->SetString( "" );
-						g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0025) ) );
-//						g_WndMng.OpenMessageBox( "숫자 4자리로만 넣어야 합니다. 다시 입력해주세요" );
-					}					
+			if (!IsValidPassword(szLastPass)
+				|| !IsValidPassword(szNewPass)
+				|| !IsValidPassword(szConfirmPass)) {
+
+				if (m_nFlags == 0) {
+					m_pLastPass->SetString("0000");
+				} else {
+					m_pLastPass->SetString("");
 				}
-				else
-				{
-					m_pNewPass->SetString( "" );
-					m_pConfirmPass->SetString( "" );
-					g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0022) ) );
-//					g_WndMng.OpenMessageBox( "새암호와 암호확인이 다름니다. 다시 입력해주세요" );					
+				m_pNewPass->SetString("");
+				m_pConfirmPass->SetString("");
+				g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0025)));
+			} else {
+				if (0 == strcmp(szNewPass, szConfirmPass)) {
+					g_DPlay.SendPacket<PACKETTYPE_CHANGEBANKPASS,
+						char[5], char[5], DWORD, DWORD
+					>(szLastPass, szNewPass, m_dwId, m_dwItemId);
+				} else {
+					m_pNewPass->SetString("");
+					m_pConfirmPass->SetString("");
+					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0022)));
 				}
-			}
-			else
-			{
-				if( m_nFlags == 0 )
-				{
-					m_pLastPass->SetString( "0000" );
-				}
-				else
-				{
-					m_pLastPass->SetString( "" );
-				}
-				m_pNewPass->SetString( "" );
-				m_pConfirmPass->SetString( "" );
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0025) ) );
-//				g_WndMng.OpenMessageBox( "숫자 4자리로만 넣어야 합니다. 다시 입력해주세요" );
 			}
 		}
 	}
@@ -568,7 +464,7 @@ BOOL CWndBankPassword::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 	}
 	else if( m_nFlags == 0 && message == 0 && nID == WIDC_EDIT1 )
 	{
-		CWndEdit *m_pNewPass = (CWndEdit*)GetDlgItem( WIDC_EDIT2 );
+		CWndBase *m_pNewPass = GetDlgItem( WIDC_EDIT2 );
 		m_pNewPass->SetFocus();
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 

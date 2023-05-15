@@ -7822,18 +7822,8 @@ void CDPClient::SendCloseGuildBankWnd()
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendConfirmBank( const char *szPass, DWORD dwId, DWORD dwItemId )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_CONFIRMBANK, DPID_UNKNOWN );
-	ar.WriteString( szPass );
-	ar << dwId << dwItemId;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendCloseBankWnd( void )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_CLOSEBANKWND, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendCloseBankWnd() {
+	SendPacket<PACKETTYPE_CLOSEBANKWND>();
 }
 
 void CDPClient::SendDoUseSkillPoint(const MoverSkills & skills) {

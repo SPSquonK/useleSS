@@ -208,7 +208,7 @@ public:
 
 	void	SendOpenGuildBankWnd();
 	void	SendCloseGuildBankWnd();
-	void	SendCloseBankWnd( void );
+	void	SendCloseBankWnd();
 
 	void	SendDoUseSkillPoint(const MoverSkills & skills);
 	void	SendEnterChattingRoom( u_long uidChatting );
@@ -225,8 +225,6 @@ public:
 	void	SendGetGoldBank( BYTE nSlot, DWORD dwGold );
 	void	SendPutGoldBankToBank( BYTE nPutSlot, BYTE nSlot, DWORD dwGold );
 	void	SendStateModeCancel( DWORD dwStateMode, BYTE nFlag );
-
-	void	SendConfirmBank( const char *szPass, DWORD dwId, DWORD dwItemId );
 
 	void	SendCorrReq( CObj *pObj );
 	void	SendCorrReq( OBJID idObj );

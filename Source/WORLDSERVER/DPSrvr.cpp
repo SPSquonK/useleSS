@@ -3405,7 +3405,7 @@ void CDPSrvr::OnMoveBankItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 
 void CDPSrvr::OnChangeBankPass( CAr & ar, CUser & pUser ) {
 	const auto [szLastPass, szNewPass, dwId, dwItemId] = ar.Extract<
-		char[10], char[10], DWORD, DWORD
+		char[5], char[5], DWORD, DWORD
 	>();
 
 	constexpr auto IsValidBankPassword = [](const char * const str) {
@@ -3435,7 +3435,7 @@ void CDPSrvr::OnChangeBankPass( CAr & ar, CUser & pUser ) {
 
 void CDPSrvr::OnConfirmBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-	char szPass[10] ={0,};
+	char szPass[5] ={0,};
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
@@ -3451,7 +3451,7 @@ void CDPSrvr::OnConfirmBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 #endif // __S_SERVER_UNIFY
 
 		// 여기서 비밀번호 확인작업
-		ar.ReadString( szPass, 10 );
+		ar.ReadString( szPass );
 
 		DWORD dwId, dwItemId;
 		ar >> dwId >> dwItemId;
