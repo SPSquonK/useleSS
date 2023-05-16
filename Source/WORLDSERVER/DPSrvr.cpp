@@ -6300,103 +6300,85 @@ void CDPSrvr::OnSummonFriendCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 	}
 }
 
-void CDPSrvr::OnSummonParty( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnSummonParty( CAr & ar, CUser * pUser )
 {
-	DWORD dwData;
-	
-	ar >> dwData;
+	DWORD dwData; ar >> dwData;
 
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
+	const CUser::SummonState nState = pUser->GetSummonState();
+	if( nState != CUser::SummonState::Ok_0 )
 	{
-		const CUser::SummonState nState = pUser->GetSummonState();
-		if( nState != CUser::SummonState::Ok_0 )
-		{
-			const DWORD dwMsgId = CUser::GetSummonStateTIdForMyself(nState);
-			pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( dwMsgId ) );
-			return;
-		}
+		const DWORD dwMsgId = CUser::GetSummonStateTIdForMyself(nState);
+		pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( dwMsgId ) );
+		return;
+	}
 
-		if( prj.IsGuildQuestRegion( pUser->GetPos() ) )
-		{
-			pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( TID_GAME_EVENT_WORLD_NOTUSE ) );
-			return;
-		}
-		if( CRainbowRaceMng::GetInstance()->IsEntry( pUser->m_idPlayer ) )
-		{
-			pUser->AddDefinedText( TID_GAME_RAINBOWRACE_NOTELEPORT );
-			return;
-		}
+	if (prj.IsGuildQuestRegion(pUser->GetPos())) {
+		pUser->AddDefinedText(TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText(TID_GAME_EVENT_WORLD_NOTUSE));
+		return;
+	}
 
-		
-		WORD wId	= LOWORD( dwData );
-		CItemElem* pItemElem = pUser->GetItemId( wId );
-		if( IsUsableItem( pItemElem ) )
-		{
-			CParty* pParty;
-			pParty = g_PartyMng.GetParty( pUser->GetPartyId() );
-			if( pParty && pParty->IsLeader( pUser->m_idPlayer ) )
-			{
-				if( !pUser->HasBuff( BUFF_ITEM, (WORD)( pItemElem->GetProp()->dwID ) ) )
-				{
-					pParty->m_dwWorldId = pUser->GetWorld()->GetID();
+	if (CRainbowRaceMng::GetInstance()->IsEntry(pUser->m_idPlayer)) {
+		pUser->AddDefinedText(TID_GAME_RAINBOWRACE_NOTELEPORT);
+		return;
+	}
+	
+	const WORD wId	= LOWORD( dwData );
+	CItemElem * const pItemElem = pUser->GetItemId( wId );
 
-					g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElem, pItemElem->GetProp(), pParty->m_sParty );
-					
-					ItemProp* pItemProptmp = prj.GetItemProp( II_SYS_SYS_SCR_PARTYSUMMON );
-					for( int i = 1 ; i < pParty->m_nSizeofMember ; i++ )
-					{
-						CUser* pUsertmp		= g_UserMng.GetUserByPlayerID( pParty->GetPlayerId( i ) );
-						if( IsValidObj( (CObj*)pUsertmp ) )
-						{
-//								if( pUser->GetWorld()->GetID() == pUsertmp->GetWorld()->GetID() && !prj.IsGuildQuestRegion( pUsertmp->GetPos() ) )
-							{
-								pUser->DoApplySkill( (CCtrl*)pUsertmp, pItemElem->GetProp(), NULL );
-								pUsertmp->AddSummonPartyConfirm( pUser->GetId(), dwData, pUser->GetWorld()->m_szWorldName );
-								if( pItemProptmp )
-									g_UserMng.AddCreateSfxObj((CMover *)pUsertmp, pItemProptmp->dwSfxObj3 );
-								pUser->AddDefinedText( TID_GAME_SUMMONFRIEND_CONFIRM, "\"%s\"", pUsertmp->GetName() );
-							}
-//								else
-//								{
-//									pUser->AddDefinedText( TID_ERROR_SUMMONFRIEND_NOTWORLD );
-//								}
-						}
-						else
-						{
-							pUser->AddDefinedText( TID_ERROR_SUMMONFRIEND_NOUSER, "\"%s\"", CPlayerDataCenter::GetInstance()->GetPlayerString( pParty->GetPlayerId( i ) ) );
-						}
-					}
-					pUser->DoApplySkill( (CCtrl*)pUser, pItemElem->GetProp(), NULL );
-					pUser->RemoveItem( (BYTE)( wId ), (short)1 );
+	if (!IsUsableItem(pItemElem)) {
+		const ItemProp * pItemProp = prj.GetItemProp(II_SYS_SYS_SCR_PARTYSUMMON);
+		if (pItemProp)
+			pUser->AddDefinedText(TID_ERROR_SUMMONPARTY_NOITEM, "\"%s\"", pItemProp->szName);
+		return;
+	}
 
-					if( pItemProptmp )
-						g_UserMng.AddCreateSfxObj((CMover *)pUser, pItemProptmp->dwSfxObj3 );
-				}
-				else
-				{
-					pUser->AddDefinedText( TID_GAME_LIMITED_USE );
-				}
-			}
-		}	
-		else
-		{
-			ItemProp* pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_PARTYSUMMON );
-			if( pItemProp )
-				pUser->AddDefinedText( TID_ERROR_SUMMONPARTY_NOITEM, "\"%s\"", pItemProp->szName );
+	CParty * pParty = g_PartyMng.GetParty( pUser->GetPartyId() );
+	if (!pParty) return;
+	if (!pParty->IsLeader(pUser->m_idPlayer)) return;
+
+	if (pUser->HasBuff(BUFF_ITEM, (WORD)(pItemElem->m_dwItemId))) {
+		pUser->AddDefinedText(TID_GAME_LIMITED_USE);
+		return;
+	}
+
+	if (pItemElem->m_dwItemId != II_SYS_SYS_SCR_PARTYSUMMON) {
+		return;
+	}
+
+	pParty->m_dwWorldId = pUser->GetWorld()->GetID();
+
+	g_dpDBClient.SendLogSMItemUse("1", pUser, pItemElem, pItemElem->GetProp(), pParty->m_sParty);
+
+	ItemProp * pItemProptmp = prj.GetItemProp(II_SYS_SYS_SCR_PARTYSUMMON);
+
+	for (int i = 1; i < pParty->m_nSizeofMember; i++) {
+		CUser * pUsertmp = g_UserMng.GetUserByPlayerID(pParty->GetPlayerId(i));
+		if (IsValidObj(pUsertmp)) {
+			pUser->DoApplySkill(pUsertmp, pItemProptmp, NULL);
+			pUsertmp->AddSummonPartyConfirm(pUser->GetId(), dwData, pUser->GetWorld()->m_szWorldName);
+			if (pItemProptmp)
+				g_UserMng.AddCreateSfxObj(pUsertmp, pItemProptmp->dwSfxObj3);
+			pUser->AddDefinedText(TID_GAME_SUMMONFRIEND_CONFIRM, "\"%s\"", pUsertmp->GetName());
+		} else {
+			pUser->AddDefinedText(TID_ERROR_SUMMONFRIEND_NOUSER, "\"%s\"", CPlayerDataCenter::GetInstance()->GetPlayerString(pParty->GetPlayerId(i)));
 		}
-	}	
+	}
+
+	pUser->DoApplySkill(pUser, pItemProptmp, NULL);
+	pUser->RemoveItem((BYTE)(wId), 1);
+
+	if (pItemProptmp) {
+		g_UserMng.AddCreateSfxObj(pUser, pItemProptmp->dwSfxObj3);
+	}
 }
 
-void CDPSrvr::OnSummonPartyConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnSummonPartyConfirm( CAr & ar, CUser * pUser )
 {
 	OBJID objid;
 	DWORD dwData;
 	ar >> objid;
 	ar >> dwData;
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if (!IsValidObj(pUser)) return;
-	
+
 	CParty* pParty = g_PartyMng.GetParty( pUser->GetPartyId() );
 
 	if (!pParty) {

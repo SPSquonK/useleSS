@@ -242,8 +242,8 @@ private:
 	void	OnSummonFriend( CAr & ar, CUser * pUser );
 	void	OnSummonFriendConfirm( CAr & ar, CUser * pUser );
 	void	OnSummonFriendCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	void	OnSummonParty( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	void	OnSummonPartyConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
+	void	OnSummonParty( CAr & ar, CUser * pUser );
+	void	OnSummonPartyConfirm( CAr & ar, CUser * pUser );
 
 	void	OnRemoveInvenItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnRandomScroll( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
