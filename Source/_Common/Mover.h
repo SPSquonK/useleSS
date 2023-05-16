@@ -1262,7 +1262,7 @@ public:
 	void			PutLvUpSkillName_2( DWORD dwSkill );
 	BOOL			IsRegionMove( DWORD dwOlgRegionAttr, DWORD dwRegionAttr );
 	DWORD			GetPKPVPRegionAttr();
-	BOOL			IsAttackMode();
+	[[nodiscard]] bool IsAttackMode() const;
 	void			AddSkillPoint( int nPoint);
 	
 	void			DoPVPEnd( CCtrl *pAttackCtrl, bool bWinner , DWORD dwMsg = 0 );	// 掂倔场抄第 贸府
@@ -1343,7 +1343,6 @@ public:
 	void			IncSFXCount( OBJID idTarget, DWORD dwSkill );
 	void			AddSFXInfo( OBJID idTarget, SFXHIT_INFO& info );
 	void			ClearSFX( OBJID idTarget );
-	int				GetSummonState();
 	BOOL			IsDoUseBuff( ItemProp* pItemProp );
 	
 #endif // __WORLDSERVER

@@ -6880,7 +6880,7 @@ BOOL CUser::IsTeleportable( void )
 #endif // __QUIZ
 	)
 		return FALSE;
-	return ( GetSummonState() == 0 );
+	return GetSummonState() == SummonState::Ok_0;
 }
 
 void CUser::AddSetTutorialState( void )

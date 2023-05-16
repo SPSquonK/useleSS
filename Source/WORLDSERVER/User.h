@@ -242,6 +242,15 @@ public:
 	void OnAfterUseItem(const ItemProp * pItemProp);
 #pragma endregion
 
+	enum class SummonState {
+		Ok_0, Trade_1, Die_2, Vendor_3, Attack_4,
+		Fly_5, Duel_6
+	};
+	[[nodiscard]] SummonState GetSummonState();
+	[[nodiscard]] static DWORD GetSummonStateTIdForMyself(SummonState state);
+	[[nodiscard]] static DWORD GetSummonStateTIdForOther(SummonState state);
+
+
 public:
 	enum class PVPInspection { Solo, Party };
 	bool IsPVPInspection(CMover * pMover, PVPInspection nFlag);

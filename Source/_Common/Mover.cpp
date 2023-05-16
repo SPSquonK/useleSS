@@ -6390,7 +6390,7 @@ void CMover::ProcessRecovery()
 		// 서있을 때
 		m_dwTickRecovery = dwCurTick + NEXT_TICK_RECOVERY; // 앉아있기 회복을 막는다.
 		//if( m_pActMover->IsActAttack() == FALSE )	
-		if( IsAttackMode() == FALSE )	// IsActAttack은 공격동작일 때만, IsAttackMode는 전투중
+		if( !IsAttackMode() )	// IsActAttack은 공격동작일 때만, IsAttackMode는 전투중
 		{
 			// 어택상태가 아닐때만 일정시간마다 피찬다.
 			if( dwCurTick > m_dwTickRecoveryStand )	
@@ -7128,9 +7128,8 @@ void CMover::AddSkillPoint(const int nPoint) {
 }
 
 // 전투중인가?
-BOOL CMover::IsAttackMode()
-{
-	return ( m_nAtkCnt && m_nAtkCnt < (SEC1 * 10) );
+bool CMover::IsAttackMode() const {
+	return m_nAtkCnt && m_nAtkCnt < (SEC1 * 10);
 }
 
 BOOL CMover::IsDropable( CItemElem* pItemElem, BOOL bPK )

@@ -190,46 +190,6 @@ void CMover::PutLvUpSkillName_2( DWORD dwSkill )
 #endif // CLIENT
 }
 
-#ifdef __WORLDSERVER
-/// �ŷ�, ����, ���λ�����, ������ FALSE
-int CMover::GetSummonState()
-{
-	// �ŷ�
-	if( m_vtInfo.GetOther() != NULL )
-		return 1;
-	  // â��
-	if( m_bBank )
-		return 1;
-	  // ���â��
-	if( m_bGuildBank )
-		return 1;
-
-	// ����
-	if( IsDie() )
-		return 2;
-
-	// ���λ�����
-	if( m_vtInfo.VendorIsVendor() || m_vtInfo.IsVendorOpen() )
-		return 3;
-
-	// ������
-	if( IsAttackMode() )
-		return 4;
-	
-	// ������
-	if( ( IsFly() ) )
-		return 5;
-
-
-	if( m_nDuel )
-		return 6;
-
-
-	return 0;
-}
-#endif //
-
-
 #ifdef __CLIENT
 LPCTSTR CMover::GetJobString() const {
 	if (m_nJob == -1) return _T("");
