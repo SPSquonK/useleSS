@@ -447,6 +447,13 @@ bool CDPSrvrHandlers::Handle(CDPSrvr & self, CAr & ar, DPID dpidCache, DPID dpid
 
 			(self.*(userHandler)) (ar, *user);
 		}
+
+		void operator()(const UserPtrHandler & userHandler) const {
+			CUser * const user = g_UserMng.GetUser(dpidCache, dpidUser);
+			if (!IsValidObj(user)) return;
+
+			(self.*(userHandler)) (ar, user);
+		}
 	};
 
 	std::visit(Visitor{ self, ar, dpidCache, dpidUser }, pfn);
@@ -4194,26 +4201,6 @@ void CDPSrvr::OnBlock( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_
 		g_DPCoreClient.SendBlock( nGu, uidPlayerTo, szNameTo, uidPlayerFrom );
 }
 
-DWORD WhatEleCard( DWORD dwItemType )
-{	// 속성 제련 용 카드의 종류가 
-	// 속성 당 하나로 통합됨
-	switch( dwItemType )
-	{
-		case SAI79::FIRE:
-			return II_GEN_MAT_ELE_FLAME;
-		case SAI79::WATER:
-			return II_GEN_MAT_ELE_RIVER;
-		case SAI79::ELECTRICITY:
-			return II_GEN_MAT_ELE_GENERATOR;
-		case SAI79::EARTH:
-			return II_GEN_MAT_ELE_DESERT;
-		case SAI79::WIND:
-			return II_GEN_MAT_ELE_CYCLON;
-		default:
-			return 0;
-	}
-}
-
 void CDPSrvr::OnPiercingSize( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
 {
 	DWORD dwId1, dwId2, dwId3;
@@ -4282,23 +4269,6 @@ void CDPSrvr::OnCreateSfxObj( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 				g_UserMng.AddCreateSfxObj((CMover *)pUsertmp, dwSfxId, pUsertmp->GetPos().x, pUsertmp->GetPos().y, pUsertmp->GetPos().z, bFlag);
 		}		
 	}
-}
-
-// 1000 단위의 퍼센트를 넘긴다.
-// dwID - 제련 아이템 아이디, n - 제련 단계 
-int GetEnchantPercent( DWORD dwID, int n )
-{
-	static int nPersent1[10] = { 1000, 1000, 700, 500, 400, 300, 200, 100, 50, 20 };
-	static int nPersent2[10] = { 1000, 1000, 900, 750, 550, 400, 250, 150, 80, 40 };
-
-	float fFactor = 1.0f;
-	if( ::GetLanguage() != LANG_KOR && n >= 3 )	// 제련 4부터 10% 확률 감소 
-		fFactor = 0.9f;
-
-	if( dwID == II_GEN_MAT_DIE_TWELVE )
-		return	( (int)( nPersent2[n] * fFactor ) );
-	else
-		return	( (int)( nPersent1[n] * fFactor ) );
 }
 
 void CDPSrvr::OnRemoveItemLevelDown( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
@@ -5414,11 +5384,11 @@ void CDPSrvr::OnCheering( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 				pUser->SendActMsg( OBJMSG_MOTION, MTI_CHEEROTHER, ANILOOP_1PLAY );
 			}
 
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_CHEERSENDEFFECT );
+			g_UserMng.AddCreateSfxObj(pUser, XI_CHEERSENDEFFECT );
 			g_UserMng.AddCreateSfxObj(pTarget, XI_CHEERRECEIVEEFFECT );
 
 
-			CMover* pSrc = (CMover*)pUser ;
+			CMover* pSrc = pUser ;
 			g_UserMng.AddMoverBehavior( pSrc, pSrc->GetPos(), pSrc->m_pActMover->m_vDelta,
 				pSrc->GetAngle(), pSrc->m_pActMover->GetState(), pSrc->m_pActMover->GetStateFlag(), 
 				pSrc->m_dwMotion, pSrc->m_pActMover->m_nMotionEx, pSrc->m_pModel->m_nLoop, pSrc->m_dwMotionOption, g_TickCount.GetTickCount(), TRUE );

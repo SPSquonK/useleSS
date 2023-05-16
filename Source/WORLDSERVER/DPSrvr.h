@@ -20,8 +20,9 @@ class CDPSrvrHandlers {
 public:
 	using GalaHandler = void (CDPSrvr:: *) (CAr &, DPID, DPID, LPBYTE, u_long);
 	using UserHandler = void (CDPSrvr:: *) (CAr &, CUser &);
+	using UserPtrHandler = void (CDPSrvr:: *) (CAr &, CUser *);
 
-	using HandlerStruct = std::variant<GalaHandler, UserHandler>;
+	using HandlerStruct = std::variant<GalaHandler, UserHandler, UserPtrHandler>;
 private:
 
 	std::map<DWORD, HandlerStruct> m_handlers;
