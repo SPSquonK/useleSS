@@ -456,7 +456,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 #endif	// __WORLDSERVER
 
 #ifdef __EVENT_MONSTER
-	CEventMonster::GetInstance()->LoadScript();
+	CEventMonster::LoadScript();
 #endif // __EVENT_MONSTER
 
 #ifdef __WORLDSERVER

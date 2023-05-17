@@ -2092,13 +2092,14 @@ BOOL CMover::IsLoot( CItem *pItem, BOOL bPet )
 	DWORD dwTime	= g_tmCurrent;
 #ifdef __EVENT_MONSTER
 	DWORD dwMonsterId = pItem->m_IdEventMonster;
-	if( dwMonsterId != NULL_ID && CEventMonster::GetInstance()->SetEventMonster( dwMonsterId ) )
+	const CEventMonster::Prop * pEventMoverProp = dwMonsterId != NULL_ID ? CEventMonster::GetEventMonster(dwMonsterId) : nullptr;
+	if( pEventMoverProp )
 	{
-		DWORD dwLootTime = CEventMonster::GetInstance()->GetLootTime();
+		DWORD dwLootTime = pEventMoverProp->dwLootTime;
 		if( (dwTime - pItem->m_dwDropTime) >= (DWORD)( SEC(dwLootTime) ) )
 			bTake = TRUE;
 		
-		if( bPet && !CEventMonster::GetInstance()->IsPetAble() )
+		if( bPet && !pEventMoverProp->bPet)
 			bTake = FALSE;
 	}
 	else

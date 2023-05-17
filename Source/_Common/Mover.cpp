@@ -5721,10 +5721,12 @@ BOOL CMover::DropItem( CMover* pAttacker )
 		D3DXVECTOR3 vPos;		// 드랍될 위치.
 
 #ifdef __EVENT_MONSTER
+		const CEventMonster::Prop * pMoverEventProp = CEventMonster::GetEventMonster(lpMoverProp->dwID);
+
 		// 이벤트 몬스터는 설정에 따라 한번만 드랍한다.
-		if( CEventMonster::GetInstance()->SetEventMonster( lpMoverProp->dwID ) )
-			if( !CEventMonster::GetInstance()->IsGiftBoxAble() )
-				nloop = 1;
+		if (pMoverEventProp && !pMoverEventProp->bGiftBox) {
+			nloop = 1;
+		}
 #endif // __EVENT_MONSTER
 		
 		for( int k = 0 ; k < nloop ; k++ )
@@ -5739,8 +5741,8 @@ BOOL CMover::DropItem( CMover* pAttacker )
 			if( GetIndex() == MI_DEMIAN5 || GetIndex() == MI_KEAKOON5 || GetIndex() == MI_MUFFRIN5 )
 				bAdjDropRate = FALSE;		// 이벤트몹들도 레벨차에의한 드랍률 저하가 없다.
 #ifdef __EVENT_MONSTER
-			if( CEventMonster::GetInstance()->SetEventMonster( lpMoverProp->dwID ) )
-				bAdjDropRate = FALSE;
+			if (pMoverEventProp)
+				bAdjDropRate = FALSE;				
 #endif // __EVENT_MONSTER
 #ifdef __EVENTLUA_SPAWN
 			if( prj.m_EventLua.IsEventSpawnMonster( lpMoverProp->dwID ) )
@@ -5820,14 +5822,14 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							vPos.z += (xRandomF(2.0f) - 1.0f);
 #ifdef __EVENT_MONSTER
 							// 이벤트 몬스터가 드랍한 아이템은 몬스터의 ID를 기억한다(펫이 못 줍게...)
-							if (CEventMonster::GetInstance()->SetEventMonster(lpMoverProp->dwID))
+							if (pMoverEventProp)
 							{
 								// 이벤트 몬스터는 무조건 선점권을 갖는다.
 								pItem->m_idOwn = pAttacker->GetId();
 								pItem->m_dwDropTime = timeGetTime();
 
 								pItem->m_IdEventMonster = lpMoverProp->dwID;
-								float fItemDropRange = CEventMonster::GetInstance()->GetItemDropRange();
+								float fItemDropRange = pMoverEventProp->fItemDropRange;
 								vPos = GetPos();
 								vPos.x += (xRandomF(fItemDropRange) - (fItemDropRange / 2.0f));
 								vPos.z += (xRandomF(fItemDropRange) - (fItemDropRange / 2.0f));
@@ -5916,14 +5918,13 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							vPos.y = GetPos().y;
 					#ifdef __EVENT_MONSTER
 							// 이벤트 몬스터가 드랍한 아이템은 몬스터의 ID를 기억한다(펫이 못 줍게...)
-							if( CEventMonster::GetInstance()->SetEventMonster( lpMoverProp->dwID ) )
-							{
+							if (pMoverEventProp) {
 								// 이벤트 몬스터는 무조건 선점권을 갖는다.
 								pItem->m_idOwn	= pAttacker->GetId();
 								pItem->m_dwDropTime		= timeGetTime();
 
 								pItem->m_IdEventMonster = lpMoverProp->dwID;
-								float fItemDropRange = CEventMonster::GetInstance()->GetItemDropRange(); 
+								float fItemDropRange = pMoverEventProp->fItemDropRange;
 								vPos = GetPos();
 								vPos.x += ( xRandomF( fItemDropRange ) - (fItemDropRange / 2.0f) );
 								vPos.z += ( xRandomF( fItemDropRange ) - (fItemDropRange / 2.0f) );
@@ -6029,7 +6030,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							}
 							pItem->m_bDropMob	= TRUE;
 					#ifdef __EVENT_MONSTER
-							if( CEventMonster::GetInstance()->SetEventMonster( lpMoverProp->dwID ) )
+							if(pMoverEventProp)
 							{
 								// 이벤트 몬스터는 무조건 선점권을 갖는다.
 								pItem->m_idOwn	= pAttacker->GetId();
@@ -6107,7 +6108,7 @@ void CMover::SetJJim( CMover *pJJimer )
 
 #ifdef __EVENT_MONSTER
 	// 이벤트 몬스터는 스틸 허용
-	if( CEventMonster::GetInstance()->IsEventMonster( GetProp()->dwID ) )
+	if( CEventMonster::IsEventMonster( GetProp()->dwID ) )
 		return;
 #endif // __EVENT_MONSTER
 		

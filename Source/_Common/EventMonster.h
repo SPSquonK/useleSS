@@ -1,21 +1,12 @@
-// EventMonster.h: interface for the CEventMonster class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_EVENTMONSTER_H__812603BA_A499_4C90_9975_D3C74CF95390__INCLUDED_)
-#define AFX_EVENTMONSTER_H__812603BA_A499_4C90_9975_D3C74CF95390__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #ifdef __EVENT_MONSTER
 
-class CEventMonster  
-{
+#include <boost/container/flat_map.hpp>
+
+class CEventMonster final {
 public:	
-	struct __EVENTMONSTER
-	{
+	struct Prop {
 		int nLevel;
 		DWORD dwLootTime;
 		float fItemDropRange;
@@ -23,25 +14,30 @@ public:
 		BOOL bGiftBox;
 	};
 
-	CEventMonster();
-	virtual ~CEventMonster();
-	
-	static CEventMonster*	GetInstance( void );
+	static void LoadScript() { instance.LoadScript(); }
 
-	void	LoadScript();
+	[[nodiscard]] static bool IsEventMonster(const DWORD dwId) {
+		return instance.IsEventMonster(dwId);
+	}
 
-	BOOL	SetEventMonster( DWORD dwId );
-	BOOL	IsEventMonster( DWORD dwId );
-	BOOL	IsPetAble();
-	BOOL	IsGiftBoxAble();
-	DWORD	GetLootTime();
-	int		GetLevelGap();
-	float	GetItemDropRange();
+	[[nodiscard]] static const Prop * GetEventMonster(const DWORD dwId) {
+		return instance.GetEventMonster(dwId);
+	}
 
-	
-	std::map< DWORD, __EVENTMONSTER > m_mapEventMonster;
-	std::map< DWORD, __EVENTMONSTER >::iterator m_it;
+private:
+	struct Instance {
+		void LoadScript();
+
+		[[nodiscard]] bool IsEventMonster(const DWORD dwId) const {
+			return m_mapEventMonster.contains(dwId);
+		}
+
+		[[nodiscard]] const Prop * GetEventMonster(DWORD dwId) const;
+
+		boost::container::flat_map<DWORD, Prop> m_mapEventMonster;
+	};
+
+	static Instance instance;
 };
-#endif // __EVENT_MONSTER
 
-#endif // !defined(AFX_EVENTMONSTER_H__812603BA_A499_4C90_9975_D3C74CF95390__INCLUDED_)
+#endif // __EVENT_MONSTER
