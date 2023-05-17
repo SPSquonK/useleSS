@@ -129,33 +129,6 @@ bool DROPITEM::IsDropped( BOOL bUniqueMode, float fProbability ) const
 		return dwRand < dwProbability;
 }
 
-// CQuestItemGenerator
-QUESTITEM* CQuestItemGenerator::GetAt( int nIndex )
-{
-	ASSERT( nIndex < (int)(m_pQuestItem.size()));
-	return &m_pQuestItem[nIndex];
-}
-
-void CQuestItemGenerator::AddTail(const QUESTITEM & rQuestItem) {
-	m_pQuestItem.emplace_back(rQuestItem);
-}
-
-void CDropKindGenerator::AddTail( const DROPKIND & rDropKind )
-{
-	ASSERT( m_nSize < MAX_DROPKIND );
-	memcpy( &m_aDropKind[m_nSize++], &rDropKind, sizeof(DROPKIND) );
-}
-
-LPDROPKIND CDropKindGenerator::GetAt( int nIndex )
-{
-	ASSERT( nIndex >= 0 );
-	ASSERT( nIndex < m_nSize );
-	if( nIndex < 0 || nIndex >= m_nSize )
-		return NULL;
-	return &m_aDropKind[nIndex];
-}
-
-
 CProject::CProject()
 #ifdef __WORLDSERVER
 :
@@ -1968,7 +1941,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				qi.dwNumber	= script.GetNumber();	//
 				script.GetToken();	// )
 				MoverProp* pMoverProp = GetMoverProp( dwMoverIdx );
-				pMoverProp->m_QuestItemGenerator.AddTail( qi );	// copy
+				pMoverProp->m_QuestItemGenerator.emplace_back( qi );	// copy
 			}
 			else
 			if( script.Token == "SetEndRewardTSP" )
@@ -2083,7 +2056,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 						qi.dwNumber	= script.GetNumber();	//
 						script.GetToken();	// )
 						MoverProp* pMoverProp = GetMoverProp( dwMoverIdx );
-						pMoverProp->m_QuestItemGenerator.AddTail( qi );	// copy
+						pMoverProp->m_QuestItemGenerator.emplace_back( qi );	// copy
 					}
 					else
 					if( script.Token == "SetDesc" )
@@ -2508,7 +2481,7 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 					dropKind.nMaxUniq = 1;
 				script.GetToken();	// )
 			#ifdef __WORLDSERVER
-				pProp->m_DropKindGenerator.AddTail( dropKind );	// copy
+				pProp->m_DropKindGenerator.emplace_back( dropKind );
 			#endif
 			}
 			else
@@ -4411,13 +4384,8 @@ void CProject::OutputDropItem( void )
 
 			// dropkind
 			{
-				int nSize	= pMoverProp->m_DropKindGenerator.GetSize();
-				
-				for( int i = 0; i < nSize; i++ )
-				{
-					DROPKIND * pDropKind = pMoverProp->m_DropKindGenerator.GetAt( i );
-
-					const auto & pItemProps = prj.GetItemKind3WithRarity(*pDropKind);
+				for (const DROPKIND & pDropKind : pMoverProp->m_DropKindGenerator) {
+					const auto & pItemProps = prj.GetItemKind3WithRarity(pDropKind);
 
 					for (const ItemProp * pItemProp : pItemProps)
 					{

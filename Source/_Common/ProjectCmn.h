@@ -455,13 +455,11 @@ struct DROPITEM
 	[[nodiscard]] bool IsDropped(BOOL bUniqueMode, float fProbability = 0.0f) const;
 };
 
-typedef	struct	tagDROPKIND
-{
+struct DROPKIND {
 	DWORD	dwIK3;
 	short	nMinUniq;
 	short	nMaxUniq;
-}
-DROPKIND,	*LPDROPKIND;
+};
 
 struct QUESTITEM {
 	QuestId	dwQuest;
@@ -470,15 +468,6 @@ struct QUESTITEM {
 	DWORD	dwProbability;
 	DWORD	dwNumber; 
 };
-
-typedef struct tagEVENTITEM
-{
-	DWORD	dwIndex;
-	DWORD	dwPrabability;
-}
-EVENTITEM,	*PEVENTITEM;
-
-#define	MAX_DROPKIND	80
 
 class CDropItemGenerator final {
 private:
@@ -493,36 +482,12 @@ public:
 	std::span<const DROPITEM> GetDropItems() { return m_dropItems; }
 };
 
-class CDropKindGenerator
-{
-private:
-	int		m_nSize;
-	DROPKIND	m_aDropKind[MAX_DROPKIND];
-public:
-//	Contructions
-	CDropKindGenerator()
-		{	m_nSize	= 0;	}
-	virtual	~CDropKindGenerator()	{}
-//	Operations
-	void	AddTail( const DROPKIND & rDropKind );	// memcpy
-	int		GetSize( void )		{	return m_nSize;	}
-	LPDROPKIND	GetAt( int nIndex );
-};
+using CDropKindGenerator = std::vector<DROPKIND>;
+using CQuestItemGenerator = std::vector<QUESTITEM>;
 
-class CQuestItemGenerator {
-private:
-	std::vector<QUESTITEM> m_pQuestItem;
-public:
-	void AddTail(const QUESTITEM & rQuestItem);
-	[[nodiscard]] u_long GetSize() const noexcept { return m_pQuestItem.size(); }
-	[[nodiscard]] QUESTITEM * GetAt(int nIndex);
-};
-
-struct MonsterTransform
-{
-	float fHPRate;
-	DWORD dwMonsterId;
-	MonsterTransform() : fHPRate( 0.0f ), dwMonsterId( NULL_ID ) {}
+struct MonsterTransform {
+	float fHPRate = 0.0f;
+	DWORD dwMonsterId = NULL_ID;
 };
 /*----------------------------------------------------------------------------------------------------*/
 

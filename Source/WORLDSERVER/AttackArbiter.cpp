@@ -792,6 +792,11 @@ void CAttackArbiter::OnDiedSchoolEvent()
 			g_UserMng.AddModifyMode( (CUser*)m_pDefender );
 		}
 
+		struct EVENTITEM {
+			DWORD	dwIndex;
+			DWORD	dwPrabability;
+		};
+
 		static EVENTITEM eventitem[3] =
 		{
 			II_GEN_FOO_INS_HOTDOG,		12,

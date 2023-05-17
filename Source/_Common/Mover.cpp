@@ -5541,11 +5541,9 @@ BOOL CMover::DropItem( CMover* pAttacker )
 			}
 		}
 
-		short nNum;
-		u_long uSizeOfQuestItem	= lpMoverProp->m_QuestItemGenerator.GetSize();
-		for( u_long i = 0; i < uSizeOfQuestItem; i++ ) 
-		{
-			QUESTITEM * pQuestItem	= lpMoverProp->m_QuestItemGenerator.GetAt( i );
+		for (const QUESTITEM & rQuestItem : lpMoverProp->m_QuestItemGenerator) {
+			const QUESTITEM * pQuestItem = &rQuestItem;
+
 			LPQUEST lpQuest = pAttacker->GetQuest( pQuestItem->dwQuest );
 			if( lpQuest && lpQuest->m_nState == pQuestItem->dwState ) 
 			{
@@ -5566,8 +5564,8 @@ BOOL CMover::DropItem( CMover* pAttacker )
 				if( xRandom( 3000000000 ) <= dwProbability ) 
 				{
 					if( pQuestItem->dwNumber == 0 )
-						Error( "CMover::DropItem : %s의 quest item drop %d번째의 dwNumber가 0", GetName(), i );
-					nNum	= (short)( xRandom( pQuestItem->dwNumber ) + 1 );
+						Error( "CMover::DropItem : %s quest item drop has number = 0", GetName() );
+					short nNum	= (short)( xRandom( pQuestItem->dwNumber ) + 1 );
 					if( pQuestItem->dwIndex == 0 )
 					{
 						WriteLog( "%s, %d\r\n\t%s", __FILE__, __LINE__, lpMoverProp->szName );
@@ -5959,13 +5957,9 @@ BOOL CMover::DropItem( CMover* pAttacker )
 					///////////
 				} // for nSize
 
-				int nSize	= lpMoverProp->m_DropKindGenerator.GetSize();
 
-				for( int i = 0; i < nSize; i++ )
-				{
-					bool bDrop = false;
-					const DROPKIND * pDropKind	= lpMoverProp->m_DropKindGenerator.GetAt( i );
-					const auto minMaxIdx = prj.GetItemKind3WithRarity(*pDropKind);
+				for (const DROPKIND & pDropKind : lpMoverProp->m_DropKindGenerator) {
+					const auto minMaxIdx = prj.GetItemKind3WithRarity(pDropKind);
 					
 					if (minMaxIdx.empty()) {
 						continue;
@@ -5974,7 +5968,8 @@ BOOL CMover::DropItem( CMover* pAttacker )
 					const ItemProp * pItemProp = minMaxIdx[xRandom(minMaxIdx.size())];
 
 					const int nAbilityOption	= xRandom( 11 );	// 0 ~ 10
-				
+
+					bool bDrop = false;
 					for( int k = nAbilityOption; k >= 0; k-- )
 					{
 						DWORD dwPrabability		= (DWORD)( prj.m_adwExpDropLuck[( pItemProp->dwItemLV > 120? 119: pItemProp->dwItemLV-1 )][k]
