@@ -432,37 +432,6 @@ struct JobProp
 	float   fCritical;				//크리티컬 처리
 };
 
-typedef	struct	tagRANDOM_ITEM
-{
-	BYTE	m_lpQuestFlagArray[ITEM_KIND_MAX / 8 + 1];
-
-	void	SetItemKind( int nItemKind,BOOL bBool );
-	BOOL	IsItemKind( int nItemKind );
-
-	BYTE	m_nTotalNum;	// 발생 아이템 갯수 
-	BYTE	m_nUniqueMax;	// 유니크 아이템 최대 
-	BYTE	m_nUniqueMin;	// 유니크 아이템 최소  
-	WORD	m_nGoldMax;		// 골드 맥스 
-	WORD	m_nAmmoMax;		// 총알 맥스 
-	WORD	m_nDartMax;		// 표창 맥스 
-	WORD	m_nGoldMin;		// 골드 맥스 
-	WORD	m_nAmmoMin;	// 총알 맥스 
-	WORD	m_nDartMin;	// 표창 맥스 
-	tagRANDOM_ITEM()
-	{
-		m_nTotalNum		= 0;
-		m_nUniqueMax	= 0;
-		m_nUniqueMin	= 0;
-		m_nGoldMax		= 0;
-		m_nAmmoMax		= 0;
-		m_nDartMax		= 0;
-		m_nGoldMin		= 0;
-		m_nAmmoMin		= 0;
-		m_nDartMin		= 0;
-	}
-}
-RANDOM_ITEM,* LPRANDOM_ITEM;
-
 struct JobSkills : std::array<std::vector<const ItemProp *>, MAX_JOB> {
 	void Load(CFixedArray<ItemProp> & aPropSkill);
 };
@@ -713,7 +682,6 @@ struct MoverProp : CtrlProp
 	short	m_nChangeTargetRand;
 
 	short   m_nAttackFirstRange;
-	RANDOM_ITEM		m_randomItem  ;
 	CDropItemGenerator	m_DropItemGenerator;
 	CQuestItemGenerator		m_QuestItemGenerator;
 	CDropKindGenerator	m_DropKindGenerator;

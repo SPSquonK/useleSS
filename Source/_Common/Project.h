@@ -317,7 +317,6 @@ typedef struct tagCHARACTER
 	DWORD			m_dwHairMesh;
 	DWORD			m_dwHairColor;
 	DWORD			m_dwHeadMesh;
-	RANDOM_ITEM		m_randomItem;
 	BOOL			m_abMoverMenu[ MAX_MOVER_MENU ];
 
 	std::vector<std::pair<QuestId, DWORD>> m_srcQuests;
@@ -854,7 +853,7 @@ public:
 	BOOL			LoadCharacter( LPCTSTR szFileName );
 	BOOL			LoadEtc( LPCTSTR szFileName );
 	BOOL			LoadPropAddSkill( LPCTSTR lpszFileName );
-	void			InterpretRandomItem( LPRANDOM_ITEM pRandomItem, CScript& script );
+	void			InterpretRandomItem( CScript& script );
 	BOOL			LoadScriptDiePenalty( LPCTSTR lpszFileName );
 	BOOL			LoadScriptPK( LPCTSTR lpszFileName );
 	BOOL			LoadPropQuest( LPCTSTR szFileName, BOOL bOptimize = TRUE );

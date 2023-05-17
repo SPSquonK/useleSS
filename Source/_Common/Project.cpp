@@ -2460,12 +2460,12 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 			}
 			else
 			if(script.Token == "randomItem")
-				InterpretRandomItem( &pProp->m_randomItem, script );
+				InterpretRandomItem( script );
 			else 
 			if( script.Token == "Maxitem" )
 			{
 				script.GetToken();	// =
-				pProp->m_DropItemGenerator.m_dwMax	= script.GetNumber();
+				pProp->m_DropItemGenerator.m_dwMax	= script.GetNumber() | 1 << 4;
 			}
 			else 
 			if( script.Token == "DropItem" )
@@ -2592,7 +2592,7 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 			else
 			if(script.Token == "randomItem")
 			{
-				InterpretRandomItem(&lpCharacter->m_randomItem,script);
+				InterpretRandomItem(script);
 			}
 			else
 			if(script.Token == "SetEquip")
@@ -2846,7 +2846,7 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 	return TRUE;
 }	
 
-void CProject::InterpretRandomItem(LPRANDOM_ITEM pRandomItem,CScript& script)
+void CProject::InterpretRandomItem(CScript& script)
 {
 	script.GetToken(); // {
 	script.GetToken(); 
