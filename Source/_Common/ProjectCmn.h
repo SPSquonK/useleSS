@@ -836,47 +836,16 @@ struct SHORTCUT {
 };
 using LPSHORTCUT = SHORTCUT *;
 
-typedef struct tagEXPPARTY
-{
+struct EXPPARTY {
 	DWORD	Exp;
 	DWORD	Point;
-}
-EXPPARTY, *LPEXPPARTY;
+};
 
-typedef struct tagRENEWEVENT
-{
-	int		nLevel;
-	DWORD	dwItemId;
-	TCHAR	strItemName[64];
-	float	fPercent;
-}
-RENEWEVENT, *LPRENEWEVENT;
-
-typedef struct tagRENEWEVENTITEM
-{
-#ifdef __S0517
-	CTime	EndTime;
-#else // __S0517
-	TCHAR strTime[32];
-#endif // __S0517
-	int nLevel;
-	int	nRealitem[ MAX_REALITEM ];
-	int nRealitemCount[ MAX_REALITEM ];
-	int nSendRealitemCount[ MAX_REALITEM ];
-	int nPercent[ MAX_REALITEM ];
-	int nNextIndex;
-}
-RENEWEVENTITEM, *LPRENEWEVENTITEM;
-
-
-typedef struct tagExpCharacter
-{
+struct EXPCHARACTER {
 	EXPINTEGER	nExp1;
-	EXPINTEGER	nExp2;
 	DWORD dwLPPoint;
 	EXPINTEGER	nLimitExp;
-}
-EXPCHARACTER, *LPEXPCHARACTER;
+};
 
 
 #ifdef __RULE_0615

@@ -2850,7 +2850,7 @@ BOOL CProject::LoadExpTable( LPCTSTR lpszFileName )
 			while( *script.token != '}' )
 			{
 				m_aExpCharacter[i].nExp1	= nVal;
-				m_aExpCharacter[i].nExp2	= script.GetExpInteger();
+				script.GetExpInteger(); // Exp2, unused
 				m_aExpCharacter[i].dwLPPoint	= script.GetNumber();
 				m_aExpCharacter[i++].nLimitExp		= script.GetExpInteger();
 				nVal	= script.GetExpInteger();
