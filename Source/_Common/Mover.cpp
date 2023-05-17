@@ -5760,15 +5760,94 @@ BOOL CMover::DropItem( CMover* pAttacker )
 
 			if( xRandom( 100 ) < fItemDropRate )	// 아이템을 드롭할지 말지 결정. 레벨차가 많이 나면 아예 떨어트리지 않는다.
 			{
+				if (k == 0) {
+					for (const CDropItemGenerator::Money & rDropMoney : lpMoverProp->m_DropItemGenerator.GetMoney()) {
+						int nNumGold = rDropMoney.dwNumber;
+						if (rDropMoney.dwNumber2 > rDropMoney.dwNumber) {
+							nNumGold += xRandom(rDropMoney.dwNumber2 - rDropMoney.dwNumber);
+						}
+						nNumGold = nNumGold * nPenyaRate / 100;
+#ifdef __S1108_BACK_END_SYSTEM
+						nNumGold = (int)(nNumGold * prj.m_fGoldDropRate * lpMoverProp->m_fPenya_Rate);
+						if (nNumGold == 0)
+							continue;
+#else // __S1108_BACK_END_SYSTEM
+						nNumGold *= prj.m_fGoldDropRate;
+#endif // __S1108_BACK_END_SYSTEM
+
+						nNumGold = (int)(nNumGold * prj.m_EventLua.GetGoldDropFactor());
+
+						if (lpMoverProp->dwFlying) {
+							if (CanAdd(pAttacker->GetGold(), nNumGold))
+							{
+								pAttacker->AddGold(nNumGold);
+								((CUser *)pAttacker)->AddGoldText(nNumGold);
+							}
+						} else {
+							int	nSeedID;
+							// 돈액수에 따라 어떤모양의 시드를 사용할지 결정한다.
+							if (nNumGold <= (int)(prj.GetItemProp(II_GOLD_SEED1)->dwAbilityMax))
+								nSeedID = II_GOLD_SEED1;
+							else if (nNumGold <= (int)(prj.GetItemProp(II_GOLD_SEED2)->dwAbilityMax))
+								nSeedID = II_GOLD_SEED2;
+							else if (nNumGold <= (int)(prj.GetItemProp(II_GOLD_SEED3)->dwAbilityMax))
+								nSeedID = II_GOLD_SEED3;
+							else
+								nSeedID = II_GOLD_SEED4;
+
+							CItemElem * pItemElem = new CItemElem;
+							pItemElem->m_dwItemId = nSeedID;
+							pItemElem->m_nItemNum = nNumGold;	// 돈액수
+							pItemElem->m_nHitPoint = nNumGold;
+							CItem * pItem = new CItem;
+							pItem->m_pItemBase = pItemElem;
+							BOOL bJJim = TRUE;
+							if (lpMoverProp->dwClass == RANK_SUPER)		// 보스몹이 드롭한 아이템은 아무나 먹을수 있다.
+								bJJim = FALSE;
+							if (GetIndex() == MI_DEMIAN5 || GetIndex() == MI_KEAKOON5 || GetIndex() == MI_MUFFRIN5)
+								bJJim = FALSE;		// 얘들은 이벤트몹이므로 찜안해놔도 된다. 아무나 먹을수 있음
+							if (bJJim)
+							{
+								pItem->m_idOwn = pAttacker->GetId();	// 이 아이템의 소유가 pAttacker(어태커)꺼란걸 표시.
+								pItem->m_dwDropTime = timeGetTime();	// 드랍 했을당시의 시간을 기록함.
+							}
+							pItem->m_bDropMob = TRUE;		// 몹이 죽어서 떨군 돈은 표시를 해둠.
+							if (pItem->m_pItemBase->m_dwItemId == 0) Error("DropItem: 3rd %s\n", GetName());
+							pItem->SetIndex(D3DDEVICE, pItem->m_pItemBase->m_dwItemId);
+
+							vPos = GetPos();
+							vPos.x += (xRandomF(2.0f) - 1.0f);
+							vPos.z += (xRandomF(2.0f) - 1.0f);
+#ifdef __EVENT_MONSTER
+							// 이벤트 몬스터가 드랍한 아이템은 몬스터의 ID를 기억한다(펫이 못 줍게...)
+							if (CEventMonster::GetInstance()->SetEventMonster(lpMoverProp->dwID))
+							{
+								// 이벤트 몬스터는 무조건 선점권을 갖는다.
+								pItem->m_idOwn = pAttacker->GetId();
+								pItem->m_dwDropTime = timeGetTime();
+
+								pItem->m_IdEventMonster = lpMoverProp->dwID;
+								float fItemDropRange = CEventMonster::GetInstance()->GetItemDropRange();
+								vPos = GetPos();
+								vPos.x += (xRandomF(fItemDropRange) - (fItemDropRange / 2.0f));
+								vPos.z += (xRandomF(fItemDropRange) - (fItemDropRange / 2.0f));
+							}
+#endif // __EVENT_MONSTER
+							pItem->SetPos(vPos);
+							GetWorld()->ADDOBJ(pItem, TRUE, GetLayer());
+						}
+					}
+				}
+
+
 				int nNumber	= 0;
 		
-				for (const DROPITEM & rDropItem : lpMoverProp->m_DropItemGenerator.GetDropItems()) {
-					const DROPITEM * lpDropItem = &rDropItem;
+				for (const auto & rDropItem : lpMoverProp->m_DropItemGenerator.GetItems()) {
+					const CDropItemGenerator::Item * lpDropItem = &rDropItem;
 
-					if ( lpDropItem->IsDropped(bUnique, GetPieceItemDropRateFactor(pAttacker)))
-					{
-						if( lpDropItem->dtType == DROPTYPE_NORMAL )
-						{
+					if (!lpDropItem->IsDropped(bUnique, GetPieceItemDropRateFactor(pAttacker)))
+						continue;
+
 							DWORD dwNum		= lpDropItem->dwNumber;
 							if(  dwNum == (DWORD)-1 )
 								dwNum	= 1;
@@ -5798,7 +5877,8 @@ BOOL CMover::DropItem( CMover* pAttacker )
 									}
 									if( lpDropItem->dwNumber != (DWORD)-1 )
 										nNumber++;
-									if(  (DWORD)( nNumber ) >= lpMoverProp->m_DropItemGenerator.m_dwMax )
+									if( !useless_params::DropIgnoreMaxItemsPerMonster
+									&& (DWORD)( nNumber ) >= lpMoverProp->m_DropItemGenerator.m_dwMax )
 										break;
 								}
 								continue;
@@ -5869,89 +5949,11 @@ BOOL CMover::DropItem( CMover* pAttacker )
 								}
 							}
 
-							if( nNumber == lpMoverProp->m_DropItemGenerator.m_dwMax )
+							if(!useless_params::DropIgnoreMaxItemsPerMonster
+								&& nNumber == lpMoverProp->m_DropItemGenerator.m_dwMax )
 								break;
-						} else
-						// 돈은 무조건떨어져야 한다.
-						if( lpDropItem->dtType == DROPTYPE_SEED && k == 0 )
-						{
-							int	nSeedID = 0;
-							int nNumGold = lpDropItem->dwNumber + xRandom( lpDropItem->dwNumber2 - lpDropItem->dwNumber );	// Number ~ Number2 사이의 랜덤값.
-							nNumGold	= nNumGold * nPenyaRate / 100;
-	#ifdef __S1108_BACK_END_SYSTEM
-							nNumGold	= (int)( nNumGold * prj.m_fGoldDropRate * lpMoverProp->m_fPenya_Rate );
-							if( nNumGold == 0 )
-								continue;
-	#else // __S1108_BACK_END_SYSTEM
-							nNumGold	*= prj.m_fGoldDropRate;
-	#endif // __S1108_BACK_END_SYSTEM
-							
-							nNumGold	= (int)( nNumGold * prj.m_EventLua.GetGoldDropFactor() );
+						
 
-
-							if( lpMoverProp->dwFlying )
-							{
-								if( CanAdd( pAttacker->GetGold(), nNumGold ) )
-								{
-									pAttacker->AddGold( nNumGold );
-									( (CUser*)pAttacker )->AddGoldText( nNumGold );
-								}
-							}
-							else
-							{
-								// 돈액수에 따라 어떤모양의 시드를 사용할지 결정한다.
-								if( nNumGold <= (int)( prj.GetItemProp( II_GOLD_SEED1 )->dwAbilityMax ) )
-									nSeedID = II_GOLD_SEED1;
-								else if( nNumGold <= (int)( prj.GetItemProp( II_GOLD_SEED2 )->dwAbilityMax ) )
-									nSeedID = II_GOLD_SEED2;
-								else if( nNumGold <= (int)( prj.GetItemProp( II_GOLD_SEED3 )->dwAbilityMax ) )
-									nSeedID = II_GOLD_SEED3;
-								else 
-									nSeedID = II_GOLD_SEED4;
-
-								CItemElem* pItemElem	= new CItemElem;
-								pItemElem->m_dwItemId	= nSeedID;
-								pItemElem->m_nItemNum	= nNumGold;	// 돈액수
-								pItemElem->m_nHitPoint	= nNumGold;
-								CItem* pItem	= new CItem;
-								pItem->m_pItemBase	= pItemElem;
-								BOOL bJJim = TRUE;
-								if( lpMoverProp->dwClass == RANK_SUPER )		// 보스몹이 드롭한 아이템은 아무나 먹을수 있다.
-									bJJim = FALSE;
-								if( GetIndex() == MI_DEMIAN5 || GetIndex() == MI_KEAKOON5 || GetIndex() == MI_MUFFRIN5 )
-									bJJim = FALSE;		// 얘들은 이벤트몹이므로 찜안해놔도 된다. 아무나 먹을수 있음
-								if( bJJim )
-								{
-									pItem->m_idOwn = pAttacker->GetId();	// 이 아이템의 소유가 pAttacker(어태커)꺼란걸 표시.
-									pItem->m_dwDropTime = timeGetTime();	// 드랍 했을당시의 시간을 기록함.
-								}
-								pItem->m_bDropMob = TRUE;		// 몹이 죽어서 떨군 돈은 표시를 해둠.
-								if( pItem->m_pItemBase->m_dwItemId == 0 ) Error("DropItem: 3rd %s\n", GetName() );
-								pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
-
-								vPos = GetPos();
-								vPos.x += ( xRandomF(2.0f) - 1.0f );
-								vPos.z += ( xRandomF(2.0f) - 1.0f );
-						#ifdef __EVENT_MONSTER
-								// 이벤트 몬스터가 드랍한 아이템은 몬스터의 ID를 기억한다(펫이 못 줍게...)
-								if( CEventMonster::GetInstance()->SetEventMonster( lpMoverProp->dwID ) )
-								{
-									// 이벤트 몬스터는 무조건 선점권을 갖는다.
-									pItem->m_idOwn	= pAttacker->GetId();
-									pItem->m_dwDropTime		= timeGetTime();
-									
-									pItem->m_IdEventMonster = lpMoverProp->dwID;
-									float fItemDropRange = CEventMonster::GetInstance()->GetItemDropRange(); 
-									vPos = GetPos();
-									vPos.x += ( xRandomF( fItemDropRange ) - (fItemDropRange / 2.0f) );
-									vPos.z += ( xRandomF( fItemDropRange ) - (fItemDropRange / 2.0f));
-								}
-						#endif // __EVENT_MONSTER
-								pItem->SetPos( vPos );
-								GetWorld()->ADDOBJ( pItem, TRUE, GetLayer() );
-							}
-						} // DROPTYPE_SEED
-					} // if
 					//////////////
 					//  여기까지 for-loop안내려오고 continue하는 수도 있으니까 여기다 코드 넣지 말것.
 					///////////

@@ -113,20 +113,19 @@ void CHARACTER::Clear()
 ////////////////////////////////////////////////////////////////////////////////////
 // CDropItemGenerator
 ////////////////////////////////////////////////////////////////////////////////////
-bool DROPITEM::IsDropped( BOOL bUniqueMode, float fProbability ) const
+bool CDropItemGenerator::Item::IsDropped(BOOL bUniqueMode, float fProbability) const
 {
-
-		DWORD dwRand = xRandom( 3000000000 );
+	DWORD dwRand = xRandom(3000000000);
 #if defined(__WORLDSERVER) // __EVENTLUA, __WORLDSERVER
-		dwRand = static_cast<DWORD>(dwRand / fProbability );
+	dwRand = static_cast<DWORD>(dwRand / fProbability);
 #endif // __EVENTLUA && __WORLDSERVER
-		/*
-		if( lpDropItem->dwLevel && bUniqueMode && lpDropItem->dwProbability <= 10000000 )
-		{
-			dwRand /= 2;
-		}
-		*/
-		return dwRand < dwProbability;
+	/*
+	if( lpDropItem->dwLevel && bUniqueMode && lpDropItem->dwProbability <= 10000000 )
+	{
+		dwRand /= 2;
+	}
+	*/
+	return dwRand < dwProbability;
 }
 
 CProject::CProject()
@@ -2438,14 +2437,12 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 			if( script.Token == "Maxitem" )
 			{
 				script.GetToken();	// =
-				pProp->m_DropItemGenerator.m_dwMax	= script.GetNumber() | 1 << 4;
+				pProp->m_DropItemGenerator.m_dwMax	= script.GetNumber();
 			}
 			else 
 			if( script.Token == "DropItem" )
 			{
-				DROPITEM di;
-				memset( &di, 0, sizeof(DROPITEM) );
-				di.dtType = DROPTYPE_NORMAL;
+				CDropItemGenerator::Item di{};
 				script.GetToken();	// (
 				di.dwIndex	= script.GetNumber();	// specific item index
 				if( di.dwIndex == 0 )
@@ -2459,9 +2456,8 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 				di.dwNumber	= script.GetNumber();	// number
 				script.GetToken();	// )
 			#ifdef __WORLDSERVER
-				pProp->m_DropItemGenerator.AddDropItem( di );
+				pProp->m_DropItemGenerator.Add( di );
 			#endif
-				di.dwNumber2 = 0;
 			}
 			else 
 			if( script.Token == "DropKind" )
@@ -2487,17 +2483,14 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 			else
 			if( script.Token == "DropGold" )
 			{
-				DROPITEM di;
-				memset( &di, 0, sizeof(DROPITEM) );	// clear
-				di.dtType = DROPTYPE_SEED;
-				di.dwProbability = 0xFFFFFFFF;	// ������ ������.
+				CDropItemGenerator::Money di{};
 				script.GetToken();	// (
 				di.dwNumber = script.GetNumber();	// gold min
 				script.GetToken();	// ,
 				di.dwNumber2 = script.GetNumber();	// gold max
 				script.GetToken();	// )
 			#ifdef __WORLDSERVER
-				pProp->m_DropItemGenerator.AddDropItem( di );
+				pProp->m_DropItemGenerator.Add( di );
 			#endif
 			}
 			else if( script.Token == "Transform" )
@@ -3137,10 +3130,7 @@ BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
 		s.GetToken();
 		if( s.Token == "DropItem" )
 		{
-			DROPITEM di;
-			DWORD dwMinLevel, dwMaxLevel;
-			memset( &di, 0, sizeof(DROPITEM) );
-			di.dtType = DROPTYPE_NORMAL;
+			CDropItemGenerator::Item di{};
 			s.GetToken();	// (
 			di.dwIndex	= s.GetNumber();	// specific item index
 			s.GetToken();	// ,
@@ -3150,14 +3140,13 @@ BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
 			s.GetToken();	// ,
 			di.dwNumber	= s.GetNumber();	// number
 			s.GetToken();	// ,
-			dwMinLevel	= s.GetNumber();	// min
+			const DWORD dwMinLevel	= s.GetNumber();	// min
 			s.GetToken();	// ,
-			dwMaxLevel	= s.GetNumber();	// max
+			const DWORD dwMaxLevel	= s.GetNumber();	// max
 			s.GetToken();	// )
 
-			const auto i2	= m_setExcept.find( di.dwIndex );
-			if( i2 != m_setExcept.end() )
-				continue;
+			if(m_setExcept.contains(di.dwIndex)) continue;
+
 			if( GetLanguage() != LANG_KOR )
 			{
 				if( di.dwIndex == II_GEN_SKILL_BUFFBREAKER )
@@ -3168,7 +3157,7 @@ BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
 			{
 				MoverProp* pProp	= m_pPropMover + i;
 				if( pProp->dwID && pProp->dwLevel >= dwMinLevel && pProp->dwLevel <= dwMaxLevel	)
-					pProp->m_DropItemGenerator.AddDropItem( di );
+					pProp->m_DropItemGenerator.Add( di );
 			}
 		}
 	} while( s.tok != FINISHED );
@@ -4349,38 +4338,34 @@ void CProject::OutputDropItem( void )
 			s.Format( "\n%s\t%d", pMoverProp->szName, pMoverProp->m_DropItemGenerator.m_dwMax );
 			// dropitem
 
-				for (const DROPITEM & rDropItem : pMoverProp->m_DropItemGenerator.GetDropItems()) {
-					const DROPITEM * lpDropItem = &rDropItem;
 
-						if( lpDropItem->dtType == DROPTYPE_NORMAL )
-						{
-							DWORD dwProbability		= lpDropItem->dwProbability;
-							const ItemProp* pItemProp	= prj.GetItemProp( lpDropItem->dwIndex );
-							if( lpDropItem->dwLevel != 0 )
-							{
-								if( pItemProp && (int)pItemProp->dwItemLV > 0 )
-								{
-									int nValue	= dwProbability / pItemProp->dwItemLV;
-									if( nValue < 21 )	nValue	= 21;
-									dwProbability	= nValue - 20;
-								}
-							}
-							if( pItemProp )
-							{
-								CString str;
-								str.Format( "\n \t%s\t%f%%\t%d\t%d", pItemProp->szName, (double)dwProbability / (double)30000000, lpDropItem->dwNumber, lpDropItem->dwLevel );
-								s	+= str;
-							}
-						}
-						else if( lpDropItem->dtType == DROPTYPE_SEED )
-						{
-							CString str;
-							str.Format(" \tPENYA %d-%d", lpDropItem->dwNumber, lpDropItem->dwNumber2 ); 
-							s	+= str;
-						}
+			for (const auto & rDropItem : pMoverProp->m_DropItemGenerator.GetItems()) {
+				const CDropItemGenerator::Item * lpDropItem = &rDropItem;
 
+				DWORD dwProbability = lpDropItem->dwProbability;
+				const ItemProp * pItemProp = prj.GetItemProp(lpDropItem->dwIndex);
+				if (lpDropItem->dwLevel != 0)
+				{
+					if (pItemProp && (int)pItemProp->dwItemLV > 0)
+					{
+						int nValue = dwProbability / pItemProp->dwItemLV;
+						if (nValue < 21)	nValue = 21;
+						dwProbability = nValue - 20;
+					}
 				}
-				sLog[nWrite]	+= s;
+				if (pItemProp)
+				{
+					CString str;
+					str.Format("\n \t%s\t%f%%\t%d\t%d", pItemProp->szName, (double)dwProbability / (double)30000000, lpDropItem->dwNumber, lpDropItem->dwLevel);
+					s += str;
+				}
+			}
+
+			for (const CDropItemGenerator::Money & rDropMoney : pMoverProp->m_DropItemGenerator.GetMoney()) {
+				s.AppendFormat(" \tPENYA %d-%d", rDropMoney.dwNumber, rDropMoney.dwNumber2);
+			}
+
+			sLog[nWrite]	+= s;
 
 			// dropkind
 			{

@@ -41,5 +41,8 @@ namespace useless_params {
   // Use reflexive morph
   static constexpr bool ReflexiveMorph = true;
 
+  // Cancels m_dwMax impact.
+  static constexpr bool DropIgnoreMaxItemsPerMonster = true;
+
 }
 

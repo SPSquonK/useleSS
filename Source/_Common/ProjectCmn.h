@@ -5,6 +5,7 @@
 #include <string>
 #include <exception>
 #include <span>
+#include <boost/container/small_vector.hpp>
 #include "FlyFFTypes.h"
 #include "defineJob.h"
 
@@ -437,24 +438,6 @@ struct JobSkills : std::array<std::vector<const ItemProp *>, MAX_JOB> {
 };
 
 /*----------------------------------------------------------------------------------------------------*/
-enum DROPTYPE
-{
-	DROPTYPE_NORMAL,
-	DROPTYPE_SEED,
-};
-
-struct DROPITEM
-{
-	DROPTYPE	dtType;
-	DWORD	dwIndex;
-	DWORD	dwProbability;
-	DWORD	dwLevel;
-	DWORD	dwNumber;
-	DWORD	dwNumber2;	// Min, Max¡ﬂ Max∑Œ æ∏.
-
-	[[nodiscard]] bool IsDropped(BOOL bUniqueMode, float fProbability = 0.0f) const;
-};
-
 struct DROPKIND {
 	DWORD	dwIK3;
 	short	nMinUniq;
@@ -470,19 +453,37 @@ struct QUESTITEM {
 };
 
 class CDropItemGenerator final {
+public:
+	struct Item {
+		DWORD	dwIndex;       // Id of item
+		DWORD	dwProbability; // Probability over 3e+9
+		DWORD	dwLevel;       // Upgrade of dropped item
+		DWORD	dwNumber;      // Quantity
+
+		[[nodiscard]] bool IsDropped(BOOL bUniqueMode, float fProbability = 0.0f) const;
+	};
+
+	struct Money {
+		DWORD	dwNumber;      // Min quantity
+		DWORD	dwNumber2;     // Max quantity, exclusive
+	};
+
 private:
-	std::vector<DROPITEM>	m_dropItems;
+	std::vector<Item>	m_items;
+	boost::container::small_vector<Money, 1> m_money;
 
 public:
 	DWORD				m_dwMax = 0;
 
 public:
-	void AddDropItem(const DROPITEM & rDropItem) { m_dropItems.emplace_back(rDropItem); }
+	void Add(const Item  & rDropItem ) { m_items.emplace_back(rDropItem); }
+	void Add(const Money & rDropMoney) { m_money.emplace_back(rDropMoney); }
 
-	std::span<const DROPITEM> GetDropItems() { return m_dropItems; }
+	[[nodiscard]] std::span<const Item > GetItems() const { return m_items; }
+	[[nodiscard]] std::span<const Money> GetMoney() const { return m_money; }
 };
 
-using CDropKindGenerator = std::vector<DROPKIND>;
+using CDropKindGenerator  = std::vector<DROPKIND>;
 using CQuestItemGenerator = std::vector<QUESTITEM>;
 
 struct MonsterTransform {
