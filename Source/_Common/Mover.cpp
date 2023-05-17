@@ -1167,33 +1167,27 @@ void CMover::ProcessRegenItem()
 						{
 							m_ShopInventory[i]->Clear();		// m_packÀ» ´Ù ¾ø¾Ø´Ù.
 
-							ItemProp* apItemProp[MAX_VENDOR_INVENTORY];
-							int cbSize	= 0;
+							boost::container::static_vector<const ItemProp *, MAX_VENDOR_INVENTORY> apItemProp;
+
 							// generate
 							for (const auto & pVendor : pCharacter->m_vendor.m_venderItemAry[i]) {
-								GenerateVendorItem( apItemProp, &cbSize, MAX_VENDOR_INVENTORY, pVendor );
+								GenerateVendorItem(apItemProp, pVendor);
 							}
+
 							// sort
-							for( int j = 0; j < cbSize - 1; j++ )
-							{
-								for( int k = j + 1; k < cbSize; k++ )
-								{
-									if( ( apItemProp[k]->dwItemKind1 < apItemProp[j]->dwItemKind1 ) ||
-										( apItemProp[k]->dwItemKind1 == apItemProp[j]->dwItemKind1 && apItemProp[k]->dwItemRare < apItemProp[j]->dwItemRare ) )
-									{
-										ItemProp* ptmp	= apItemProp[j];
-										apItemProp[j]	= apItemProp[k];
-										apItemProp[k]	= ptmp;
-									}
+							std::sort(
+								apItemProp.begin(), apItemProp.end(),
+								[](const ItemProp * lhs, const ItemProp * rhs) {
+									return std::pair(lhs->dwItemKind1, lhs->dwItemRare) < std::pair(rhs->dwItemKind1, rhs->dwItemRare);
 								}
-							}
+							);
+
 							// add
-							for( int j = 0; j < cbSize; j++ )
-							{
+							for (const ItemProp * itemProp : apItemProp) {
 								CItemElem itemElem;
-								itemElem.m_dwItemId	= apItemProp[j]->dwID;
-								itemElem.m_nItemNum		= (short)( apItemProp[j]->dwPackMax );
-								itemElem.m_nHitPoint	= apItemProp[j]->dwEndurance;
+								itemElem.m_dwItemId	= itemProp->dwID;
+								itemElem.m_nItemNum		= (short)(itemProp->dwPackMax );
+								itemElem.m_nHitPoint	= itemProp->dwEndurance;
 								if( m_ShopInventory[i]->Add( &itemElem ) == FALSE )
 									break;
 							}
@@ -3735,53 +3729,31 @@ void CMover::CreateAbilityOption_SetItemSFX(const int nAbilityOption )
 
 #endif //__CLIENT
 
-//int nItemKind, int nItemKind2, int nNumMax, int nUniqueMin, int nUniqueMax, int nTotalNum, CAnim* pAnimParent, int nMaterialCount )
-void CMover::GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, const CVendor::CategoryItem & pVendor )
-{
-	CPtrArray* pItemKindAry		= prj.GetItemKindAry( pVendor.m_nItemkind3 );
-	ItemProp* pItemProp		= NULL;
-	int cbSizeOld	= *pcbSize;
-
+void CMover::GenerateVendorItem(
+	boost::container::static_vector<const ItemProp *, MAX_VENDOR_INVENTORY> & itemProps,
+	const CVendor::CategoryItem & pVendor
+) {
 	ASSERT( pVendor->m_nUniqueMin >= 0 );
 	ASSERT( pVendor->m_nUniqueMax >= 0 );
 	
-	if( *pcbSize >= nMax )
-		return;
+	if (itemProps.size() >= itemProps.max_size()) return;
 
-	int nMinIdx	= -1, nMaxIdx	= -1;
+	const auto span = prj.GetItemKind3WithRarity(pVendor);
 
-	for( int j = pVendor.m_nUniqueMin; j <= pVendor.m_nUniqueMax; j++ )
-	{
-		nMinIdx		= prj.GetMinIdx( pVendor.m_nItemkind3, j );
-		if( nMinIdx != -1 )
-			break;
-	}
-	for( int j = pVendor.m_nUniqueMax; j >= pVendor.m_nUniqueMin; j-- )
-	{
-		nMaxIdx		= prj.GetMaxIdx( pVendor.m_nItemkind3, j );
-		if( nMaxIdx != -1 )
-			break;
-	}
-	if( nMinIdx < 0 )
-	{
-		WriteError( "VENDORITEM//%s//%d-%d//%d", GetName(), pVendor.m_nUniqueMin, pVendor.m_nUniqueMax, pVendor.m_nItemkind3 );
+	if (span.empty()) {
+		WriteError( "VENDORITEM//%s//%d-%d//%lu", GetName(), pVendor.nMinUniq, pVendor.nMaxUniq, pVendor.dwIK3 );
 		return;
 	}
 
-	for( int k = nMinIdx; k <= nMaxIdx; k++ )
-	{
-		pItemProp	= (ItemProp*)pItemKindAry->GetAt( k );
-
+	for (const ItemProp * pItemProp : span) {
 		if( ( NULL == pItemProp ) ||
 			( pItemProp->dwShopAble == (DWORD)-1 ) ||
 			( pVendor.m_nItemJob != -1 && (DWORD)pItemProp->dwItemJob != pVendor.m_nItemJob ) )
 			continue;
-		
-		if( *pcbSize >= nMax )
-			break;
 
-		apItemProp[*pcbSize]	= pItemProp;
-		(*pcbSize)++;
+		if (itemProps.size() >= itemProps.max_size()) return;
+
+		itemProps.emplace_back(pItemProp);
 	}
 }
 
@@ -5988,48 +5960,27 @@ BOOL CMover::DropItem( CMover* pAttacker )
 				} // for nSize
 
 				int nSize	= lpMoverProp->m_DropKindGenerator.GetSize();
-				DROPKIND* pDropKind;
-				CPtrArray* pItemKindAry;
-				int nAbilityOption; //, nDropLuck;
-				BOOL bDrop = FALSE;
+
 				for( int i = 0; i < nSize; i++ )
 				{
-					bDrop = FALSE;
-					pDropKind	= lpMoverProp->m_DropKindGenerator.GetAt( i );
-					pItemKindAry	= prj.GetItemKindAry( pDropKind->dwIK3 );
-					int nMinIdx	= -1,	nMaxIdx		= -1;
-					for( int j = pDropKind->nMinUniq; j <= pDropKind->nMaxUniq; j++ )
-					{
-						nMinIdx		= prj.GetMinIdx( pDropKind->dwIK3, j );
-						if( nMinIdx != -1 )
-							break;
-					}
-					for( int j = pDropKind->nMaxUniq; j >= pDropKind->nMinUniq; j-- )
-					{
-						nMaxIdx		= prj.GetMaxIdx( pDropKind->dwIK3, j );
-						if( nMaxIdx != -1 )
-							break;
-					}
-					if( nMinIdx < 0 || nMaxIdx < 0 )
-					{
-						continue;
-					}
-					ItemProp* pItemProp		= (ItemProp*)pItemKindAry->GetAt( nMinIdx + xRandom( nMaxIdx - nMinIdx + 1 ) );
-					if( NULL == pItemProp )
-					{
-						continue;
-					}
-
-					nAbilityOption	= xRandom( 11 );	// 0 ~ 10
-
-					DWORD dwAdjRand;
+					bool bDrop = false;
+					const DROPKIND * pDropKind	= lpMoverProp->m_DropKindGenerator.GetAt( i );
+					const auto minMaxIdx = prj.GetItemKind3WithRarity(*pDropKind);
 					
+					if (minMaxIdx.empty()) {
+						continue;
+					}
+
+					const ItemProp * pItemProp = minMaxIdx[xRandom(minMaxIdx.size())];
+
+					const int nAbilityOption	= xRandom( 11 );	// 0 ~ 10
+				
 					for( int k = nAbilityOption; k >= 0; k-- )
 					{
 						DWORD dwPrabability		= (DWORD)( prj.m_adwExpDropLuck[( pItemProp->dwItemLV > 120? 119: pItemProp->dwItemLV-1 )][k]
 						* ( (float)lpMoverProp->dwCorrectionValue / 100.0f ) );
 
-						dwAdjRand	= xRandom( 3000000000 );
+						DWORD dwAdjRand	= xRandom( 3000000000 );
 						if( bUnique && dwPrabability <= 10000000 )
 							dwAdjRand	/= 2;
 						
@@ -6094,7 +6045,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
 							pItem->SetPos( GetPos() );
 							GetWorld()->ADDOBJ( pItem, TRUE, GetLayer() );
-							bDrop = TRUE;
+							bDrop = true;
 
 							if( pItemProp->dwItemKind1 == IK1_WEAPON || pItemProp->dwItemKind1 == IK1_ARMOR || ( pItemProp->dwItemKind1 == IK1_GENERAL && pItemProp->dwItemKind2 == IK2_JEWELRY ) )
 							{

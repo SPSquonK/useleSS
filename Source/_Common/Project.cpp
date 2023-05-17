@@ -2740,15 +2740,15 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 				int nSubLang	= script.GetNumber();
 				script.GetToken();	//,
 				int nSlot	= script.GetNumber(); script.GetToken(); // 
-				int nItemKind3	= script.GetNumber(); script.GetToken(); // 
+				DWORD nItemKind3	= script.GetNumber(); script.GetToken(); // 
 				int	nItemJob	= script.GetNumber(); script.GetToken();	//
-				int nUniqueMin	= script.GetNumber(); script.GetToken(); // 
-				int nUniqueMax	= script.GetNumber(); script.GetToken(); // 
-				int nTotalNum	= script.GetNumber(); script.GetToken(); // 
+				short nUniqueMin	= static_cast<short>(script.GetNumber()); script.GetToken(); // 
+				short nUniqueMax	= static_cast<short>(script.GetNumber()); script.GetToken(); // 
+				script.GetNumber(); script.GetToken(); // 
 				if( nLang == ::GetLanguage() && nSubLang == ::GetSubLanguage() )
 				{
 					lpCharacter->m_vendor.m_venderItemAry[ nSlot ].emplace_back(
-						nItemKind3, nItemJob, nUniqueMin, nUniqueMax, nTotalNum
+						nItemKind3, nItemJob, nUniqueMin, nUniqueMax
 					);
 				}
 			}
@@ -2758,14 +2758,14 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 			{
 				script.GetToken(); // (
 				int nSlot      = script.GetNumber(); script.GetToken(); // 
-				int nItemKind3  = script.GetNumber(); script.GetToken(); // 
+				DWORD nItemKind3  = script.GetNumber(); script.GetToken(); // 
 				int	nItemJob	= script.GetNumber(); script.GetToken();	//
-				int nUniqueMin = script.GetNumber(); script.GetToken(); // 
-				int nUniqueMax = script.GetNumber(); script.GetToken(); // 
-				int nTotalNum  = script.GetNumber(); script.GetToken(); // 
+				short nUniqueMin = static_cast<short>(script.GetNumber()); script.GetToken(); // 
+				short nUniqueMax = static_cast<short>(script.GetNumber()); script.GetToken(); // 
+				script.GetNumber(); script.GetToken(); // 
 
 				lpCharacter->m_vendor.m_venderItemAry[ nSlot ].emplace_back(
-					nItemKind3, nItemJob, nUniqueMin, nUniqueMax, nTotalNum
+					nItemKind3, nItemJob, nUniqueMin, nUniqueMax
 				);
 			}
 			else if( script.Token == "AddVenderItem2" || script.Token == "AddVendorItem2")
@@ -3702,7 +3702,7 @@ void CRandomOptItemGen::Arrange() {
 	}
 }
 
-int CRandomOptItemGen::GenRandomOptItem(int nLevel, FLOAT fPenalty, ItemProp * pItemProp, DWORD dwClass) const {
+int CRandomOptItemGen::GenRandomOptItem(int nLevel, FLOAT fPenalty, const ItemProp * pItemProp, DWORD dwClass) const {
 	if (!pItemProp) return 0;
 	
 	if (pItemProp->dwItemKind1 != IK1_WEAPON && pItemProp->dwItemKind1 != IK1_ARMOR) return 0;
@@ -3764,7 +3764,9 @@ void CProject::OnAfterLoadPropItem()
 
 		if( pItemProp.dwItemKind3 != NULL_ID )
 		{
-			m_itemKindAry[ pItemProp.dwItemKind3 ].Add( &pItemProp );
+			if (pItemProp.dwItemRare != NULL_ID && pItemProp.dwItemRare < MAX_UNIQUE_SIZE) {
+				m_itemKindAry[pItemProp.dwItemKind3].emplace_back(&pItemProp);
+			}
 
 			switch( pItemProp.dwItemKind3 )
 			{
@@ -3776,41 +3778,29 @@ void CProject::OnAfterLoadPropItem()
 		}
 	}
 
+	for (int i = 0; i != MAX_ITEM_KIND3; ++i) {
+		auto & itemKindAry = m_itemKindAry[i];
+		auto & minMaxIdxAry = m_minMaxIdxAry[i];
 
-	ItemProp* ptmp;
-	for( int i = 0; i < MAX_ITEM_KIND3; i++ )
-	{
 		// sort
-		for( int j = 0; j < m_itemKindAry[i].GetSize() - 1; j++ )
-		{
-			for( int k = j + 1; k < m_itemKindAry[i].GetSize(); k++ )
-			{
-				if( ( (ItemProp*)m_itemKindAry[i].GetAt( k ) )->dwItemRare < ( (ItemProp*)m_itemKindAry[i].GetAt( j ) )->dwItemRare )
-				{
-					ptmp	= (ItemProp*)m_itemKindAry[i].GetAt( j );
-					m_itemKindAry[i].SetAt( j, (void*)m_itemKindAry[i].GetAt( k ) );
-					m_itemKindAry[i].SetAt( k, (void*)ptmp );
-				}
+		std::sort(
+			itemKindAry.begin(), itemKindAry.end(),
+			[](ItemProp * lhs, ItemProp * rhs) {
+				return lhs->dwItemRare < rhs->dwItemRare;
 			}
-		}
+		);
+
 		//
-		DWORD dwItemRare	= (DWORD)-1;
-		for( int j = 0; j < m_itemKindAry[i].GetSize(); j++ )
-		{
-			if( dwItemRare != ( (ItemProp*)m_itemKindAry[i].GetAt( j ) )->dwItemRare )
-			{
-				dwItemRare	= ( (ItemProp*)m_itemKindAry[i].GetAt( j ) )->dwItemRare;
-				if( dwItemRare != (DWORD)-1 )
-				{
-					m_minMaxIdxAry[i][dwItemRare].cx	= j;
-					m_minMaxIdxAry[i][dwItemRare].cy	= j;
-				}
+		DWORD lastSeen = NULL_ID;
+		for (size_t j = 0; j < itemKindAry.size(); j++) {
+			const ItemProp * itemProp = itemKindAry[j];
+
+			if (lastSeen != itemProp->dwItemRare) {
+				minMaxIdxAry[itemProp->dwItemRare].cx = j;
 			}
-			else
-			{
-				if( dwItemRare != (DWORD)-1 )
-					m_minMaxIdxAry[i][dwItemRare].cy	= j;
-			}
+
+			lastSeen = itemProp->dwItemRare;
+			minMaxIdxAry[itemProp->dwItemRare].cy = j;
 		}
 	}
 
@@ -4177,19 +4167,33 @@ BOOL CProject::LoadScriptPK( LPCTSTR lpszFileName )
 	return TRUE;
 }
 
+std::span<const ItemProp * const> CProject::GetItemKind3WithRarity(DROPKIND dropKind) const {
+	
+	dropKind.nMinUniq = std::min<short>(dropKind.nMinUniq, MAX_UNIQUE_SIZE);
+	dropKind.nMaxUniq = std::min<short>(dropKind.nMaxUniq, MAX_UNIQUE_SIZE);
 
-int	CProject::GetMinIdx( int nItemKind3, DWORD dwItemRare )
-{
-	if( dwItemRare >= MAX_UNIQUE_SIZE )
-		return -1;
-	return m_minMaxIdxAry[nItemKind3][dwItemRare].cx;
-}
+	int nMinIdx = -1;
+	int nMaxIdx = -1;
 
-int CProject::GetMaxIdx( int nItemKind3, DWORD dwItemRare )
-{
-	if( dwItemRare >= MAX_UNIQUE_SIZE )
-		return -1;
-	return m_minMaxIdxAry[nItemKind3][dwItemRare].cy;
+	for (int j = dropKind.nMinUniq; j <= dropKind.nMaxUniq; j++) {
+		nMinIdx = m_minMaxIdxAry[dropKind.dwIK3][j].cx;
+
+		if (nMinIdx != -1)
+			break;
+	}
+
+	for (int j = dropKind.nMaxUniq; j >= dropKind.nMinUniq; j--) {
+		nMaxIdx = m_minMaxIdxAry[dropKind.dwIK3][j].cy;
+		if (nMaxIdx != -1)
+			break;
+	}
+
+	if (nMinIdx < 0) return {};
+
+	return std::span<const ItemProp * const>(
+		m_itemKindAry[dropKind.dwIK3].begin() + nMinIdx,
+		m_itemKindAry[dropKind.dwIK3].begin() + nMaxIdx + 1
+	);
 }
 
 GUILDQUESTPROP*	CProject::GetGuildQuestProp( int nQuestId )
@@ -4408,34 +4412,15 @@ void CProject::OutputDropItem( void )
 			// dropkind
 			{
 				int nSize	= pMoverProp->m_DropKindGenerator.GetSize();
-				DROPKIND* pDropKind;
-				CPtrArray* pItemKindAry;
+				
 				for( int i = 0; i < nSize; i++ )
 				{
-					pDropKind	= pMoverProp->m_DropKindGenerator.GetAt( i );
-					pItemKindAry	= prj.GetItemKindAry( pDropKind->dwIK3 );
-					int nMinIdx	= -1,	nMaxIdx		= -1;
-					for( int j = pDropKind->nMinUniq; j <= pDropKind->nMaxUniq; j++ )
-					{
-						nMinIdx		= prj.GetMinIdx( pDropKind->dwIK3, j );
-						if( nMinIdx != -1 )
-							break;
-					}
-					for( int j = pDropKind->nMaxUniq; j >= pDropKind->nMinUniq; j-- )
-					{
-						nMaxIdx		= prj.GetMaxIdx( pDropKind->dwIK3, j );
-						if( nMaxIdx != -1 )
-							break;
-					}
-					if( nMinIdx < 0 || nMaxIdx < 0 )
-						continue;
+					DROPKIND * pDropKind = pMoverProp->m_DropKindGenerator.GetAt( i );
 
-					for( int a = nMinIdx; a <= nMaxIdx; a++ )
-					{
-						ItemProp* pItemProp		= (ItemProp*)pItemKindAry->GetAt( a );
-						if( !pItemProp )
-							continue;
+					const auto & pItemProps = prj.GetItemKind3WithRarity(*pDropKind);
 
+					for (const ItemProp * pItemProp : pItemProps)
+					{
 						CString s1;
 						s1.Format( "\n \t%s", pItemProp->szName );
 						for( int k = 10; k >= 0; k-- )

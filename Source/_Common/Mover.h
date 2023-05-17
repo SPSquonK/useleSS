@@ -1140,7 +1140,10 @@ public:
 	void			UpdateItemBank( int nSlot, BYTE nId, short newQuantity );
 	[[nodiscard]] CItemElem * GetItemBankId( int nSlot, DWORD dwId );
 	void			RemoveItemBankId( int nSlot, DWORD dwId );
-	void			GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, const CVendor::CategoryItem & pVendor );
+	void			GenerateVendorItem(
+		boost::container::static_vector<const ItemProp *, MAX_VENDOR_INVENTORY> & itemProps,
+		const CVendor::CategoryItem & pVendor
+	);
 	BOOL			DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETYPE sutType = SUT_NORMAL, BOOL bControl = FALSE, const int nCastingTime = 0 );		// dwSkill/nLevel만 가지고도 사용할 수 있는 버전.
 	void			SetPKTargetLimit( int nSec );
 	void			ClearCmd(); 
