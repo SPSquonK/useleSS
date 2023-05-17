@@ -113,15 +113,9 @@ void CHARACTER::Clear()
 ////////////////////////////////////////////////////////////////////////////////////
 // CDropItemGenerator
 ////////////////////////////////////////////////////////////////////////////////////
-DROPITEM* CDropItemGenerator::GetAt( int nIndex, BOOL bUniqueMode, float fProbability )
+bool DROPITEM::IsDropped( BOOL bUniqueMode, float fProbability ) const
 {
-	//ASSERT( nIndex < m_dwSize );
-	ASSERT( nIndex < (int)GetSize() );
 
-	if( fProbability > 0.0f ) 
-	{
-		DROPITEM* lpDropItem	= &m_dropItems[ nIndex ];
-		DWORD dwProbability		= lpDropItem->dwProbability;
 		DWORD dwRand = xRandom( 3000000000 );
 #if defined(__WORLDSERVER) // __EVENTLUA, __WORLDSERVER
 		dwRand = static_cast<DWORD>(dwRand / fProbability );
@@ -131,29 +125,8 @@ DROPITEM* CDropItemGenerator::GetAt( int nIndex, BOOL bUniqueMode, float fProbab
 		{
 			dwRand /= 2;
 		}
-		// ����(����ũ)�� �ֳ� �˻�
-		if( lpDropItem->dwLevel != 0 )
-		{
-			ItemProp* pItemProp	= prj.GetItemProp( lpDropItem->dwIndex );
-			if( pItemProp && (int)pItemProp->dwItemLV > 0 )
-			{
-				int nValue	= dwProbability / pItemProp->dwItemLV;
-				if( nValue < 21 )	nValue	= 21;
-				dwProbability	= nValue - 20;
-			}
-		}
 		*/
-		return( dwRand < dwProbability? lpDropItem: NULL );
-	}
-	else 
-	{
-		return &m_dropItems[ nIndex ];
-	}
-}
-
-void CDropItemGenerator::AddTail( CONST DROPITEM & rDropItem, const char* s )
-{
-	m_dropItems.push_back( rDropItem );
+		return dwRand < dwProbability;
 }
 
 // CQuestItemGenerator
@@ -2513,7 +2486,7 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 				di.dwNumber	= script.GetNumber();	// number
 				script.GetToken();	// )
 			#ifdef __WORLDSERVER
-				pProp->m_DropItemGenerator.AddTail( di, pProp->szName );	// copy
+				pProp->m_DropItemGenerator.AddDropItem( di );
 			#endif
 				di.dwNumber2 = 0;
 			}
@@ -2551,7 +2524,7 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 				di.dwNumber2 = script.GetNumber();	// gold max
 				script.GetToken();	// )
 			#ifdef __WORLDSERVER
-				pProp->m_DropItemGenerator.AddTail( di, pProp->szName );	// copy
+				pProp->m_DropItemGenerator.AddDropItem( di );
 			#endif
 			}
 			else if( script.Token == "Transform" )
@@ -3222,7 +3195,7 @@ BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
 			{
 				MoverProp* pProp	= m_pPropMover + i;
 				if( pProp->dwID && pProp->dwLevel >= dwMinLevel && pProp->dwLevel <= dwMaxLevel	)
-					pProp->m_DropItemGenerator.AddTail( di, pProp->szName );	// copy
+					pProp->m_DropItemGenerator.AddDropItem( di );
 			}
 		}
 	} while( s.tok != FINISHED );
@@ -3230,32 +3203,6 @@ BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
 	return TRUE;
 }
 
-BOOL CProject::SortDropItem( void )
-{
-	// DROPITEM�� dwProbability ������������ Sortting 
-	for( int i = 0; i < m_nMoverPropSize; i++ )
-	{
-		MoverProp* pProp	= m_pPropMover + i;
-		int nDropItemCount = pProp->m_DropItemGenerator.GetSize();
-
-		DROPITEM *pDropItem0, *pDropItem1, *pDropItemTemp;		
-		for( int i = 0 ; i < nDropItemCount - 1 ; ++i )
-		{
-			pDropItem0 = pProp->m_DropItemGenerator.GetAt( i, FALSE, 0.0f );
-			for( int j = i + 1 ; j < nDropItemCount ; ++j )
-			{
-				pDropItem1 = pProp->m_DropItemGenerator.GetAt( j, FALSE, 0.0f );
-				if( pDropItem0->dwProbability > pDropItem1->dwProbability )
-				{
-					pDropItemTemp = pDropItem0;
-					pDropItem0 = pDropItem1;
-					pDropItem1 = pDropItemTemp;
-				}
-			}
-		}
-	}
-	return TRUE;
-}
 #endif	// __WORLDSERVER
 
 
@@ -4424,18 +4371,14 @@ void CProject::OutputDropItem( void )
 			TRACE( "%d\n", i );
 			s.Format( "\n%s\t%d", pMoverProp->szName, pMoverProp->m_DropItemGenerator.m_dwMax );
 			// dropitem
-			{
-				int cbDropItem	= pMoverProp->m_DropItemGenerator.GetSize();
-				int nNumber	= 0;
-				DROPITEM* lpDropItem;
-				for( int i = 0; i < cbDropItem; i++ )
-				{
-					if( lpDropItem = pMoverProp->m_DropItemGenerator.GetAt( i, FALSE, 0.0f ) )
-					{
+
+				for (const DROPITEM & rDropItem : pMoverProp->m_DropItemGenerator.GetDropItems()) {
+					const DROPITEM * lpDropItem = &rDropItem;
+
 						if( lpDropItem->dtType == DROPTYPE_NORMAL )
 						{
 							DWORD dwProbability		= lpDropItem->dwProbability;
-							ItemProp* pItemProp	= prj.GetItemProp( lpDropItem->dwIndex );
+							const ItemProp* pItemProp	= prj.GetItemProp( lpDropItem->dwIndex );
 							if( lpDropItem->dwLevel != 0 )
 							{
 								if( pItemProp && (int)pItemProp->dwItemLV > 0 )
@@ -4458,10 +4401,10 @@ void CProject::OutputDropItem( void )
 							str.Format(" \tPENYA %d-%d", lpDropItem->dwNumber, lpDropItem->dwNumber2 ); 
 							s	+= str;
 						}
-					}
+
 				}
 				sLog[nWrite]	+= s;
-			}
+
 			// dropkind
 			{
 				int nSize	= pMoverProp->m_DropKindGenerator.GetSize();

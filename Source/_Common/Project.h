@@ -888,7 +888,6 @@ public:
 
 #ifdef __WORLDSERVER
 	CUser*			GetUser( OBJID objid );
-	BOOL			SortDropItem( void );
 private:
 	int			m_nMaxSequence;
 public:

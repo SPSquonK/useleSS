@@ -5420,24 +5420,17 @@ float CMover::SubDieDecExp( BOOL bTransfer, DWORD dwDestParam, BOOL bResurrectio
 #endif // WORLDSERVER
 
 
+#ifdef __WORLDSERVER
 
-BOOL CMover::DropItemByDied( CMover* pAttacker )
-{
-	BOOL bResult;
-	OBJID objid = GetMaxEnemyHitID();
-	if( objid != NULL_ID )
-	{
-		CMover* pMover	= prj.GetMover( objid );
-		if( IsValidObj( pMover ) )
-			bResult = DropItem( pMover );
-		else
-			objid = NULL_ID;
+BOOL CMover::DropItemByDied( CMover* pAttacker ) {
+	if (const OBJID objid = GetMaxEnemyHitID(); objid != NULL_ID) {
+		CMover * pMover = prj.GetMover(objid);
+		if (IsValidObj(pMover)) {
+			return DropItem(pMover);
+		}
 	}
 
-	if( objid == NULL_ID )
-		bResult = DropItem( pAttacker );
-
-	return bResult;
+	return DropItem( pAttacker );
 }
 
 // 몹이 죽어서 아이템을 드랍할때 사용
@@ -5446,7 +5439,6 @@ BOOL CMover::DropItemByDied( CMover* pAttacker )
 BOOL CMover::DropItem( CMover* pAttacker )
 {
 		MoverProp* lpMoverProp	= GetProp();
-#ifdef __WORLDSERVER
 	if( pAttacker->IsPlayer() && IsNPC() )
 	{
 #ifdef __VTN_TIMELIMIT
@@ -5798,13 +5790,12 @@ BOOL CMover::DropItem( CMover* pAttacker )
 
 			if( xRandom( 100 ) < fItemDropRate )	// 아이템을 드롭할지 말지 결정. 레벨차가 많이 나면 아예 떨어트리지 않는다.
 			{
-				int nSize	= lpMoverProp->m_DropItemGenerator.GetSize();
 				int nNumber	= 0;
-				DROPITEM* lpDropItem;
 		
-				for( int i = 0; i < nSize; i++ )
-				{
-					if( ( lpDropItem = lpMoverProp->m_DropItemGenerator.GetAt( i, bUnique, GetPieceItemDropRateFactor( pAttacker ) ) ) != NULL )
+				for (const DROPITEM & rDropItem : lpMoverProp->m_DropItemGenerator.GetDropItems()) {
+					const DROPITEM * lpDropItem = &rDropItem;
+
+					if ( lpDropItem->IsDropped(bUnique, GetPieceItemDropRateFactor(pAttacker)))
 					{
 						if( lpDropItem->dtType == DROPTYPE_NORMAL )
 						{
@@ -5996,7 +5987,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 					///////////
 				} // for nSize
 
-				nSize	= lpMoverProp->m_DropKindGenerator.GetSize();
+				int nSize	= lpMoverProp->m_DropKindGenerator.GetSize();
 				DROPKIND* pDropKind;
 				CPtrArray* pItemKindAry;
 				int nAbilityOption; //, nDropLuck;
@@ -6021,17 +6012,11 @@ BOOL CMover::DropItem( CMover* pAttacker )
 					}
 					if( nMinIdx < 0 || nMaxIdx < 0 )
 					{
-#ifdef __INTERNALSERVER
-						WriteLog( "dropkind, 1, dwIndex = %d, nIndex = %d", lpMoverProp->dwID, i );
-#endif	// __INTERNALSERVER
 						continue;
 					}
 					ItemProp* pItemProp		= (ItemProp*)pItemKindAry->GetAt( nMinIdx + xRandom( nMaxIdx - nMinIdx + 1 ) );
 					if( NULL == pItemProp )
 					{
-#ifdef __INTERNALSERVER
-						WriteLog( "dropkind, 2, dwIndex = %d, nIndex = %d", lpMoverProp->dwID, i );
-#endif	// __INTERNALSERVER
 						continue;
 					}
 
@@ -6136,22 +6121,18 @@ BOOL CMover::DropItem( CMover* pAttacker )
 	
 	if( IsNPC() )	// 몹이 죽었을때..
 	{
-		MoverProp* pMoverProp	= GetProp();
-		if( pMoverProp->m_nLoot == 2 )	// 2아 d옵션.  아이템 먹고 뱉기까지 하는 옵션.
+		if(lpMoverProp->m_nLoot == 2 )	// 2아 d옵션.  아이템 먹고 뱉기까지 하는 옵션.
 		{
-			int nSize = m_Inventory.GetSize();
-			int i;
-			CItemElem *pElem = NULL;
-			for( i = 0; i < nSize; i ++ )
+			const int nSize = m_Inventory.GetSize();
+			for( int i = 0; i < nSize; i ++ )
 			{
-				pElem = m_Inventory.GetAt( i );
+				CItemElem * pElem = m_Inventory.GetAt( i );
 				if( pElem )
 				{
 					D3DXVECTOR3 vPos = GetPos();
-				#ifdef __WORLDSERVER
 					vPos.x += ( xRandomF(2.0f) - 1.0f );
 					vPos.z += ( xRandomF(2.0f) - 1.0f );
-				#endif
+
 					CItem *pItem = DropItem( i, pElem->m_nItemNum, vPos, FALSE );
 					pItem->m_idOwn	= pAttacker->GetId();
 					pItem->m_dwDropTime		= timeGetTime();
@@ -6160,10 +6141,10 @@ BOOL CMover::DropItem( CMover* pAttacker )
 		}
 	}
 
-#endif	// __WORLDSERVER
 
 	return TRUE;
 }
+#endif	// __WORLDSERVER
 
 // this오브젝트에다 찜한사람(JJimer -_-;;;) 의 아이디를 박아둬서 
 // this가 찜당했다는걸 표시.

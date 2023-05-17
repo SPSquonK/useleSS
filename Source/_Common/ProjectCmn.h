@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <exception>
+#include <span>
 #include "FlyFFTypes.h"
 #include "defineJob.h"
 
@@ -473,7 +474,7 @@ enum DROPTYPE
 	DROPTYPE_SEED,
 };
 
-typedef struct	tagDROPITEM
+struct DROPITEM
 {
 	DROPTYPE	dtType;
 	DWORD	dwIndex;
@@ -481,8 +482,9 @@ typedef struct	tagDROPITEM
 	DWORD	dwLevel;
 	DWORD	dwNumber;
 	DWORD	dwNumber2;	// Min, Max¡ﬂ Max∑Œ æ∏.
-}
-DROPITEM,	*LPDROPITEM;
+
+	[[nodiscard]] bool IsDropped(BOOL bUniqueMode, float fProbability = 0.0f) const;
+};
 
 typedef	struct	tagDROPKIND
 {
@@ -509,24 +511,17 @@ EVENTITEM,	*PEVENTITEM;
 
 #define	MAX_DROPKIND	80
 
-class CDropItemGenerator
-{
+class CDropItemGenerator final {
 private:
 	std::vector<DROPITEM>	m_dropItems;
 
 public:
-	DWORD				m_dwMax;
+	DWORD				m_dwMax = 0;
 
 public:
-//	Contructions
-	CDropItemGenerator() { m_dwMax = 0; }
-	virtual	~CDropItemGenerator()	{	Clear();	}
+	void AddDropItem(const DROPITEM & rDropItem) { m_dropItems.emplace_back(rDropItem); }
 
-//	Operations
-	void		AddTail( CONST DROPITEM & rDropItem, const char* s );
-	void	Clear( void )	{	m_dropItems.clear();	}
-	DWORD		GetSize( void )	{	return m_dropItems.size();	}
-	DROPITEM*	GetAt( int nIndex, BOOL bUniqueMode, float fProbability = 0.0f );
+	std::span<const DROPITEM> GetDropItems() { return m_dropItems; }
 };
 
 class CDropKindGenerator

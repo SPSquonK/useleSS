@@ -1141,7 +1141,6 @@ public:
 	[[nodiscard]] CItemElem * GetItemBankId( int nSlot, DWORD dwId );
 	void			RemoveItemBankId( int nSlot, DWORD dwId );
 	void			GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, const CVendor::CategoryItem & pVendor );
-	BOOL			DropItemByDied( CMover* pAttacker );		// 죽어서 떨어트리는 드랍.
 	BOOL			DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETYPE sutType = SUT_NORMAL, BOOL bControl = FALSE, const int nCastingTime = 0 );		// dwSkill/nLevel만 가지고도 사용할 수 있는 버전.
 	void			SetPKTargetLimit( int nSec );
 	void			ClearCmd(); 
@@ -1423,7 +1422,6 @@ private:
 	void			ProcessTarget();
 #endif // __CLIENT
 
-	BOOL			DropItem( CMover* pAttacker );		// 죽어서 떨어트리는 드랍.
 	void			EnforcedGhostCorr();
 	void			ApproachGhostAngle();
 	void			OnArriveAtPos();
@@ -1433,6 +1431,11 @@ private:
 	void			SetCmd( OBJACT cmd, int nParam1 = 0, int nParam2 = 0, int nParam3 = 0 );
 	void			SetCmdParam( int nIdx, int nValue ) { m_nCParam[nIdx] = nValue; }
 	BOOL			__SetQuest( LPQUEST lpQuest, LPQUEST lpNewQuest );
+
+#ifdef __WORLDSERVER
+public:		BOOL DropItemByDied(CMover * pAttacker);		// 죽어서 떨어트리는 드랍.
+private:	BOOL DropItem(CMover * pAttacker);		// 죽어서 떨어트리는 드랍.
+#endif
 
 public:
 #ifdef __CLIENT
