@@ -16,6 +16,7 @@ public:
 	int  GetSize() { return static_cast<int>(m_offsets.size()); }
 	void SetAtGrow(size_t nIndex, const T & pData);
 	T * GetAt(DWORD dwIndex);
+	const T * GetAt(DWORD dwIndex) const;
 	void Optimize();
 	void RemoveAll() { *this = CFixedArray(); }
 
@@ -34,6 +35,11 @@ template <class T> inline CFixedArray<T>::CFixedArray() {
 }
 
 template <class T> inline T * CFixedArray<T>::GetAt(DWORD dwIndex) {
+	if (dwIndex >= m_offsets.size()) return nullptr;
+	return m_offsets[dwIndex];
+}
+
+template <class T> inline const T * CFixedArray<T>::GetAt(DWORD dwIndex) const {
 	if (dwIndex >= m_offsets.size()) return nullptr;
 	return m_offsets[dwIndex];
 }

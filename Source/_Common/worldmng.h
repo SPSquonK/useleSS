@@ -7,14 +7,12 @@ static_assert(false, "worldmng.h included in another project than World or Clien
 #include <vector>
 #include <memory>
 
-typedef struct tagWORLD
-{
+struct WORLD {
 	TCHAR	m_szFileName[128];
 	TCHAR	m_szWorldName[128];
 	DWORD	m_dwId;
-	BOOL	IsValid()	{	return( m_szFileName[0] != '\0' );	}
-}
-WORLD,* LPWORLD;
+	[[nodiscard]] bool IsValid() const { return m_szFileName[0] != '\0'; }
+};
 
 #define MAX_WORLD	256
 
@@ -61,11 +59,10 @@ public:
 #endif	// __WOLDSERVER	--------------------------------------------------------
 
 //	common	--------------------------------------------------------------------
-private:
-	int		m_nSize;
-	void	LoadRevivalPos( DWORD dwWorldId, LPCTSTR lpszWorld );		// as loading script, it is called
-
 #ifdef __WORLDSERVER
+private:
+	void	LoadRevivalPos(DWORD dwWorldId, LPCTSTR lpszWorld);		// as loading script, it is called
+
 public:
 	const REGIONELEM * GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey ) const;
 	const REGIONELEM * GetNearRevivalPosChao( DWORD dwWorldId, const D3DXVECTOR3 & vPos ) const;
@@ -82,9 +79,12 @@ public:
 	CWorldMng();
 	virtual	~CWorldMng();
 //	Operations
-	LPWORLD	GetWorldStruct( OBJID idWorld )	{ return (LPWORLD)m_aWorld.GetAt( idWorld ); }
+	const WORLD * GetWorldStruct(OBJID idWorld) const { return m_aWorld.GetAt(idWorld); }
 	BOOL	LoadScript( LPCTSTR lpszFileName );
+
+#ifdef __WORLDSERVER
 	void LoadAllMoverDialog();
+#endif
 
 #ifdef __MAP_SECURITY
 	void	AddMapCheckInfo( const char* szFileName );

@@ -17,11 +17,10 @@ extern float s_fFogEnd;
 #include "InstanceDungeonBase.h"
 
 
-BOOL CWorld::OpenWorld( OBJID idWorld, BOOL bDir )
-{
-	LPWORLD lpWorld	= g_WorldMng.GetWorldStruct( idWorld );
+BOOL CWorld::OpenWorld( OBJID idWorld, BOOL bDir ) {
+	const WORLD * lpWorld = g_WorldMng.GetWorldStruct(idWorld);
 	ASSERT( lpWorld->IsValid() );
-	return( OpenWorld( lpWorld->m_szFileName, bDir ) );
+	return OpenWorld(lpWorld->m_szFileName, bDir);
 }
 
 const char* DEFAULT_FNAME = "default";

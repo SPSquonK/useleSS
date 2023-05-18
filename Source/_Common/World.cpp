@@ -211,15 +211,14 @@ void CWorld::CalcBound()
 	WORLD_HEIGHT = MAP_SIZE * m_nLandHeight;
 }
 
-void CWorld::LoadAllMoverDialog()
-{
 #ifdef __WORLDSERVER
+void CWorld::LoadAllMoverDialog() {
 	for (CObj * pObj : m_Objs.ValidObjs()) {
 		if(pObj->GetType() == OT_MOVER )
 			((CMover*)pObj)->LoadDialog();
 	}
-#endif
 }
+#endif
 
 #ifdef __CLIENT
 // pObj는 CItem도 들어온다.

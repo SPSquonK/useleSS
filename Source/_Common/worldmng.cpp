@@ -28,7 +28,6 @@ CWorldMng	g_WorldMng;
 
 CWorldMng::CWorldMng()
 {
-	m_nSize = 0;
 }
 
 
@@ -123,7 +122,7 @@ BOOL CWorldMng::AddObj( CObj* pObj, DWORD dwWorldID, BOOL bAddItToGlobalId )
 #else	// __WORLDSERVER
 
 CWorld* CWorldMng::Open( LPDIRECT3DDEVICE9 pd3dDevice, OBJID idWorld ) {
-	WORLD * lpWorld = GetWorldStruct(idWorld);
+	const WORLD * lpWorld = GetWorldStruct(idWorld);
 	if (!lpWorld) return nullptr;
 
 	CWorld* pWorld	= Open( pd3dDevice, lpWorld->m_szFileName );
@@ -169,9 +168,6 @@ BOOL CWorldMng::LoadScript( LPCTSTR lpszFileName )
 	if( scanner.Load( lpszFileName ) == FALSE )
 		return FALSE;
 
-	LPWORLD lpWorld;
-	
-	m_nSize		= 0;
 	int nBrace	= 1;
 	scanner.SetMark();
 	int i	= scanner.GetNumber();	// folder or id
@@ -184,7 +180,6 @@ BOOL CWorldMng::LoadScript( LPCTSTR lpszFileName )
 			{
 				scanner.SetMark();
 				i	= scanner.GetNumber();	// folder or id
-				if( i > m_nSize )	m_nSize	= i;
 				continue;
 			}
 			if( nBrace == 0 )
@@ -196,7 +191,7 @@ BOOL CWorldMng::LoadScript( LPCTSTR lpszFileName )
 		if( scanner.Token == "SetTitle" )
 		{
 			WORLD* pWorld = m_aWorld.GetAt( i );
-			if( pWorld != NULL )
+			if( pWorld )
 			{
 				scanner.GetToken(); // (
 				strcpy(	pWorld->m_szWorldName, prj.GetLangScript( scanner ) );				
@@ -210,8 +205,6 @@ BOOL CWorldMng::LoadScript( LPCTSTR lpszFileName )
 		{
 			scanner.GoMark();
 			i	= scanner.GetNumber(); // id
-			if( i > m_nSize )	m_nSize		= i;
-
 
 			WORLD world;
 			::memset( &world, 0, sizeof(world) );
@@ -225,26 +218,23 @@ BOOL CWorldMng::LoadScript( LPCTSTR lpszFileName )
 
 		scanner.SetMark();
 		i	= scanner.GetNumber();	// texture fileName
-		if( i > m_nSize )	m_nSize		= i;
 	}
 	m_aWorld.Optimize();
-	m_nSize++;
 
-	for( i = 0; i < m_nSize; i++ )
-	{
-		lpWorld	= GetWorldStruct( i );
-		if( lpWorld && lpWorld->IsValid() )
-		{
-			LoadRevivalPos( lpWorld->m_dwId, lpWorld->m_szFileName );
+#ifdef __WORLDSERVER
+	for (const WORLD & pWorld : m_aWorld) {
+		if (pWorld.IsValid()) {
+			LoadRevivalPos(pWorld.m_dwId, pWorld.m_szFileName);
 		}
 	}
+#endif
 
 	return TRUE;
 }
 
+#ifdef __WORLDSERVER
 void CWorldMng::LoadRevivalPos( DWORD dwWorldId, LPCTSTR lpszWorld )
 {
-#ifdef __WORLDSERVER
 	TCHAR lpFileName[MAX_PATH];
 	sprintf( lpFileName, "%s%s\\%s.rgn", DIR_WORLD, lpszWorld, lpszWorld );
 	CScanner s;
@@ -404,19 +394,13 @@ void CWorldMng::LoadRevivalPos( DWORD dwWorldId, LPCTSTR lpszWorld )
 			s.GetToken();
 		}
 	}
-#endif	// __WORLDSERVER
 }
-void CWorldMng::LoadAllMoverDialog()
-{
-#ifdef __WORLDSERVER
+
+void CWorldMng::LoadAllMoverDialog() {
 	for (auto & pWorld : m_worlds) {
 		pWorld->LoadAllMoverDialog();
 	}
-#endif //__WORLDSERVER
 }
-
-
-#ifdef __WORLDSERVER
 
 const REGIONELEM * CWorldMng::GetRevivalPosChao( DWORD dwWorldId, LPCTSTR sKey ) const
 {

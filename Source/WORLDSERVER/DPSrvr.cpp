@@ -2674,8 +2674,8 @@ void CDPSrvr::OnSellItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 // 패스워드 변경창을 띄울것인지 패스워드 확인창을 띄을것인지를 알려준다
 void CDPSrvr::OnOpenBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-	DWORD	dwId, dwItemId;
-	ar >> dwId >> dwItemId;
+	DWORD	dwId;
+	ar >> dwId;
 
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
@@ -2691,12 +2691,12 @@ void CDPSrvr::OnOpenBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		if( 0 == strcmp( pUser->m_szBankPass, "0000") )
 		{
 			pUser->SendSnapshotNoTarget<
-				SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
-			>(Subsnapshot::Bank::InitialRequirePassword, dwId, dwItemId);
+				SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID
+			>(Subsnapshot::Bank::InitialRequirePassword, dwId);
 		} else {
 			pUser->SendSnapshotNoTarget<
-				SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID, DWORD
-			>(Subsnapshot::Bank::AskCurrentPassword, dwId, dwItemId);
+				SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID
+			>(Subsnapshot::Bank::AskCurrentPassword, dwId);
 		}
 	}
 }

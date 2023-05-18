@@ -396,7 +396,7 @@ void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 	boost::container::flat_set<WorldId> badWorlds;
 
 	for (const WorldId pJurisdiction : desc.m_lspJurisdiction) {
-		WORLD * lpWorld = g_WorldMng.GetWorldStruct(pJurisdiction);
+		const WORLD * lpWorld = g_WorldMng.GetWorldStruct(pJurisdiction);
 		if (!lpWorld) {
 			Error(__FUNCTION__ ": The world #%lu has no world Struct", pJurisdiction);
 			badWorlds.emplace(pJurisdiction);
