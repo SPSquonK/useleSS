@@ -7765,23 +7765,16 @@ void CDPClient::SendCloseShopWnd( void )
 	SendHdr( PACKETTYPE_CLOSESHOPWND );
 }
 
-void CDPClient::SendOpenBankWnd( DWORD dwId, DWORD dwItemId )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_OPENBANKWND, DPID_UNKNOWN );
-	ar << dwId << dwItemId;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendOpenBankWnd(const DWORD dwId) {
+	SendPacket<PACKETTYPE_OPENBANKWND, OBJID>(dwId);
 }
 
-void CDPClient::SendOpenGuildBankWnd()
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_BANK_WND, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendOpenGuildBankWnd() {
+	SendPacket<PACKETTYPE_GUILD_BANK_WND>();
 }
 
-void CDPClient::SendCloseGuildBankWnd()
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_BANK_WND_CLOSE, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendCloseGuildBankWnd() {
+	SendPacket<PACKETTYPE_GUILD_BANK_WND_CLOSE>();
 }
 
 void CDPClient::SendCloseBankWnd() {
@@ -8514,7 +8507,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	
 	if( pItemProp->dwID == II_SYS_SYS_SCR_CUSTODY )
 	{
-		SendOpenBankWnd( pItemBase->m_dwObjId, pItemBase->m_dwItemId );
+		SendOpenBankWnd( pItemBase->m_dwObjId );
 		return;
 	}
 	

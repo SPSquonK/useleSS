@@ -202,7 +202,7 @@ public:
 		
 	void	SendExp( EXPINTEGER nExp );
 
-	void	SendOpenBankWnd( DWORD dwId, DWORD dwItemId );
+	void	SendOpenBankWnd( DWORD dwId );
 	
 	void	SendFocusObj();
 

@@ -4952,7 +4952,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 						break;
 					}
 				}
-				g_DPlay.SendOpenBankWnd( NULL_ID, 0 );
+				g_DPlay.SendOpenBankWnd( NULL_ID );
 				break;
 			}
 		case	MMI_GUILDBANKING:
