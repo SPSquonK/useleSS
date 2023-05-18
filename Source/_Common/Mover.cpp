@@ -4164,7 +4164,7 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 	}
 
 	// 클라이언트는 이쪽으로 오지 않음.
-	CMover *pAttacker = pAttackCtrl->ToMover();
+	CMover *pAttacker = pAttackCtrl ? pAttackCtrl->ToMover() : nullptr;
 
 	m_bLastPK = false;
 	if( pAttacker && pAttacker != this && pAttacker->IsPlayer() )		// 자살한게 아니고, 플레이어에게 죽었냐 아니냐.
