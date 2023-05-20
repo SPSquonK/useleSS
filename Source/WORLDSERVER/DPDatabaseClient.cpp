@@ -1366,23 +1366,17 @@ void CDPDatabaseClient::OnBaseGameSetting( CAr & ar, DPID, DPID )
 		for (auto & pWorld : g_WorldMng.m_worlds) {
 			pWorld->LoadRegion();
 #ifdef __EVENT_0117
-		#ifdef __LAYER_1021
 			CRespawner* pRespawner	= pWorld->m_respawner.Proto();
-		#else	// __LAYER_1021
-			CRespawner* pRespawner	= &pWorld->m_respawner;
-		#endif	// __LAYER_1021
-			for( int i = 0; i < (int)( pRespawner->m_vRespawnInfoRegion.size() ); ++i )
-			{
-				CRespawnInfo* pRespawnInfo	= &( pRespawner->m_vRespawnInfoRegion[i] );
+
+			for (CRespawnInfo & rRespawnInfo : pRespawner->m_vRespawnInfoRegion) {
+
+				CRespawnInfo* pRespawnInfo	= &rRespawnInfo;
 		
 				if( pRespawnInfo->m_dwType == OT_MOVER )	// 몬스터 리스폰
 				{
-					MoverProp* pMoverProp	= prj.GetMoverProp( pRespawnInfo->m_dwIndex );
+					const MoverProp* pMoverProp	= prj.GetMoverProp( pRespawnInfo->m_dwIndex );
 					if( pMoverProp && pMoverProp->dwFlying == 0 && pMoverProp->dwLevel > 0 && pMoverProp->dwLevel <= MAX_MONSTER_LEVEL )
 					{
-#ifdef _DEBUG
-						TRACE( "%d, (%d, %d, %d, %d)\n", pRespawnInfo->m_dwIndex, pRespawnInfo->m_rect.left, pRespawnInfo->m_rect.top, pRespawnInfo->m_rect.right, pRespawnInfo->m_rect.bottom );
-#endif	// _DEBUG
 						CEventGeneric::GetInstance()->AddRegionGeneric( pMoverProp->dwLevel, pWorld->GetID(), pRespawnInfo );
 #ifdef __EVENTLUA_SPAWN
 						if( pWorld->GetID() == WI_WORLD_MADRIGAL )	// 현재까지는 마드리갈 대륙에만 출현한다.
@@ -1401,6 +1395,9 @@ void CDPDatabaseClient::OnBaseGameSetting( CAr & ar, DPID, DPID )
 
 void CDPDatabaseClient::OnMonsterRespawnSetting( CAr & ar, DPID, DPID )
 {
+	CWorld * pWorld = g_WorldMng.GetWorld(WI_WORLD_MADRIGAL);
+	if (!pWorld) return;
+
 	char szMonsterName[32];
 	D3DXVECTOR3	vPos;
 	int		nAddIndex;
@@ -1425,12 +1422,7 @@ void CDPDatabaseClient::OnMonsterRespawnSetting( CAr & ar, DPID, DPID )
 		pMoverProp	= prj.GetMoverProp( szMonsterName );
 		
 		if( pMoverProp )
-		{
-			CWorld* pWorld	= g_WorldMng.GetWorld( WI_WORLD_MADRIGAL );
-			
-			if( pWorld == NULL )
-				return;
-			
+		{			
 			CRespawnInfo ri;
 			ri.m_dwType = OT_MOVER;
 			ri.m_dwIndex = pMoverProp->dwID;
@@ -1445,7 +1437,7 @@ void CDPDatabaseClient::OnMonsterRespawnSetting( CAr & ar, DPID, DPID )
 			ri.m_uTime = nTime;
 			ri.m_nGMIndex = nAddIndex;
 			
-			pWorld->m_respawner.Add( ri, SpawnType::Script);
+			pWorld->m_respawner.AddScriptSpawn(ri);
 		}
 	} 
 
@@ -1455,12 +1447,7 @@ void CDPDatabaseClient::OnMonsterRespawnSetting( CAr & ar, DPID, DPID )
 	for( int i = 0 ; i < nRemoveSize ; ++ i )
 	{
 		ar >> nRemoveIndex;
-		
-		CWorld* pWorld	= g_WorldMng.GetWorld( WI_WORLD_MADRIGAL );
-		
-		if( pWorld == NULL )
-			return;
-		pWorld->m_respawner.RemoveRegionSpawn( nRemoveIndex );
+		pWorld->m_respawner.RemoveScriptSpawn( nRemoveIndex );
 	}
 }
 

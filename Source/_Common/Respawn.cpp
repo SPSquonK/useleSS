@@ -94,34 +94,31 @@ void CRespawnInfo::Increment(const BOOL bActiveAttack) {
 // CRespawner
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-int CRespawner::Add( CRespawnInfo & ri, SpawnType nType ) {
-	if (nType == SpawnType::Region) {
-		ri.m_uTime /= 2;
-		ri.m_nGMIndex = m_vRespawnInfoRegion.size();
-		m_vRespawnInfoRegion.push_back(ri);
-		return m_vRespawnInfoRegion.size() - 1;
-	} else if (nType == SpawnType::Script) {
-		const auto i = std::find_if(
-			m_vRespawnInfoScript.begin(), m_vRespawnInfoScript.end(),
-			[nRespawnNo = ri.m_nGMIndex](const CRespawnInfo & self) {
-				return self.m_nGMIndex == nRespawnNo;
-			}
-		);
+void CRespawner::AddRegionSpawn(CRespawnInfo ri) {
+	ri.m_uTime /= 2;
+	ri.m_nGMIndex = m_vRespawnInfoRegion.size();
+	m_vRespawnInfoRegion.emplace_back(ri);
+}
 
-		if (i != m_vRespawnInfoScript.end()) {
-			Error("CRespawner::Add 같은 ID 발견 : %d, %d, %f, %f, %d\n", ri.m_dwIndex, ri.m_dwType, ri.m_vPos.x, ri.m_vPos.z, nType);
-			return -1;
+bool CRespawner::AddScriptSpawn(CRespawnInfo & ri) {
+	const bool spawnNoAlreadyExists = std::any_of(
+		m_vRespawnInfoScript.begin(), m_vRespawnInfoScript.end(),
+		[nRespawnNo = ri.m_nGMIndex](const CRespawnInfo & self) {
+			return self.m_nGMIndex == nRespawnNo;
 		}
+	);
 
-		m_vRespawnInfoScript.push_back(ri);
-		return m_vRespawnInfoScript.size() - 1;
+	if (spawnNoAlreadyExists) {
+		Error("CRespawner::AddScriptSpawn : Collision with %d, %d, %f, %f\n", ri.m_dwIndex, ri.m_dwType, ri.m_vPos.x, ri.m_vPos.z);
+		return false;
 	}
 
-	return -1;
+	m_vRespawnInfoScript.push_back(ri);
+	return true;
 }
 
 // 여기서는 Remove 상태만 세팅 
-bool CRespawner::RemoveRegionSpawn(const int nRespawnNo) {
+bool CRespawner::RemoveScriptSpawn(const int nRespawnNo) {
 	if (nRespawnNo < 0)	return false;
 
 	const auto i = std::find_if(
@@ -375,16 +372,24 @@ bool CRespawnInfo::IsInTimeRange(const int now, const int min, const int max) {
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef __LAYER_1021
 
-int CLayerdRespawner::Add( CRespawnInfo & ri, SpawnType nType ) {
-	return m_proto.Add( ri, nType );
+void CLayerdRespawner::AddRegionSpawn(CRespawnInfo & ri) {
+	m_proto.AddRegionSpawn(ri);
 }
 
-bool CLayerdRespawner::RemoveRegionSpawn(const int nRespawnNo) {
+bool CLayerdRespawner::AddScriptSpawn(CRespawnInfo & ri) {
 	for (const auto & [nLayer, pRespawner] : m_mapRespawners) {
-		pRespawner->RemoveRegionSpawn(nRespawnNo);
+		pRespawner->AddScriptSpawn(ri);
 	}
 
-	return m_proto.RemoveRegionSpawn(nRespawnNo);
+	return m_proto.AddScriptSpawn(ri);
+}
+
+bool CLayerdRespawner::RemoveScriptSpawn(const int nRespawnNo) {
+	for (const auto & [nLayer, pRespawner] : m_mapRespawners) {
+		pRespawner->RemoveScriptSpawn(nRespawnNo);
+	}
+
+	return m_proto.RemoveScriptSpawn(nRespawnNo);
 }
 
 bool CLayerdRespawner::IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo, int nLayer) const {

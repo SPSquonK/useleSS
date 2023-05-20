@@ -163,20 +163,16 @@ BOOL TextCmd_SetMonsterRespawn(CScanner & scanner, CPlayer_ * pUser) {
 	if( pMoverProp && pMoverProp->dwID != 0 )
 	{
 		DWORD dwNum	= scanner.GetNumber();
-		if( dwNum > 30 ) dwNum = 30;
-		if( dwNum < 1 ) dwNum = 1;
+		dwNum = std::clamp(dwNum, 1lu, 30lu);
 
 		DWORD dwAttackNum	= scanner.GetNumber();
-		if( dwAttackNum > dwNum ) dwAttackNum = dwNum;
-		if( dwAttackNum < 1 ) dwAttackNum = 0;
+		dwAttackNum = std::clamp(dwAttackNum, 0lu, dwNum);
 
 		DWORD dwRect = scanner.GetNumber();
-		if( dwRect > 255 ) dwRect = 255;
-		if( dwRect < 1 ) dwRect = 1;
+		dwRect = std::clamp(dwRect, 1lu, 255lu);
 
 		DWORD dwTime = scanner.GetNumber();
-		if( dwTime > 10800 ) dwTime = 10800;
-		if( dwTime < 10 ) dwTime = 10;
+		dwTime = std::clamp(dwTime, 10lu, 3600lu * 3lu);
 
 		int nAllServer = scanner.GetNumber();
 		if( nAllServer != 0 )
@@ -203,7 +199,7 @@ BOOL TextCmd_SetMonsterRespawn(CScanner & scanner, CPlayer_ * pUser) {
 		ri.m_cbTime			= 0;
 
 		char chMessage[512] = {0,};
-			pWorld->m_respawner.Add( ri, SpawnType::Script );
+		pWorld->m_respawner.AddScriptSpawn( ri );
 
 		sprintf( chMessage, "Add Respwan Monster : %s(%d/%d) Rect(%d, %d, %d, %d) Time : %d", 
 			pMoverProp->szName, ri.m_cb, ri.m_nActiveAttackNum, ri.m_rect.left, ri.m_rect.right, ri.m_rect.top, ri.m_rect.bottom, ri.m_uTime );

@@ -2103,7 +2103,7 @@ void CDPCoreClient::OnSetMonsterRespawn( CAr & ar, DPID, DPID, OBJID )
 	CWorld* pWorld = NULL;
 	
 	CUser* pUser	= (CUser*)prj.GetUserByID( uidPlayer );
-	if( IsValidObj( (CObj*)pUser ) )
+	if( IsValidObj( pUser ) )
 	{
 		vPos = pUser->GetPos();
 		pWorld = pUser->GetWorld();
@@ -2125,7 +2125,7 @@ void CDPCoreClient::OnSetMonsterRespawn( CAr & ar, DPID, DPID, OBJID )
 		ri.m_uTime			= (u_short)( dwRespawnTime );
 		ri.m_cbTime = 0;
 		
-		pWorld->m_respawner.Add( ri, SpawnType::Script);
+		pWorld->m_respawner.AddScriptSpawn(ri);
 		
 		char chMessage[512] = {0,};
 		sprintf( chMessage, "Add Respwan MonsterID = %d(%d/%d) Rect(%d, %d, %d, %d) Time = %d", 

@@ -70,9 +70,10 @@ public:
 	std::vector<CRespawnInfo> m_vRespawnInfoScript;
 
 public:
-	int		Add( CRespawnInfo & ri, SpawnType nType );
+	void AddRegionSpawn(CRespawnInfo ri);
+	bool AddScriptSpawn(CRespawnInfo & ri);
+	bool RemoveScriptSpawn(int nRespawnNo);
 	[[nodiscard]] bool IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo) const;
-	bool RemoveRegionSpawn(int nRespawnNo);
 	u_long	Spawn( CWorld* pWorld, int nLayer );
 	void Increment(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack);
 	bool IncrementIfAlone(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack);
@@ -87,8 +88,9 @@ private:
 class CLayerdRespawner
 {
 public:
-	int		Add( CRespawnInfo & ri, SpawnType nType /* = SpawnType::Region */ );
-	bool RemoveRegionSpawn(int nRespawnNo);
+	void AddRegionSpawn(CRespawnInfo & ri);
+	bool AddScriptSpawn(CRespawnInfo & ri);
+	bool RemoveScriptSpawn(int nRespawnNo);
 	[[nodiscard]] bool IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo, int nLayer) const;
 	u_long Spawn( CWorld* pWorld );
 	void	Increment( CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, int nLayer );
