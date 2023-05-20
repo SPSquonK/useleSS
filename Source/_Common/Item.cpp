@@ -382,16 +382,9 @@ void CItem::SetOwner( OBJID id )
 CItem::~CItem()
 {
 	SAFE_DELETE( m_pItemBase );
-	if( GetWorld() )
-	{
-		#if !defined(__CLIENT)
-		#ifdef __LAYER_1021
-			GetWorld()->m_respawner.Increment( GetRespawn(), m_nRespawnType, FALSE, GetLayer() );
-		#else	// __LAYER_1021
-			GetWorld()->m_respawner.Increment( GetRespawn(), m_nRespawnType, FALSE );
-		#endif	// __LAYER_1021
-		#endif
-	}
+#ifdef __WORLDSERVER
+	RefreshSpawn(FALSE);
+#endif
 }
 
 BOOL CItem::Read( CFileIO* pFile )

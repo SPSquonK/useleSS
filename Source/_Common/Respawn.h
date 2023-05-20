@@ -69,11 +69,11 @@ public:
 private:
 	BOOL	DoRemove( int nRespawnNo, SpawnType nType ); // 실제 Remove를 수행 
 public:
-	int		Add( CRespawnInfo & ri, SpawnType nType /* = SpawnType::Region */ );
-	CRespawnInfo*	GetRespawnInfo( int nRespawnNo, SpawnType nType );
+	int		Add( CRespawnInfo & ri, SpawnType nType );
+	[[nodiscard]] bool IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo) const;
 	BOOL	Remove( int nRespawnNo, SpawnType nType );
 	u_long	Spawn( CWorld* pWorld, int nLayer );
-	void	Increment( int nRespawnNo, SpawnType nType, BOOL bActiveAttack );
+	void	Increment( CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack );
 };
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -85,9 +85,9 @@ public:
 	virtual	~CLayerdRespawner();
 	int		Add( CRespawnInfo & ri, SpawnType nType /* = SpawnType::Region */ );
 	BOOL	Remove( int nRespawn, SpawnType nType );
-	CRespawnInfo*	GetRespawnInfo( int nRespawn, SpawnType nType, int nLayer );
+	[[nodiscard]] bool IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo, int nLayer) const;
 	u_long Spawn( CWorld* pWorld );
-	void	Increment( int nRespawn, SpawnType nType, BOOL bActiveAttack, int nLayer );
+	void	Increment( CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, int nLayer );
 	void	Expand( int nLayer );
 	void	Release( int nLayer );
 	CRespawner*	Proto( void )	{	return &m_proto;	}

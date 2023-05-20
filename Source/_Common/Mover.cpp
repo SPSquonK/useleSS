@@ -153,16 +153,9 @@ CMover::~CMover()
 	for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
 		SAFE_DELETE( m_ShopInventory[ i ] );
 
-	if( GetWorld() )
-	{
-	#if !defined(__CLIENT)
-	#ifdef __LAYER_1021
-		GetWorld()->m_respawner.Increment( GetRespawn(), GetRespawnType(), m_bActiveAttack, GetLayer() );
-	#else	// __LAYER_1021
-		GetWorld()->m_respawner.Increment( GetRespawn(), GetRespawnType(), m_bActiveAttack );
-	#endif	// __LAYER_1021
+	#ifdef __WORLDSERVER
+	RefreshSpawn(m_bActiveAttack);
 	#endif
-	}
 
 #ifdef __CLIENT
 	m_pSfxWing = NULL;

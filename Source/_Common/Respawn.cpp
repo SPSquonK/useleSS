@@ -177,37 +177,43 @@ BOOL CRespawner::Remove( int nRespawnNo, SpawnType nType )
 
 	return FALSE;
 }
-CRespawnInfo* CRespawner::GetRespawnInfo( int nRespawnNo, SpawnType nType )
-{
-	if( nRespawnNo < 0 ) return nullptr;
 
-	if (nType == SpawnType::Region) {
-		if( nRespawnNo < (int)(m_vRespawnInfoRegion.size() ) )
-			return &m_vRespawnInfoRegion[nRespawnNo];
-	} else if (nType == SpawnType::Script) {
-		for( VRI::iterator i = m_vRespawnInfoScript.begin(); i != m_vRespawnInfoScript.end(); ++i )
-		{
-			if( ( *i ).m_nGMIndex == nRespawnNo )
-				return &( *i );
-		}
+bool CRespawner::IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo) const
+{
+	if (ctrlSpawnInfo.type == SpawnType::Region) {
+		return false;
+	} else if (ctrlSpawnInfo.type == SpawnType::Script) {
+
+		const auto i = std::find_if(
+			m_vRespawnInfoScript.begin(), m_vRespawnInfoScript.end(),
+			[nRespawnNo = ctrlSpawnInfo.spawnId](const CRespawnInfo & self) {
+				return self.m_nGMIndex == nRespawnNo;
+			}
+		);
+
+		if (i == m_vRespawnInfoScript.end()) return false;
+
+		return i->m_bRemove;
 	}
 
-	return nullptr;
+	return false;
 }
-void CRespawner::Increment( int nRespawnNo, SpawnType nType, BOOL bActiveAttack )
+void CRespawner::Increment( CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack )
 {
-	if( nRespawnNo < 0 )	
-		return;
-
-	if (nType == SpawnType::Region) {
-		if( nRespawnNo < (int)(m_vRespawnInfoRegion.size() ) )
-			m_vRespawnInfoRegion[nRespawnNo].Increment( bActiveAttack );
-	} else if (nType == SpawnType::Script) {
-		for (VRI::iterator i = m_vRespawnInfoScript.begin(); i != m_vRespawnInfoScript.end(); ++i) {
-			if ((*i).m_nGMIndex == nRespawnNo) {
-				( *i ).Increment( bActiveAttack );
-				break;
+	if (ctrlSpawnInfo.type == SpawnType::Region) {
+		if (ctrlSpawnInfo.spawnId >= 0 && std::cmp_less(ctrlSpawnInfo.spawnId, m_vRespawnInfoRegion.size())) {
+			m_vRespawnInfoRegion[ctrlSpawnInfo.spawnId].Increment(bActiveAttack);
+		}
+	} else if (ctrlSpawnInfo.type == SpawnType::Script) {
+		const auto i = std::find_if(
+			m_vRespawnInfoScript.begin(), m_vRespawnInfoScript.end(),
+			[nRespawnNo= ctrlSpawnInfo.spawnId](const CRespawnInfo & self) {
+				return self.m_nGMIndex == nRespawnNo;
 			}
+		);
+
+		if (i != m_vRespawnInfoScript.end()) {
+			i->Increment(bActiveAttack);
 		}
 	}
 }
@@ -324,7 +330,7 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 						Error( "CRespawner::Spawn()\t// 0 index\n" );
 						continue;
 					}
-					CObj * pObj	= CreateObj( D3DDEVICE, pi->m_dwType, pi->m_dwIndex );
+					CCtrl * pObj = static_cast<CCtrl *>(CreateObj(D3DDEVICE, pi->m_dwType, pi->m_dwIndex));
 					
 					if( pi->m_dwType == OT_ITEM )
 					{
@@ -385,7 +391,7 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 					}
 
 
-					( (CCtrl*)pObj )->SetRespawn( pi->m_nGMIndex, nType );
+					pObj->SetSpawner(CtrlSpawnInfo{ pi->m_nGMIndex, nType });
 						int nMaxAttckNum = 0;
 
 
@@ -458,12 +464,15 @@ BOOL CLayerdRespawner::Remove( int nRespawn, SpawnType nType )
 	return m_proto.Remove( nRespawn, nType );
 }
 
-CRespawnInfo* CLayerdRespawner::GetRespawnInfo( int nRespawn, SpawnType nType, int nLayer )
-{
-	MRP::iterator i = m_mapRespawners.find( nLayer );
-	if( i != m_mapRespawners.end() )
-		return i->second->GetRespawnInfo( nRespawn, nType );
-	return NULL;
+bool CLayerdRespawner::IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo, int nLayer) const {
+	if (ctrlSpawnInfo.type == SpawnType::Region) {
+		return false;
+	}
+
+	const auto i = m_mapRespawners.find(nLayer);
+	if (i != m_mapRespawners.end())
+		return i->second->IsSpawnInDeletion(ctrlSpawnInfo);
+	return false;
 }
 
 u_long CLayerdRespawner::Spawn( CWorld* pWorld )
@@ -474,11 +483,11 @@ u_long CLayerdRespawner::Spawn( CWorld* pWorld )
 	return uRespawn;
 }
 
-void CLayerdRespawner::Increment( int nRespawn, SpawnType nType, BOOL bActiveAttack, int nLayer )
+void CLayerdRespawner::Increment(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, int nLayer )
 {
 	MRP::iterator i = m_mapRespawners.find( nLayer );
 	if( i != m_mapRespawners.end() )
-		i->second->Increment( nRespawn, nType, bActiveAttack );
+		i->second->Increment(ctrlSpawnInfo, bActiveAttack );
 }
 
 void CLayerdRespawner::Expand( int nLayer )

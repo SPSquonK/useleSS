@@ -777,6 +777,11 @@ struct MoverProp : CtrlProp
 
 #ifdef __WORLDSERVER
 enum class SpawnType : bool { Region, Script };
+
+struct CtrlSpawnInfo {
+	int       spawnId;
+	SpawnType type;
+};
 #endif
 
 #define TASKBAR_TOP    0

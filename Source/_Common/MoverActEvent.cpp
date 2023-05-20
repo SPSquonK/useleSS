@@ -2110,8 +2110,10 @@ BOOL CMover::IsLoot( CItem *pItem, BOOL bPet )
 	// 펫은 리스폰된 아이템을 집을수 없음.
 	if( bPet && bTake )
 	{
-		if( 0 < ((CCtrl*)pItem)->m_lRespawn )
-			bTake = FALSE;
+		if (pItem->m_spawnerInfo) {
+			return FALSE;
+		}
+
 #ifdef __JEFF_11
 		// 소지품이 가득 차서 해당 아이템을 획득할 수 없다
 		CItemElem* pItemElem	= pItem->m_pItemBase;

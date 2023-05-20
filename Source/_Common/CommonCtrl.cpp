@@ -70,12 +70,8 @@ CCommonCtrl::CCommonCtrl()
 }
 CCommonCtrl::~CCommonCtrl()
 {
-#if !defined(__CLIENT)
-	#ifdef __LAYER_1021
-	GetWorld()->m_respawner.Increment( GetRespawn(), m_nRespawnType, FALSE, GetLayer() );
-	#else	// __LAYER_1021
-	GetWorld()->m_respawner.Increment( GetRespawn(), m_nRespawnType, FALSE );
-	#endif	// __LAYER_1021
+#ifdef __WORLDSERVER
+	RefreshSpawn(FALSE);
 #endif
 }
 
