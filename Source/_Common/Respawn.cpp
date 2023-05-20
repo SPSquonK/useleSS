@@ -41,55 +41,16 @@ CRespawnInfo::CRespawnInfo()
 	m_dwPatrolIndex = NULL_ID;
 	m_bPatrolCycle  = 0;
 
-#ifdef __RES0807
+#ifdef __WORLDSERVER
 	memset( m_aResPoint, 0, sizeof(POINT) * MAX_RESPOINT_PER_REGION );
-#endif	// __RES0807
+#endif
 
 	m_bHalf	= FALSE;
 	m_cbRespawn	= 0;
 }
 
-CRespawnInfo::CRespawnInfo( const CRespawnInfo & ri )
-{
-	m_dwIndex	= ri.m_dwIndex;	
-	m_dwType	= ri.m_dwType;	
-	m_uTime	    = ri.m_uTime;		
-	m_cb		= ri.m_cb; 	
-	m_cbTime	= ri.m_cbTime;	
-	m_rect	    = ri.m_rect;
-	m_vPos	    = ri.m_vPos;
-	m_fY  	   = ri.m_fY;
-	m_nDayMin  = ri.m_nDayMin ;
-	m_nDayMax  = ri.m_nDayMax ;
-	m_nHourMin = ri.m_nHourMin;
-	m_nHourMax = ri.m_nHourMax;
-	m_nItemMin = ri.m_nItemMin;
-	m_nItemMax = ri.m_nItemMax;
-	m_nActiveAttackNum = ri.m_nActiveAttackNum;
-	memcpy( &m_CtrlElem, &ri.m_CtrlElem, sizeof( m_CtrlElem ) );
-	m_cbRespawn	= (u_short)( m_cb );
-//	m_uTime		/= 2;	
-	m_bHalf		= FALSE;
-#ifdef __S1108_BACK_END_SYSTEM
-	m_nMaxcb = ri.m_nMaxcb;
-	m_nMaxAttackNum = ri.m_nMaxAttackNum;
-	m_nGMIndex = ri.m_nGMIndex;
-#endif // __S1108_BACK_END_SYSTEM
-	m_bRemove = ri.m_bRemove;
-	m_dwAiState = ri.m_dwAiState;
-	m_fAngle    = ri.m_fAngle;	
-	m_dwPatrolIndex = ri.m_dwPatrolIndex;
-	m_bPatrolCycle  = ri.m_bPatrolCycle;
-#ifdef __RES0807
-	memcpy( m_aResPoint, ri.m_aResPoint, sizeof(POINT) * MAX_RESPOINT_PER_REGION );
-#endif	// __RES0807
-}
+#ifdef __WORLDSERVER
 
-CRespawnInfo::~CRespawnInfo()
-{
-}
-
-#ifdef __RES0807
 #define	MAX_FAIL_TO_RESPAWN	10000
 BOOL CRespawnInfo::GenResPoint( CWorld* pWorld )
 {
@@ -118,7 +79,6 @@ BOOL CRespawnInfo::GenResPoint( CWorld* pWorld )
 //	TRACE( "nFail=%d\n", nFail );
 	return TRUE;
 }
-#endif	// __RES0807
 
 void CRespawnInfo::GetPos( D3DXVECTOR3 & v, BOOL bRespawn )
 {
@@ -131,7 +91,6 @@ void CRespawnInfo::GetPos( D3DXVECTOR3 & v, BOOL bRespawn )
 		}
 	}
 
-#ifdef __RES0807
 	if( bRespawn )
 	{
 		int r	= xRandom( 0, MAX_RESPOINT_PER_REGION );
@@ -149,15 +108,7 @@ void CRespawnInfo::GetPos( D3DXVECTOR3 & v, BOOL bRespawn )
 		v.z		= (float)( m_rect.top + xRandom( nHeight ) );
 		v.y		= m_vPos.y;
 	}
-#else	// __RES0807
-	int nWidth = m_rect.right - m_rect.left;
-	if( nWidth <= 0 ) nWidth = 1;
-	int nHeight = m_rect.bottom - m_rect.top;
-	if( nHeight <= 0 ) nHeight = 1;
-	v.x		= (float)( m_rect.left + xRandom( nWidth ) );
-	v.z		= (float)( m_rect.top + xRandom( nHeight ) );
-	v.y		= m_vPos.y;
-#endif	// __RES0807
+
 }
 
 void CRespawnInfo::Increment( BOOL bActiveAttack )	
@@ -173,66 +124,10 @@ void CRespawnInfo::Increment( BOOL bActiveAttack )
 #endif // __S1108_BACK_END_SYSTEM
 }
 
-CRespawnInfo& CRespawnInfo::operator=( const CRespawnInfo & ri )
-{
-	m_dwIndex	= ri.m_dwIndex;	
-	m_dwType	= ri.m_dwType;	
-	m_uTime	    = ri.m_uTime;		
-	m_cb		= ri.m_cb; 	
-	m_cbTime	= ri.m_cbTime;	
-	m_rect	    = ri.m_rect;
-	m_vPos	    = ri.m_vPos;
-	m_fY  	   = ri.m_fY;
-	m_nDayMin  = ri.m_nDayMin ;
-	m_nDayMax  = ri.m_nDayMax ;
-	m_nHourMin = ri.m_nHourMin;
-	m_nHourMax = ri.m_nHourMax;
-	m_nItemMin = ri.m_nItemMin;
-	m_nItemMax = ri.m_nItemMax;
-	m_nActiveAttackNum = ri.m_nActiveAttackNum;
-	memcpy( &m_CtrlElem, &ri.m_CtrlElem, sizeof( m_CtrlElem ) );
-
-	m_cbRespawn	= (u_short)( m_cb );
-//	m_uTime		/= 2;	
-	m_bHalf		= FALSE;
-
-#ifdef __S1108_BACK_END_SYSTEM
-	m_nMaxcb = ri.m_nMaxcb;
-	m_nMaxAttackNum = ri.m_nMaxAttackNum;
-	m_nGMIndex = ri.m_nGMIndex;
-#endif // __S1108_BACK_END_SYSTEM
-	m_bRemove = ri.m_bRemove;
-
-	m_dwAiState = ri.m_dwAiState;
-	m_fAngle    = ri.m_fAngle;	
-
-	m_dwPatrolIndex = ri.m_dwPatrolIndex;
-	m_bPatrolCycle  = ri.m_bPatrolCycle;
-
-#ifdef __RES0807
-	memcpy( m_aResPoint, ri.m_aResPoint, sizeof(POINT) * MAX_RESPOINT_PER_REGION );
-#endif	// __RES0807
-	return *this;
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // CRespawner
 ///////////////////////////////////////////////////////////////////////////////////////////
-CRespawner::CRespawner()
-{
-}
-
-#ifdef __LAYER_1021
-CRespawner::CRespawner( const CRespawner & respawner )
-{
-	for( int i = 0; i < 3; ++i )
-		m_vRespawnInfo[i].assign( respawner.m_vRespawnInfo[i].begin(), respawner.m_vRespawnInfo[i].end() );
-}
-#endif	// __LAYER_1021
-
-CRespawner::~CRespawner()
-{
-}
 
 int CRespawner::Add( CRespawnInfo & ri, int nType )
 {	
@@ -369,38 +264,22 @@ void CRespawner::Increment( int nRespawnNo, int nType, BOOL bActiveAttack )
 	}
 }
 
-#ifdef __LAYER_1021
 u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
-#else	// __LAYER_1021
-u_long CRespawner::Spawn( CWorld* pWorld )
-#endif	// __LAYER_1021
 {
-#if defined(__CLIENT)
-	return 0;
-#else
 	if( g_eLocal.GetState( EVE_RESPAWN ) == 0 )
 		return 0;
 
 	ASSERT( pWorld );
 
-	CRespawnInfo*	pi;
 	short			cb;
-	CObj*			pObj;
-	D3DXVECTOR3		v;
 	u_long			uRespawned	= 0;
-#ifndef __RES0807
-	int				nAttr, nCheckAttr;
-	int				nRetry;
-#endif	// __RES0807
-	MoverProp*		pMoverProp;
-	DWORD			dwFlying;
 
 	for( int nType = 0; nType < 3; nType++ )
 	{
 		int nSize	= m_vRespawnInfo[nType].size();
 		for( int i = 0; i < nSize; i++ )			// 04.10.11 - 480개 정도 이다.
 		{
-			pi	= &m_vRespawnInfo[nType][i];
+			CRespawnInfo * pi	= &m_vRespawnInfo[nType][i];
 
 			if( pi->m_dwIndex == 0 )
 				continue;
@@ -485,20 +364,14 @@ u_long CRespawner::Spawn( CWorld* pWorld )
 				}
 				pi->m_bHalf	= !pi->m_bHalf;
 
-				dwFlying = 0;
+				DWORD dwFlying = 0;
+				const MoverProp * pMoverProp = nullptr;
 				if( pi->m_dwType == OT_MOVER )
 				{
 					pMoverProp = prj.GetMoverProp( pi->m_dwIndex );
 					if( pMoverProp )
 						dwFlying	= pMoverProp->dwFlying;
 				}
-
-#ifndef __RES0807
-				if( dwFlying )
-					nCheckAttr = HATTR_NOFLY;
-				else
-					nCheckAttr = HATTR_NOWALK;
-#endif	// __RES0807
 
 				while( cb-- > 0 )
 				{
@@ -507,7 +380,7 @@ u_long CRespawner::Spawn( CWorld* pWorld )
 						Error( "CRespawner::Spawn()\t// 0 index\n" );
 						continue;
 					}
-					pObj	= CreateObj( D3DDEVICE, pi->m_dwType, pi->m_dwIndex );
+					CObj * pObj	= CreateObj( D3DDEVICE, pi->m_dwType, pi->m_dwIndex );
 					
 					if( pi->m_dwType == OT_ITEM )
 					{
@@ -551,41 +424,8 @@ u_long CRespawner::Spawn( CWorld* pWorld )
 					if( ( pObj->m_dwAIInterfaceState == 9 || pObj->m_dwAIInterfaceState == 8 ) && pi->m_nMaxcb == 1 )
 						pObj->SetAngle( pi->m_fAngle );					
 
-#ifdef __RES0807
+					D3DXVECTOR3		v;
 					pi->GetPos( v );
-#else	// __RES0807
-					nRetry	= 0;
-lbl_retry:
-					pi->GetPos( v ); // v에 랜덤 좌표를 얻는다.
-					nAttr	= pWorld->GetHeightAttribute( v.x, v.z );
-
-					if( nAttr == -1 || nAttr == HATTR_NOMOVE || nAttr == nCheckAttr ) 
-					{
-						v = pi->m_vPos;
-						if( v == D3DXVECTOR3( 0.0f, 0.0f, 0.0f ) )
-						{
-							if( ++nRetry < 100 )
-								goto lbl_retry;
-						#ifdef __S1108_BACK_END_SYSTEM
-							if( pi->m_nGMIndex != 0 )
-								Remove( pi->m_nGMIndex, TRUE );
-							WriteLog( "GM RESPAWN(%d): %d, %d, %d, %d, %d, %d",
-								pi->m_nGMIndex, pi->m_dwType, pi->m_dwIndex, pi->m_rect.left, pi->m_rect.top, pi->m_rect.right, pi->m_rect.bottom );
-						#else // __S1108_BACK_END_SYSTEM
-							WriteLog( "SPAWN: %d, %d, %d, %d, %d, %d",
-								pi->m_dwType, pi->m_dwIndex, pi->m_rect.left, pi->m_rect.top, pi->m_rect.right, pi->m_rect.bottom );
-						#endif // __S1108_BACK_END_SYSTEM
-
-							SAFE_DELETE( pObj );
-							pi->m_dwIndex		= 0;	// REMOVE
-							break;
-						}
-					}
-					else
-					{
-						pi->m_vPos	= v;
-					}
-#endif	// __RES0807
 
 					if( dwFlying )
 					{
@@ -645,7 +485,7 @@ lbl_retry:
 					pObj->SetPos( v );
 					pWorld->ADDOBJ( pObj, TRUE, nLayer );
 					uRespawned++;
-//					InterlockedDecrement( &pi->m_cb );
+
 				#ifdef __S1108_BACK_END_SYSTEM
 					InterlockedIncrement( &pi->m_cb );
 				#else // __S1108_BACK_END_SYSTEM
@@ -657,13 +497,9 @@ lbl_retry:
 	} // for( int nType = 0; nType < 3; nType++ )
 
 	return uRespawned;
-#endif // __!CLIENT
 }
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef __LAYER_1021
-CLayerdRespawner::CLayerdRespawner()
-{
-}
 
 CLayerdRespawner::~CLayerdRespawner()
 {
@@ -739,3 +575,5 @@ void CLayerdRespawner::Release( int nLayer )
 	}
 }
 #endif	// __LAYER_1021
+
+#endif

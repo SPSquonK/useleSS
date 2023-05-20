@@ -712,7 +712,6 @@ BOOL CWorld::ReadRespawn( CScript& s )
 	}
 
 #ifdef __WORLDSERVER
-#ifdef __RES0807
 	if( FALSE == ri.GenResPoint( this ) )
 	{
 		char lpOutputString[256]	=	{ 0,};
@@ -721,7 +720,7 @@ BOOL CWorld::ReadRespawn( CScript& s )
 		OutputDebugString( lpOutputString );
 		return FALSE;
 	}
-#endif	// __RES0807
+
 	m_respawner.Add( ri );
 #endif	// __WORLDSERVER
 

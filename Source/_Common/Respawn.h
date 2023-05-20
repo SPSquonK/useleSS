@@ -1,5 +1,4 @@
-#ifndef __RESPAWNER_H__
-#define __RESPAWNER_H__
+#pragma once
 
 #define RESPAWNTYPE_REGION   0
 #define RESPAWNTYPE_SCRIPT   1
@@ -7,10 +6,13 @@
 
 #include "commonCtrl.h"
 
-#ifdef __RES0807
+#ifdef __WORLDSERVER
+#include <array>
+
 #define	MAX_RESPOINT_PER_REGION		100
 class CWorld;
-#endif	// __RES0807
+#endif
+
 class CRespawnInfo
 {
 public:
@@ -45,60 +47,44 @@ public:
 	float	m_fAngle;	
 	DWORD	m_dwPatrolIndex;
 	BYTE    m_bPatrolCycle: 1;			// 전체 순환이냐? 끝->처음->끝 방향이냐
-#ifdef __RES0807
+#ifdef __WORLDSERVER
 	POINT	m_aResPoint[MAX_RESPOINT_PER_REGION];
-#endif	// __RES0807
+#endif
 	
 public:
-//	Constructions
 	CRespawnInfo();
-	CRespawnInfo( const CRespawnInfo & ri );
-	virtual	~CRespawnInfo();
-//	Operations
-	CRespawnInfo&	operator=( const CRespawnInfo & ri );
+
+#ifdef __WORLDSERVER
 	void			Clear( void )	{	m_cb	= 0;	}
 	u_long			Get( void )		{	return m_cb;	}
 	void			Increment( BOOL bActiveAttack );	
 	void			GetPos( D3DXVECTOR3 & v, BOOL bRespawn=TRUE );
-#ifdef __RES0807
 	BOOL	GenResPoint( CWorld* pWorld );
-#endif	// __RES0807
+#endif
 };
 
-typedef std::vector<CRespawnInfo>	VRI;
-class CRespawner
-{
-public:
-	VRI	m_vRespawnInfo[3];
-	//	Constructions
-	CRespawner();
-#ifdef __LAYER_1021
-	CRespawner( const CRespawner & respawner );
-#endif	// __LAYER_1021
-	virtual	~CRespawner();
+#ifdef __WORLDSERVER
 
-	//	Operations
+typedef std::vector<CRespawnInfo>	VRI;
+class CRespawner final {
+public:
+	std::array<VRI, 3>	m_vRespawnInfo;
+
 private:
 	BOOL	DoRemove( int nRespawnNo, int nType ); // 실제 Remove를 수행 
 public:
 	int		Add( CRespawnInfo & ri, int nType = RESPAWNTYPE_REGION );
 	CRespawnInfo*	GetRespawnInfo( int nRespawnNo, int nType );
 	BOOL	Remove( int nRespawnNo, int nType );
-#ifdef __LAYER_1021
 	u_long	Spawn( CWorld* pWorld, int nLayer );
-#else	// __LAYER_1021
-	u_long	Spawn( CWorld* pWorld );
-#endif	// __LAYER_1021
 	void	Increment( int nRespawnNo, int nType, BOOL bActiveAttack );
 };
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef __LAYER_1021
 typedef	std::map<int, CRespawner*>	MRP;
 class CLayerdRespawner
 {
 public:
-	CLayerdRespawner();
 	virtual	~CLayerdRespawner();
 	int		Add( CRespawnInfo & ri, int nType = RESPAWNTYPE_REGION );
 	BOOL	Remove( int nRespawn, int nType );
@@ -114,6 +100,5 @@ private:
 	CRespawner	m_proto;
 	MRP	m_mapRespawners;
 };
-#endif	// __LAYER_1021
 
-#endif	// __RESPAWNER_H__
+#endif

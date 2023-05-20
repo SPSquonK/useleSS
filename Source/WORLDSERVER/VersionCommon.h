@@ -12,7 +12,6 @@
 #define		__VERIFY_LOOP041010
 #define		__S1108_BACK_END_SYSTEM			// 백앤드시스템 Trans, World, Neuz
 //#define		__PROFILE_RUN
-#define		__RES0807						// 리스폰 개선
 #define		__CPU_UTILDOWN_060502			// CPU 사용률 감소작업 
 #define		__SLIDE_060502					// 땅으로 꺼지는 문제 수정 
 #define		__S8_SERVER_PORT				// 2006월 11월 7일 업데이트 - World, Cache, CoreServer
