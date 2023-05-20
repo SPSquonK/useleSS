@@ -10,41 +10,16 @@
 
 CRespawnInfo::CRespawnInfo()
 {
-	m_dwIndex	= 0; 
 	m_dwType	= 0;
-	m_cb		= 0; // 10
-	m_uTime	= m_cbTime = 0; // 60
-	memset( &m_rect, 0, sizeof(m_rect) );
-	m_vPos	= D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
-	m_nActiveAttackNum = 0;
-	m_nDayMin = 1;
-	m_nDayMax = 30;
-	m_nHourMin = 1;
-	m_nHourMax = 24;
-	m_nItemMin = 1;
-	m_nItemMax = 1;
-	m_fY = 0;
 	ZeroMemory( &m_CtrlElem, sizeof( m_CtrlElem ) );
 	m_CtrlElem.m_dwMinItemNum = 1;
 	m_CtrlElem.m_dwMaxiItemNum = 1;
 
-	m_nMaxcb = 0;
-	m_nMaxAttackNum = 0;
-	m_nGMIndex = 0;
 	m_bRemove = FALSE;
-	
-	m_dwAiState = 2;
-	m_fAngle    = 0.0f;
-	
-	m_dwPatrolIndex = NULL_ID;
-	m_bPatrolCycle  = 0;
-
+		
 #ifdef __WORLDSERVER
 	memset( m_aResPoint, 0, sizeof(POINT) * MAX_RESPOINT_PER_REGION );
 #endif
-
-	m_bHalf	= FALSE;
-	m_cbRespawn	= 0;
 }
 
 #ifdef __WORLDSERVER
@@ -126,12 +101,18 @@ int CRespawner::Add( CRespawnInfo & ri, SpawnType nType ) {
 		m_vRespawnInfoRegion.push_back(ri);
 		return m_vRespawnInfoRegion.size() - 1;
 	} else if (nType == SpawnType::Script) {
-		for (VRI::iterator i = m_vRespawnInfoScript.begin(); i != m_vRespawnInfoScript.end(); ++i) {
-			if ((*i).m_nGMIndex == ri.m_nGMIndex) {
-				Error("CRespawner::Add 같은 ID 발견 : %d, %d, %f, %f, %d\n", ri.m_dwIndex, ri.m_dwType, ri.m_vPos.x, ri.m_vPos.z, nType);
-				return -1;
+		const auto i = std::find_if(
+			m_vRespawnInfoScript.begin(), m_vRespawnInfoScript.end(),
+			[nRespawnNo = ri.m_nGMIndex](const CRespawnInfo & self) {
+				return self.m_nGMIndex == nRespawnNo;
 			}
+		);
+
+		if (i != m_vRespawnInfoScript.end()) {
+			Error("CRespawner::Add 같은 ID 발견 : %d, %d, %f, %f, %d\n", ri.m_dwIndex, ri.m_dwType, ri.m_vPos.x, ri.m_vPos.z, nType);
+			return -1;
 		}
+
 		m_vRespawnInfoScript.push_back(ri);
 		return m_vRespawnInfoScript.size() - 1;
 	}
@@ -157,10 +138,7 @@ bool CRespawner::RemoveRegionSpawn(const int nRespawnNo) {
 }
 
 bool CRespawner::IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo) const {
-	if (ctrlSpawnInfo.type == SpawnType::Region) {
-		return false;
-	} else if (ctrlSpawnInfo.type == SpawnType::Script) {
-
+	if (ctrlSpawnInfo.type == SpawnType::Script) {
 		const auto i = std::find_if(
 			m_vRespawnInfoScript.begin(), m_vRespawnInfoScript.end(),
 			[nRespawnNo = ctrlSpawnInfo.spawnId](const CRespawnInfo & self) {
@@ -175,37 +153,19 @@ bool CRespawner::IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo) const {
 
 	return false;
 }
-void CRespawner::Increment( CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack )
-{
-	if (ctrlSpawnInfo.type == SpawnType::Region) {
-		if (ctrlSpawnInfo.spawnId >= 0 && std::cmp_less(ctrlSpawnInfo.spawnId, m_vRespawnInfoRegion.size())) {
-			m_vRespawnInfoRegion[ctrlSpawnInfo.spawnId].Increment(bActiveAttack);
-		}
-	} else if (ctrlSpawnInfo.type == SpawnType::Script) {
-		const auto i = std::find_if(
-			m_vRespawnInfoScript.begin(), m_vRespawnInfoScript.end(),
-			[nRespawnNo= ctrlSpawnInfo.spawnId](const CRespawnInfo & self) {
-				return self.m_nGMIndex == nRespawnNo;
-			}
-		);
 
-		if (i != m_vRespawnInfoScript.end()) {
-			i->Increment(bActiveAttack);
-		}
-	}
-}
-
-bool CRespawner::IncrementIfAlone(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack)
-{
-	static constexpr auto IsAlone = [](const CRespawnInfo & self) {
-		return self.m_nMaxcb == 1;
-	};
-
+template<typename Predicate>
+	requires (std::is_invocable_r_v<bool, Predicate, const CRespawnInfo &>)
+bool CRespawner::IncrementIf(
+	const CtrlSpawnInfo ctrlSpawnInfo,
+	const BOOL bActiveAttack,
+	Predicate && predicate
+) {
 	if (ctrlSpawnInfo.type == SpawnType::Region) {
 		if (ctrlSpawnInfo.spawnId >= 0 && std::cmp_less(ctrlSpawnInfo.spawnId, m_vRespawnInfoRegion.size())) {
 			auto & respawnInfo = m_vRespawnInfoRegion[ctrlSpawnInfo.spawnId];
 
-			if (IsAlone(respawnInfo)) {
+			if (predicate(respawnInfo)) {
 				respawnInfo.Increment(bActiveAttack);
 				return true;
 			}
@@ -218,13 +178,25 @@ bool CRespawner::IncrementIfAlone(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttac
 			}
 		);
 
-		if (i != m_vRespawnInfoScript.end() && IsAlone(*i)) {
+		if (i != m_vRespawnInfoScript.end() && predicate(*i)) {
 			i->Increment(bActiveAttack);
 			return true;
 		}
 	}
 
 	return false;
+}
+
+void CRespawner::Increment(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack) {
+	IncrementIf(ctrlSpawnInfo, bActiveAttack, [](const auto &) { return true; });
+}
+
+bool CRespawner::IncrementIfAlone(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack) {
+	static constexpr auto IsAlone = [](const CRespawnInfo & self) {
+		return self.m_nMaxcb == 1;
+	};
+
+	return IncrementIf(ctrlSpawnInfo, bActiveAttack, IsAlone);
 }
 
 u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
