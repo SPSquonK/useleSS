@@ -218,6 +218,38 @@ void CRespawner::Increment( CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack )
 	}
 }
 
+bool CRespawner::IncrementIfAlone(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack)
+{
+	static constexpr auto IsAlone = [](const CRespawnInfo & self) {
+		return self.m_nMaxcb == 1;
+	};
+
+	if (ctrlSpawnInfo.type == SpawnType::Region) {
+		if (ctrlSpawnInfo.spawnId >= 0 && std::cmp_less(ctrlSpawnInfo.spawnId, m_vRespawnInfoRegion.size())) {
+			auto & respawnInfo = m_vRespawnInfoRegion[ctrlSpawnInfo.spawnId];
+
+			if (IsAlone(respawnInfo)) {
+				respawnInfo.Increment(bActiveAttack);
+				return true;
+			}
+		}
+	} else if (ctrlSpawnInfo.type == SpawnType::Script) {
+		const auto i = std::find_if(
+			m_vRespawnInfoScript.begin(), m_vRespawnInfoScript.end(),
+			[nRespawnNo = ctrlSpawnInfo.spawnId](const CRespawnInfo & self) {
+				return self.m_nGMIndex == nRespawnNo;
+			}
+		);
+
+		if (i != m_vRespawnInfoScript.end() && IsAlone(*i)) {
+			i->Increment(bActiveAttack);
+			return true;
+		}
+	}
+
+	return false;
+}
+
 u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 {
 	if( g_eLocal.GetState( EVE_RESPAWN ) == 0 )
@@ -488,6 +520,15 @@ void CLayerdRespawner::Increment(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack
 	MRP::iterator i = m_mapRespawners.find( nLayer );
 	if( i != m_mapRespawners.end() )
 		i->second->Increment(ctrlSpawnInfo, bActiveAttack );
+}
+
+bool CLayerdRespawner::IncrementIfAlone(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, int nLayer)
+{
+	MRP::iterator i = m_mapRespawners.find(nLayer);
+	if (i != m_mapRespawners.end())
+		return i->second->IncrementIfAlone(ctrlSpawnInfo, bActiveAttack);
+
+	return false;
 }
 
 void CLayerdRespawner::Expand( int nLayer )

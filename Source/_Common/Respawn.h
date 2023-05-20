@@ -74,6 +74,7 @@ public:
 	BOOL	Remove( int nRespawnNo, SpawnType nType );
 	u_long	Spawn( CWorld* pWorld, int nLayer );
 	void	Increment( CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack );
+	bool IncrementIfAlone(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack);
 };
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -88,6 +89,7 @@ public:
 	[[nodiscard]] bool IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo, int nLayer) const;
 	u_long Spawn( CWorld* pWorld );
 	void	Increment( CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, int nLayer );
+	bool IncrementIfAlone(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, int nLayer);
 	void	Expand( int nLayer );
 	void	Release( int nLayer );
 	CRespawner*	Proto( void )	{	return &m_proto;	}

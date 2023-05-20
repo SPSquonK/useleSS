@@ -4355,8 +4355,14 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 			CInstanceDungeonHelper::GetInstance()->SetInstanceDungeonKill( GetWorld()->GetID(), static_cast<DWORD>( this->GetLayer() ), GetProp()->dwID );
 	}
 #ifdef __EVENTLUA_SPAWN
-	if( IsNPC() )
-		prj.m_EventLua.RemoveSpawnedMonster( GetId() );
+	if (IsNPC()) {
+		prj.m_EventLua.RemoveSpawnedMonster(GetId());
+
+		if (m_spawnerInfo) {
+			const bool refreshed = GetWorld()->m_respawner.IncrementIfAlone(m_spawnerInfo.value(), m_bActiveAttack, GetLayer());
+			if (refreshed) m_spawnerInfo = std::nullopt;
+		}
+	}
 #endif // __EVENTLUA_SPAWN
 
 #endif //__WORLDSERVER	
