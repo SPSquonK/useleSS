@@ -109,11 +109,9 @@ void CRespawnInfo::GetPos( D3DXVECTOR3 & v, BOOL bRespawn )
 
 }
 
-void CRespawnInfo::Increment( BOOL bActiveAttack )	
-{ 
-	InterlockedDecrement( &m_cb ); 
-	if( bActiveAttack ) 
-		InterlockedDecrement( &m_nActiveAttackNum );	
+void CRespawnInfo::Increment(const BOOL bActiveAttack) {
+	m_cb -= 1;
+	if (bActiveAttack) m_nActiveAttackNum -= 1;
 }
 
 
@@ -257,7 +255,6 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 
 	ASSERT( pWorld );
 
-	short			cb;
 	u_long			uRespawned	= 0;
 
 
@@ -317,7 +314,7 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 			if( pi->m_cbTime < 0 )							// 0 이면 리스폰 시작
 			{
 				short nTime = (short)( ( pi->m_uTime * xRandom( 50, 150 ) ) / 100 );
-				cb = 0;
+				short cb = 0;
 				if( pi->m_nGMIndex != 0 )
 				{
 					pi->m_cbTime = nTime;					// 타이머 reset	
@@ -446,7 +443,7 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 						
 						if( pObj->GetType() == OT_MOVER && ( pi->m_nActiveAttackNum < nMaxAttckNum ) )
 						{
-							InterlockedIncrement( &pi->m_nActiveAttackNum );
+							pi->m_nActiveAttackNum += 1;
 							if( pMoverProp->dwLevel >= 7 )	// 레벨이 7 이상인것만 선공으로 리스폰됨.
 								((CMover*)pObj)->m_bActiveAttack	= TRUE;
 						}
@@ -455,7 +452,7 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 					pWorld->ADDOBJ( pObj, TRUE, nLayer );
 					uRespawned++;
 
-					InterlockedIncrement( &pi->m_cb );
+					pi->m_cb += 1;
 				}	// while( cb-- > 0 )					
 			} // if( pi->m_cbTime < 0 )
 		} // for( int i = 0; i < nSize; i++ )

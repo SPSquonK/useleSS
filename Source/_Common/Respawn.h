@@ -14,8 +14,8 @@ class CRespawnInfo
 public:
 	DWORD			m_dwType;
 	DWORD			m_dwIndex;
-	volatile long	m_cb;
-	volatile long	m_nActiveAttackNum;
+	long	m_cb;
+	long	m_nActiveAttackNum;
 	CRect			m_rect;
 	D3DXVECTOR3		m_vPos; // flying일 경우만 의미가있음 
 	u_short			m_uTime;
