@@ -1460,7 +1460,7 @@ void CDPDatabaseClient::OnMonsterRespawnSetting( CAr & ar, DPID, DPID )
 		
 		if( pWorld == NULL )
 			return;
-		pWorld->m_respawner.Remove( nRemoveIndex, SpawnType::Script);
+		pWorld->m_respawner.RemoveRegionSpawn( nRemoveIndex );
 	}
 }
 

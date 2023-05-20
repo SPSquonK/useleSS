@@ -139,41 +139,21 @@ int CRespawner::Add( CRespawnInfo & ri, SpawnType nType ) {
 	return -1;
 }
 
-// 실제 삭제 
-BOOL CRespawner::DoRemove( int nRespawnNo, SpawnType nType )
-{
-	if (nRespawnNo < 0)	return FALSE;
-
-	if (nType == SpawnType::Region) {
-		Error("CRespawner::Remove에서 RESPAWN_REGION 타입은 삭제할 수 없음 : %d\n", nRespawnNo);
-	} else if (nType == SpawnType::Script) {
-		for (VRI::iterator i = m_vRespawnInfoScript.begin(); i != m_vRespawnInfoScript.end(); ++i) {
-			if ((*i).m_nGMIndex == nRespawnNo) {
-				m_vRespawnInfoScript.erase(i);
-				return TRUE;
-			}
-		}
-	}
-
-	return FALSE;
-}
 // 여기서는 Remove 상태만 세팅 
-BOOL CRespawner::Remove( int nRespawnNo, SpawnType nType )
-{
-	if (nRespawnNo < 0)	return FALSE;
+bool CRespawner::RemoveRegionSpawn(const int nRespawnNo) {
+	if (nRespawnNo < 0)	return false;
 
-	if (nType == SpawnType::Region) {
-		Error( "CRespawner::Remove에서 RESPAWN_REGION 타입은 삭제할 수 없음 : %d\n", nRespawnNo );
-	} else if (nType == SpawnType::Script) {
-		for (VRI::iterator i = m_vRespawnInfoScript.begin(); i != m_vRespawnInfoScript.end(); ++i) {
-			if ((*i).m_nGMIndex == nRespawnNo) {
-				( *i ).m_bRemove	= TRUE;
-				return TRUE;
-			}
+	const auto i = std::find_if(
+		m_vRespawnInfoScript.begin(), m_vRespawnInfoScript.end(),
+		[nRespawnNo](const CRespawnInfo & respawnInfo) {
+			return respawnInfo.m_nGMIndex == nRespawnNo;
 		}
-	}
+	);
 
-	return FALSE;
+	if (i == m_vRespawnInfoScript.end()) return false;
+
+	i->m_bRemove = true;
+	return true;
 }
 
 bool CRespawner::IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo) const {
@@ -263,29 +243,20 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 	}
 
 	{
-		int nSize	= m_vRespawnInfoScript.size();
-		for( int i = 0; i < nSize; i++ )			// 04.10.11 - 480개 정도 이다.
-		{
-			CRespawnInfo * pi	= &m_vRespawnInfoScript[i];
-
-			if( pi->m_dwIndex == 0 )
-				continue;
+		auto pi = m_vRespawnInfoScript.begin();
+		while (pi != m_vRespawnInfoScript.end()) {
+			// 04.10.11 - 480개 정도 이다.
 
 			// 삭제 명령이 내려졌고, 리스폰된 오브젝트가 없다면?
-			if( pi->m_bRemove )
-			{
-				if( pi->m_cb == 0 )
-				{
-					if( DoRemove( pi->m_nGMIndex, SpawnType::Script) )
-					{
-						i--; 
-						nSize--;
-						continue;
-					}
-				}
-			}
+			const bool mustErase = (pi->m_dwIndex == 0)
+				|| (pi->m_bRemove && pi->m_cb == 0);
 
-			uRespawned += pi->ProcessRespawn(pWorld, nLayer, SpawnType::Script);
+			if (mustErase) {
+				pi = m_vRespawnInfoScript.erase(pi);
+			} else {
+				uRespawned += pi->ProcessRespawn(pWorld, nLayer, SpawnType::Script);
+				++pi;
+			}
 		}
 	}
 
@@ -294,9 +265,6 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 
 u_long CRespawnInfo::ProcessRespawn(CWorld * const pWorld, const int nLayer, const SpawnType spawnType) {
 	u_long uRespawned = 0;
-
-	int nDay = g_GameTimer.m_nDay;
-	int nHour = g_GameTimer.m_nHour;
 
 	if (!IsInTime()) return 0;
 
@@ -326,7 +294,6 @@ u_long CRespawnInfo::ProcessRespawn(CWorld * const pWorld, const int nLayer, con
 
 		cb = (m_nMaxcb / 2) - (m_nMaxcb - cb);
 	}
-	
 
 	DWORD dwFlying = 0;
 	const MoverProp * pMoverProp = nullptr;
@@ -436,34 +403,16 @@ bool CRespawnInfo::IsInTimeRange(const int now, const int min, const int max) {
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef __LAYER_1021
 
-CLayerdRespawner::~CLayerdRespawner()
-{
-	Clear();
-}
-
-void CLayerdRespawner::Clear()
-{
-	for( MRP::iterator i = m_mapRespawners.begin(); i != m_mapRespawners.end(); ++i )
-	{
-		CRespawner* pRespawner	= i->second;
-		SAFE_DELETE( pRespawner );
-	}
-	m_mapRespawners.clear();
-}
-
-int CLayerdRespawner::Add( CRespawnInfo & ri, SpawnType nType )
-{
+int CLayerdRespawner::Add( CRespawnInfo & ri, SpawnType nType ) {
 	return m_proto.Add( ri, nType );
 }
 
-BOOL CLayerdRespawner::Remove( int nRespawn, SpawnType nType )
-{
-	for( MRP::iterator i = m_mapRespawners.begin(); i != m_mapRespawners.end(); ++i )
-	{
-		CRespawner* pRespawner	= i->second;
-		pRespawner->Remove( nRespawn, nType );
+bool CLayerdRespawner::RemoveRegionSpawn(const int nRespawnNo) {
+	for (const auto & [nLayer, pRespawner] : m_mapRespawners) {
+		pRespawner->RemoveRegionSpawn(nRespawnNo);
 	}
-	return m_proto.Remove( nRespawn, nType );
+
+	return m_proto.RemoveRegionSpawn(nRespawnNo);
 }
 
 bool CLayerdRespawner::IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo, int nLayer) const {
@@ -471,55 +420,42 @@ bool CLayerdRespawner::IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo, int nLayer
 		return false;
 	}
 
-	const auto i = m_mapRespawners.find(nLayer);
-	if (i != m_mapRespawners.end())
+	if (const auto i = m_mapRespawners.find(nLayer); i != m_mapRespawners.end()) {
 		return i->second->IsSpawnInDeletion(ctrlSpawnInfo);
+	}
 	return false;
 }
 
-u_long CLayerdRespawner::Spawn( CWorld* pWorld )
-{
-	u_long uRespawn	= 0;
-	for( MRP::iterator i = m_mapRespawners.begin(); i != m_mapRespawners.end(); ++i )
-		uRespawn	+= i->second->Spawn( pWorld, i->first );
+u_long CLayerdRespawner::Spawn(CWorld * pWorld) {
+	u_long uRespawn = 0;
+	for (const auto & [nLayer, pRespawner] : m_mapRespawners) {
+		uRespawn += pRespawner->Spawn(pWorld, nLayer);
+	}
 	return uRespawn;
 }
 
-void CLayerdRespawner::Increment(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, int nLayer )
-{
-	MRP::iterator i = m_mapRespawners.find( nLayer );
-	if( i != m_mapRespawners.end() )
-		i->second->Increment(ctrlSpawnInfo, bActiveAttack );
+void CLayerdRespawner::Increment(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, int nLayer) {
+	if (const auto i = m_mapRespawners.find(nLayer); i != m_mapRespawners.end()) {
+		i->second->Increment(ctrlSpawnInfo, bActiveAttack);
+	}
 }
 
-bool CLayerdRespawner::IncrementIfAlone(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, int nLayer)
-{
-	MRP::iterator i = m_mapRespawners.find(nLayer);
-	if (i != m_mapRespawners.end())
+bool CLayerdRespawner::IncrementIfAlone(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, int nLayer) {
+	if (const auto i = m_mapRespawners.find(nLayer); i != m_mapRespawners.end()) {
 		return i->second->IncrementIfAlone(ctrlSpawnInfo, bActiveAttack);
+	}
 
 	return false;
 }
 
-void CLayerdRespawner::Expand( int nLayer )
-{
-	MRP::iterator i = m_mapRespawners.find( nLayer );
-	if( i == m_mapRespawners.end() )
-	{
-		CRespawner* pRespawner	= new CRespawner( m_proto );
-		bool bResult	= m_mapRespawners.insert( MRP::value_type( nLayer, pRespawner ) ).second;
+void CLayerdRespawner::Expand(int nLayer) {
+	if (!m_mapRespawners.contains(nLayer)) {
+		m_mapRespawners.emplace(nLayer, std::make_unique<CRespawner>(m_proto));
 	}
 }
 
-void CLayerdRespawner::Release( int nLayer )
-{
-	MRP::iterator i = m_mapRespawners.find( nLayer );
-	if( i != m_mapRespawners.end() )
-	{
-		CRespawner* pRespawner	= i->second;
-		SAFE_DELETE( pRespawner );
-		m_mapRespawners.erase( i );
-	}
+void CLayerdRespawner::Release(const int nLayer) {
+	m_mapRespawners.erase(nLayer);
 }
 #endif	// __LAYER_1021
 

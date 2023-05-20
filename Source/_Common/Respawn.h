@@ -3,6 +3,7 @@
 #include "commonCtrl.h"
 
 #ifdef __WORLDSERVER
+#include <memory>
 #include <array>
 
 #define	MAX_RESPOINT_PER_REGION		100
@@ -71,12 +72,10 @@ public:
 	VRI m_vRespawnInfoRegion;
 	VRI m_vRespawnInfoScript;
 
-private:
-	BOOL	DoRemove( int nRespawnNo, SpawnType nType ); // 실제 Remove를 수행 
 public:
 	int		Add( CRespawnInfo & ri, SpawnType nType );
 	[[nodiscard]] bool IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo) const;
-	BOOL	Remove( int nRespawnNo, SpawnType nType );
+	bool RemoveRegionSpawn(int nRespawnNo);
 	u_long	Spawn( CWorld* pWorld, int nLayer );
 	void	Increment( CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack );
 	bool IncrementIfAlone(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack);
@@ -86,11 +85,8 @@ public:
 class CLayerdRespawner
 {
 public:
-	using MRP = std::map<int, CRespawner *>;
-
-	virtual	~CLayerdRespawner();
 	int		Add( CRespawnInfo & ri, SpawnType nType /* = SpawnType::Region */ );
-	BOOL	Remove( int nRespawn, SpawnType nType );
+	bool RemoveRegionSpawn(int nRespawnNo);
 	[[nodiscard]] bool IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo, int nLayer) const;
 	u_long Spawn( CWorld* pWorld );
 	void	Increment( CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, int nLayer );
@@ -99,10 +95,8 @@ public:
 	void	Release( int nLayer );
 	CRespawner*	Proto( void )	{	return &m_proto;	}
 private:
-	void	Clear();
-private:
 	CRespawner	m_proto;
-	MRP	m_mapRespawners;
+	std::map<int, std::unique_ptr<CRespawner>> m_mapRespawners;
 };
 
 #endif
