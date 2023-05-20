@@ -54,6 +54,11 @@ public:
 	void			Increment( BOOL bActiveAttack );	
 	void			GetPos( D3DXVECTOR3 & v, BOOL bRespawn=TRUE );
 	BOOL	GenResPoint( CWorld* pWorld );
+	u_long ProcessRespawn(CWorld * pWorld, int nLayer, SpawnType spawnType);
+
+private:
+	[[nodiscard]] bool IsInTime() const;
+	[[nodiscard]] static bool IsInTimeRange(int now, int min, int max);
 #endif
 };
 

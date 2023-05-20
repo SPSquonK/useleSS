@@ -176,8 +176,7 @@ BOOL CRespawner::Remove( int nRespawnNo, SpawnType nType )
 	return FALSE;
 }
 
-bool CRespawner::IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo) const
-{
+bool CRespawner::IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo) const {
 	if (ctrlSpawnInfo.type == SpawnType::Region) {
 		return false;
 	} else if (ctrlSpawnInfo.type == SpawnType::Script) {
@@ -255,19 +254,19 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 
 	ASSERT( pWorld );
 
-	u_long			uRespawned	= 0;
+	u_long uRespawned	= 0;
 
+	for (CRespawnInfo & pi : m_vRespawnInfoRegion) {
+		if (pi.m_dwIndex != 0) {
+			uRespawned += pi.ProcessRespawn(pWorld, nLayer, SpawnType::Region);
+		}
+	}
 
-	const std::initializer_list initList = {
-		std::pair<SpawnType, VRI &>(SpawnType::Region, m_vRespawnInfoRegion),
-		std::pair<SpawnType, VRI &>(SpawnType::Script, m_vRespawnInfoScript),
-	};
-
-	for (const auto & [nType, vRepaswnInfo] : initList) {
-		int nSize	= vRepaswnInfo.size();
+	{
+		int nSize	= m_vRespawnInfoScript.size();
 		for( int i = 0; i < nSize; i++ )			// 04.10.11 - 480개 정도 이다.
 		{
-			CRespawnInfo * pi	= &vRepaswnInfo[i];
+			CRespawnInfo * pi	= &m_vRespawnInfoScript[i];
 
 			if( pi->m_dwIndex == 0 )
 				continue;
@@ -277,7 +276,7 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 			{
 				if( pi->m_cb == 0 )
 				{
-					if( DoRemove( pi->m_nGMIndex, nType ) )
+					if( DoRemove( pi->m_nGMIndex, SpawnType::Script) )
 					{
 						i--; 
 						nSize--;
@@ -286,180 +285,154 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 				}
 			}
 
-			int nDay  = g_GameTimer.m_nDay ;
-			int nHour = g_GameTimer.m_nHour;
-
-			if( pi->m_nDayMin < pi->m_nDayMax )
-			{
-				if( nDay < pi->m_nDayMin || nDay > pi->m_nDayMax )
-					continue;
-			}
-			else
-			{
-				if( nDay < pi->m_nDayMin && nDay > pi->m_nDayMax )
-					continue;
-			}
-			if( pi->m_nHourMin < pi->m_nHourMax )
-			{
-				if( nHour < pi->m_nHourMin || nHour > pi->m_nHourMax )
-					continue;
-			}
-			else
-			{
-				if( nHour < pi->m_nHourMin && nHour > pi->m_nHourMax )
-					continue;
-			}
-
-			pi->m_cbTime--;									// 리스폰 타이머 시간 감소 
-			if( pi->m_cbTime < 0 )							// 0 이면 리스폰 시작
-			{
-				short nTime = (short)( ( pi->m_uTime * xRandom( 50, 150 ) ) / 100 );
-				short cb = 0;
-				if( pi->m_nGMIndex != 0 )
-				{
-					pi->m_cbTime = nTime;					// 타이머 reset	
-					if( pi->m_nMaxcb - pi->m_cb > 0 )
-						cb	= (short)( pi->m_nMaxcb - pi->m_cb );		// cb = 죽은 갯수
-				}
-				else
-				{
-					if( pWorld->GetID() == WI_WORLD_MADRIGAL )
-					{
-						pi->m_cbTime = (short)(nTime * prj.m_fMonsterRebirthRate);			// 타이머 reset
-						if( (pi->m_nMaxcb * prj.m_fMonsterRespawnRate) - pi->m_cb > 0 )
-							cb	= (short)( (pi->m_nMaxcb * prj.m_fMonsterRespawnRate) - pi->m_cb );	// cb = 죽은 갯수
-					}
-					else
-					{
-						pi->m_cbTime = nTime;							// 타이머 reset
-						if( pi->m_nMaxcb - pi->m_cb > 0 )
-							cb	= (short)( pi->m_nMaxcb - pi->m_cb );				// cb = 죽은 갯수
-					}
-				}
-				
-				if( pi->m_bHalf )
-				{
-					cb	= (short)( ( pi->m_nMaxcb / 2 ) - ( pi->m_nMaxcb - cb ) );
-				}
-				pi->m_bHalf	= !pi->m_bHalf;
-
-				DWORD dwFlying = 0;
-				const MoverProp * pMoverProp = nullptr;
-				if( pi->m_dwType == OT_MOVER )
-				{
-					pMoverProp = prj.GetMoverProp( pi->m_dwIndex );
-					if( pMoverProp )
-						dwFlying	= pMoverProp->dwFlying;
-				}
-
-				while( cb-- > 0 )
-				{
-					if( pi->m_dwIndex == 0 )
-					{
-						Error( "CRespawner::Spawn()\t// 0 index\n" );
-						continue;
-					}
-					CCtrl * pObj = static_cast<CCtrl *>(CreateObj(D3DDEVICE, pi->m_dwType, pi->m_dwIndex));
-					
-					if( pi->m_dwType == OT_ITEM )
-					{
-						CItemElem* pItemElem	= new CItemElem;
-						pItemElem->m_dwItemId	= pi->m_dwIndex;
-						pItemElem->m_nItemNum	= (short)( pi->m_nItemMin + xRandom( pi->m_nItemMax - pi->m_nItemMin + 1 ) );
-						ItemProp* pItemProp	= pItemElem->GetProp();
-						if( !pItemProp )
-						{
-							char lpOutputString[100]	= { 0,};
-							sprintf( lpOutputString, "%d item property not found", pi->m_dwIndex );
-							OutputDebugString( lpOutputString );
-						}
-						pItemElem->m_nHitPoint	= pItemProp->dwEndurance;
-						pItemElem->SetSerialNumber();
-						( (CItem*)pObj )->m_pItemBase	= pItemElem;
-						if( pItemElem->m_nItemNum > (int)( pItemProp->dwPackMax ) )
-						{
-							pItemElem->m_nItemNum	= (int)( pItemProp->dwPackMax );
-						}
-					}
-					else
-					if( pi->m_dwType == OT_CTRL )
-					{
-						memcpy( &(((CCommonCtrl*)pObj)->m_CtrlElem), &(pi->m_CtrlElem), sizeof( CCtrlElem ) );
-						((CCommonCtrl*)pObj)->SetAngle( (float)( xRandom(360) ) );
-					}
-					else
-					if( pi->m_dwType == OT_MOVER )
-					{
-						((CMover*)pObj)->SetGold(((CMover*)pObj)->GetLevel()*15);  // 몬스터 생성시 기본 페냐를 설정
-					}
-
-					if( !pObj )
-						WriteLog( "SPAWN: %d, %d", pi->m_dwType, pi->m_dwIndex );
-
-					pObj->m_dwAIInterfaceState = pi->m_dwAiState;
-					pObj->m_dwPatrolIndex      = pi->m_dwPatrolIndex;
-					pObj->m_bPatrolCycle       = pi->m_bPatrolCycle;
-						
-					if( ( pObj->m_dwAIInterfaceState == 9 || pObj->m_dwAIInterfaceState == 8 ) && pi->m_nMaxcb == 1 )
-						pObj->SetAngle( pi->m_fAngle );					
-
-					D3DXVECTOR3		v;
-					pi->GetPos( v );
-
-					if( dwFlying )
-					{
-						v.y	+= xRandom( 21 );	
-						float y	= pWorld->GetLandHeight( v.x, v.z );
-						if( v.y < y )	
-							v.y	= y	+ 10.0f;
-					}
-					else
-					{
-						v.y = pi->m_fY + 1.0f;	// 약간 더해주자. 안그러면 뚫고 들어갈 수 있음 
-						v.y	= pWorld->GetUnderHeight( v );
-					}
-
-
-					pObj->SetSpawner(CtrlSpawnInfo{ pi->m_nGMIndex, nType });
-						int nMaxAttckNum = 0;
-
-
-							if( pi->m_nMaxAttackNum == 1 && pi->m_nMaxcb == 1 ) // 거대 몬스터? 몬스터 마리수가 1명이고 선공 몬스터시 무조건 선공 몬스터 임
-							{
-								nMaxAttckNum = pi->m_nActiveAttackNum + 1;
-							}
-							else
-							{
-								if( pWorld->GetID() == WI_WORLD_MADRIGAL )
-								{
-									nMaxAttckNum = int( ( pi->m_nMaxcb * prj.m_fMonsterRespawnRate ) * prj.m_fMonsterAggressiveRate );
-								}
-								else
-								{
-									nMaxAttckNum = pi->m_nMaxAttackNum;
-								}
-							}
-
-						
-						if( pObj->GetType() == OT_MOVER && ( pi->m_nActiveAttackNum < nMaxAttckNum ) )
-						{
-							pi->m_nActiveAttackNum += 1;
-							if( pMoverProp->dwLevel >= 7 )	// 레벨이 7 이상인것만 선공으로 리스폰됨.
-								((CMover*)pObj)->m_bActiveAttack	= TRUE;
-						}
-
-					pObj->SetPos( v );
-					pWorld->ADDOBJ( pObj, TRUE, nLayer );
-					uRespawned++;
-
-					pi->m_cb += 1;
-				}	// while( cb-- > 0 )					
-			} // if( pi->m_cbTime < 0 )
-		} // for( int i = 0; i < nSize; i++ )
-	} // for( int nType = 0; nType < 3; nType++ )
+			uRespawned += pi->ProcessRespawn(pWorld, nLayer, SpawnType::Script);
+		}
+	}
 
 	return uRespawned;
 }
+
+u_long CRespawnInfo::ProcessRespawn(CWorld * const pWorld, const int nLayer, const SpawnType spawnType) {
+	u_long uRespawned = 0;
+
+	int nDay = g_GameTimer.m_nDay;
+	int nHour = g_GameTimer.m_nHour;
+
+	if (!IsInTime()) return 0;
+
+	m_cbTime--;									// 리스폰 타이머 시간 감소 
+	if (m_cbTime >= 0) return 0;
+
+	// 0 이면 리스폰 시작
+
+	short nTime = (short)((m_uTime * xRandom(50, 150)) / 100);
+
+
+	long cb = 0;
+	if (m_nGMIndex != 0 || pWorld->GetID() != WI_WORLD_MADRIGAL) {
+		m_cbTime = nTime;					// 타이머 reset	
+		cb = std::max(m_nMaxcb - m_cb, 0l);
+	} else {
+		m_cbTime = (short)(nTime * prj.m_fMonsterRebirthRate);
+		cb = std::max(static_cast<long>(m_nMaxcb * prj.m_fMonsterRespawnRate) - m_cb, 0l);
+	}
+
+	m_bHalf = !m_bHalf;
+
+	if (!m_bHalf) {
+		if (m_nMaxcb / 2 <= m_nMaxcb - cb) {
+			return 0;
+		}
+
+		cb = (m_nMaxcb / 2) - (m_nMaxcb - cb);
+	}
+	
+
+	DWORD dwFlying = 0;
+	const MoverProp * pMoverProp = nullptr;
+	if (m_dwType == OT_MOVER) {
+		pMoverProp = prj.GetMoverProp(m_dwIndex);
+		if (pMoverProp)
+			dwFlying = pMoverProp->dwFlying;
+	}
+
+	for (int iCb = 0; iCb != cb; ++iCb) {
+		CCtrl * pObj = static_cast<CCtrl *>(CreateObj(D3DDEVICE, m_dwType, m_dwIndex));
+
+		if (!pObj) {
+			WriteLog("SPAWN: %lu, %lu", m_dwType, m_dwIndex);
+			return uRespawned;
+		}
+
+		if (m_dwType == OT_ITEM) {
+			CItemElem * pItemElem = new CItemElem;
+			pItemElem->m_dwItemId = m_dwIndex;
+			pItemElem->m_nItemNum = (short)(m_nItemMin + xRandom(m_nItemMax - m_nItemMin + 1));
+			const ItemProp * pItemProp = pItemElem->GetProp();
+			if (!pItemProp) {
+				char lpOutputString[100] = { 0, };
+				sprintf(lpOutputString, "%lu item property not found", m_dwIndex);
+				OutputDebugString(lpOutputString);
+				delete pItemElem;
+				return uRespawned;
+			}
+			pItemElem->m_nHitPoint = pItemProp->dwEndurance;
+			pItemElem->SetSerialNumber();
+			((CItem *)pObj)->m_pItemBase = pItemElem;
+
+			pItemElem->m_nItemNum = std::min(pItemElem->m_nItemNum, static_cast<short>(pItemProp->dwPackMax));
+		} else if (m_dwType == OT_CTRL) {
+			CCommonCtrl * pCtrl = static_cast<CCommonCtrl *>(pObj);
+			memcpy(&(pCtrl->m_CtrlElem), &(m_CtrlElem), sizeof(CCtrlElem));
+			pCtrl->SetAngle((float)(xRandom(360)));
+		} else if (m_dwType == OT_MOVER) {
+			CMover * pMover = static_cast<CMover *>(pObj);
+			pMover->SetGold(pMover->GetLevel() * 15);  // 몬스터 생성시 기본 페냐를 설정
+		}
+
+
+		pObj->m_dwAIInterfaceState = m_dwAiState;
+		pObj->m_dwPatrolIndex = m_dwPatrolIndex;
+		pObj->m_bPatrolCycle = m_bPatrolCycle;
+
+		if ((pObj->m_dwAIInterfaceState == 9 || pObj->m_dwAIInterfaceState == 8) && m_nMaxcb == 1)
+			pObj->SetAngle(m_fAngle);
+
+		D3DXVECTOR3	v; GetPos(v);
+
+		if (dwFlying) {
+			v.y += xRandom(21);
+			float y = pWorld->GetLandHeight(v.x, v.z);
+			if (v.y < y)
+				v.y = y + 10.0f;
+		} else {
+			v.y = m_fY + 1.0f;	// 약간 더해주자. 안그러면 뚫고 들어갈 수 있음 
+			v.y = pWorld->GetUnderHeight(v);
+		}
+		pObj->SetPos(v);
+
+		pObj->SetSpawner(CtrlSpawnInfo{ m_nGMIndex, spawnType });
+
+		// 거대 몬스터? 몬스터 마리수가 1명이고 선공 몬스터시 무조건 선공 몬스터 임
+		if (m_dwType == OT_MOVER) {
+			int nMaxAttckNum;
+			if (m_nMaxAttackNum == 1 && m_nMaxcb == 1) {
+				nMaxAttckNum = m_nActiveAttackNum + 1;
+			} else if (pWorld->GetID() == WI_WORLD_MADRIGAL) {
+				nMaxAttckNum = int((m_nMaxcb * prj.m_fMonsterRespawnRate) * prj.m_fMonsterAggressiveRate);
+			} else {
+				nMaxAttckNum = m_nMaxAttackNum;
+			}
+
+			if (m_nActiveAttackNum < nMaxAttckNum) {
+				m_nActiveAttackNum += 1;
+				if (pMoverProp->dwLevel >= 7)	// 레벨이 7 이상인것만 선공으로 리스폰됨.
+					((CMover *)pObj)->m_bActiveAttack = TRUE;
+			}
+		}
+
+		pWorld->ADDOBJ(pObj, TRUE, nLayer);
+		
+		uRespawned++;
+		m_cb += 1;
+	}
+
+	return uRespawned;
+}
+
+bool CRespawnInfo::IsInTime() const {
+	return IsInTimeRange(g_GameTimer.m_nDay, m_nDayMin, m_nDayMax)
+		&& IsInTimeRange(g_GameTimer.m_nHour, m_nHourMin, m_nHourMax);
+}
+
+bool CRespawnInfo::IsInTimeRange(const int now, const int min, const int max) {
+	if (min < max) {
+		return now >= min && now <= max;
+	} else {
+		return now <= min || now >= max;
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef __LAYER_1021
 
