@@ -1371,9 +1371,9 @@ void CDPDatabaseClient::OnBaseGameSetting( CAr & ar, DPID, DPID )
 		#else	// __LAYER_1021
 			CRespawner* pRespawner	= &pWorld->m_respawner;
 		#endif	// __LAYER_1021
-			for( int i = 0; i < (int)( pRespawner->m_vRespawnInfo[RESPAWNTYPE_REGION].size() ); ++i )
+			for( int i = 0; i < (int)( pRespawner->m_vRespawnInfoRegion.size() ); ++i )
 			{
-				CRespawnInfo* pRespawnInfo	= &( pRespawner->m_vRespawnInfo[RESPAWNTYPE_REGION][i] );
+				CRespawnInfo* pRespawnInfo	= &( pRespawner->m_vRespawnInfoRegion[i] );
 		
 				if( pRespawnInfo->m_dwType == OT_MOVER )	// 몬스터 리스폰
 				{
@@ -1445,7 +1445,7 @@ void CDPDatabaseClient::OnMonsterRespawnSetting( CAr & ar, DPID, DPID )
 			ri.m_uTime = nTime;
 			ri.m_nGMIndex = nAddIndex;
 			
-			pWorld->m_respawner.Add( ri, TRUE );
+			pWorld->m_respawner.Add( ri, SpawnType::Script);
 		}
 	} 
 
@@ -1460,7 +1460,7 @@ void CDPDatabaseClient::OnMonsterRespawnSetting( CAr & ar, DPID, DPID )
 		
 		if( pWorld == NULL )
 			return;
-		pWorld->m_respawner.Remove( nRemoveIndex, TRUE );
+		pWorld->m_respawner.Remove( nRemoveIndex, SpawnType::Script);
 	}
 }
 

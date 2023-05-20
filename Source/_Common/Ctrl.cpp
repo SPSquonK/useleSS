@@ -39,7 +39,7 @@ CCtrl::CCtrl()
 
 #ifdef __WORLDSERVER
 	m_lRespawn	= -1;
-	m_nRespawnType = 0;
+	m_nRespawnType = SpawnType::Region;
 
 	memset( m_nOldCenter, 0, sizeof(int) * MAX_LINKLEVEL );
 #endif	// __WORLDSERVER

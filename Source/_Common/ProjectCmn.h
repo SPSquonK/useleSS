@@ -775,6 +775,10 @@ struct MoverProp : CtrlProp
 	}
 };
 
+#ifdef __WORLDSERVER
+enum class SpawnType : bool { Region, Script };
+#endif
+
 #define TASKBAR_TOP    0
 #define TASKBAR_BOTTOM 1
 #define TASKBAR_LEFT   2

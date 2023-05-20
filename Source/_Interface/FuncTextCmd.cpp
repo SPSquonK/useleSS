@@ -203,7 +203,7 @@ BOOL TextCmd_SetMonsterRespawn(CScanner & scanner, CPlayer_ * pUser) {
 		ri.m_cbTime			= 0;
 
 		char chMessage[512] = {0,};
-			pWorld->m_respawner.Add( ri, TRUE );
+			pWorld->m_respawner.Add( ri, SpawnType::Script );
 
 		sprintf( chMessage, "Add Respwan Monster : %s(%d/%d) Rect(%d, %d, %d, %d) Time : %d", 
 			pMoverProp->szName, ri.m_cb, ri.m_nActiveAttackNum, ri.m_rect.left, ri.m_rect.right, ri.m_rect.top, ri.m_rect.bottom, ri.m_uTime );

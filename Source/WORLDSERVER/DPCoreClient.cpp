@@ -2125,7 +2125,7 @@ void CDPCoreClient::OnSetMonsterRespawn( CAr & ar, DPID, DPID, OBJID )
 		ri.m_uTime			= (u_short)( dwRespawnTime );
 		ri.m_cbTime = 0;
 		
-		pWorld->m_respawner.Add( ri, TRUE );
+		pWorld->m_respawner.Add( ri, SpawnType::Script);
 		
 		char chMessage[512] = {0,};
 		sprintf( chMessage, "Add Respwan MonsterID = %d(%d/%d) Rect(%d, %d, %d, %d) Time = %d", 

@@ -1,9 +1,5 @@
 #pragma once
 
-#define RESPAWNTYPE_REGION   0
-#define RESPAWNTYPE_SCRIPT   1
-#define RESPAWNTYPE_BACKEND  2
-
 #include "commonCtrl.h"
 
 #ifdef __WORLDSERVER
@@ -63,32 +59,35 @@ public:
 
 #ifdef __WORLDSERVER
 
-typedef std::vector<CRespawnInfo>	VRI;
 class CRespawner final {
 public:
-	std::array<VRI, 3>	m_vRespawnInfo;
+	using VRI = std::vector<CRespawnInfo>;
+
+	VRI m_vRespawnInfoRegion;
+	VRI m_vRespawnInfoScript;
 
 private:
-	BOOL	DoRemove( int nRespawnNo, int nType ); // 실제 Remove를 수행 
+	BOOL	DoRemove( int nRespawnNo, SpawnType nType ); // 실제 Remove를 수행 
 public:
-	int		Add( CRespawnInfo & ri, int nType = RESPAWNTYPE_REGION );
-	CRespawnInfo*	GetRespawnInfo( int nRespawnNo, int nType );
-	BOOL	Remove( int nRespawnNo, int nType );
+	int		Add( CRespawnInfo & ri, SpawnType nType /* = SpawnType::Region */ );
+	CRespawnInfo*	GetRespawnInfo( int nRespawnNo, SpawnType nType );
+	BOOL	Remove( int nRespawnNo, SpawnType nType );
 	u_long	Spawn( CWorld* pWorld, int nLayer );
-	void	Increment( int nRespawnNo, int nType, BOOL bActiveAttack );
+	void	Increment( int nRespawnNo, SpawnType nType, BOOL bActiveAttack );
 };
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef	std::map<int, CRespawner*>	MRP;
 class CLayerdRespawner
 {
 public:
+	using MRP = std::map<int, CRespawner *>;
+
 	virtual	~CLayerdRespawner();
-	int		Add( CRespawnInfo & ri, int nType = RESPAWNTYPE_REGION );
-	BOOL	Remove( int nRespawn, int nType );
-	CRespawnInfo*	GetRespawnInfo( int nRespawn, int nType, int nLayer );
+	int		Add( CRespawnInfo & ri, SpawnType nType /* = SpawnType::Region */ );
+	BOOL	Remove( int nRespawn, SpawnType nType );
+	CRespawnInfo*	GetRespawnInfo( int nRespawn, SpawnType nType, int nLayer );
 	u_long Spawn( CWorld* pWorld );
-	void	Increment( int nRespawn, int nType, BOOL bActiveAttack, int nLayer );
+	void	Increment( int nRespawn, SpawnType nType, BOOL bActiveAttack, int nLayer );
 	void	Expand( int nLayer );
 	void	Release( int nLayer );
 	CRespawner*	Proto( void )	{	return &m_proto;	}

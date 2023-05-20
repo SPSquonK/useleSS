@@ -713,7 +713,7 @@ BOOL CWorld::ReadRespawn( CScript& s )
 		return FALSE;
 	}
 
-	m_respawner.Add( ri );
+	m_respawner.Add( ri, SpawnType::Region );
 #endif	// __WORLDSERVER
 
 	return TRUE;

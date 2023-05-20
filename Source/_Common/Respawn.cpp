@@ -121,138 +121,94 @@ void CRespawnInfo::Increment( BOOL bActiveAttack )
 // CRespawner
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-int CRespawner::Add( CRespawnInfo & ri, int nType )
-{	
-	if( nType == RESPAWNTYPE_REGION )
-	{
-		ri.m_uTime	/= 2;
-		ri.m_nGMIndex	= m_vRespawnInfo[nType].size();
-		m_vRespawnInfo[nType].push_back( ri );
-	}
-	else
-	if( nType == RESPAWNTYPE_SCRIPT )
-	{
-		for( VRI::iterator i = m_vRespawnInfo[nType].begin(); i != m_vRespawnInfo[nType].end(); ++i )
-		{
-			 if( ( * i ).m_nGMIndex == ri.m_nGMIndex )
-			 {
-				Error( "CRespawner::Add 같은 ID 발견 : %d, %d, %f, %f, %d\n", ri.m_dwIndex, ri.m_dwType, ri.m_vPos.x, ri.m_vPos.z, nType );
+int CRespawner::Add( CRespawnInfo & ri, SpawnType nType ) {
+	if (nType == SpawnType::Region) {
+		ri.m_uTime /= 2;
+		ri.m_nGMIndex = m_vRespawnInfoRegion.size();
+		m_vRespawnInfoRegion.push_back(ri);
+		return m_vRespawnInfoRegion.size() - 1;
+	} else if (nType == SpawnType::Script) {
+		for (VRI::iterator i = m_vRespawnInfoScript.begin(); i != m_vRespawnInfoScript.end(); ++i) {
+			if ((*i).m_nGMIndex == ri.m_nGMIndex) {
+				Error("CRespawner::Add 같은 ID 발견 : %d, %d, %f, %f, %d\n", ri.m_dwIndex, ri.m_dwType, ri.m_vPos.x, ri.m_vPos.z, nType);
 				return -1;
-			 }
+			}
 		}
-		m_vRespawnInfo[nType].push_back( ri );
+		m_vRespawnInfoScript.push_back(ri);
+		return m_vRespawnInfoScript.size() - 1;
 	}
-	return m_vRespawnInfo[nType].size() - 1;
+
+	return -1;
 }
 
 // 실제 삭제 
-BOOL CRespawner::DoRemove( int nRespawnNo, int nType )
+BOOL CRespawner::DoRemove( int nRespawnNo, SpawnType nType )
 {
-	if( nRespawnNo < 0 )	
-		return NULL;
-	BOOL bResult = FALSE;
-	if( nType == RESPAWNTYPE_REGION )
-	{
-		Error( "CRespawner::Remove에서 RESPAWN_REGION 타입은 삭제할 수 없음 : %d\n", nRespawnNo );
-		return FALSE;
-	}
-	else
-	if( nType == RESPAWNTYPE_SCRIPT )
-	{
-		for( VRI::iterator i = m_vRespawnInfo[nType].begin(); i != m_vRespawnInfo[nType].end(); ++i )
-		{
-			if( ( *i ).m_nGMIndex == nRespawnNo )
-			{
-				m_vRespawnInfo[nType].erase( i );
-				bResult = TRUE;
-				break;
+	if (nRespawnNo < 0)	return FALSE;
+
+	if (nType == SpawnType::Region) {
+		Error("CRespawner::Remove에서 RESPAWN_REGION 타입은 삭제할 수 없음 : %d\n", nRespawnNo);
+	} else if (nType == SpawnType::Script) {
+		for (VRI::iterator i = m_vRespawnInfoScript.begin(); i != m_vRespawnInfoScript.end(); ++i) {
+			if ((*i).m_nGMIndex == nRespawnNo) {
+				m_vRespawnInfoScript.erase(i);
+				return TRUE;
 			}
 		}
 	}
-	else
-	if( nType == RESPAWNTYPE_BACKEND )
-	{
-		return TRUE;
-	}
-	return bResult;
+
+	return FALSE;
 }
 // 여기서는 Remove 상태만 세팅 
-BOOL CRespawner::Remove( int nRespawnNo, int nType )
+BOOL CRespawner::Remove( int nRespawnNo, SpawnType nType )
 {
-	if( nRespawnNo < 0 )	
-		return NULL;
-	if( nType == RESPAWNTYPE_REGION )
-	{
+	if (nRespawnNo < 0)	return FALSE;
+
+	if (nType == SpawnType::Region) {
 		Error( "CRespawner::Remove에서 RESPAWN_REGION 타입은 삭제할 수 없음 : %d\n", nRespawnNo );
-		return FALSE;
-	}
-	else
-	if( nType == RESPAWNTYPE_SCRIPT )
-	{
-		for( VRI::iterator i = m_vRespawnInfo[nType].begin(); i != m_vRespawnInfo[nType].end(); ++i )
-		{
-			if( ( *i ).m_nGMIndex == nRespawnNo )
-			{
+	} else if (nType == SpawnType::Script) {
+		for (VRI::iterator i = m_vRespawnInfoScript.begin(); i != m_vRespawnInfoScript.end(); ++i) {
+			if ((*i).m_nGMIndex == nRespawnNo) {
 				( *i ).m_bRemove	= TRUE;
 				return TRUE;
 			}
 		}
 	}
-	else
-	if( nType == RESPAWNTYPE_BACKEND )
-	{
-		return TRUE;
-	}
+
 	return FALSE;
 }
-CRespawnInfo* CRespawner::GetRespawnInfo( int nRespawnNo, int nType )
+CRespawnInfo* CRespawner::GetRespawnInfo( int nRespawnNo, SpawnType nType )
 {
-	if( nRespawnNo < 0 )	
-		return NULL;
-	if( nType == RESPAWNTYPE_REGION )
-	{
-		if( nRespawnNo < (int)( m_vRespawnInfo[nType].size() ) )
-			return &m_vRespawnInfo[nType][nRespawnNo];
-	}
-	else
-	if( nType == RESPAWNTYPE_SCRIPT )
-	{
-		for( VRI::iterator i = m_vRespawnInfo[nType].begin(); i != m_vRespawnInfo[nType].end(); ++i )
+	if( nRespawnNo < 0 ) return nullptr;
+
+	if (nType == SpawnType::Region) {
+		if( nRespawnNo < (int)(m_vRespawnInfoRegion.size() ) )
+			return &m_vRespawnInfoRegion[nRespawnNo];
+	} else if (nType == SpawnType::Script) {
+		for( VRI::iterator i = m_vRespawnInfoScript.begin(); i != m_vRespawnInfoScript.end(); ++i )
 		{
 			if( ( *i ).m_nGMIndex == nRespawnNo )
 				return &( *i );
 		}
 	}
-	else
-	if( nType == RESPAWNTYPE_BACKEND )
-	{
-	}
-	return NULL;
+
+	return nullptr;
 }
-void CRespawner::Increment( int nRespawnNo, int nType, BOOL bActiveAttack )	
+void CRespawner::Increment( int nRespawnNo, SpawnType nType, BOOL bActiveAttack )
 {
 	if( nRespawnNo < 0 )	
 		return;
-	if( nType == RESPAWNTYPE_REGION )
-	{
-		if( nRespawnNo < (int)( m_vRespawnInfo[nType].size() ) )
-			m_vRespawnInfo[nType][nRespawnNo].Increment( bActiveAttack );
-	}
-	else
-	if( nType == RESPAWNTYPE_SCRIPT )
-	{
-		for( VRI::iterator i = m_vRespawnInfo[nType].begin(); i != m_vRespawnInfo[nType].end(); ++i )
-		{
-			if( ( *i ).m_nGMIndex == nRespawnNo )
-			{
+
+	if (nType == SpawnType::Region) {
+		if( nRespawnNo < (int)(m_vRespawnInfoRegion.size() ) )
+			m_vRespawnInfoRegion[nRespawnNo].Increment( bActiveAttack );
+	} else if (nType == SpawnType::Script) {
+		for (VRI::iterator i = m_vRespawnInfoScript.begin(); i != m_vRespawnInfoScript.end(); ++i) {
+			if ((*i).m_nGMIndex == nRespawnNo) {
 				( *i ).Increment( bActiveAttack );
 				break;
 			}
 		}
-	}
-	else
-	if( nType == RESPAWNTYPE_BACKEND )
-	{
 	}
 }
 
@@ -266,12 +222,17 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 	short			cb;
 	u_long			uRespawned	= 0;
 
-	for( int nType = 0; nType < 3; nType++ )
-	{
-		int nSize	= m_vRespawnInfo[nType].size();
+
+	const std::initializer_list initList = {
+		std::pair<SpawnType, VRI &>(SpawnType::Region, m_vRespawnInfoRegion),
+		std::pair<SpawnType, VRI &>(SpawnType::Script, m_vRespawnInfoScript),
+	};
+
+	for (const auto & [nType, vRepaswnInfo] : initList) {
+		int nSize	= vRepaswnInfo.size();
 		for( int i = 0; i < nSize; i++ )			// 04.10.11 - 480개 정도 이다.
 		{
-			CRespawnInfo * pi	= &m_vRespawnInfo[nType][i];
+			CRespawnInfo * pi	= &vRepaswnInfo[i];
 
 			if( pi->m_dwIndex == 0 )
 				continue;
@@ -426,12 +387,8 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 
 					( (CCtrl*)pObj )->SetRespawn( pi->m_nGMIndex, nType );
 						int nMaxAttckNum = 0;
-						if( nType == RESPAWNTYPE_BACKEND )	// 운영자가 설정을 해놓은것은 적용을 안시킴(선공갯수를 적용시킬수 없음)
-						{
-							nMaxAttckNum = int( float( pi->m_nMaxcb * prj.m_fMonsterRespawnRate ) * float((float)pi->m_nMaxAttackNum / 100.0f) );
-						}
-						else
-						{
+
+
 							if( pi->m_nMaxAttackNum == 1 && pi->m_nMaxcb == 1 ) // 거대 몬스터? 몬스터 마리수가 1명이고 선공 몬스터시 무조건 선공 몬스터 임
 							{
 								nMaxAttckNum = pi->m_nActiveAttackNum + 1;
@@ -447,7 +404,7 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 									nMaxAttckNum = pi->m_nMaxAttackNum;
 								}
 							}
-						}		
+
 						
 						if( pObj->GetType() == OT_MOVER && ( pi->m_nActiveAttackNum < nMaxAttckNum ) )
 						{
@@ -486,12 +443,12 @@ void CLayerdRespawner::Clear()
 	m_mapRespawners.clear();
 }
 
-int CLayerdRespawner::Add( CRespawnInfo & ri, int nType )
+int CLayerdRespawner::Add( CRespawnInfo & ri, SpawnType nType )
 {
 	return m_proto.Add( ri, nType );
 }
 
-BOOL CLayerdRespawner::Remove( int nRespawn, int nType )
+BOOL CLayerdRespawner::Remove( int nRespawn, SpawnType nType )
 {
 	for( MRP::iterator i = m_mapRespawners.begin(); i != m_mapRespawners.end(); ++i )
 	{
@@ -501,7 +458,7 @@ BOOL CLayerdRespawner::Remove( int nRespawn, int nType )
 	return m_proto.Remove( nRespawn, nType );
 }
 
-CRespawnInfo* CLayerdRespawner::GetRespawnInfo( int nRespawn, int nType, int nLayer )
+CRespawnInfo* CLayerdRespawner::GetRespawnInfo( int nRespawn, SpawnType nType, int nLayer )
 {
 	MRP::iterator i = m_mapRespawners.find( nLayer );
 	if( i != m_mapRespawners.end() )
@@ -517,7 +474,7 @@ u_long CLayerdRespawner::Spawn( CWorld* pWorld )
 	return uRespawn;
 }
 
-void CLayerdRespawner::Increment( int nRespawn, int nType, BOOL bActiveAttack, int nLayer )
+void CLayerdRespawner::Increment( int nRespawn, SpawnType nType, BOOL bActiveAttack, int nLayer )
 {
 	MRP::iterator i = m_mapRespawners.find( nLayer );
 	if( i != m_mapRespawners.end() )
