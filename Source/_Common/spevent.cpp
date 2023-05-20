@@ -565,8 +565,7 @@ void CEventGeneric::Spawn( void )
 				CWorld* pWorld	= g_WorldMng.GetWorld( m_aRegionGeneric[nIndex].dwWorldId );
 				if( pWorld )
 				{
-					D3DXVECTOR3 v;
-					m_aRegionGeneric[nIndex].pi->GetPos( v );
+					D3DXVECTOR3 v = m_aRegionGeneric[nIndex].pi->GetRandomPosition();
 					v.y		=	pWorld->GetLandHeight( v.x, v.z ) + 1.0f;
 					CObj* pObj	= CreateObj( D3DDEVICE, pSpawn->m_dwType, pSpawn->m_dwIndex );
 					if( pSpawn->m_dwType == OT_ITEM )

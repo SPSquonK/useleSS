@@ -24,18 +24,28 @@ CRespawnInfo::CRespawnInfo()
 
 #ifdef __WORLDSERVER
 
-#define	MAX_FAIL_TO_RESPAWN	10000
 BOOL CRespawnInfo::GenResPoint( CWorld* pWorld )
 {
+	if (m_nMaxcb == 1 && (m_dwAiState == 8 || m_dwAiState == 9)) {
+		for (POINT & point : m_aResPoint) {
+			point = POINT{
+				.x = static_cast<long>(m_vPos.x),
+				.y = static_cast<long>(m_vPos.z),
+			};
+		}
+		return TRUE;
+	}
+
 	int nCheckAttr	= HATTR_NOWALK;
 	if( m_dwType == OT_MOVER && prj.GetMoverProp( m_dwIndex )->dwFlying )
 		nCheckAttr	= HATTR_NOFLY;
-	D3DXVECTOR3 v;
-	int nSize	= 0;
-	int nFail	= 0;
-	while( 1 )
-	{
-		GetPos( v, FALSE );
+
+	static constexpr size_t MAX_FAIL_TO_RESPAWN = 10000;
+
+	size_t nSize = 0;
+	size_t nFail = 0;
+	while (nSize < MAX_RESPOINT_PER_REGION) {
+		const D3DXVECTOR3 v = GetRandomPositionWithoutCache();
 		int nAttr	= pWorld->GetHeightAttribute( v.x, v.z );
 		if( nAttr == -1 || nAttr == HATTR_NOMOVE || nAttr == nCheckAttr ) 
 		{
@@ -43,45 +53,43 @@ BOOL CRespawnInfo::GenResPoint( CWorld* pWorld )
 				return FALSE;
 			continue;
 		}
-		m_aResPoint[nSize].x	= (LONG)( v.x );
-		m_aResPoint[nSize++].y	= (LONG)( v.z );
 
-		if( nSize >= MAX_RESPOINT_PER_REGION )
-			break;
+		m_aResPoint[nSize++] = POINT{
+			.x = static_cast<LONG>(v.x),
+			.y = static_cast<LONG>(v.z)
+		};
 	}
-//	TRACE( "nFail=%d\n", nFail );
+
 	return TRUE;
 }
 
-void CRespawnInfo::GetPos( D3DXVECTOR3 & v, BOOL bRespawn )
-{
-	if( m_nMaxcb == 1 )
-	{
-		if( m_dwAiState == 8 || m_dwAiState == 9 )
-		{
-			v = m_vPos;
-			return;
-		}
+D3DXVECTOR3 CRespawnInfo::GetRandomPosition() const {
+	if (m_nMaxcb == 1 && (m_dwAiState == 8 || m_dwAiState == 9)) {
+		return m_vPos;
 	}
 
-	if( bRespawn )
-	{
-		int r	= xRandom( 0, MAX_RESPOINT_PER_REGION );
-		v.x		= (float)( m_aResPoint[r].x );
-		v.z		= (float)( m_aResPoint[r].y );
-		v.y		= m_vPos.y;
+	if (m_aResPoint[MAX_RESPOINT_PER_REGION - 1].x != 0 && m_aResPoint[MAX_RESPOINT_PER_REGION - 1].y) {
+		const size_t r = xRandom(MAX_RESPOINT_PER_REGION);
+		return D3DXVECTOR3(
+			static_cast<float>(m_aResPoint[r].x),
+			m_vPos.y,
+			static_cast<float>(m_aResPoint[r].y)
+		);
+	} else {
+		return GetRandomPositionWithoutCache();
 	}
-	else
-	{
-		int nWidth = m_rect.right - m_rect.left;
-		if( nWidth <= 0 ) nWidth = 1;
-		int nHeight = m_rect.bottom - m_rect.top;
-		if( nHeight <= 0 ) nHeight = 1;
-		v.x		= (float)( m_rect.left + xRandom( nWidth ) );
-		v.z		= (float)( m_rect.top + xRandom( nHeight ) );
-		v.y		= m_vPos.y;
-	}
+}
 
+
+D3DXVECTOR3 CRespawnInfo::GetRandomPositionWithoutCache() const {
+	const int nWidth  = std::max(m_rect.Width(), 1);
+	const int nHeight = std::max(m_rect.Height(), 1);
+	
+	return D3DXVECTOR3(
+		(float)( m_rect.left + xRandom( nWidth ) ),
+		m_vPos.y,
+		(float)( m_rect.top + xRandom( nHeight ) )
+	);
 }
 
 void CRespawnInfo::Increment(const BOOL bActiveAttack) {
@@ -314,7 +322,7 @@ u_long CRespawnInfo::ProcessRespawn(CWorld * const pWorld, const int nLayer, con
 		if ((pObj->m_dwAIInterfaceState == 9 || pObj->m_dwAIInterfaceState == 8) && m_nMaxcb == 1)
 			pObj->SetAngle(m_fAngle);
 
-		D3DXVECTOR3	v; GetPos(v);
+		D3DXVECTOR3	v = GetRandomPosition();
 
 		if (dwFlying) {
 			v.y += xRandom(21);
@@ -347,7 +355,7 @@ u_long CRespawnInfo::ProcessRespawn(CWorld * const pWorld, const int nLayer, con
 			}
 		}
 
-		pWorld->ADDOBJ(pObj, TRUE, nLayer);
+		pWorld->AddObj(pObj, TRUE, nLayer);
 		
 		uRespawned++;
 		m_cb += 1;

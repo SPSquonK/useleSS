@@ -51,8 +51,9 @@ public:
 	CRespawnInfo();
 
 #ifdef __WORLDSERVER
-	void			Increment( BOOL bActiveAttack );	
-	void			GetPos( D3DXVECTOR3 & v, BOOL bRespawn=TRUE );
+	void			Increment( BOOL bActiveAttack );
+	[[nodiscard]] D3DXVECTOR3 GetRandomPosition() const;
+	[[nodiscard]] D3DXVECTOR3 GetRandomPositionWithoutCache() const;
 	BOOL	GenResPoint( CWorld* pWorld );
 	u_long ProcessRespawn(CWorld * pWorld, int nLayer, SpawnType spawnType);
 
