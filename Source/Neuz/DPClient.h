@@ -615,10 +615,8 @@ public:
 	void	OnEventLuaDesc( CAr & ar );
 	void	OnRemoveAttributeResult( CAr & ar );
 	void    OnMotionArrive( OBJID objid, CAr & ar );
-#ifdef __S1108_BACK_END_SYSTEM
 	void	OnMonsterProp( CAr & ar );
 	void	OnGMChat( CAr & ar );
-#endif // __S1108_BACK_END_SYSTEM
 
 	void	OnChangeFace( CAr & ar );
 	

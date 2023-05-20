@@ -434,9 +434,7 @@ float CMover::GetDEFMultiplier( ATTACK_INFO* pInfo )
 	float fFactor = 1.0f;
 	if( IsNPC() )
 	{
-	#ifdef __S1108_BACK_END_SYSTEM
 		 fFactor *= GetProp()->m_fDefence_Rate;
-	#endif //	__S1108_BACK_END_SYSTEM
 	}
 
 	// 아머 페너트레이트는 맞는순간 방어력을 50%로 계산.
@@ -1038,11 +1036,7 @@ float CMover::GetATKMultiplier( CMover* pDefender, DWORD dwAtkFlags )
 	}
 	else
 	{
-	#ifdef __S1108_BACK_END_SYSTEM
 		fMultiplier *= ( prj.m_fMonsterHitRate * GetProp()->m_fAttackPower_Rate );
-	#else 
-		fMultiplier *= prj.m_fMonsterHitRate;
-	#endif 
 	}
 
 	if( 0 < nDstDmg )

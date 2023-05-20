@@ -7,7 +7,6 @@
 
 #define		__SERVER					// 클라이언트 전용코드를 빌드하지 않기 위한 define
 #define		__ITEM_REMOVE_LIST			// 아이템 제거 
-#define		__S1108_BACK_END_SYSTEM		// 백앤드시스템 Trans, World, Neuz
 
 #define		__EVENT_1101				// 출첵 이벤트
 

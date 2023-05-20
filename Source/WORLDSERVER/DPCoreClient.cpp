@@ -2125,11 +2125,7 @@ void CDPCoreClient::OnSetMonsterRespawn( CAr & ar, DPID, DPID, OBJID )
 		ri.m_uTime			= (u_short)( dwRespawnTime );
 		ri.m_cbTime = 0;
 		
-#ifdef __S1108_BACK_END_SYSTEM
 		pWorld->m_respawner.Add( ri, TRUE );
-#else // __S1108_BACK_END_SYSTEM
-		pWorld->m_respawner.Add( ri );
-#endif // __S1108_BACK_END_SYSTEM
 		
 		char chMessage[512] = {0,};
 		sprintf( chMessage, "Add Respwan MonsterID = %d(%d/%d) Rect(%d, %d, %d, %d) Time = %d", 

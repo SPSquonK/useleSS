@@ -37,11 +37,9 @@ public:
 	float	m_fY; // 발생할 y 좌표
 	CCtrlElem m_CtrlElem;
 
-#ifdef __S1108_BACK_END_SYSTEM
 	long m_nMaxcb;
 	long m_nMaxAttackNum;
 	int	 m_nGMIndex;
-#endif // __S1108_BACK_END_SYSTEM
 
 	DWORD	m_dwAiState;
 	float	m_fAngle;	

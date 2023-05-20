@@ -338,7 +338,6 @@ typedef struct tagCHARACTER
 	std::vector<D3DXVECTOR3> m_vecTeleportPos;
 } CHARACTER,* LPCHARACTER;
 
-#ifdef __S1108_BACK_END_SYSTEM
 
 typedef struct	_MONSTER_RESPAWN
 {
@@ -384,7 +383,6 @@ typedef struct _MONSTER_PROP
 	}
 }
 MONSTER_PROP, *PMONSTER_PROP;
-#endif // __S1108_BACK_END_SYSTEM
 
 struct DIE_PENALTY {
 	int		nLevel = 0;
@@ -753,7 +751,6 @@ public:
 	CMapStringToString			m_mapWordToolTip;	
 #endif
 	
-#ifdef __S1108_BACK_END_SYSTEM
 	FLOAT						m_fMonsterRebirthRate;	// 몬스터 리스폰률(시간)
 	FLOAT						m_fMonsterHitpointRate;	// 몬스터 생명력률
 	FLOAT						m_fMonsterAggressiveRate;	// 선공몬스터률
@@ -765,7 +762,6 @@ public:
 	int							m_nRemoveMonsterPropSize;
 	int							m_nMonsterPropSize;
 	char						m_chGMChat[10][256];
-#endif // __S1108_BACK_END_SYSTEM
 	
 	int				m_nEnchantLimitLevel[3];
 	float			m_fEnchantLevelScal[2][10];
@@ -918,10 +914,8 @@ public:
 	void			OutputSkill( void );
 #endif	
 
-#ifdef __S1108_BACK_END_SYSTEM
 	void			AddMonsterProp( MONSTER_PROP MonsterProp );
 	void			RemoveMonsterProp( char* lpszMonsterName );
-#endif 
 
 #if defined( __CLIENT )
 	BOOL LoadQuestDestination( void );

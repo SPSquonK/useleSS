@@ -548,21 +548,13 @@ BOOL CWorld::ReadRespawn( CScript& s )
 	pInfo->m_dwIndex     = dwIndex;
 	pInfo->m_dwType	= dwType;
 
-#ifdef __S1108_BACK_END_SYSTEM
 	pInfo->m_nMaxcb		 = s.GetNumber();
 	pInfo->m_cb          = 0;
-#else // __S1108_BACK_END_SYSTEM
-	pInfo->m_cb          = (u_short)s.GetNumber();
-#endif // __S1108_BACK_END_SYSTEM
 
 	pInfo->m_uTime = (short)s.GetNumber();
 
-#ifdef __S1108_BACK_END_SYSTEM
 	pInfo->m_nMaxAttackNum = (long)s.GetNumber();
 	pInfo->m_nActiveAttackNum = 0;
-#else // __S1108_BACK_END_SYSTEM
-	pInfo->m_nActiveAttackNum = (long)s.GetNumber();
-#endif // __S1108_BACK_END_SYSTEM
 
 	pInfo->m_vPos	= D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 

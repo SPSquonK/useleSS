@@ -11,7 +11,6 @@
 #define		__PROTOCOL0910
 #define		__PROTOCOL1021
 #define		__INFO_SOCKLIB0516			// 네트워크 에러얻기 
-#define		__S1108_BACK_END_SYSTEM		// Trans, World, Neuz : 백앤드시스템 
 #define		__THROUGHPORTAL0810			// 웹에 의한 실행
 #define		__TWN_LOGIN0816				// 대만 로그인 프로토콜 변경	// 클라/인증
 #define		__FIX_WND_1109				// 창 생성 시 부모창 지정 오류 수정

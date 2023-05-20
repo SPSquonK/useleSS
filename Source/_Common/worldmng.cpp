@@ -66,9 +66,6 @@ void CWorldMng::ReadObject() {
 	#else	// __LAYER_1021
 		pWorld->LoadObject();
 	#endif	// __LAYER_1021
-	#ifndef __S1108_BACK_END_SYSTEM
-		pWorld->LoadRegion();	// x
-	#endif // __S1108_BACK_END_SYSTEM
 		pWorld->LoadPatrol();
 	}
 }

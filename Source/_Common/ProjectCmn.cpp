@@ -97,11 +97,7 @@ BOOL CProject::LoadPropMover( LPCTSTR lpszFileName )
 			Error( "LoadPropMover : bIfParts엔 -1을 넣으면 안된다. %s \r\n컬럼이 밀렸거나 워킹폴더를 잘못지정했을수도있음 ", pProperty->szName );
 
 		pProperty->nChaotic				= scanner.GetNumber();
-#ifdef __S1108_BACK_END_SYSTEM
 		pProperty->dwUseable			= scanner.GetNumber();
-#else // __S1108_BACK_END_SYSTEM
-		pProperty->dwDefExtent			= scanner.GetNumber();
-#endif // __S1108_BACK_END_SYSTEM
 		pProperty->dwActionRadius		= scanner.GetNumber();
 		pProperty->dwAtkMin				= scanner.GetNumber();
 		pProperty->dwAtkMax				= scanner.GetNumber();
@@ -182,7 +178,6 @@ BOOL CProject::LoadPropMover( LPCTSTR lpszFileName )
 
 		scanner.GetToken();
 
-#ifdef __S1108_BACK_END_SYSTEM
 		pProperty->m_fHitPoint_Rate = 1.0f;		
 		pProperty->m_fAttackPower_Rate = 1.0f;
 		pProperty->m_fDefence_Rate = 1.0f;		
@@ -190,7 +185,6 @@ BOOL CProject::LoadPropMover( LPCTSTR lpszFileName )
 		pProperty->m_fItemDrop_Rate = 1.0f;
 		pProperty->m_fPenya_Rate = 1.0f;			
 		pProperty->m_bRate = FALSE;
-#endif // __S1108_BACK_END_SYSTEM
 	}
 
 	if( checker.size() > 0 )

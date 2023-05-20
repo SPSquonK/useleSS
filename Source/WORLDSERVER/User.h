@@ -473,9 +473,7 @@ public:
 	void			AddAllAction( BOOL bCharacter );
 #endif // __S_SERVER_UNIFY
 
-#ifdef __S1108_BACK_END_SYSTEM
 	void			AddMonsterProp();
-#endif // __S1108_BACK_END_SYSTEM
 //	void			AddCreateAngel(BOOL isSuccess, char* createAngel);
 	void			AddAngelInfo( BOOL bComplete = FALSE );
 	
@@ -861,10 +859,8 @@ public:
 	void			AddGuildMsg( u_long idGuild, LPCSTR lpsz );
 	void			AddGuildMsg( CGuild* pGuild, LPCSTR lpsz );
 
-#ifdef __S1108_BACK_END_SYSTEM
 	void			AddMonsterProp( );
 	void			AddGMChat( int nSize );
-#endif // __S1108_BACK_END_SYSTEM
 
 	void			AddMotionArrive( CMover* pMover, OBJMSG objmsg );
 

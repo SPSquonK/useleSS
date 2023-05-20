@@ -387,10 +387,8 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_REMOVE_ATTRIBUTE: OnRemoveAttributeResult( ar ); break;
 			case SNAPSHOTTYPE_MOTION_ARRIVE: OnMotionArrive( objid, ar ); break;
 
-#ifdef __S1108_BACK_END_SYSTEM
 			case SNAPSHOTTYPE_MONSTERPROP:	OnMonsterProp( ar ); break;
 			case SNAPSHOTTYPE_GMCHAT:		OnGMChat( ar ); break;
-#endif // __S1108_BACK_END_SYSTEM
 
 			case SNAPSHOTTYPE_CHANGEFACE: OnChangeFace( ar ); break;
 			case SNAPSHOTTYPE_DEFINEDCAPTION: OnDefinedCaption( ar ); break;
@@ -5311,7 +5309,6 @@ void CDPClient::OnGameRate( CAr & ar )
 			}
 		}
 		break;
-#ifdef __S1108_BACK_END_SYSTEM
 	case GAME_RATE_REBIRTH:
 		{
 			prj.m_fMonsterRebirthRate = fRate;
@@ -5352,7 +5349,6 @@ void CDPClient::OnGameRate( CAr & ar )
 			}
 		}
 		break;
-#endif // __S1108_BACK_END_SYSTEM
 	case GAME_SKILL_VAGSP:
 		{
 			prj.m_dwVagSP = (DWORD)fRate;
@@ -5400,7 +5396,6 @@ void CDPClient::OnGameRate( CAr & ar )
 	}
 }
 
-#ifdef __S1108_BACK_END_SYSTEM
 void CDPClient::OnMonsterProp( CAr & ar )
 {
 	char	szMonsterName[32];
@@ -5485,7 +5480,6 @@ void CDPClient::OnGMChat( CAr & ar )
 		g_WndMng.PutString( str, NULL, prj.GetTextColor(TID_ADMIN_ANNOUNCE), CHATSTY_SYSTEM );
 	}
 }
-#endif // __S1108_BACK_END_SYSTEM
 
 void CDPClient::OnChangeFace( CAr & ar )
 {

@@ -842,9 +842,7 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		pUser->AddSMModeAll();
 
 		pUser->AddGameSetting();
-#ifdef __S1108_BACK_END_SYSTEM
 		pUser->AddMonsterProp();
-#endif // __S1108_BACK_END_SYSTEM
 		
 #ifdef __S_SERVER_UNIFY
 		// 서버 통합 작업
@@ -1344,7 +1342,6 @@ void CDPDatabaseClient::OnUpdatePlayerData( CAr & ar , DPID, DPID )
 
 void CDPDatabaseClient::OnBaseGameSetting( CAr & ar, DPID, DPID )
 {
-#ifdef __S1108_BACK_END_SYSTEM
 	BOOL bBaseGameSetting = FALSE;
 	BOOL bFirst = FALSE;
 	ar >> bFirst;
@@ -1400,12 +1397,10 @@ void CDPDatabaseClient::OnBaseGameSetting( CAr & ar, DPID, DPID )
 		CEventGeneric::GetInstance()->SortRegionGeneric();
 #endif	// __EVENT_0117
 	}	// if
-#endif // __S1108_BACK_END_SYSTEM
 }
 
 void CDPDatabaseClient::OnMonsterRespawnSetting( CAr & ar, DPID, DPID )
 {
-#ifdef __S1108_BACK_END_SYSTEM
 	char szMonsterName[32];
 	D3DXVECTOR3	vPos;
 	int		nAddIndex;
@@ -1467,12 +1462,10 @@ void CDPDatabaseClient::OnMonsterRespawnSetting( CAr & ar, DPID, DPID )
 			return;
 		pWorld->m_respawner.Remove( nRemoveIndex, TRUE );
 	}
-#endif // __S1108_BACK_END_SYSTEM
 }
 
 void CDPDatabaseClient::OnMonsterPropSetting( CAr & ar, DPID, DPID )
 {
-#ifdef __S1108_BACK_END_SYSTEM
 	char	szMonsterName[32];
 	int		nHitPoint;
 	int		nAttackPower;
@@ -1542,12 +1535,10 @@ void CDPDatabaseClient::OnMonsterPropSetting( CAr & ar, DPID, DPID )
 	}
 	
 	g_UserMng.AddMonsterProp();
-#endif // __S1108_BACK_END_SYSTEM
 }
 
 void CDPDatabaseClient::OnGMChat( CAr & ar, DPID, DPID )
 {
-#ifdef __S1108_BACK_END_SYSTEM
 	int nSize;
 	ar >> nSize;
 	for( int i = 0 ; i < nSize ; ++i )
@@ -1556,7 +1547,6 @@ void CDPDatabaseClient::OnGMChat( CAr & ar, DPID, DPID )
 	}
 	if( 0 < nSize )
 		g_UserMng.AddGMChat( nSize );
-#endif // __S1108_BACK_END_SYSTEM
 }
 /*
 #ifdef __S0114_RELOADPRO

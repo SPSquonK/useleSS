@@ -1827,11 +1827,7 @@ int CMover::GetMaxOriginHitPoint( BOOL bOriginal )
 	else
 	{
 		MoverProp *pMoverProp = GetProp();
-#ifdef __S1108_BACK_END_SYSTEM
 		return int( pMoverProp->dwAddHp * prj.m_fMonsterHitpointRate * pMoverProp->m_fHitPoint_Rate ); 
-#else // __S1108_BACK_END_SYSTEM
-		return pMoverProp->dwAddHp; 
-#endif // __S1108_BACK_END_SYSTEM
 	}
 
 	return 0;
@@ -2848,9 +2844,7 @@ float CMover::GetItemDropRateFactor( CMover* pAttacker )
 	float fFactor	= 1.0F;
 #ifdef __WORLDSERVER
 	fFactor		*= prj.m_fItemDropRate;
-#ifdef __S1108_BACK_END_SYSTEM
 	fFactor		*= GetProp()->m_fItemDrop_Rate;
-#endif // __S1108_BACK_END_SYSTEM
 #ifdef __ITEMDROPRATE
 	fFactor		*= CEventGeneric::GetInstance()->GetItemDropRateFactor();
 #endif // __ITEMDROPRATE

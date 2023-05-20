@@ -4702,7 +4702,6 @@ void CUserMng::AddSetSkillState( CMover* pCenter, CMover *pTarget, WORD wType, W
 	NEXT_VISIBILITYRANGE( pCenter )
 }
 
-#ifdef __S1108_BACK_END_SYSTEM
 void CUserMng::AddMonsterProp()
 {
 	CAr ar;
@@ -4743,7 +4742,6 @@ void CUserMng::AddGMChat( int nSize )
 	GETBLOCK( ar, lpBuf, uBufSize );
 	AddBlock( lpBuf, uBufSize );	// all
 }
-#endif // __S1108_BACK_END_SYSTEM
 
 void CUserMng::AddGuildCombatUserState( CMover* pMover )
 {
@@ -5363,15 +5361,12 @@ void CUser::AddGameSetting()
 		AddGameRate( prj.m_fMonsterExpRate, GAME_RATE_MONSTEREXP );
 		AddGameRate( prj.m_fMonsterHitRate, GAME_RATE_MONSTERHIT );
 		
-#ifdef __S1108_BACK_END_SYSTEM
 		AddGameRate( prj.m_fMonsterRebirthRate, GAME_RATE_REBIRTH );
 		AddGameRate( prj.m_fMonsterHitpointRate, GAME_RATE_HITPOINT );
 		AddGameRate( prj.m_fMonsterAggressiveRate, GAME_RATE_AGGRESSIVE );
-#endif // __S1108_BACK_END_SYSTEM
 	}	
 }
 
-#ifdef __S1108_BACK_END_SYSTEM
 void CUser::AddMonsterProp()
 {
 	if( IsDelete() )	return;
@@ -5400,7 +5395,6 @@ void CUser::AddMonsterProp()
 
 	
 }
-#endif // __S1108_BACK_END_SYSTEM
 
 void CUser::AddInitSkill()
 {

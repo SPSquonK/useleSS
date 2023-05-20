@@ -4075,7 +4075,7 @@ BOOL CMover::SetMotion( DWORD dwMotion, int nLoop, DWORD dwOption )
 
 			pModel->MakeSWDForce( PARTS_RWEAPON, pItemProp->dwItemKind3, (dwOption & MOP_HITSLOW) ? TRUE : FALSE, dwColor, m_fAniSpeed );
 			pModel->MakeSWDForce( PARTS_LWEAPON, pItemProp->dwItemKind3, (dwOption & MOP_HITSLOW) ? TRUE : FALSE, dwColor, m_fAniSpeed );
-#endif __CLIENT
+#endif
 		}
 	}
 	else
@@ -4711,17 +4711,10 @@ int CMover::SubExperience( CMover *pDead )
 #ifdef __WORLDSERVER
 	EXPFLOAT fExpValue = 0;
 	float	fFxpValue = 0.0f;
-	#ifdef __S1108_BACK_END_SYSTEM
 //			fExpValue	= pMoverProp->nExpValue * static_cast<EXPFLOAT>( prj.m_fMonsterExpRate ) * static_cast<EXPFLOAT>( pMoverProp->m_fExp_Rate );
 //			fFxpValue	= pMoverProp->nFxpValue * prj.m_fMonsterExpRate * pMoverProp->m_fExp_Rate;
 			fExpValue	= pMoverProp->nExpValue * static_cast<EXPFLOAT>( pMoverProp->m_fExp_Rate );
 			fFxpValue	= pMoverProp->nFxpValue * pMoverProp->m_fExp_Rate;
-	#else // __S1108_BACK_END_SYSTEM
-//			fExpValue	= pMoverProp->nExpValue * static_cast<EXPFLOAT>( prj.m_fMonsterExpRate );
-// 			fFxpValue	= pMoverProp->nFxpValue * prj.m_fMonsterExpRate;
-			fExpValue	= pMoverProp->nExpValue;
- 			fFxpValue	= pMoverProp->nFxpValue;
-	#endif // __S1108_BACK_END_SYSTEM
 #else	// __WORLDSERVER
 	EXPFLOAT fExpValue	= static_cast<EXPFLOAT>( pMoverProp->nExpValue );
 	float	fFxpValue	= pMoverProp->nFxpValue;
@@ -5186,7 +5179,7 @@ BOOL CMover::SubPKPVPInspectionBase( CMover* pMover, CMover* pMover1, DWORD dwPK
 			return FALSE;
 		}
 	}
-#endif __WORLDSERVER
+#endif
 
 	if( IsRegionAttr( dwPKAttr ) == FALSE )	// 같은 지역에 있는지 확인
 	{
@@ -5769,13 +5762,9 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							nNumGold += xRandom(rDropMoney.dwNumber2 - rDropMoney.dwNumber);
 						}
 						nNumGold = nNumGold * nPenyaRate / 100;
-#ifdef __S1108_BACK_END_SYSTEM
 						nNumGold = (int)(nNumGold * prj.m_fGoldDropRate * lpMoverProp->m_fPenya_Rate);
 						if (nNumGold == 0)
 							continue;
-#else // __S1108_BACK_END_SYSTEM
-						nNumGold *= prj.m_fGoldDropRate;
-#endif // __S1108_BACK_END_SYSTEM
 
 						nNumGold = (int)(nNumGold * prj.m_EventLua.GetGoldDropFactor());
 

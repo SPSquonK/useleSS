@@ -28,11 +28,9 @@ CRespawnInfo::CRespawnInfo()
 	m_CtrlElem.m_dwMinItemNum = 1;
 	m_CtrlElem.m_dwMaxiItemNum = 1;
 
-#ifdef __S1108_BACK_END_SYSTEM
 	m_nMaxcb = 0;
 	m_nMaxAttackNum = 0;
 	m_nGMIndex = 0;
-#endif // __S1108_BACK_END_SYSTEM
 	m_bRemove = FALSE;
 	
 	m_dwAiState = 2;
@@ -113,15 +111,9 @@ void CRespawnInfo::GetPos( D3DXVECTOR3 & v, BOOL bRespawn )
 
 void CRespawnInfo::Increment( BOOL bActiveAttack )	
 { 
-#ifdef __S1108_BACK_END_SYSTEM
 	InterlockedDecrement( &m_cb ); 
 	if( bActiveAttack ) 
 		InterlockedDecrement( &m_nActiveAttackNum );	
-#else // __S1108_BACK_END_SYSTEM
-	InterlockedIncrement( &m_cb ); 
-	if( bActiveAttack ) 
-		InterlockedIncrement( &m_nActiveAttackNum );	
-#endif // __S1108_BACK_END_SYSTEM
 }
 
 
@@ -326,7 +318,6 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 			if( pi->m_cbTime < 0 )							// 0 이면 리스폰 시작
 			{
 				short nTime = (short)( ( pi->m_uTime * xRandom( 50, 150 ) ) / 100 );
-			#ifdef __S1108_BACK_END_SYSTEM
 				cb = 0;
 				if( pi->m_nGMIndex != 0 )
 				{
@@ -349,18 +340,10 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 							cb	= (short)( pi->m_nMaxcb - pi->m_cb );				// cb = 죽은 갯수
 					}
 				}
-			#else // __S1108_BACK_END_SYSTEM
-				pi->m_cbTime = nTime;				// 타이머 reset
-				cb = pi->m_cb;						// cb = 죽은 갯수
-			#endif // __S1108_BACK_END_SYSTEM
 				
 				if( pi->m_bHalf )
 				{
-				#ifdef __S1108_BACK_END_SYSTEM
 					cb	= (short)( ( pi->m_nMaxcb / 2 ) - ( pi->m_nMaxcb - cb ) );
-				#else	// __S1108_BACK_END_SYSTEM
-					cb	= (short)( ( pi->m_cbRespawn / 2 ) - ( pi->m_cbRespawn - cb ) );
-				#endif	// __S1108_BACK_END_SYSTEM
 				}
 				pi->m_bHalf	= !pi->m_bHalf;
 
@@ -442,7 +425,6 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 
 
 					( (CCtrl*)pObj )->SetRespawn( pi->m_nGMIndex, nType );
-					#ifdef __S1108_BACK_END_SYSTEM
 						int nMaxAttckNum = 0;
 						if( nType == RESPAWNTYPE_BACKEND )	// 운영자가 설정을 해놓은것은 적용을 안시킴(선공갯수를 적용시킬수 없음)
 						{
@@ -473,24 +455,12 @@ u_long CRespawner::Spawn( CWorld* pWorld, int nLayer )
 							if( pMoverProp->dwLevel >= 7 )	// 레벨이 7 이상인것만 선공으로 리스폰됨.
 								((CMover*)pObj)->m_bActiveAttack	= TRUE;
 						}
-					#else // __S1108_BACK_END_SYSTEM
-						if( pObj->GetType() == OT_MOVER && pi->m_nActiveAttackNum > 0 )
-						{
-							InterlockedDecrement( &pi->m_nActiveAttackNum );
-							if( pMoverProp->dwLevel >= 7 )	// 레벨이 7 이상인것만 선공으로 리스폰됨.
-								((CMover*)pObj)->m_bActiveAttack	= TRUE;
-						}
-					#endif // __S1108_BACK_END_SYSTEM
 
 					pObj->SetPos( v );
 					pWorld->ADDOBJ( pObj, TRUE, nLayer );
 					uRespawned++;
 
-				#ifdef __S1108_BACK_END_SYSTEM
 					InterlockedIncrement( &pi->m_cb );
-				#else // __S1108_BACK_END_SYSTEM
-					InterlockedDecrement( &pi->m_cb );
-				#endif // __S1108_BACK_END_SYSTEM
 				}	// while( cb-- > 0 )					
 			} // if( pi->m_cbTime < 0 )
 		} // for( int i = 0; i < nSize; i++ )

@@ -139,7 +139,6 @@ m_nMaxSequence( 0 )
 	memset( m_aGuildAppell, 0, sizeof(m_aGuildAppell) );
 
 
-#ifdef __S1108_BACK_END_SYSTEM
 	m_fMonsterRebirthRate = 1.0f;	
 	m_fMonsterHitpointRate = 1.0f;	
 	m_fMonsterAggressiveRate = 0.2f;
@@ -147,7 +146,6 @@ m_nMaxSequence( 0 )
 	m_nAddMonsterPropSize = 0;
 	m_nRemoveMonsterPropSize = 0;
 	m_nMonsterPropSize = 0;
-#endif // __S1108_BACK_END_SYSTEM
 
 	memset( m_aSetItemAvail, 0, sizeof(m_aSetItemAvail) );
 
@@ -3077,7 +3075,6 @@ void CProject::ProtectPropMover()
 //	::VirtualProtect( m_pPropMover, sizeof(MoverProp) * MAX_PROPMOVER, PAGE_READONLY, &dwOld );
 }
 
-#ifdef __S1108_BACK_END_SYSTEM
 void CProject::AddMonsterProp( MONSTER_PROP MonsterProp )
 {
 	strcpy( m_aMonsterProp[ m_nMonsterPropSize ].szMonsterName, MonsterProp.szMonsterName );
@@ -3117,7 +3114,6 @@ void CProject::RemoveMonsterProp( char* lpszMonsterName )
 		--m_nMonsterPropSize;
 	}			
 }
-#endif // __S1108_BACK_END_SYSTEM
 
 #ifdef __WORLDSERVER
 BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )

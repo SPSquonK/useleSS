@@ -203,11 +203,7 @@ BOOL TextCmd_SetMonsterRespawn(CScanner & scanner, CPlayer_ * pUser) {
 		ri.m_cbTime			= 0;
 
 		char chMessage[512] = {0,};
-#ifdef __S1108_BACK_END_SYSTEM
 			pWorld->m_respawner.Add( ri, TRUE );
-#else // __S1108_BACK_END_SYSTEM
-		pWorld->m_respawner.Add( ri );
-#endif // __S1108_BACK_END_SYSTEM
 
 		sprintf( chMessage, "Add Respwan Monster : %s(%d/%d) Rect(%d, %d, %d, %d) Time : %d", 
 			pMoverProp->szName, ri.m_cb, ri.m_nActiveAttackNum, ri.m_rect.left, ri.m_rect.right, ri.m_rect.top, ri.m_rect.bottom, ri.m_uTime );
@@ -217,7 +213,6 @@ BOOL TextCmd_SetMonsterRespawn(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-#ifdef __S1108_BACK_END_SYSTEM
 
 BOOL TextCmd_PropMonster( CScanner & scanner )
 {
@@ -241,7 +236,6 @@ BOOL TextCmd_PropMonster( CScanner & scanner )
 #endif	// __CLIENT
 	return TRUE;
 }
-#endif // __S1108_BACK_END_SYSTEM
 
 BOOL TextCmd_GameSetting(CScanner &, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
@@ -4654,9 +4648,7 @@ CmdFunc::AllCommands::AllCommands() {
 	ON_TEXTCMDFUNC( TextCmd_LoadToolTipColor,      "LoadToolTip",        "ltt",            "로드툴팁",       "로툴팁",  TCM_CLIENT, AUTH_ADMINISTRATOR, "로드 툴팁 컬러" )
 #endif
 
-#ifdef __S1108_BACK_END_SYSTEM
 	ON_TEXTCMDFUNC( TextCmd_PropMonster,           "monstersetting",     "ms",             "몬스터설정",     "몬설",    TCM_CLIENT, AUTH_ADMINISTRATOR   , "몬스터 설정 보기" )
-#endif // __S1108_BACK_END_SYSTEM
 
 #ifdef __EVENT_1101
 	ON_TEXTCMDFUNC( TextCmd_CallTheRoll,			"CallTheRoll",        "ctr",            "출석설정",       "출석",  TCM_BOTH,	AUTH_ADMINISTRATOR, "출석 조작 명령어" )

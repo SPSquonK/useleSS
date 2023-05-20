@@ -509,11 +509,7 @@ struct MoverProp : CtrlProp
 	DWORD   dwClass;
 	BOOL	bIfParts;	// 파츠냐?
 	int		nChaotic;	// 나쁜놈 마이너스/ 좋은넘 플러스
-#ifdef __S1108_BACK_END_SYSTEM
 	DWORD	dwUseable;	// 방어 캐릭수,
-#else // __S1108_BACK_END_SYSTEM
-	DWORD	dwDefExtent;	// 방어 캐릭수,
-#endif // __S1108_BACK_END_SYSTEM
 	DWORD	dwActionRadius;		// 전투행동번경,
 	DWORD	dwAtkMin;	// 최소타격치,
 	DWORD	dwAtkMax;	// 최대타격치,
@@ -624,7 +620,7 @@ struct MoverProp : CtrlProp
 	int		m_nScanChao;		// 카오, 비카오 검색
 #endif // !__CORESERVER
 	
-#ifdef __S1108_BACK_END_SYSTEM
+#ifndef __CORESERVER
 	float	m_fHitPoint_Rate;		// 몬스터 최대 HP률 // dwAddHp * m_nHitPoint_Rate
 	float	m_fAttackPower_Rate;	// 몬스터 최대 공격률 // dwAtkMin * m_nAttackPower_Rate
 	float	m_fDefence_Rate;		// 몬스터 최대 방어률 // dwAddHp * m_nDefence_Rate
@@ -632,7 +628,7 @@ struct MoverProp : CtrlProp
 	float	m_fItemDrop_Rate;		// 몬스터 최대 아이템 드롭률 // dwAddHp * m_nItemDrop_Rate
 	float	m_fPenya_Rate;			// 몬스터 최대 페냐률 // dwAddHp * m_nPenya_Rate
 	BOOL	m_bRate;
-#endif // __S1108_BACK_END_SYSTEM
+#endif
 
 	
 	short	m_nAttackItemNear;
@@ -657,11 +653,7 @@ struct MoverProp : CtrlProp
 	{
 		dwStr	= dwSta	= dwDex	= dwInt	= dwHR	= dwER	= dwRace	= dwBelligerence	=dwGender
 		= dwLevel	= dwFlightLevel	= dwSize	= dwClass	= bIfParts	= nChaotic
-		#ifdef __S1108_BACK_END_SYSTEM
 		= dwUseable
-		#else // __S1108_BACK_END_SYSTEM
-		= dwDefExtent
-		#endif // __S1108_BACK_END_SYSTEM
 		= dwActionRadius	= dwAtkMin	= dwAtkMax	= dwAtk1	= dwAtk2	= dwAtk3	= dwAtk4	= 0;
 			fFrame	= 1.0F;
 			dwOrthograde	= 0;
@@ -759,7 +751,7 @@ struct MoverProp : CtrlProp
 		m_nScanChao			= 0;
 #endif // !__CORESERVER
 
-#ifdef __S1108_BACK_END_SYSTEM
+#ifndef __CORESERVER
 		m_fHitPoint_Rate	=
 		m_fAttackPower_Rate	= 
 		m_fDefence_Rate	=
@@ -767,7 +759,7 @@ struct MoverProp : CtrlProp
 		m_fItemDrop_Rate	= 
 		m_fPenya_Rate	= 0.0F;
 		m_bRate	=
-#endif // __S1108_BACK_END_SYSTEM
+#endif
 		m_nAttackItemNear	=
 		m_nAttackItemFar	=
 		m_nAttackItem1	=

@@ -36,7 +36,6 @@ CProject::CProject()
 	m_fGoldDropRate = 1.0f;
 	m_fMonsterExpRate = 1.0f;
 	m_fMonsterHitRate = 1.0f;
-#ifdef __S1108_BACK_END_SYSTEM
 	m_fMonsterRebirthRate = 1.0f;	
 	m_fMonsterHitpointRate = 1.0f;	
 	m_fMonsterAggressiveRate = 0.2f;
@@ -51,7 +50,6 @@ CProject::CProject()
 	ZeroMemory( m_chBackEndSystemTime, sizeof( m_chBackEndSystemTime ) );
 	ZeroMemory( m_chBackEndSystemChatTime, sizeof( m_chBackEndSystemChatTime ) );
 	ZeroMemory( m_chGMChat, sizeof( m_chGMChat ) );
-#endif // __S1108_BACK_END_SYSTEM
 
 	m_bItemUpdate = FALSE;
 #ifdef __ITEM_REMOVE_LIST

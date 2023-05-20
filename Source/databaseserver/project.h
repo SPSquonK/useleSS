@@ -14,7 +14,6 @@
 #define	MAX_WORLD	256
 
 
-#ifdef __S1108_BACK_END_SYSTEM
 #define MAX_RESPAWN 1024
 #define MAX_MONSTER_PROP 1024
 typedef struct	_MONSTER_RESPAWN
@@ -60,7 +59,6 @@ typedef struct _MONSTER_PROP
 	}
 }
 MONSTER_PROP, *PMONSTER_PROP;
-#endif // __S1108_BACK_END_SYSTEM
 
 class CScript;
 
@@ -98,7 +96,6 @@ public:
 	DWORD	m_dwConvMode;
 #endif // __ITEM_REMOVE_LIST
 	
-#ifdef __S1108_BACK_END_SYSTEM
 	FLOAT m_fMonsterRebirthRate;	// 몬스터 리스폰률
 	FLOAT m_fMonsterHitpointRate;	// 몬스터 생명력률
 	FLOAT m_fMonsterAggressiveRate; // 선공몬스터률
@@ -118,7 +115,6 @@ public:
 	char			m_chBackEndSystemTime[15];
 	char			m_chBackEndSystemChatTime[15];
 	char			m_chGMChat[10][256];
-#endif // __S1108_BACK_END_SYSTEM
 
 	BOOL			m_bItemUpdate;		// 
 	TCHAR	m_apszWorld[MAX_WORLD][64];

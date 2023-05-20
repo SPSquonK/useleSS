@@ -77,9 +77,7 @@ CDbManager::CDbManager()
 #endif	// __TRANS_0413
 
 
-#ifdef __S1108_BACK_END_SYSTEM
 	m_hWorker	= m_hCloseWorker	= NULL;
-#endif // __S1108_BACK_END_SYSTEM
 
 	m_hItemUpdateWorker = m_hItemUpdateCloseWorker = NULL;
 	m_nItemUpdate = 0;
@@ -1408,11 +1406,9 @@ BOOL CDbManager::CreateDbWorkers( void )
 	m_hSPThread	= chBEGINTHREADEX( NULL, 0, _SPThread, (LPVOID)this, 0, &dwThreadId );	// update
 	ASSERT( m_hSPThread );
 
-#ifdef __S1108_BACK_END_SYSTEM
 	m_hCloseWorker	= CreateEvent( NULL, FALSE, FALSE, NULL );
 	m_hWorker	= chBEGINTHREADEX( NULL, 0, _BackSystem, this, 0, &dwThreadId );
 	ASSERT( m_hWorker );
-#endif // __S1108_BACK_END_SYSTEM
 	
 	m_hItemUpdateCloseWorker	= CreateEvent( NULL, FALSE, FALSE, NULL );
 	m_hItemUpdateWorker	= chBEGINTHREADEX( NULL, 0, _ItemUpdateThread, this, 0, &dwThreadId );
@@ -1461,9 +1457,7 @@ void CDbManager::CloseDbWorkers( void )
 		CLOSE_HANDLE( m_hThreadGuild );
 	}
 
-#ifdef __S1108_BACK_END_SYSTEM
 	CLOSE_THREAD( m_hWorker, m_hCloseWorker );
-#endif // __S1108_BACK_END_SYSTEM
 
 	CLOSE_THREAD( m_hItemUpdateWorker, m_hItemUpdateCloseWorker );
 
@@ -1510,14 +1504,12 @@ UINT CDbManager::_GuildThread( LPVOID pParam )
 	return 0;
 }
 
-#ifdef __S1108_BACK_END_SYSTEM
 UINT CDbManager::_BackSystem( LPVOID pParam )
 {
 	CDbManager* pDbManager	= (CDbManager*)pParam;
 	pDbManager->BackSystem();
 	return 0;
 }
-#endif // __S1108_BACK_END_SYSTEM
 
 UINT CDbManager::_ItemUpdateThread( LPVOID pParam )
 {
