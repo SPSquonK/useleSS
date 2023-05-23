@@ -697,24 +697,7 @@ g_ShoutChat:
 	}
 }
 #endif
-void CDialogMsg::SetLinePos(C2DRender* p2DRender,int nLinePos)
-{
-//	MakeImageString(p2DRender);
-}
-void CDialogMsg::SetRectPage(C2DRender* p2DRender,CRect rect)
-{
-	ClearAllMessage();
-	m_rectPage = rect;
-	//SetSize(rect.Height() / ( p2DRender->GetFontManager()->GetHanFontSize().cy + m_nLineSpace));
-//	MakeImageString(p2DRender);
-}
-void CDialogMsg::SetLineNum(C2DRender* p2DRender,int nLineNum)
-{
-	ClearAllMessage();
-	//rectPage = rect;
-	SetSize(nLineNum);
-//	MakeImageString(p2DRender);
-}
+
 
 #define		MAX_CLIENTMSG_LEN		100
 

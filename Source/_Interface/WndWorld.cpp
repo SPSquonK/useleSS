@@ -742,11 +742,7 @@ void CWndWorld::OnDraw( C2DRender* p2DRender )
 #endif
 
 	g_DialogMsg.Render( p2DRender );
-	// 768 : 484 = Height : y
-	//p2DRender->SetFont( 	CWndBase::m_Theme.m_pFontWorld );
-	//g_ClientMsg.Render( CPoint( p2DRender->m_clipRect.Width() / 2 , 520 * p2DRender->m_clipRect.Height() / 768 ), p2DRender );
-	//p2DRender->SetFont( 	CWndBase::m_Theme.m_pFontText );
-	// 768 : 184 = Height : y
+
 	g_Caption1.Render( CPoint( 0, 184 * p2DRender->m_clipRect.Height() / 768 ), p2DRender );
 	g_CapTime.Render( CPoint( 0, 50 * p2DRender->m_clipRect.Height() / 768 ), p2DRender );
 
@@ -1014,11 +1010,6 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 	// 날기 모드가 아니면 고도계 출력 안하고 종료 
 	if( g_pPlayer && g_pPlayer->m_pActMover->IsFly() == TRUE )
 		RenderAltimeter();
-
-
-	//p2DRender->SetFont( 	CWndBase::m_Theme.m_pFontWorld );
-	//g_ClientMsg.Render( CPoint( 0, 0 ), p2DRender );
-	//p2DRender->SetFont( 	CWndBase::m_Theme.m_pFontText );
 
 	CRect rectClient = GetClientRect();
 	g_Neuz.m_camera.Transform( g_Neuz.m_pd3dDevice, g_WorldMng.Get() );

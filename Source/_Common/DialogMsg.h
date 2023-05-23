@@ -87,9 +87,6 @@ public:
 	void ClearAllMessage();
 	void ClearMessage( CObj* pObj );
 	void Render( C2DRender* p2DRender );
-	void SetLinePos( C2DRender* p2DRender, int nLinePos );
-	void SetRectPage( C2DRender* p2DRender, CRect rect );
-	void SetLineNum( C2DRender* p2DRender, int nLineNum );
 
 	void AddMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD = 0xffffffff, int nKind = 0, DWORD dwPStyle = 0x00000001 );
 	void AddVendorMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD RGB = 0xffffffff );
