@@ -90,16 +90,8 @@ void CDialogMsg::ClearMessage( CObj* pObj )
 		}
 	}
 
-	for( int i = 0; i < m_VendortextArray.GetSize(); i++ )
-	{
-		LPCUSTOMTEXT pText	= (LPCUSTOMTEXT)m_VendortextArray.GetAt( i );
-		if( pText->m_pObj == pObj )
-		{
-			safe_delete( pText );
-			m_VendortextArray.RemoveAt( i );
-			i--;
-		}
-	}
+
+	RemoveVendorMessage(pObj);
 }
 
 void CDialogMsg::RemoveDeleteObjMsg()
@@ -119,6 +111,7 @@ void CDialogMsg::RemoveDeleteObjMsg()
 		}
 	}
 
+
 	for( int i = 0; i < m_VendortextArray.GetSize(); i++ )
 	{
 		LPCUSTOMTEXT lpCustomText 
@@ -132,183 +125,11 @@ void CDialogMsg::RemoveDeleteObjMsg()
 	}
 	
 }
-//#define DLGMSG_ALPHA 180
-#if 0
+
 void CDialogMsg::Render( C2DRender* p2DRender )
 {
 	CSize size;	
 	LPCUSTOMTEXT lpCustomText;
-	for( int i = 0; i < m_textArray.GetSize(); i++ )
-	{
-		lpCustomText = (LPCUSTOMTEXT) m_textArray.GetAt( i );
-		if( lpCustomText->m_timer.TimeOut() )
-		{
-			// 퀘스트 이모티콘을 다시 보이게 한다.
-			if( lpCustomText->m_pObj->GetType() == OT_MOVER )
-				((CMover*)lpCustomText->m_pObj)->m_bShowQuestEmoticon = TRUE;
-			safe_delete( lpCustomText );
-			m_textArray.RemoveAt( i );
-			i --;
-		}
-		else
-		{
-			LPCTSTR lpStr = lpCustomText->m_string;
-			lpCustomText->m_pFont->GetTextExtent( (TCHAR*)lpStr, &size );
-			CObj* pObj = lpCustomText->m_pObj;
-
-			if( pObj->IsCull() == FALSE )
-			{
-				int nAlpha = 200;
-				if( lpCustomText->m_timer.GetLeftTime() > 4000 )
-					nAlpha = 200 - ( ( lpCustomText->m_timer.GetLeftTime() - 4000 )* 200 / 1000 );
-				LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-
-				// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-				D3DXVECTOR3 vOut, vPos = pObj->GetPos(), vPosHeight;
-				D3DVIEWPORT9 vp;
-				const BOUND_BOX* pBB = pObj->m_pModel->GetBBVector();
-
-				pd3dDevice->GetViewport( &vp );
-
-				D3DXMATRIX matTrans;
-				D3DXMATRIX matWorld;
-				D3DXMatrixIdentity(&matWorld);
-				D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
-
-				D3DXMatrixMultiply( &matWorld, &matWorld, &pObj->GetMatrixScale() );
-				D3DXMatrixMultiply( &matWorld, &matWorld, &pObj->GetMatrixRotation() );
-				D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
-
-				vPosHeight = pBB->m_vPos[0];
-				vPosHeight.x = 0;
-				vPosHeight.z = 0;
-				
-				D3DXVec3Project( &vOut, &vPosHeight, &vp, &pObj->GetWorld()->m_matProj,
-					&pObj->GetWorld()->m_pCamera->m_matView, &matWorld);
-			
-				CRect rect = lpCustomText->m_rect;
-				vOut.x -= rect.Width() / 2;
-				vOut.y -= rect.Height();
-				CRectClip rectClip = p2DRender->m_clipRect;
-				DWORD dwLineCount = lpCustomText->m_string.GetLineCount();
-				DWORD dwMaxHeight = lpCustomText->m_pFont->GetMaxHeight();
-				CPoint ptOrigin = p2DRender->GetViewportOrg();
-				p2DRender->SetViewportOrg( 0, 0 );
-				int x = vOut.x;
-				int y = vOut.y;
-				int nHeight = rect.Height() / 8;
-				int nWidth  = rect.Width()  / 8;
-
-				for( int i = 0; i < nHeight; i++)
-				{
-					int nIndex;
-					if( i == 0 ) 
-						nIndex = 0; 
-					else if( i != nHeight - 1 ) 
-						nIndex = 3;
-					else 
-						nIndex = 6;
-					for( int j = 0; j < nWidth; j++)
-					{
-						CPoint point = CPoint( x + j * 8, y + i * 8);
-						if( j == 0 )
-							m_texPack.Render( p2DRender, point, nIndex, nAlpha ); 
-						else
-						if( j != nWidth - 1 )
-						{
-							// 맨 밑쪽 
-							/*
-							if( i == nHeight - 1 ) 
-							{
-								if( nWidth >= 6 && ( j == 3 * nWidth / 5 || j == 3 * nWidth / 5 + 1) )
-								{ m_texPack.Render( p2DRender, point, 4); continue; } // 5 : 3 = 10 : 6 
-								else
-								if( nWidth == 5 && ( j == 2 || j == 3 ) )
-								{ m_texPack.Render( p2DRender, point, 4); continue; }
-								else
-								if( nWidth == 4 && j == 2 )
-								{ m_texPack.Render( p2DRender, point, 4); continue; }
-								else
-								if( nWidth == 3 && j == 1 )
-								{ m_texPack.Render( p2DRender, point, 4); continue; }
-							}*/
-							m_texPack.Render( p2DRender, point, nIndex + 1, nAlpha); 
-						}
-						else
-							m_texPack.Render( p2DRender, point, nIndex + 2, nAlpha); 
-					}
-				}
-				// 꼬랑지 출력 
-				if( nWidth >= 6 )
-					m_texPack.Render( p2DRender, CPoint( x + ( 3 * nWidth / 5 ) * 8, y + i * 8 - 1),  9, nAlpha ); 
-				else
-				if( nWidth == 5 ) 
-					m_texPack.Render( p2DRender, CPoint( x + 2 * 8, y + i * 8 - 1), 9, nAlpha ); 
-				else
-				if( nWidth == 4 ) 
-					m_texPack.Render( p2DRender, CPoint( x + 2 * 8, y + i * 8 - 1),  11, nAlpha ); 
-				else
-				if( nWidth == 3 ) 
-					m_texPack.Render( p2DRender, CPoint( x + 1 * 8, y + i * 8 - 1),  11 , nAlpha); 
-				p2DRender->SetViewportOrg( ptOrigin );
-
-				x = vOut.x + 8;
-				y = vOut.y + 8;
-				p2DRender->TextOut_EditString( x, y, lpCustomText->m_string, 0, 0, 0 );
-				/*
-				for( i = 0; i < dwLineCount; i++)
-				{
-					CString string = lpCustomText->m_string.GetLine( i );
-					DWORD dwOffset = lpCustomText->m_string.GetLineOffset( i );
-					LPCTSTR lpszStr = string;
-					int nLength = string.GetLength();
-					DWORD dwCurOffset;
-					TCHAR strHan[ 3 ];
-					x = vOut.x + 8;;
-					for( int j = 0; j < nLength; j++)
-					{
-						if( IsHangul( string[j] ) )
-						{
-							strHan[0] = string[j++];
-							strHan[1] = string[j];
-							strHan[2] = '\0';
-							dwCurOffset = dwOffset + (j - 1);
-						}
-						else
-						{
-							strHan[0] = string[j];
-							strHan[1] = '\0';
-							dwCurOffset = dwOffset + j;
-						}
-						CSize size = lpCustomText->m_pFont->GetTextExtent(strHan);
-						DWORD dwColor = lpCustomText->m_string.m_adwColor[dwCurOffset];
-						DWORD dwStyle = lpCustomText->m_string.m_abyStyle[dwCurOffset];
-						
-						//p2DRender->TextOut( dwBegin, 0 + y * dwMaxHeight, strHan, dwColor);
-						lpCustomText->m_pFont->DrawText( x, y, dwColor, (TCHAR*) strHan );
-						if( dwStyle & ESSTY_BOLD )
-							lpCustomText->m_pFont->DrawText( x + 1, y, dwColor, (TCHAR*) strHan );
-						if( dwStyle & ESSTY_UNDERLINE )
-							p2DRender->RenderLine( CPoint( x, y + size.cy ), CPoint( x + size.cx, y + size.cy ), dwColor );
-							
-						x+= size.cx;
-					}	
-					//lpCustomText->m_pFont->DrawText( x, y, D3DCOLOR_ARGB( nAlpha, 0, 0, 0 ), (TCHAR*) lpszStr );
-					y += dwMaxHeight;
-				}
-				*/
-			}
-		}
-	}
-}
-#else
-void CDialogMsg::Render( C2DRender* p2DRender )
-{
-	CSize size;	
-	LPCUSTOMTEXT lpCustomText;
-
-//	CD3DFont* pOldFont = p2DRender->GetFont();
-//	p2DRender->SetFont( CWndBase::m_Theme.m_pFontWndTitle );
 	
 	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 	
@@ -688,7 +509,6 @@ g_ShoutChat:
 		}
 	}
 }
-#endif
 
 
 #define		MAX_CLIENTMSG_LEN		100
@@ -751,24 +571,6 @@ void CDialogMsg::AddMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD RGB, int nKi
 		scanner.GetToken();
 
 		// 이모티콘 명령
-/*		
-		if( scanner.Token == "/" )
-		{			
-			scanner.GetToken();
-
-			CString strstr = scanner.token;
-			for( int j=0; j < MAX_EMOTICON_NUM; j++ )
-			{
-				CString strstr2 = m_EmiticonCmd[ j ].m_szCommand;
-
-				if( strstr == strstr2 )
-				{
-					AddEmoticonUser( pObj, m_EmiticonCmd[ j ].m_dwIndex );
-					return;
-				}
-			}
-		}
-*/
 		if( scanner.Token == "/" )
 		{			
 			CString strstr = lpszMessage;
@@ -869,18 +671,10 @@ void CDialogMsg::AddVendorMessage(CObj *pObj, LPCTSTR lpszMessage, DWORD RGB)
 			tempstr.SetAt(j, ' ');
 		}
 	}
-	lpszMessage = tempstr.GetBuffer(0);
+	lpszMessage = tempstr.GetString();
 
-	for( int i = 0; i < m_VendortextArray.GetSize(); i++ )
-	{
-		LPCUSTOMTEXT lpCustomText = (LPCUSTOMTEXT) m_VendortextArray.GetAt( i );
-		if( lpCustomText->m_pObj == pObj )
-		{
-			safe_delete( lpCustomText );
-			m_VendortextArray.RemoveAt( i );
-			break;
-		}
-	}
+
+	RemoveVendorMessage(pObj);
 	
 	LPCUSTOMTEXT lpCustomText = new CUSTOMTEXT;
 	lpCustomText->m_dwRGB = RGB;
@@ -894,15 +688,6 @@ void CDialogMsg::AddVendorMessage(CObj *pObj, LPCTSTR lpszMessage, DWORD RGB)
 	CSize size = lpCustomText->m_pFont->GetTextExtent( lpszMessage );
 	int cx, cy;
 	// 기본 사이즈 계산 
-	/*
-	if( size.cx >= 160 )
-	{
-		cx = 160;
-		cy = 160; // 이 수치는 의미가 없음. Reset 이후에 줄수로 재 계산 됨 
-		lpCustomText->m_string.Init( lpCustomText->m_pFont, &CRect( 0, 0, cx - 16, cy - 16) );
-	}
-	else
-	*/
 	{
 		cx = size.cx + 16; 
 		cx = ( ( cx / 16 ) * 16 ) + ( ( cx % 16 ) ? 16 : 0 );
@@ -910,16 +695,13 @@ void CDialogMsg::AddVendorMessage(CObj *pObj, LPCTSTR lpszMessage, DWORD RGB)
 		const CRect rect = CRect(0, 0, cx - 16, cy - 16);
 		lpCustomText->m_string.Init( lpCustomText->m_pFont, &rect );
 	}
-	if( lpCustomText->m_bInfinite )
-	{
-		DWORD dwColor = 0;
 
-		dwColor = ( rand()%2 ) ? 0xffff0000: 0xff0000ff;
-
-		lpCustomText->m_string.SetParsingString( lpszMessage, dwColor );
+	if (lpCustomText->m_bInfinite) {
+		DWORD dwColor = (rand() % 2) ? 0xffff0000 : 0xff0000ff;
+		lpCustomText->m_string.SetParsingString(lpszMessage, dwColor);
+	} else {
+		lpCustomText->m_string.SetParsingString(lpszMessage);
 	}
-	else
-		lpCustomText->m_string.SetParsingString( lpszMessage );
 	
 	cy = lpCustomText->m_string.GetLineCount() * nMaxHeight + 16; // 라인 줄수로 세로 길이를 구함 
 	cy = ( ( cy / 16 ) * 16 ) + ( ( cy % 16 ) ? 16 : 0 );

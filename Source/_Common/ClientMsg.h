@@ -7,6 +7,7 @@ struct CLIENTMSG {
 	CEditString m_string;
 	DWORD   m_dwRGB;
 	int m_nAlpha;
+	std::optional<CSize> m_size;
 };
 
 class CClientMsg {

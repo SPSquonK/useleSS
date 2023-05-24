@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "clientMsg.h"
+#include "StdAfx.h"
+#include "ClientMsg.h"
 #include "timer.h"
 
 
@@ -28,7 +28,13 @@ void CClientMsg::Render(const CPoint point, C2DRender* p2DRender ) {
 
 		LPCTSTR lpStr = lpClientMsg->m_string;
 		CSize size;
-		p2DRender->m_pFont->GetTextExtent(lpStr,&size);
+		if (lpClientMsg->m_size) {
+			size = lpClientMsg->m_size.value();
+		} else {
+			p2DRender->m_pFont->GetTextExtent(lpStr, &size);
+			lpClientMsg->m_size = size;
+		}
+		
 		nLine -= size.cy + m_nLineSpace;
 
 		CPoint pt = point;
