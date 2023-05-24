@@ -9,13 +9,6 @@ CDialogMsg g_DialogMsg;
 
 CDialogMsg::CDialogMsg()
 {
-//	m_textArray.SetSize(7);
-	m_nLineSpace = 1;
-	m_nBeginLine =  0;
-	m_nAddLineNum = 0;
-	m_pFont = NULL;
-	m_pFontEffect = NULL;
-
 	// 텍스쳐렌더 버그 관련 수정
 	for(int i = 0; i < 3; i++)
 		m_pTex[i] = NULL;
@@ -75,7 +68,6 @@ void CDialogMsg::ClearAllMessage()
 			((CMover*)lpCustomText->m_pObj)->m_bShowQuestEmoticon = TRUE;
 	}
 	m_textArray.RemoveAll();
-	m_nAddLineNum = 0;
 
 	for( int i = 0; i < m_VendortextArray.GetSize(); i++)
 		safe_delete( (LPCUSTOMTEXT)m_VendortextArray.GetAt( i ) );
@@ -742,7 +734,7 @@ void CDialogMsg::AddTexture( CObj* pObj, CTexture* pTexture )
 	}
 	LPCUSTOMTEXT lpCustomText = new CUSTOMTEXT;
 	lpCustomText->m_dwRGB = 0;
-	lpCustomText->m_pFont = CWndBase::m_Theme.m_pFontText; //ect ? m_pFontEffect : m_pFont;
+	lpCustomText->m_pFont = CWndBase::m_Theme.m_pFontText;
 	lpCustomText->m_pObj = pObj;
 	lpCustomText->m_timer.Set( 5000 );
 	lpCustomText->m_bInfinite	= FALSE;	//( pObj->GetType() == OT_MOVER && ( (CMover*)pObj )->m_vtInfo.IsVendorOpen() );
@@ -813,7 +805,7 @@ void CDialogMsg::AddMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD RGB, int nKi
 	}
 	LPCUSTOMTEXT lpCustomText = new CUSTOMTEXT;
 	lpCustomText->m_dwRGB = RGB;
-	lpCustomText->m_pFont = CWndBase::m_Theme.m_pFontText; //ect ? m_pFontEffect : m_pFont;
+	lpCustomText->m_pFont = CWndBase::m_Theme.m_pFontText;
 	lpCustomText->m_pObj = pObj;
 	lpCustomText->m_timer.Set( 5000 );
 	lpCustomText->m_bInfinite	= FALSE;//( pObj->GetType() == OT_MOVER && ( (CMover*)pObj )->m_vtInfo.IsVendorOpen() );
@@ -824,14 +816,11 @@ void CDialogMsg::AddMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD RGB, int nKi
 	if( pObj->GetType() == OT_MOVER )
 		((CMover*)pObj)->m_bShowQuestEmoticon = FALSE;
 
-	if( lpCustomText->m_bInfinite )
-	{
-		DWORD dwColor = 0;
-		dwColor = 0xff008000;
-		lpCustomText->m_string.SetParsingString( lpszMessage, dwColor, 0x00000000, 0, dwPStyle );
+	if (lpCustomText->m_bInfinite) {
+		lpCustomText->m_string.SetParsingString(lpszMessage, 0xff008000, 0x00000000, 0, dwPStyle);
+	} else {
+		lpCustomText->m_string.SetParsingString(lpszMessage, 0xff000000, 0x00000000, 0, dwPStyle);
 	}
-	else
-		lpCustomText->m_string.SetParsingString( lpszMessage, 0xff000000, 0x00000000, 0, dwPStyle );
 
 	int nMaxHeight = lpCustomText->m_pFont->GetMaxHeight();
 	CSize size = lpCustomText->m_pFont->GetTextExtent( lpszMessage );

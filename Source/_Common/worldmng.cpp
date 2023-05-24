@@ -143,7 +143,6 @@ void CWorldMng::DestroyCurrentWorld()
 	m_currentWorld->InvalidateDeviceObjects();
 	m_currentWorld->DeleteDeviceObjects();
 	g_pMoveMark = NULL;
-	g_DialogMsg.RemoveAll();
 
 	m_currentWorld.reset();
 }

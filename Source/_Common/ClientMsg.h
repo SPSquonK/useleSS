@@ -11,7 +11,6 @@ struct CLIENTMSG {
 
 class CClientMsg {
 	CTimer m_timer; 
-	int    m_nBeginLine = 0;
 	std::vector<std::unique_ptr<CLIENTMSG>> m_textArray;
 public:
 	void Render(CPoint point, C2DRender * p2DRender);
