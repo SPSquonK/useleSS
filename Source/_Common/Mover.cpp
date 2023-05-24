@@ -1814,52 +1814,34 @@ BOOL CMover::Replace( DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE ty
 	return TRUE;
 }
 
-BOOL CMover::CreateItem( CItemElem * pItemBase, BYTE* pnId, short* pnNum, BYTE nCount )
+BOOL CMover::CreateItem( CItemElem * pItemBase, BYTE * pnId )
 {
-	if( pItemBase->m_dwItemId == 0 )
-		return FALSE;
+	if (pItemBase->m_dwItemId == 0) return FALSE;
 
-	if(pItemBase->m_nHitPoint == -1 )
-	{
-		ItemProp* pItemProp		= pItemBase->GetProp();
-		if( pItemProp )
-			pItemBase->m_nHitPoint		= pItemProp->dwEndurance;
-		else
-			pItemBase->m_nHitPoint		= 0;
+	if (pItemBase->m_nHitPoint == -1) {
+		const ItemProp * pItemProp = pItemBase->GetProp();
+		pItemBase->m_nHitPoint = pItemProp ? pItemProp->dwEndurance : 0;
 	}
-	if( pItemBase->GetSerialNumber() == 0 )
+
+	if (pItemBase->GetSerialNumber() == 0) {
 		pItemBase->SetSerialNumber();
-	BOOL fSuccess;
+	}
 
-	if( nCount == 0 )
-	{
-		BYTE anId[MAX_INVENTORY];
-		short anNum[MAX_INVENTORY];
+	BYTE nCount = 0;
+	BYTE anId[MAX_INVENTORY];
+	short anNum[MAX_INVENTORY];
 		
-		fSuccess	= m_Inventory.Add( pItemBase, anId, anNum, &nCount );
+	BOOL fSuccess	= m_Inventory.Add( pItemBase, anId, anNum, &nCount );
 
-		if( fSuccess && IsPlayer() )
-		{
-			( (CUser*)this )->AddCreateItem( pItemBase, anId, anNum, nCount );
-		}
-		if( pnId != NULL )
-			memcpy( pnId, anId, sizeof(BYTE) * nCount );
-		if( pnNum != NULL )
-			memcpy( pnNum, anNum, sizeof(short) * nCount );
-	}
-	else
+	if( fSuccess && IsPlayer() )
 	{
-		CItemElem itemElem;
-		itemElem	= *pItemBase;
-		for( int i = 0; i < nCount; i++ )
-		{
-			itemElem.m_nItemNum		= pnNum[i];
-			m_Inventory.SetAtId( pnId[i], &itemElem );
-		}
-		if( IsPlayer() )
-			( (CUser*)this )->AddCreateItem( pItemBase, pnId, pnNum, nCount );
-		fSuccess	= TRUE;
+		( (CUser*)this )->AddCreateItem( pItemBase, anId, anNum, nCount );
 	}
+
+	if( pnId != NULL )
+		memcpy( pnId, anId, sizeof(BYTE) * nCount );
+
+
 	return fSuccess;
 }
 
