@@ -424,7 +424,7 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 	for( int i = 0; i < m_nMaxSlotApplet; i++ )
 	{
 		SHORTCUT & lpShortcut = m_aSlotApplet[i];
-		const bool isMissingItem = RenderShortcut(p2DRender, lpShortcut, point, true);
+		const bool isMissingItem = !RenderShortcut(p2DRender, lpShortcut, point, true);
 
 		if (isMissingItem) {
 			FindNewStackForShortcut(std::nullopt, i);
