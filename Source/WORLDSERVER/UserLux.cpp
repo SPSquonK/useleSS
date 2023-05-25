@@ -38,40 +38,6 @@ void CUser::AddSetTarget(OBJID idTarget) {
 // ----------------------------------------------------------------------------------
 
 
-#pragma warning( push )
-#pragma warning( disable : 6262 )
-
-template<WORD SnapshotId, typename... Ts>
-void BroadcastAround(CCtrl * pCenter, const Ts ... ts) {
-	CAr ar;
-	ar << pCenter->GetId() << SnapshotId;
-	ar.Accumulate<Ts...>(ts ...);
-
-	const std::span<BYTE> buffer = ar.GetBuffer();
-
-	for (CUser * pUser : pCenter->m_2pc | std::views::values) {
-		pUser->AddBlock(buffer.data(), buffer.size());
-	}
-}
-
-template<WORD SnapshotId, typename... Ts>
-void BroadcastAroundExcluding(CUser * pCenter, const Ts ... ts) {
-	CAr ar;
-	ar << pCenter->GetId() << SnapshotId;
-	ar.Accumulate<Ts...>(ts ...);
-
-	const std::span<BYTE> buffer = ar.GetBuffer();
-
-	for (CUser * pUser : pCenter->m_2pc | std::views::values) {
-		if (pUser != pCenter) {
-			pUser->AddBlock(buffer.data(), buffer.size());
-		}
-	}
-}
-#pragma warning( pop )
-
-
-
 void	CUserMng::AddCreateSkillEffect(CMover * pAttacker, OBJID idTarget, DWORD dwSkill, DWORD dwLevel) {
 	BroadcastAround<SNAPSHOTTYPE_ACTIVESKILL, OBJID, DWORD, DWORD>(pAttacker,
 		idTarget, dwSkill, dwLevel

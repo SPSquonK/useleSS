@@ -909,6 +909,13 @@ public:
 	void	AddChangeMoverSfxId( CMover* pMover );
 	BOOL	HasUserSameWorldnLayer( CUser* pUserSrc );
 
+
+public:
+	template<WORD SnapshotId, typename... Ts>
+	void BroadcastAround(CCtrl * pCenter, const Ts ... ts);
+
+	template<WORD SnapshotId, typename... Ts>
+	void BroadcastAroundExcluding(CCtrl * pCenter, const Ts ... ts);
 };
 
 extern CUserMng g_UserMng;
@@ -941,6 +948,40 @@ void CUser::SendSnapshotWithTarget(DWORD targetId, const Ts & ... ts) {
 	m_Snapshot.ar << SnapshotId;
 	m_Snapshot.ar.Accumulate<Ts...>(ts...);
 }
+
+
+#pragma warning( push )
+#pragma warning( disable : 6262 )
+
+template<WORD SnapshotId, typename... Ts>
+void CUserMng::BroadcastAround(CCtrl * pCenter, const Ts ... ts) {
+	CAr ar;
+	ar << pCenter->GetId() << SnapshotId;
+	ar.Accumulate<Ts...>(ts ...);
+
+	const std::span<BYTE> buffer = ar.GetBuffer();
+
+	for (const auto & pair : pCenter->m_2pc) {
+		pair.second->AddBlock(buffer.data(), buffer.size());
+	}
+}
+
+template<WORD SnapshotId, typename... Ts>
+void CUserMng::BroadcastAroundExcluding(CCtrl * pCenter, const Ts ... ts) {
+	CAr ar;
+	ar << pCenter->GetId() << SnapshotId;
+	ar.Accumulate<Ts...>(ts ...);
+
+	const std::span<BYTE> buffer = ar.GetBuffer();
+
+	for (const auto & pair : pCenter->m_2pc) {
+		CUser * pUser = pair.second;
+		if (pUser != pCenter) {
+			pUser->AddBlock(buffer.data(), buffer.size());
+		}
+	}
+}
+#pragma warning( pop )
 
 #pragma endregion
 
