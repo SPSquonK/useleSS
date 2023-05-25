@@ -1,9 +1,6 @@
 #ifndef __USERMACRO_H__
 #define __USERMACRO_H__
 
-#define ALLOCBLOCK( ar )	\
-							CAr ar;
-
 #define	GETBLOCK( ar, lpBuf, nBufSize )	\
 										int nBufSize;	\
 										LPBYTE lpBuf	= ar.GetBuffer( &nBufSize );

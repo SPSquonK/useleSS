@@ -4,6 +4,7 @@
 #include <boost/container/static_vector.hpp>
 #include <optional>
 #include <variant>
+#include <span>
 #include "sqktd/static_string.h"
 #include "sqktd/type_traits.hpp"
 
@@ -52,6 +53,7 @@ public:
 
 
 	LPBYTE	GetBuffer( int* pnBufSize );
+	std::span<BYTE> GetBuffer() { return std::span(m_lpBufStart, m_lpBufCur); }
 	u_long	GetOffset( void );
 #ifndef __CLIENT
 	[[nodiscard]] bool IsOverflow() const noexcept { return m_overflow; }

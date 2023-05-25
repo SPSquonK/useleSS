@@ -12999,7 +12999,7 @@ void	CDPClient::OnSetActionPoint( OBJID objid, CAr & ar )
 }
 
 // 서버로부터 클라의 ObjFocus 변경.
-void	CDPClient::OnSetTarget( OBJID objid, CAr & ar )
+void	CDPClient::OnSetTarget( OBJID, CAr & ar )
 {
 	OBJID idTarget;
 	ar >> idTarget;		// 서버로부터 최대 쿨타임시간을 받음.
