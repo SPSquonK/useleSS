@@ -671,9 +671,8 @@ BOOL CBuffMgr::Overwrite( IBuff* pBuff )
 	return FALSE;
 }
 
-BOOL CBuffMgr::HasBuff( WORD wType, WORD wId )
-{
-	return GetBuff( wType, wId ) != NULL;
+BOOL CBuffMgr::HasBuff( WORD wType, WORD wId ) const {
+	return m_mapBuffs.contains(MAKELONG(wId, wType)) ? TRUE : FALSE;
 }
 
 IBuff* CBuffMgr::GetBuff( WORD wType, WORD wId )

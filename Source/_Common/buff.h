@@ -216,7 +216,7 @@ private:
 #ifndef __DBSERVER
 public:
 	void	Process();
-	BOOL	HasBuff( WORD wType, WORD wId );
+	[[nodiscard]] BOOL	HasBuff( WORD wType, WORD wId ) const;
 	void	RemoveBuff( IBuff* pBuff, BOOL bFake );
 	void	RemoveBuff( WORD wType, WORD wId, BOOL bFake = TRUE );
 	[[nodiscard]] bool HasBuffByIk3(DWORD dwIk3) const;
