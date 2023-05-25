@@ -151,7 +151,7 @@ BOOL CTax::IsApplyTaxRate( const CMover* pMover, const CItemElem* pItemElem ) co
 			return FALSE;
 	}
 
-	return TRUE;
+	return FALSE; // "oops rich people are not going to steal money from new players"
 }
 
 #endif // !__DBSERVER
@@ -476,7 +476,7 @@ void CTax::SendSetTaxRateOpenWnd( BYTE nCont, DWORD dwGuildId )		// 점령길드에게
 	CGuild* pGuild = g_GuildMng.GetGuild( dwGuildId );
 	if( pGuild )
 	{
-		CUser* pUserTemp = (CUser*)prj.GetUserByID( pGuild->m_idMaster );
+		CUser* pUserTemp = prj.GetUserByID( pGuild->m_idMaster );
 		if( IsValidObj( pUserTemp ) )
 			pUserTemp->AddTaxSetTaxRateOpenWnd( nCont );
 	}
@@ -487,12 +487,11 @@ void CTax::SendNoSetTaxRateOpenWnd( CUser* pUser )	// 세율 설정을 하지 않은경우 
 	CGuild* pGuild = pUser->GetGuild();
 	if( pGuild )
 	{
-		for( TAXINFOMAP::iterator it=m_mapTaxInfo.begin(); it!=m_mapTaxInfo.end(); it++ )
-		{
-			if( it->first != CONT_ALL && it->second->dwNextId == pGuild->GetGuildId()
-				&& !it->second->bSetTaxRate && pGuild->IsMaster( pUser->m_idPlayer ) )
+		for (const auto & [contId, taxInfo] : m_mapTaxInfo) {
+			if(contId != CONT_ALL && taxInfo->dwNextId == pGuild->GetGuildId()
+				&& !taxInfo->bSetTaxRate && pGuild->IsMaster( pUser->m_idPlayer ) )
 			{
-				pUser->AddTaxSetTaxRateOpenWnd( it->first );
+				pUser->AddTaxSetTaxRateOpenWnd(contId);
 				return;
 			}
 		}
@@ -767,7 +766,7 @@ void CTaxDBController::LoadTaxInfo()
 		while( pQuery->Fetch() )
 		{
 			BYTE nTaxKind = static_cast<BYTE>( pQuery->GetInt( "nTaxKind" ) );
-			if( taxInfo->mapTaxDetail.find(nTaxKind) == taxInfo->mapTaxDetail.end() )
+			if( taxInfo->mapTaxDetail.contains(nTaxKind) )
 			{
 				WriteLog( "LoadTaxInfo() - taxDetail is wrong, nContinent = %d, nTaxKind = %d", nContinent, nTaxKind );
 				return;
