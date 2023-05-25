@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Continent.h"
+#include <boost/container/flat_map.hpp>
 
 #define TAX_SALES		(BYTE)0	// 판매 세금
 #define	TAX_PURCHASE	(BYTE)1 // 구매 세금
@@ -54,12 +55,12 @@ struct __TAXINFO
 {
 	DWORD	dwId = NULL_ID;
 	BOOL	bSetTaxRate = TRUE;
-	std::map<BYTE, __TAXDETAIL *> mapTaxDetail;
+	boost::container::flat_map<BYTE, __TAXDETAIL> mapTaxDetail;
 	DWORD	dwNextId = NULL_ID;
 	__TAXINFO()
 	{
-		mapTaxDetail.emplace(TAX_SALES, new __TAXDETAIL );			// 구매 세금은 기본
-		mapTaxDetail.emplace(TAX_PURCHASE, new __TAXDETAIL );		// 판매 세금은 기본
+		mapTaxDetail.emplace(TAX_SALES, __TAXDETAIL{});			// 구매 세금은 기본
+		mapTaxDetail.emplace(TAX_PURCHASE, __TAXDETAIL{});		// 판매 세금은 기본
 	}
 };
 
