@@ -108,8 +108,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\rtmessenger.cpp">
     </ClCompile>
-    <ClCompile Include="..\_network\misc\src\speedhackchecker.cpp">
-    </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
@@ -170,7 +168,6 @@
     <ClInclude Include="packetlog.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="..\_network\misc\include\speedhackchecker.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="VersionCommon.h" />
     <ClInclude Include="..\_network\CmnHdr.h" />

@@ -59,9 +59,6 @@
     <ClCompile Include="..\_Common\rtmessenger.cpp">
       <Filter>Cache Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_network\misc\src\speedhackchecker.cpp">
-      <Filter>Cache Files</Filter>
-    </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Cache Files</Filter>
     </ClCompile>
@@ -268,9 +265,6 @@
       <Filter>Cache Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Cache Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_network\misc\include\speedhackchecker.h">
       <Filter>Cache Files</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h">
