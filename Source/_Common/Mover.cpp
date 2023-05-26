@@ -13,6 +13,7 @@
 #include "CreateObj.h"
 #include "eveschool.h"
 #include <ranges>
+#include <boost/range/adaptor/filtered.hpp>
 
 #include "..\_aiinterface\aipet.h"
 
@@ -4114,13 +4115,11 @@ void CMover::RemoveEnemy(const OBJID objid) {
 }
 
 void CMover::RemoveAllEnemies() {
-	auto range = m_idEnemies
-		| std::views::keys
-		| std::views::transform([](const OBJID objid) { return prj.GetMover(objid); })
-		| std::views::filter(IsValidObj);
-
-	for (CMover * const pEnemy : range) {
-		pEnemy->RemoveEnemy(GetId());
+	for (const OBJID objid : m_idEnemies | std::views::keys) {
+		CMover * pEnemy = prj.GetMover(objid);
+		if (IsValidObj(pEnemy)) {
+			pEnemy->RemoveEnemy(GetId());
+		}
 	}
 
 	m_idEnemies.clear();

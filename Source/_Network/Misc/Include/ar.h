@@ -53,7 +53,7 @@ public:
 
 
 	LPBYTE	GetBuffer( int* pnBufSize );
-	std::span<BYTE> GetBuffer() { return std::span(m_lpBufStart, m_lpBufCur); }
+	std::span<BYTE> GetBuffer() { return std::span<BYTE>(m_lpBufStart, m_lpBufCur); }
 	u_long	GetOffset( void );
 #ifndef __CLIENT
 	[[nodiscard]] bool IsOverflow() const noexcept { return m_overflow; }

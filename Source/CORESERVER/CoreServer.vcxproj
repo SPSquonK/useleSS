@@ -58,6 +58,8 @@
       <CompileAs>Default</CompileAs>
       <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <EnableModules>false</EnableModules>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;winmm.lib;pdh.lib;VERSION.LIB;%(AdditionalDependencies)</AdditionalDependencies>
