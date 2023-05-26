@@ -22,7 +22,7 @@
 #include "guildwar.h"
 
 //________________________________________________________________________________
-CAr&  operator<<(CAr& ar, VOTE_INSERTED_INFO& info)
+CAr&  operator<<(CAr& ar, const VOTE_INSERTED_INFO& info)
 {
 	ar << info.idGuild << info.idVote;
 	ar.WriteString( info.szTitle );

@@ -2725,15 +2725,8 @@ void CDPSrvr::OnOpenGuildBankWnd(CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 	}
 }
 
-void foo(void * ptr) {
-	
-}
-
 void CDPSrvr::OnCloseBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-	int x = 74978;
-	foo(x);
-
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );	
 	if( IsValidObj( pUser ) )
 	{

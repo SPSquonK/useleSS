@@ -54,9 +54,7 @@ void CDPAccountClient::SendServerEnable( int nMulti, long lEnable )
 
 void CDPAccountClient::SendAddIdofServer( DWORD dwIdofServer )
 {
-	BEFORESEND( ar, PACKETTYPE_MYREG );
-	ar << dwIdofServer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_MYREG, DWORD>(dwIdofServer);
 }
 
 void CDPAccountClient::SendRemoveAccount( char* lpszAccount )
@@ -66,10 +64,9 @@ void CDPAccountClient::SendRemoveAccount( char* lpszAccount )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPAccountClient::SendRemoveAllAccounts( void )
+void CDPAccountClient::SendRemoveAllAccounts()
 {
-	BEFORESEND( ar, PACKETTYPE_REMOVE_ALLACCOUNTS );
-	SEND( ar, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_REMOVE_ALLACCOUNTS>();
 }
 
 #ifdef __REMOVE_PLAYER_0221
@@ -171,65 +168,4 @@ void CDPAccountClient::SendBuyingInfo( PBUYING_INFO2 pbi2, SERIALNUMBER iSerialN
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-/*
-#ifdef __S0114_RELOADPRO
-void CDPAccountClient::OnReloadProject( CAr& ar, LPBYTE lpBuf, u_long uBufSize )
-{
-	SET_STRING::iterator it;
-	char szAccount[MAX_ACCOUNT];
-	int nCount;
-	ar >> nCount;
-
-	g_DbManager.m_AddRemoveLock.Enter();
-	for( int i = 0 ; i < nCount ; ++i )
-	{
-		ZeroMemory( szAccount, sizeof( szAccount ) );
-		ar.ReadString( szAccount );
-		it = m_OutAccount_List.find( szAccount );
-		if( it == m_OutAccount_List.end() )
-		{
-			m_OutAccount_List.insert( szAccount );
-			CTimeSpan timeSpan( 0, 0, 1, 0 );
-			m_tMemDelete = CTime::GetCurrentTime() + timeSpan;
-			m_bMemDelete = TRUE;
-		}
-	}
-	g_DbManager.m_AddRemoveLock.Leave();
-}
-
-void CDPAccountClient::SendCompleteReloadProject()
-{
-	BEFORESEND( ar, PACKETTYPE_RELOAD_PROJECT );
-	ar << g_appInfo.dwSys;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPAccountClient::ReloadProject( )
-{
-	SET_STRING::iterator it;
-	if( m_bMemDelete && m_tMemDelete < CTime::GetCurrentTime() )
-	{
-		g_DbManager.m_AddRemoveLock.Enter();
-		// 여기서 메모리 삭제
-		m_bMemDelete = FALSE;
-		ACCOUNT_CACHE* AccountCache;
-		map<string, ACCOUNT_CACHE*>::iterator ia;
-		for( it = m_OutAccount_List.begin() ; it != m_OutAccount_List.end() ; ++it )
-		{
-			ia = g_DbManager.m_2Account.find( it->data() );
-			if( ia != g_DbManager.m_2Account.end() )
-			{
-				AccountCache = ia->second;
-				AccountCache->Clear();
-				g_DbManager.m_pAccountMemPooler->Free( AccountCache );
-				// m_2Account.erase 를 호출해야 될 것 같음 
-			}
-		}
-		m_OutAccount_List.clear();
-		g_DbManager.m_AddRemoveLock.Leave();
-		SendCompleteReloadProject();
-	}
-}
-#endif // __S0114_RELOADPRO
-*/
 CDPAccountClient	g_dpAccountClient;

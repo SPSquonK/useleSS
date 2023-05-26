@@ -137,11 +137,8 @@ void CDPCoreClient::OnQueryRemovePlayer( CAr & ar )
 	}
 }
 
-void CDPCoreClient::SendLeave( u_long idPlayer )
-{
-	BEFORESEND( ar, PACKETTYPE_LEAVE );
-	ar << idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPCoreClient::SendLeave(u_long idPlayer) {
+	SendPacket<PACKETTYPE_LEAVE, u_long>(idPlayer);
 }
 
 CDPCoreClient	g_dpCoreClient;

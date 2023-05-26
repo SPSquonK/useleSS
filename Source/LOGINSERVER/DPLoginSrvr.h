@@ -17,7 +17,7 @@ CACHESTRUCT, *LPCACHESTRUCT;
 #define	MAX_CACHE_SIZE	4
 
 class CDPLoginSrvr : public CDPMng,
-	public DPMngFeatures::SendPacketNone<CDPLoginSrvr>
+	public DPMngFeatures::BroadcastPacketNone<CDPLoginSrvr>
 {
 private:
 	CACHESTRUCT		m_aCache[MAX_CACHE_SIZE];
