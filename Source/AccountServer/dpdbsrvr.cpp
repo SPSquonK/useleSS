@@ -266,35 +266,6 @@ void CDPDBSrvr::SendLogSMItem()
 {
 }
 
-/*
-#ifdef __S0114_RELOADPRO
-void CDPDBSrvr::SendReloadAccount()
-{
-	BEFORESEND( ar, PACKETTYPE_RELOAD_PROJECT );
-	ar << g_DbManager.m_OutAccount_List.size();
-	for( SET_STRING::iterator i = g_DbManager.m_OutAccount_List.begin() ; i != g_DbManager.m_OutAccount_List.end() ; ++i )
-	{
-		ar.WriteString( i->data() );
-	}	
-	SEND( ar, this, DPID_ALLPLAYERS );
-
-	for( i = g_DbManager.m_OutAccount_List.begin() ; i != g_DbManager.m_OutAccount_List.end() ; ++i )
-	{
-		g_dpSrvr.CloseExistingConnection( i->data(), ERROR_FLYFF_DB_JOB_ING );
-	}	
-}
-
-void CDPDBSrvr::OnCompleteReloadProject( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
-{
-	DWORD dwDBServer;
-	ar >> dwDBServer;
-	char szMessage[1024];
-	sprintf( szMessage, "CompleteReloadProject -> %d ", dwDBServer );
-	ReloadLog( szMessage );
-}
-#endif // __S0114_RELOADPRO
-*/
-
 #ifdef __SERVERLIST0911
 void CDPDBSrvr::OnServerEnable( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 {

@@ -13,13 +13,6 @@ class CDPAccountClient : public CDPMng,
 	public DPMngFeatures::SendPacketNone<CDPAccountClient>
 {
 public:
-/*
-#ifdef __S0114_RELOADPRO
-	SET_STRING		m_OutAccount_List;
-	CTime			m_tMemDelete;
-	BOOL			m_bMemDelete;
-#endif // __S0114_RELOADPRO
-*/
 //	Constructions
 	CDPAccountClient();
 	virtual	~CDPAccountClient();

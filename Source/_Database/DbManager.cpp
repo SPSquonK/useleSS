@@ -81,9 +81,6 @@ CDbManager::CDbManager()
 
 	m_hItemUpdateWorker = m_hItemUpdateCloseWorker = NULL;
 	m_nItemUpdate = 0;
-#ifdef __ITEM_REMOVE_LIST
-	m_RemoveItem_List.clear();
-#endif // __ITEM_REMOVE_LIST
 	memset( m_apQuery, 0, sizeof(m_apQuery) );
 
 	DB_ADMIN_PASS_LOG[0] = '\0';

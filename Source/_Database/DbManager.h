@@ -536,7 +536,6 @@ inline BOOL ACCOUNT_CACHE::IsReleaseable()
 
 //typedef CMyMap2<CMover*>	C2Mover;
 //typedef CMyBucket2<CMover*> CMoverBucket;
-typedef	std::set<std::string>			SET_STRING;
 typedef std::map<u_long, std::string>	ULONG2STRING;
 typedef std::map<int, std::string>	INT2STRING;
 
@@ -648,7 +647,7 @@ class CDbManager
 
 public:
 #ifdef __ITEM_REMOVE_LIST
-	SET_STRING	m_RemoveItem_List;
+	std::set<std::string>	m_RemoveItem_List;
 #endif // __ITEM_REMOVE_LIST
 	INT2STRING		m_int2StrItemUpdate;
 
@@ -906,9 +905,8 @@ public:
 	
 	BOOL	GetBankMover( CMover* pMover, CQuery *qry, int nSlot );
 	void	GetGuildBank( CItemContainer*  GuildBank, CQuery *qry );
-	BOOL	RemoveItemInvenBank( CMover* pMover, int* nCountItem0, int* nCountItem1 );
-	BOOL	RemoveItemGuildBank( int nGuildId, CItemContainer*  GuildBank, int* nCountItem0, int* nCountItem1 );
-	DWORD	GetRemoveItemPanya( int nItem0, int nItem1 );
+	bool RemoveItemInvenBank( CMover* pMover );
+	bool RemoveItemGuildBank( int nGuildId, CItemContainer*  GuildBank );
 
 #ifdef __ITEM_REMOVE_LIST
 	void	InitConvItemDialog( void );
@@ -923,16 +921,14 @@ public:
 	BOOL	GetInventoryBankView( char* pszSQL, CQuery* pQueryChar, CQuery* pQuerySave );
 	BOOL	GetGuildBankView( char* pszSQL, CQuery* pQueryChar, CQuery* pQuerySave );
 	BOOL	GetUserInventoryBank( CMover* pMover, CQuery* pQueryChar );	
-	BOOL	InventoryBankConv( char* pszSQL, CMover* pMover, CQuery* pQueryChar, CQuery* pQuerySave );
-	BOOL	GuildBankConv( char* pszSQL, int nGuildId, CItemContainer* GuildBank, CQuery* pQueryChar, CQuery* pQuerySave );
-	BOOL	RemoveGuildBankList( char* pszSQL, int nGuildId, CItemContainer*  GuildBank, int* nCountItem0, int* nCountItem1 );
-	BOOL 	RemoveInventoryBankList( char* pszSQL, CMover* pMover, int* nCountItem0, int* nCountItem1 );
-	BOOL	RemoveGuildBankListPanya( char* pszSQL, int nGuildId, CQuery* pQueryChar, CQuery* pQuerySave, int nCountItem0, int nCountItem1 );
-	BOOL	RemoveInventoryBankListPanya( char* pszSQL, CMover* pMover, CQuery* pQueryChar, CQuery* pQuerySave, int nCountItem0, int nCountItem1 );
+	bool	InventoryBankConv( char* pszSQL, CMover* pMover );
+	bool GuildBankConv( char* pszSQL, int nGuildId, CItemContainer* GuildBank );
+	bool	RemoveGuildBankList( char* pszSQL, int nGuildId, CItemContainer*  GuildBank );
+	bool 	RemoveInventoryBankList( char* pszSQL, CMover* pMover );
 	BOOL	SaveUserInventoryBank( char* pszSQL, CMover* pMover, CQuery* pQueryChar, CQuery* pQuerySave );
 	BOOL	SaveConvGuildBank( char* pszSQL, int nGuildId, CItemContainer* GuildBank, CQuery* pQueryChar, CQuery* pQuerySave );
 	BOOL	PiercingConfirmInventoryBank( CMover* pMover );
-	BOOL	PiercingConfirmGuildBank( int nGuildId, CItemContainer* GuildBank );
+	bool PiercingConfirmGuildBank(int nGuildId, CItemContainer * GuildBank);
 	BOOL	ConvItemStart( void );
 #endif // __ITEM_REMOVE_LIST
 

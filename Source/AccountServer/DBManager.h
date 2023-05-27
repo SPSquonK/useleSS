@@ -9,7 +9,6 @@
 #include <map>
 #include <set>
 #include <string>
-typedef	std::set<std::string>			SET_STRING;
 
 enum QUERYMODE
 {	
@@ -106,11 +105,6 @@ public:
 	HANDLE							m_hDbCompletionPort;
 	BOOL							m_bTracking;
 	BOOL							m_bLogItem;		// 상용화 아이템 로그 ( 예전 - __NOLOG )
-/*
-#ifdef __S0114_RELOADPRO
-	SET_STRING						m_OutAccount_List;
-#endif // __S0114_RELOADPRO
-*/
 
 public:
 //	Constructions
