@@ -1403,27 +1403,10 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 				if( lpShortcut->m_dwData != 0 )
 				{
-					if( pWndTaget == &(g_WndMng.m_pWndBank->m_wndItemCtrl[0]) )
-					{					
-						nSlot = 0;
-					}
-					else if( pWndTaget == &(g_WndMng.m_pWndBank->m_wndItemCtrl[1]) )
-					{
-						nSlot = 1;
-					}
-					else
-					{
-						nSlot = 2;
-					}
+					nSlot = g_WndMng.m_pWndBank->GetPosOfItemCtrl(pWndTaget);
 					
 					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 					
-					for( int i = 0; i < (int)( pWndItemCtrl->GetSelectedCount() ); i++ )
-					{
-						int nItem = pWndItemCtrl->GetSelectedItem( i );
-						pWndItemCtrl->GetItem( nItem );
-					}
-
 					CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
 					if( itemElem->m_nItemNum > 1 )
 					{ 
@@ -1438,10 +1421,8 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						g_WndMng.m_pWndTradeGold->MoveParentCenter();
 						CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
 						CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-						CString strMain = prj.GetText( TID_GAME_MOVECOUNT );//"��� �̵��Ͻðڽ��ϱ�?";
-						CString strCount = prj.GetText(TID_GAME_NUMCOUNT);//" ���� : ";
-						pStatic->m_strTitle = strMain;
-						pStaticCount->m_strTitle = strCount;
+						pStatic->m_strTitle = prj.GetText(TID_GAME_MOVECOUNT);
+						pStaticCount->m_strTitle = prj.GetText(TID_GAME_NUMCOUNT);
 					}
 					else
 					{
@@ -1450,18 +1431,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				}
 				else
 				{
-					if( pWndTaget == &(g_WndMng.m_pWndBank->m_wndGold[0]) )
-					{					
-						nSlot = 0;
-					}
-					else if( pWndTaget == &(g_WndMng.m_pWndBank->m_wndGold[1]) )
-					{
-						nSlot = 1;
-					}
-					else
-					{
-						nSlot = 2;
-					}
+					nSlot = g_WndMng.m_pWndBank->GetPosOfGold(pWndTaget);
 
 					// ���? (��)
 					g_WndMng.m_pWndTradeGold = new CWndTradeGold;
@@ -1475,10 +1445,8 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					g_WndMng.m_pWndTradeGold->MoveParentCenter();
 					CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
 					CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-					CString strMain = prj.GetText( TID_GAME_MOVEPENYA );//"�󸶸� �̵��Ͻðڽ��ϱ�?";
-					CString strCount = prj.GetText(TID_GAME_PENYACOUNT);//" SEED : ";
-					pStatic->m_strTitle = strMain;
-					pStaticCount->m_strTitle = strCount;
+					pStatic->m_strTitle = prj.GetText(TID_GAME_MOVEPENYA);
+					pStaticCount->m_strTitle = prj.GetText(TID_GAME_PENYACOUNT);
 				}
 				bForbid = FALSE;
 			}
@@ -1509,12 +1477,6 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					
 					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 					
-					for( int i = 0; i < (int)( pWndItemCtrl->GetSelectedCount() ); i++ )
-					{
-						int nItem = pWndItemCtrl->GetSelectedItem( i );
-						pWndItemCtrl->GetItem( nItem );
-					}
-
 					CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
 					if( itemElem->m_nItemNum > 1 )
 					{ 
@@ -1573,11 +1535,6 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 						
-						for( int i = 0; i < (int)( pWndItemCtrl->GetSelectedCount() ); i++ )
-						{
-							int nItem = pWndItemCtrl->GetSelectedItem( i );
-							pWndItemCtrl->GetItem( nItem );
-						}
 						CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
 						if( itemElem->m_nItemNum > 1 )
 						{ 
@@ -1936,8 +1893,6 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						bAble = FALSE;
 					}
 
-					if( pFocusItem->m_bCharged != 1 )
-					{
 						switch( pProp->dwID )
 						{
 						case II_SYS_SYS_SCR_BLESSING:
@@ -1979,7 +1934,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							break;
 						}
 						}
-					}
+
 				}
 			}
 			if( bAble )	// �������� �������� ����.
@@ -6130,14 +6085,7 @@ BOOL CWndPostSend::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	
 	// ������( ���?, ���ⱸ )
 	if( PtInRect(&(pCustom->rect), point) )
-	{
-		if( pItemElem->IsCharged() )//&& pItemElem->GetProp()->dwItemRare == 200 || pItemElem->GetProp()->dwItemRare == 300 )
-		{
-			g_WndMng.PutString(TID_GAME_CHARGED_NOTUSE);
-			pItemElem = NULL;
-			return FALSE;
-		}
-		
+	{		
 		if( pItemElem->m_nItemNum > 1 )
 		{ 
 			SetItemId( (BYTE)( pItemElem->m_dwObjId ) );
@@ -7393,7 +7341,7 @@ BOOL CWndGuildCombatBoard::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 }
 
-void CWndGuildCombatBoard::SetString( CHAR* szChar )
+void CWndGuildCombatBoard::SetString( const CHAR* szChar )
 {
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 	
@@ -7463,19 +7411,11 @@ BOOL CGuildCombatInfoMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT*
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-void CGuildCombatInfoMessageBox::SetString( CHAR* szChar )
+void CGuildCombatInfoMessageBox::SetString( const CHAR* szChar )
 {
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 	
 	pWndText->m_string.AddParsingString( szChar  );
-	pWndText->ResetString();	
-}
-
-void CGuildCombatInfoMessageBox::SetString( CString strMsg )
-{
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	
-	pWndText->m_string.AddParsingString( strMsg  );
 	pWndText->ResetString();	
 }
 
@@ -11920,7 +11860,6 @@ void CWndRemoveJewel::UpdateStartButtonStatus() {
 
 CWndChangeAttribute::CWndChangeAttribute()
 {
-	m_pText = NULL;
 	m_nAttributeNum = -1;
 	m_pItemElem = NULL;
 	m_pChangeItem = NULL;
@@ -11939,18 +11878,11 @@ void CWndChangeAttribute::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// ���⿡ �ڵ��ϼ���
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "ChangeAttribute.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
 
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("ChangeAttribute.inc")
+	);
 
 	m_nAttributeStaticID[0] = WIDC_CUSTOM1;
 	m_nAttributeStaticID[1] = WIDC_CUSTOM2;
@@ -12424,32 +12356,16 @@ void CWndCoupleTabInfo::OnDraw(C2DRender* p2DRender)
 //////////////////////////////////////////////////////////////////////////
 // Couple Manager Tab Skill Window
 //////////////////////////////////////////////////////////////////////////
-CWndCoupleTabSkill::CWndCoupleTabSkill()
-{
-	m_pText = NULL;
-	m_pSkillBgTexture = NULL;
-}
-
-CWndCoupleTabSkill::~CWndCoupleTabSkill()
-{
-}
 
 void CWndCoupleTabSkill::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// ���⿡ �ڵ��ϼ���
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
-	
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "CoupleSkillInfo.inc" ) ));
-	CHAR* szChar = scanner.m_pProg;
 
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString(szChar);
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("CoupleSkillInfo.inc")
+	);
 
 	m_pSkillBgTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "Bg_Couple_Skill.tga"), 0xffff00ff );
 

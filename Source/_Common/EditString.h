@@ -2,14 +2,7 @@
 #define __EDITSTRING_H 
 
 #include "vutil.h"
-inline BOOL IsWhite(TCHAR c)
-{
-	return (iswspace(c) || c == '\r' || c == '\n' || !iswprint(c)) && !IsDBCSLeadByte(c);
-}
-inline BOOL IsAlphaNum(TCHAR c)
-{
-	return iswalnum(c);
-}
+
 #define ESSTY_UNDERLINE     1
 #define ESSTY_BOLD          2 
 #define ESSTY_STRIKETHROUGH 4

@@ -44,19 +44,8 @@ struct EmticonCmd
 };
 
 
-class CDialogMsg : public CPtrArray
+class CDialogMsg
 {
-	struct Image 
-	{
-		COLORREF    m_RGB;
-		CString     m_string;
-		CObj*       m_pObj;
-	};
-	CRect  m_rectPage;
-	int    m_nLinePos;
-	int    m_nLineSpace;
-	int    m_nBeginLine;
-	int    m_nAddLineNum;
 public:
 	
 	CTexturePack m_texPack_ex[3];
@@ -72,8 +61,6 @@ public:
 	CTexturePack m_texEmoticon;
 	void AddTexture( CObj* pObj, CTexture* pTexture );
 	void AddEmoticon( CObj* pObj, int nEmoticonIdx );
-	CD3DFont* m_pFont;
-	CD3DFont* m_pFontEffect;
 
 	CPtrArray m_textArray;
 	
@@ -87,9 +74,6 @@ public:
 	void ClearAllMessage();
 	void ClearMessage( CObj* pObj );
 	void Render( C2DRender* p2DRender );
-	void SetLinePos( C2DRender* p2DRender, int nLinePos );
-	void SetRectPage( C2DRender* p2DRender, CRect rect );
-	void SetLineNum( C2DRender* p2DRender, int nLineNum );
 
 	void AddMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD = 0xffffffff, int nKind = 0, DWORD dwPStyle = 0x00000001 );
 	void AddVendorMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD RGB = 0xffffffff );

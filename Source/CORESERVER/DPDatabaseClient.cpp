@@ -61,6 +61,7 @@ void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSi
 
 	if( pfn ) {
 		( this->*( pfn ) )( ar );
+		if (ar.IsOverflow()) Error("Core-Database: Packet %08x overflowed", dw);
 	}
 //	else {
 //		switch( dw ) {

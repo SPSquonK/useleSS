@@ -47,6 +47,7 @@ void CDPClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID
 	// Hard coded dispatch
 	if (dw == PACKETTYPE_QUERY_DESTROY_PLAYER) {
 		OnQueryDestroyPlayer(ar, dpidUser, lpMsg, dwMsgSize);
+		if (ar.IsOverflow()) Error("Cache-Neuz: Packet %08x overflowed", dw);
 	} else {
 		// Send to Neuz
 		g_DPCacheSrvr.Send(lpBuf, uBufSize, dpidUser);

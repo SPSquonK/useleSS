@@ -161,6 +161,7 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 	
 	if( pfn ) {
 		( this->*( pfn ) )( ar, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)( (LPBYTE)lpMsg + sizeof(DPID) ), NULL_ID );
+		if (ar.IsOverflow()) Error("World-Core: Packet %08x overflowed", dw);
 	}
 	else {
 		switch( dw )
@@ -395,7 +396,7 @@ void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 	boost::container::flat_set<WorldId> badWorlds;
 
 	for (const WorldId pJurisdiction : desc.m_lspJurisdiction) {
-		WORLD * lpWorld = g_WorldMng.GetWorldStruct(pJurisdiction);
+		const WORLD * lpWorld = g_WorldMng.GetWorldStruct(pJurisdiction);
 		if (!lpWorld) {
 			Error(__FUNCTION__ ": The world #%lu has no world Struct", pJurisdiction);
 			badWorlds.emplace(pJurisdiction);
@@ -2102,7 +2103,7 @@ void CDPCoreClient::OnSetMonsterRespawn( CAr & ar, DPID, DPID, OBJID )
 	CWorld* pWorld = NULL;
 	
 	CUser* pUser	= (CUser*)prj.GetUserByID( uidPlayer );
-	if( IsValidObj( (CObj*)pUser ) )
+	if( IsValidObj( pUser ) )
 	{
 		vPos = pUser->GetPos();
 		pWorld = pUser->GetWorld();
@@ -2124,11 +2125,7 @@ void CDPCoreClient::OnSetMonsterRespawn( CAr & ar, DPID, DPID, OBJID )
 		ri.m_uTime			= (u_short)( dwRespawnTime );
 		ri.m_cbTime = 0;
 		
-#ifdef __S1108_BACK_END_SYSTEM
-		pWorld->m_respawner.Add( ri, TRUE );
-#else // __S1108_BACK_END_SYSTEM
-		pWorld->m_respawner.Add( ri );
-#endif // __S1108_BACK_END_SYSTEM
+		pWorld->m_respawner.AddScriptSpawn(ri);
 		
 		char chMessage[512] = {0,};
 		sprintf( chMessage, "Add Respwan MonsterID = %d(%d/%d) Rect(%d, %d, %d, %d) Time = %d", 
@@ -2616,7 +2613,6 @@ void CDPCoreClient::OnBuyingInfo( CAr & ar, DPID, DPID, DPID)
 		CItemElem itemElem;
 		itemElem.m_dwItemId = bi2.dwItemId;
 		itemElem.m_nItemNum = (short)bi2.dwItemNum;
-		itemElem.m_bCharged = TRUE;
 		BYTE nId;
 		bi2.dwRetVal = pUser->CreateItem(&itemElem, &nId);
 #ifdef __LAYER_1015
@@ -2628,7 +2624,6 @@ void CDPCoreClient::OnBuyingInfo( CAr & ar, DPID, DPID, DPID)
 			CItemElem * pItemElem = pUser->m_Inventory.GetAtId(nId);
 			if (pItemElem) {
 				iSerialNumber = pItemElem->GetSerialNumber();
-				pItemElem->m_bCharged = TRUE;
 				if (bi2.dwSenderId > 0) {
 					// %s was a gift from %s.
 				}

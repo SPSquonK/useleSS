@@ -1486,17 +1486,15 @@ BOOL CWndPetFoodMill::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	{
 		if(m_pItemElem != NULL)
 		{
-			ItemProp* pItemProp = m_pItemElem->GetProp();
-//			if( ( pItemProp->dwParts != NULL_ID || pItemProp->dwItemKind3 == IK3_GEM ) && m_pItemElem->IsCharged() == FALSE && pItemProp->dwCost > 0 )
-//			if( pItemProp && (pItemProp->dwItemKind1 == IK1_WEAPON || pItemProp->dwReferStat1 == IK1_ARMOR ||
-//				pItemProp->dwItemKind3 == IK3_GEM) && pItemProp->dwCost > 0)
-			if( pItemProp->dwItemKind3 == IK3_GEM && m_pItemElem->IsCharged() == FALSE && pItemProp->dwCost > 0 )
+			const ItemProp * pItemProp = m_pItemElem->GetProp();
+
+			if( pItemProp->dwItemKind3 == IK3_GEM && pItemProp->dwCost > 0 )
 			{
 				//Send to Server...
 				g_DPlay.SendMakePetFeed(m_pItemElem->m_dwObjId, (short)m_nItemCount, m_dwObjId);
 			}
 			else
-				g_WndMng.PutString( prj.GetText(TID_GAME_NOTFOOD), NULL, prj.GetTextColor(TID_GAME_NOTFOOD) );
+				g_WndMng.PutString(TID_GAME_NOTFOOD);
 		}
 	}
 	else if(nID == WIDC_CANCEL || nID == WTBID_CLOSE)

@@ -1,3 +1,6 @@
+#pragma once
+#include <string>
+
 // CClipboard Class
 // ----------------
 // Written by David Terracino <davet@lycosemail.com>
@@ -11,21 +14,9 @@
 // And as always, please give credit where credit is
 // due. Don't remove my name from the source.
 
-#ifndef __CCLIPBOARD_H
-#define __CCLIPBOARD_H
-
 class CClipboard
 {
 public:
-	static BOOL GetText (LPSTR lpszBuffer,
-						 int nBufSize,
-						 HWND hWnd = NULL);
-	
-	static BOOL GetTextLength (DWORD *pnSize,
-							   HWND hWnd = NULL);
-	
-	static BOOL SetText (LPCTSTR lpszBuffer,
-						 HWND hWND = NULL);
+	static std::string GetText();
+	static bool SetText(LPCTSTR lpszBuffer);
 };
-
-#endif

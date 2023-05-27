@@ -10,6 +10,7 @@ static_assert(false, "Project.h was included")
 #include <boost/container/small_vector.hpp>
 #include "boost/container/static_vector.hpp"
 #include <boost/container/flat_map.hpp>
+#include <span>
 #include "sqktd/static_string.h"
 #include "FlyFFTypes.h"
 
@@ -262,17 +263,14 @@ struct MotionProp
 struct CVendor {
 	enum class Type { Penya, RedChip };
 
-	struct CategoryItem {
-		int		m_nItemkind3;
+	struct CategoryItem : DROPKIND {
 		int		m_nItemJob;
-		int		m_nUniqueMin;
-		int		m_nUniqueMax;
-		int		m_nTotalNum;
 
-		CategoryItem(int nItemkind3, int nItemJob,
-			int nUniqueMin, int nUniqueMax, int nTotalNum)
-			: m_nItemkind3(nItemkind3), m_nItemJob(nItemJob),
-			m_nUniqueMin(nUniqueMin), m_nUniqueMax(nUniqueMax), m_nTotalNum(nTotalNum) {
+		CategoryItem(DWORD nItemkind3, int nItemJob, short nUniqueMin, short nUniqueMax) {
+			dwIK3 = nItemkind3;
+			nMinUniq = nUniqueMin;
+			nMaxUniq = nUniqueMax;
+			m_nItemJob = nItemJob;
 		}
 	};
 
@@ -319,7 +317,6 @@ typedef struct tagCHARACTER
 	DWORD			m_dwHairMesh;
 	DWORD			m_dwHairColor;
 	DWORD			m_dwHeadMesh;
-	RANDOM_ITEM		m_randomItem;
 	BOOL			m_abMoverMenu[ MAX_MOVER_MENU ];
 
 	std::vector<std::pair<QuestId, DWORD>> m_srcQuests;
@@ -341,7 +338,6 @@ typedef struct tagCHARACTER
 	std::vector<D3DXVECTOR3> m_vecTeleportPos;
 } CHARACTER,* LPCHARACTER;
 
-#ifdef __S1108_BACK_END_SYSTEM
 
 typedef struct	_MONSTER_RESPAWN
 {
@@ -387,7 +383,6 @@ typedef struct _MONSTER_PROP
 	}
 }
 MONSTER_PROP, *PMONSTER_PROP;
-#endif // __S1108_BACK_END_SYSTEM
 
 struct DIE_PENALTY {
 	int		nLevel = 0;
@@ -653,7 +648,7 @@ public:
 
 	[[nodiscard]] const RandomOptItem * GetRandomOptItem(int nId) const;
 	[[nodiscard]] const char * GetRandomOptItemString(int nId) const;
-	[[nodiscard]] int GenRandomOptItem(int nLevel, FLOAT fPenalty, ItemProp* pItemProp, DWORD dwClass) const;
+	[[nodiscard]] int GenRandomOptItem(int nLevel, FLOAT fPenalty, const ItemProp* pItemProp, DWORD dwClass) const;
 };
 
 extern CRandomOptItemGen g_RandomOptItemGen;
@@ -736,11 +731,13 @@ public:
 	DWORD						m_aExpLPPoint[ MAX_EXPLPPOINT ];
 	DWORD						m_aExpSkill[ MAX_EXPSKILL ];
 	EXPPARTY					m_aExpParty[MAX_PARTYLEVEL];
-	CPtrArray					m_itemKindAry[ MAX_ITEM_KIND3 ];
+	
+	std::vector<ItemProp *> m_itemKindAry[MAX_ITEM_KIND3];
+	SIZE m_minMaxIdxAry[MAX_ITEM_KIND3][MAX_UNIQUE_SIZE];
+
 	int							m_aExpUpItem[6][11];	// +0 ~ +10까지의 추가능력치.
 	DWORD						m_adwExpDropLuck[122][11];
 	SETITEMAVAIL				m_aSetItemAvail[11];
-	SIZE						m_minMaxIdxAry[MAX_ITEM_KIND3][MAX_UNIQUE_SIZE];
 	std::map<int, PARTYQUESTPROP>	m_propPartyQuest;
 	std::vector< DIE_PENALTY >		m_vecRevivalPenalty;
 	std::vector< DIE_PENALTY >		m_vecDecExpPenalty;
@@ -754,7 +751,6 @@ public:
 	CMapStringToString			m_mapWordToolTip;	
 #endif
 	
-#ifdef __S1108_BACK_END_SYSTEM
 	FLOAT						m_fMonsterRebirthRate;	// 몬스터 리스폰률(시간)
 	FLOAT						m_fMonsterHitpointRate;	// 몬스터 생명력률
 	FLOAT						m_fMonsterAggressiveRate;	// 선공몬스터률
@@ -766,7 +762,6 @@ public:
 	int							m_nRemoveMonsterPropSize;
 	int							m_nMonsterPropSize;
 	char						m_chGMChat[10][256];
-#endif // __S1108_BACK_END_SYSTEM
 	
 	int				m_nEnchantLimitLevel[3];
 	float			m_fEnchantLevelScal[2][10];
@@ -814,8 +809,7 @@ public:
 	static void		SetGlobal( UINT type, float fValue );
 
 	PSETITEMAVAIL	GetSetItemAvail( int nAbilityOption );
-	int				GetMinIdx( int nItemKind3, DWORD dwItemRare );
-	int				GetMaxIdx( int nItemKind3, DWORD dwItemRare );
+	[[nodiscard]] std::span<const ItemProp * const> GetItemKind3WithRarity(DROPKIND dropKind) const;
 	ObjProp*		GetProp( int nType, int nIndex );
 	GUILDQUESTPROP*	GetGuildQuestProp( int nQuestId );
 	PARTYQUESTPROP*	GetPartyQuestProp( int nQuestId );
@@ -823,7 +817,6 @@ public:
 	CtrlProp*		GetCtrlProp( int nIndex );
 	ItemProp*		GetItemProp( int nIndex ); 
 	ItemProp*		GetSkillProp( int nIndex ); 
-	CPtrArray*		GetItemKindAry( int nKind );
 	MoverProp*		GetMoverProp( int nIndex ) ;
 	MoverProp*		GetMoverPropEx( int nIndex );
 	DWORD			GetSkillPoint( const ItemProp* pSkillProp ) const;
@@ -856,7 +849,7 @@ public:
 	BOOL			LoadCharacter( LPCTSTR szFileName );
 	BOOL			LoadEtc( LPCTSTR szFileName );
 	BOOL			LoadPropAddSkill( LPCTSTR lpszFileName );
-	void			InterpretRandomItem( LPRANDOM_ITEM pRandomItem, CScript& script );
+	void			InterpretRandomItem( CScript& script );
 	BOOL			LoadScriptDiePenalty( LPCTSTR lpszFileName );
 	BOOL			LoadScriptPK( LPCTSTR lpszFileName );
 	BOOL			LoadPropQuest( LPCTSTR szFileName, BOOL bOptimize = TRUE );
@@ -888,7 +881,6 @@ public:
 
 #ifdef __WORLDSERVER
 	CUser*			GetUser( OBJID objid );
-	BOOL			SortDropItem( void );
 private:
 	int			m_nMaxSequence;
 public:
@@ -922,10 +914,8 @@ public:
 	void			OutputSkill( void );
 #endif	
 
-#ifdef __S1108_BACK_END_SYSTEM
 	void			AddMonsterProp( MONSTER_PROP MonsterProp );
 	void			RemoveMonsterProp( char* lpszMonsterName );
-#endif 
 
 #if defined( __CLIENT )
 	BOOL LoadQuestDestination( void );
@@ -1006,11 +996,6 @@ inline ItemProp* CProject::GetSkillProp( int nIndex )
 { 
 	VERIFY_RANGE( nIndex, 0, m_aPropSkill.GetSize(), "GetSkillProp range_error", NULL );
 	return m_aPropSkill.GetAt( nIndex ); 
-}
-
-inline CPtrArray* CProject::GetItemKindAry( int nKind )  
-{ 
-	return &m_itemKindAry[nKind]; 
 }
 
 inline MoverProp* CProject::GetMoverProp( int nIndex ) 

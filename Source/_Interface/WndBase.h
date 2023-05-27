@@ -4,6 +4,8 @@
 #include <format>
 #include <source_location>
 #include <typeinfo>
+#include <memory>
+#include <functional>
 
 /*
 #ifdef __CLIENT
@@ -42,6 +44,15 @@ struct WNDMESSAGE {
 	LPARAM    m_lParam   ;
 };
 
+struct CTileMapManager {
+private:
+	std::map<std::string, std::unique_ptr<IMAGE>, std::less<>> m_map;
+
+public:
+	IMAGE * GetImage(std::string_view lpszFileName);
+	void Clear() { return m_map.clear(); }
+};
+
 //////////////////////////////////////////////////////////////////////////////
 // CWndBase 
 //////////////////////////////////////////////////////////////////////////////
@@ -71,13 +82,13 @@ static CWndBase* m_pWndCapture;
 
 //oid AddWnd(CWndBase* pWnd); 
 	//void RemoveWnd(CWndBase* pWnd);
-	void DestroyAllWnd(CWndBase* pWndRoot); // 모든 윈도를 강제 삭제 ; 종료할때 호출 
+	void DestroyAllWnd(); // Force delete all windows ; called when exiting
 	void SetChildFocus( CWndBase* pWndBase, POINT point );
 	[[nodiscard]] CWndBase * GetChildFocus(POINT point);
 //protected:
 public:
 static CResManager m_resMng;
-static CMapStringToPtr m_strWndTileMap;
+	static CTileMapManager m_strWndTileMap;
 	CD3DApplication* m_pApp;
 	CTheme*   m_pTheme;
 	CWndBase* m_pParentWnd;
@@ -126,7 +137,6 @@ static CWndBase*      m_pCurFocus       ; // 다이얼로그, 차일드 중 최종 현재 포�
 
 static std::vector<CWndBase *> m_wndRemove;
 static std::vector<WNDMESSAGE> m_postMessage;
-//static CTexturePack   m_texturePack     ;
 static CTexture*      m_pTexForbid;
 static CTimer         m_timerForbid;
 static BOOL           m_bForbid;
@@ -161,7 +171,10 @@ static SHORTCUT       m_GlobalShortcut;
 	int       m_nWinSize; // 0 = nomal, 1 - minimaize, 2 = maximize
 
 	void FitTextureSize();
-static void FreeTileTexture();
+	static void FreeTileTexture() { return m_strWndTileMap.Clear(); }
+	static IMAGE * GetTileImage(std::string_view lpszFileName) {
+		return m_strWndTileMap.GetImage(lpszFileName);
+	}
 	
 	BOOL Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID);
 	void SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName, BOOL bMyLoader = FALSE );
@@ -225,7 +238,6 @@ public:
 	[[nodiscard]] CPoint GetMousePoint() const noexcept { return m_ptMouse; } 
 	void SetGroup(BOOL bGroup) { m_bGroup = bGroup; }
 	BOOL IsGroup() { return m_bGroup; }
-	CPtrArray* GetWndArray() { return &m_wndArray; }
 	void SetFont(CD3DFont* pFont) { m_pFont = pFont; }
 	CD3DFont* GetFont() { return m_pFont; }
 	void SetAutoFree(BOOL bFree) { m_bAutoFree = (bFree != FALSE ); }

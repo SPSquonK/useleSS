@@ -1,95 +1,64 @@
-// EventLua.h: interface for the CEventLua class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_EVENTLUA_H__CB7F2A4F_B0F3_47A4_BC55_55047E95D5D2__INCLUDED_)
-#define AFX_EVENTLUA_H__CB7F2A4F_B0F3_47A4_BC55_55047E95D5D2__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-
 
 #include "LuaBase.h"
 
 #ifdef __WORLDSERVER
 class CEventLua;
-class CEventLuaProxy
-{
+class CEventLuaProxy final {
 public:
-	CEventLuaProxy();
-	virtual	~CEventLuaProxy();
+	CEventLuaProxy() = default;
 public:
 	std::vector<BYTE>	GetEventList()	{	return m_vEventLists;	}
-	void	SetEventList( const std::vector<BYTE> & vEventLists )	{	m_vEventLists.assign( vEventLists.begin(), vEventLists.end() );	}
 	float	GetExpFactor()	{	return m_fExpFactor;	}
-	void	SetExpFactor( float fExpFactor )	{	m_fExpFactor	= fExpFactor;	}
 	float	GetItemDropRate()	{	return m_fItemDropRate;	}
-	void	SetItemDropRate( float fItemDropRate )	{	m_fItemDropRate	= fItemDropRate;	}
 	float	GetPieceItemDropRate()	{	return m_fPieceItemDropRate;	}
-	void	SetPieceItemDropRate( float fPieceItemDropRate )	{	m_fPieceItemDropRate	= fPieceItemDropRate;	}
 	float	GetGoldDropFactor()	{	return m_fGoldDropFactor;	}
-	void	SetGoldDropFactor( float GoldDropFactor )	{	m_fGoldDropFactor	= GoldDropFactor;	}
 	int		GetAttackPower()	{	return m_nAttackPower;	}
-	void	SetAttackPower( int nAttackPower )	{	m_nAttackPower	= nAttackPower;		}
 	int		GetDefensePower()	{	return m_fDefensePower;		}
-	void	SetDefensePower( int fDefensePower )	{	m_fDefensePower	= fDefensePower;	}
 	DWORD	GetCouponEvent()	{	return m_dwCouponEvent;	}
-	void	SetCouponEvent( DWORD dwCouponEvent )	{	m_dwCouponEvent	= dwCouponEvent;	}
 #ifdef __EVENTLUA_CHEEREXP
-	void	SetCheerExpFactor( float fCheerExpFactor ) { m_fCheerExpFactor = fCheerExpFactor; }
 	float	GetCheerExpFactor() { return m_fCheerExpFactor; }
 #endif // __EVENTLUA_CHEEREXP
 #ifdef __EVENTLUA_KEEPCONNECT
 	DWORD	GetKeepConnectTime()	{	return m_dwKeepConnect;	}
-	void	SetKeepConnectTime( DWORD dwKeepConnect )	{	m_dwKeepConnect	= dwKeepConnect;	}
 #endif // __EVENTLUA_KEEPCONNECT
 
-
-	void	SetWeatherEventExpFactor( float fWeatherEventExpFactor )	{ m_fWeatherEventExpFactor = fWeatherEventExpFactor; }
 	float	GetWeatherEventExpFactor()	{ return m_fWeatherEventExpFactor; }
 
-
 #ifdef __SHOP_COST_RATE
-	void	SetShopBuyFactor( float fShopBuyFactor )	{	m_fShopBuyFactor = fShopBuyFactor;	}
 	float	GetShopBuyFactor()	{	return m_fShopBuyFactor;	}
-	void	SetShopSellFactor( float fShopSellFactor )	{	m_fShopSellFactor = fShopSellFactor;	}
 	float	GetShopSellFactor()	{	return m_fShopSellFactor;	}
 #endif // __SHOP_COST_RATE
 	void	Initialize( CEventLua* pEventLua );
 private:
 	std::vector<BYTE>	m_vEventLists;
-	float	m_fExpFactor;
-	float	m_fItemDropRate;
-	float	m_fPieceItemDropRate;
-	float	m_fGoldDropFactor;
-	int		m_nAttackPower;
-	int		m_fDefensePower;
-	DWORD	m_dwCouponEvent;
+	float	m_fExpFactor = 1.0f;
+	float	m_fItemDropRate = 1.0f;
+	float	m_fPieceItemDropRate = 1.0f;
+	float	m_fGoldDropFactor = 1.0f;
+	int		m_nAttackPower = 0;
+	int		m_fDefensePower = 0;
+	DWORD	m_dwCouponEvent = 0;
 #ifdef __EVENTLUA_CHEEREXP
-	float	m_fCheerExpFactor;
+	float	m_fCheerExpFactor = 1.0f;
 #endif // __EVENTLUA_CHEEREXP
 #ifdef __EVENTLUA_KEEPCONNECT
-	DWORD	m_dwKeepConnect;
+	DWORD	m_dwKeepConnect = 0;
 #endif // __EVENTLUA_KEEPCONNECT
 
 
-	float	m_fWeatherEventExpFactor;
+	float	m_fWeatherEventExpFactor = 1.0f;
 
 
 #ifdef __SHOP_COST_RATE
-	float	m_fShopBuyFactor;
-	float	m_fShopSellFactor;
+	float	m_fShopBuyFactor = 1.0f;
+	float	m_fShopSellFactor = 1.0f;
 #endif // __SHOP_COST_RATE
 };
 #endif // __WORLDSERVER
 
-class CEventLua  
-{
+class CEventLua final {
 public:
-	CEventLua();
-	virtual ~CEventLua();
-
 #ifdef __DBSERVER
 #ifdef __AUTO_NOTICE
 	BOOL			IsNoticeTime();
@@ -100,7 +69,7 @@ public:
 	CMclCritSec		m_Access;
 #ifdef __VTN_TIMELIMIT
 private:
-	BOOL			m_bTimeLimit;
+	BOOL			m_bTimeLimit = TRUE;
 public:
 	BOOL			IsTimeLimit()	{ return m_bTimeLimit; }
 #endif // __VTN_TIMELIMIT
@@ -110,7 +79,7 @@ public:
 	std::vector<BYTE>	GetEventList( BOOL bProxy = TRUE );
 	void			LoadScript();
 	BOOL			IsPossible() { return m_bRun; }
-	BOOL			m_bRun;
+	BOOL			m_bRun = FALSE;
 	CLuaBase m_Lua;
 #endif // __WORLDSERVER, __DBSERVER
 
@@ -211,4 +180,3 @@ public:
 #endif // __WORLDSERVER
 };
 
-#endif // !defined(AFX_EVENTLUA_H__CB7F2A4F_B0F3_47A4_BC55_55047E95D5D2__INCLUDED_)

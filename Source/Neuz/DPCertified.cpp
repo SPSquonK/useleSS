@@ -182,11 +182,8 @@ LPCTSTR CDPCertified::GetServerName(int nServerIndex) const {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void CDPCertified::OnKeepAlive( CAr & ar, DPID )
-{
-//	BEFORESENDSOLE( ar2, PACKETTYPE_KEEP_ALIVE, DPID_UNKNOWN );
-	BEFORESEND( ar2, PACKETTYPE_KEEP_ALIVE );
-	SEND( ar2, this, DPID_SERVERPLAYER );
+void CDPCertified::OnKeepAlive(CAr &, DPID) {
+	SendPacket<PACKETTYPE_KEEP_ALIVE>();
 }
 
 
@@ -260,9 +257,7 @@ void CDPCertified::OnErrorString( CAr & ar, DPID dpid )
 		pWndLogin->GetDlgItem( WIDC_OK )->EnableWindow( TRUE );
 
 	// 에러 표시 후 소켓이 끊기게 패킷을 보낸다. shutdown이 되지 않는 이 아픔 
-	// BEFORESENDSOLE( arWrite, PACKETTYPE_ERROR, DPID_UNKNOWN );
-	BEFORESEND( arWrite, PACKETTYPE_ERROR);		// chipi_090219
-	SEND( arWrite, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_ERROR>();
 }
 #endif	// __GPAUTH
 
@@ -371,9 +366,7 @@ void CDPCertified::OnError( CAr & ar, DPID dpid )
 			pWndLogin->GetDlgItem( WIDC_OK )->EnableWindow( TRUE );
 
 		// 에러 표시 후 소켓이 끊기게 패킷을 보낸다. shutdown이 되지 않는 이 아픔 
-		//BEFORESENDSOLE( ar, PACKETTYPE_ERROR, DPID_UNKNOWN );
-		BEFORESEND( ar, PACKETTYPE_ERROR );		// chipi_090219 
-		SEND( ar, this, DPID_SERVERPLAYER );
+		SendPacket<PACKETTYPE_ERROR>();
 	}
 }
 

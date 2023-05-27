@@ -197,10 +197,12 @@ void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSi
 
 	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
 	
-	if( pfn ) 
-		( this->*( pfn ) )( ar, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)( (LPBYTE)lpMsg + sizeof(DPID) ) );
-	else 
-		Error( "Handler not found(%08x)\n",dw );
+	if (pfn) {
+		(this->*(pfn))(ar, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + sizeof(DPID)));
+		if (ar.IsOverflow()) Error("World-Database: Packet %08x overflowed", dw);
+	} else {
+		Error("Handler not found(%08x)\n", dw);
+	}
 }
 
 #ifdef __LAYER_1015
@@ -840,9 +842,7 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		pUser->AddSMModeAll();
 
 		pUser->AddGameSetting();
-#ifdef __S1108_BACK_END_SYSTEM
 		pUser->AddMonsterProp();
-#endif // __S1108_BACK_END_SYSTEM
 		
 #ifdef __S_SERVER_UNIFY
 		// 서버 통합 작업
@@ -1342,7 +1342,6 @@ void CDPDatabaseClient::OnUpdatePlayerData( CAr & ar , DPID, DPID )
 
 void CDPDatabaseClient::OnBaseGameSetting( CAr & ar, DPID, DPID )
 {
-#ifdef __S1108_BACK_END_SYSTEM
 	BOOL bBaseGameSetting = FALSE;
 	BOOL bFirst = FALSE;
 	ar >> bFirst;
@@ -1367,23 +1366,17 @@ void CDPDatabaseClient::OnBaseGameSetting( CAr & ar, DPID, DPID )
 		for (auto & pWorld : g_WorldMng.m_worlds) {
 			pWorld->LoadRegion();
 #ifdef __EVENT_0117
-		#ifdef __LAYER_1021
 			CRespawner* pRespawner	= pWorld->m_respawner.Proto();
-		#else	// __LAYER_1021
-			CRespawner* pRespawner	= &pWorld->m_respawner;
-		#endif	// __LAYER_1021
-			for( int i = 0; i < (int)( pRespawner->m_vRespawnInfo[RESPAWNTYPE_REGION].size() ); ++i )
-			{
-				CRespawnInfo* pRespawnInfo	= &( pRespawner->m_vRespawnInfo[RESPAWNTYPE_REGION][i] );
+
+			for (CRespawnInfo & rRespawnInfo : pRespawner->m_vRespawnInfoRegion) {
+
+				CRespawnInfo* pRespawnInfo	= &rRespawnInfo;
 		
 				if( pRespawnInfo->m_dwType == OT_MOVER )	// 몬스터 리스폰
 				{
-					MoverProp* pMoverProp	= prj.GetMoverProp( pRespawnInfo->m_dwIndex );
+					const MoverProp* pMoverProp	= prj.GetMoverProp( pRespawnInfo->m_dwIndex );
 					if( pMoverProp && pMoverProp->dwFlying == 0 && pMoverProp->dwLevel > 0 && pMoverProp->dwLevel <= MAX_MONSTER_LEVEL )
 					{
-#ifdef _DEBUG
-						TRACE( "%d, (%d, %d, %d, %d)\n", pRespawnInfo->m_dwIndex, pRespawnInfo->m_rect.left, pRespawnInfo->m_rect.top, pRespawnInfo->m_rect.right, pRespawnInfo->m_rect.bottom );
-#endif	// _DEBUG
 						CEventGeneric::GetInstance()->AddRegionGeneric( pMoverProp->dwLevel, pWorld->GetID(), pRespawnInfo );
 #ifdef __EVENTLUA_SPAWN
 						if( pWorld->GetID() == WI_WORLD_MADRIGAL )	// 현재까지는 마드리갈 대륙에만 출현한다.
@@ -1398,12 +1391,13 @@ void CDPDatabaseClient::OnBaseGameSetting( CAr & ar, DPID, DPID )
 		CEventGeneric::GetInstance()->SortRegionGeneric();
 #endif	// __EVENT_0117
 	}	// if
-#endif // __S1108_BACK_END_SYSTEM
 }
 
 void CDPDatabaseClient::OnMonsterRespawnSetting( CAr & ar, DPID, DPID )
 {
-#ifdef __S1108_BACK_END_SYSTEM
+	CWorld * pWorld = g_WorldMng.GetWorld(WI_WORLD_MADRIGAL);
+	if (!pWorld) return;
+
 	char szMonsterName[32];
 	D3DXVECTOR3	vPos;
 	int		nAddIndex;
@@ -1428,12 +1422,7 @@ void CDPDatabaseClient::OnMonsterRespawnSetting( CAr & ar, DPID, DPID )
 		pMoverProp	= prj.GetMoverProp( szMonsterName );
 		
 		if( pMoverProp )
-		{
-			CWorld* pWorld	= g_WorldMng.GetWorld( WI_WORLD_MADRIGAL );
-			
-			if( pWorld == NULL )
-				return;
-			
+		{			
 			CRespawnInfo ri;
 			ri.m_dwType = OT_MOVER;
 			ri.m_dwIndex = pMoverProp->dwID;
@@ -1448,7 +1437,7 @@ void CDPDatabaseClient::OnMonsterRespawnSetting( CAr & ar, DPID, DPID )
 			ri.m_uTime = nTime;
 			ri.m_nGMIndex = nAddIndex;
 			
-			pWorld->m_respawner.Add( ri, TRUE );
+			pWorld->m_respawner.AddScriptSpawn(ri);
 		}
 	} 
 
@@ -1458,19 +1447,12 @@ void CDPDatabaseClient::OnMonsterRespawnSetting( CAr & ar, DPID, DPID )
 	for( int i = 0 ; i < nRemoveSize ; ++ i )
 	{
 		ar >> nRemoveIndex;
-		
-		CWorld* pWorld	= g_WorldMng.GetWorld( WI_WORLD_MADRIGAL );
-		
-		if( pWorld == NULL )
-			return;
-		pWorld->m_respawner.Remove( nRemoveIndex, TRUE );
+		pWorld->m_respawner.RemoveScriptSpawn( nRemoveIndex );
 	}
-#endif // __S1108_BACK_END_SYSTEM
 }
 
 void CDPDatabaseClient::OnMonsterPropSetting( CAr & ar, DPID, DPID )
 {
-#ifdef __S1108_BACK_END_SYSTEM
 	char	szMonsterName[32];
 	int		nHitPoint;
 	int		nAttackPower;
@@ -1540,12 +1522,10 @@ void CDPDatabaseClient::OnMonsterPropSetting( CAr & ar, DPID, DPID )
 	}
 	
 	g_UserMng.AddMonsterProp();
-#endif // __S1108_BACK_END_SYSTEM
 }
 
 void CDPDatabaseClient::OnGMChat( CAr & ar, DPID, DPID )
 {
-#ifdef __S1108_BACK_END_SYSTEM
 	int nSize;
 	ar >> nSize;
 	for( int i = 0 ; i < nSize ; ++i )
@@ -1554,7 +1534,6 @@ void CDPDatabaseClient::OnGMChat( CAr & ar, DPID, DPID )
 	}
 	if( 0 < nSize )
 		g_UserMng.AddGMChat( nSize );
-#endif // __S1108_BACK_END_SYSTEM
 }
 /*
 #ifdef __S0114_RELOADPRO
@@ -1691,7 +1670,6 @@ void CDPDatabaseClient::SendLogSMItemUse( const char *Action, CUser* pUser, CIte
 		ar << (int)0;
 		ar << (int)0;
 		ar << (int)0;
-		ar << (BOOL)0;
 		ar << (DWORD)0;
 		ar << (int)0;
 		ar << (int)0;
@@ -1713,7 +1691,6 @@ void CDPDatabaseClient::SendLogSMItemUse( const char *Action, CUser* pUser, CIte
 		ar << (int)0;
 		ar << (int)pItemElem->m_bItemResist;
 		ar << (int)pItemElem->m_nResistAbilityOption;
-		ar << pItemElem->m_bCharged;
 		ar << pItemElem->m_dwKeepTime;
 		ar << pItemElem->GetPiercingSize();
 		for( int i=0; i<pItemElem->GetPiercingSize(); i++ )

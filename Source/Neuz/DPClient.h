@@ -202,13 +202,13 @@ public:
 		
 	void	SendExp( EXPINTEGER nExp );
 
-	void	SendOpenBankWnd( DWORD dwId, DWORD dwItemId );
+	void	SendOpenBankWnd( DWORD dwId );
 	
 	void	SendFocusObj();
 
 	void	SendOpenGuildBankWnd();
 	void	SendCloseGuildBankWnd();
-	void	SendCloseBankWnd( void );
+	void	SendCloseBankWnd();
 
 	void	SendDoUseSkillPoint(const MoverSkills & skills);
 	void	SendEnterChattingRoom( u_long uidChatting );
@@ -225,8 +225,6 @@ public:
 	void	SendGetGoldBank( BYTE nSlot, DWORD dwGold );
 	void	SendPutGoldBankToBank( BYTE nPutSlot, BYTE nSlot, DWORD dwGold );
 	void	SendStateModeCancel( DWORD dwStateMode, BYTE nFlag );
-
-	void	SendConfirmBank( const char *szPass, DWORD dwId, DWORD dwItemId );
 
 	void	SendCorrReq( CObj *pObj );
 	void	SendCorrReq( OBJID idObj );
@@ -503,15 +501,13 @@ public:
 	void	OnMoveBankItem( OBJID objid, CAr & ar );
 	void	OnUpdateBankItem( OBJID objid, CAr & ar );
 	void	OnErrorBankIsFull( OBJID objid, CAr & ar );
-	void	OnBankWindow( OBJID objid, CAr & ar );
+	void	OnBank(OBJID objid, CAr & ar);
 
 	void    OnFocusObj( CAr & ar );
 	
 	void	OnGuildBankWindow( OBJID objid, CAr & ar );
 	void	OnPutItemGuildBank( OBJID objid, CAr & ar );
 	void	OnGetItemGuildBank( OBJID objid, CAr & ar );
-	void	OnChangeBankPass( OBJID objid, CAr & ar );
-	void	OnConfirmBankPass( OBJID objid, CAr & ar );
 	void	OnVendor( OBJID objid, CAr & ar );
 	void	OnUpdateVendor( OBJID objid, CAr & ar );
 	void	OnUpdateItemVariant( OBJID objid, CAr & ar );
@@ -619,10 +615,8 @@ public:
 	void	OnEventLuaDesc( CAr & ar );
 	void	OnRemoveAttributeResult( CAr & ar );
 	void    OnMotionArrive( OBJID objid, CAr & ar );
-#ifdef __S1108_BACK_END_SYSTEM
 	void	OnMonsterProp( CAr & ar );
 	void	OnGMChat( CAr & ar );
-#endif // __S1108_BACK_END_SYSTEM
 
 	void	OnChangeFace( CAr & ar );
 	

@@ -74,10 +74,8 @@ extern	char	DB_ADMIN_ID_CHARACTER01[260];
 extern	char	DSN_NAME_LOG[260];
 extern	char	DB_ADMIN_ID_LOG[260];
 
-#ifdef __S1108_BACK_END_SYSTEM
 extern	char	DSN_NAME_BACKSYSTEM[260];
 extern	char	DB_ADMIN_ID_BACKSYSTEM[260];
-#endif // __S1108_BACK_END_SYSTEM
 
 extern	char	DSN_NAME_ITEMUPDATE[260];
 extern	char	DB_ADMIN_ID_ITEMUPDATE[260];

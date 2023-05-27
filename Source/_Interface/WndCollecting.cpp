@@ -23,11 +23,6 @@ CCollectingWnd::CCollectingWnd()
 { 
 
 	m_bIsCollecting = false;
-	D3DXMatrixIdentity(&m_matModel);
-	//D3DXMatrixScaling(&m_matModel, 3.0f, 3.0f, 3.0f);
-	m_pSfxBase	= NULL;
-	m_pSfx		= NULL;
-	m_fAngle	= 0.0f;
 	m_pVBGauge	= NULL;
 	m_pTexGauEmptyNormal = NULL;
 	m_pTexGauFillNormal = NULL;
@@ -36,25 +31,18 @@ CCollectingWnd::CCollectingWnd()
 } 
 
 
-CCollectingWnd::~CCollectingWnd() 
-{ 
-} 
-
 
 void CCollectingWnd::OnDraw( C2DRender* p2DRender ) 
 { 
-	//if( m_pElem == NULL)
-	//return;
     if(!g_pPlayer) return;
 	LPWNDCTRL wndCtrlPic1 = GetWndCtrl( WIDC_PIC1 );
 	LPWNDCTRL wndCtrlPic2 = GetWndCtrl( WIDC_PIC2 );
 
-	if(m_pTexBatt)
-	{
+	if (m_pTexBatt) {
 		m_pTexBatt->Render(p2DRender, wndCtrlPic2->rect.TopLeft());
 	}
-	if(m_pTexLevel)
-	{
+
+	if (m_pTexLevel) {
 		m_pTexLevel->Render(p2DRender, wndCtrlPic1->rect.TopLeft());
 	}
 
@@ -63,28 +51,22 @@ void CCollectingWnd::OnDraw( C2DRender* p2DRender )
 	if(pCollector)
 	{
 		LPWNDCTRL	lpGauge   = GetWndCtrl( WIDC_GAUGE );
-		CRect 		rect = GetClientRect();
-		CRect 		rectTemp;
 		int 		nWidthClient = lpGauge->rect.Width();
-		int 		nWidth;
 		int			nMax = CCollectingProperty::GetInstance()->GetMaxBattery();
 		float		fRatio = (float)pCollector->m_nHitPoint / (float)nMax; 
 		int			nBtryRemain = pCollector->m_nHitPoint;
 
 		if(nBtryRemain < 0)  nBtryRemain = 0;
 
-		nWidth = (int)( nWidthClient * fRatio );
+		int nWidth = (int)( nWidthClient * fRatio );
 		wsprintf(m_pbufText, "%d / %d (%d%%)", nBtryRemain, nMax, (int)(fRatio * 100));
 
-		m_nGWidth = nWidth;
-		if(m_nGWidth >= 2)
+		if(nWidth >= 2)
 		{
-			rect = lpGauge->rect;
-			rectTemp = rect; 
+			CRect rectTemp = lpGauge->rect;
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			//m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rect, D3DCOLOR_ARGB( 200, 255, 255, 255 ), m_pVBGauge, m_pTexGauFillNormal );
-			//m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, m_pTexGauEmptyNormal );	
+
 			m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, D3DCOLOR_ARGB( 128, 0, 0, 255 ), m_pVBGauge, m_pTexGauFillNormal );
 			m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, m_pTexGauEmptyNormal );	
 		}
@@ -101,42 +83,6 @@ void CCollectingWnd::OnDraw( C2DRender* p2DRender )
 void CCollectingWnd::OnDestroy()
 {
 }
-
-
-void CCollectingWnd::AddSfx()
-{
-	/*
-	if( !m_pSfx )
-	{
-		m_pSfx = new CSfxModel;
-
-		if(!m_pSfxBase)
-		{
-			m_pSfxBase = new CSfxBase;
-			m_pSfxBase->m_strName = "sfx_collect";
-			m_pSfxBase->Load();
-		}
-		//m_pSfx->m_pSfxBase = m_pSfxBase;
-		m_pSfx->SetSfx(m_pSfxBase);
-		m_pSfx->m_vPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	}*/
-}
-
-void CCollectingWnd::DeleteSfx()
-{
-	/*
-	if(m_pSfxBase)
-	{
-		SAFE_DELETE(m_pSfxBase);
-		m_pSfxBase = NULL;
-	}
-	if(m_pSfx)
-	{
-		SAFE_DELETE(m_pSfx);
-		m_pSfx = NULL;
-	}*/
-}
-
 
 HRESULT CCollectingWnd::RestoreDeviceObjects()
 {
@@ -169,16 +115,10 @@ void CCollectingWnd::OnInitialUpdate()
 
 	if(pCollector)
 	{
-		char		szTemp[64];
-		//CWndStatic* pBettery = (CWndStatic*)GetDlgItem( WIDC_STATIC5 );
-		CWndStatic* pLevel   = (CWndStatic*)GetDlgItem( WIDC_STATIC3 );
-		CWndStatic* pPic1    = (CWndStatic*)GetDlgItem( WIDC_PIC1 );
-		CWndStatic* pPic2    = (CWndStatic*)GetDlgItem( WIDC_PIC2 );
+
 		LPWNDCTRL lpWndCtrl1 	= GetWndCtrl( WIDC_STATIC1 );
 		LPWNDCTRL lpWndCtrl2 	= GetWndCtrl( WIDC_STATIC2 );
 		LPWNDCTRL	lpGauge		= GetWndCtrl( WIDC_GAUGE );
-		CRect 		rect		= GetClientRect();
-		CRect 		rectTemp;
 		int 		nWidthClient= lpGauge->rect.Width();
 		int			nMax		= CCollectingProperty::GetInstance()->GetMaxBattery();
 		int			nRatio		= pCollector->m_nHitPoint / nMax; 
@@ -194,30 +134,23 @@ void CCollectingWnd::OnInitialUpdate()
 
 		m_pTexGauEmptyNormal = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff );
 		m_pTexGauFillNormal  = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff );
-		/*m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-		m_texGauEmptySmall.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
-		m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-		m_texGauFillSmall.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
-		*/
+
 		wsprintf(m_pbufText, "%d / %d (%d%%)", nBtryRemain, nMax, nRatio * 100);
 		
-		m_nGWidth = nWidth;
-		rect = lpGauge->rect;
-		rectTemp = rect; 
+		CRect rectTemp = lpGauge->rect;
 		rectTemp.right = rectTemp.left + nWidth;
 		ClientToScreen( rectTemp );
-		//m_bVBGauge = m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rect, 0x640010ff, m_pVBGauge, m_pTexGauFillNormal );
 
+		char		szTemp[64];
 		memset(szTemp, 0, 64);
 		sprintf(szTemp, "%d  /  5", pCollector->GetAbilityOption());
+
+		CWndStatic * pLevel = (CWndStatic *)GetDlgItem(WIDC_STATIC3);
 		pLevel->SetTitle(szTemp);
+
 		m_pTexBatt  = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "Icon_ColBattery.tga" )), 0xffff00ff );
 		m_pTexLevel = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "Icon_ColLevel.tga" )), 0xffff00ff );
 		
-		/*
-		if(!m_pModel) m_pModel = new CModelObject;
-		m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_ITEM, pCollector->m_dwItemId );
-		m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );*/
 	}
 
 	// 윈도를 중앙으로 옮기는 부분.
@@ -233,32 +166,21 @@ BOOL CCollectingWnd::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 		// Daisy에서 설정한 리소스로 윈도를 연다.
 		return CWndNeuz::InitDialog( APP_COLLECTING, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-/*
-  직접 윈도를 열때 사용 
-BOOL CCollectingWnd::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
+
 
 
 void  CCollectingWnd::Update()
 {
 	if(!g_pPlayer) return;
+	
 	CItemElem* pCollector = g_pPlayer->GetCollector();
+	if (!pCollector) return;
 
-	if(pCollector)
-	{
-		char		szTemp[64];
-		CWndStatic* pLevel   = (CWndStatic*)GetDlgItem( WIDC_STATIC3 );
+	char szTemp[64];
+	sprintf(szTemp, "%d  /  5", pCollector->GetAbilityOption());
 
-		memset(szTemp, 0, 64);
-		sprintf(szTemp, "%d  /  5", pCollector->GetAbilityOption());
-		pLevel->SetTitle(szTemp);
-	}
+	CWndBase * pLevel = GetDlgItem(WIDC_STATIC3);
+	pLevel->SetTitle(szTemp);
 }
 
 BOOL CCollectingWnd::Process()
@@ -267,37 +189,18 @@ BOOL CCollectingWnd::Process()
 }
 
 
-BOOL CCollectingWnd::SetButtonCaption(bool bIsStart)
-{
-	CWndButton* pWndButton = (CWndButton*)GetDlgItem( WIDC_BUTTON1 );
-	
-	if(bIsStart)
-		pWndButton->SetTexture(m_pParentWnd->m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "ButtStop.bmp" )), TRUE );
-	else
-	{
-		if(::GetLanguage() == LANG_FRE)
-			pWndButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
-		else
-			pWndButton->SetTexture(m_pParentWnd->m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "ButtStart.bmp" )), TRUE );
-	}
-	return true;
+void CCollectingWnd::SetButtonCaption(bool bIsStart) {
+	CWndBase * pWndButton = GetDlgItem(WIDC_BUTTON1);
 
+	if (bIsStart) {
+		pWndButton->SetTexture(m_pParentWnd->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtStop.bmp")), TRUE);
+	} else if (::GetLanguage() == LANG_FRE) {
+		pWndButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("ButOk2.bmp")), TRUE);
+	} else {
+		pWndButton->SetTexture(m_pParentWnd->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtStart.bmp")), TRUE);
+	}
 }
 
-BOOL CCollectingWnd::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CCollectingWnd::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CCollectingWnd::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CCollectingWnd::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CCollectingWnd::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if(!g_pPlayer) return FALSE;
@@ -319,46 +222,24 @@ BOOL CCollectingWnd::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-BOOL CCollectingWnd::OnEraseBkgnd(C2DRender* p2DRender)
-{
-	//CRect rect = GetClientRect();
-	//p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
-	//p2DRender->RenderFillRect( rect, D3DCOLOR_ARGB( 100, 0, 0, 0 ) );
 
-	return CWndBase::OnEraseBkgnd( p2DRender );
+void CCollectingWnd::OnMouseWndSurface(CPoint point) {
 	
-}
-
-
-void CCollectingWnd::OnMouseWndSurface( CPoint point )
-{
-	CRect DrawRect 		= m_BetteryRect;
-
-
-	if( DrawRect.PtInRect( point ) )
-	{
+	if (CRect DrawRect = m_BetteryRect; DrawRect.PtInRect(point)) {
 		CPoint point2 = point;
-		CString strText;
+		ClientToScreen(&point2);
+		ClientToScreen(&DrawRect);
 
-		ClientToScreen( &point2 );
-		ClientToScreen( &DrawRect );
-
-		strText = prj.GetText(TID_GAME_COLLECTOR_BETTERY_INFO);
-		g_toolTip.PutToolTip( 100000, strText, DrawRect, point2 );
-
+		CString strText = prj.GetText(TID_GAME_COLLECTOR_BETTERY_INFO);
+		g_toolTip.PutToolTip(100000, strText, DrawRect, point2);
 	}
 
-	DrawRect 		= m_LevelRect;
-
-	if( DrawRect.PtInRect( point ) )
-	{
+	if (CRect DrawRect = m_LevelRect; DrawRect.PtInRect(point)) {
 		CPoint point2 = point;
-		CString strText;
+		ClientToScreen(&point2);
+		ClientToScreen(&DrawRect);
 
-		ClientToScreen( &point2 );
-		ClientToScreen( &DrawRect );
-		strText = prj.GetText(TID_GAME_COLLECTOR_LEVEL_INFO);
-		g_toolTip.PutToolTip( 100000, strText, DrawRect, point2 );
-
+		CString strText = prj.GetText(TID_GAME_COLLECTOR_LEVEL_INFO);
+		g_toolTip.PutToolTip(100000, strText, DrawRect, point2);
 	}
 }

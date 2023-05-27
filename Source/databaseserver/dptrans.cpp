@@ -234,11 +234,9 @@ void CDPTrans::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID i
 
 				CCoupleHelper::Instance()->PostRequest( CCoupleHelper::eTransfer, NULL, 0, lpCreatePlayer->dpId );
 
-#ifdef __S1108_BACK_END_SYSTEM
 				SendBaseGameSetting( TRUE, lpCreatePlayer->dpId );
 				SendMonsterRespawnSetting( 0, NULL, lpCreatePlayer->dpId );
 				SendMonsterPropSetting( TRUE, lpCreatePlayer->dpId );
-#endif // __S1108_BACK_END_SYSTEM
 				
 				PostQueuedCompletionStatus( g_DbManager.m_hIOCPGuild, 1, lpCreatePlayer->dpId, NULL );
 
@@ -295,6 +293,7 @@ void CDPTrans::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID 
 	
 	if( pfn ) {
 		( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)( (LPBYTE)lpMsg + nSize ), (LPBYTE)lpMsg + nSize + nSize + nSize, dwMsgSize - ( nSize + nSize + nSize ) );
+		if (ar.IsOverflow()) Error("Database-World: Packet %08x overflowed", dw);
 	}
 	else {
 
@@ -380,7 +379,6 @@ void CDPTrans::SendUpdateGuildRankFinish()
 
 void CDPTrans::SendBaseGameSetting( BOOL bFirst, DPID dpid )
 {
-#ifdef __S1108_BACK_END_SYSTEM
 	BEFORESENDDUAL( ar, PACKETTYPE_BASEGAMESETTING, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << bFirst;
 	ar << prj.m_bBaseGameSetting;
@@ -391,12 +389,10 @@ void CDPTrans::SendBaseGameSetting( BOOL bFirst, DPID dpid )
 	}
 //	SEND( ar, this, DPID_ALLPLAYERS );
 	SEND( ar, this, dpid );
-#endif // __S1108_BACK_END_SYSTEM
 }
 
 void CDPTrans::SendMonsterRespawnSetting( int nRemoveSize, int nRemoveRespawn[], DPID dpid )
 {
-#ifdef __S1108_BACK_END_SYSTEM
 	BEFORESENDDUAL( ar, PACKETTYPE_MONSTERRESPAWNSETTING, DPID_UNKNOWN, DPID_UNKNOWN );
 	if( nRemoveRespawn == NULL )
 	{
@@ -434,12 +430,10 @@ void CDPTrans::SendMonsterRespawnSetting( int nRemoveSize, int nRemoveRespawn[],
 	}
 
 	SEND( ar, this, dpid );
-#endif // __S1108_BACK_END_SYSTEM
 }
 
 void CDPTrans::SendMonsterPropSetting( BOOL bFirst, DPID dpid )
 {
-#ifdef __S1108_BACK_END_SYSTEM
 	BEFORESENDDUAL( ar, PACKETTYPE_MONSTERPROPGAMESETTING, DPID_UNKNOWN, DPID_UNKNOWN );
 	if( bFirst == TRUE )
 	{
@@ -477,12 +471,10 @@ void CDPTrans::SendMonsterPropSetting( BOOL bFirst, DPID dpid )
 	}
 
 	SEND( ar, this, dpid );
-#endif // __S1108_BACK_END_SYSTEM
 }
 
 void CDPTrans::SendGMChat( int nCount )
 {
-#ifdef __S1108_BACK_END_SYSTEM
 	BEFORESENDDUAL( ar, PACKETTYPE_GAMEMASTER_CHATTING, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << nCount;
 	for( int i = 0 ; i < nCount ; ++i )
@@ -490,7 +482,6 @@ void CDPTrans::SendGMChat( int nCount )
 		ar.WriteString( prj.m_chGMChat[i] );
 	}
 	SEND( ar, this, DPID_ALLPLAYERS );
-#endif // __S1108_BACK_END_SYSTEM
 }
 
 void CDPTrans::OnJoin( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

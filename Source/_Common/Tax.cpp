@@ -23,10 +23,10 @@ CTax::CTax(void)
 	m_nMaxTaxRate = 0;
 	
 	m_mapTaxInfo.emplace( CONT_EAST, new __TAXINFO );		// 동부 점령 길드 - 입장료도 포함
-	m_mapTaxInfo.find( CONT_EAST )->second->mapTaxDetail.emplace(TAX_ADMISSION, new __TAXDETAIL); 
+	m_mapTaxInfo.find(CONT_EAST)->second->mapTaxDetail.emplace(TAX_ADMISSION, __TAXDETAIL{});
 	m_mapTaxInfo.emplace( CONT_WEST, new __TAXINFO );		// 서부 점령 길드
 	m_mapTaxInfo.emplace( CONT_ALL, new __TAXINFO );		// 군주 - 입장료도 포함
-	m_mapTaxInfo.find( CONT_ALL )->second->mapTaxDetail.emplace(TAX_ADMISSION, new __TAXDETAIL);
+	m_mapTaxInfo.find(CONT_ALL)->second->mapTaxDetail.emplace(TAX_ADMISSION, __TAXDETAIL{});
 
 #ifdef __DBSERVER
 	m_nTaxSecretRoomRate = 0;
@@ -49,12 +49,6 @@ CTax::~CTax(void)
 		__TAXINFO* taxInfo = it->second;
 		if( taxInfo )
 		{
-			for( auto it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
-			{
-				__TAXDETAIL* taxDetail = it2->second;
-				if( taxDetail )
-					safe_delete( taxDetail );
-			}
 			safe_delete( taxInfo );
 		}
 	}
@@ -102,7 +96,7 @@ float CTax::GetSalesTaxRate( BYTE nContinent )	// 해당 대륙의 판매 세율
 	if( !taxInfo )
 		return 0.0f;
 
-	int nTaxRate = taxInfo->mapTaxDetail.find( TAX_SALES )->second->nTaxRate;
+	int nTaxRate = taxInfo->mapTaxDetail.find( TAX_SALES )->second.nTaxRate;
 	return static_cast<float>(nTaxRate) * 0.1f * 0.1f;
 }
 
@@ -122,7 +116,7 @@ float CTax::GetPurchaseTaxRate( BYTE nContinent )	// 해당 대륙의 구매 세율
 	if( !taxInfo )
 		return 0.0f;
 
-	int nTaxRate = taxInfo->mapTaxDetail.find( TAX_PURCHASE )->second->nTaxRate;
+	int nTaxRate = taxInfo->mapTaxDetail.find( TAX_PURCHASE )->second.nTaxRate;
 	return static_cast<float>(nTaxRate) * 0.1f * 0.1f;
 }
 
@@ -151,7 +145,7 @@ BOOL CTax::IsApplyTaxRate( const CMover* pMover, const CItemElem* pItemElem ) co
 			return FALSE;
 	}
 
-	return TRUE;
+	return FALSE; // "oops rich people are not going to steal money from new players"
 }
 
 #endif // !__DBSERVER
@@ -236,8 +230,8 @@ void CTax::SetChangeNextTax()	// 변경될 세율을 적용
 		{
 			if( it->first != CONT_ALL )		// 군주는 세율과 관계없다.
 			{
-				taxInfo->mapTaxDetail.find( TAX_SALES )->second->nTaxRate = taxInfo->mapTaxDetail.find( TAX_SALES )->second->nNextTaxRate;
-				taxInfo->mapTaxDetail.find( TAX_PURCHASE )->second->nTaxRate = taxInfo->mapTaxDetail.find( TAX_PURCHASE )->second->nNextTaxRate;
+				taxInfo->mapTaxDetail.find( TAX_SALES )->second.nTaxRate = taxInfo->mapTaxDetail.find( TAX_SALES )->second.nNextTaxRate;
+				taxInfo->mapTaxDetail.find( TAX_PURCHASE )->second.nTaxRate = taxInfo->mapTaxDetail.find( TAX_PURCHASE )->second.nNextTaxRate;
 			}
 		}
 		else	// 세율 변경을 하지 않았을 경우 기본 세율로 설정
@@ -245,19 +239,17 @@ void CTax::SetChangeNextTax()	// 변경될 세율을 적용
 			taxInfo->bSetTaxRate = TRUE;	// 더이상 세율 설정 창이 안뜨도록 설정한 것으로 만든다.
 			if( it->first != CONT_ALL )		// 군주는 세율과 관계없다.
 			{
-				taxInfo->mapTaxDetail.find( TAX_SALES )->second->nTaxRate = m_nMinTaxRate;
-				taxInfo->mapTaxDetail.find( TAX_PURCHASE )->second->nTaxRate = m_nMinTaxRate;
+				taxInfo->mapTaxDetail.find( TAX_SALES )->second.nTaxRate = m_nMinTaxRate;
+				taxInfo->mapTaxDetail.find( TAX_PURCHASE )->second.nTaxRate = m_nMinTaxRate;
 			}
 		}
 		
 		// 세금을 모두 초기화 한다.
-		for( auto it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
-		{
-			__TAXDETAIL* taxDetail = it2->second;
-			taxDetail->nNextTaxRate = 0;
-			taxDetail->nTaxCount = 0;
-			taxDetail->nTaxPerin = 0;
-			taxDetail->nTaxGold = 0;
+		for (__TAXDETAIL & taxDetail : taxInfo->mapTaxDetail | std::views::values) {
+			taxDetail.nNextTaxRate = 0;
+			taxDetail.nTaxCount = 0;
+			taxDetail.nTaxPerin = 0;
+			taxDetail.nTaxGold = 0;
 		}
 	}
 }
@@ -328,8 +320,10 @@ void CTax::SetNextSecretRoomGuild( BYTE nCont, DWORD dwGuildId )	// 담주 점령길�
 		taxInfo->bSetTaxRate = FALSE;
 	// 다음 ID등록 및 세율 초기화
 	taxInfo->dwNextId = dwGuildId;
-	for( auto it=taxInfo->mapTaxDetail.begin(); it!=taxInfo->mapTaxDetail.end(); it++ )
-		it->second->nNextTaxRate = 0;
+
+	for (__TAXDETAIL & taxDetail : taxInfo->mapTaxDetail | std::views::values) {
+		taxDetail.nNextTaxRate = 0;
+	}
 #endif // __DBSERVER
 }
 
@@ -347,8 +341,10 @@ void CTax::SetNextLord( DWORD dwIdPlayer )	// 다음 군주 설정
 	taxInfo->bSetTaxRate = TRUE;
 	// 다음 ID등록 및 세율 초기화
 	taxInfo->dwNextId = dwIdPlayer;
-	for( auto it=taxInfo->mapTaxDetail.begin(); it!=taxInfo->mapTaxDetail.end(); it++ )
-		it->second->nNextTaxRate = 0; // 군주는 세율이 무의미 하지만 초기화...
+
+	for (__TAXDETAIL & taxDetail : taxInfo->mapTaxDetail | std::views::values) {
+		taxDetail.nNextTaxRate = 0;
+	}
 #endif // __DBSERVER
 }
 
@@ -367,8 +363,8 @@ void CTax::SetNextTaxRate( BYTE nCont, int nSalesTaxRate, int nPurchaseTaxRate )
 		return;
 	
 	taxInfo->bSetTaxRate = TRUE;
-	taxInfo->mapTaxDetail.find( TAX_SALES )->second->nNextTaxRate = nSalesTaxRate;
-	taxInfo->mapTaxDetail.find( TAX_PURCHASE )->second->nNextTaxRate = nPurchaseTaxRate;
+	taxInfo->mapTaxDetail.find( TAX_SALES )->second.nNextTaxRate = nSalesTaxRate;
+	taxInfo->mapTaxDetail.find( TAX_PURCHASE )->second.nNextTaxRate = nPurchaseTaxRate;
 #endif // __DBSERVER
 }
 
@@ -394,9 +390,9 @@ CAr & operator<<(CAr & ar, const CTax & self) {
 		ar << taxInfo->dwNextId;
 #endif // __DBSERVER
 		
-		ar << static_cast<std::uint32_t>(taxInfo->mapTaxDetail.size());
+		ar << static_cast<std::uint8_t>(taxInfo->mapTaxDetail.size());
 		for (const auto & [nTaxKind, taxDetail] : taxInfo->mapTaxDetail) {
-			ar << nTaxKind << taxDetail->nTaxRate;
+			ar << nTaxKind << taxDetail.nTaxRate;
 		}
 	}
 
@@ -416,14 +412,14 @@ CAr & operator>>(CAr & ar, CTax & self) {
 		ar >> taxInfo->dwNextId;
 #endif // __WORLDSERVER
 
-		std::uint32_t nSize2; ar >> nSize2;
-		for( std::uint32_t j=0; j<nSize2; j++ )
+		std::uint8_t nSize2; ar >> nSize2;
+		for( std::uint8_t j=0; j<nSize2; j++ )
 		{
 			BYTE nTaxKind;
 			ar >> nTaxKind;
-			__TAXDETAIL* taxDetail = taxInfo->mapTaxDetail.find( nTaxKind )->second;
+			__TAXDETAIL & taxDetail = taxInfo->mapTaxDetail.find( nTaxKind )->second;
 			
-			ar >> taxDetail->nTaxRate;
+			ar >> taxDetail.nTaxRate;
 		}
 	}
 
@@ -449,7 +445,7 @@ BOOL CTax::AddTax( BYTE nCont, int nTax, BYTE nTaxKind )	// 판매, 구매, 입장료에
 			if( taxInfo->mapTaxDetail.find( nTaxKind ) == taxInfo->mapTaxDetail.end() )
 				continue;
 
-			__TAXDETAIL* taxDetail = taxInfo->mapTaxDetail.find( nTaxKind )->second;
+			__TAXDETAIL* taxDetail = &taxInfo->mapTaxDetail.find( nTaxKind )->second;
 			if( taxDetail )
 			{
 				taxDetail->nTaxCount++;
@@ -476,7 +472,7 @@ void CTax::SendSetTaxRateOpenWnd( BYTE nCont, DWORD dwGuildId )		// 점령길드에게
 	CGuild* pGuild = g_GuildMng.GetGuild( dwGuildId );
 	if( pGuild )
 	{
-		CUser* pUserTemp = (CUser*)prj.GetUserByID( pGuild->m_idMaster );
+		CUser* pUserTemp = prj.GetUserByID( pGuild->m_idMaster );
 		if( IsValidObj( pUserTemp ) )
 			pUserTemp->AddTaxSetTaxRateOpenWnd( nCont );
 	}
@@ -487,12 +483,11 @@ void CTax::SendNoSetTaxRateOpenWnd( CUser* pUser )	// 세율 설정을 하지 않은경우 
 	CGuild* pGuild = pUser->GetGuild();
 	if( pGuild )
 	{
-		for( TAXINFOMAP::iterator it=m_mapTaxInfo.begin(); it!=m_mapTaxInfo.end(); it++ )
-		{
-			if( it->first != CONT_ALL && it->second->dwNextId == pGuild->GetGuildId()
-				&& !it->second->bSetTaxRate && pGuild->IsMaster( pUser->m_idPlayer ) )
+		for (const auto & [contId, taxInfo] : m_mapTaxInfo) {
+			if(contId != CONT_ALL && taxInfo->dwNextId == pGuild->GetGuildId()
+				&& !taxInfo->bSetTaxRate && pGuild->IsMaster( pUser->m_idPlayer ) )
 			{
-				pUser->AddTaxSetTaxRateOpenWnd( it->first );
+				pUser->AddTaxSetTaxRateOpenWnd(contId);
 				return;
 			}
 		}
@@ -668,15 +663,15 @@ void CTaxDBController::PayTaxToPost()
 		if( dwId == NULL_ID )
 			continue;
 
-		for( auto it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
-		{
-			__TAXDETAIL* taxDetail = it2->second;
+
+		for (auto & [taxType, rTaxDetail] : taxInfo->mapTaxDetail) {
+			__TAXDETAIL* taxDetail = &rTaxDetail;
 
 			CMail* pMail = new CMail;
 			pMail->m_tmCreate	= ::time_null();
 			pMail->m_idSender	= 0;	//
 			pMail->m_nGold		= taxDetail->nTaxGold;
-			switch( it2->first )
+			switch(taxType)
 			{
 				case TAX_SALES :
 					sprintf( pMail->m_szTitle, prj.GetText(TID_GAME_TAX_PAY_SALES_TITLE),
@@ -767,13 +762,13 @@ void CTaxDBController::LoadTaxInfo()
 		while( pQuery->Fetch() )
 		{
 			BYTE nTaxKind = static_cast<BYTE>( pQuery->GetInt( "nTaxKind" ) );
-			if( taxInfo->mapTaxDetail.find(nTaxKind) == taxInfo->mapTaxDetail.end() )
+			if( taxInfo->mapTaxDetail.contains(nTaxKind) )
 			{
 				WriteLog( "LoadTaxInfo() - taxDetail is wrong, nContinent = %d, nTaxKind = %d", nContinent, nTaxKind );
 				return;
 			}
 
-			__TAXDETAIL* taxDetail = taxInfo->mapTaxDetail.find(nTaxKind)->second;
+			__TAXDETAIL* taxDetail = &taxInfo->mapTaxDetail.find(nTaxKind)->second;
 			taxDetail->nTaxRate = pQuery->GetInt( "nTaxRate" );
 			taxDetail->nTaxCount = pQuery->GetInt( "nTaxCount" );
 			taxDetail->nTaxGold = pQuery->GetInt( "nTaxGold" );
@@ -803,11 +798,12 @@ void CTaxDBController::InsertToDB()
 		if( pQuery->Exec( szQuery ) == FALSE )
 		{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }
 				
-		for( auto it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
-		{
-			__TAXDETAIL* taxDetail = it2->second;
+
+		for (auto & [taxType, rTaxDetail] : taxInfo->mapTaxDetail) {
+			__TAXDETAIL * taxDetail = &rTaxDetail;
+
 			sprintf( szQuery, "TAX_DETAIL_STR 'I1', '%02d', %d, %d, %d, %d, %d, %d, %d, %d",
-					g_appInfo.dwSys, m_nTimes, it->first, it2->first, taxDetail->nTaxRate, taxDetail->nTaxCount,
+					g_appInfo.dwSys, m_nTimes, it->first, taxType, taxDetail->nTaxRate, taxDetail->nTaxCount,
 					taxDetail->nTaxGold, taxDetail->nTaxPerin, taxDetail->nNextTaxRate );
 			if( pQuery->Exec( szQuery ) == FALSE )
 			{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }
@@ -836,11 +832,11 @@ void CTaxDBController::UpdateToDB( BYTE nContinent )
 	if( pQuery->Exec( szQuery ) == FALSE )
 	{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }
 
-	for( auto it2=taxInfo->mapTaxDetail.begin(); it2!=taxInfo->mapTaxDetail.end(); it2++ )
-	{
-		__TAXDETAIL* taxDetail = it2->second;
+	for (auto & [taxType, rTaxDetail] : taxInfo->mapTaxDetail) {
+		__TAXDETAIL * taxDetail = &rTaxDetail;
+
 		sprintf( szQuery, "TAX_DETAIL_STR 'U1', '%02d', %d, %d, %d, %d, %d, %d, %d, %d",
-			g_appInfo.dwSys, m_nTimes, nContinent, it2->first, taxDetail->nTaxRate, taxDetail->nTaxCount,
+			g_appInfo.dwSys, m_nTimes, nContinent, taxType, taxDetail->nTaxRate, taxDetail->nTaxCount,
 			taxDetail->nTaxGold, taxDetail->nTaxPerin, taxDetail->nNextTaxRate );
 		if( pQuery->Exec( szQuery ) == FALSE )
 		{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }

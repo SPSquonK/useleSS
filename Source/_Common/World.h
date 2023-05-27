@@ -399,7 +399,10 @@ public:
 	void			ClipZ( FLOAT& z );
 
 	void			Free();
+
+#ifdef __WORLDSERVER
 	void			LoadAllMoverDialog();
+#endif
 
 #ifdef __LAYER_1015
 	BOOL			AddObj( CObj* pObj, BOOL bAddItToGlobalId, int nLayer );

@@ -190,46 +190,6 @@ void CMover::PutLvUpSkillName_2( DWORD dwSkill )
 #endif // CLIENT
 }
 
-#ifdef __WORLDSERVER
-/// �ŷ�, ����, ���λ�����, ������ FALSE
-int CMover::GetSummonState()
-{
-	// �ŷ�
-	if( m_vtInfo.GetOther() != NULL )
-		return 1;
-	  // â��
-	if( m_bBank )
-		return 1;
-	  // ���â��
-	if( m_bGuildBank )
-		return 1;
-
-	// ����
-	if( IsDie() )
-		return 2;
-
-	// ���λ�����
-	if( m_vtInfo.VendorIsVendor() || m_vtInfo.IsVendorOpen() )
-		return 3;
-
-	// ������
-	if( IsAttackMode() )
-		return 4;
-	
-	// ������
-	if( ( IsFly() ) )
-		return 5;
-
-
-	if( m_nDuel )
-		return 6;
-
-
-	return 0;
-}
-#endif //
-
-
 #ifdef __CLIENT
 LPCTSTR CMover::GetJobString() const {
 	if (m_nJob == -1) return _T("");
@@ -1867,11 +1827,7 @@ int CMover::GetMaxOriginHitPoint( BOOL bOriginal )
 	else
 	{
 		MoverProp *pMoverProp = GetProp();
-#ifdef __S1108_BACK_END_SYSTEM
 		return int( pMoverProp->dwAddHp * prj.m_fMonsterHitpointRate * pMoverProp->m_fHitPoint_Rate ); 
-#else // __S1108_BACK_END_SYSTEM
-		return pMoverProp->dwAddHp; 
-#endif // __S1108_BACK_END_SYSTEM
 	}
 
 	return 0;
@@ -2650,9 +2606,9 @@ namespace UI {
 		return Element{ .kind = SAI79::ePropType::NO_PROP, .abilityOption = 0 };
 	}
 
-	Element Element::Increase(const CItemElem & itemElem) {
+	Element Element::Increase(const CItemElem & itemElem, SAI79::ePropType target) {
 		return Element{
-			.kind = itemElem.m_bItemResist,
+			.kind = static_cast<BYTE>(target),
 			.abilityOption = itemElem.m_nResistAbilityOption + 1
 		};
 	}
@@ -2726,7 +2682,6 @@ namespace UI {
 	namespace PetVis {
 		void TransformToVisPet::operator()(CItemElem & itemElem) const {
 			itemElem.m_bTranformVisPet = TRUE;
-			itemElem.m_bCharged = TRUE;
 		}
 
 		// == Size
@@ -2889,9 +2844,7 @@ float CMover::GetItemDropRateFactor( CMover* pAttacker )
 	float fFactor	= 1.0F;
 #ifdef __WORLDSERVER
 	fFactor		*= prj.m_fItemDropRate;
-#ifdef __S1108_BACK_END_SYSTEM
 	fFactor		*= GetProp()->m_fItemDrop_Rate;
-#endif // __S1108_BACK_END_SYSTEM
 #ifdef __ITEMDROPRATE
 	fFactor		*= CEventGeneric::GetInstance()->GetItemDropRateFactor();
 #endif // __ITEMDROPRATE

@@ -1508,8 +1508,6 @@ HRESULT CNeuzApp::InitDeviceObjects()
 	g_Shadow.LoadElement( "Shadow.o3d" );
 
 	g_ParticleMng.InitDeviceObjects( m_pd3dDevice );
-	if( g_Option.m_nTextureQuality == 2 )		// 텍스쳐 퀄리티 낮음이면 파티클 실행안됨.
-		g_ParticleMng.m_bActive = FALSE;
 
 	m_TextureGauge[0].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauMagChargeBG.TGA" ), 0xffff00ff, TRUE );
 	m_TextureGauge[1].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauMagChargeHead.TGA" ), 0xffff00ff, TRUE );

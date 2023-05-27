@@ -150,7 +150,6 @@ public:
 class CTailEffectMng
 {
 	LPDIRECT3DDEVICE9 m_pd3dDevice;
-	int		m_nMaxType;
 	CTailEffect* m_TailEffects[ MAX_TAILEFFECT ];
 
 	void	Init( void );

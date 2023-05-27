@@ -536,7 +536,6 @@ CTailEffectMng::~CTailEffectMng()
 void CTailEffectMng::Init( void )
 {
 	m_bActive = TRUE;
-	m_nMaxType = 0;
 
 	for( int i = 0; i < MAX_TAILEFFECT; i ++ )
 	{
@@ -595,7 +594,6 @@ CTailEffect *CTailEffectMng::AddEffect( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR sz
 		m_TailEffects[ i ]->Create( nType, fFadeSpeed );		// 꼬리메모리 할당하고
 		m_TailEffects[ i ]->InitDeviceObjects( pd3dDevice, szFileName );	// 텍스쳐 읽고
 		m_TailEffects[ i ]->RestoreDeviceObjects( pd3dDevice );	// 버텍스 버퍼 할당하고.
-		m_nMaxType ++;
 		return m_TailEffects[ i ];
 	}
 	
@@ -612,7 +610,6 @@ int		CTailEffectMng::Delete( CTailEffect *pTail )
 		{
 			m_TailEffects[i]->Destroy();		// 메모리는 재할당하지 않고 초기화만 시킨다.
 			SAFE_DELETE( m_TailEffects[i] );
-			m_nMaxType --;
 			return 1;
 		}
 	}

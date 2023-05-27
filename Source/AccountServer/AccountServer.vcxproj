@@ -66,6 +66,8 @@
       <CompileAs>Default</CompileAs>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <BuildStlModules>false</BuildStlModules>
+      <EnableModules>false</EnableModules>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ws2_32.lib;winmm.lib;d3dx9.lib;odbc32.lib;odbccp32.lib;VERSION.LIB;%(AdditionalDependencies)</AdditionalDependencies>

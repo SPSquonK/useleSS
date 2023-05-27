@@ -98,16 +98,13 @@ LRESULT CALLBACK LowLevelKeyboardProc (INT nCode, WPARAM wParam, LPARAM lParam)
 
 void InitLanguageFromResource( HINSTANCE hInstance )
 {
-	char szLang[16], szSubLang[16];
+	char szLang[16], szSubLang[16], szCodePage[16];
 
 	LoadString(hInstance, IDS_LANG, szLang, 16);	
 	LoadString(hInstance, IDS_SUBLANG, szSubLang, 16);	
 	::SetLanguageInfo( atoi( szLang ), atoi( szSubLang ) );
-#ifdef __LANG_1013
-	char szCodePage[16]	= { 0,};
 	LoadString( hInstance, IDS_CODEPAGE, szCodePage, 16 );
 	g_codePage	= atoi( szCodePage );
-#endif	// __LANG_1013
 }
 
 void InitGlobalVars( HINSTANCE hInstance )

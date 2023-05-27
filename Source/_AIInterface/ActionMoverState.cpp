@@ -1004,7 +1004,7 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 							pParticles = g_ParticleMng.CreateParticle( nEffLevel, vPos, vVel, g_pPlayer->GetPos().y );
 					}
 					if( pParticles )
-						pParticles->m_bGravity = TRUE;
+						pParticles->m_bGravity = true;
 				}
 			}
 		#endif // CLIENT

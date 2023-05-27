@@ -78,8 +78,10 @@ void CDPCoreSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 		=	GetHandler( dw );
 	//	ASSERT( pfn );
 
-	if( pfn )
-		( this->*( pfn ) )( ar, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD) );
+	if (pfn) {
+		(this->*(pfn))(ar, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD));
+		if (ar.IsOverflow()) Error("Database-Core: Packet %08x overflowed", dw);
+	}
 }
 
 void CDPCoreSrvr::OnAddConnection( DPID dpid )
@@ -245,11 +247,8 @@ void CDPCoreSrvr::OnCastVote( CAr & ar, LPBYTE lpBuf, u_long uBufSize )
 }
 
 // 투표입력의 결과
-void CDPCoreSrvr::SendAddVoteResult( VOTE_INSERTED_INFO & info )
-{
-	BEFORESEND( ar, PACKETTYPE_DC_ADDVOTERESULT );
-	ar << info;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPCoreSrvr::SendAddVoteResult( const VOTE_INSERTED_INFO & info ) {
+	BroadcastPacket<PACKETTYPE_DC_ADDVOTERESULT, VOTE_INSERTED_INFO>(info);
 }
 
 
@@ -346,17 +345,11 @@ void CDPCoreSrvr::OnTag( CAr & ar, LPBYTE lpBuf, u_long uBufSize )
 }
 
 void CDPCoreSrvr::SendTagResult(u_long idFrom, bool cbResult) {
-	BEFORESEND(ar, PACKETTYPE_INSERTTAG_RESULT);
-	ar << idFrom;
-	ar << cbResult;
-	SEND(ar, this, DPID_ALLPLAYERS);
+	BroadcastPacket<PACKETTYPE_INSERTTAG_RESULT, u_long, bool>(idFrom, cbResult);
 }
 
-void CDPCoreSrvr::SendDelPlayer( u_long idPlayer, u_long idGuild )
-{
-	BEFORESEND( ar, PACKETTYPE_DEL_PLAYER );
-	ar << idPlayer << idGuild;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPCoreSrvr::SendDelPlayer(u_long idPlayer, u_long idGuild) {
+	BroadcastPacket<PACKETTYPE_DEL_PLAYER, u_long, u_long>(idPlayer, idGuild);
 }
 
 void CDPCoreSrvr::SendMemberTime( u_long idPlayer, LPCTSTR tGuildMember )
@@ -454,11 +447,8 @@ void CDPCoreSrvr::OnUpdateMessenger( CAr & ar, LPBYTE lpBuf, u_long uBufSize )
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPPut, 1, NULL, &pov->Overlapped );
 }
 
-void CDPCoreSrvr::SendRemovePlayerFriend( u_long uPlayerId, u_long uFriendId )
-{
-	BEFORESEND( ar, PACKETTYPE_REMOVEFRIEND );
-	ar << uPlayerId << uFriendId;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPCoreSrvr::SendRemovePlayerFriend(u_long uPlayerId, u_long uFriendId) {
+	BroadcastPacket<PACKETTYPE_REMOVEFRIEND, u_long, u_long>(uPlayerId, uFriendId);
 }
 
 #ifdef __AUTO_NOTICE

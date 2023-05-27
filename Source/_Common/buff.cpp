@@ -224,8 +224,10 @@ void IBuffItemBase::Release( CBuffMgr* pBuffMgr )
 	ItemProp* pProp	= GetProp();
 	if( pProp )
 	{
-		pBuffMgr->GetMover()->ResetDestParam( pProp->dwDestParam1, pProp->nAdjParamVal1, TRUE );
-		pBuffMgr->GetMover()->ResetDestParam( pProp->dwDestParam2, pProp->nAdjParamVal2, TRUE );
+		for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
+			pBuffMgr->GetMover()->ResetDestParam(pProp->dwDestParam[i], pProp->nAdjParamVal[i], TRUE);
+		}
+
 		if( strlen( pProp->szTextFileName ) > 0 && IK3_ANGEL_BUFF != pProp->dwItemKind3 
 			&& IK2_PAPERING != pProp->dwItemKind2
 			)
@@ -253,7 +255,6 @@ void IBuffItemBase::Release( CBuffMgr* pBuffMgr )
 			{
 				CItemElem itemElem;
 				itemElem.m_dwItemId = pItemProp->dwID;
-				itemElem.m_bCharged = pItemProp->bCharged;
 				itemElem.m_nItemNum = 1;
 				itemElem.SetSerialNumber();
 				if( pUser->CreateItem( &itemElem ) )
@@ -351,11 +352,10 @@ void CBuffItem::AddTotal( DWORD tmTotal )
 
 DWORD CBuffItem::GetDisguise()
 {
-	char szCommand[100]	= { 0,};
 	ItemProp* pProp	= GetProp();
 	if( pProp && pProp->dwItemKind3 == IK3_TEXT_DISGUISE )
 	{
-		char* ptr	= ::strstr( pProp->szTextFileName, "/dis" );
+		const char* ptr	= ::strstr( pProp->szTextFileName, "/dis" );
 		if( ptr )
 		{
 			int n	= atoi( ptr + 5 );	// "/dis "
@@ -671,9 +671,8 @@ BOOL CBuffMgr::Overwrite( IBuff* pBuff )
 	return FALSE;
 }
 
-BOOL CBuffMgr::HasBuff( WORD wType, WORD wId )
-{
-	return GetBuff( wType, wId ) != NULL;
+BOOL CBuffMgr::HasBuff( WORD wType, WORD wId ) const {
+	return m_mapBuffs.contains(MAKELONG(wId, wType)) ? TRUE : FALSE;
 }
 
 IBuff* CBuffMgr::GetBuff( WORD wType, WORD wId )

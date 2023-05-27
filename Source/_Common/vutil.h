@@ -35,22 +35,19 @@ int GetStrLen( const CHAR* pSrc );
 #define IMGBIT_24  2
 #define IMGBIT_32  3 
 
-struct IMAGE
-{
-	LPBYTE lpData;
-	SIZE   size;
-	int    nImgBit;
-	DWORD  dwSize;
-	DWORD	dwSizeBak;
-	IMAGE() 
-	{
-		dwSizeBak	= dwSize = 0;
-		lpData = NULL;
-	}
-	~IMAGE() 
-	{
-		if( lpData )
-			safe_delete_array( lpData );
+struct IMAGE final {
+	LPBYTE lpData = nullptr;
+	SIZE   size = CSize(0, 0);
+	int    nImgBit = IMGBIT_8;
+
+	IMAGE() = default;
+	IMAGE(const IMAGE &) = delete;
+	IMAGE & operator=(const IMAGE &) = delete;
+
+	~IMAGE() {
+		if (lpData) {
+			safe_delete_array(lpData);
+		}
 	}
 }; 
 

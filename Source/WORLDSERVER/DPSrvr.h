@@ -20,8 +20,9 @@ class CDPSrvrHandlers {
 public:
 	using GalaHandler = void (CDPSrvr:: *) (CAr &, DPID, DPID, LPBYTE, u_long);
 	using UserHandler = void (CDPSrvr:: *) (CAr &, CUser &);
+	using UserPtrHandler = void (CDPSrvr:: *) (CAr &, CUser *);
 
-	using HandlerStruct = std::variant<GalaHandler, UserHandler>;
+	using HandlerStruct = std::variant<GalaHandler, UserHandler, UserPtrHandler>;
 private:
 
 	std::map<DWORD, HandlerStruct> m_handlers;
@@ -238,11 +239,11 @@ private:
 	void	OnGCGetPenyaPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnGCTele( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnGCPlayerPoint( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	void	OnSummonFriend( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	void	OnSummonFriendConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
+	void	OnSummonFriend( CAr & ar, CUser * pUser );
+	void	OnSummonFriendConfirm( CAr & ar, CUser * pUser );
 	void	OnSummonFriendCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	void	OnSummonParty( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	void	OnSummonPartyConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
+	void	OnSummonParty( CAr & ar, CUser * pUser );
+	void	OnSummonPartyConfirm( CAr & ar, CUser * pUser );
 
 	void	OnRemoveInvenItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnRandomScroll( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );

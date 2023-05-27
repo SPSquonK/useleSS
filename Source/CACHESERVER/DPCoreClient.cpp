@@ -63,10 +63,10 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 
 	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
 	
-	if( pfn )
-		( this->*( pfn ) )( ar, dpidUser );
-	else
-	{
+	if (pfn) {
+		(this->*(pfn))(ar, dpidUser);
+		if (ar.IsOverflow()) Error("Cache-Core: Packet %08x overflowed", dw);
+	} else {
 		g_DPCacheSrvr.Send( lpBuf, uBufSize, dpidUser );
 	}
 #ifdef __CRASH_0404

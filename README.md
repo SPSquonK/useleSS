@@ -10,6 +10,7 @@ Some v22 resource compatiblity have been added. See [Documentation/v15plus.md](D
 This source is developped on Visual Studio 2022 with the C++lastest option.
 
 - This repository **does not** provide a production ready of the source code. Many exploits are not (yet) fixed.
+- **/!\ Server developer /!\: Read the How to use section of this document**
 - If you encounter a bug, please use the Github issue system, or in the worst case send a mail.
 
 
@@ -54,3 +55,32 @@ should keep their comments.
 
 
 The [Source/Libraries/boost/pfr/detail/core17_generated.hpp file](Source/Libraries/boost/pfr/detail/core17_generated.hpp) is licensied under the Boost License by its author. It is included in the project to break through the 100 limit.
+
+## How to use this repository as a server developer?
+
+As this repository does not fix bugs/exploits, change some parts of the architecture and does not implement new major features, using it as the start point of your project is probably counter productive.
+
+The best way to use this repository is probably to clone two versions of it, `git checkout original-code` on one code, and use diff between the current HEAD and the initial commit (for example with a tool like WinMerge) to check for all the modifications. Then, integrate the modifications that you find usefull in your own code.
+
+Do not forget to put a message like `// Original code: SquonK, https://github.com/SPSquonK/useless` if you copy several lines of code.
+
+Examples of code that you might find usefull include:
+- `SendPacket` / `BroadcastPacket` API
+- WorldServer's OnSnapshot error handling
+- The `CWndTListBox` class
+
+Very common ideas in this repository include:
+- Simplification of `CWndBase` derived classes
+- STL-ization of many classes (`CFixedArray`, … are considered obsolete)
+
+Note that some changes are very opiniated, for example:
+- `UIVariant` API (The design choices behind these changes in french: https://www.sà.fr/2022/06/04/uivariant/)
+
+## Contributing
+
+Any contribution of any kind is welcomed. This includes some casual messages like "hey, check out this thing. They changed it in V21 / this private server source code release and it is probably better than the V15 / what you've done here.", bug report, pull requests, ...
+
+
+
+
+

@@ -348,7 +348,6 @@ void CWndCredit::OnInitialUpdate()
 	//LoadScreenShot();
 
 	//m_pFont->RestoreDeviceObjects();//>InvalidateDeviceObjects();
-	//m_mapFont.SetAt( _T( "Arial Black9"), pFont );
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 

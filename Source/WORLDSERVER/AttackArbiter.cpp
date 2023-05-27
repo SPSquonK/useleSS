@@ -235,10 +235,13 @@ BOOL CAttackArbiter::CheckValidDamageMsg()
 	// 이벤트 몬스터이고 레벨이 15넘게 차이나면 MISS
 	if( m_pAttacker->IsPlayer() && !m_pDefender->IsPlayer() )
 	{
-		MoverProp* lpMoverProp = m_pDefender->GetProp();
-		if( lpMoverProp && CEventMonster::GetInstance()->SetEventMonster( lpMoverProp->dwID ) )
-			if( m_pAttacker->GetLevel() - m_pDefender->GetLevel() >= CEventMonster::GetInstance()->GetLevelGap() )
+		const MoverProp * lpMoverProp = m_pDefender->GetProp();
+		if (lpMoverProp) {
+			const CEventMonster::Prop * eventProp = CEventMonster::GetEventMonster(lpMoverProp->dwID);
+			if (eventProp && m_pAttacker->GetLevel() - m_pDefender->GetLevel() >= eventProp->nLevel) {
 				m_dwAtkFlags = AF_MISS;
+			}
+		}
 	}
 #endif // __EVENT_MONSTER
 
@@ -791,6 +794,11 @@ void CAttackArbiter::OnDiedSchoolEvent()
 			m_pDefender->SetMode( OBSERVE_MODE );
 			g_UserMng.AddModifyMode( (CUser*)m_pDefender );
 		}
+
+		struct EVENTITEM {
+			DWORD	dwIndex;
+			DWORD	dwPrabability;
+		};
 
 		static EVENTITEM eventitem[3] =
 		{

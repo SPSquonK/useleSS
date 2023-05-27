@@ -54,12 +54,12 @@ void CCachePlayerMng::DestroyPlayer(const CDPClient * const pClient) {
 
 	if (pClient) {
 		// ~ Destroy players on WorldServer pClient
-		for (const auto & pPlayer : m_mapPlayers
-			| std::views::values
-			| std::views::filter([pClient](const auto & player) { return player->GetClient() == pClient; })
+		for (const auto & pPlayer : m_mapPlayers | std::views::values
 			) {
-			g_DPCoreClient.SendDestroyPlayer(*pPlayer);
-			g_DPCacheSrvr.DestroyPlayer(pPlayer->GetNetworkId());
+			if (pPlayer->GetClient() == pClient) {
+				g_DPCoreClient.SendDestroyPlayer(*pPlayer);
+				g_DPCacheSrvr.DestroyPlayer(pPlayer->GetNetworkId());
+			}
 		}
 	} else {
 		// ~ DestroyAllPlayers (= Core is dead)

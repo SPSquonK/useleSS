@@ -242,6 +242,15 @@ public:
 	void OnAfterUseItem(const ItemProp * pItemProp);
 #pragma endregion
 
+	enum class SummonState {
+		Ok_0, Trade_1, Die_2, Vendor_3, Attack_4,
+		Fly_5, Duel_6
+	};
+	[[nodiscard]] SummonState GetSummonState();
+	[[nodiscard]] static DWORD GetSummonStateTIdForMyself(SummonState state);
+	[[nodiscard]] static DWORD GetSummonStateTIdForOther(SummonState state);
+
+
 public:
 	enum class PVPInspection { Solo, Party };
 	bool IsPVPInspection(CMover * pMover, PVPInspection nFlag);
@@ -327,9 +336,6 @@ public:
 	void			AddMoveBankItem( BYTE nSrcIndex, BYTE nDestIndex );
 	void			AddBankIsFull();
 	void			AddRemoveGuildBankItem( u_long idGuild, DWORD dwId, DWORD dwItemNum );
-	void			AddChangeBankPass( int nMode, DWORD dwId, DWORD dwItemId );
-	void			AddBankWindow( int nMode, DWORD dwId, DWORD dwItemId );
-	void			AddconfirmBankPass( int nMode, DWORD dwId, DWORD dwItemId );
 	void			AddTaskBar();
 	void			AddSendErrorParty( DWORD dw, DWORD dwSkill = 0 );
 	void			AddPartyMember( CParty *pParty, u_long idPlayer, const char* pszLeader, const char* pszMember );
@@ -467,9 +473,7 @@ public:
 	void			AddAllAction( BOOL bCharacter );
 #endif // __S_SERVER_UNIFY
 
-#ifdef __S1108_BACK_END_SYSTEM
 	void			AddMonsterProp();
-#endif // __S1108_BACK_END_SYSTEM
 //	void			AddCreateAngel(BOOL isSuccess, char* createAngel);
 	void			AddAngelInfo( BOOL bComplete = FALSE );
 	
@@ -855,10 +859,8 @@ public:
 	void			AddGuildMsg( u_long idGuild, LPCSTR lpsz );
 	void			AddGuildMsg( CGuild* pGuild, LPCSTR lpsz );
 
-#ifdef __S1108_BACK_END_SYSTEM
 	void			AddMonsterProp( );
 	void			AddGMChat( int nSize );
-#endif // __S1108_BACK_END_SYSTEM
 
 	void			AddMotionArrive( CMover* pMover, OBJMSG objmsg );
 
@@ -907,6 +909,13 @@ public:
 	void	AddChangeMoverSfxId( CMover* pMover );
 	BOOL	HasUserSameWorldnLayer( CUser* pUserSrc );
 
+
+public:
+	template<WORD SnapshotId, typename... Ts>
+	void BroadcastAround(CCtrl * pCenter, const Ts ... ts);
+
+	template<WORD SnapshotId, typename... Ts>
+	void BroadcastAroundExcluding(CCtrl * pCenter, const Ts ... ts);
 };
 
 extern CUserMng g_UserMng;
@@ -939,6 +948,40 @@ void CUser::SendSnapshotWithTarget(DWORD targetId, const Ts & ... ts) {
 	m_Snapshot.ar << SnapshotId;
 	m_Snapshot.ar.Accumulate<Ts...>(ts...);
 }
+
+
+#pragma warning( push )
+#pragma warning( disable : 6262 )
+
+template<WORD SnapshotId, typename... Ts>
+void CUserMng::BroadcastAround(CCtrl * pCenter, const Ts ... ts) {
+	CAr ar;
+	ar << pCenter->GetId() << SnapshotId;
+	ar.Accumulate<Ts...>(ts ...);
+
+	const std::span<BYTE> buffer = ar.GetBuffer();
+
+	for (const auto & pair : pCenter->m_2pc) {
+		pair.second->AddBlock(buffer.data(), buffer.size());
+	}
+}
+
+template<WORD SnapshotId, typename... Ts>
+void CUserMng::BroadcastAroundExcluding(CCtrl * pCenter, const Ts ... ts) {
+	CAr ar;
+	ar << pCenter->GetId() << SnapshotId;
+	ar.Accumulate<Ts...>(ts ...);
+
+	const std::span<BYTE> buffer = ar.GetBuffer();
+
+	for (const auto & pair : pCenter->m_2pc) {
+		CUser * pUser = pair.second;
+		if (pUser != pCenter) {
+			pUser->AddBlock(buffer.data(), buffer.size());
+		}
+	}
+}
+#pragma warning( pop )
 
 #pragma endregion
 

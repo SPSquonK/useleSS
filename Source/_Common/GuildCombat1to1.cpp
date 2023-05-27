@@ -265,7 +265,6 @@ void	CGuildCombat1to1::SetWinChip( CUser* pUserWin, CUser* pUserLost, BOOL bDraw
 		itemElem.m_nItemNum = GetChipNum();
 		if( itemElem.m_nItemNum < 1 )
 			itemElem.m_nItemNum = 1;
-		itemElem.m_bCharged = itemElem.GetProp()->bCharged;
 		itemElem.SetSerialNumber();
 
 		LogItemInfo aLogItem;

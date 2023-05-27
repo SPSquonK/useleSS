@@ -111,7 +111,6 @@ void CDbManager::LogItem(CQuery *qry, CAr & arRead)
 				aLogItem.Gold_1 = iReMainder2;
 				aLogItem.Action = chAction;
 
-				arRead >> aLogItem.m_bCharged;
 				arRead >> aLogItem.m_dwKeepTime;
 				arRead >> aLogItem.nPiercedSize;
 				
@@ -189,7 +188,6 @@ void CDbManager::LogItem(CQuery *qry, CAr & arRead)
 				aLogItem.Gold_1 = iReMainder1;
 				aLogItem.Action = chAction;
 				
-				arRead >> aLogItem.m_bCharged;
 				arRead >> aLogItem.m_dwKeepTime;
 				arRead >> aLogItem.nPiercedSize;
 				for( int i=0; i<aLogItem.nPiercedSize; i++ )
@@ -318,7 +316,6 @@ void CDbManager::LogItem(CQuery *qry, CAr & arRead)
 			aLogItem.nSlot1 = nSlot1;
 			aLogItem.Action = chAction;
 
-			arRead >> aLogItem.m_bCharged;
 			arRead >> aLogItem.m_dwKeepTime;
 			arRead >> aLogItem.nPiercedSize;
 			for( int i=0; i<aLogItem.nPiercedSize; i++ )
@@ -832,7 +829,7 @@ void CDbManager::DBQryNewItemLog( char* qryLog, const LogItemInfo& info )
 		info.SendName, g_appInfo.dwSys, info.RecvName, info.WorldId, info.Gold, info.Gold2, 
 		info.ItemNo, info.szItemName, info.Negudo, info.nAbilityOption, info.Gold_1,
 		info.itemNumber, info.Action, info.nSlot, info.nSlot1, info.nItemResist, info.nResistAbilityOption
-		, info.m_bCharged, info.m_dwKeepTime,
+		, 0, info.m_dwKeepTime,
 		info.m_iRandomOptItemId
 		, info.nPiercedSize, info.adwItemId[0], info.adwItemId[1], info.adwItemId[2], info.adwItemId[3]
 		, info.adwItemId[4]

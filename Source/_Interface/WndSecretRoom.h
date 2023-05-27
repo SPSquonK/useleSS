@@ -287,12 +287,10 @@ public:
 	CWndSecretRoomInfoMsgBox();
 
 	virtual ~CWndSecretRoomInfoMsgBox();
-	void	SetString( CHAR* szChar );
+	void	SetString( const CHAR* szChar );
 	virtual	void OnInitialUpdate();
 	virtual	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-
-	void	SetString( CString strMsg );
 };
 
 class CWndSecretRoomChangeTaxRateMsgBox : public CWndMessageBox

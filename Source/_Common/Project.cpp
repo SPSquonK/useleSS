@@ -48,9 +48,7 @@
 
 #include "CreateMonster.h"
 
-#ifdef __LANG_1013
 #include "langman.h"
-#endif	// __LANG_1013
 
 
 #ifdef __WORLDSERVER
@@ -115,75 +113,20 @@ void CHARACTER::Clear()
 ////////////////////////////////////////////////////////////////////////////////////
 // CDropItemGenerator
 ////////////////////////////////////////////////////////////////////////////////////
-DROPITEM* CDropItemGenerator::GetAt( int nIndex, BOOL bUniqueMode, float fProbability )
+bool CDropItemGenerator::Item::IsDropped(BOOL bUniqueMode, float fProbability) const
 {
-	//ASSERT( nIndex < m_dwSize );
-	ASSERT( nIndex < (int)GetSize() );
-
-	if( fProbability > 0.0f ) 
-	{
-		DROPITEM* lpDropItem	= &m_dropItems[ nIndex ];
-		DWORD dwProbability		= lpDropItem->dwProbability;
-		DWORD dwRand = xRandom( 3000000000 );
+	DWORD dwRand = xRandom(3000000000);
 #if defined(__WORLDSERVER) // __EVENTLUA, __WORLDSERVER
-		dwRand = static_cast<DWORD>(dwRand / fProbability );
+	dwRand = static_cast<DWORD>(dwRand / fProbability);
 #endif // __EVENTLUA && __WORLDSERVER
-		/*
-		if( lpDropItem->dwLevel && bUniqueMode && lpDropItem->dwProbability <= 10000000 )
-		{
-			dwRand /= 2;
-		}
-		// ����(����ũ)�� �ֳ� �˻�
-		if( lpDropItem->dwLevel != 0 )
-		{
-			ItemProp* pItemProp	= prj.GetItemProp( lpDropItem->dwIndex );
-			if( pItemProp && (int)pItemProp->dwItemLV > 0 )
-			{
-				int nValue	= dwProbability / pItemProp->dwItemLV;
-				if( nValue < 21 )	nValue	= 21;
-				dwProbability	= nValue - 20;
-			}
-		}
-		*/
-		return( dwRand < dwProbability? lpDropItem: NULL );
-	}
-	else 
+	/*
+	if( lpDropItem->dwLevel && bUniqueMode && lpDropItem->dwProbability <= 10000000 )
 	{
-		return &m_dropItems[ nIndex ];
+		dwRand /= 2;
 	}
+	*/
+	return dwRand < dwProbability;
 }
-
-void CDropItemGenerator::AddTail( CONST DROPITEM & rDropItem, const char* s )
-{
-	m_dropItems.push_back( rDropItem );
-}
-
-// CQuestItemGenerator
-QUESTITEM* CQuestItemGenerator::GetAt( int nIndex )
-{
-	ASSERT( nIndex < (int)(m_pQuestItem.size()));
-	return &m_pQuestItem[nIndex];
-}
-
-void CQuestItemGenerator::AddTail(const QUESTITEM & rQuestItem) {
-	m_pQuestItem.emplace_back(rQuestItem);
-}
-
-void CDropKindGenerator::AddTail( const DROPKIND & rDropKind )
-{
-	ASSERT( m_nSize < MAX_DROPKIND );
-	memcpy( &m_aDropKind[m_nSize++], &rDropKind, sizeof(DROPKIND) );
-}
-
-LPDROPKIND CDropKindGenerator::GetAt( int nIndex )
-{
-	ASSERT( nIndex >= 0 );
-	ASSERT( nIndex < m_nSize );
-	if( nIndex < 0 || nIndex >= m_nSize )
-		return NULL;
-	return &m_aDropKind[nIndex];
-}
-
 
 CProject::CProject()
 #ifdef __WORLDSERVER
@@ -196,7 +139,6 @@ m_nMaxSequence( 0 )
 	memset( m_aGuildAppell, 0, sizeof(m_aGuildAppell) );
 
 
-#ifdef __S1108_BACK_END_SYSTEM
 	m_fMonsterRebirthRate = 1.0f;	
 	m_fMonsterHitpointRate = 1.0f;	
 	m_fMonsterAggressiveRate = 0.2f;
@@ -204,7 +146,6 @@ m_nMaxSequence( 0 )
 	m_nAddMonsterPropSize = 0;
 	m_nRemoveMonsterPropSize = 0;
 	m_nMonsterPropSize = 0;
-#endif // __S1108_BACK_END_SYSTEM
 
 	memset( m_aSetItemAvail, 0, sizeof(m_aSetItemAvail) );
 
@@ -513,7 +454,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 #endif	// __WORLDSERVER
 
 #ifdef __EVENT_MONSTER
-	CEventMonster::GetInstance()->LoadScript();
+	CEventMonster::LoadScript();
 #endif // __EVENT_MONSTER
 
 #ifdef __WORLDSERVER
@@ -1997,7 +1938,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				qi.dwNumber	= script.GetNumber();	//
 				script.GetToken();	// )
 				MoverProp* pMoverProp = GetMoverProp( dwMoverIdx );
-				pMoverProp->m_QuestItemGenerator.AddTail( qi );	// copy
+				pMoverProp->m_QuestItemGenerator.emplace_back( qi );	// copy
 			}
 			else
 			if( script.Token == "SetEndRewardTSP" )
@@ -2112,7 +2053,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 						qi.dwNumber	= script.GetNumber();	//
 						script.GetToken();	// )
 						MoverProp* pMoverProp = GetMoverProp( dwMoverIdx );
-						pMoverProp->m_QuestItemGenerator.AddTail( qi );	// copy
+						pMoverProp->m_QuestItemGenerator.emplace_back( qi );	// copy
 					}
 					else
 					if( script.Token == "SetDesc" )
@@ -2489,7 +2430,7 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 			}
 			else
 			if(script.Token == "randomItem")
-				InterpretRandomItem( &pProp->m_randomItem, script );
+				InterpretRandomItem( script );
 			else 
 			if( script.Token == "Maxitem" )
 			{
@@ -2499,9 +2440,7 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 			else 
 			if( script.Token == "DropItem" )
 			{
-				DROPITEM di;
-				memset( &di, 0, sizeof(DROPITEM) );
-				di.dtType = DROPTYPE_NORMAL;
+				CDropItemGenerator::Item di{};
 				script.GetToken();	// (
 				di.dwIndex	= script.GetNumber();	// specific item index
 				if( di.dwIndex == 0 )
@@ -2515,9 +2454,8 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 				di.dwNumber	= script.GetNumber();	// number
 				script.GetToken();	// )
 			#ifdef __WORLDSERVER
-				pProp->m_DropItemGenerator.AddTail( di, pProp->szName );	// copy
+				pProp->m_DropItemGenerator.Add( di );
 			#endif
-				di.dwNumber2 = 0;
 			}
 			else 
 			if( script.Token == "DropKind" )
@@ -2537,23 +2475,20 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 					dropKind.nMaxUniq = 1;
 				script.GetToken();	// )
 			#ifdef __WORLDSERVER
-				pProp->m_DropKindGenerator.AddTail( dropKind );	// copy
+				pProp->m_DropKindGenerator.emplace_back( dropKind );
 			#endif
 			}
 			else
 			if( script.Token == "DropGold" )
 			{
-				DROPITEM di;
-				memset( &di, 0, sizeof(DROPITEM) );	// clear
-				di.dtType = DROPTYPE_SEED;
-				di.dwProbability = 0xFFFFFFFF;	// ������ ������.
+				CDropItemGenerator::Money di{};
 				script.GetToken();	// (
 				di.dwNumber = script.GetNumber();	// gold min
 				script.GetToken();	// ,
 				di.dwNumber2 = script.GetNumber();	// gold max
 				script.GetToken();	// )
 			#ifdef __WORLDSERVER
-				pProp->m_DropItemGenerator.AddTail( di, pProp->szName );	// copy
+				pProp->m_DropItemGenerator.Add( di );
 			#endif
 			}
 			else if( script.Token == "Transform" )
@@ -2621,7 +2556,7 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 			else
 			if(script.Token == "randomItem")
 			{
-				InterpretRandomItem(&lpCharacter->m_randomItem,script);
+				InterpretRandomItem(script);
 			}
 			else
 			if(script.Token == "SetEquip")
@@ -2769,15 +2704,15 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 				int nSubLang	= script.GetNumber();
 				script.GetToken();	//,
 				int nSlot	= script.GetNumber(); script.GetToken(); // 
-				int nItemKind3	= script.GetNumber(); script.GetToken(); // 
+				DWORD nItemKind3	= script.GetNumber(); script.GetToken(); // 
 				int	nItemJob	= script.GetNumber(); script.GetToken();	//
-				int nUniqueMin	= script.GetNumber(); script.GetToken(); // 
-				int nUniqueMax	= script.GetNumber(); script.GetToken(); // 
-				int nTotalNum	= script.GetNumber(); script.GetToken(); // 
+				short nUniqueMin	= static_cast<short>(script.GetNumber()); script.GetToken(); // 
+				short nUniqueMax	= static_cast<short>(script.GetNumber()); script.GetToken(); // 
+				script.GetNumber(); script.GetToken(); // 
 				if( nLang == ::GetLanguage() && nSubLang == ::GetSubLanguage() )
 				{
 					lpCharacter->m_vendor.m_venderItemAry[ nSlot ].emplace_back(
-						nItemKind3, nItemJob, nUniqueMin, nUniqueMax, nTotalNum
+						nItemKind3, nItemJob, nUniqueMin, nUniqueMax
 					);
 				}
 			}
@@ -2787,14 +2722,14 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 			{
 				script.GetToken(); // (
 				int nSlot      = script.GetNumber(); script.GetToken(); // 
-				int nItemKind3  = script.GetNumber(); script.GetToken(); // 
+				DWORD nItemKind3  = script.GetNumber(); script.GetToken(); // 
 				int	nItemJob	= script.GetNumber(); script.GetToken();	//
-				int nUniqueMin = script.GetNumber(); script.GetToken(); // 
-				int nUniqueMax = script.GetNumber(); script.GetToken(); // 
-				int nTotalNum  = script.GetNumber(); script.GetToken(); // 
+				short nUniqueMin = static_cast<short>(script.GetNumber()); script.GetToken(); // 
+				short nUniqueMax = static_cast<short>(script.GetNumber()); script.GetToken(); // 
+				script.GetNumber(); script.GetToken(); // 
 
 				lpCharacter->m_vendor.m_venderItemAry[ nSlot ].emplace_back(
-					nItemKind3, nItemJob, nUniqueMin, nUniqueMax, nTotalNum
+					nItemKind3, nItemJob, nUniqueMin, nUniqueMax
 				);
 			}
 			else if( script.Token == "AddVenderItem2" || script.Token == "AddVendorItem2")
@@ -2875,7 +2810,7 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 	return TRUE;
 }	
 
-void CProject::InterpretRandomItem(LPRANDOM_ITEM pRandomItem,CScript& script)
+void CProject::InterpretRandomItem(CScript& script)
 {
 	script.GetToken(); // {
 	script.GetToken(); 
@@ -2913,7 +2848,7 @@ BOOL CProject::LoadExpTable( LPCTSTR lpszFileName )
 			while( *script.token != '}' )
 			{
 				m_aExpCharacter[i].nExp1	= nVal;
-				m_aExpCharacter[i].nExp2	= script.GetExpInteger();
+				script.GetExpInteger(); // Exp2, unused
 				m_aExpCharacter[i].dwLPPoint	= script.GetNumber();
 				m_aExpCharacter[i++].nLimitExp		= script.GetExpInteger();
 				nVal	= script.GetExpInteger();
@@ -3140,7 +3075,6 @@ void CProject::ProtectPropMover()
 //	::VirtualProtect( m_pPropMover, sizeof(MoverProp) * MAX_PROPMOVER, PAGE_READONLY, &dwOld );
 }
 
-#ifdef __S1108_BACK_END_SYSTEM
 void CProject::AddMonsterProp( MONSTER_PROP MonsterProp )
 {
 	strcpy( m_aMonsterProp[ m_nMonsterPropSize ].szMonsterName, MonsterProp.szMonsterName );
@@ -3180,7 +3114,6 @@ void CProject::RemoveMonsterProp( char* lpszMonsterName )
 		--m_nMonsterPropSize;
 	}			
 }
-#endif // __S1108_BACK_END_SYSTEM
 
 #ifdef __WORLDSERVER
 BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
@@ -3193,10 +3126,7 @@ BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
 		s.GetToken();
 		if( s.Token == "DropItem" )
 		{
-			DROPITEM di;
-			DWORD dwMinLevel, dwMaxLevel;
-			memset( &di, 0, sizeof(DROPITEM) );
-			di.dtType = DROPTYPE_NORMAL;
+			CDropItemGenerator::Item di{};
 			s.GetToken();	// (
 			di.dwIndex	= s.GetNumber();	// specific item index
 			s.GetToken();	// ,
@@ -3206,14 +3136,13 @@ BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
 			s.GetToken();	// ,
 			di.dwNumber	= s.GetNumber();	// number
 			s.GetToken();	// ,
-			dwMinLevel	= s.GetNumber();	// min
+			const DWORD dwMinLevel	= s.GetNumber();	// min
 			s.GetToken();	// ,
-			dwMaxLevel	= s.GetNumber();	// max
+			const DWORD dwMaxLevel	= s.GetNumber();	// max
 			s.GetToken();	// )
 
-			const auto i2	= m_setExcept.find( di.dwIndex );
-			if( i2 != m_setExcept.end() )
-				continue;
+			if(m_setExcept.contains(di.dwIndex)) continue;
+
 			if( GetLanguage() != LANG_KOR )
 			{
 				if( di.dwIndex == II_GEN_SKILL_BUFFBREAKER )
@@ -3224,7 +3153,7 @@ BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
 			{
 				MoverProp* pProp	= m_pPropMover + i;
 				if( pProp->dwID && pProp->dwLevel >= dwMinLevel && pProp->dwLevel <= dwMaxLevel	)
-					pProp->m_DropItemGenerator.AddTail( di, pProp->szName );	// copy
+					pProp->m_DropItemGenerator.Add( di );
 			}
 		}
 	} while( s.tok != FINISHED );
@@ -3232,32 +3161,6 @@ BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
 	return TRUE;
 }
 
-BOOL CProject::SortDropItem( void )
-{
-	// DROPITEM�� dwProbability ������������ Sortting 
-	for( int i = 0; i < m_nMoverPropSize; i++ )
-	{
-		MoverProp* pProp	= m_pPropMover + i;
-		int nDropItemCount = pProp->m_DropItemGenerator.GetSize();
-
-		DROPITEM *pDropItem0, *pDropItem1, *pDropItemTemp;		
-		for( int i = 0 ; i < nDropItemCount - 1 ; ++i )
-		{
-			pDropItem0 = pProp->m_DropItemGenerator.GetAt( i, FALSE, 0.0f );
-			for( int j = i + 1 ; j < nDropItemCount ; ++j )
-			{
-				pDropItem1 = pProp->m_DropItemGenerator.GetAt( j, FALSE, 0.0f );
-				if( pDropItem0->dwProbability > pDropItem1->dwProbability )
-				{
-					pDropItemTemp = pDropItem0;
-					pDropItem0 = pDropItem1;
-					pDropItem1 = pDropItemTemp;
-				}
-			}
-		}
-	}
-	return TRUE;
-}
 #endif	// __WORLDSERVER
 
 
@@ -3757,7 +3660,7 @@ void CRandomOptItemGen::Arrange() {
 	}
 }
 
-int CRandomOptItemGen::GenRandomOptItem(int nLevel, FLOAT fPenalty, ItemProp * pItemProp, DWORD dwClass) const {
+int CRandomOptItemGen::GenRandomOptItem(int nLevel, FLOAT fPenalty, const ItemProp * pItemProp, DWORD dwClass) const {
 	if (!pItemProp) return 0;
 	
 	if (pItemProp->dwItemKind1 != IK1_WEAPON && pItemProp->dwItemKind1 != IK1_ARMOR) return 0;
@@ -3819,7 +3722,9 @@ void CProject::OnAfterLoadPropItem()
 
 		if( pItemProp.dwItemKind3 != NULL_ID )
 		{
-			m_itemKindAry[ pItemProp.dwItemKind3 ].Add( &pItemProp );
+			if (pItemProp.dwItemRare != NULL_ID && pItemProp.dwItemRare < MAX_UNIQUE_SIZE) {
+				m_itemKindAry[pItemProp.dwItemKind3].emplace_back(&pItemProp);
+			}
 
 			switch( pItemProp.dwItemKind3 )
 			{
@@ -3831,41 +3736,29 @@ void CProject::OnAfterLoadPropItem()
 		}
 	}
 
+	for (int i = 0; i != MAX_ITEM_KIND3; ++i) {
+		auto & itemKindAry = m_itemKindAry[i];
+		auto & minMaxIdxAry = m_minMaxIdxAry[i];
 
-	ItemProp* ptmp;
-	for( int i = 0; i < MAX_ITEM_KIND3; i++ )
-	{
 		// sort
-		for( int j = 0; j < m_itemKindAry[i].GetSize() - 1; j++ )
-		{
-			for( int k = j + 1; k < m_itemKindAry[i].GetSize(); k++ )
-			{
-				if( ( (ItemProp*)m_itemKindAry[i].GetAt( k ) )->dwItemRare < ( (ItemProp*)m_itemKindAry[i].GetAt( j ) )->dwItemRare )
-				{
-					ptmp	= (ItemProp*)m_itemKindAry[i].GetAt( j );
-					m_itemKindAry[i].SetAt( j, (void*)m_itemKindAry[i].GetAt( k ) );
-					m_itemKindAry[i].SetAt( k, (void*)ptmp );
-				}
+		std::sort(
+			itemKindAry.begin(), itemKindAry.end(),
+			[](ItemProp * lhs, ItemProp * rhs) {
+				return lhs->dwItemRare < rhs->dwItemRare;
 			}
-		}
+		);
+
 		//
-		DWORD dwItemRare	= (DWORD)-1;
-		for( int j = 0; j < m_itemKindAry[i].GetSize(); j++ )
-		{
-			if( dwItemRare != ( (ItemProp*)m_itemKindAry[i].GetAt( j ) )->dwItemRare )
-			{
-				dwItemRare	= ( (ItemProp*)m_itemKindAry[i].GetAt( j ) )->dwItemRare;
-				if( dwItemRare != (DWORD)-1 )
-				{
-					m_minMaxIdxAry[i][dwItemRare].cx	= j;
-					m_minMaxIdxAry[i][dwItemRare].cy	= j;
-				}
+		DWORD lastSeen = NULL_ID;
+		for (size_t j = 0; j < itemKindAry.size(); j++) {
+			const ItemProp * itemProp = itemKindAry[j];
+
+			if (lastSeen != itemProp->dwItemRare) {
+				minMaxIdxAry[itemProp->dwItemRare].cx = j;
 			}
-			else
-			{
-				if( dwItemRare != (DWORD)-1 )
-					m_minMaxIdxAry[i][dwItemRare].cy	= j;
-			}
+
+			lastSeen = itemProp->dwItemRare;
+			minMaxIdxAry[itemProp->dwItemRare].cy = j;
 		}
 	}
 
@@ -4232,19 +4125,33 @@ BOOL CProject::LoadScriptPK( LPCTSTR lpszFileName )
 	return TRUE;
 }
 
+std::span<const ItemProp * const> CProject::GetItemKind3WithRarity(DROPKIND dropKind) const {
+	
+	dropKind.nMinUniq = std::min<short>(dropKind.nMinUniq, MAX_UNIQUE_SIZE);
+	dropKind.nMaxUniq = std::min<short>(dropKind.nMaxUniq, MAX_UNIQUE_SIZE);
 
-int	CProject::GetMinIdx( int nItemKind3, DWORD dwItemRare )
-{
-	if( dwItemRare >= MAX_UNIQUE_SIZE )
-		return -1;
-	return m_minMaxIdxAry[nItemKind3][dwItemRare].cx;
-}
+	int nMinIdx = -1;
+	int nMaxIdx = -1;
 
-int CProject::GetMaxIdx( int nItemKind3, DWORD dwItemRare )
-{
-	if( dwItemRare >= MAX_UNIQUE_SIZE )
-		return -1;
-	return m_minMaxIdxAry[nItemKind3][dwItemRare].cy;
+	for (int j = dropKind.nMinUniq; j <= dropKind.nMaxUniq; j++) {
+		nMinIdx = m_minMaxIdxAry[dropKind.dwIK3][j].cx;
+
+		if (nMinIdx != -1)
+			break;
+	}
+
+	for (int j = dropKind.nMaxUniq; j >= dropKind.nMinUniq; j--) {
+		nMaxIdx = m_minMaxIdxAry[dropKind.dwIK3][j].cy;
+		if (nMaxIdx != -1)
+			break;
+	}
+
+	if (nMinIdx < 0) return {};
+
+	return std::span<const ItemProp * const>(
+		m_itemKindAry[dropKind.dwIK3].begin() + nMinIdx,
+		m_itemKindAry[dropKind.dwIK3].begin() + nMaxIdx + 1
+	);
 }
 
 GUILDQUESTPROP*	CProject::GetGuildQuestProp( int nQuestId )
@@ -4426,75 +4333,43 @@ void CProject::OutputDropItem( void )
 			TRACE( "%d\n", i );
 			s.Format( "\n%s\t%d", pMoverProp->szName, pMoverProp->m_DropItemGenerator.m_dwMax );
 			// dropitem
-			{
-				int cbDropItem	= pMoverProp->m_DropItemGenerator.GetSize();
-				int nNumber	= 0;
-				DROPITEM* lpDropItem;
-				for( int i = 0; i < cbDropItem; i++ )
+
+
+			for (const auto & rDropItem : pMoverProp->m_DropItemGenerator.GetItems()) {
+				const CDropItemGenerator::Item * lpDropItem = &rDropItem;
+
+				DWORD dwProbability = lpDropItem->dwProbability;
+				const ItemProp * pItemProp = prj.GetItemProp(lpDropItem->dwIndex);
+				if (lpDropItem->dwLevel != 0)
 				{
-					if( lpDropItem = pMoverProp->m_DropItemGenerator.GetAt( i, FALSE, 0.0f ) )
+					if (pItemProp && (int)pItemProp->dwItemLV > 0)
 					{
-						if( lpDropItem->dtType == DROPTYPE_NORMAL )
-						{
-							DWORD dwProbability		= lpDropItem->dwProbability;
-							ItemProp* pItemProp	= prj.GetItemProp( lpDropItem->dwIndex );
-							if( lpDropItem->dwLevel != 0 )
-							{
-								if( pItemProp && (int)pItemProp->dwItemLV > 0 )
-								{
-									int nValue	= dwProbability / pItemProp->dwItemLV;
-									if( nValue < 21 )	nValue	= 21;
-									dwProbability	= nValue - 20;
-								}
-							}
-							if( pItemProp )
-							{
-								CString str;
-								str.Format( "\n \t%s\t%f%%\t%d\t%d", pItemProp->szName, (double)dwProbability / (double)30000000, lpDropItem->dwNumber, lpDropItem->dwLevel );
-								s	+= str;
-							}
-						}
-						else if( lpDropItem->dtType == DROPTYPE_SEED )
-						{
-							CString str;
-							str.Format(" \tPENYA %d-%d", lpDropItem->dwNumber, lpDropItem->dwNumber2 ); 
-							s	+= str;
-						}
+						int nValue = dwProbability / pItemProp->dwItemLV;
+						if (nValue < 21)	nValue = 21;
+						dwProbability = nValue - 20;
 					}
 				}
-				sLog[nWrite]	+= s;
+				if (pItemProp)
+				{
+					CString str;
+					str.Format("\n \t%s\t%f%%\t%d\t%d", pItemProp->szName, (double)dwProbability / (double)30000000, lpDropItem->dwNumber, lpDropItem->dwLevel);
+					s += str;
+				}
 			}
+
+			for (const CDropItemGenerator::Money & rDropMoney : pMoverProp->m_DropItemGenerator.GetMoney()) {
+				s.AppendFormat(" \tPENYA %d-%d", rDropMoney.dwNumber, rDropMoney.dwNumber2);
+			}
+
+			sLog[nWrite]	+= s;
+
 			// dropkind
 			{
-				int nSize	= pMoverProp->m_DropKindGenerator.GetSize();
-				DROPKIND* pDropKind;
-				CPtrArray* pItemKindAry;
-				for( int i = 0; i < nSize; i++ )
-				{
-					pDropKind	= pMoverProp->m_DropKindGenerator.GetAt( i );
-					pItemKindAry	= prj.GetItemKindAry( pDropKind->dwIK3 );
-					int nMinIdx	= -1,	nMaxIdx		= -1;
-					for( int j = pDropKind->nMinUniq; j <= pDropKind->nMaxUniq; j++ )
-					{
-						nMinIdx		= prj.GetMinIdx( pDropKind->dwIK3, j );
-						if( nMinIdx != -1 )
-							break;
-					}
-					for( int j = pDropKind->nMaxUniq; j >= pDropKind->nMinUniq; j-- )
-					{
-						nMaxIdx		= prj.GetMaxIdx( pDropKind->dwIK3, j );
-						if( nMaxIdx != -1 )
-							break;
-					}
-					if( nMinIdx < 0 || nMaxIdx < 0 )
-						continue;
+				for (const DROPKIND & pDropKind : pMoverProp->m_DropKindGenerator) {
+					const auto & pItemProps = prj.GetItemKind3WithRarity(pDropKind);
 
-					for( int a = nMinIdx; a <= nMaxIdx; a++ )
+					for (const ItemProp * pItemProp : pItemProps)
 					{
-						ItemProp* pItemProp		= (ItemProp*)pItemKindAry->GetAt( a );
-						if( !pItemProp )
-							continue;
-
 						CString s1;
 						s1.Format( "\n \t%s", pItemProp->szName );
 						for( int k = 10; k >= 0; k-- )

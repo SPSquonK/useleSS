@@ -9,15 +9,6 @@ CTitleManager::CTitleManager()
 	m_mapEtc.clear();
 	m_mapAll.clear();
 	m_nCurrentTitleCount = 0;
-#ifdef __CLIENT
-	m_vecEarned.clear();
-#endif	// __CLIENT
-}
-
-
-CTitleManager::~CTitleManager()
-{
-
 }
 
 CTitleManager* CTitleManager::Instance( void )
@@ -37,7 +28,7 @@ BOOL	CTitleManager::LoadTitle(LPCTSTR lpszFileName)
 
 	script.tok = 0;
 
-	TempData.Init();
+	TempData = HonorData();
 	TempData.nID		= script.GetNumber(); // ID
 
 	while(script.tok != FINISHED)
@@ -82,13 +73,13 @@ BOOL	CTitleManager::LoadTitle(LPCTSTR lpszFileName)
 				break;
 		};
 		m_nCurrentTitleCount++;
-		TempData.Init();
+		TempData = HonorData();
 		TempData.nID		= script.GetNumber(); // ID
 	}
 	
 	return TRUE;
 }
-char	*CTitleManager::GetTitle(int nId)		// 타이틀을 반환
+const char	*CTitleManager::GetTitle(int nId)		// 타이틀을 반환
 {
 	if(nId == -1) return NULL; 
 	//int nGroup = GetIdxType(nId);
@@ -257,41 +248,29 @@ int     CTitleManager::GetIdxByGroup(int nLarge,int nSmall)
 	}
 	return -1;
 }	
+
 #ifdef __CLIENT
-BOOL	CTitleManager::IsEarned(int nId)
-{
-	for(auto iter = m_vecEarned.begin(); iter != m_vecEarned.end(); ++iter)
-	{
-		if(iter->nId == nId) return TRUE;
-	}
-	return FALSE;
-}
 
-void	CTitleManager::AddEarned(int nId)
-{
-	EarnedTitle Temp;
-	Temp.nId		= nId;
-	Temp.strTitle	= GetTitle(nId); 
-	m_vecEarned.push_back(Temp);
-}
+bool CTitleManager::UpdateEarned(int nId, int nCurrentCount) {
+	const int nNeed = CTitleManager::Instance()->GetNeedCount(nId, -1);
 
-BOOL	CTitleManager::RemoveEarned(int nId)
-{
-	for(auto iter = m_vecEarned.begin(); iter != m_vecEarned.end(); ++iter)
-	{
-		if(iter->nId == nId)
-		{
-			m_vecEarned.erase(iter);
-			return TRUE;
+	const auto it = m_vecEarned.find(nId);
+
+	if (nCurrentCount >= nNeed && nNeed > 0) {
+		if (it == m_vecEarned.end()) {
+			m_vecEarned.emplace(nId);
+			return true;
+		} else {
+			return false;
 		}
+	} else {
+		if (it != m_vecEarned.end()) m_vecEarned.erase(it);
+		return false;
 	}
-	return FALSE;
 }
 
-void	CTitleManager::InitEarned()
-{
+void	CTitleManager::InitEarned() {
 	m_vecEarned.clear();
 }
-
 #endif	// __CLIENT
 

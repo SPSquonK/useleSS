@@ -72,6 +72,7 @@ void CDPLoginSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	if( pfn )
 	{
 		( this->*( pfn ) )( ar, idFrom );
+		if (ar.IsOverflow()) Error("Login-Neuz: Packet %08x overflowed", dw);
 	}
 	else
 	{

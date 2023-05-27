@@ -519,10 +519,44 @@ BOOL CWndShop::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	return InitDialog( APP_SHOP_, pWndParent, 0, 0 );
 } 
 
+bool CWndShop::OnDropItemFromInventory(CItemElem * const pItemElem) {
+	if (!pItemElem) return false;
+	if (pItemElem->IsQuest()) return false;
+
+	const ItemProp * const pProp = pItemElem->GetProp();
+	if (!pProp) {
+		Error("CWndShop::OnChildNotify : pProp==NULL %d", pItemElem->m_dwItemId);
+		return false;
+	}
+
+	const bool bWarning = pProp->bCharged;
+
+	if (g_pPlayer->m_Inventory.IsEquip(pItemElem->m_dwObjId)) {
+		g_WndMng.PutString(TID_GAME_EQUIPTRADE);
+		return false;
+	}
+
+	if (bWarning) {
+		SAFE_DELETE(m_pWndWarning);
+		SAFE_DELETE(m_pWndConfirmSell);
+		m_pWndWarning = new CWndWarning;
+		m_pWndWarning->m_pItemElem = pItemElem;
+		m_pWndWarning->m_pMover = m_pMover;
+		m_pWndWarning->Initialize(this, APP_WARNING);
+	} else {
+		SAFE_DELETE(m_pWndWarning);
+		SAFE_DELETE(m_pWndConfirmSell);
+		m_pWndConfirmSell = new CWndConfirmSell;
+		m_pWndConfirmSell->m_pItemElem = pItemElem;
+		m_pWndConfirmSell->m_pMover = m_pMover;
+		m_pWndConfirmSell->Initialize(this, APP_CONFIRM_SELL);
+	}
+
+	return true;
+}
+
 BOOL CWndShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
-	BOOL	bWarning	= FALSE;
-
 	if( message == WIN_ITEMDROP )
 	{
 		LPSHORTCUT lpShortcut = (LPSHORTCUT)pLResult;
@@ -533,64 +567,9 @@ BOOL CWndShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			if( nID == 10 || nID == 11 || nID == 12 || nID == 13) // item
 			{
-				BOOL bResult = TRUE;
-				if( ( (CItemElem*)lpShortcut->m_dwData )->IsQuest() )
-				{
-					bResult = FALSE;
-				}
-
-				if( bResult && pWndFrame->GetWndId() == APP_INVENTORY )
-				{
-					CItemElem *pItemElem = (CItemElem*)lpShortcut->m_dwData;
-					if( pItemElem )
-					{
-						ItemProp *pProp = pItemElem->GetProp();
-						if( pProp )
-						{
-							if( pItemElem->IsCharged() )
-							{
-								// 090527 김창섭 - 유료지역입장권 사용 후 사용기간이 남아있는 상태에서 NPC를 통해 상점에 팔 경우 경고창이 뜨지않는 현상 수정
-								//if( !pItemElem->m_dwKeepTime )
-								bWarning	= TRUE;
-							}
-						} else
-						{
-							LPCTSTR szErr = Error( "CWndShop::OnChildNotify : pProp==NULL %d", pItemElem->m_dwItemId );
-							//ADDERRORMSG( szErr );
-						}
-					} else
-					{
-						LPCTSTR szErr = Error( "CWndShop::OnChildNotify : pItemElem==NULL %d", pItemElem->m_dwItemId );
-						//ADDERRORMSG( szErr );
-					}
-
-					if( FALSE == g_pPlayer->m_Inventory.IsEquip( ( (CItemElem*)lpShortcut->m_dwData)->m_dwObjId ) )
-					{
-						if( bWarning )
-						{
-							SAFE_DELETE( m_pWndWarning );
-							SAFE_DELETE( m_pWndConfirmSell );
-							m_pWndWarning	= new CWndWarning;
-							m_pWndWarning->m_pItemElem	= (CItemElem*)lpShortcut->m_dwData;
-							m_pWndWarning->m_pMover = m_pMover;
-							m_pWndWarning->Initialize( this, APP_WARNING );
-						}
-						else
-						{
-							SAFE_DELETE( m_pWndWarning );
-							SAFE_DELETE( m_pWndConfirmSell );
-							m_pWndConfirmSell = new CWndConfirmSell;
-							m_pWndConfirmSell->m_pItemElem = (CItemElem*)lpShortcut->m_dwData;
-							m_pWndConfirmSell->m_pMover = m_pMover;
-							m_pWndConfirmSell->Initialize( this, APP_CONFIRM_SELL );
-						}
-
-						bForbid = FALSE;
-					}
-					else
-					{
-						g_WndMng.PutString(TID_GAME_EQUIPTRADE);
-					}
+				if (pWndFrame->GetWndId() == APP_INVENTORY) {
+					CItemElem * pItemElem = reinterpret_cast<CItemElem *>(lpShortcut->m_dwData);
+					bForbid = OnDropItemFromInventory(pItemElem) ? FALSE : TRUE;
 				}
 			}
 		}
@@ -611,8 +590,6 @@ BOOL CWndShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		break;
 	}
 	
-	
-
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 

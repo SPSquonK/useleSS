@@ -30,7 +30,7 @@ public:
 	void	SendTagResult( u_long idFrom, bool cbResult );
 	void	OnAddConnection( DPID dpid );
 	void	OnRemoveConnection( DPID dpid );
-	void	SendAddVoteResult( VOTE_INSERTED_INFO & info );
+	void	SendAddVoteResult( const VOTE_INSERTED_INFO & info );
 	void	SendDelPlayer( u_long idPlayer, u_long idGuild );
 	void	SendMemberTime( u_long idPlayer, LPCTSTR tGuildMember );
 	void	SendBuyingInfo( PBUYING_INFO2 pbi2 );	// 3

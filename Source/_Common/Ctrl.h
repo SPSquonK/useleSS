@@ -37,8 +37,7 @@ protected:
 public:
 
 #ifdef __WORLDSERVER
-	LONG			m_lRespawn;			/// 리스폰 번호
-	int	            m_nRespawnType;		/// 리스폰 타입 
+	std::optional<CtrlSpawnInfo> m_spawnerInfo = std::nullopt;
 	std::map< DWORD, CUser* > m_2pc;			/// 주변 플레이어 맵 
 	int				m_nOldCenter[MAX_LINKLEVEL];	/// 링크맵 계산용 
 #endif	// __WORLDSERVER
@@ -80,10 +79,9 @@ public:
 	[[nodiscard]] bool IsNearPC(const OBJID objid) const noexcept { return m_2pc.contains(objid); }
 	[[nodiscard]] bool IsNearPC(const CUser * const pUser) const;
 
-	LONG			GetRespawn()			{ return m_lRespawn; }
-	void			SetRespawn( LONG n, BYTE nType )	{ m_lRespawn = n; m_nRespawnType = nType; }	
-	BOOL			ProcessDeleteRespawn();
-	int				GetRespawnType( )		{ return m_nRespawnType; }	
+	void SetSpawner(CtrlSpawnInfo ctrlSpawnInfo) { m_spawnerInfo = ctrlSpawnInfo; }
+	BOOL ProcessDeleteRespawn();
+	void RefreshSpawn(BOOL bActiveAttack);
 #else
 	void			CreateYoyoSkill( CSfx* pSfx, CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp );
 #endif	//__WORLDSERVER

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Continent.h"
+#include <boost/container/flat_map.hpp>
 
 #define TAX_SALES		(BYTE)0	// 판매 세금
 #define	TAX_PURCHASE	(BYTE)1 // 구매 세금
@@ -39,46 +40,29 @@ private:
 };
 #endif // __DBSERVER
 
-
 struct __TAXDETAIL
 {
-	int nTaxRate;
+	int nTaxRate = 0;
 #ifdef __DBSERVER
-	int nTaxCount;
-	int	nTaxGold;
-	int nTaxPerin;
-	int	nNextTaxRate;
+	int nTaxCount = 0;
+	int	nTaxGold = 0;
+	int nTaxPerin = 0;
+	int	nNextTaxRate = 0;
 #endif // __DBSERVER
-	__TAXDETAIL()
-	{
-		nTaxRate = 0;
-#ifdef __DBSERVER
-		nTaxCount = 0;
-		nTaxGold = 0;
-		nTaxPerin = 0;
-		nNextTaxRate = 0;
-#endif // __DBSERVER
-	}
 };
-typedef std::map<BYTE, __TAXDETAIL*> TAXDETAILMAP;
 
 struct __TAXINFO
 {
-	DWORD	dwId;
-	BOOL	bSetTaxRate;
-	TAXDETAILMAP mapTaxDetail;
-	DWORD	dwNextId;
+	DWORD	dwId = NULL_ID;
+	BOOL	bSetTaxRate = TRUE;
+	boost::container::flat_map<BYTE, __TAXDETAIL> mapTaxDetail;
+	DWORD	dwNextId = NULL_ID;
 	__TAXINFO()
 	{
-		dwId = NULL_ID;
-		bSetTaxRate = TRUE;
-		mapTaxDetail.emplace(TAX_SALES, new __TAXDETAIL );			// 구매 세금은 기본
-		mapTaxDetail.emplace(TAX_PURCHASE, new __TAXDETAIL );		// 판매 세금은 기본
-		dwNextId = NULL_ID;
+		mapTaxDetail.emplace(TAX_SALES, __TAXDETAIL{});			// 구매 세금은 기본
+		mapTaxDetail.emplace(TAX_PURCHASE, __TAXDETAIL{});		// 판매 세금은 기본
 	}
 };
-typedef std::map<BYTE, __TAXINFO*> TAXINFOMAP;
-
 
 class CTax
 {
@@ -93,7 +77,7 @@ public:
 	int m_nMinTaxRate;					// 최소 세율
 	int m_nMaxTaxRate;					// 최대 세율
 
-	TAXINFOMAP m_mapTaxInfo;	// 각 대륙별 점령길드 세율 정보 및 세금 수입
+	std::map<BYTE, __TAXINFO *> m_mapTaxInfo;	// 각 대륙별 점령길드 세율 정보 및 세금 수입
 
 	__TAXINFO* GetTaxInfo( BYTE nContinent );
 	void SetNextSecretRoomGuild( BYTE nCont, DWORD dwGuildId );

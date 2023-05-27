@@ -520,7 +520,6 @@ BOOL Script( LPCSTR lpszFileName )
 				s.GetToken();
 				strcpy( DB_ADMIN_ID_LOG, s.Token );
 			}
-#ifdef __S1108_BACK_END_SYSTEM
 			else if( s.Token == "DSN_NAME_BACKSYSTEM" )
 			{
 				s.GetToken();
@@ -535,7 +534,6 @@ BOOL Script( LPCSTR lpszFileName )
 			{
 				prj.m_bBackEndSystem = TRUE;
 			}
-#endif // __S1108_BACK_END_SYSTEM
 			else if( s.Token == "DSN_NAME_ITEMUPDATE" )
 			{
 				s.GetToken();

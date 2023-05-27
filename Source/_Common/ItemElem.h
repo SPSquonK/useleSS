@@ -60,7 +60,6 @@ public:
 	__int64		m_n64NewRandomOption;
 #endif
 
-	BOOL	m_bCharged;			// Can't be traded?
 	DWORD	m_dwKeepTime;		// Mobile game mechanic
 
 #ifndef __CORESERVER
@@ -220,7 +219,6 @@ public:
 	void	SetFlag(BYTE byFlag) { m_byFlag |= byFlag; }
 	BOOL	IsBinds();
 	BOOL	IsUndestructable(void);
-	BOOL	IsCharged();
 	BOOL	IsLogable();
 
 	static BOOL	IsDiceRefineryAble(const ItemProp * pProp);

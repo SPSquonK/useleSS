@@ -898,18 +898,6 @@ void CUser::AddRemoveSkillInfluence( WORD wType, WORD wID )
 	
 }
 
-void CUser::AddBankWindow( int nMode, DWORD dwId, DWORD dwItemId )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_BANKWINDOW;
-	m_Snapshot.ar << nMode;
-	m_Snapshot.ar << dwId << dwItemId;
-
-}
-
 void CUser::AddGuildBankWindow( int nMode )
 {
 	if( IsDelete() )	return;
@@ -926,28 +914,6 @@ void CUser::AddGuildBankWindow( int nMode )
 		m_Snapshot.ar << pGuild->m_nGoldGuild;
 		m_Snapshot.ar << pGuild->m_GuildBank;
 	}
-}
-
-void CUser::AddChangeBankPass( int nMode, DWORD dwId, DWORD dwItemId )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_CHANGEBANKPASS;
-	m_Snapshot.ar << nMode;
-	m_Snapshot.ar << dwId << dwItemId;
-}
-
-void CUser::AddconfirmBankPass( int nMode, DWORD dwId, DWORD dwItemId )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_CONFIRMBANKPASS;
-	m_Snapshot.ar << nMode;
-	m_Snapshot.ar << dwId << dwItemId;
 }
 
 void CUser::AddUpdateBankItem( BYTE nSlot, BYTE nId, short newQuantity ) {
@@ -2215,7 +2181,6 @@ void CUser::DoUsePackItem( CItemElem* pItemElem, const CPackItem::PACKITEMELEM &
 		itemElem.m_dwItemId = item.dwItem;
 		itemElem.SetAbilityOption(item.nAbilityOption);
 		itemElem.m_nItemNum	= item.nNum;
-		itemElem.m_bCharged		= itemElem.GetProp()->bCharged;
 		itemElem.m_dwKeepTime	= (DWORD)t;
 
 		if (pItemElem->IsBinds()) itemElem.SetFlag(CItemElem::binds);
@@ -2255,7 +2220,6 @@ BOOL CUser::DoUseGiftbox( CItemElem* pItemElem, const DWORD dwItemId ) {
 
 	if (result->nFlag != CItemElem::isusing) {	// ignore property
 		itemElem.m_byFlag = result->nFlag & ~(CItemElem::isusing);
-		itemElem.m_bCharged = itemElem.GetProp()->bCharged;
 	}
 
 	time_t t	= 0;
@@ -3470,34 +3434,12 @@ void	CUserMng::AddDlgEmoticon( CCtrl* pCtrl, int nIdx )
 	AddChat( pCtrl, szString );
 }
 
-void CUserMng::AddStartCollecting( CUser* pUser )
-{
-	CAr ar;
-
-	ar << GETID( pUser ) << SNAPSHOTTYPE_START_COLLECTING;
-	
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pUser )
-	{
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	}
-	NEXT_VISIBILITYRANGE( pUser )
+void CUserMng::AddStartCollecting(CUser * pUser) {
+	BroadcastAround<SNAPSHOTTYPE_START_COLLECTING>(pUser);
 }
 
-void CUserMng::AddStopCollecting( CUser* pUser )
-{
-	CAr ar;
-
-	ar << GETID( pUser ) << SNAPSHOTTYPE_STOP_COLLECTING;
-	
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pUser )
-	{
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	}
-	NEXT_VISIBILITYRANGE( pUser )
+void CUserMng::AddStopCollecting(CUser * pUser) {
+	BroadcastAround<SNAPSHOTTYPE_STOP_COLLECTING>(pUser);
 }
 
 void CUserMng::AddChat( CCtrl* pCtrl, const TCHAR* szChat )
@@ -3583,29 +3525,12 @@ void CUserMng::AddShipActMsg( CMover* pMover, CShip *pShip, DWORD dwMsg, int nPa
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddMotion( CMover* pMover, DWORD dwMsg )
-{
-	CAr ar;
-	ar << GETID( pMover ) << SNAPSHOTTYPE_MOTION;
-	ar << dwMsg;
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddMotion(CMover * pMover, DWORD dwMsg) {
+	BroadcastAround<SNAPSHOTTYPE_MOTION, DWORD>(pMover, dwMsg);
 }
 
-void CUserMng::AddRemoveAllSkillInfluence( CMover* pMover )
-{
-	CAr ar;
-	ar << GETID( pMover ) << SNAPSHOTTYPE_REMOVEALLSKILLINFULENCE;
-	
-	GETBLOCK( ar, lpBuf, nBufSize );
-	
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddRemoveAllSkillInfluence(CMover * pMover) {
+	BroadcastAround<SNAPSHOTTYPE_REMOVEALLSKILLINFULENCE>(pMover);
 }
 
 void CUserMng::AddWorldShout( const TCHAR* szName, const TCHAR* szShout, D3DXVECTOR3 vPos, CWorld* pWorld )
@@ -3644,28 +3569,14 @@ void CUserMng::AddDamage( CMover* pMover, OBJID objidAttacker, DWORD dwHit, DWOR
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddDisguise( CMover* pMover, DWORD dwMoverIdx )
-{
-	CAr ar;
-	ar << GETID( pMover ) << SNAPSHOTTYPE_DISGUISE << dwMoverIdx;
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddDisguise(CMover * pMover, DWORD dwMoverIdx) {
+	BroadcastAround<SNAPSHOTTYPE_DISGUISE, DWORD>(pMover, dwMoverIdx);
 }
-void CUserMng::AddNoDisguise( CMover* pMover )
-{
-	CAr ar;
-	ar << GETID( pMover ) << SNAPSHOTTYPE_NODISGUISE;
 
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddNoDisguise(CMover * pMover) {
+	BroadcastAround<SNAPSHOTTYPE_NODISGUISE>(pMover);
 }
+
 void CUserMng::AddMoverDeath( CMover* pMover, CMover* pAttacker, DWORD dwMsg )
 {
 	CAr ar;
@@ -3679,18 +3590,11 @@ void CUserMng::AddMoverDeath( CMover* pMover, CMover* pAttacker, DWORD dwMsg )
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddUseSkill( CMover* pMover, DWORD dwSkill, DWORD dwLevel, OBJID objid, int nUseType, int nCastingTime )
-{
-	CAr ar;
-	ar << GETID( pMover ) << SNAPSHOTTYPE_USESKILL;
-	ar << dwSkill << dwLevel;
-	ar << objid << nUseType << nCastingTime;
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddUseSkill(CMover * pMover, DWORD dwSkill, DWORD dwLevel, OBJID objid, int nUseType, int nCastingTime) {
+	BroadcastAround<SNAPSHOTTYPE_USESKILL, DWORD, DWORD, OBJID, int, int>(pMover,
+		dwSkill, dwLevel,
+		objid, nUseType, nCastingTime
+	);
 }
 
 void CUserMng::AddDoEquip( CMover* pMover, int nPart, BYTE nId, const EQUIP_INFO & rEquipInfo, BYTE fEquip )
@@ -3753,130 +3657,53 @@ void CUserMng::AddUpdateVendor( CMover* pVendor, CHAR cTab, BYTE nId, short nNum
 	NEXT_VISIBILITYRANGE( pVendor )
 }
 
-void CUserMng::AddSetDestParam( CMover* pMover, int nDstParameter, int nAdjParameterValue, int nChgParameterValue )
-{
-	CAr ar;
-
-	ar << GETID( pMover );
-	ar << SNAPSHOTTYPE_SETDESTPARAM;
-
-	ar << nDstParameter << nAdjParameterValue << nChgParameterValue;
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddSetDestParam(CMover * pMover, int nDstParameter, int nAdjParameterValue, int nChgParameterValue) {
+	BroadcastAround<SNAPSHOTTYPE_SETDESTPARAM, int, int, int>(pMover,
+		nDstParameter, nAdjParameterValue, nChgParameterValue
+	);
 }
 
-void CUserMng::AddResetDestParam( CMover* pMover, int nDstParameter, int nAdjParameterValue )
-{
-	CAr ar;
-
-	ar << GETID( pMover );
-	ar << SNAPSHOTTYPE_RESETDESTPARAM;
-
-	ar << nDstParameter << nAdjParameterValue;
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddResetDestParam(CMover * pMover, int nDstParameter, int nAdjParameterValue) {
+	BroadcastAround<SNAPSHOTTYPE_RESETDESTPARAM, int, int>(pMover,
+		nDstParameter, nAdjParameterValue
+	);
 }
+
 #ifdef __SPEED_SYNC_0108		// ResetDestParam speed 수정
-void CUserMng::AddResetDestParamSync( CMover* pMover, int nDstParameter,int nAdjParameterValue, int nParameterValue )
-{
-	CAr ar;
-
-	ar << GETID( pMover );
-	ar << SNAPSHOTTYPE_RESETDESTPARAM_SYNC;
-
-	ar << nDstParameter << nAdjParameterValue << nParameterValue;
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddResetDestParamSync(CMover * pMover, int nDstParameter, int nAdjParameterValue, int nParameterValue) {
+	BroadcastAround<SNAPSHOTTYPE_RESETDESTPARAM_SYNC, int, int, int>(pMover,
+		nDstParameter, nAdjParameterValue, nParameterValue
+	);
 }
 #endif // __SPEED_SYNC_0108		// ResetDestParam speed 수정
 
-void CUserMng::AddSetPointParam( CMover* pMover, int nDstParameter, int nValue )
-{
-	CAr ar;
-
-	ar << GETID( pMover );
-	ar << SNAPSHOTTYPE_SETPOINTPARAM;
-
-	ar << nDstParameter << nValue;
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddSetPointParam(CMover * pMover, int nDstParameter, int nValue) {
+	BroadcastAround<SNAPSHOTTYPE_SETPOINTPARAM, int, int>(pMover,
+		nDstParameter, nValue
+	);
 }
 
-void CUserMng::AddSetPos( CCtrl* pCtrl, const D3DXVECTOR3 & vPos )
-{
-	CAr ar;
-
-	ar << GETID( pCtrl ) << SNAPSHOTTYPE_SETPOS;
-	ar << vPos;
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pCtrl )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pCtrl )
+void CUserMng::AddSetPos(CCtrl * pCtrl, const D3DXVECTOR3 & vPos) {
+	BroadcastAround<SNAPSHOTTYPE_SETPOS, D3DXVECTOR3>(pCtrl, vPos);
 }
 
 
-void CUserMng::AddSetLevel( CMover* pMover, WORD wLevel )
-{
-	CAr ar;
-
-	ar << GETID( pMover ) << SNAPSHOTTYPE_SETLEVEL;
-	ar << wLevel;
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pMover )
-		if( USERPTR != pMover )
-			USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddSetLevel(CMover * pMover, WORD wLevel) {
+	BroadcastAroundExcluding<SNAPSHOTTYPE_SETLEVEL, WORD>(pMover, wLevel);
 }
 
 void CUserMng::AddSetFlightLevel( CMover* pMover, int nFlightLv )
 {
-	CAr ar;
-	
-	ar << GETID( pMover ) << SNAPSHOTTYPE_SETFLIGHTLEVEL;
-	ar << (WORD)nFlightLv;
-	
-	GETBLOCK( ar, lpBuf, nBufSize );
-	
-	FOR_VISIBILITYRANGE( pMover )
-		if( USERPTR != pMover )
-			USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+	BroadcastAroundExcluding<SNAPSHOTTYPE_SETFLIGHTLEVEL, WORD>(pMover,
+		static_cast<WORD>(nFlightLv)
+	);
 }
 
 
-void CUserMng::AddSetSkillLevel( CMover* pMover, DWORD dwSkill, DWORD dwLevel )
-{
-	CAr ar;
-
-	ar << GETID( pMover ) << SNAPSHOTTYPE_SETSKILLLEVEL;
-	ar << dwSkill << dwLevel;
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pMover )
-		if( USERPTR != pMover )
-			USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddSetSkillLevel(CMover * pMover, DWORD dwSkill, DWORD dwLevel) {
+	BroadcastAroundExcluding<SNAPSHOTTYPE_SETSKILLLEVEL, DWORD, DWORD>(pMover,
+		dwSkill, dwLevel
+	);
 }
 
 
@@ -4738,7 +4565,6 @@ void CUserMng::AddSetSkillState( CMover* pCenter, CMover *pTarget, WORD wType, W
 	NEXT_VISIBILITYRANGE( pCenter )
 }
 
-#ifdef __S1108_BACK_END_SYSTEM
 void CUserMng::AddMonsterProp()
 {
 	CAr ar;
@@ -4779,7 +4605,6 @@ void CUserMng::AddGMChat( int nSize )
 	GETBLOCK( ar, lpBuf, uBufSize );
 	AddBlock( lpBuf, uBufSize );	// all
 }
-#endif // __S1108_BACK_END_SYSTEM
 
 void CUserMng::AddGuildCombatUserState( CMover* pMover )
 {
@@ -5399,15 +5224,12 @@ void CUser::AddGameSetting()
 		AddGameRate( prj.m_fMonsterExpRate, GAME_RATE_MONSTEREXP );
 		AddGameRate( prj.m_fMonsterHitRate, GAME_RATE_MONSTERHIT );
 		
-#ifdef __S1108_BACK_END_SYSTEM
 		AddGameRate( prj.m_fMonsterRebirthRate, GAME_RATE_REBIRTH );
 		AddGameRate( prj.m_fMonsterHitpointRate, GAME_RATE_HITPOINT );
 		AddGameRate( prj.m_fMonsterAggressiveRate, GAME_RATE_AGGRESSIVE );
-#endif // __S1108_BACK_END_SYSTEM
 	}	
 }
 
-#ifdef __S1108_BACK_END_SYSTEM
 void CUser::AddMonsterProp()
 {
 	if( IsDelete() )	return;
@@ -5436,7 +5258,6 @@ void CUser::AddMonsterProp()
 
 	
 }
-#endif // __S1108_BACK_END_SYSTEM
 
 void CUser::AddInitSkill()
 {
@@ -6916,7 +6737,7 @@ BOOL CUser::IsTeleportable( void )
 #endif // __QUIZ
 	)
 		return FALSE;
-	return ( GetSummonState() == 0 );
+	return GetSummonState() == SummonState::Ok_0;
 }
 
 void CUser::AddSetTutorialState( void )

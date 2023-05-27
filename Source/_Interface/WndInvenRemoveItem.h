@@ -1,28 +1,22 @@
-#ifndef __WNDINVENREMOVEITEM__H
-#define __WNDINVENREMOVEITEM__H
+#pragma once
 
-class CWndInvenRemoveItem : public CWndNeuz 
-{ 
-public: 
-	CItemElem*		m_pItemElem;
-	LPWNDCTRL		m_pWndItemCtrl;
-	CWndEdit*		m_pWndEditNum;
+class CWndInvenRemoveItem final : public CWndNeuz {
+private:
+	CItemElem*	m_pItemElem    = nullptr;
+	LPWNDCTRL		m_pWndItemCtrl = nullptr;
+	CWndEdit*		m_pWndEditNum  = nullptr;
 
-	int				m_nRemoveNum;
-	void InitItem( CItemElem* pItemElem );
-	BOOL OnButtonOK( void );
+public:
+	void InitItem(CItemElem * pItemElem);
+	
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnDraw(C2DRender * p2DRender) override;
+	void OnInitialUpdate() override;
+	void OnMouseWndSurface(CPoint point) override;
 
-	CWndInvenRemoveItem(); 
-	~CWndInvenRemoveItem(); 
-
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnMouseWndSurface( CPoint point );
-}; 
-#endif
+private:
+	std::optional<int> OnButtonOK();
+	void SetEditNumToMax();
+	static std::optional<int> StringToInt(LPCTSTR string);
+};

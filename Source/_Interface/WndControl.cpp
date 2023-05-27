@@ -415,7 +415,7 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 				CSize size = m_pTexture->m_size;
 				m_pTexture->m_size.cx = 20;
 				m_pTexture->m_size.cy = 20;
-				m_pTexture->Render( p2DRender, CPoint( pt.x, pt.y ), m_nAlphaCount );
+				m_pTexture->Render( p2DRender, pt, m_nAlphaCount );
 				m_pTexture->m_size = size;
 			}
 			// 체크 
@@ -428,7 +428,7 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 			p2DRender->TextOut( pt.x + 4 + 20, pt.y + 4, m_strTitle, 0xff000000 );
 			if( m_cHotkey )
 			{
-				CString strHotkey = m_cHotkey;
+				CHAR strHotkey[2] = { m_cHotkey, '\0' };
 				p2DRender->TextOut( m_rectClient.right - 32, pt.y + 4, strHotkey, 0xff000000 );
 			}
 		}
@@ -474,52 +474,72 @@ void CWndButton::SetButtonStyle(UINT nStyle, BOOL bRedraw) // Changes the style 
 */
 void CWndButton::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	if( IsPush() )
-	{
-///		PLAYSND( m_strSndEffect, NULL );
+	if (!IsPush()) return;
 
-		if( m_dwStyle & WBS_CHECK )
-			m_bCheck = !m_bCheck;
+	if (m_dwStyle & WBS_CHECK) {
+		m_bCheck = !m_bCheck;
+	}
 
-		CWndBase* pWnd = m_pParentWnd;
-		//if( ! (pWnd->GetStyle() & WBS_CHILD ) )
-			pWnd->OnChildNotify( WNM_CLICKED, m_nIdWnd, (LRESULT*)this); 
+	CWndBase* pWnd = m_pParentWnd;
+	pWnd->OnChildNotify(WNM_CLICKED, m_nIdWnd, (LRESULT *)this);
 
-		if( (m_dwStyle & WBS_RADIO) && m_pParentWnd)
-		{
-			CPtrArray* pWndArray = m_pParentWnd->GetWndArray();
-			// 내 버튼의 인덱스를 페어런트로부터 찾는다.
-			for( int i = 0; i < pWndArray->GetSize(); i++)
-			{
-				CWndButton* pWndBase = (CWndButton*)pWndArray->GetAt(i);
-				if( pWndBase == this )
-				{
-					// 앞쪽으로 그룹 선언을 찾는다.
-					for( int i2 = i; i2 >= 0; i2-- )
-					{
-						pWndBase = (CWndButton*)pWndArray->GetAt(i2);
-						if(pWndBase->IsGroup() && pWndBase->IsWndStyle(WBS_RADIO))
-						{
-							// 라디오 버튼이 아니거나 새로운 그룹이 나타날 때까지 검색 
-							for(int i3 = i2; i3 < pWndArray->GetSize(); i3++)
-							{
-								pWndBase = (CWndButton*)pWndArray->GetAt(i3);
-								if(i3 > i2 && pWndBase->IsGroup())
-									break;
-								if(pWndBase->IsWndStyle(WBS_RADIO))
-									((CWndButton*)pWndBase)->SetCheck(0);
-								else
-									break;
-							}
-							SetCheck(TRUE);
-							return;
-						}
-					}
-				}
-			}
-		}
+	if ((m_dwStyle & WBS_RADIO) && m_pParentWnd) {
+		ParentUncheckGroup();
 	}
 }
+
+void CWndButton::ParentUncheckGroup() {
+	CPtrArray * pWndArray = &m_pParentWnd->m_wndArray;
+
+	// 1: Search the start of the group of this
+	std::optional<int> startGroup;
+	bool foundThis = false;
+
+	for (int i = 0; i != pWndArray->GetSize(); ++i) {
+		CWndBase * pWnd = (CWndBase *) pWndArray->GetAt(i);
+
+		if (pWnd->IsGroup() && pWnd->IsWndStyle(WBS_RADIO)) {
+			startGroup = i;
+		}
+
+		if (pWnd == this) {
+			foundThis = true;
+			break;
+		}
+	}
+
+	if (!startGroup) {
+		return;
+	}
+
+	if (!foundThis) {
+		Error(
+			__FUNCTION__" did not found this in parent (this = %lu, parent = %lu)",
+			m_nIdWnd,
+			m_pParentWnd->GetWndId()
+			);
+	}
+
+	// 2: Uncheck all members of groupe except this
+	for (int i = startGroup.value(); i != pWndArray->GetSize(); ++i) {
+		CWndBase * pWnd = (CWndBase *)pWndArray->GetAt(i);
+
+		// M.C. Hammer - U Can't Touch This
+		if (pWnd == this) continue;
+
+		// Start of next group
+		if (i != startGroup.value() && pWnd->IsGroup()) break;
+		
+		// Uncheck if radio button
+		if (pWnd->IsWndStyle(WBS_RADIO)) {
+			dynamic_cast<CWndButton *>(pWnd)->SetCheck(FALSE);
+		}
+	}
+
+	// 3: Check this
+	SetCheck(TRUE);
+}
+
 void CWndButton::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	PLAYSND( SND_INF_CLICK );
@@ -1258,12 +1278,9 @@ void CWndScrollBar::OnDraw(C2DRender* p2DRender)
 		}
 	}
 }
-//CTexturePack CWndScrollBar::m_texturePack;
 
 void CWndScrollBar::OnInitialUpdate()
 {
-	//m_pTexButtVScrUp    = m_texturePack.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrUp.bmp"    ), 0xffff00ff );
-	//m_pTexButtVScrDown  = m_texturePack.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrDown.bmp"  ), 0xffff00ff );
 	m_pTexButtVScrBar   = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrBar.bmp"   ), 0xffff00ff );
 	m_pTexButtVScrPUp   = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrPUp.bmp"   ), 0xffff00ff );
 	m_pTexButtVScrPDown = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrPDown.bmp" ), 0xffff00ff );
@@ -1887,12 +1904,9 @@ CWndText::CWndText()
 		m_nLineSpace	= 0;
 	m_byWndType = WTYPE_TEXT;
 	m_bEnableClipboard = FALSE;
-	memset(m_szCaret, 0, sizeof(char) * 3);
 	
-	m_szCaret[0] = 0;
 	m_strTexture = DEF_CTRL_TEXT;
 	m_bTile = TRUE;
-	m_ptDeflateRect = CPoint( 6, 6 );
 }
 CWndText::~CWndText()
 {
@@ -1918,7 +1932,6 @@ void CWndText::OnInitialUpdate()
 	UpdateScrollBar();
 	m_wndScrollBar.SetVisible( IsWndStyle( WBS_VSCROLL ) );
 	
-	m_bScr = TRUE;
 	m_nLineRefresh = 0;
 }
 void CWndText::OnSize( UINT nType, int cx, int cy )
@@ -1938,16 +1951,15 @@ void CWndText::SetWndRect(CRect rectWnd, BOOL bOnSize )
 	m_rectWindow = rectWnd;
 	m_rectClient = m_rectWindow;
 	if( !IsWndStyle( WBS_NOFRAME ) )
-		m_rectClient.DeflateRect( m_ptDeflateRect.x, m_ptDeflateRect.y );
+		m_rectClient.DeflateRect( 6, 6 );
 
 	if( IsWndStyle( WBS_VSCROLL ) ) 
 		m_rectClient.right -= 15;
 	m_wndScrollBar.SetVisible( IsWndStyle( WBS_VSCROLL ) );
 	if( bOnSize )
 		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-	SetCaretPos( ptCaret );
-	
+
+	ReplaceCaret();
 }
 
 
@@ -1959,7 +1971,6 @@ void CWndText::OnDraw( C2DRender* p2DRender )
 	CString string;
 	DWORD dwMaxHeight = GetFontHeight();
 	DWORD dwOffset = 0;
-	TCHAR strHan[3];
 	DWORD dwBegin = 0;
 	DWORD dwCurOffset = 0;
 	DWORD dwOffsetLine = m_string.OffsetToLine( m_dwOffset );
@@ -2013,8 +2024,7 @@ void CWndText::OnDraw( C2DRender* p2DRender )
 
 				const char* next = CharNextEx( iter, wCodePage );
 
-				strHan[0] = '*';
-				strHan[1] = 0;
+				const char * strHan = "*";
 
 				CSize size;
 				p2DRender->m_pFont->GetTextExtent( "*", &size );
@@ -2025,13 +2035,7 @@ void CWndText::OnDraw( C2DRender* p2DRender )
 
 				if( m_bEnableClipboard )
 				{
-					DWORD dwBlockBegin;
-					DWORD dwBlockEnd;
-					if(m_dwBlockBegin > m_dwBlockEnd)
-						dwBlockBegin = m_dwBlockEnd, dwBlockEnd = m_dwBlockBegin;
-					else
-						dwBlockBegin = m_dwBlockBegin, dwBlockEnd = m_dwBlockEnd;
-
+					const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
 
 					if(dwCurOffset >= dwBlockBegin && dwCurOffset < dwBlockEnd)
 					{
@@ -2050,7 +2054,6 @@ void CWndText::OnDraw( C2DRender* p2DRender )
 				// 문장 내에서 캐럿과 위치가 같다면 출력 위치다.
 				if(dwCurOffset == m_dwOffset)
 				{
-					strcpy( m_szCaret, strHan );
 					ptCaret = CPoint( dwBegin, 0 + y * dwMaxHeight );
 				}
 				dwBegin += size.cx;
@@ -2058,20 +2061,13 @@ void CWndText::OnDraw( C2DRender* p2DRender )
 				iter = next;
 			}
 		}
-		 //m_ptCaret = ptCaret; 
-		 //m_timerCaret.Reset(); 
 	}
 	else
 	{
-		if( nLines == 6 )
-		{
-			int a = 0;
-		}
 		BlockSetStyle(ESSTY_BLOCK);
-		//ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
 		p2DRender->TextOut_EditString( 0, 0, m_string, nPos, nLines, m_nLineSpace );
 	}
-	//SetCaretPos( ptCaret );
+
 	DrawCaret( p2DRender );
 	p2DRender->SetFont( pOldFont );
 }
@@ -2080,12 +2076,8 @@ void CWndText::BlockSetStyle(DWORD dwStyle)
 {
 	if( m_bEnableClipboard )
 	{
-		DWORD dwBlockBegin;
-		DWORD dwBlockEnd;
-		if(m_dwBlockBegin > m_dwBlockEnd) 
-			dwBlockBegin = m_dwBlockEnd, dwBlockEnd = m_dwBlockBegin;
-		else
-			dwBlockBegin = m_dwBlockBegin, dwBlockEnd = m_dwBlockEnd;
+		const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
+
 		if( dwBlockEnd - dwBlockBegin )
 		{
 			m_string.SetStyle( dwBlockBegin, dwBlockEnd - dwBlockBegin, dwStyle );
@@ -2097,12 +2089,8 @@ void CWndText::BlockSetColor( DWORD dwColor )
 {
 	if( m_bEnableClipboard )
 	{
-		DWORD dwBlockBegin;
-		DWORD dwBlockEnd;
-		if(m_dwBlockBegin > m_dwBlockEnd) 
-			dwBlockBegin = m_dwBlockEnd, dwBlockEnd = m_dwBlockBegin;
-		else
-			dwBlockBegin = m_dwBlockBegin, dwBlockEnd = m_dwBlockEnd;
+		const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
+
 		if( dwBlockEnd - dwBlockBegin )
 		{
 			m_string.SetColor( dwBlockBegin, dwBlockEnd - dwBlockBegin, dwColor );
@@ -2115,12 +2103,8 @@ void CWndText::BlockClearStyle(DWORD dwStyle)
 {
 	if( m_bEnableClipboard )
 	{
-		DWORD dwBlockBegin;
-		DWORD dwBlockEnd;
-		if(m_dwBlockBegin > m_dwBlockEnd) 
-			dwBlockBegin = m_dwBlockEnd, dwBlockEnd = m_dwBlockBegin;
-		else
-			dwBlockBegin = m_dwBlockBegin, dwBlockEnd = m_dwBlockEnd;
+		const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
+
 		if( dwBlockEnd - dwBlockBegin )
 		{
 			m_string.ClearStyle( dwBlockBegin, dwBlockEnd - dwBlockBegin, dwStyle );
@@ -2150,12 +2134,11 @@ void CWndText::UpdateScrollBar()
 	}
 
 }
-CPoint CWndText::OffsetToPoint( DWORD dwSetOffset, TCHAR* pszStr )
+CPoint CWndText::OffsetToPoint( DWORD dwSetOffset )
 {
 	CString string;
 	DWORD dwMaxHeight = GetFontHeight();
 	DWORD dwOffset = 0;
-	TCHAR strHan[3];
 	DWORD dwBegin = 0;
 	DWORD dwCurOffset = 0;
 	DWORD dwOffsetLine = m_string.OffsetToLine( m_dwOffset );
@@ -2165,7 +2148,6 @@ CPoint CWndText::OffsetToPoint( DWORD dwSetOffset, TCHAR* pszStr )
 		dwOffset = m_string.GetLineOffset( i );
 		string = m_string.GetLine(i);
 		dwBegin = 0;
-		strHan[0] = 0;
 		const char* begin = string;
 		const char* end = begin + string.GetLength();
 		const char* iter = begin;
@@ -2193,8 +2175,6 @@ CPoint CWndText::OffsetToPoint( DWORD dwSetOffset, TCHAR* pszStr )
 			// 문장 내에서 캐럿과 위치가 같다면 출력 위치다.
 			if( dwCurOffset == dwSetOffset )
 			{
-				if( pszStr )
-					strcpy( pszStr, strHan );
 				return CPoint( dwBegin, 0 + i * dwMaxHeight );// + GetScreenRect().TopLeft();
 			}
 			dwBegin += size.cx;
@@ -2206,14 +2186,10 @@ CPoint CWndText::OffsetToPoint( DWORD dwSetOffset, TCHAR* pszStr )
 		{
 			if( !m_dwOffset || m_string.GetAt( m_dwOffset - 1 ) != '\n' )
 			{
-				if( pszStr )
-					pszStr[0] = 0;
 				ptCaret = CPoint( dwBegin, i * dwMaxHeight );// + GetScreenRect().TopLeft();
 			}
 			else
 			{
-				if( pszStr )
-					pszStr[0] = 0;
 				ptCaret = CPoint( 0, ( i + 1 ) * dwMaxHeight );// + GetScreenRect().TopLeft();
 			}
 		}
@@ -2228,11 +2204,18 @@ void CWndText::DrawCaret(C2DRender* p2DRender)
 }
 LONG CWndText::GetOffset(CPoint point)
 {
-	CString string;
 	int dwMaxHeight = GetFontHeight();
 	CPoint pt = point;
 	pt.y /= dwMaxHeight;
 	pt.y += m_wndScrollBar.GetScrollPos();
+
+	if (pt.y < 0) {
+		pt.y = 0;
+	} else if (std::cmp_greater_equal(pt.y, m_string.GetLineCount())
+		&& m_string.GetLineCount() > 0) {
+		pt.y = m_string.GetLineCount() - 1;
+	}
+
 	DWORD dwOffset1 = m_string.GetLineOffset( pt.y );
 	DWORD dwOffset2 = m_string.GetLineOffset( pt.y + 1);
 	DWORD dwBegin = 0;
@@ -2286,14 +2269,9 @@ void CWndText::OnChar( UINT nChar  )
 	{
 		if( m_dwBlockBegin != m_dwBlockEnd )
 		{
-			DWORD dwBlockBegin;
-			DWORD dwBlockEnd;
-			if(m_dwBlockBegin > m_dwBlockEnd)
-				dwBlockBegin = m_dwBlockEnd, dwBlockEnd = m_dwBlockBegin;
-			else
-				dwBlockBegin = m_dwBlockBegin, dwBlockEnd = m_dwBlockEnd;
-			CString strClipboard;
-			strClipboard = m_string.Mid( dwBlockBegin, dwBlockEnd - dwBlockBegin );
+			const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
+
+			CString strClipboard = m_string.Mid( dwBlockBegin, dwBlockEnd - dwBlockBegin );
 			if( m_bEnableClipboard ) 
 				CClipboard::SetText( strClipboard );
 		}
@@ -2307,9 +2285,7 @@ void CWndText::OnLButtonDown( UINT nFlags, CPoint point )
 		m_dwBlockBegin = m_dwBlockEnd = m_dwOffset = lOffset; 
 	m_bLButtonDown = TRUE;
 	SetCapture();
-
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 }
 void CWndText::OnLButtonUp(UINT nFlags, CPoint point)
 {
@@ -2359,88 +2335,30 @@ void CWndText::OnMouseMove(UINT nFlags, CPoint point)
 		if(lOffset != -1)
 			m_dwBlockEnd = m_dwOffset = lOffset; 
 	}
-	else
-	{
-		int dwOffset;
-		int dwBlockBegin;
-		int dwBlockEnd;
-		LONG lOffset = GetOffset( point );
-		BYTE chr1, chr2;
-
-		if(lOffset >= 0 && lOffset < m_string.GetLength() ) 
-		{
-			if( !IsWhite( m_string.GetAt( lOffset ) ) ) 
-			{
-				dwBlockBegin = lOffset;
-				dwBlockEnd = lOffset;
-
-				while( dwBlockBegin > 1 )
-				{
-					chr1 = m_string.GetAt ( dwBlockBegin - 1 );
-					chr2 = m_string.GetAt ( dwBlockBegin - 2 ); 
-
-					if( IsDBCSLeadByte( chr1 ) && IsDBCSLeadByte( chr2 ) )
-						dwBlockBegin -= 2;
-					else
-					if( !IsWhite( chr1 ) )
-						dwBlockBegin -= 1;
-					else
-						break;
-				}
-
-				dwOffset = dwBlockEnd; 
-
-			}
-		}
-	}
 }
-void CWndText::OnLButtonDblClk(UINT nFlags, CPoint point)
+void CWndText::OnLButtonDblClk(UINT, CPoint point)
 {
-	LONG lOffset = GetOffset(point);
-	BYTE chr1;
+	const LONG lOffset = GetOffset(point);
+	if (lOffset < 0 || lOffset > m_string.GetLength()) {
+		return;
+	}
 
-	if(lOffset >= 0 && lOffset < m_string.GetLength() ) 
-	{
-		if( !IsWhite( m_string.GetAt( lOffset ) ) ) 
-		{
-			chr1 = 0;
-			const char* begin = m_string;
-			const char* end = begin + m_string.GetLength();
-			const char* iter = begin;
+	EditStringIterator::WordSpace iterator(m_string);
 
-			m_dwBlockBegin = 0;
+	while (iterator && !iterator.ContainsPosition(lOffset)) {
+		++iterator;
+	}
 
-			// Get m_dwBlockBegin
-			while(*iter && iter < end) {
+	if (iterator.ContainsPosition(lOffset)) {
+		const auto [begin, end] = iterator.GetRange();
+		m_dwBlockBegin = begin;
+		m_dwBlockEnd = end;
+		m_dwOffset = m_dwBlockEnd;
 
-				if( IsWhite( *iter ) )
-					m_dwBlockBegin = iter - begin;
-
-				WORD wCodePage = m_string.m_awCodePage[iter-begin];
-
-				iter = CharNextEx( iter, wCodePage );
-				if(iter - begin > lOffset) break;
-			}
-
-			m_dwBlockEnd = m_dwBlockBegin;
-
-			while(*iter && iter < end) {
-
-				if( IsWhite( *iter ) ) {
-					m_dwBlockEnd = iter - begin;
-					break;
-				}
-
-				WORD wCodePage = m_string.m_awCodePage[iter-begin];
-
-				iter = CharNextEx( iter, wCodePage );
-				if(iter - begin > lOffset) break;
-			}
-
-			m_dwOffset = m_dwBlockEnd;
-		}
+		ReplaceCaret();
 	}
 }
+
 BOOL CWndText::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
 {
 	if( m_wndScrollBar.GetScrollPage() >= m_wndScrollBar.GetMaxScrollPos() )
@@ -2483,50 +2401,23 @@ void CWndText::SetString( LPCTSTR pszString, DWORD dwColor )
 	if( IsWndStyle( WBS_VSCROLL ) )
 		UpdateScrollBar();
 	m_dwOffset = m_string.GetLength();
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 	
 	m_dwBlockBegin = m_dwBlockEnd = 0;
-	//m_dwBlockBegin = m_dwBlockEnd = m_dwOffset = 0;
-	//SetCaretPos( CPoint(0,0) );
-	//m_string.Reset( m_pFont, &GetClientRect() );
 }
 void CWndText::AddString(LPCTSTR pszString, DWORD dwColor, DWORD dwPStyle )
 {
 	int nLine = m_string.GetLineCount() - 1;
-	m_string.AddParsingString( pszString, dwColor, 0x00000000, 0, dwPStyle );//+= pszString;
-	//m_string.Align( m_pFont, nLine );
-	UpdateScrollBar();
-	m_dwOffset = m_string.GetLength();
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-	SetCaretPos( ptCaret );
-}
+	m_string.AddParsingString( pszString, dwColor, 0x00000000, 0, dwPStyle );
 
-void CWndText::Insert(int nIndex, LPCTSTR pstr)
-{
-	int nLine = m_string.GetLineCount() - 1;
-	m_string.Insert( nIndex, pstr );
 	UpdateScrollBar();
 	m_dwOffset = m_string.GetLength();
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-	SetCaretPos( ptCaret );	
-}
-
-void CWndText::Delete(int nIndex, int nLen)
-{
-	int nLine = m_string.GetLineCount() - 1;
-	m_string.Delete( nIndex, nLen );
-	UpdateScrollBar();
-	m_dwOffset = m_string.GetLength();
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-	SetCaretPos( ptCaret );		
+	ReplaceCaret();
 }
 
 void CWndText::ResetString()
 {
-	//m_string.Reset( m_pFont, &GetClientRect() );
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 	UpdateScrollBar();
 }
 
@@ -2540,6 +2431,100 @@ void CWndText::SetupDescription(CWndText * self, LPCTSTR filename) {
 	self->m_string.AddParsingString(scanner.m_pProg);
 	self->ResetString();
 }
+
+std::pair<DWORD, DWORD> CWndText::GetSelectionRange() const {
+	return std::minmax(m_dwBlockBegin, m_dwBlockEnd);
+}
+
+////////////////////////////
+
+EditStringIterator::Character::Character(CEditString & editString)
+	: m_string(&editString)
+	, m_position(editString.GetString())
+	, m_endAt(nullptr) {
+
+}
+
+EditStringIterator::Character & EditStringIterator::Character::operator++() {
+	if (IsAtEnd()) {
+		return *this;
+	}
+
+	EnsureHasEnd();
+
+	m_position = m_endAt;
+	m_endAt = nullptr;
+
+	return *this;
+}
+
+bool EditStringIterator::Character::operator==(const Character & other) const {
+	return m_string == other.m_string && m_position == other.m_position;
+}
+
+
+bool EditStringIterator::Character::IsAtEnd() const {
+	return *m_position == '\0'
+		|| m_position >= m_string->GetString() + m_string->GetLength();
+}
+
+
+void EditStringIterator::Character::EnsureHasEnd() {
+	if (m_endAt) return;
+
+	const WORD wCodePage = m_string->m_awCodePage[m_position - m_string->GetString()];
+	m_endAt = CharNextEx(m_position, wCodePage);
+}
+
+EditStringIterator::SymbolType EditStringIterator::Character::GetSymbolType() {
+	if (IsAtEnd()) return SymbolType::Whitespace;
+	EnsureHasEnd();
+	if (m_position + 1 != m_endAt) return SymbolType::Other;
+
+	if (iswblank(*m_position)) return SymbolType::Blank;
+	if (iswspace(*m_position)) return SymbolType::Whitespace;
+	return SymbolType::Other;
+}
+
+EditStringIterator::WordSpace::WordSpace(CEditString & editString)
+: m_begin(editString), m_end(editString) {
+	ComputeEnd();
+}
+
+EditStringIterator::WordSpace & EditStringIterator::WordSpace::operator++() {
+	if (!m_begin) return *this;
+
+	m_begin = m_end;
+
+	// Pass new lines
+	// TODO: this should only pass one newline
+	while (m_begin && m_begin.GetSymbolType() == SymbolType::Whitespace) {
+		++m_begin;
+	}
+
+	ComputeEnd();
+
+	return *this;
+}
+
+bool EditStringIterator::WordSpace::operator==(const WordSpace & other) const {
+	return m_begin == other.m_begin;
+}
+
+void EditStringIterator::WordSpace::ComputeEnd() {
+	m_end = m_begin;
+
+	// Pass letters
+	while (m_end && m_end.GetSymbolType() == SymbolType::Other) {
+		++m_end;
+	}
+
+	// Pass blanks
+	while (m_end && m_end.GetSymbolType() == SymbolType::Blank) {
+		++m_end;
+	}
+}
+
 
 ////////////////////////////
 
@@ -3238,16 +3223,8 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
 	{
 		CString strTemp1 = m_strTile.Left( m_strTile.GetLength() - 6 );
 		CString strTemp2 = m_strTile.Right( 4 );
-		strFileName.Format( "%s%02d%s", strTemp1, i, strTemp2 );
-		if( m_strWndTileMap.Lookup( strFileName, (void*&)lpImage[i] ) == FALSE )
-		{
-			lpImage[i] = new IMAGE;
-			
-			if( LoadImage( MakePath( DIR_THEME, strFileName ), lpImage[i] ) == FALSE )
-				Error( "CWndTabCtrl::AdditionalSkinTexture에서 %s Open1 실패", strFileName );
-
-			m_strWndTileMap.SetAt( strFileName, lpImage[i] );
-		}
+		strFileName.Format("%s%02d%s", strTemp1.GetString(), i, strTemp2.GetString());
+		lpImage[i] = GetTileImage(strFileName.GetString());
 	}
 	///////////////////////////////////////////////////////
 	CRect rect = GetWindowRect( TRUE );
@@ -3302,29 +3279,15 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
 	{
 		CString strTemp1 = m_strTile.Left( m_strTile.GetLength() - 6 );
 		CString strTemp2 = m_strTile.Right( 4 );
-		strFileName.Format( "%s%02d%s", strTemp1, i, strTemp2 );
-		if( m_strWndTileMap.Lookup( strFileName, (void*&)lpImage[i] ) == FALSE )
-		{
-			lpImage[i] = new IMAGE;
-			if( LoadImage( MakePath( DIR_THEME, strFileName ), lpImage[i] ) == FALSE )
-				Error( "CWndTabCtrl::AdditionalSkinTexture에서 %s Open1 실패", strFileName );
-
-			m_strWndTileMap.SetAt( strFileName, lpImage[i] );
-		}
+		strFileName.Format("%s%02d%s", strTemp1.GetString(), i, strTemp2.GetString());
+		lpImage[i] = GetTileImage(strFileName.GetString());
 	}
 	for( int i = 10; i < 16; i++ )
 	{
 		CString strTemp1 = m_strTile.Left( m_strTile.GetLength() - 6 );
 		CString strTemp2 = m_strTile.Right( 4 );
-		strFileName.Format( "%s%02d%s", strTemp1, i, strTemp2 );
-		if( m_strWndTileMap.Lookup( strFileName, (void*&)lpImage[i] ) == FALSE )
-		{
-			lpImage[i] = new IMAGE;
-			if( LoadImage( MakePath( DIR_THEME, strFileName ), lpImage[i] ) == FALSE )
-				Error( "CWndTabCtrl::AdditionalSkinTexture에서 %s Open1 실패", strFileName );
-
-			m_strWndTileMap.SetAt( strFileName, lpImage[i] );
-		}
+		strFileName.Format("%s%02d%s", strTemp1.GetString(), i, strTemp2.GetString());
+		lpImage[i] = GetTileImage(strFileName.GetString());
 	}
 	///////////////////////////////////////////////////////
 	nHeight -= 2;
@@ -3369,7 +3332,7 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
 	}
  	for( int i = 0; i < m_wndArray.GetSize(); i++ )
 	{
-		CWndBase* pWndBase = (CWndBase*)m_wndArray.GetAt( i );
+		CWndBase* pWndBase = (CWndBase*)m_wndArray[i];
 		CRect rectOld = m_rectWindow;
 		m_rectWindow.OffsetRect( rect.TopLeft() );
 		if( pWndBase->IsDestroy() == FALSE && pWndBase->IsVisible() )
@@ -3377,7 +3340,7 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
  			pWndBase->AdditionalSkinTexture( pDest, sizeSurface, d3dFormat );
 			for( int i = 0; i < pWndBase->m_wndArray.GetSize(); i++ )
 			{
-				CWndBase* pWndChild = (CWndBase*)pWndBase->m_wndArray.GetAt( i );
+				CWndBase* pWndChild = (CWndBase*)pWndBase->m_wndArray[i];
 				CRect rectOldChild = pWndChild->m_rectWindow;
 				pWndChild->m_rectWindow.OffsetRect( rect.TopLeft() );
 				if( pWndChild->IsDestroy() == FALSE && pWndChild->IsVisible() )

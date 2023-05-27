@@ -77,6 +77,9 @@ public:
 	virtual	void OnInitialUpdate(); 
 	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
 	virtual	void OnDestroy( void );
+
+private:
+	bool OnDropItemFromInventory(CItemElem * pItemElem);
 }; 
 
 class CWndBeautyShopConfirm;

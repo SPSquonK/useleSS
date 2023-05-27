@@ -595,7 +595,7 @@ void	CDbManager::SavePocket( CMover* pMover, PPocketStruct pPocketStruct )
 				sprintf( sObjIndex, "%d/", pPocket->m_apItem[i].m_dwObjIndex );
 				strcat( pPocketStruct[nPocket].szObjIndex, sObjIndex );
 				strncat( pPocketStruct[nPocket].szPet, is.szPet, sizeof(is.szPet) );
-				if( pPocket->m_apItem[i].m_bCharged || 0 < pPocket->m_apItem[i].m_dwKeepTime || 0 != pPocket->m_apItem[i].GetRandomOptItemId() )
+				if( 0 < pPocket->m_apItem[i].m_dwKeepTime || 0 != pPocket->m_apItem[i].GetRandomOptItemId() )
 					bExt	= TRUE;
 				if( pPocket->m_apItem[i].IsPiercedItem() )
 					bPiercing	= TRUE;
@@ -653,7 +653,7 @@ void CDbManager::SaveInventory( CMover* pMover, PItemContainerStruct pItemContai
 		strcat( pItemContainerStruct->szObjIndex, sPerObjIndex );
 		strncat( pItemContainerStruct->szPet, is.szPet, sizeof(is.szPet) );
 
-		if( pMover->m_Inventory.m_apItem[ch].m_bCharged || 0 < pMover->m_Inventory.m_apItem[ch].m_dwKeepTime || 0 != pMover->m_Inventory.m_apItem[ch].GetRandomOptItemId() )
+		if( 0 < pMover->m_Inventory.m_apItem[ch].m_dwKeepTime || 0 != pMover->m_Inventory.m_apItem[ch].GetRandomOptItemId() )
 			bExtInven = TRUE;
 		if( pMover->m_Inventory.m_apItem[ch].IsPiercedItem() )
 			bPirecingInven = TRUE;
@@ -707,7 +707,7 @@ void CDbManager::SaveBank( CMover* pMover, CItemContainer* pPlayerBank, ItemCont
 		sprintf( sPerObjIndex, "%d/", pPlayerBank->m_apItem[ch].m_dwObjIndex );
 		strcat( pItemContainerStruct->szObjIndex, sPerObjIndex );
 		strncat( pItemContainerStruct->szPet, is.szPet, sizeof(is.szPet) );
-		if( pPlayerBank->m_apItem[ch].m_bCharged || 0 < pPlayerBank->m_apItem[ch].m_dwKeepTime || 0 != pPlayerBank->m_apItem[ch].GetRandomOptItemId() )
+		if( 0 < pPlayerBank->m_apItem[ch].m_dwKeepTime || 0 != pPlayerBank->m_apItem[ch].GetRandomOptItemId() )
 			bExtBank = TRUE;
 		if( pPlayerBank->m_apItem[ch].IsPiercedItem() )
 			bPirecingBank = TRUE;
@@ -749,7 +749,7 @@ void CDbManager::SaveGuildBank( CItemContainer*  pGuildBank, PItemContainerStruc
 		strcat( pItemContainerStruct->szObjIndex, sPerObjIndex );
 		strncat( pItemContainerStruct->szPet, is.szPet, sizeof(is.szPet) );
 
-		if( pGuildBank->m_apItem[ch].m_bCharged || 0 < pGuildBank->m_apItem[ch].m_dwKeepTime || 0 != pGuildBank->m_apItem[ch].GetRandomOptItemId() )
+		if( 0 < pGuildBank->m_apItem[ch].m_dwKeepTime || 0 != pGuildBank->m_apItem[ch].GetRandomOptItemId() )
 			bExtBank = TRUE;
 		if( pGuildBank->m_apItem[ch].IsPiercedItem() )
 			bPirecingBank = TRUE;
@@ -940,7 +940,7 @@ void CDbManager::SaveOneItem( CItemElem* pItemElem, PItemStruct pItemStruct )
 		// ext
 		sprintf( pItemStruct->szExt, "%d,%d,%I64d"
 			",%d"
-			"/", pItemElem->m_bCharged, pItemElem->m_dwKeepTime, pItemElem->GetRandomOptItemId()
+			"/", 0 /* charged */, pItemElem->m_dwKeepTime, pItemElem->GetRandomOptItemId()
 			, static_cast<int>( pItemElem->m_bTranformVisPet )
 			);
 

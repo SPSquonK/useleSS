@@ -93,7 +93,7 @@ struct VOTE_INSERTED_INFO
 	char	szSelections[4][MAX_BYTE_VOTESELECT];		// 선택문장 
 };
 
-extern CAr&  operator<<(CAr& ar, VOTE_INSERTED_INFO& info);
+extern CAr&  operator<<(CAr& ar, const VOTE_INSERTED_INFO& info);
 extern CAr&  operator>>(CAr& ar, VOTE_INSERTED_INFO& info);
 
 

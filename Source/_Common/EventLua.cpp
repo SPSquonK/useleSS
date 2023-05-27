@@ -23,33 +23,6 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CEventLua::CEventLua()
-{
-	m_bRun = FALSE;
-#ifdef __VTN_TIMELIMIT
-#ifdef __DBSERVER
-	m_bTimeLimit = TRUE;
-#endif // __DBSERVER
-#endif // __VTN_TIMELIMIT
-}
-
-CEventLua::~CEventLua()
-{
-#ifdef __WORLDSERVER
-#ifdef __EVENTLUA_SPAWN
-	m_mapSpawnList.clear();			// spawn 이벤트 진행시 생성될 아이템 및 몬스터 정보
-	m_mapMonsterId.clear();			// spawn 이벤트 진행시 생성된 몬스터가 이벤트용 인지 검사하기 위해 필요
-	m_vecSpawnRegion.clear();		// spawn 이벤트 진행시 아이템 및 몬스터의 생성위치(월드 및 좌표) 정보
-	m_mapSpawnedMonster.clear();	// spawn 이벤트 진행시 실제로 생성된 몬스터들의 목록 저장(이벤트 종료시 삭제하기 위해 필요)
-	m_vecEndSpawnEvent.clear();		// 종료된 이벤트 ID 목록( 남아있는 spawn 몬스터가 있으면 다 삭제한 후 ID를 제거한다
-#endif // __EVENTLUA_SPAWN
-#ifdef __EVENTLUA_KEEPCONNECT
-	m_vecKeepConnectUser.clear();
-	m_mapItemList.clear();
-#endif // __EVENTLUA_KEEPCONNECT
-#endif // __WORLDSERVER
-}
-
 #ifdef __DBSERVER
 #ifdef __AUTO_NOTICE
 BOOL CEventLua::IsNoticeTime()
@@ -173,8 +146,9 @@ void CEventLua::LoadScript()
 #ifdef __WORLDSERVER
 		PrepareProxy();
 #ifdef __EVENTLUA_SPAWN
-		for( auto it=m_mapSpawnList.begin(); it!=m_mapSpawnList.end(); it++ )
-			m_vecEndSpawnEvent.push_back( it->first );
+		for (const BYTE eventId : m_mapSpawnList | std::views::keys) {
+			m_vecEndSpawnEvent.push_back(eventId);
+		}
 		m_mapSpawnList.clear();
 #endif // __EVENTLUA_SPAWN
 #endif // __WORLDSERVER
@@ -823,7 +797,6 @@ void CEventLua::KeepConnectEventProcess()
 	if( !nVecSize )
 		return;
 	
-	u_long idPlayer;
 	int nCount = 0;
 
 	for( int i = 0; i < nVecSize; ++i )
@@ -831,7 +804,7 @@ void CEventLua::KeepConnectEventProcess()
 		if( nCount >= 10 )
 			break;
 		
-		idPlayer = m_vecKeepConnectUser.back();
+		const u_long idPlayer = m_vecKeepConnectUser.back();
 		m_vecKeepConnectUser.pop_back();
 		
 		for( auto it = m_mapItemList.begin(); it != m_mapItemList.end(); ++it )
@@ -938,61 +911,31 @@ float CEventLua::GetShopSellFactor( BOOL bProxy )
 #endif // __WORLDSERVER
 
 #ifdef __WORLDSERVER
-CEventLuaProxy::CEventLuaProxy()
-:
-m_fExpFactor( 1.0f ),
-m_fItemDropRate( 1.0f ),
-m_fPieceItemDropRate( 1.0f ),
-m_fGoldDropFactor( 1.0f ),
-m_nAttackPower( 0 ),
-m_fDefensePower( 0 ),
-m_dwCouponEvent( 0 )
-#ifdef __EVENTLUA_CHEEREXP
-,m_fCheerExpFactor( 1.0f )
-#endif // __EVENTLUA_CHEEREXP
-#ifdef __EVENTLUA_KEEPCONNECT
-, m_dwKeepConnect( 0 )
-#endif // __EVENTLUA_KEEPCONNECT
-
-
-, m_fWeatherEventExpFactor( 1.0f )
-
-#ifdef __SHOP_COST_RATE
-, m_fShopBuyFactor( 1.0f )
-, m_fShopSellFactor( 1.0f )
-#endif // __SHOP_COST_RATE
-{
-}
-
-CEventLuaProxy::~CEventLuaProxy()
-{
-}
 
 void CEventLuaProxy::Initialize( CEventLua* pEventLua )
 {
 	OutputDebugString( "\nCEventLuaProxy::Initialize\n" );
-	SetEventList( pEventLua->GetEventList( FALSE ) );
-	SetExpFactor( pEventLua->GetExpFactor( FALSE ) );
-	SetItemDropRate( pEventLua->GetItemDropRate( FALSE ) );
-	SetPieceItemDropRate( pEventLua->GetPieceItemDropRate( FALSE ) );
-	SetGoldDropFactor( pEventLua->GetGoldDropFactor( FALSE ) );
-	SetAttackPower( pEventLua->GetAttackPower( FALSE ) );
-	SetDefensePower( pEventLua->GetDefensePower( FALSE ) );
-	SetCouponEvent( pEventLua->GetCouponEvent( FALSE ) );
+	m_vEventLists = pEventLua->GetEventList(FALSE);
+	m_fExpFactor = pEventLua->GetExpFactor(FALSE);
+	m_fItemDropRate = pEventLua->GetItemDropRate(FALSE);
+	m_fPieceItemDropRate = pEventLua->GetPieceItemDropRate(FALSE);
+	m_fGoldDropFactor = pEventLua->GetGoldDropFactor(FALSE);
+	m_nAttackPower = pEventLua->GetAttackPower(FALSE);
+	m_fDefensePower = pEventLua->GetDefensePower(FALSE);
+	m_dwCouponEvent = pEventLua->GetCouponEvent(FALSE);
 #ifdef __EVENTLUA_CHEEREXP
-	SetCheerExpFactor( pEventLua->GetCheerExpFactor( FALSE ) );
+	m_fCheerExpFactor = pEventLua->GetCheerExpFactor(FALSE);
 #endif // __EVENTLUA_CHEEREXP
 #ifdef __EVENTLUA_KEEPCONNECT
-	SetKeepConnectTime( pEventLua->GetKeepConnectTime( FALSE ) );
+	m_dwKeepConnect = pEventLua->GetKeepConnectTime(FALSE);
 	pEventLua->GetKeepConnectItem();
 #endif // __EVENTLUA_KEEPCONNECT
 
-
-	SetWeatherEventExpFactor( pEventLua->GetWeatherEventExpFactor( FALSE ) );
+	m_fWeatherEventExpFactor = pEventLua->GetWeatherEventExpFactor(FALSE);
 
 #ifdef __SHOP_COST_RATE
-	SetShopBuyFactor( pEventLua->GetShopBuyFactor( FALSE ) );
-	SetShopSellFactor( pEventLua->GetShopSellFactor( FALSE ) );
+	m_fShopBuyFactor = pEventLua->GetShopBuyFactor(FALSE);
+	m_fShopSellFactor = pEventLua->GetShopSellFactor(FALSE);
 #endif // __SHOP_COST_RATE
 }
 #endif	// __EVENTLUA_0826

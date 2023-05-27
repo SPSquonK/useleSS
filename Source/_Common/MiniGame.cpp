@@ -171,7 +171,6 @@ BOOL CMiniGame::ResultItem_Kawibawibo( CUser* pUser )
 			itemElem.m_nHitPoint	= pItemProp->dwEndurance;
 		else
 			itemElem.m_nHitPoint	= 0;
-		itemElem.m_bCharged = pItemProp->bCharged;
 
 		if( pUser->CreateItem( &itemElem ) )
 		{
@@ -240,7 +239,6 @@ BOOL CMiniGame::ResultItem_Reassemble( CUser* pUser )
 		itemElem.m_nHitPoint	= pItemProp->dwEndurance;
 	else
 		itemElem.m_nHitPoint	= 0;
-	itemElem.m_bCharged = pItemProp->bCharged;
 
 	LogItemInfo aLogItem;
 	if( pUser->CreateItem( &itemElem ) )
@@ -402,7 +400,6 @@ BOOL CMiniGame::ResultItem_Alphabet( CUser* pUser, int nNum )
 		itemElem.m_nHitPoint	= pItemProp->dwEndurance;
 	else
 		itemElem.m_nHitPoint	= 0;
-	itemElem.m_bCharged = pItemProp->bCharged;
 	
 	LogItemInfo aLogItem;
 	if( pUser->CreateItem( &itemElem ) )

@@ -38,9 +38,6 @@ CCtrl::CCtrl()
 	m_objid	 = NULL_ID;
 
 #ifdef __WORLDSERVER
-	m_lRespawn	= -1;
-	m_nRespawnType = 0;
-
 	memset( m_nOldCenter, 0, sizeof(int) * MAX_LINKLEVEL );
 #endif	// __WORLDSERVER
 
@@ -137,20 +134,30 @@ void CCtrl::RemoveItFromGlobalId()
 
 #ifdef __WORLDSERVER
 
+void CCtrl::RefreshSpawn(const BOOL bActiveAttack) {
+	CWorld * pWorld = GetWorld();
+	if (!pWorld) return;
+
+	if (m_spawnerInfo) {
+		GetWorld()->m_respawner.Increment(m_spawnerInfo.value(), bActiveAttack, GetLayer());
+		m_spawnerInfo = std::nullopt;
+	}
+}
+
 BOOL CCtrl::ProcessDeleteRespawn()
 {
+	if (!m_spawnerInfo) return FALSE;
+
 	// 리스폰이 Remove이면 삭제 명령 
-#ifdef __LAYER_1021
-	CRespawnInfo* pRespawnInfo = GetWorld()->m_respawner.GetRespawnInfo( GetRespawn(), m_nRespawnType, GetLayer() );
-#else	// __LAYER_1021
-	CRespawnInfo* pRespawnInfo = GetWorld()->m_respawner.GetRespawnInfo( GetRespawn(), m_nRespawnType );
-#endif	// __LAYER_1021
-	if( pRespawnInfo && pRespawnInfo->m_bRemove )
-	{
+
+	const bool spawnerIsDying = GetWorld()->m_respawner.IsSpawnInDeletion(m_spawnerInfo.value(), GetLayer());
+
+	if (spawnerIsDying) {
 		Delete();
 		return TRUE;
+	} else {
+		return FALSE;
 	}
-	return FALSE;
 }
 
 void CCtrl::RemoveItFromPcView() {

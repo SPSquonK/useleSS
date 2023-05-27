@@ -1,119 +1,107 @@
-#ifndef __RESPAWNER_H__
-#define __RESPAWNER_H__
-
-#define RESPAWNTYPE_REGION   0
-#define RESPAWNTYPE_SCRIPT   1
-#define RESPAWNTYPE_BACKEND  2
+#pragma once
 
 #include "commonCtrl.h"
 
-#ifdef __RES0807
+#ifdef __WORLDSERVER
+#include <memory>
+#include <array>
+#include <concepts>
+
 #define	MAX_RESPOINT_PER_REGION		100
 class CWorld;
-#endif	// __RES0807
+#endif
+
 class CRespawnInfo
 {
 public:
 	DWORD			m_dwType;
-	DWORD			m_dwIndex;
-	volatile long	m_cb;
-	volatile long	m_nActiveAttackNum;
-	CRect			m_rect;
-	D3DXVECTOR3		m_vPos; // flying일 경우만 의미가있음 
-	u_short			m_uTime;
-	short			m_cbTime;
+	DWORD			m_dwIndex = 0;
+	long	m_cb = 0;
+	long	m_nActiveAttackNum = 0;
+	CRect			m_rect = CRect(0, 0, 0, 0);
+	D3DXVECTOR3		m_vPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f); // flying일 경우만 의미가있음 
+	u_short			m_uTime = 0;
+	short			m_cbTime = 0;
 
-	u_short			m_cbRespawn;
-	BOOL			m_bHalf;
+	u_short			m_cbRespawn = 0;
+	BOOL			m_bHalf = FALSE;
 	BOOL			m_bRemove;
-	int m_nItemMin; // 아이템 최소 갯수  
-	int m_nItemMax; // 아이템 최대 갯수  
-	int m_nDayMin;
-	int m_nDayMax;
-	int m_nHourMin;
-	int m_nHourMax;
-	float	m_fY; // 발생할 y 좌표
+	int m_nItemMin = 1; // 아이템 최소 갯수  
+	int m_nItemMax = 1; // 아이템 최대 갯수  
+	int m_nDayMin = 1;
+	int m_nDayMax = 30;
+	int m_nHourMin = 1;
+	int m_nHourMax = 24;
+	float	m_fY = 0.0f; // 발생할 y 좌표
 	CCtrlElem m_CtrlElem;
 
-#ifdef __S1108_BACK_END_SYSTEM
-	long m_nMaxcb;
-	long m_nMaxAttackNum;
-	int	 m_nGMIndex;
-#endif // __S1108_BACK_END_SYSTEM
+	long m_nMaxcb = 0;
+	long m_nMaxAttackNum = 0;
+	int	 m_nGMIndex = 0;
 
-	DWORD	m_dwAiState;
-	float	m_fAngle;	
-	DWORD	m_dwPatrolIndex;
-	BYTE    m_bPatrolCycle: 1;			// 전체 순환이냐? 끝->처음->끝 방향이냐
-#ifdef __RES0807
+	DWORD	m_dwAiState = 2;
+	float	m_fAngle = 0.0f;	
+	DWORD	m_dwPatrolIndex = NULL_ID;
+	BYTE    m_bPatrolCycle: 1 = 0;			// 전체 순환이냐? 끝->처음->끝 방향이냐
+#ifdef __WORLDSERVER
 	POINT	m_aResPoint[MAX_RESPOINT_PER_REGION];
-#endif	// __RES0807
+#endif
 	
 public:
-//	Constructions
 	CRespawnInfo();
-	CRespawnInfo( const CRespawnInfo & ri );
-	virtual	~CRespawnInfo();
-//	Operations
-	CRespawnInfo&	operator=( const CRespawnInfo & ri );
-	void			Clear( void )	{	m_cb	= 0;	}
-	u_long			Get( void )		{	return m_cb;	}
-	void			Increment( BOOL bActiveAttack );	
-	void			GetPos( D3DXVECTOR3 & v, BOOL bRespawn=TRUE );
-#ifdef __RES0807
+
+#ifdef __WORLDSERVER
+	void			Increment( BOOL bActiveAttack );
+	[[nodiscard]] D3DXVECTOR3 GetRandomPosition() const;
+	[[nodiscard]] D3DXVECTOR3 GetRandomPositionWithoutCache() const;
 	BOOL	GenResPoint( CWorld* pWorld );
-#endif	// __RES0807
+	u_long ProcessRespawn(CWorld * pWorld, int nLayer, SpawnType spawnType);
+
+private:
+	[[nodiscard]] bool IsInTime() const;
+	[[nodiscard]] static bool IsInTimeRange(int now, int min, int max);
+#endif
 };
 
-typedef std::vector<CRespawnInfo>	VRI;
-class CRespawner
-{
-public:
-	VRI	m_vRespawnInfo[3];
-	//	Constructions
-	CRespawner();
-#ifdef __LAYER_1021
-	CRespawner( const CRespawner & respawner );
-#endif	// __LAYER_1021
-	virtual	~CRespawner();
+#ifdef __WORLDSERVER
 
-	//	Operations
-private:
-	BOOL	DoRemove( int nRespawnNo, int nType ); // 실제 Remove를 수행 
+class CRespawner final {
 public:
-	int		Add( CRespawnInfo & ri, int nType = RESPAWNTYPE_REGION );
-	CRespawnInfo*	GetRespawnInfo( int nRespawnNo, int nType );
-	BOOL	Remove( int nRespawnNo, int nType );
-#ifdef __LAYER_1021
+	std::vector<CRespawnInfo> m_vRespawnInfoRegion;
+	std::vector<CRespawnInfo> m_vRespawnInfoScript;
+
+public:
+	void AddRegionSpawn(CRespawnInfo ri);
+	bool AddScriptSpawn(CRespawnInfo & ri);
+	bool RemoveScriptSpawn(int nRespawnNo);
+	[[nodiscard]] bool IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo) const;
 	u_long	Spawn( CWorld* pWorld, int nLayer );
-#else	// __LAYER_1021
-	u_long	Spawn( CWorld* pWorld );
-#endif	// __LAYER_1021
-	void	Increment( int nRespawnNo, int nType, BOOL bActiveAttack );
+	void Increment(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack);
+	bool IncrementIfAlone(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack);
+
+private:
+	template<typename Predicate>
+	requires (std::is_invocable_r_v<bool, Predicate, const CRespawnInfo &>)
+	bool IncrementIf(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, Predicate && predicate);
 };
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef __LAYER_1021
-typedef	std::map<int, CRespawner*>	MRP;
 class CLayerdRespawner
 {
 public:
-	CLayerdRespawner();
-	virtual	~CLayerdRespawner();
-	int		Add( CRespawnInfo & ri, int nType = RESPAWNTYPE_REGION );
-	BOOL	Remove( int nRespawn, int nType );
-	CRespawnInfo*	GetRespawnInfo( int nRespawn, int nType, int nLayer );
+	void AddRegionSpawn(CRespawnInfo & ri);
+	bool AddScriptSpawn(CRespawnInfo & ri);
+	bool RemoveScriptSpawn(int nRespawnNo);
+	[[nodiscard]] bool IsSpawnInDeletion(CtrlSpawnInfo ctrlSpawnInfo, int nLayer) const;
 	u_long Spawn( CWorld* pWorld );
-	void	Increment( int nRespawn, int nType, BOOL bActiveAttack, int nLayer );
+	void	Increment( CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, int nLayer );
+	bool IncrementIfAlone(CtrlSpawnInfo ctrlSpawnInfo, BOOL bActiveAttack, int nLayer);
 	void	Expand( int nLayer );
 	void	Release( int nLayer );
 	CRespawner*	Proto( void )	{	return &m_proto;	}
 private:
-	void	Clear();
-private:
 	CRespawner	m_proto;
-	MRP	m_mapRespawners;
+	std::map<int, std::unique_ptr<CRespawner>> m_mapRespawners;
 };
-#endif	// __LAYER_1021
 
-#endif	// __RESPAWNER_H__
+#endif

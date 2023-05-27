@@ -18,31 +18,27 @@ m_fPieceItemDropFactor( 1.0f )
 	UpdateInfo();
 }
 
-CPCBangInfo::~CPCBangInfo()
-{
-}
-
-BOOL CPCBangInfo::ProcessRemove( DWORD dwPlayerId )
+bool CPCBangInfo::ProcessRemove( DWORD dwPlayerId )
 {
 	if( m_dwDisconnectTime != 0 && m_dwDisconnectTime + MIN(10) < g_tmCurrent )
-		return TRUE;
+		return true;
 	
-	DWORD dwUnitTime = GetUnitTime();
+	const DWORD dwUnitTime = GetUnitTime();
 	if( m_dwUnitTime < dwUnitTime )
 	{
 		m_dwUnitTime = dwUnitTime;
 		UpdateInfo();
-		CUser* pUser = static_cast<CUser*>( prj.GetUserByID( dwPlayerId ) );
-		if( IsValidObj( pUser ) )
-			pUser->AddPCBangInfo( this );
+		CUser* pUser = prj.GetUserByID( dwPlayerId );
+		if (IsValidObj(pUser)) {
+			pUser->AddPCBangInfo(this);
+		}
 	}
 
-	return FALSE;
+	return false;
 }
 
-void CPCBangInfo::UpdateInfo()
-{
-	m_fExpFactor = CPCBang::GetInstance()->GetExpInfo( m_dwUnitTime );
+void CPCBangInfo::UpdateInfo() {
+	m_fExpFactor           = CPCBang::GetInstance()->GetExpInfo( m_dwUnitTime );
 	m_fPieceItemDropFactor = CPCBang::GetInstance()->GetPieceItemDropInfo( m_dwUnitTime );
 }
 #endif // __WORLDSERVER
@@ -67,10 +63,6 @@ m_fPieceItemDropFactor( 1.0f )
 {
 }
 
-CPCBangInfo::~CPCBangInfo()
-{
-}
-
 CPCBangInfo* CPCBangInfo::GetInstance()
 {
 	static CPCBangInfo sPCBangInfo;
@@ -87,12 +79,6 @@ CPCBang::CPCBang()
 :m_bApply( TRUE )
 {
 	LoadScript();
-}
-
-CPCBang::~CPCBang()
-{
-	m_vecfExp.clear();
-	m_vecfDropRate.clear();
 }
 
 CPCBang* CPCBang::GetInstance()
@@ -149,7 +135,7 @@ void CPCBang::SetPCBangPlayer( CUser* pUser, DWORD dwPCBangClass )
 	else
 	{
 		CPCBangInfo pi( dwPCBangClass, g_tmCurrent );
-		m_mapPCBang.insert( MAPPBI::value_type( pUser->m_idPlayer, pi ) );
+		m_mapPCBang.emplace( pUser->m_idPlayer, pi );
 		pUser->AddPCBangInfo( &pi );
 	}
 		
@@ -175,12 +161,14 @@ DWORD CPCBang::GetPCBangClass( DWORD dwPlayerId )
 
 void CPCBang::ProcessPCBang()
 {
-	for( MAPPBI::iterator it=m_mapPCBang.begin(); it!=m_mapPCBang.end(); )
-	{
-		if( it->second.ProcessRemove( it->first ) )
-			m_mapPCBang.erase( it++ );
-		else
-			it++;
+	auto it = m_mapPCBang.begin();
+	while (it != m_mapPCBang.end()) {
+
+		if (it->second.ProcessRemove(it->first)) {
+			it = m_mapPCBang.erase(it);
+		} else {
+			++it;
+		}
 	}
 }
 
@@ -190,31 +178,32 @@ void CPCBang::SetApply( BOOL bApply )
 
 	if( IsApply() )
 	{
-		for( MAPPBI::iterator it=m_mapPCBang.begin(); it!=m_mapPCBang.end(); it++ )
-		{
-			CUser* pUser = static_cast<CUser*>( prj.GetUserByID( it->first ) );
-			if( IsValidObj( pUser ) )
-				pUser->AddBuff( BUFF_EQUIP, II_PCBANG_BUFF01, 1, 999999999 );
+		for (const auto & [playerId, _] : m_mapPCBang) {
+			CUser* pUser = prj.GetUserByID(playerId);
+			if (IsValidObj(pUser)) {
+				pUser->AddBuff(BUFF_EQUIP, II_PCBANG_BUFF01, 1, 999999999);
+			}
 		}
 	}
 	else
 	{
-		for( MAPPBI::iterator it=m_mapPCBang.begin(); it!=m_mapPCBang.end(); it++ )
-		{
-			CUser* pUser = static_cast<CUser*>( prj.GetUserByID( it->first ) );
-			if( IsValidObj( pUser ) )
-				pUser->RemoveBuff( BUFF_EQUIP, II_PCBANG_BUFF01 );
+		for (const auto & [playerId, _] : m_mapPCBang) {
+			CUser * pUser = prj.GetUserByID(playerId);
+			if (IsValidObj(pUser)) {
+				pUser->RemoveBuff(BUFF_EQUIP, II_PCBANG_BUFF01);
+			}
 		}
 	}
 }
 
-CPCBangInfo* CPCBang::GetPCBangInfo( DWORD dwPlayerId )
-{
-	MAPPBI::iterator it = m_mapPCBang.find( dwPlayerId );
-	if( it == m_mapPCBang.end() )
-		return NULL;
-	
-	return &it->second;
+CPCBangInfo * CPCBang::GetPCBangInfo(DWORD dwPlayerId) {
+	const auto it = m_mapPCBang.find(dwPlayerId);
+	return it != m_mapPCBang.end() ? &it->second : nullptr;
+}
+
+const CPCBangInfo * CPCBang::GetPCBangInfo(DWORD dwPlayerId) const {
+	const auto it = m_mapPCBang.find(dwPlayerId);
+	return it != m_mapPCBang.end() ? &it->second : nullptr;
 }
 
 float CPCBang::GetExpInfo( DWORD dwHour )
@@ -231,12 +220,12 @@ float CPCBang::GetExpInfo( DWORD dwHour )
 	return 1.0f;
 }
 
-float CPCBang::GetExpFactor( CUser* pUser )
+float CPCBang::GetExpFactor(const CUser* pUser ) const
 {
 	if( !IsApply() || !IsValidObj( pUser ) || !pUser->m_buffs.HasBuff( BUFF_EQUIP, II_PCBANG_BUFF01 ) )
 		return 1.0f;
 
-	CPCBangInfo* pPI = GetPCBangInfo( pUser->m_idPlayer );
+	const CPCBangInfo* pPI = GetPCBangInfo( pUser->m_idPlayer );
 	if( pPI )
 		return pPI->GetExpFactor();
 
@@ -257,12 +246,12 @@ float CPCBang::GetPieceItemDropInfo( DWORD dwHour )
 	return 1.0f;
 }
 
-float CPCBang::GetPieceItemDropFactor( CUser* pUser )
+float CPCBang::GetPieceItemDropFactor(const CUser* pUser ) const
 {	
 	if( !IsApply() || !IsValidObj( pUser ) || !pUser->m_buffs.HasBuff( BUFF_EQUIP, II_PCBANG_BUFF01 ) )
 		return 1.0f;
 
-	CPCBangInfo* pPI = GetPCBangInfo( pUser->m_idPlayer );
+	const CPCBangInfo* pPI = GetPCBangInfo( pUser->m_idPlayer );
 	if( pPI )
 		return pPI->GetPieceItemDropFactor();
 	

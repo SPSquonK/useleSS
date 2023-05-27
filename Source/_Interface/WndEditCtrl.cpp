@@ -1440,15 +1440,11 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 		{
 		case WM_CHAR:
 			{
-				switch(wparam)
-				{
-				case 8:case 27:case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':case '8':case '9':
-					{
-						if( static_cast< DWORD >( strlen( m_string ) ) < m_dwMaxStringNumber )
-							OnChar_(wparam);
-						break;
-					}
+			if (wparam == 8 || wparam == 27 || (wparam >= '0' && wparam <= '9')) {
+				if (static_cast<DWORD>(strlen(m_string)) < m_dwMaxStringNumber) {
+					OnChar_(wparam);
 				}
+			}
 				break;
 			}
 		case WM_KEYDOWN:
@@ -1518,8 +1514,7 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 						{
 							m_string.Insert( m_dwOffset, '\n', EDIT_COLOR, 0, g_imeMgr.m_codePage );
 							m_dwOffset++;
-							CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-							SetCaretPos( ptCaret );
+							ReplaceCaret();
 						}
 						CloseCandidate();
 						g_imeMgr.CancelComposition( m_hWnd );
@@ -1529,18 +1524,12 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 				case VK_ESCAPE:
 					break;
 				}
-				CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-				SetCaretPos( ptCaret );
+				ReplaceCaret();
 				OnKeyDown(wparam, LOWORD(lparam), HIWORD(lparam));
 			}
 		case WM_KEYUP:
 			{
 				TRACE( "WM_KEYUP %x\n", wparam );
-				if( wparam == 0x0d )
-				{
-					int a = 0;
-					a++;
-				}
 				OnKeyUp(wparam, LOWORD(lparam), HIWORD(lparam));
 				return TRUE;
 				break;
@@ -1655,8 +1644,7 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 						if( m_pParentWnd->OnChildNotify( EN_UP, m_nIdWnd, (LRESULT*)this ))
 						{
 							OnKeyEnd();
-							CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-							SetCaretPos( ptCaret );
+							ReplaceCaret();
 							return FALSE;
 						}
 					}
@@ -1678,8 +1666,7 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 					{
 						m_string.Insert( m_dwOffset, '\n', EDIT_COLOR, 0, g_imeMgr.m_codePage );
 						m_dwOffset++;
-						CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-						SetCaretPos( ptCaret );
+						ReplaceCaret();
 					}
 					CloseCandidate();
 					g_imeMgr.CancelComposition( m_hWnd );
@@ -1688,17 +1675,11 @@ BOOL CWndEdit::IsYouMessage(UINT msg,WPARAM wparam, LPARAM lparam)
 				case VK_ESCAPE:
 					break;
 			}
-			CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-			SetCaretPos( ptCaret );
+			ReplaceCaret();
 			OnKeyDown(wparam, LOWORD(lparam), HIWORD(lparam));
 		}
 		case WM_KEYUP:
 			TRACE( "WM_KEYUP %x\n", wparam );
-			if( wparam == 0x0d )
-			{
-				int a = 0;
-				a++;
-			}
 			OnKeyUp(wparam, LOWORD(lparam), HIWORD(lparam));
 			return TRUE;
 			break;
@@ -1762,9 +1743,8 @@ void CWndEdit::DeleteBlock( )
 	{
 		CRect rect = GetClientRect();
 		m_string.Init( m_pFont, &rect );
-		
-		DWORD dwBlockBegin = std::min(m_dwBlockBegin, m_dwBlockEnd);
-		DWORD dwBlockEnd = std::max(m_dwBlockBegin, m_dwBlockEnd);
+
+		const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
 
 		m_string.Delete( dwBlockBegin, dwBlockEnd - dwBlockBegin );
 
@@ -1791,8 +1771,7 @@ LONG CWndEdit::OnInputLangChange(WPARAM dwCommand, LPARAM dwData)
 LONG CWndEdit::OnIMEStartComposition(WPARAM dwCommand, LPARAM dwData)
 {
 	m_stringBack = m_string;
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 
 	return TRUE;
 }
@@ -1898,45 +1877,54 @@ void CWndEdit::OnChar_(UINT nChar)
 		
 		return;
 	}
+
+	// CTRL-A: Select all
+	if (nChar == 1) {
+		m_dwBlockBegin = 0;
+		m_dwBlockEnd = m_dwOffset = m_string.GetLength();
+		ReplaceCaret();
+		return;
+	}
 	
-	if( nChar == 3 ) // CTRL-C : copy
-	{
-		if( m_dwBlockBegin != m_dwBlockEnd  && m_bEnableClipboard)
-		{
-			DWORD dwBlockBegin = std::min(m_dwBlockBegin, m_dwBlockEnd);
-			DWORD dwBlockEnd = std::max(m_dwBlockBegin, m_dwBlockEnd);
-
-			CString strClipboard = m_string.Mid( dwBlockBegin, dwBlockEnd - dwBlockBegin );
-
-			CClipboard::SetText( strClipboard );
+	// CTRL-C: Copy
+	if (nChar == 3) {
+		if (m_dwBlockBegin != m_dwBlockEnd && m_bEnableClipboard) {
+			const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
+			const CString strClipboard = m_string.Mid(dwBlockBegin, dwBlockEnd - dwBlockBegin);
+			CClipboard::SetText(strClipboard.GetString());
 		}
 		return;
 	}
-	if( nChar == 22 && m_bEnableClipboard ) // Ctrl-V : Paste
-	{
-		DeleteBlock();
 
-		CHAR* buf;
-		DWORD dwSize;
-		CClipboard::GetTextLength( &dwSize );
-		if( dwSize )
-		{
-			buf = new CHAR[ dwSize + 1 ];
-			CClipboard::GetText( buf, dwSize + 1 );
-			buf[ dwSize ] = 0; 
+	// CTRL-V: Paste
+	if (nChar == 22 && m_bEnableClipboard) {
+		const std::string str = CClipboard::GetText();
+		if (str != "") {
+			DeleteBlock();
+
 			CRect rect = GetClientRect();
-			m_string.Init( m_pFont, &rect );//, IsWndStyle( EBS_AUTOHSCROLL ), IsWndStyle( EBS_AUTOVSCROLL ) );
-			m_string.Insert( m_dwOffset, buf, EDIT_COLOR, 0, g_imeMgr.m_codePage );
-			m_dwOffset += dwSize - 1;
-			m_pParentWnd->OnChildNotify( EN_CHANGE, m_nIdWnd, (LRESULT*)this ); 
-			safe_delete( buf );
+			m_string.Init(m_pFont, &rect);
+			m_string.Insert(m_dwOffset, str.c_str(), EDIT_COLOR, 0, g_imeMgr.m_codePage);
+			m_dwOffset += str.size() - 1;
+
+			m_pParentWnd->OnChildNotify(EN_CHANGE, m_nIdWnd, (LRESULT *)this);
+			ReplaceCaret();
 		}
 		return;
 	}
-	if( nChar == 24 ) // Ctrl-X : Paste
-	{
+	
+	// CTRL-X: Cut
+	if (nChar == 24 && m_bEnableClipboard) {
+		if (m_dwBlockBegin != m_dwBlockEnd) {
+			const auto [dwBlockBegin, dwBlockEnd] = GetSelectionRange();
+			const CString strClipboard = m_string.Mid(dwBlockBegin, dwBlockEnd - dwBlockBegin);
+			CClipboard::SetText(strClipboard.GetString());
+			DeleteBlock();
+			ReplaceCaret();
+		}
+		return;
 	}
-	else
+
 	if( nChar != 9 ) // !tab
 	{
 		DeleteBlock();
@@ -1969,8 +1957,7 @@ void CWndEdit::OnChar_(UINT nChar)
 		
 		m_pParentWnd->OnChildNotify( EN_CHANGE, m_nIdWnd, (LRESULT*)this ); 
 	}
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 }
 // GCS_RESULTSTR
 BOOL CWndEdit::GetResultString()
@@ -1993,8 +1980,7 @@ BOOL CWndEdit::GetResultString()
 	m_dwOffset+=len;
 
 	m_pParentWnd->OnChildNotify( EN_CHANGE, m_nIdWnd, (LRESULT*)this ); 
-	CPoint ptCaret = OffsetToPoint( m_dwOffset, m_szCaret );
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 	m_stringBack = m_string;
 
 	return TRUE;
@@ -2052,12 +2038,10 @@ BOOL CWndEdit::GetCompString(LONG flag)
 		m_string.Insert( m_dwOffset + i, str[ i ], dwColor, dwStyle, g_imeMgr.m_codePage );
 	}
 
-	m_ptInputPos = OffsetToPoint( m_dwOffset + inputPos, m_szCaret );
+	m_ptInputPos = OffsetToPoint( m_dwOffset + inputPos );
 	
 	m_pParentWnd->OnChildNotify( EN_CHANGE, m_nIdWnd, (LRESULT*)this ); 
-	CPoint ptCaret = OffsetToPoint( m_dwOffset + curPos, m_szCaret );
-
-	SetCaretPos( ptCaret );
+	ReplaceCaret();
 
 	return TRUE;
 }

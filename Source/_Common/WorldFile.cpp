@@ -17,11 +17,10 @@ extern float s_fFogEnd;
 #include "InstanceDungeonBase.h"
 
 
-BOOL CWorld::OpenWorld( OBJID idWorld, BOOL bDir )
-{
-	LPWORLD lpWorld	= g_WorldMng.GetWorldStruct( idWorld );
+BOOL CWorld::OpenWorld( OBJID idWorld, BOOL bDir ) {
+	const WORLD * lpWorld = g_WorldMng.GetWorldStruct(idWorld);
 	ASSERT( lpWorld->IsValid() );
-	return( OpenWorld( lpWorld->m_szFileName, bDir ) );
+	return OpenWorld(lpWorld->m_szFileName, bDir);
 }
 
 const char* DEFAULT_FNAME = "default";
@@ -549,21 +548,13 @@ BOOL CWorld::ReadRespawn( CScript& s )
 	pInfo->m_dwIndex     = dwIndex;
 	pInfo->m_dwType	= dwType;
 
-#ifdef __S1108_BACK_END_SYSTEM
 	pInfo->m_nMaxcb		 = s.GetNumber();
 	pInfo->m_cb          = 0;
-#else // __S1108_BACK_END_SYSTEM
-	pInfo->m_cb          = (u_short)s.GetNumber();
-#endif // __S1108_BACK_END_SYSTEM
 
 	pInfo->m_uTime = (short)s.GetNumber();
 
-#ifdef __S1108_BACK_END_SYSTEM
 	pInfo->m_nMaxAttackNum = (long)s.GetNumber();
 	pInfo->m_nActiveAttackNum = 0;
-#else // __S1108_BACK_END_SYSTEM
-	pInfo->m_nActiveAttackNum = (long)s.GetNumber();
-#endif // __S1108_BACK_END_SYSTEM
 
 	pInfo->m_vPos	= D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
 
@@ -713,7 +704,6 @@ BOOL CWorld::ReadRespawn( CScript& s )
 	}
 
 #ifdef __WORLDSERVER
-#ifdef __RES0807
 	if( FALSE == ri.GenResPoint( this ) )
 	{
 		char lpOutputString[256]	=	{ 0,};
@@ -722,8 +712,8 @@ BOOL CWorld::ReadRespawn( CScript& s )
 		OutputDebugString( lpOutputString );
 		return FALSE;
 	}
-#endif	// __RES0807
-	m_respawner.Add( ri );
+
+	m_respawner.AddRegionSpawn( ri );
 #endif	// __WORLDSERVER
 
 	return TRUE;

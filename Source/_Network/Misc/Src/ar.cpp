@@ -50,6 +50,9 @@ void CAr::Read( void* lpBuf, u_int nSize )
 	{
 		memset( lpBuf, 0, nSize );
 		m_lpBufCur	= m_lpBufMax;
+#ifndef __CLIENT
+		m_overflow = true;
+#endif
 	}
 }
 
@@ -190,6 +193,9 @@ CAr::GoToOffsetAnswer CAr::GoToOffset(const u_long expectedOffset) {
 
 	if (target > m_lpBufMax) [[unlikely]] {
 		Error("CAr::GoToOffset - Target is out of bound");
+#ifndef __CLIENT
+		m_overflow = true;
+#endif
 		m_lpBufCur = m_lpBufMax;
 	}
 

@@ -51,8 +51,10 @@ void CDPCertifier::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 		=	GetHandler( dw );
 
 //	ASSERT( pfn );
-	if( pfn )
-		( this->*( pfn ) )( ar, dpid, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD) );
+	if (pfn) {
+		(this->*(pfn))(ar, dpid, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD));
+		if (ar.IsOverflow()) Error("Certifier-Neuz: Packet %08x overflowed", dw);
+	}
 }
 
 void CDPCertifier::OnAddConnection( DPID dpid )

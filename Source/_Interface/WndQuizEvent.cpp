@@ -64,8 +64,7 @@ BOOL CWndQuizEventConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 
 void CWndQuizEventConfirm::SetString( const char* lpszMessage )
 {
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
-	
+	CWndText* pWndText = GetDlgItem<CWndText>( WIDC_TEXT1 );
 	pWndText->m_string.AddParsingString( lpszMessage  );
 	pWndText->ResetString();
 }

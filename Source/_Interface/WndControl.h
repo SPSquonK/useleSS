@@ -150,6 +150,9 @@ public:
 	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 	virtual LRESULT DefWindowProc(UINT message,WPARAM wParam,LPARAM lParam);
+
+private:
+	void ParentUncheckGroup();
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -177,8 +180,6 @@ public:
 	CTexture* m_pTexButtVScrPUp  ;
 	CTexture* m_pTexButtVScrPDown;
 	CTexture* m_pTexButtVScrPBar ;
-
-//static CTexturePack m_texturePack;
 	
 	CWndScrollBar();
 	~CWndScrollBar();
@@ -296,19 +297,14 @@ protected:
 	DWORD m_dwBlockEnd;
 	DWORD m_dwOffset;
 	
-	BOOL	m_bScr;
 	int		m_nLineRefresh;
 
 public:
-	void Delete( int nIndex, int nLen );
-	
-	void Insert( int nIndex, LPCTSTR pstr );
 	void BlockSetStyle( DWORD dwStyle );
 	void BlockClearStyle( DWORD dwStyle );
 	void BlockSetColor( DWORD dwColor );
 	CWndMenu m_wndMenu;
 	
-	TCHAR m_szCaret[ 3 ];
 	BOOL m_bEnableClipboard;
 
 	int m_nLineSpace; 
@@ -318,7 +314,6 @@ public:
 	CWndText();
 	~CWndText();
 	BOOL Create( DWORD dwTextStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID );
-	CPoint m_ptDeflateRect;
 
 	virtual	void OnInitialUpdate();
 	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE );
@@ -340,17 +335,81 @@ public:
 	LONG GetOffset( CPoint point );
 	void UpdateScrollBar();
 	BOOL IsEmptyBlock() { return m_dwBlockBegin == m_dwBlockEnd; }
-	CPoint OffsetToPoint( DWORD dwOffset, TCHAR* pszStr );
-	CPoint GetCaretPos() { return m_ptCaret; }
+	CPoint OffsetToPoint( DWORD dwOffset );
 virtual void DrawCaret( C2DRender* p2DRender );
 	void SetCaretPos( CPoint ptCaret ) { m_ptCaret = ptCaret; m_timerCaret.Reset(); }
+	void ReplaceCaret() { SetCaretPos(OffsetToPoint(m_dwOffset)); }
 
 	void SetString( LPCTSTR pszString, DWORD dwColor = 0xff000000 );
 	void AddString( LPCTSTR pszString, DWORD dwColor = 0xff000000, DWORD dwPStyle = 0x00000001 );
+	// Reset the carret position and the scrollbar. DOES NOT MODIFY THE STRING
 	void ResetString();
 
 	static void SetupDescription(CWndText * self, LPCTSTR filename);
+	[[nodiscard]] std::pair<DWORD, DWORD> GetSelectionRange() const;
 };
+
+struct EditStringIterator {
+	enum SymbolType { Blank, Whitespace, Other };
+
+	struct Character {
+	private:
+		CEditString * m_string;
+		LPCSTR m_position;
+		LPCSTR m_endAt;
+
+	public:
+		explicit Character(CEditString & editString);
+		Character & operator++();
+		[[nodiscard]] bool operator==(const Character & other) const;
+		[[nodiscard]] bool operator!=(const Character & other) const {
+			return !(*this == other);
+		}
+
+		[[nodiscard]] operator bool() const { return !IsAtEnd(); }
+
+		[[nodiscard]] int GetPosition() const {
+			return m_position - m_string->GetString();
+		}
+
+		[[nodiscard]] SymbolType GetSymbolType();
+		
+	private:
+		[[nodiscard]] bool IsAtEnd() const;
+		void EnsureHasEnd();
+	};
+
+	struct WordSpace {
+	private:
+		Character m_begin;
+		Character m_end;
+
+	public:
+		explicit WordSpace(CEditString & editString);
+
+		WordSpace & operator++();
+		[[nodiscard]] bool operator==(const WordSpace & other) const;
+		[[nodiscard]] bool operator!=(const WordSpace & other) const {
+			return !(*this == other);
+		}
+
+		[[nodiscard]] bool ContainsPosition(int position) const {
+			return position >= m_begin.GetPosition() && position <= m_end.GetPosition();
+		}
+
+		[[nodiscard]] operator bool() const {
+			return m_begin;
+		}
+
+		[[nodiscard]] std::pair<int, int> GetRange() const {
+			return { m_begin.GetPosition(), m_end.GetPosition() };
+		}
+
+	private:
+		void ComputeEnd();
+	};
+};
+
 
 //////////////////////////////////////////////////////////////////////////////
 // CWndViewCtrl

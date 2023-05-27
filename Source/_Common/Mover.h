@@ -122,13 +122,7 @@ enum SKILLUSETYPE
 ////////////////////////////////////////////////////////////////////////////////
 
 /// Player vs Player mode
-enum PVP_MODE
-{
-	PVP_MODE_NONE,
-	PVP_MODE_GUILDWAR,
-	PVP_MODE_PK,
-	PVP_MODE_DUEL
-};
+enum class PVP_MODE { NONE, GUILDWAR, PK, DUEL };
 
 
 /// Transaction Confirmation Type
@@ -612,7 +606,7 @@ public:
 	CTimer          m_timerQuestLimitTime;		/// 퀘스트 제한 시간 타이머 
 	DWORD	        m_dwPKTargetLimit;			/// PK선공제한시각
 	DWORD			m_dwTickCreated;			/// 생성 시각 
-	BOOL			m_bLastPK;					/// 마지막으로 죽었을때 플레이어에게(듀얼포함) 죽은건가 그외의 경우로 죽은건가.
+	bool			m_bLastPK;					/// 마지막으로 죽었을때 플레이어에게(듀얼포함) 죽은건가 그외의 경우로 죽은건가.
 	BOOL			m_bLastDuelParty;			/// 파티듀얼로 사망?
 	CTime			m_tGuildMember;				/// 길드 탈퇴 시각 
 	BOOL			m_bGuildCombat;				/// 길드 대전 중?
@@ -1126,7 +1120,7 @@ private:
 public:
 	CItem*			_DropItemNPC( DWORD dwItemType, DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos );
 	CItem*			DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BOOL bPlayer = FALSE );
-	int				DoDropItemRandom( BOOL bExcludeEquip, CMover* pAttacker, BOOL bOnlyEquip = FALSE );
+	void DoDropItemRandom( unsigned int fromInventory, unsigned int fromEquipement );
 	int				GetItemNum( DWORD dwItemId );
 #ifdef __CLIENT
 	int				GetItemNumForClient( DWORD dwItemId ); // Client에서만 사용하는 아이템 갯수 구하기(Null check 이외의 Usable check안함)
@@ -1146,8 +1140,10 @@ public:
 	void			UpdateItemBank( int nSlot, BYTE nId, short newQuantity );
 	[[nodiscard]] CItemElem * GetItemBankId( int nSlot, DWORD dwId );
 	void			RemoveItemBankId( int nSlot, DWORD dwId );
-	void			GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, const CVendor::CategoryItem & pVendor );
-	BOOL			DropItemByDied( CMover* pAttacker );		// 죽어서 떨어트리는 드랍.
+	void			GenerateVendorItem(
+		boost::container::static_vector<const ItemProp *, MAX_VENDOR_INVENTORY> & itemProps,
+		const CVendor::CategoryItem & pVendor
+	);
 	BOOL			DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETYPE sutType = SUT_NORMAL, BOOL bControl = FALSE, const int nCastingTime = 0 );		// dwSkill/nLevel만 가지고도 사용할 수 있는 버전.
 	void			SetPKTargetLimit( int nSec );
 	void			ClearCmd(); 
@@ -1190,7 +1186,7 @@ public:
 	int				DoDie( CCtrl *pAttackCtrl, DWORD dwMsg = 0 );	// 뒈져라.	
 	void			ChangeFame( CMover *pLose );
 	int				DuelResult( CMover *pLose );
-	PVP_MODE		GetPVPCase( CMover *pAttacker );
+	[[nodiscard]] PVP_MODE GetPVPCase(const CMover * pAttacker) const;
 	void			SubPVP( CMover *pAttacker, int nReflect );	// 사람과 사람의 싸움에서 죽었을때.
 	int				SubDuel( CMover *pAttacker );	// 듀얼중에 죽었을때 
 	int				SubPK( CMover *pAttacker, int nReflect );		// PK에의해 죽었을때.
@@ -1268,7 +1264,7 @@ public:
 	void			PutLvUpSkillName_2( DWORD dwSkill );
 	BOOL			IsRegionMove( DWORD dwOlgRegionAttr, DWORD dwRegionAttr );
 	DWORD			GetPKPVPRegionAttr();
-	BOOL			IsAttackMode();
+	[[nodiscard]] bool IsAttackMode() const;
 	void			AddSkillPoint( int nPoint);
 	
 	void			DoPVPEnd( CCtrl *pAttackCtrl, bool bWinner , DWORD dwMsg = 0 );	// 듀얼끝난뒤 처리
@@ -1318,7 +1314,7 @@ public:
 	void			SubAroundExp( float fRange );		// this를 중심으로 fRange범위안에 있는 유저에게 경험치를 배분한다.
 	void			GetDieDecExp( int nLevel, FLOAT& fRate, FLOAT& fDecExp, BOOL& bPxpClear, BOOL& bLvDown );
 	void			GetDieDecExpRate( FLOAT& fDecExp, DWORD dwDestParam, BOOL bResurrection );
-	BOOL			CreateItem( CItemElem * pItemBase, BYTE* pnId = NULL, short* pnNum = NULL, BYTE nCount = 0 );
+	BOOL			CreateItem( CItemElem * pItemBase, BYTE * pnId = NULL );
 	void			RemoveItem( BYTE nId, short nNum );
 	int				RemoveItemA( DWORD dwItemId, short nNum );
 	void			RemoveVendorItem( CHAR chTab, BYTE nId, short nNum );
@@ -1349,7 +1345,6 @@ public:
 	void			IncSFXCount( OBJID idTarget, DWORD dwSkill );
 	void			AddSFXInfo( OBJID idTarget, SFXHIT_INFO& info );
 	void			ClearSFX( OBJID idTarget );
-	int				GetSummonState();
 	BOOL			IsDoUseBuff( ItemProp* pItemProp );
 	
 #endif // __WORLDSERVER
@@ -1430,7 +1425,6 @@ private:
 	void			ProcessTarget();
 #endif // __CLIENT
 
-	BOOL			DropItem( CMover* pAttacker );		// 죽어서 떨어트리는 드랍.
 	void			EnforcedGhostCorr();
 	void			ApproachGhostAngle();
 	void			OnArriveAtPos();
@@ -1440,6 +1434,11 @@ private:
 	void			SetCmd( OBJACT cmd, int nParam1 = 0, int nParam2 = 0, int nParam3 = 0 );
 	void			SetCmdParam( int nIdx, int nValue ) { m_nCParam[nIdx] = nValue; }
 	BOOL			__SetQuest( LPQUEST lpQuest, LPQUEST lpNewQuest );
+
+#ifdef __WORLDSERVER
+public:		BOOL DropItemByDied(CMover * pAttacker);		// 죽어서 떨어트리는 드랍.
+private:	BOOL DropItem(CMover * pAttacker);		// 죽어서 떨어트리는 드랍.
+#endif
 
 public:
 #ifdef __CLIENT

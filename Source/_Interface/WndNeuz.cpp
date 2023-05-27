@@ -208,22 +208,10 @@ void CWndNeuz::AdditionalSkinTexture( LPWORD pDest, CSize size1, D3DFORMAT d3dFo
 	int nImgBit = IMGBIT_32;
 	for( int i = 0; i < 12; i++ )
 	{
-		CString strTemp1 = m_strTexture.Left( m_strTexture.GetLength() - 6 );
-		CString strTemp2 = m_strTexture.Right( 4 );
-		strFileName.Format( "%s%02d%s", strTemp1, i, strTemp2 );
-		if( m_strWndTileMap.Lookup( strFileName, (void*&)lpImage[i] ) == FALSE )
-		{
-			lpImage[i] = new IMAGE;
-			lpImage[i]->size.cx = 99;
-			if( LoadImage( MakePath( DIR_THEME, strFileName ), lpImage[i] ) == FALSE )
-				Error( "CWndNeuz::AdditionalSkinTexture에서 %s Open1 실패", strFileName );
-
-			m_strWndTileMap.SetAt( strFileName, lpImage[i] );
-		}
-		//else
-		//{
-		//	sizeBmp[i] = CSize(16,16);
-		//}
+		CString strTemp1 = m_strTexture.Left(m_strTexture.GetLength() - 6);
+		CString strTemp2 = m_strTexture.Right(4);
+		strFileName.Format("%s%02d%s", strTemp1.GetString(), i, strTemp2.GetString());
+		lpImage[i] = GetTileImage(strFileName.GetString());
 	}
 	sizeBmp[0] = CSize(16,16);
 	CSize sizeDiv = size2;
@@ -423,30 +411,6 @@ void CWndNeuz::OnSize(UINT nType, int cx, int cy)
 	m_wndTitleBar.Replace(); 
 
 	CWndBase::OnSize( nType, cx, cy );
-
-//	if( rectOld.Width() != m_rectClient.Width() || rectOld.Height() != m_rectClient.Height() )
-
-
-	// 차일드 윈도우들의 사이즈를 조절 
-	/*
-	for(int i = 0; i < m_wndArray.GetSize(); i++)
-	{
-		CWndBase* pWnd = (CWndBase*)m_wndArray.GetAt(i);
-		if(pWnd->IsWndStyle(WBS_DOCKED))// && pWnd->IsWndStyle(WBS_CHILD))
-		{
-			CRect rect = pWnd->GetWindowRect(TRUE);
-			rect.SetRect(0,0,cx,cy);
-			pWnd->SetWndRect(rect);
-		}
-	}
-	*/
-	/*
-	if(IsWndStyle(WBS_DOCKED))// && IsWndStyle(WBS_CHILD))
-	{
-		m_wndTitleBar.m_wndMinimize.SetVisible(FALSE);
-		m_wndTitleBar.m_wndMaximize.SetVisible(FALSE);
-	}
-	*/
 }
 void CWndNeuz::OnNonClientLButtonDblClk( UINT nFlags, CPoint point )
 {

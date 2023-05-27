@@ -39,7 +39,6 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>..\_Network\Net\Include;..\_Network\Misc\Include;.;..\_Network\Mcl\Include;..\_DirectX;..\..\resource;..\_Common;..\_network;..\_Interface;..\_AIInterface;..\Libraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NO_WARN_MBCS_MFC_DEPRECATION;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -60,6 +59,8 @@
       <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <EnableModules>false</EnableModules>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <AdditionalDependencies>D3dx9.lib;d3d9.lib;Dxerr9.lib;winmm.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;d3dxof.lib;dxguid.lib;imm32.lib;Dsound.lib;pdh.lib;VERSION.LIB;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>

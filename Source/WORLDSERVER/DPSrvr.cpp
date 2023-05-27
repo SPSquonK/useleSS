@@ -447,9 +447,18 @@ bool CDPSrvrHandlers::Handle(CDPSrvr & self, CAr & ar, DPID dpidCache, DPID dpid
 
 			(self.*(userHandler)) (ar, *user);
 		}
+
+		void operator()(const UserPtrHandler & userHandler) const {
+			CUser * const user = g_UserMng.GetUser(dpidCache, dpidUser);
+			if (!IsValidObj(user)) return;
+
+			(self.*(userHandler)) (ar, user);
+		}
 	};
 
 	std::visit(Visitor{ self, ar, dpidCache, dpidUser }, pfn);
+
+	if (ar.IsOverflow()) Error("World-Neuz: Packet %08x overflowed", packetId);
 	return true;
 }
 
@@ -1528,11 +1537,10 @@ void CDPSrvr::OnDuelRequest( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		if( pDstUser->m_vtInfo.GetOther() )	// 거래중 이면 듀얼 불가 
 			return;
 	
-		int	nState = pUser->GetSummonState();
-		if( nState != 0 )
+
+		if (pUser->GetSummonState() != CUser::SummonState::Ok_0)
 			return;
-		nState = pUser->GetSummonState();
-		if( nState != 0 )
+		if (pDstUser->GetSummonState() != CUser::SummonState::Ok_0)
 			return;
 
 
@@ -2666,8 +2674,8 @@ void CDPSrvr::OnSellItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 // 패스워드 변경창을 띄울것인지 패스워드 확인창을 띄을것인지를 알려준다
 void CDPSrvr::OnOpenBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-	DWORD	dwId, dwItemId;
-	ar >> dwId >> dwItemId;
+	DWORD	dwId;
+	ar >> dwId;
 
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
@@ -2682,13 +2690,13 @@ void CDPSrvr::OnOpenBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		}
 		if( 0 == strcmp( pUser->m_szBankPass, "0000") )
 		{
-			// 변경창을 띄우라고 함
-			pUser->AddBankWindow( 0, dwId, dwItemId );
-		}
-		else
-		{
-			// 확인창을 띄우라고 함
-			pUser->AddBankWindow( 1, dwId, dwItemId );
+			pUser->SendSnapshotNoTarget<
+				SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID
+			>(Subsnapshot::Bank::InitialRequirePassword, dwId);
+		} else {
+			pUser->SendSnapshotNoTarget<
+				SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID
+			>(Subsnapshot::Bank::AskCurrentPassword, dwId);
 		}
 	}
 }
@@ -3029,9 +3037,6 @@ void CDPSrvr::OnPutItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 			return;
 		}
 
-		if( pItemElem->IsCharged() )
-			return;
-	
 		if( (int)( nItemNum ) > pItemElem->m_nItemNum )
 			nItemNum = pItemElem->m_nItemNum;
 		if( nItemNum < 1 )
@@ -3405,16 +3410,16 @@ void CDPSrvr::OnMoveBankItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 }
 
 void CDPSrvr::OnChangeBankPass( CAr & ar, CUser & pUser ) {
-	const auto [szLastPass, szNewPass, dwId, dwItemId] = ar.Extract<
-		char[10], char[10], DWORD, DWORD
-	>();
+	const auto [szLastPass, szNewPass, dwId] = ar.Extract<char[5], char[5], OBJID>();
 
 	constexpr auto IsValidBankPassword = [](const char * const str) {
 		return std::strlen(str) == 4 && std::all_of(str, str + 4, isdigit2);
 	};
 
 	if (!IsValidBankPassword(szNewPass)) {
-		pUser.AddChangeBankPass(0, dwId, dwItemId);
+		pUser.SendSnapshotNoTarget<
+			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID
+		>(Subsnapshot::Bank::InvalidNewPasswordQuery, dwId);
 		return;
 	}
 
@@ -3424,68 +3429,64 @@ void CDPSrvr::OnChangeBankPass( CAr & ar, CUser & pUser ) {
 		// 패스워드가 바꿨으므로 DB와 클라이언트에 게 바뀠다고 보내줌
 		strcpy( pUser.m_szBankPass, szNewPass );
 		g_dpDBClient.SendChangeBankPass( pUser.GetName(), szNewPass, pUser.m_idPlayer );
-		pUser.AddChangeBankPass( 1, dwId, dwItemId );
+		
+		pUser.SendSnapshotNoTarget<
+			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID
+		>(Subsnapshot::Bank::OkForNewPassword, dwId);
 	}
 	else
 	{
-		// 다시 입력하라고 알려줌
-		// 패스워드가 틀렸음
-		pUser.AddChangeBankPass( 0, dwId, dwItemId );
+		pUser.SendSnapshotNoTarget<
+			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID
+		>(Subsnapshot::Bank::InvalidNewPasswordQuery, dwId);
 	}
 }
 
 void CDPSrvr::OnConfirmBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-	char szPass[10] ={0,};
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		if( pUser->m_vtInfo.GetOther() )
-			return;
-		if( pUser->m_vtInfo.VendorIsVendor() )
-			return;
-		if( pUser->m_bGuildBank )
-			return;
+	if (!IsValidObj(pUser)) return;
+	if( pUser->m_vtInfo.GetOther() ) return;
+	if( pUser->m_vtInfo.VendorIsVendor() ) return;
+	if( pUser->m_bGuildBank ) return;
 #ifdef __S_SERVER_UNIFY
-		if( pUser->m_bAllAction == FALSE )
-			return;
+	if( pUser->m_bAllAction == FALSE ) return;
 #endif // __S_SERVER_UNIFY
 
-		// 여기서 비밀번호 확인작업
-		ar.ReadString( szPass, 10 );
+	// 여기서 비밀번호 확인작업
+	char szPass[5] = { 0, };
+	ar >> szPass;
+	OBJID dwId;
+	ar >> dwId;
 
-		DWORD dwId, dwItemId;
-		ar >> dwId >> dwItemId;
+	if( dwId == NULL_ID && !CNpcChecker::GetInstance()->IsCloseNpc<MMI_BANKING>(pUser) )
+			return;
 
-		if( dwId == NULL_ID && !CNpcChecker::GetInstance()->IsCloseNpc<MMI_BANKING>(pUser) )
-				return;
-
-		if( 0 == strcmp( szPass, pUser->m_szBankPass ) )
-		{
-			// 비밀번호를 확인 하였으므로 은행을 열수 잇게 해줌
-			if( dwId != NULL_ID )
-			{
-				CItemElem* pItemElem = pUser->m_Inventory.GetAtId( dwId );
-				if( IsUsableItem( pItemElem ) == FALSE || pItemElem->m_dwItemId != dwItemId )
-				{
-					return;
-				}
-				else
-				{
-					pUser->m_bInstantBank	= TRUE;
-					pUser->RemoveItem( (BYTE)( pItemElem->m_dwObjId ), 1 );
-				}
-			}
-			pUser->m_bBank = TRUE;
-			pUser->AddconfirmBankPass( 1, dwId, dwItemId );
-		}
-		else
-		{
-			// 다시 입력하라고 알려줌
-			// 패스워드가 틀렸음
-			pUser->AddconfirmBankPass( 0, dwId, dwItemId );
-		}
+	if (0 != strcmp(szPass, pUser->m_szBankPass))
+	{
+		pUser->SendSnapshotNoTarget<
+			SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID
+		>(Subsnapshot::Bank::InvalidCurrentPassword, dwId);
+		return;
 	}
+
+	// 비밀번호를 확인 하였으므로 은행을 열수 잇게 해줌
+	if( dwId != NULL_ID )
+	{
+		CItemElem* pItemElem = pUser->m_Inventory.GetAtId( dwId );
+		if( IsUsableItem( pItemElem ) == FALSE || pItemElem->m_dwItemId != II_SYS_SYS_SCR_CUSTODY)
+		{
+			return;
+		}
+
+		pUser->m_bInstantBank	= TRUE;
+		pUser->RemoveItem( (BYTE)( pItemElem->m_dwObjId ), 1 );
+	}
+	pUser->m_bBank = TRUE;
+
+	pUser->SendSnapshotNoTarget<SNAPSHOTTYPE_BANK, Subsnapshot::Bank>(
+		Subsnapshot::Bank::ValidateBankAccess
+	);
 }
 
 void CDPSrvr::OnSfxHit( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -3967,7 +3968,6 @@ void	CDPSrvr::OnLogItem( LogItemInfo & info, CItemElem* pItemElem, int nItemCoun
 		info.nAbilityOption = pItemElem->GetAbilityOption();
 		info.Negudo = pItemElem->m_nHitPoint;
 		info.MaxNegudo	= pItemElem->m_nRepair;
-		info.m_bCharged = pItemElem->m_bCharged;
 		info.m_dwKeepTime = pItemElem->m_dwKeepTime;
 		info.nPiercedSize = pItemElem->GetPiercingSize();
 		for( int i=0; i<pItemElem->GetPiercingSize(); i++ )
@@ -4021,7 +4021,6 @@ void	CDPSrvr::OnLogItem( LogItemInfo & info, CItemElem* pItemElem, int nItemCoun
 	ar << info.nSlot1;
 	ar << info.nItemResist;
 	ar << info.nResistAbilityOption;
-	ar << info.m_bCharged;
 	ar << info.m_dwKeepTime;
 	ar << info.nPiercedSize;
 	for( int i=0; i<info.nPiercedSize; i++ )
@@ -4201,26 +4200,6 @@ void CDPSrvr::OnBlock( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_
 		g_DPCoreClient.SendBlock( nGu, uidPlayerTo, szNameTo, uidPlayerFrom );
 }
 
-DWORD WhatEleCard( DWORD dwItemType )
-{	// 속성 제련 용 카드의 종류가 
-	// 속성 당 하나로 통합됨
-	switch( dwItemType )
-	{
-		case SAI79::FIRE:
-			return II_GEN_MAT_ELE_FLAME;
-		case SAI79::WATER:
-			return II_GEN_MAT_ELE_RIVER;
-		case SAI79::ELECTRICITY:
-			return II_GEN_MAT_ELE_GENERATOR;
-		case SAI79::EARTH:
-			return II_GEN_MAT_ELE_DESERT;
-		case SAI79::WIND:
-			return II_GEN_MAT_ELE_CYCLON;
-		default:
-			return 0;
-	}
-}
-
 void CDPSrvr::OnPiercingSize( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
 {
 	DWORD dwId1, dwId2, dwId3;
@@ -4289,23 +4268,6 @@ void CDPSrvr::OnCreateSfxObj( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 				g_UserMng.AddCreateSfxObj((CMover *)pUsertmp, dwSfxId, pUsertmp->GetPos().x, pUsertmp->GetPos().y, pUsertmp->GetPos().z, bFlag);
 		}		
 	}
-}
-
-// 1000 단위의 퍼센트를 넘긴다.
-// dwID - 제련 아이템 아이디, n - 제련 단계 
-int GetEnchantPercent( DWORD dwID, int n )
-{
-	static int nPersent1[10] = { 1000, 1000, 700, 500, 400, 300, 200, 100, 50, 20 };
-	static int nPersent2[10] = { 1000, 1000, 900, 750, 550, 400, 250, 150, 80, 40 };
-
-	float fFactor = 1.0f;
-	if( ::GetLanguage() != LANG_KOR && n >= 3 )	// 제련 4부터 10% 확률 감소 
-		fFactor = 0.9f;
-
-	if( dwID == II_GEN_MAT_DIE_TWELVE )
-		return	( (int)( nPersent2[n] * fFactor ) );
-	else
-		return	( (int)( nPersent1[n] * fFactor ) );
 }
 
 void CDPSrvr::OnRemoveItemLevelDown( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
@@ -5296,7 +5258,6 @@ void CDPSrvr::OnQuerySetPlayerName( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 #endif // __S_SERVER_UNIFY
 		{
 			WORD wId	= LOWORD( dwData );
-			WORD wMode	= HIWORD( dwData );
 			if( (short)wId >= 0 )
 			{
 				CItemElem* pItemElem = pUser->GetItemId( wId );
@@ -5421,11 +5382,11 @@ void CDPSrvr::OnCheering( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 				pUser->SendActMsg( OBJMSG_MOTION, MTI_CHEEROTHER, ANILOOP_1PLAY );
 			}
 
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_CHEERSENDEFFECT );
+			g_UserMng.AddCreateSfxObj(pUser, XI_CHEERSENDEFFECT );
 			g_UserMng.AddCreateSfxObj(pTarget, XI_CHEERRECEIVEEFFECT );
 
 
-			CMover* pSrc = (CMover*)pUser ;
+			CMover* pSrc = pUser ;
 			g_UserMng.AddMoverBehavior( pSrc, pSrc->GetPos(), pSrc->m_pActMover->m_vDelta,
 				pSrc->GetAngle(), pSrc->m_pActMover->GetState(), pSrc->m_pActMover->GetStateFlag(), 
 				pSrc->m_dwMotion, pSrc->m_pActMover->m_nMotionEx, pSrc->m_pModel->m_nLoop, pSrc->m_dwMotionOption, g_TickCount.GetTickCount(), TRUE );
@@ -5632,11 +5593,6 @@ void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 					return;
 				if( pItemElem->m_nItemNum < nItemNum )
 					nItemNum	= pItemElem->m_nItemNum;
-				if( pItemElem->IsCharged() )
-				{
-					pUser->AddDiagText( prj.GetText( TID_GAME_CANNOT_POST ) );
-					return;
-				}
 			}
 			if( pUser->GetGold() < (int)( ( nPostGold + nGold ) ) )
 			{
@@ -6151,188 +6107,126 @@ void CDPSrvr::OnGCPlayerPoint( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 		pUser->AddGCPlayerPoint();
 }
 
-void CDPSrvr::OnSummonFriend( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnSummonFriend( CAr & ar, CUser * pUser )
 {
 	DWORD dwData;
 	char lpszPlayer[MAX_PLAYER]	= { 0, };
-	
-	ar >> dwData;
-	ar.ReadString( lpszPlayer, MAX_PLAYER );
+	ar >> dwData >> lpszPlayer;
 
 	if( strlen(lpszPlayer) >= MAX_NAME )
 		return;
 	
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
+	CUser::SummonState nState = pUser->GetSummonState();
+	if (nState != CUser::SummonState::Ok_0) {
+		const DWORD dwMsgId = CUser::GetSummonStateTIdForMyself(nState);
+		pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( dwMsgId ) );
+		return;
+	}
+
+	WORD wId	= LOWORD( dwData );
+	CItemElem* pItemElem = pUser->GetItemId( wId );
+	if (!IsUsableItem(pItemElem)) {
+		ItemProp * pItemProp = prj.GetItemProp(II_SYS_SYS_SCR_FRIENDSUMMON_A);
+		if (pItemProp)
+			pUser->AddDefinedText(TID_ERROR_SUMMONFRIEND_NOITEM, "\"%s\" \"%s\"", pItemProp->szName, lpszPlayer);
+		return;
+	}
+
+	if( pItemElem->m_dwItemId != II_SYS_SYS_SCR_FRIENDSUMMON_A
+		&& pItemElem->m_dwItemId != II_SYS_SYS_SCR_FRIENDSUMMON_B )
+		return;
+
+	if( pItemElem->m_bQuery )
+		return;
+
+	CUser * pUsertmp = g_UserMng.GetUserByPlayerID(CPlayerDataCenter::GetInstance()->GetPlayerId(lpszPlayer));
+	if (!IsValidObj(pUsertmp)) {
+		pUser->AddDefinedText(TID_ERROR_SUMMONFRIEND_NOUSER, "\"%s\"", lpszPlayer);
+		return;
+	}
+
+	nState = pUsertmp->GetSummonState();
+
+	if( nState != CUser::SummonState::Ok_0)
 	{
-		int nState = pUser->GetSummonState();
-		if( nState != 0 )
-		{
-			DWORD dwMsgId = 0;
-			if( nState == 1 )	// 거래중
-				dwMsgId = TID_GAME_TRADE_NOTUSE;
-			else if( nState == 2 ) // 죽음
-				dwMsgId = TID_GAME_DIE_NOTUSE;
-			else if( nState == 3 ) // 개인상점 중
-				dwMsgId = TID_GAME_VENDOR_NOTUSE;
-			else if( nState == 4 ) // 전투중
-				dwMsgId = TID_GAME_ATTACK_NOTUSE;
-			else if( nState == 5 ) // 비행중
-				dwMsgId = TID_GAME_FLY_NOTUSE;
-			else if( nState == 6 ) // 듀얼중
-				dwMsgId = TID_GAME_ATTACK_NOTUSE;
-
-			pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( dwMsgId ) );
-			return;
-		}
-
-		WORD wId	= LOWORD( dwData );
-		WORD wMode	= HIWORD( dwData );
-		CItemElem* pItemElem = pUser->GetItemId( wId );
-		if( IsUsableItem( pItemElem ) )
-		{
-			if( pItemElem->m_dwItemId != II_SYS_SYS_SCR_FRIENDSUMMON_A && pItemElem->m_dwItemId != II_SYS_SYS_SCR_FRIENDSUMMON_B )
-				return;
-			if( pItemElem->m_bQuery )
-				return;
-
-			CUser* pUsertmp = g_UserMng.GetUserByPlayerID( CPlayerDataCenter::GetInstance()->GetPlayerId( lpszPlayer ) );
-			if( IsValidObj( (CObj*)pUsertmp ) )
-			{
-				nState = pUsertmp->GetSummonState();
-				if( nState != 0 )
-				{
-					DWORD dwMsgId = 0;
-					if( nState == 1 )	// 거래중
-						dwMsgId = TID_GAME_TRADE_NOTUSE1;
-					else if( nState == 2 ) // 죽음
-						dwMsgId = TID_GAME_DIE_NOTUSE1;
-					else if( nState == 3 ) // 개인상점 중
-						dwMsgId = TID_GAME_VENDOR_NOTUSE1;
-					else if( nState == 4 ) // 전투중
-						dwMsgId = TID_GAME_ATTACK_NOTUSE1;
-					else if( nState == 5 ) // 비행중
-						dwMsgId = TID_GAME_FLY_NOTUSE1;
-					else if( nState == 6 ) // 듀얼중
-						dwMsgId = TID_GAME_ATTACK_NOTUSE1;
-					
-					pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( dwMsgId ) );
-				}
-				else if( pUser->m_idPlayer == pUsertmp->m_idPlayer )
-				{
-					pUser->AddDefinedText( TID_GAME_SUMMON_FRIEND_MY_NOUSE );
-				}
-				else if( prj.IsGuildQuestRegion( pUser->GetPos() ) )
-				{
-					pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( TID_GAME_EVENT_WORLD_NOTUSE ) );
-				}
-				else if( prj.IsGuildQuestRegion( pUsertmp->GetPos() ) )
-				{
-					pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( TID_GAME_EVENT_WORLD_NOTUSE1 ) );
-				}
-				else if( pUser->GetWorld()->GetID() != pUsertmp->GetWorld()->GetID()
-						|| pUser->GetLayer() != pUsertmp->GetLayer()
-					)
-				{
-					CString strtmp;
-					strtmp.Format( prj.GetText( TID_GAME_WORLD_NOTUSE ), pUser->GetWorld()->m_szWorldName, pUsertmp->GetWorld()->m_szWorldName );
-					pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", strtmp );
-				}
-				else if( CRainbowRaceMng::GetInstance()->IsEntry( pUser->m_idPlayer )
-						|| CRainbowRaceMng::GetInstance()->IsEntry( pUsertmp->m_idPlayer ) )
-				{
-					pUser->AddDefinedText( TID_GAME_RAINBOWRACE_NOTELEPORT );
-					return;
-				}
+		const DWORD dwMsgId = CUser::GetSummonStateTIdForOther(nState);
+		pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( dwMsgId ) );
+	}
+	else if( pUser->m_idPlayer == pUsertmp->m_idPlayer )
+	{
+		pUser->AddDefinedText( TID_GAME_SUMMON_FRIEND_MY_NOUSE );
+	}
+	else if( prj.IsGuildQuestRegion( pUser->GetPos() ) )
+	{
+		pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( TID_GAME_EVENT_WORLD_NOTUSE ) );
+	}
+	else if( prj.IsGuildQuestRegion( pUsertmp->GetPos() ) )
+	{
+		pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( TID_GAME_EVENT_WORLD_NOTUSE1 ) );
+	}
+	else if( pUser->GetWorld()->GetID() != pUsertmp->GetWorld()->GetID()
+			|| pUser->GetLayer() != pUsertmp->GetLayer()
+		)
+	{
+		CString strtmp;
+		strtmp.Format( prj.GetText( TID_GAME_WORLD_NOTUSE ), pUser->GetWorld()->m_szWorldName, pUsertmp->GetWorld()->m_szWorldName );
+		pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", strtmp );
+	}
+	else if( CRainbowRaceMng::GetInstance()->IsEntry( pUser->m_idPlayer )
+			|| CRainbowRaceMng::GetInstance()->IsEntry( pUsertmp->m_idPlayer ) )
+	{
+		pUser->AddDefinedText( TID_GAME_RAINBOWRACE_NOTELEPORT );
+		return;
+	}
 #ifdef __QUIZ
-				else if( pUser->GetWorld()->GetID() == WI_WORLD_QUIZ 
-						|| pUsertmp->GetWorld()->GetID() == WI_WORLD_QUIZ )
-					pUser->AddDefinedText( TID_GAME_QUIZ_DO_NOT_USE );
+	else if( pUser->GetWorld()->GetID() == WI_WORLD_QUIZ 
+			|| pUsertmp->GetWorld()->GetID() == WI_WORLD_QUIZ )
+		pUser->AddDefinedText( TID_GAME_QUIZ_DO_NOT_USE );
 						
 #endif // __QUIZ
-				else
-				{
-					if( pUsertmp->m_RTMessenger.IsBlock( pUser->m_idPlayer ) )
-					{
-						pUser->AddDefinedText( TID_ERROR_SUMMONFRIEND_NOUSER, "\"%s\"", lpszPlayer );
-						return;
-					}
-					pItemElem->m_bQuery		= TRUE;
-					pUsertmp->AddSummonFriendConfirm( pUser->GetId(), dwData, pUser->GetName(), pUser->GetWorld()->m_szWorldName );
-					pUser->AddDefinedText( TID_GAME_SUMMONFRIEND_CONFIRM, "\"%s\"", lpszPlayer );
-				}
-			}
-			else
-			{
-				pUser->AddDefinedText( TID_ERROR_SUMMONFRIEND_NOUSER, "\"%s\"", lpszPlayer );
-			}
-		}	
-		else
+	else
+	{
+		if( pUsertmp->m_RTMessenger.IsBlock( pUser->m_idPlayer ) )
 		{
-			ItemProp* pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_FRIENDSUMMON_A );
-			if( pItemProp )
-				pUser->AddDefinedText( TID_ERROR_SUMMONFRIEND_NOITEM, "\"%s\" \"%s\"", pItemProp->szName, lpszPlayer );
+			pUser->AddDefinedText( TID_ERROR_SUMMONFRIEND_NOUSER, "\"%s\"", lpszPlayer );
+			return;
 		}
+		pItemElem->m_bQuery		= TRUE;
+		pUsertmp->AddSummonFriendConfirm( pUser->GetId(), dwData, pUser->GetName(), pUser->GetWorld()->m_szWorldName );
+		pUser->AddDefinedText( TID_GAME_SUMMONFRIEND_CONFIRM, "\"%s\"", lpszPlayer );
 	}
+
+
 }
-void CDPSrvr::OnSummonFriendConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnSummonFriendConfirm( CAr & ar, CUser * pUser )
 {
 	OBJID objid;
 	DWORD dwData;
-
 	ar >> objid >> dwData;
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		CUser* pUsertmp = prj.GetUser( objid );
-		if( IsValidObj( (CObj*)pUsertmp ) )
-		{
-			int nState = pUser->GetSummonState();
-			if( nState != 0 )
-			{
-				DWORD dwMsgId = 0;
-				if( nState == 1 )	// 거래중
-					dwMsgId = TID_GAME_TRADE_NOTUSE;
-				else if( nState == 2 ) // 죽음
-					dwMsgId = TID_GAME_DIE_NOTUSE;
-				else if( nState == 3 ) // 개인상점 중
-					dwMsgId = TID_GAME_VENDOR_NOTUSE;
-				else if( nState == 4 ) // 전투중
-					dwMsgId = TID_GAME_ATTACK_NOTUSE;
-				else if( nState == 5 ) // 비행중
-					dwMsgId = TID_GAME_FLY_NOTUSE;
-				else if( nState == 6 ) // 듀얼중
-					dwMsgId = TID_GAME_ATTACK_NOTUSE;
-				
-				pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", prj.GetText( dwMsgId ) );
-				pUsertmp->AddDefinedText( TID_GAME_STATE_NOTSUMMON, "\"%s\"", prj.GetText( dwMsgId + 1 ) );
-				return;
-			}
 
-			nState = pUsertmp->GetSummonState();
-			if( nState != 0 )
-			{
-				DWORD dwMsgId = 0;
-				if( nState == 1 )	// 거래중
-					dwMsgId = TID_GAME_TRADE_NOTUSE1;
-				else if( nState == 2 ) // 죽음
-					dwMsgId = TID_GAME_DIE_NOTUSE1;
-				else if( nState == 3 ) // 개인상점 중
-					dwMsgId = TID_GAME_VENDOR_NOTUSE1;
-				else if( nState == 4 ) // 전투중
-					dwMsgId = TID_GAME_ATTACK_NOTUSE1;
-				else if( nState == 5 ) // 비행중
-					dwMsgId = TID_GAME_FLY_NOTUSE1;
-				else if( nState == 6 ) // 듀얼중
-					dwMsgId = TID_GAME_ATTACK_NOTUSE1;
-				
-				pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK , "\"%s\"", prj.GetText( dwMsgId ) );
-				pUsertmp->AddDefinedText( TID_GAME_STATE_NOTSUMMON , "\"%s\"", prj.GetText( dwMsgId - 1 ) );
-				return;
-			}
+	CUser* pUsertmp = prj.GetUser( objid );
+	if (!IsValidObj(pUsertmp)) {
+		return;
+	}
+
+	CUser::SummonState nState = pUser->GetSummonState();
+	if (nState != CUser::SummonState::Ok_0) {
+		const DWORD dwMsgId = CUser::GetSummonStateTIdForMyself(nState);
+		pUser->AddDefinedText(TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", prj.GetText(dwMsgId));
+		pUsertmp->AddDefinedText(TID_GAME_STATE_NOTSUMMON, "\"%s\"", prj.GetText(dwMsgId + 1));
+		return;
+	}
+
+	nState = pUsertmp->GetSummonState();
+	if (nState != CUser::SummonState::Ok_0) {
+		const DWORD dwMsgId = CUser::GetSummonStateTIdForOther(nState);
+
+		pUser->AddDefinedText(TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", prj.GetText(dwMsgId));
+		pUsertmp->AddDefinedText(TID_GAME_STATE_NOTSUMMON, "\"%s\"", prj.GetText(dwMsgId - 1));
+		return;
+	}
 
 			WORD wId	= LOWORD( dwData );
-			WORD wMode	= HIWORD( dwData );
 			CItemElem* pItemElem = pUsertmp->GetItemId( wId );
 			if( IsUsableItem( pItemElem ) )
 			{
@@ -6382,8 +6276,8 @@ void CDPSrvr::OnSummonFriendConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LP
 				if( pItemProp )
 					pUsertmp->AddDefinedText( TID_ERROR_SUMMONFRIEND_NOITEM, "\"%s\" \"%s\"", pItemProp->szName, pUser->GetName() );
 			}
-		}
-	}
+
+
 }
 
 void CDPSrvr::OnSummonFriendCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -6406,229 +6300,150 @@ void CDPSrvr::OnSummonFriendCancel( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 	}
 }
 
-void CDPSrvr::OnSummonParty( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnSummonParty( CAr & ar, CUser * pUser )
 {
-	DWORD dwData;
-	
-	ar >> dwData;
+	DWORD dwData; ar >> dwData;
 
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
+	const CUser::SummonState nState = pUser->GetSummonState();
+	if( nState != CUser::SummonState::Ok_0 )
 	{
-		int nState = pUser->GetSummonState();
-		if( nState != 0 )
-		{
-			DWORD dwMsgId = 0;
-			if( nState == 1 )	// 거래중
-				dwMsgId = TID_GAME_TRADE_NOTUSE;
-			else if( nState == 2 ) // 죽음
-				dwMsgId = TID_GAME_DIE_NOTUSE;
-			else if( nState == 3 ) // 개인상점 중
-				dwMsgId = TID_GAME_VENDOR_NOTUSE;
-			else if( nState == 4 ) // 전투중
-				dwMsgId = TID_GAME_ATTACK_NOTUSE;
-			else if( nState == 5 ) // 비행중
-				dwMsgId = TID_GAME_FLY_NOTUSE;
-			else if( nState == 6 ) // 듀얼중
-				dwMsgId = TID_GAME_ATTACK_NOTUSE;
-			
-			pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( dwMsgId ) );
-			return;
-		}
+		const DWORD dwMsgId = CUser::GetSummonStateTIdForMyself(nState);
+		pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( dwMsgId ) );
+		return;
+	}
 
-		if( prj.IsGuildQuestRegion( pUser->GetPos() ) )
-		{
-			pUser->AddDefinedText( TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText( TID_GAME_EVENT_WORLD_NOTUSE ) );
-			return;
-		}
-		if( CRainbowRaceMng::GetInstance()->IsEntry( pUser->m_idPlayer ) )
-		{
-			pUser->AddDefinedText( TID_GAME_RAINBOWRACE_NOTELEPORT );
-			return;
-		}
+	if (prj.IsGuildQuestRegion(pUser->GetPos())) {
+		pUser->AddDefinedText(TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText(TID_GAME_EVENT_WORLD_NOTUSE));
+		return;
+	}
 
-		
-		WORD wId	= LOWORD( dwData );
-		WORD wMode	= HIWORD( dwData );
-		CItemElem* pItemElem = pUser->GetItemId( wId );
-		if( IsUsableItem( pItemElem ) )
-		{
-			CParty* pParty;
-			pParty = g_PartyMng.GetParty( pUser->GetPartyId() );
-			if( pParty && pParty->IsLeader( pUser->m_idPlayer ) )
-			{
-				if( !pUser->HasBuff( BUFF_ITEM, (WORD)( pItemElem->GetProp()->dwID ) ) )
-				{
-					pParty->m_dwWorldId = pUser->GetWorld()->GetID();
+	if (CRainbowRaceMng::GetInstance()->IsEntry(pUser->m_idPlayer)) {
+		pUser->AddDefinedText(TID_GAME_RAINBOWRACE_NOTELEPORT);
+		return;
+	}
+	
+	const WORD wId	= LOWORD( dwData );
+	CItemElem * const pItemElem = pUser->GetItemId( wId );
 
-					g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElem, pItemElem->GetProp(), pParty->m_sParty );
-					
-					ItemProp* pItemProptmp = prj.GetItemProp( II_SYS_SYS_SCR_PARTYSUMMON );
-					for( int i = 1 ; i < pParty->m_nSizeofMember ; i++ )
-					{
-						CUser* pUsertmp		= g_UserMng.GetUserByPlayerID( pParty->GetPlayerId( i ) );
-						if( IsValidObj( (CObj*)pUsertmp ) )
-						{
-//								if( pUser->GetWorld()->GetID() == pUsertmp->GetWorld()->GetID() && !prj.IsGuildQuestRegion( pUsertmp->GetPos() ) )
-							{
-								pUser->DoApplySkill( (CCtrl*)pUsertmp, pItemElem->GetProp(), NULL );
-								pUsertmp->AddSummonPartyConfirm( pUser->GetId(), dwData, pUser->GetWorld()->m_szWorldName );
-								if( pItemProptmp )
-									g_UserMng.AddCreateSfxObj((CMover *)pUsertmp, pItemProptmp->dwSfxObj3 );
-								pUser->AddDefinedText( TID_GAME_SUMMONFRIEND_CONFIRM, "\"%s\"", pUsertmp->GetName() );
-							}
-//								else
-//								{
-//									pUser->AddDefinedText( TID_ERROR_SUMMONFRIEND_NOTWORLD );
-//								}
-						}
-						else
-						{
-							pUser->AddDefinedText( TID_ERROR_SUMMONFRIEND_NOUSER, "\"%s\"", CPlayerDataCenter::GetInstance()->GetPlayerString( pParty->GetPlayerId( i ) ) );
-						}
-					}
-					pUser->DoApplySkill( (CCtrl*)pUser, pItemElem->GetProp(), NULL );
-					pUser->RemoveItem( (BYTE)( wId ), (short)1 );
+	if (!IsUsableItem(pItemElem)) {
+		const ItemProp * pItemProp = prj.GetItemProp(II_SYS_SYS_SCR_PARTYSUMMON);
+		if (pItemProp)
+			pUser->AddDefinedText(TID_ERROR_SUMMONPARTY_NOITEM, "\"%s\"", pItemProp->szName);
+		return;
+	}
 
-					if( pItemProptmp )
-						g_UserMng.AddCreateSfxObj((CMover *)pUser, pItemProptmp->dwSfxObj3 );
-				}
-				else
-				{
-					pUser->AddDefinedText( TID_GAME_LIMITED_USE );
-				}
-			}
-		}	
-		else
-		{
-			ItemProp* pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_PARTYSUMMON );
-			if( pItemProp )
-				pUser->AddDefinedText( TID_ERROR_SUMMONPARTY_NOITEM, "\"%s\"", pItemProp->szName );
+	CParty * pParty = g_PartyMng.GetParty( pUser->GetPartyId() );
+	if (!pParty) return;
+	if (!pParty->IsLeader(pUser->m_idPlayer)) return;
+
+	if (pUser->HasBuff(BUFF_ITEM, (WORD)(pItemElem->m_dwItemId))) {
+		pUser->AddDefinedText(TID_GAME_LIMITED_USE);
+		return;
+	}
+
+	if (pItemElem->m_dwItemId != II_SYS_SYS_SCR_PARTYSUMMON) {
+		return;
+	}
+
+	pParty->m_dwWorldId = pUser->GetWorld()->GetID();
+
+	g_dpDBClient.SendLogSMItemUse("1", pUser, pItemElem, pItemElem->GetProp(), pParty->m_sParty);
+
+	ItemProp * pItemProptmp = prj.GetItemProp(II_SYS_SYS_SCR_PARTYSUMMON);
+
+	for (int i = 1; i < pParty->m_nSizeofMember; i++) {
+		CUser * pUsertmp = g_UserMng.GetUserByPlayerID(pParty->GetPlayerId(i));
+		if (IsValidObj(pUsertmp)) {
+			pUser->DoApplySkill(pUsertmp, pItemProptmp, NULL);
+			pUsertmp->AddSummonPartyConfirm(pUser->GetId(), dwData, pUser->GetWorld()->m_szWorldName);
+			if (pItemProptmp)
+				g_UserMng.AddCreateSfxObj(pUsertmp, pItemProptmp->dwSfxObj3);
+			pUser->AddDefinedText(TID_GAME_SUMMONFRIEND_CONFIRM, "\"%s\"", pUsertmp->GetName());
+		} else {
+			pUser->AddDefinedText(TID_ERROR_SUMMONFRIEND_NOUSER, "\"%s\"", CPlayerDataCenter::GetInstance()->GetPlayerString(pParty->GetPlayerId(i)));
 		}
-	}	
+	}
+
+	pUser->DoApplySkill(pUser, pItemProptmp, NULL);
+	pUser->RemoveItem((BYTE)(wId), 1);
+
+	if (pItemProptmp) {
+		g_UserMng.AddCreateSfxObj(pUser, pItemProptmp->dwSfxObj3);
+	}
 }
 
-void CDPSrvr::OnSummonPartyConfirm( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnSummonPartyConfirm( CAr & ar, CUser * pUser )
 {
 	OBJID objid;
 	DWORD dwData;
 	ar >> objid;
 	ar >> dwData;
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		CParty* pParty;
-		pParty = g_PartyMng.GetParty( pUser->GetPartyId() );
-		if( pParty )
-		{
-			CMover* pLeader = prj.GetUser( objid );
-			if( IsValidObj( pLeader ) && pParty->IsLeader( pLeader->m_idPlayer ) && pLeader->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_PARTYSUMMON ) )
-			{
-				if( pUser == pLeader )
-					return;
-				int nState = pUser->GetSummonState();
-				if( nState != 0 && nState != 5 )
-				{
-					DWORD dwMsgId = 0;
-					if( nState == 1 )	// 거래중
-						dwMsgId = TID_GAME_TRADE_NOTUSE;
-					else if( nState == 2 ) // 죽음
-						dwMsgId = TID_GAME_DIE_NOTUSE;
-					else if( nState == 3 ) // 개인상점 중
-						dwMsgId = TID_GAME_VENDOR_NOTUSE;
-					else if( nState == 4 ) // 전투중
-						dwMsgId = TID_GAME_ATTACK_NOTUSE;
-					else if( nState == 6 ) // 듀얼중
-						dwMsgId = TID_GAME_ATTACK_NOTUSE;
-					
-					pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK , "\"%s\"", prj.GetText( dwMsgId ) );
-					return;
-				}
+
+	CParty* pParty = g_PartyMng.GetParty( pUser->GetPartyId() );
+
+	if (!pParty) {
+		pUser->AddDefinedText(TID_GAME_NOPARTY);
+		return;
+	}
+
+	CUser * pLeader = prj.GetUser( objid );
+	if (!(IsValidObj(pLeader)
+		&& pParty->IsLeader(pLeader->m_idPlayer)
+		&& pLeader->HasBuff(BUFF_ITEM, II_SYS_SYS_SCR_PARTYSUMMON))) {
+		pUser->AddDefinedText(TID_ERROR_SUMMONPARTY_NOTTIME);
+		return;
+	}
+
+	if (pUser == pLeader) {
+		return;
+	}
+
+	CUser::SummonState nState = pUser->GetSummonState();
+	if (nState != CUser::SummonState::Ok_0 && nState != CUser::SummonState::Fly_5) {
+		const DWORD dwMsgId = CUser::GetSummonStateTIdForMyself(nState);
+		pUser->AddDefinedText(TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", prj.GetText(dwMsgId));
+		return;
+	}
 				
-				nState = pLeader->GetSummonState();
-				if( nState != 0 )
-				{
-					DWORD dwMsgId = 0;
-					if( nState == 1 )	// 거래중
-						dwMsgId = TID_GAME_TRADE_NOTUSE1;
-					else if( nState == 2 ) // 죽음
-						dwMsgId = TID_GAME_DIE_NOTUSE1;
-					else if( nState == 3 ) // 개인상점 중
-						dwMsgId = TID_GAME_VENDOR_NOTUSE1;
-					else if( nState == 4 ) // 전투중
-						dwMsgId = TID_GAME_ATTACK_NOTUSE1;
-					else if( nState == 5 ) // 비행중
-						dwMsgId = TID_GAME_FLY_NOTUSE1;
-					else if( nState == 6 ) // 듀얼중
-						dwMsgId = TID_GAME_ATTACK_NOTUSE1;
-					
-					pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK , "\"%s\"", prj.GetText( dwMsgId ) );
-					return;
-				}
+	nState = pLeader->GetSummonState();
+	if (nState != CUser::SummonState::Ok_0) {
+		const DWORD dwMsgId = CUser::GetSummonStateTIdForOther(nState);
+		pUser->AddDefinedText(TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", prj.GetText(dwMsgId));
+		return;
+	}
 				
-				if( prj.IsGuildQuestRegion( pLeader->GetPos() ) )
-				{
-					pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", prj.GetText( TID_GAME_EVENT_WORLD_NOTUSE1) );
-				}
-				else if( prj.IsGuildQuestRegion( pUser->GetPos() ) )
-				{
-					pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", prj.GetText( TID_GAME_EVENT_WORLD_NOTUSE ) );
-				}
-				else if( pUser->GetWorld()->GetID() != pParty->m_dwWorldId )
-				{
-					CWorld* pWorld = g_WorldMng.GetWorld( pParty->m_dwWorldId );
-					if( pWorld )
-					{
-						CString strtmp;
-						strtmp.Format( prj.GetText( TID_GAME_WORLD_NOTUSE ), pUser->GetWorld()->m_szWorldName, pWorld->m_szWorldName );
-						pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", strtmp );
-					}
-				}
-				else if( pParty->m_dwWorldId != pLeader->GetWorld()->GetID() )
-				{
-					CWorld* pWorld = g_WorldMng.GetWorld( pParty->m_dwWorldId );
-					if( pWorld )
-					{
-						CString strtmp;
-						strtmp.Format( prj.GetText( TID_GAME_WORLDLEADER_NOTUSE ) );
-						pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", strtmp );
-					}
-				}
-				else if( pLeader->GetLayer() != pUser->GetLayer() )
-				{
-					CString strtmp;
-					strtmp.Format( prj.GetText( TID_GAME_WORLD_NOTUSE ) );
-					pUser->AddDefinedText( TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", strtmp );
-				}
-				else if( CRainbowRaceMng::GetInstance()->IsEntry( pUser->m_idPlayer ) )
-				{
-					pUser->AddDefinedText( TID_GAME_RAINBOWRACE_NOTELEPORT );
-				}
-#ifdef __QUIZ
-				else if( pLeader->GetWorld()->GetID() == WI_WORLD_QUIZ 
-					|| pUser->GetWorld()->GetID() == WI_WORLD_QUIZ )
-					pUser->AddDefinedText( TID_GAME_QUIZ_DO_NOT_USE );
-#endif // __QUIZ
-				else
-				{
-					pUser->RemoveBuff( BUFF_ITEM, II_SYS_SYS_SCR_PARTYSUMMON );
-					pUser->Replace(*pLeader, REPLACE_FORCE);
-					pUser->AddDefinedText( TID_GAME_SUMMON_SUCCESS1, "\"%s\"", pLeader->GetName() );
-					((CUser*)pLeader)->AddDefinedText( TID_GAME_SUMMON_SUCCESS, "\"%s\"", pUser->GetName() );					
-					ItemProp* pItemProptmp = prj.GetItemProp( II_SYS_SYS_SCR_PARTYSUMMON );
-					if( pItemProptmp )
-						g_UserMng.AddCreateSfxObj((CMover *)pUser, pItemProptmp->dwSfxObj3 );
-				}
-			}
-			else
-			{
-				pUser->AddDefinedText( TID_ERROR_SUMMONPARTY_NOTTIME );
-			}
+	if (prj.IsGuildQuestRegion(pLeader->GetPos())) {
+		pUser->AddDefinedText(TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", prj.GetText(TID_GAME_EVENT_WORLD_NOTUSE1));
+	} else if (prj.IsGuildQuestRegion(pUser->GetPos())) {
+		pUser->AddDefinedText(TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", prj.GetText(TID_GAME_EVENT_WORLD_NOTUSE));
+	} else if (pUser->GetWorld()->GetID() != pParty->m_dwWorldId) {
+		CWorld * pWorld = g_WorldMng.GetWorld(pParty->m_dwWorldId);
+		if (pWorld) {
+			CString strtmp;
+			strtmp.Format(prj.GetText(TID_GAME_WORLD_NOTUSE), pUser->GetWorld()->m_szWorldName, pWorld->m_szWorldName);
+			pUser->AddDefinedText(TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", strtmp);
 		}
-		else
+	} else if (pParty->m_dwWorldId != pLeader->GetWorld()->GetID()) {
+		CWorld * pWorld = g_WorldMng.GetWorld(pParty->m_dwWorldId);
+		if (pWorld)
 		{
-			pUser->AddDefinedText( TID_GAME_NOPARTY );
+			pUser->AddDefinedText(TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", prj.GetText(TID_GAME_WORLDLEADER_NOTUSE));
 		}
+	} else if (pLeader->GetLayer() != pUser->GetLayer()) {
+		pUser->AddDefinedText(TID_GAME_STATE_NOTSUMMONOK, "\"%s\"", prj.GetText(TID_GAME_WORLD_NOTUSE));
+	} else if (CRainbowRaceMng::GetInstance()->IsEntry(pUser->m_idPlayer)) {
+		pUser->AddDefinedText(TID_GAME_RAINBOWRACE_NOTELEPORT);
+	} else if (pLeader->GetWorld()->GetID() == WI_WORLD_QUIZ
+		|| pUser->GetWorld()->GetID() == WI_WORLD_QUIZ) {
+		pUser->AddDefinedText(TID_GAME_QUIZ_DO_NOT_USE);
+	} else {
+		pUser->RemoveBuff(BUFF_ITEM, II_SYS_SYS_SCR_PARTYSUMMON);
+		pUser->Replace(*pLeader, REPLACE_FORCE);
+		pUser->AddDefinedText(TID_GAME_SUMMON_SUCCESS1, "\"%s\"", pLeader->GetName());
+		pLeader->AddDefinedText(TID_GAME_SUMMON_SUCCESS, "\"%s\"", pUser->GetName());
+		ItemProp * pItemProptmp = prj.GetItemProp(II_SYS_SYS_SCR_PARTYSUMMON);
+		if (pItemProptmp)
+			g_UserMng.AddCreateSfxObj(pUser, pItemProptmp->dwSfxObj3);
 	}
 }
 
@@ -8176,12 +7991,6 @@ void CDPSrvr::OnMakePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 		if( pProp == NULL )
 		{
 			// error
-			return;
-		}
-
-		if( pMaterial->IsCharged() )
-		{
-			pUser->AddDefinedText( TID_GAME_PET_FEED_CHARGED );
 			return;
 		}
 

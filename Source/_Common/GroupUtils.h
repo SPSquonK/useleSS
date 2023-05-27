@@ -1,21 +1,32 @@
 #pragma once
 
-#include <ranges>
+#include <boost/container/small_vector.hpp>
 
 #include "party.h"
 #include "guild.h"
 
+inline boost::container::small_vector<CUser *, MAX_PTMEMBER_SIZE> AllMembers(const CParty & party) {
+	boost::container::small_vector<CUser *, MAX_PTMEMBER_SIZE> out;
 
+	for (const PartyMember & pm : party.m_aMember) {
+		CUser * pUser = prj.GetUserByID(pm.m_uPlayerId);
+		if (IsValidObj(pUser)) {
+			out.emplace_back(pUser);
+		}
+	}
 
-inline auto AllMembers(const CParty & party) {
-	return std::views::counted(party.m_aMember, party.GetSizeofMember())
-		| std::views::transform([](const PartyMember & pm) { return prj.GetUserByID(pm.m_uPlayerId); })
-		| std::views::filter(IsValidObj);
+	return out;
 }
 
-inline auto AllMembers(const CGuild & guild) {
-	return guild.m_mapPMember
-		| std::views::values
-		| std::views::transform([](const CGuildMember * gm) { return prj.GetUserByID(gm->m_idPlayer); })
-		| std::views::filter(IsValidObj);
+inline boost::container::small_vector<CUser *, 40> AllMembers(const CGuild & guild) {
+	boost::container::small_vector<CUser *, 40> out;
+
+	for (const auto & [_, guildMember] : guild.m_mapPMember) {
+		CUser * pUser = prj.GetUserByID(guildMember->m_idPlayer);
+		if (IsValidObj(pUser)) {
+			out.emplace_back(pUser);
+		}
+	}
+
+	return out;
 }

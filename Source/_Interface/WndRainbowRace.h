@@ -5,12 +5,10 @@
 class CWndRainbowRaceOffer : public CWndNeuz 
 {
 public:
-	CWndText* m_pText;
 	int m_nOfferCount;
 
 public: 
-	CWndRainbowRaceOffer(); 
-	virtual ~CWndRainbowRaceOffer();
+	CWndRainbowRaceOffer();
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
@@ -21,13 +19,7 @@ public:
 
 class CWndRainbowRaceInfo : public CWndNeuz 
 {
-public:
-	CWndText* m_pText;
-
 public: 
-	CWndRainbowRaceInfo(); 
-	virtual ~CWndRainbowRaceInfo();
-	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
@@ -35,13 +27,7 @@ public:
 
 class CWndRainbowRaceRule : public CWndNeuz 
 {
-public:
-	CWndText* m_pText;
-
 public: 
-	CWndRainbowRaceRule(); 
-	virtual ~CWndRainbowRaceRule();
-	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
@@ -66,13 +52,7 @@ public:
 
 class CWndRainbowRacePrize : public CWndNeuz 
 {
-public:
-	CWndText* m_pText;
-	
 public: 
-	CWndRainbowRacePrize(); 
-	virtual ~CWndRainbowRacePrize();
-	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
@@ -81,7 +61,6 @@ public:
 class CWndRainbowRaceMiniGameInfo : public CWndNeuz 
 {
 public:
-	CWndText* m_pText;
 	CString m_strFileName;
 
 public: 
@@ -179,7 +158,6 @@ class CWndRRMiniGameKawiBawiBo : public CWndNeuz
 {
 	enum MyPosition {KAWI, BAWI, BO};
 public:
-	CWndText* m_pText;
 	int m_nWinningCount;			//연승 수
 	int m_nMyChoice;				//내가 선택한 카드 (가위, 바위, 보)
 	int m_nComChoice;				//Com이 선택한 카드
@@ -219,7 +197,6 @@ public:
 class CWndRRMiniGameDice : public CWndNeuz
 {
 public:
-	CWndText* m_pText;
 	int m_nTargetNum;
 	int m_nTargetNumBackup;
 	int m_nDiceNum1, m_nDiceNum2;
@@ -260,7 +237,6 @@ public:
 class CWndRRMiniGameArithmetic : public CWndNeuz 
 {
 public:
-	CWndText* m_pText;
 	CString m_strQuestion;
 	DWORD m_dwTime;
 	int m_nCorrectCount;
@@ -282,7 +258,6 @@ public:
 class CWndRRMiniGameStopWatch : public CWndNeuz 
 {
 public:
-	CWndText* m_pText;
 	DWORD m_dwTargetTime;
 	DWORD m_dwStartTime;
 	DWORD m_dwTime;
@@ -293,7 +268,7 @@ public:
 
 public: 
 	CWndRRMiniGameStopWatch(); 
-	virtual ~CWndRRMiniGameStopWatch();
+	~CWndRRMiniGameStopWatch() override = default;
 	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
@@ -311,15 +286,10 @@ public:
 class  CWndRRMiniGameTyping : public CWndNeuz 
 {
 public:
-	CWndText* m_pText;
-
 	int m_QuestionStaticID[3];
 	int m_TypingStaticID[3];
 
 public: 
-	CWndRRMiniGameTyping(); 
-	virtual ~CWndRRMiniGameTyping();
-	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
@@ -329,17 +299,15 @@ public:
 	void ResetQuestion();
 };
 
-typedef struct __CARD_INFO
-{
+struct __CARD_INFO {
 	CTexture* m_pTexture;
 	int m_nCardNum;
 	BOOL m_bCheck;
-} __CARD_INFO;
+};
 
 class CWndRRMiniGameCard : public CWndNeuz 
 {
 public:
-	CWndText* m_pText;
 	CString m_strCard[9];
 	CTexture* m_texCardBack;
 	__CARD_INFO m_stCard[18];
@@ -385,7 +353,6 @@ public:
 	int m_nTarget;
 	int m_nStart;
 	int m_nLadder[15][10];
-	CWndText* m_pText;
 	int m_nStartCustomID[15];
 	BOOL m_bStart;
 	BOOL m_bMakeLadder;

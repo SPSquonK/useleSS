@@ -246,7 +246,6 @@ void TradeLog( CAr & ar, CItemElem * pItemBase, short nItemCount )
 	ar << int(pItemBase->m_nResistAbilityOption);
 	ar << pItemBase->m_nHitPoint;
 	ar << pItemBase->m_nRepair;
-	ar << pItemBase->m_bCharged;
 	ar << pItemBase->m_dwKeepTime;
 	ar << pItemBase->GetPiercingSize();
 	for( int i=0; i< pItemBase->GetPiercingSize(); i++ )

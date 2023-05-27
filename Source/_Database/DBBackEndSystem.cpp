@@ -12,7 +12,6 @@ extern	CProject			prj;
 
 const int MAX_BACKENDSYSTEM = 2;
 
-#ifdef __S1108_BACK_END_SYSTEM
 void CDbManager::BackSystem( void )
 {
 	if( prj.m_bBackEndSystem == FALSE )
@@ -494,4 +493,3 @@ BOOL CDbManager::RemoveMonsterProp( MONSTER_PROP BufMonsterProp )
 }
 
 
-#endif // __S1108_BACK_END_SYSTEM

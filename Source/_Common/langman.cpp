@@ -1,16 +1,6 @@
 #include "stdafx.h"
 #include "langman.h"
 
-#ifdef __LANG_1013
-
-CLangMan::CLangMan()
-{
-}
-
-CLangMan::~CLangMan()
-{
-}
-
 BOOL CLangMan::Load( LPCTSTR lpszFileName )
 {
 	CScanner	s;
@@ -128,5 +118,3 @@ CLangMan*	CLangMan::GetInstance( void )
 	static	CLangMan	sLocal;
 	return &sLocal;
 }
-
-#endif	// __LANG_1013

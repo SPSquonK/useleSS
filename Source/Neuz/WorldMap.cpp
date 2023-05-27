@@ -305,11 +305,6 @@ void CWorldMap::Process()
 								strEdit.AddString(strTemp);
 
 							strEdit.AddString("\n");
-
-							for(int k=0; k<(int)( pMoverProp->m_DropItemGenerator.GetSize() ); k++)
-							{
-								DROPITEM* pDropItem = pMoverProp->m_DropItemGenerator.GetAt(k, FALSE);
-							}
 						}
 					}
 					strEdit.AddString("\n");

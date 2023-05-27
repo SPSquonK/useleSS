@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include <exception>
+#include <span>
+#include <boost/container/small_vector.hpp>
 #include "FlyFFTypes.h"
 #include "defineJob.h"
 
@@ -431,66 +433,16 @@ struct JobProp
 	float   fCritical;				//크리티컬 처리
 };
 
-typedef	struct	tagRANDOM_ITEM
-{
-	BYTE	m_lpQuestFlagArray[ITEM_KIND_MAX / 8 + 1];
-
-	void	SetItemKind( int nItemKind,BOOL bBool );
-	BOOL	IsItemKind( int nItemKind );
-
-	BYTE	m_nTotalNum;	// 발생 아이템 갯수 
-	BYTE	m_nUniqueMax;	// 유니크 아이템 최대 
-	BYTE	m_nUniqueMin;	// 유니크 아이템 최소  
-	WORD	m_nGoldMax;		// 골드 맥스 
-	WORD	m_nAmmoMax;		// 총알 맥스 
-	WORD	m_nDartMax;		// 표창 맥스 
-	WORD	m_nGoldMin;		// 골드 맥스 
-	WORD	m_nAmmoMin;	// 총알 맥스 
-	WORD	m_nDartMin;	// 표창 맥스 
-	tagRANDOM_ITEM()
-	{
-		m_nTotalNum		= 0;
-		m_nUniqueMax	= 0;
-		m_nUniqueMin	= 0;
-		m_nGoldMax		= 0;
-		m_nAmmoMax		= 0;
-		m_nDartMax		= 0;
-		m_nGoldMin		= 0;
-		m_nAmmoMin		= 0;
-		m_nDartMin		= 0;
-	}
-}
-RANDOM_ITEM,* LPRANDOM_ITEM;
-
 struct JobSkills : std::array<std::vector<const ItemProp *>, MAX_JOB> {
 	void Load(CFixedArray<ItemProp> & aPropSkill);
 };
 
 /*----------------------------------------------------------------------------------------------------*/
-enum DROPTYPE
-{
-	DROPTYPE_NORMAL,
-	DROPTYPE_SEED,
-};
-
-typedef struct	tagDROPITEM
-{
-	DROPTYPE	dtType;
-	DWORD	dwIndex;
-	DWORD	dwProbability;
-	DWORD	dwLevel;
-	DWORD	dwNumber;
-	DWORD	dwNumber2;	// Min, Max중 Max로 씀.
-}
-DROPITEM,	*LPDROPITEM;
-
-typedef	struct	tagDROPKIND
-{
+struct DROPKIND {
 	DWORD	dwIK3;
 	short	nMinUniq;
 	short	nMaxUniq;
-}
-DROPKIND,	*LPDROPKIND;
+};
 
 struct QUESTITEM {
 	QuestId	dwQuest;
@@ -500,65 +452,43 @@ struct QUESTITEM {
 	DWORD	dwNumber; 
 };
 
-typedef struct tagEVENTITEM
-{
-	DWORD	dwIndex;
-	DWORD	dwPrabability;
-}
-EVENTITEM,	*PEVENTITEM;
+class CDropItemGenerator final {
+public:
+	struct Item {
+		DWORD	dwIndex;       // Id of item
+		DWORD	dwProbability; // Probability over 3e+9
+		DWORD	dwLevel;       // Upgrade of dropped item
+		DWORD	dwNumber;      // Quantity
 
-#define	MAX_DROPKIND	80
+		[[nodiscard]] bool IsDropped(BOOL bUniqueMode, float fProbability = 0.0f) const;
+	};
 
-class CDropItemGenerator
-{
+	struct Money {
+		DWORD	dwNumber;      // Min quantity
+		DWORD	dwNumber2;     // Max quantity, exclusive
+	};
+
 private:
-	std::vector<DROPITEM>	m_dropItems;
+	std::vector<Item>	m_items;
+	boost::container::small_vector<Money, 1> m_money;
 
 public:
-	DWORD				m_dwMax;
+	DWORD				m_dwMax = 0;
 
 public:
-//	Contructions
-	CDropItemGenerator() { m_dwMax = 0; }
-	virtual	~CDropItemGenerator()	{	Clear();	}
+	void Add(const Item  & rDropItem ) { m_items.emplace_back(rDropItem); }
+	void Add(const Money & rDropMoney) { m_money.emplace_back(rDropMoney); }
 
-//	Operations
-	void		AddTail( CONST DROPITEM & rDropItem, const char* s );
-	void	Clear( void )	{	m_dropItems.clear();	}
-	DWORD		GetSize( void )	{	return m_dropItems.size();	}
-	DROPITEM*	GetAt( int nIndex, BOOL bUniqueMode, float fProbability = 0.0f );
+	[[nodiscard]] std::span<const Item > GetItems() const { return m_items; }
+	[[nodiscard]] std::span<const Money> GetMoney() const { return m_money; }
 };
 
-class CDropKindGenerator
-{
-private:
-	int		m_nSize;
-	DROPKIND	m_aDropKind[MAX_DROPKIND];
-public:
-//	Contructions
-	CDropKindGenerator()
-		{	m_nSize	= 0;	}
-	virtual	~CDropKindGenerator()	{}
-//	Operations
-	void	AddTail( const DROPKIND & rDropKind );	// memcpy
-	int		GetSize( void )		{	return m_nSize;	}
-	LPDROPKIND	GetAt( int nIndex );
-};
+using CDropKindGenerator  = std::vector<DROPKIND>;
+using CQuestItemGenerator = std::vector<QUESTITEM>;
 
-class CQuestItemGenerator {
-private:
-	std::vector<QUESTITEM> m_pQuestItem;
-public:
-	void AddTail(const QUESTITEM & rQuestItem);
-	[[nodiscard]] u_long GetSize() const noexcept { return m_pQuestItem.size(); }
-	[[nodiscard]] QUESTITEM * GetAt(int nIndex);
-};
-
-struct MonsterTransform
-{
-	float fHPRate;
-	DWORD dwMonsterId;
-	MonsterTransform() : fHPRate( 0.0f ), dwMonsterId( NULL_ID ) {}
+struct MonsterTransform {
+	float fHPRate = 0.0f;
+	DWORD dwMonsterId = NULL_ID;
 };
 /*----------------------------------------------------------------------------------------------------*/
 
@@ -579,11 +509,7 @@ struct MoverProp : CtrlProp
 	DWORD   dwClass;
 	BOOL	bIfParts;	// 파츠냐?
 	int		nChaotic;	// 나쁜놈 마이너스/ 좋은넘 플러스
-#ifdef __S1108_BACK_END_SYSTEM
 	DWORD	dwUseable;	// 방어 캐릭수,
-#else // __S1108_BACK_END_SYSTEM
-	DWORD	dwDefExtent;	// 방어 캐릭수,
-#endif // __S1108_BACK_END_SYSTEM
 	DWORD	dwActionRadius;		// 전투행동번경,
 	DWORD	dwAtkMin;	// 최소타격치,
 	DWORD	dwAtkMax;	// 최대타격치,
@@ -694,7 +620,7 @@ struct MoverProp : CtrlProp
 	int		m_nScanChao;		// 카오, 비카오 검색
 #endif // !__CORESERVER
 	
-#ifdef __S1108_BACK_END_SYSTEM
+#ifndef __CORESERVER
 	float	m_fHitPoint_Rate;		// 몬스터 최대 HP률 // dwAddHp * m_nHitPoint_Rate
 	float	m_fAttackPower_Rate;	// 몬스터 최대 공격률 // dwAtkMin * m_nAttackPower_Rate
 	float	m_fDefence_Rate;		// 몬스터 최대 방어률 // dwAddHp * m_nDefence_Rate
@@ -702,7 +628,7 @@ struct MoverProp : CtrlProp
 	float	m_fItemDrop_Rate;		// 몬스터 최대 아이템 드롭률 // dwAddHp * m_nItemDrop_Rate
 	float	m_fPenya_Rate;			// 몬스터 최대 페냐률 // dwAddHp * m_nPenya_Rate
 	BOOL	m_bRate;
-#endif // __S1108_BACK_END_SYSTEM
+#endif
 
 	
 	short	m_nAttackItemNear;
@@ -718,7 +644,6 @@ struct MoverProp : CtrlProp
 	short	m_nChangeTargetRand;
 
 	short   m_nAttackFirstRange;
-	RANDOM_ITEM		m_randomItem  ;
 	CDropItemGenerator	m_DropItemGenerator;
 	CQuestItemGenerator		m_QuestItemGenerator;
 	CDropKindGenerator	m_DropKindGenerator;
@@ -728,11 +653,7 @@ struct MoverProp : CtrlProp
 	{
 		dwStr	= dwSta	= dwDex	= dwInt	= dwHR	= dwER	= dwRace	= dwBelligerence	=dwGender
 		= dwLevel	= dwFlightLevel	= dwSize	= dwClass	= bIfParts	= nChaotic
-		#ifdef __S1108_BACK_END_SYSTEM
 		= dwUseable
-		#else // __S1108_BACK_END_SYSTEM
-		= dwDefExtent
-		#endif // __S1108_BACK_END_SYSTEM
 		= dwActionRadius	= dwAtkMin	= dwAtkMax	= dwAtk1	= dwAtk2	= dwAtk3	= dwAtk4	= 0;
 			fFrame	= 1.0F;
 			dwOrthograde	= 0;
@@ -830,7 +751,7 @@ struct MoverProp : CtrlProp
 		m_nScanChao			= 0;
 #endif // !__CORESERVER
 
-#ifdef __S1108_BACK_END_SYSTEM
+#ifndef __CORESERVER
 		m_fHitPoint_Rate	=
 		m_fAttackPower_Rate	= 
 		m_fDefence_Rate	=
@@ -838,7 +759,7 @@ struct MoverProp : CtrlProp
 		m_fItemDrop_Rate	= 
 		m_fPenya_Rate	= 0.0F;
 		m_bRate	=
-#endif // __S1108_BACK_END_SYSTEM
+#endif
 		m_nAttackItemNear	=
 		m_nAttackItemFar	=
 		m_nAttackItem1	=
@@ -853,6 +774,15 @@ struct MoverProp : CtrlProp
 		m_nAttackFirstRange	= 0;
 	}
 };
+
+#ifdef __WORLDSERVER
+enum class SpawnType : bool { Region, Script };
+
+struct CtrlSpawnInfo {
+	int       spawnId;
+	SpawnType type;
+};
+#endif
 
 #define TASKBAR_TOP    0
 #define TASKBAR_BOTTOM 1
@@ -907,47 +837,16 @@ struct SHORTCUT {
 };
 using LPSHORTCUT = SHORTCUT *;
 
-typedef struct tagEXPPARTY
-{
+struct EXPPARTY {
 	DWORD	Exp;
 	DWORD	Point;
-}
-EXPPARTY, *LPEXPPARTY;
+};
 
-typedef struct tagRENEWEVENT
-{
-	int		nLevel;
-	DWORD	dwItemId;
-	TCHAR	strItemName[64];
-	float	fPercent;
-}
-RENEWEVENT, *LPRENEWEVENT;
-
-typedef struct tagRENEWEVENTITEM
-{
-#ifdef __S0517
-	CTime	EndTime;
-#else // __S0517
-	TCHAR strTime[32];
-#endif // __S0517
-	int nLevel;
-	int	nRealitem[ MAX_REALITEM ];
-	int nRealitemCount[ MAX_REALITEM ];
-	int nSendRealitemCount[ MAX_REALITEM ];
-	int nPercent[ MAX_REALITEM ];
-	int nNextIndex;
-}
-RENEWEVENTITEM, *LPRENEWEVENTITEM;
-
-
-typedef struct tagExpCharacter
-{
+struct EXPCHARACTER {
 	EXPINTEGER	nExp1;
-	EXPINTEGER	nExp2;
 	DWORD dwLPPoint;
 	EXPINTEGER	nLimitExp;
-}
-EXPCHARACTER, *LPEXPCHARACTER;
+};
 
 
 #ifdef __RULE_0615

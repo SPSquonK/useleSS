@@ -909,7 +909,7 @@ BYTE	CItemUpgrade::SmeltSafetyAttribute(CUser* pUser, CItemElem* pItemMain, CIte
 	aLogItem.Gold2 = pUser->GetGold();
 
 	g_DPSrvr.OnLogItem( aLogItem, pItemMaterial, pItemMaterial->m_nItemNum );
-	DWORD dwValue = pItemMaterial->GetProp()->eItemType;
+	SAI79::ePropType dwValue = pItemMaterial->GetProp()->eItemType;
 	pUser->RemoveItem( (BYTE)( pItemMaterial->m_dwObjId ), (short)1 );
 
 	ItemProp* pItemProp = pItemProtScr->GetProp();
@@ -942,7 +942,7 @@ BYTE	CItemUpgrade::SmeltSafetyAttribute(CUser* pUser, CItemElem* pItemMain, CIte
 		if( !pUser->IsMode( TRANSPARENT_MODE ) )
 			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
 
-		pUser->UpdateItem(*pItemMain, UI::Element::Increase);
+		pUser->UpdateItem(*pItemMain, UI::Element::Increase(*pItemMain, dwValue));
 		aLogItem.Action = "O";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
 
@@ -1115,10 +1115,12 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 	if( pAbilityOption == NULL )
 		return;
 
+	const SAI79::ePropType eItemType = pItemMaterial->GetProp()->eItemType;
+
 	// 2가지 속성은 제련할수 없음
 	if( pItemMain->m_bItemResist != SAI79::NO_PROP )
 	{
-		if( pItemMain->m_bItemResist != pItemMaterial->GetProp()->eItemType )
+		if( pItemMain->m_bItemResist != eItemType)
 		{
 			pUser->AddDefinedText( TID_UPGRADE_ERROR_TWOELEMENT );								
 			return;
@@ -1132,7 +1134,7 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 	}
 
 	// 속성 당 하나의 속성 제련 카드를 사용하도록 수정
-	DWORD dwReqCard	= WhatEleCard( pItemMaterial->GetProp()->eItemType );
+	DWORD dwReqCard	= WhatEleCard(eItemType);
 
 	if( pItemMaterial->GetProp()->dwID != dwReqCard )
 	{
@@ -1247,7 +1249,7 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
 			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
 
-		pUser->UpdateItem(*pItemMain, UI::Element::Increase);
+		pUser->UpdateItem(*pItemMain, UI::Element::Increase(*pItemMain, eItemType));
 		aLogItem.Action = "O";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
 	}
@@ -1517,8 +1519,6 @@ void CItemUpgrade::PetVisSize( CUser* pUser, OBJID objIdMaterial )
 	}
 		
 	g_DPSrvr.PutItemLog( pUser, "!", "VIS_SLOT_MATERIAL", pItemElemMaterial );
-	if( pItemElemMaterial->m_bCharged )
-		g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElemMaterial, pItemElemMaterial->GetProp() );	
 	pUser->UpdateItem(*pItemElemPet, UI::PetVis::Size::Increase);
 	g_DPSrvr.PutItemLog( pUser, "#", "VIS_SLOT_SIZE", pItemElemPet );
 	pUser->RemoveItem( (BYTE)( objIdMaterial ), 1 );
@@ -1583,8 +1583,6 @@ void CItemUpgrade::SetPetVisItem( CUser* pUser, OBJID objIdVis )
 		}
 	);
 	PutPetVisItemLog( pUser, "!", "VIS_MATERIAL", pItemElemPet, nFirstEmptySlot );
-	if( pItemElemVis->m_bCharged )		// 상용화 아이템 로그
-		g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElemVis, pVisProp );		
 	g_DPSrvr.PutItemLog( pUser, "$", "VIS_PIERCING", pItemElemPet );
 	pUser->RemoveItem( (BYTE)( objIdVis ), 1 );
 	pUser->SetPetVisDST( pItemElemPet );
@@ -1673,8 +1671,6 @@ void CItemUpgrade::TransFormVisPet( CUser* pUser, OBJID objIdMaterial )
 					return;
 				}
 								
-				if( pItemMaterial->m_bCharged )		// 상용화 아이템 로그
-					g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemMaterial, pItemMaterial->GetProp() );
 				pUser->RemoveItem( (BYTE)( objIdMaterial ), 1 );
 				pUser->UpdateItem(*pItemEatPet, UI::PetVis::TransformToVisPet());
 				g_DPSrvr.PutItemLog( pUser, "!", "TRANSFORM_VISPET", pItemEatPet );

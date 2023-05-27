@@ -760,7 +760,7 @@ public:
 	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
 	virtual void	PaintFrame( C2DRender* p2DRender );
-	void			SetString( CHAR* szChar );
+	void			SetString( const CHAR* szChar );
 }; 
 
 class CGuildCombatSelectionClearMessageBox : public CWndMessageBox
@@ -778,12 +778,11 @@ public:
 	int	m_nCombatType;
 public:
 	CGuildCombatInfoMessageBox(int nCombatType);
-	void	SetString( CHAR* szChar );
+	void	SetString( const CHAR* szChar );
 	virtual	void OnInitialUpdate();
 	virtual	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void PaintFrame( C2DRender* p2DRender );
-	void	SetString( CString strMsg );
 }; 
 
 class CGuildCombatInfoMessageBox2 : public CWndNeuz
@@ -1618,7 +1617,6 @@ private:
 class CWndChangeAttribute : public CWndNeuz 
 {
 public:
-	CWndText* m_pText;
 	int m_nAttributeNum;
 	int m_nAttributeStaticID[5];
 	int m_nTooltipTextIndx[6];
@@ -1687,13 +1685,9 @@ public:
 class CWndCoupleTabSkill : public CWndNeuz 
 {
 public:
-	CWndText* m_pText;
-	CTexture* m_pSkillBgTexture;
+	CTexture* m_pSkillBgTexture = nullptr;
 
 public: 
-	CWndCoupleTabSkill(); 
-	virtual ~CWndCoupleTabSkill();
-	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();

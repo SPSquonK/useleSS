@@ -664,16 +664,14 @@ public:
 	HANDLE			m_hIOCPPut;
 	HANDLE			m_hIOCPUpdate;
 	HANDLE			m_hIOCPGuild;			// ±æµå ¾÷µ«¿ë 
-#ifdef __S1108_BACK_END_SYSTEM
 	HANDLE			m_hWorker;
 	HANDLE			m_hCloseWorker;
-#endif // __S1108_BACK_END_SYSTEM
 	HANDLE			m_hItemUpdateWorker;
 	HANDLE			m_hItemUpdateCloseWorker;
 	int				m_nItemUpdate;
 
 	DB_OVERLAPPED_PLUS*		AllocRequest( void );
-	void	FreeRequest( DB_OVERLAPPED_PLUS* pOverlappedPlus );
+	void	FreeRequest( DB_OVERLAPPED_PLUS* pOverlappedPlus);
 	void	MakeRequest( DB_OVERLAPPED_PLUS* pOverlappedPlus,  LPBYTE lpBuf, u_long uBufSize );
 
 #ifndef __TRANS_0413
@@ -845,9 +843,7 @@ public:
 	void	SPThread( void );
 	void	UpdateThread( void );
 	void	GuildThread( void );
-#ifdef __S1108_BACK_END_SYSTEM
 	void	BackSystem( void );
-#endif // __S1108_BACK_END_SYSTEM
 	void	ItemUpdateThread( void );
 	void	ChangeItemUpdate( CQuery* pQuery );
 	void	ChangeSkillUpdate( CQuery* pQuery );
@@ -878,9 +874,7 @@ public:
 	static	UINT	_SPThread( LPVOID pParam );
 	static	UINT	_UpdateThread( LPVOID pParam );
 	static	UINT	_GuildThread( LPVOID pParam );
-#ifdef __S1108_BACK_END_SYSTEM
 	static  UINT	_BackSystem( LPVOID pParam );
-#endif // __S1108_BACK_END_SYSTEM
 	static	UINT	_ItemUpdateThread( LPVOID pParam );
 
 	void	Clear( void );
@@ -1020,7 +1014,6 @@ private:
 	void	DbQryMail( char* szSql, const MAIL_QUERYINFO & info );
 	void	LogExpBox( CQuery *pQuery, CAr & ar );
 
-#ifdef __S1108_BACK_END_SYSTEM
 	void	GetGemeSettingtime( CQuery* pQuery, int nChat = 0 );
 	BOOL	GetBaseGameSetting( CQuery* pQuery, const char* lpstrTime = "");
 	void	GetMonsterRespawnSetting( CQuery* pQuery, int& nRemoveMaxRespawn, int aRemoveRespawn[] = NULL, const char* lpstrTime = "");
@@ -1030,7 +1023,6 @@ private:
 	BOOL	AddMonsterProp( MONSTER_PROP BufMonsterProp );
 	BOOL	RemoveMonsterProp( MONSTER_PROP BufMonsterProp );
 	BOOL	GetGMChat( CQuery* pQuery, const char * lpstrTime, int& nChatCount );
-#endif // __S1108_BACK_END_SYSTEM
 
 	BOOL	OnWantedQuery( CQuery* pQuery, WANTED_QUERYINFO& info );
 	void	SerializeWanted( CQuery* pQuery, CAr& ar );
@@ -1071,8 +1063,6 @@ inline BOOL CDbManager::VerifyString( const char* lpString, const char* lpFileNa
 	if( len > 0 && lpString[len-1] == '$' )
 		return TRUE;
 	WriteLog( "%s, %d\t%s", lpFileName, nLine, lpName );
-	if( NULL != lpOverlapped )
-		FreeRequest( lpOverlapped );
 	return FALSE;
 }
 

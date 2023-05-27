@@ -94,7 +94,7 @@ void CWndInfoNotice::OnInitialUpdate()
 				//pWndText->SetString( pChar );
 				pWndText->m_string.AddParsingString( pChar );
 				pWndText->ResetString();
-				safe_delete( pChar );
+				delete[] pChar;
 			}
 		}
 	}

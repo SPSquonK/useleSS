@@ -11,7 +11,7 @@
 
 class CAccount;
 
-class CDPDBSrvr : public CDPMng
+class CDPDBSrvr : public CDPMng, DPMngFeatures::BroadcastPacketNone<CDPDBSrvr>
 {
 public:
 //	Constructions

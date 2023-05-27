@@ -24,9 +24,7 @@
 #include "eveschool.h"
 #include "WndSummonFriend.h"
 
-#ifdef __LANG_1013
 #include "langman.h"
-#endif	// __LANG_1013
 
 #include "yUtil.h"
 #include "defineskill.h"
@@ -744,11 +742,7 @@ void CWndWorld::OnDraw( C2DRender* p2DRender )
 #endif
 
 	g_DialogMsg.Render( p2DRender );
-	// 768 : 484 = Height : y
-	//p2DRender->SetFont( 	CWndBase::m_Theme.m_pFontWorld );
-	//g_ClientMsg.Render( CPoint( p2DRender->m_clipRect.Width() / 2 , 520 * p2DRender->m_clipRect.Height() / 768 ), p2DRender );
-	//p2DRender->SetFont( 	CWndBase::m_Theme.m_pFontText );
-	// 768 : 184 = Height : y
+
 	g_Caption1.Render( CPoint( 0, 184 * p2DRender->m_clipRect.Height() / 768 ), p2DRender );
 	g_CapTime.Render( CPoint( 0, 50 * p2DRender->m_clipRect.Height() / 768 ), p2DRender );
 
@@ -1016,11 +1010,6 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 	// 날기 모드가 아니면 고도계 출력 안하고 종료 
 	if( g_pPlayer && g_pPlayer->m_pActMover->IsFly() == TRUE )
 		RenderAltimeter();
-
-
-	//p2DRender->SetFont( 	CWndBase::m_Theme.m_pFontWorld );
-	//g_ClientMsg.Render( CPoint( 0, 0 ), p2DRender );
-	//p2DRender->SetFont( 	CWndBase::m_Theme.m_pFontText );
 
 	CRect rectClient = GetClientRect();
 	g_Neuz.m_camera.Transform( g_Neuz.m_pd3dDevice, g_WorldMng.Get() );
@@ -3079,20 +3068,6 @@ TCHAR g_aszMoverMenu[ MAX_MOVER_MENU ][ 32 ] =
 
 };
 */
-#ifndef __LANG_1013
-struct LANGFONT
-{
-	CHAR szFontFirst[ 32 ], szFontSecond[ 32 ],nDivTitle,nDivCaption;
-} g_langFont[ LANG_MAX ] =
-{ 
-	"휴먼매직체"   , "굴림"            , 20,  50,
-	"Arial"        , "Arial"           , 20,  50, //eng
-	"MS Gothic"    , "굃굍 굊긕긘긞긏" , 40, 100, // jap
-	"MS Sans Serif", "MS Sans Serif"   , 20,  50, //tha
-	"MingLiU"      , "MingLiU"         , 20,  50, // twn
-	"SimSun"       , "SimSun"          , 20,  50  // chi
-};
-#endif	// __LANG_1013
 
 void CWndWorld::OnInitialUpdate()
 {
@@ -3106,57 +3081,37 @@ void CWndWorld::OnInitialUpdate()
 
 	if( ::GetLanguage() != LANG_JAP )
 	{
-		CString strFont;
-#ifdef __LANG_1013
-		LANGFONT* plfCaption	= &CLangMan::GetInstance()->GetLangData( ::GetLanguage() )->font.lfCaption;
-#endif	__LANG_1013
+		const LANGFONT & plfCaption	= CLangMan::GetInstance()->GetLangData( ::GetLanguage() )->font.lfCaption;
 
-#ifdef __LANG_1013
-		strFont = plfCaption->szFontFirst;
+		const char * strFont = plfCaption.szFontFirst;
 		if( IsFontInstalled( strFont ) == FALSE )
-			strFont = plfCaption->szFontSecond;
-#else	// __LANG_1013
-		strFont = g_langFont[ ::GetLanguage() ].szFontFirst;
-		if( IsFontInstalled( strFont ) == FALSE )
-			strFont = g_langFont[ ::GetLanguage() ].szFontSecond;
-#endif	// __LANG_1013
+			strFont = plfCaption.szFontSecond;
+
 		if( g_osVersion > WINDOWS_ME )
 		{
-#ifdef __LANG_1013
-			if(::GetLanguage() == LANG_VTN)
-				m_pFontAPICaption = new CD3DFontAPIVTN( strFont, rectClient.Width() / plfCaption->nDivCaption );
-			else
-				m_pFontAPICaption = new CD3DFontAPI( strFont, rectClient.Width() / plfCaption->nDivCaption );
-#else	// __LANG_1013
-			m_pFontAPICaption = new CD3DFontAPI( strFont, rectClient.Width() / g_langFont[ ::GetLanguage() ].nDivCaption );//, D3DFONT_BOLD );
-#endif	// __LANG_1013
+			constexpr auto MakeFont = [](const TCHAR * strFontName, DWORD dwHeight) -> CD3DFontAPI * {
+				if (::GetLanguage() != LANG_VTN) {
+					return new CD3DFontAPI(strFontName, dwHeight);
+				} else {
+					return new CD3DFontAPIVTN(strFontName, dwHeight);
+				}
+			};
+
+			m_pFontAPICaption = MakeFont( strFont, rectClient.Width() / plfCaption.nDivCaption );
 			m_pFontAPICaption->m_nOutLine = 2;
 			m_pFontAPICaption->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPICaption->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
 			m_pFontAPICaption->m_dwFlags = D3DFONT_FILTERED;
 			m_pFontAPICaption->InitDeviceObjects( m_pApp->m_pd3dDevice );
 
-#ifdef __LANG_1013
-			if(::GetLanguage() == LANG_VTN)
-				m_pFontAPITitle	= new CD3DFontAPIVTN( strFont, rectClient.Width() / plfCaption->nDivCaption );
-			else
-				m_pFontAPITitle	= new CD3DFontAPI( strFont, rectClient.Width() / plfCaption->nDivCaption );
-#else	// __LANG_1013
-			m_pFontAPITitle = new CD3DFontAPI( strFont, rectClient.Width() / g_langFont[ ::GetLanguage() ].nDivTitle );//, D3DFONT_BOLD );
-#endif	// __LANG_1013
+			m_pFontAPITitle	= MakeFont( strFont, rectClient.Width() / plfCaption.nDivCaption );
 			m_pFontAPITitle->m_nOutLine = 2;
 			m_pFontAPITitle->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPITitle->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
 			m_pFontAPITitle->m_dwFlags = D3DFONT_FILTERED;
 			m_pFontAPITitle->InitDeviceObjects( m_pApp->m_pd3dDevice );
-#ifdef __LANG_1013
-			if(::GetLanguage() == LANG_VTN)
-				m_pFontAPITime	= new CD3DFontAPIVTN( plfCaption->szFontSecond, rectClient.Width() / 40 );
-			else
-				m_pFontAPITime	= new CD3DFontAPI( plfCaption->szFontSecond, rectClient.Width() / 40 );
-#else	// __LANG_1013
-			m_pFontAPITime	= new CD3DFontAPI( g_langFont[ ::GetLanguage() ].szFontSecond, rectClient.Width() / 40 );//, D3DFONT_BOLD );
-#endif	// __LANG_1013
+
+			m_pFontAPITime	= MakeFont( plfCaption.szFontSecond, rectClient.Width() / 40 );
 			m_pFontAPITime->m_nOutLine = 2;
 			m_pFontAPITime->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPITime->m_dwBgColor = D3DCOLOR_ARGB( 255, 220, 100, 40 );
@@ -4988,7 +4943,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 						break;
 					}
 				}
-				g_DPlay.SendOpenBankWnd( NULL_ID, 0 );
+				g_DPlay.SendOpenBankWnd( NULL_ID );
 				break;
 			}
 		case	MMI_GUILDBANKING:
@@ -7080,12 +7035,6 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 				if( pItemBase->GetProp()->dwItemKind3 == IK3_CLOAK && pItemBase->m_idGuild != 0 )
 					return FALSE;
-				
-				if( pItemBase->IsCharged() )
-				{
-					g_WndMng.PutString(TID_GAME_NOTDROP);
-					return FALSE;
-				}
 
 				if( IsUsingItem( pItemBase ) )
 				{

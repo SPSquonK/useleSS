@@ -387,10 +387,8 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_REMOVE_ATTRIBUTE: OnRemoveAttributeResult( ar ); break;
 			case SNAPSHOTTYPE_MOTION_ARRIVE: OnMotionArrive( objid, ar ); break;
 
-#ifdef __S1108_BACK_END_SYSTEM
 			case SNAPSHOTTYPE_MONSTERPROP:	OnMonsterProp( ar ); break;
 			case SNAPSHOTTYPE_GMCHAT:		OnGMChat( ar ); break;
-#endif // __S1108_BACK_END_SYSTEM
 
 			case SNAPSHOTTYPE_CHANGEFACE: OnChangeFace( ar ); break;
 			case SNAPSHOTTYPE_DEFINEDCAPTION: OnDefinedCaption( ar ); break;
@@ -452,14 +450,12 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_MOVEBANKITEM:	OnMoveBankItem( objid, ar );	break;
 			case SNAPSHOTTYPE_UPDATE_BANKITEM: OnUpdateBankItem( objid, ar );	break;
 			case SNAPSHOTTYPE_BANKISFULL:	OnErrorBankIsFull( objid, ar ); break;
-			case SNAPSHOTTYPE_BANKWINDOW:	OnBankWindow( objid, ar ); break;
+			case SNAPSHOTTYPE_BANK:	OnBank( objid, ar ); break;
 			case SNAPSHOTTYPE_REMOVESKILLINFULENCE: OnRemoveSkillInfluence( objid, ar ); break;
 			case SNAPSHOTTYPE_REMOVEALLSKILLINFULENCE: OnRemoveAllSkillInfluence( objid, ar ); break;				
 			case SNAPSHOTTYPE_GUILD_BANK_WND:	OnGuildBankWindow( objid, ar ); break;
 			case SNAPSHOTTYPE_PUTITEMGUILDBANK:	OnPutItemGuildBank( objid, ar ); break;
 			case SNAPSHOTTYPE_GETITEMGUILDBANK: OnGetItemGuildBank( objid, ar ); break;
-			case SNAPSHOTTYPE_CHANGEBANKPASS: OnChangeBankPass( objid, ar ); break;
-			case SNAPSHOTTYPE_CONFIRMBANKPASS: OnConfirmBankPass( objid, ar ); break;
 			case SNAPSHOTTYPE_QUERY_PLAYER_DATA:	OnQueryPlayerData( ar );	break;
 			case SNAPSHOTTYPE_FOCUSOBJ:				OnFocusObj( ar );	break;
 				
@@ -2647,31 +2643,47 @@ void CDPClient::OnErrorBankIsFull(OBJID objid, CAr & ar) {
 	g_WndMng.PutString(TID_GAME_SLOTFULL);
 }
 
-void CDPClient::OnBankWindow( OBJID objid, CAr & ar )
+void CDPClient::OnBank( OBJID , CAr & ar )
 {
-	int nMode;
-	ar >> nMode;
-	DWORD dwId, dwItemId;
-	ar >> dwId >> dwItemId;
+	Subsnapshot::Bank nMode; ar >> nMode;
 
-	SAFE_DELETE( g_WndMng.m_pWndBank );
-	SAFE_DELETE( g_WndMng.m_pWndConfirmBank );
-	SAFE_DELETE( g_WndMng.m_pWndBankPassword );
-	if( nMode ) // 확인창
-	{
-		g_WndMng.m_pWndConfirmBank = new CWndConfirmBank;
-		g_WndMng.m_pWndConfirmBank->SetItem( dwId, dwItemId );
-		g_WndMng.m_pWndConfirmBank->Initialize( NULL, APP_CONFIRM_BANK );
+	SAFE_DELETE(g_WndMng.m_pWndBank);
+	SAFE_DELETE(g_WndMng.m_pWndConfirmBank);
+	SAFE_DELETE(g_WndMng.m_pWndBankPassword);
+
+	if (nMode == Subsnapshot::Bank::ValidateBankAccess) {
+		g_WndMng.CreateApplet(APP_INVENTORY);
+		g_WndMng.m_pWndBank = new CWndBank;
+		g_WndMng.m_pWndBank->Initialize(&g_WndMng, APP_COMMON_BANK);
+		return;
 	}
-	else // 변경창
-	{
-		g_WndMng.m_pWndBankPassword = new CWndBankPassword;
-		g_WndMng.m_pWndBankPassword->SetItem( dwId, dwItemId );
-		g_WndMng.m_pWndBankPassword->SetBankPassword( 0 );
-		g_WndMng.m_pWndBankPassword->Initialize( NULL, APP_BANK_PASSWORD );
 
+	OBJID dwId; ar >> dwId;
+
+	switch (nMode) {
+		case Subsnapshot::Bank::AskCurrentPassword:
+		case Subsnapshot::Bank::OkForNewPassword:
+			g_WndMng.m_pWndConfirmBank = new CWndConfirmBank(dwId);
+			g_WndMng.m_pWndConfirmBank->Initialize(NULL);
+			break;
+		case Subsnapshot::Bank::InitialRequirePassword:
+			g_WndMng.m_pWndBankPassword = new CWndBankPassword(false, dwId);
+			g_WndMng.m_pWndBankPassword->Initialize(NULL);
+			break;
+		case Subsnapshot::Bank::InvalidNewPasswordQuery:
+			g_WndMng.m_pWndBankPassword = new CWndBankPassword(true, dwId);
+			g_WndMng.m_pWndBankPassword->Initialize(NULL);
+
+			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0028)));
+			break;
+		case Subsnapshot::Bank::InvalidCurrentPassword:
+			g_WndMng.m_pWndConfirmBank = new CWndConfirmBank(dwId);
+			g_WndMng.m_pWndConfirmBank->Initialize(NULL);
+			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0028)));
+			break;
 	}
 }
+
 
 void CDPClient::OnGuildBankWindow( OBJID objid, CAr & ar )
 {
@@ -2700,58 +2712,6 @@ void CDPClient::OnGuildBankWindow( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::OnChangeBankPass( OBJID objid, CAr & ar )
-{
-	int nMode;
-	ar >> nMode;
-	DWORD dwId, dwItemId;
-	ar >> dwId >> dwItemId;
-
-	SAFE_DELETE( g_WndMng.m_pWndBank );
-	SAFE_DELETE( g_WndMng.m_pWndConfirmBank );
-	SAFE_DELETE( g_WndMng.m_pWndBankPassword );
-	if( nMode ) // 패스워드가 바꿨음..
-	{
-		g_WndMng.m_pWndConfirmBank = new CWndConfirmBank;
-		g_WndMng.m_pWndConfirmBank->SetItem( dwId, dwItemId );
-		g_WndMng.m_pWndConfirmBank->Initialize( NULL, APP_CONFIRM_BANK );
-	}
-	else	// 암호가 틀려서 못 바꿈
-	{
-		g_WndMng.m_pWndBankPassword = new CWndBankPassword;
-		g_WndMng.m_pWndBankPassword->SetItem( dwId, dwItemId );
-		g_WndMng.m_pWndBankPassword->SetBankPassword( 1 );
-		g_WndMng.m_pWndBankPassword->Initialize( NULL, APP_BANK_PASSWORD );				
-
-		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0028) ) );
-//		g_WndMng.OpenMessageBox( "암호가 틀렸습니다. 다시 입력해주세요" );
-	}
-}
-
-void CDPClient::OnConfirmBankPass( OBJID objid, CAr & ar )
-{
-	int nMode;
-	ar >> nMode;
-	DWORD dwId, dwItemId;
-	ar >> dwId >> dwItemId;
-	
-	SAFE_DELETE( g_WndMng.m_pWndBank );
-	SAFE_DELETE( g_WndMng.m_pWndConfirmBank );
-	SAFE_DELETE( g_WndMng.m_pWndBankPassword );
-	if( nMode ) // 패스워드 확인 됬음.
-	{
-		g_WndMng.CreateApplet( APP_INVENTORY );
-		g_WndMng.m_pWndBank = new CWndBank;
-		g_WndMng.m_pWndBank->Initialize( &g_WndMng, APP_COMMON_BANK );
-	}
-	else	// 암호가 틀려서 못 바꿈
-	{
-		g_WndMng.m_pWndConfirmBank = new CWndConfirmBank;
-		g_WndMng.m_pWndConfirmBank->SetItem( dwId, dwItemId );
-		g_WndMng.m_pWndConfirmBank->Initialize( NULL, APP_CONFIRM_BANK );			
-		g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0028) ) );
-	}
-}
 
 void CDPClient::OnVendor(OBJID objid, CAr & ar) {
 	CMover * pVendor = prj.GetMover(objid);
@@ -5349,7 +5309,6 @@ void CDPClient::OnGameRate( CAr & ar )
 			}
 		}
 		break;
-#ifdef __S1108_BACK_END_SYSTEM
 	case GAME_RATE_REBIRTH:
 		{
 			prj.m_fMonsterRebirthRate = fRate;
@@ -5390,7 +5349,6 @@ void CDPClient::OnGameRate( CAr & ar )
 			}
 		}
 		break;
-#endif // __S1108_BACK_END_SYSTEM
 	case GAME_SKILL_VAGSP:
 		{
 			prj.m_dwVagSP = (DWORD)fRate;
@@ -5438,7 +5396,6 @@ void CDPClient::OnGameRate( CAr & ar )
 	}
 }
 
-#ifdef __S1108_BACK_END_SYSTEM
 void CDPClient::OnMonsterProp( CAr & ar )
 {
 	char	szMonsterName[32];
@@ -5523,7 +5480,6 @@ void CDPClient::OnGMChat( CAr & ar )
 		g_WndMng.PutString( str, NULL, prj.GetTextColor(TID_ADMIN_ANNOUNCE), CHATSTY_SYSTEM );
 	}
 }
-#endif // __S1108_BACK_END_SYSTEM
 
 void CDPClient::OnChangeFace( CAr & ar )
 {
@@ -7803,37 +7759,20 @@ void CDPClient::SendCloseShopWnd( void )
 	SendHdr( PACKETTYPE_CLOSESHOPWND );
 }
 
-void CDPClient::SendOpenBankWnd( DWORD dwId, DWORD dwItemId )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_OPENBANKWND, DPID_UNKNOWN );
-	ar << dwId << dwItemId;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendOpenBankWnd(const DWORD dwId) {
+	SendPacket<PACKETTYPE_OPENBANKWND, OBJID>(dwId);
 }
 
-void CDPClient::SendOpenGuildBankWnd()
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_BANK_WND, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendOpenGuildBankWnd() {
+	SendPacket<PACKETTYPE_GUILD_BANK_WND>();
 }
 
-void CDPClient::SendCloseGuildBankWnd()
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_BANK_WND_CLOSE, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendCloseGuildBankWnd() {
+	SendPacket<PACKETTYPE_GUILD_BANK_WND_CLOSE>();
 }
 
-void CDPClient::SendConfirmBank( const char *szPass, DWORD dwId, DWORD dwItemId )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_CONFIRMBANK, DPID_UNKNOWN );
-	ar.WriteString( szPass );
-	ar << dwId << dwItemId;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendCloseBankWnd( void )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_CLOSEBANKWND, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendCloseBankWnd() {
+	SendPacket<PACKETTYPE_CLOSEBANKWND>();
 }
 
 void CDPClient::SendDoUseSkillPoint(const MoverSkills & skills) {
@@ -8562,7 +8501,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	
 	if( pItemProp->dwID == II_SYS_SYS_SCR_CUSTODY )
 	{
-		SendOpenBankWnd( pItemBase->m_dwObjId, pItemBase->m_dwItemId );
+		SendOpenBankWnd( pItemBase->m_dwObjId );
 		return;
 	}
 	
@@ -13060,7 +12999,7 @@ void	CDPClient::OnSetActionPoint( OBJID objid, CAr & ar )
 }
 
 // 서버로부터 클라의 ObjFocus 변경.
-void	CDPClient::OnSetTarget( OBJID objid, CAr & ar )
+void	CDPClient::OnSetTarget( OBJID, CAr & ar )
 {
 	OBJID idTarget;
 	ar >> idTarget;		// 서버로부터 최대 쿨타임시간을 받음.
@@ -14319,64 +14258,37 @@ void CDPClient::OnSealCharGet( CAr & ar )
 	}
 }
 
-void CDPClient::SendReqHonorList()
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_HONOR_LIST_REQ, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendReqHonorList() {
+	SendPacket<PACKETTYPE_HONOR_LIST_REQ>();
 }
-void CDPClient::SendReqHonorTitleChange( int nChange )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_HONOR_CHANGE_REQ, DPID_UNKNOWN );
-	ar << nChange;
-	SEND( ar, this, DPID_SERVERPLAYER );
+
+void CDPClient::SendReqHonorTitleChange( int nChange ) {
+	SendPacket<PACKETTYPE_HONOR_CHANGE_REQ, int>(nChange);
 }
 
 void CDPClient::OnHonorListAck( CAr & ar )
 {
-	int nHonorTitle[MAX_HONOR_TITLE];
-	
-    for(int i = 0 ; i<MAX_HONOR_TITLE ; i++)
-	{
-		ar >> nHonorTitle[i];
-		
-		int nNeed = CTitleManager::Instance()->GetNeedCount(i, -1);
-		if(nHonorTitle[i] >= nNeed && (0 < nNeed))
-		{
-			if(!CTitleManager::Instance()->IsEarned(i))
-			{
-				CTitleManager::Instance()->AddEarned(i);
-				// 공지날림
-				CString	strNotice;
-				strNotice.Format( prj.GetText( TID_GAME_GET_TITLE ), CTitleManager::Instance()->GetTitle(i));
-				g_WndMng.PutString( (LPCTSTR)strNotice, NULL, prj.GetTextColor( TID_GAME_GET_TITLE ) );	
-			}
-		}
-		else
-		{
-			// 획득된 타이틀이지만 요구사항을 충족못하게 될때
-			if(CTitleManager::Instance()->IsEarned(i))
-			{
-				CTitleManager::Instance()->RemoveEarned(i);
-			}
-		}
-		
-	}
-	
-	CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_CHARACTER3 );
+	for(int i = 0 ; i<MAX_HONOR_TITLE ; i++) {
+		int honorTitle;
+		ar >> honorTitle;
 
-	if( pWndBase )
-		( (CWndCharacter*)pWndBase )->m_wndHonor.RefreshList();
-	
+		if (g_pPlayer) g_pPlayer->m_aHonorTitle[i] = honorTitle;
+
+		if (CTitleManager::Instance()->UpdateEarned(i, honorTitle)) {
+			g_WndMng.PutString(TID_GAME_GET_TITLE, CTitleManager::Instance()->GetTitle(i));
+		}
+	}
+
+	if (CWndCharacter * pWndBase = g_WndMng.GetWndBase<CWndCharacter>(APP_CHARACTER3)) {
+		pWndBase->m_wndHonor.RefreshList();
+	}
 }
 
-void CDPClient::OnHonorChangeAck( OBJID objid ,CAr & ar )
-{
-	int nChange;
-	ar >> nChange;
-	
-	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj( pMover ) )
-	{	
+void CDPClient::OnHonorChangeAck(OBJID objid, CAr & ar) {
+	int nChange; ar >> nChange;
+
+	CMover * pMover = prj.GetMover(objid);
+	if (IsValidObj(pMover)) {
 		pMover->m_nHonor = nChange;
 		pMover->SetTitle(CTitleManager::Instance()->GetTitle(pMover->m_nHonor));
 	}

@@ -123,12 +123,10 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 
 	if( !qry->Exec( szQuery ) )
 	{
-		FreeRequest( lpDBOP );
 		return;
 	}
 	if( !qry->Fetch() )
 	{
-		FreeRequest( lpDBOP );
 		return;
 	}
 	qry->GetStr( "m_szName", lpDBOP->AccountInfo.szPlayer );
@@ -226,7 +224,6 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 
 	if( !qry->MoreResults() )
 	{
-		FreeRequest( lpDBOP );
 		return;
 	}
 	while( qry->Fetch() )
@@ -260,7 +257,6 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 
 	if( !GetSkill( &mover, qry, lpDBOP ) )
 	{
-		FreeRequest( lpDBOP );
 		return;
 	}
 
@@ -273,7 +269,6 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 		if( CanJoin( lpDBOP->AccountInfo.szAccount, pCache ) == FALSE )
 		{
 			m_AddRemoveLock.Leave();
-			FreeRequest( lpDBOP );
 			return;
 		}
 		if( pCache->pMover[nSlot] == NULL )
@@ -366,5 +361,4 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 	PutExpLog( qrylog, &mover, 'I' );
 	SendJoin( &mover, lpDBOP, dwAuthKey, dwBillingClass, szPartyName, szBankPass, dwPlayTime, dwFlyTime, nMaximumLevel, nTags, tags, szTimeGuild );
 	g_dpCoreSrvr.SendMemberTime( mover.m_idPlayer, szTimeGuild );
-	FreeRequest( lpDBOP );
 }

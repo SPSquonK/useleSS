@@ -552,19 +552,11 @@ void CWndGuildCombat1to1Offer::EnableAccept( BOOL bFlag )
 void CWndGuildCombat1to1Offer::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
-	
-	CWndText* m_pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 
-	CScript scanner;
-	BOOL checkflag;
-	checkflag = scanner.Load( MakePath( DIR_CLIENT,  _T( "GuildCombatRedChipGuild.inc" ) ));
-	char* szChar = scanner.m_pProg;
-	
-	if(m_pText != NULL && checkflag)
-	{
-		m_pText->m_string.AddParsingString( szChar );
-		m_pText->ResetString();	
-	}
+	CWndText::SetupDescription(
+		GetDlgItem<CWndText>(WIDC_TEXT1),
+		_T("GuildCombatRedChipGuild.inc")
+	);
 	
 	MoveParentCenter();
 } 

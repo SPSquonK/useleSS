@@ -13,6 +13,7 @@
 #include "CreateObj.h"
 #include "eveschool.h"
 #include <ranges>
+#include <boost/range/adaptor/filtered.hpp>
 
 #include "..\_aiinterface\aipet.h"
 
@@ -153,16 +154,9 @@ CMover::~CMover()
 	for( int i = 0; i < MAX_VENDOR_INVENTORY_TAB; i++ )
 		SAFE_DELETE( m_ShopInventory[ i ] );
 
-	if( GetWorld() )
-	{
-	#if !defined(__CLIENT)
-	#ifdef __LAYER_1021
-		GetWorld()->m_respawner.Increment( GetRespawn(), GetRespawnType(), m_bActiveAttack, GetLayer() );
-	#else	// __LAYER_1021
-		GetWorld()->m_respawner.Increment( GetRespawn(), GetRespawnType(), m_bActiveAttack );
-	#endif	// __LAYER_1021
+	#ifdef __WORLDSERVER
+	RefreshSpawn(m_bActiveAttack);
 	#endif
-	}
 
 #ifdef __CLIENT
 	m_pSfxWing = NULL;
@@ -318,7 +312,7 @@ void CMover::Init()
 	m_nDefenseResist = (BYTE)0xff;
 
 #ifdef __WORLDSERVER
-	m_bLastPK		= FALSE;
+	m_bLastPK		= false;
 	m_bLastDuelParty = FALSE;
 	m_bGuildCombat = FALSE;
 	m_tGuildMember	= CTime::GetCurrentTime();
@@ -1167,33 +1161,27 @@ void CMover::ProcessRegenItem()
 						{
 							m_ShopInventory[i]->Clear();		// m_pack을 다 없앤다.
 
-							ItemProp* apItemProp[MAX_VENDOR_INVENTORY];
-							int cbSize	= 0;
+							boost::container::static_vector<const ItemProp *, MAX_VENDOR_INVENTORY> apItemProp;
+
 							// generate
 							for (const auto & pVendor : pCharacter->m_vendor.m_venderItemAry[i]) {
-								GenerateVendorItem( apItemProp, &cbSize, MAX_VENDOR_INVENTORY, pVendor );
+								GenerateVendorItem(apItemProp, pVendor);
 							}
+
 							// sort
-							for( int j = 0; j < cbSize - 1; j++ )
-							{
-								for( int k = j + 1; k < cbSize; k++ )
-								{
-									if( ( apItemProp[k]->dwItemKind1 < apItemProp[j]->dwItemKind1 ) ||
-										( apItemProp[k]->dwItemKind1 == apItemProp[j]->dwItemKind1 && apItemProp[k]->dwItemRare < apItemProp[j]->dwItemRare ) )
-									{
-										ItemProp* ptmp	= apItemProp[j];
-										apItemProp[j]	= apItemProp[k];
-										apItemProp[k]	= ptmp;
-									}
+							std::sort(
+								apItemProp.begin(), apItemProp.end(),
+								[](const ItemProp * lhs, const ItemProp * rhs) {
+									return std::pair(lhs->dwItemKind1, lhs->dwItemRare) < std::pair(rhs->dwItemKind1, rhs->dwItemRare);
 								}
-							}
+							);
+
 							// add
-							for( int j = 0; j < cbSize; j++ )
-							{
+							for (const ItemProp * itemProp : apItemProp) {
 								CItemElem itemElem;
-								itemElem.m_dwItemId	= apItemProp[j]->dwID;
-								itemElem.m_nItemNum		= (short)( apItemProp[j]->dwPackMax );
-								itemElem.m_nHitPoint	= apItemProp[j]->dwEndurance;
+								itemElem.m_dwItemId	= itemProp->dwID;
+								itemElem.m_nItemNum		= (short)(itemProp->dwPackMax );
+								itemElem.m_nHitPoint	= itemProp->dwEndurance;
 								if( m_ShopInventory[i]->Add( &itemElem ) == FALSE )
 									break;
 							}
@@ -1670,7 +1658,7 @@ BOOL CMover::ReplaceInspection(const REGIONELEM * pPortkey )
 	if( bResult != FALSE && pPortkey->m_uItemId != 0xffffffff )
 	{
 		int nCount = GetItemNum( pPortkey->m_uItemId );
-		if( (DWORD)( nCount ) <= pPortkey->m_uiItemCount )
+		if( (DWORD)( nCount ) >= pPortkey->m_uiItemCount )
 		{
 			bResult = TRUE;
 		}
@@ -1827,52 +1815,34 @@ BOOL CMover::Replace( DWORD dwWorldID, const D3DXVECTOR3 & vPos, REPLACE_TYPE ty
 	return TRUE;
 }
 
-BOOL CMover::CreateItem( CItemElem * pItemBase, BYTE* pnId, short* pnNum, BYTE nCount )
+BOOL CMover::CreateItem( CItemElem * pItemBase, BYTE * pnId )
 {
-	if( pItemBase->m_dwItemId == 0 )
-		return FALSE;
+	if (pItemBase->m_dwItemId == 0) return FALSE;
 
-	if(pItemBase->m_nHitPoint == -1 )
-	{
-		ItemProp* pItemProp		= pItemBase->GetProp();
-		if( pItemProp )
-			pItemBase->m_nHitPoint		= pItemProp->dwEndurance;
-		else
-			pItemBase->m_nHitPoint		= 0;
+	if (pItemBase->m_nHitPoint == -1) {
+		const ItemProp * pItemProp = pItemBase->GetProp();
+		pItemBase->m_nHitPoint = pItemProp ? pItemProp->dwEndurance : 0;
 	}
-	if( pItemBase->GetSerialNumber() == 0 )
+
+	if (pItemBase->GetSerialNumber() == 0) {
 		pItemBase->SetSerialNumber();
-	BOOL fSuccess;
+	}
 
-	if( nCount == 0 )
-	{
-		BYTE anId[MAX_INVENTORY];
-		short anNum[MAX_INVENTORY];
+	BYTE nCount = 0;
+	BYTE anId[MAX_INVENTORY];
+	short anNum[MAX_INVENTORY];
 		
-		fSuccess	= m_Inventory.Add( pItemBase, anId, anNum, &nCount );
+	BOOL fSuccess	= m_Inventory.Add( pItemBase, anId, anNum, &nCount );
 
-		if( fSuccess && IsPlayer() )
-		{
-			( (CUser*)this )->AddCreateItem( pItemBase, anId, anNum, nCount );
-		}
-		if( pnId != NULL )
-			memcpy( pnId, anId, sizeof(BYTE) * nCount );
-		if( pnNum != NULL )
-			memcpy( pnNum, anNum, sizeof(short) * nCount );
-	}
-	else
+	if( fSuccess && IsPlayer() )
 	{
-		CItemElem itemElem;
-		itemElem	= *pItemBase;
-		for( int i = 0; i < nCount; i++ )
-		{
-			itemElem.m_nItemNum		= pnNum[i];
-			m_Inventory.SetAtId( pnId[i], &itemElem );
-		}
-		if( IsPlayer() )
-			( (CUser*)this )->AddCreateItem( pItemBase, pnId, pnNum, nCount );
-		fSuccess	= TRUE;
+		( (CUser*)this )->AddCreateItem( pItemBase, anId, anNum, nCount );
 	}
+
+	if( pnId != NULL )
+		memcpy( pnId, anId, sizeof(BYTE) * nCount );
+
+
 	return fSuccess;
 }
 
@@ -1951,81 +1921,59 @@ void CMover::UpdateItemBank(int nSlot, BYTE nId, short newQuantity) {
 
 #ifdef __WORLDSERVER
 // 인벤토리내에서 1개 아이템을 떨어트린다.
-int	CMover::DoDropItemRandom( BOOL bExcludeEquip, CMover* pAttacker, BOOL bOnlyEquip )
-{
-	int i, nMax, nRealMax, nDropCnt;
-	CItemElem* pItemElem;
-	CItemElem *pElemBuff[ MAX_INVENTORY + MAX_EQUIPMENT ] = { NULL, };
+void	CMover::DoDropItemRandom(unsigned int fromInventory, unsigned int fromEquipement) {
+	if (fromInventory == 0 && fromEquipement == 0);
 
-	nRealMax = nDropCnt = 0;
+	std::vector<CItemElem *> pElemInventory;
+	std::vector<CItemElem *> pElemEquipement;
 
-	nMax = m_Inventory.GetMax();
-	for( i = 0; i < nMax; ++i ) 		// 인벤 갯수만큼 돌면서 아이템이 있는칸만 포인터를 뽑아놓는다.
-	{
-		pItemElem = m_Inventory.GetAtId( i );
-		if( pItemElem == NULL )
-			continue;
-			
-		if( pItemElem->IsQuest() )					// 퀘스트 아이템 제외 
-			continue;
+	const int nMax = m_Inventory.GetMax();
+	for (int i = 0; i < nMax; ++i) {
+		CItemElem * pItemElem = m_Inventory.GetAtId(i);
+		if (!pItemElem) continue;
+		if (pItemElem->IsQuest()) continue;
+		if (pItemElem->m_nResistSMItemId != 0) continue;
+		if (pItemElem->GetProp()->bCharged) continue;
+		if (pItemElem->IsEatPet() || IsUsing(pItemElem)) continue;
+		if (pItemElem->IsBinds()) continue;
 
-		if( pItemElem->IsCharged() )	// 유료 상품아이템 제외
-			continue;
-
-		if( pItemElem->IsEatPet()
-			|| IsUsing( pItemElem )
-			)
-			continue;
-
-		if( pItemElem->IsBinds() )
-			continue;
-
-		if( bOnlyEquip )
-		{
-			if( m_Inventory.IsEquip( pItemElem->m_dwObjId ) )		// 장착된 아이템 제외  
-				pElemBuff[ nRealMax++ ] = pItemElem;
-		}
-		else
-		{
-			if( bExcludeEquip && m_Inventory.IsEquip( pItemElem->m_dwObjId ) )		// 장착된 아이템 제외  
-				continue;
-			
-			pElemBuff[ nRealMax++ ] = pItemElem;
+		if (m_Inventory.IsEquip(pItemElem->m_dwObjId)) {
+			pElemEquipement.emplace_back(pItemElem);
+		} else {
+			pElemInventory.emplace_back(pItemElem);
 		}
 	}
 
-	while( nRealMax )	// 검색대상 아이템이 더이상 없을경우 끝.
-	{
-		int nIdx = xRandom( nRealMax );
-		pItemElem = pElemBuff[ nIdx ];		// 아이템 리스트에서 랜덤으로 하나를 뽑아옴
+	const auto DropItems = [&](unsigned int quantity, std::vector<CItemElem *> & items) {
+		while (quantity > 0 && !items.empty()) {
+			const DWORD nIdx = xRandom(items.size());
+			CItemElem * pItemElem = items[nIdx];
 
-		int nPartBuf = -1;
-		CItemElem* pItemElemLWepon = m_Inventory.GetEquip( PARTS_LWEAPON );
-		CItemElem* pItemElemRWepon = m_Inventory.GetEquip( PARTS_RWEAPON );
-		if( pItemElem == pItemElemLWepon )
-			nPartBuf = PARTS_LWEAPON;
-		else if( pItemElem == pItemElemRWepon )
-			nPartBuf = PARTS_RWEAPON; 
-		if( m_Inventory.IsEquip( pItemElem->m_dwObjId ) )	// 장착하고 있으면 벗김 			
-		{
-			if( DoEquip( pItemElem, FALSE, nPartBuf ) )
-				g_UserMng.AddDoEquip( this, nPartBuf, pItemElem, FALSE );
+			if (m_Inventory.IsEquip(pItemElem->m_dwObjId)) {
+				int nPartBuf;
+				if (pItemElem == m_Inventory.GetEquip(PARTS_LWEAPON)) {
+					nPartBuf = PARTS_LWEAPON;
+				} else if (pItemElem == m_Inventory.GetEquip(PARTS_RWEAPON)) {
+					nPartBuf = PARTS_RWEAPON;
+				} else {
+					nPartBuf = -1;
+				}
+
+				if (DoEquip(pItemElem, FALSE, nPartBuf)) {
+					g_UserMng.AddDoEquip(this, nPartBuf, pItemElem, FALSE);
+				}
+			}
+
+			if (DropItem(pItemElem->m_dwObjId, 0, GetPos(), TRUE)) {
+				quantity -= 1;
+			}
+			
+			items.erase(items.begin() + nIdx);
 		}
+	};
 
-		CItem* pItem = DropItem( pItemElem->m_dwObjId, 0, GetPos(), TRUE );
-		if( pItem )	
-		{
-			UNUSED_ALWAYS( pAttacker );
-			return 1;
-		}
-
-		// drop에 실패한 아이템이라도 리스트에서 빼주자.
-		for( int j = nIdx; j < nRealMax-1; j ++ )		// 앞으로 한칸씩 땡김.
-			pElemBuff[j] = pElemBuff[j+1];
-		nRealMax --;	// 하나를 떨어트렸으니 버퍼의 크기를 하나 줄임
-	}		
-
-	return 0;
+	DropItems(fromInventory, pElemInventory);
+	DropItems(fromEquipement, pElemEquipement);
 }
 #endif // __WORLDSERVER
 
@@ -2116,12 +2064,12 @@ BOOL CMover::IsDropableState( BOOL bPK )
 }	
 
 
+#ifdef __WORLDSERVER
 // 인벤의 아이템을 바닥에 내려놓을때 사용한다.
 // dwType, dwID의 아이템을 vPos에 떨어트린다.
 // bPK == YES면 플레이어가 PK당해서 떨어트린 아이템이다.
 CItem* CMover::DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BOOL bPK )
 {
-#ifdef __WORLDSERVER
 	if( IsPlayer() == FALSE )	
 		return _DropItemNPC( 0, dwID, nDropNum, vPos );	// 몹이 떨어뜨릴땐 이걸사용.
 	
@@ -2173,9 +2121,9 @@ CItem* CMover::DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BO
 		SAFE_DELETE( pItem );
 	}
 
-#endif // WORLDSERVER
 	return NULL;
 }
+#endif // WORLDSERVER
 
 // TODO_OPTIMIZE: 좌표가 변경될 때 호출되게한다. ( rect를 트리구조로 갖고 찾게 하는 것도 좋겠다.)
 const REGIONELEM * CMover::UpdateRegionAttr()
@@ -3757,53 +3705,31 @@ void CMover::CreateAbilityOption_SetItemSFX(const int nAbilityOption )
 
 #endif //__CLIENT
 
-//int nItemKind, int nItemKind2, int nNumMax, int nUniqueMin, int nUniqueMax, int nTotalNum, CAnim* pAnimParent, int nMaterialCount )
-void CMover::GenerateVendorItem( ItemProp** apItemProp, int* pcbSize, int nMax, const CVendor::CategoryItem & pVendor )
-{
-	CPtrArray* pItemKindAry		= prj.GetItemKindAry( pVendor.m_nItemkind3 );
-	ItemProp* pItemProp		= NULL;
-	int cbSizeOld	= *pcbSize;
-
+void CMover::GenerateVendorItem(
+	boost::container::static_vector<const ItemProp *, MAX_VENDOR_INVENTORY> & itemProps,
+	const CVendor::CategoryItem & pVendor
+) {
 	ASSERT( pVendor->m_nUniqueMin >= 0 );
 	ASSERT( pVendor->m_nUniqueMax >= 0 );
 	
-	if( *pcbSize >= nMax )
-		return;
+	if (itemProps.size() >= itemProps.max_size()) return;
 
-	int nMinIdx	= -1, nMaxIdx	= -1;
+	const auto span = prj.GetItemKind3WithRarity(pVendor);
 
-	for( int j = pVendor.m_nUniqueMin; j <= pVendor.m_nUniqueMax; j++ )
-	{
-		nMinIdx		= prj.GetMinIdx( pVendor.m_nItemkind3, j );
-		if( nMinIdx != -1 )
-			break;
-	}
-	for( int j = pVendor.m_nUniqueMax; j >= pVendor.m_nUniqueMin; j-- )
-	{
-		nMaxIdx		= prj.GetMaxIdx( pVendor.m_nItemkind3, j );
-		if( nMaxIdx != -1 )
-			break;
-	}
-	if( nMinIdx < 0 )
-	{
-		WriteError( "VENDORITEM//%s//%d-%d//%d", GetName(), pVendor.m_nUniqueMin, pVendor.m_nUniqueMax, pVendor.m_nItemkind3 );
+	if (span.empty()) {
+		WriteError( "VENDORITEM//%s//%d-%d//%lu", GetName(), pVendor.nMinUniq, pVendor.nMaxUniq, pVendor.dwIK3 );
 		return;
 	}
 
-	for( int k = nMinIdx; k <= nMaxIdx; k++ )
-	{
-		pItemProp	= (ItemProp*)pItemKindAry->GetAt( k );
-
+	for (const ItemProp * pItemProp : span) {
 		if( ( NULL == pItemProp ) ||
 			( pItemProp->dwShopAble == (DWORD)-1 ) ||
 			( pVendor.m_nItemJob != -1 && (DWORD)pItemProp->dwItemJob != pVendor.m_nItemJob ) )
 			continue;
-		
-		if( *pcbSize >= nMax )
-			break;
 
-		apItemProp[*pcbSize]	= pItemProp;
-		(*pcbSize)++;
+		if (itemProps.size() >= itemProps.max_size()) return;
+
+		itemProps.emplace_back(pItemProp);
 	}
 }
 
@@ -4125,7 +4051,7 @@ BOOL CMover::SetMotion( DWORD dwMotion, int nLoop, DWORD dwOption )
 
 			pModel->MakeSWDForce( PARTS_RWEAPON, pItemProp->dwItemKind3, (dwOption & MOP_HITSLOW) ? TRUE : FALSE, dwColor, m_fAniSpeed );
 			pModel->MakeSWDForce( PARTS_LWEAPON, pItemProp->dwItemKind3, (dwOption & MOP_HITSLOW) ? TRUE : FALSE, dwColor, m_fAniSpeed );
-#endif __CLIENT
+#endif
 		}
 	}
 	else
@@ -4189,13 +4115,11 @@ void CMover::RemoveEnemy(const OBJID objid) {
 }
 
 void CMover::RemoveAllEnemies() {
-	auto range = m_idEnemies
-		| std::views::keys
-		| std::views::transform([](const OBJID objid) { return prj.GetMover(objid); })
-		| std::views::filter(IsValidObj);
-
-	for (CMover * const pEnemy : range) {
-		pEnemy->RemoveEnemy(GetId());
+	for (const OBJID objid : m_idEnemies | std::views::keys) {
+		CMover * pEnemy = prj.GetMover(objid);
+		if (IsValidObj(pEnemy)) {
+			pEnemy->RemoveEnemy(GetId());
+		}
 	}
 
 	m_idEnemies.clear();
@@ -4214,31 +4138,16 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 	}
 
 	// 클라이언트는 이쪽으로 오지 않음.
-	BOOL	bBehavior = FALSE;
-	CMover *pAttacker = NULL;
+	CMover *pAttacker = pAttackCtrl ? pAttackCtrl->ToMover() : nullptr;
 
-	if( pAttackCtrl && pAttackCtrl->GetType() == OT_MOVER )		// 어태커가 무버라면 무버 포인터 만들어 둔다.
-		pAttacker = (CMover *)pAttackCtrl;
-
-	m_bLastPK = FALSE;
+	m_bLastPK = false;
 	if( pAttacker && pAttacker != this && pAttacker->IsPlayer() )		// 자살한게 아니고, 플레이어에게 죽었냐 아니냐.
 	{
-		PVP_MODE mode = GetPVPCase( pAttacker ); 
-		if( mode == PVP_MODE_PK )	// PK경우
-		{
-#ifdef __JEFF_11_4
-#endif	// __JEFF_11_4
-			if( g_eLocal.GetState( EVE_PKCOST )
-#ifdef __JEFF_11_4
-				&& GetWorld()->IsArena() == FALSE
-#endif	// __JEFF_11_4
-				)
-				m_bLastPK = FALSE;	// 경험치 다운 
-			else
-				m_bLastPK = TRUE;	// 경험치 다운 없음 						
-		}
-		else
-			m_bLastPK = TRUE;	// 경험치 다운 없음 
+		const PVP_MODE mode = GetPVPCase( pAttacker ); 
+		
+		m_bLastPK = mode != PVP_MODE::PK
+			|| !g_eLocal.GetState(EVE_PKCOST)
+			|| GetWorld()->IsArena();
 		
 		m_bGuildCombat = FALSE;
 		if( GetWorld()->GetID() == WI_WORLD_GUILDWAR && g_GuildCombatMng.m_nState != CGuildCombat::CLOSE_STATE )
@@ -4247,7 +4156,7 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 			m_bGuildCombat = TRUE;
 		if(IsNPC())
 		{
-            ((CUser*)pAttacker)->SetHonorAdd(GetIndex(),HI_HUNT_MONSTER);
+			((CUser*)pAttacker)->SetHonorAdd(GetIndex(),HI_HUNT_MONSTER);
 		}
 	}
 
@@ -4294,7 +4203,6 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 			g_dpDBClient.SendLogPlayDeath( this, pAttacker );
 			// 캐릭터간의 전투로 인한 모든 캐릭터의 사망 시 펫은 사망하지 않는다.	// 0723
 			if( IsValidObj( pAttacker ) == FALSE || pAttacker->IsNPC() )
-//			if( m_bLastPK == FALSE && m_bGuildCombat == FALSE )
 			{
 				// 캐릭터 사망 시 소환중인 펫도 사망
 				CPet* pPet	= GetPet();
@@ -4331,18 +4239,9 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 		// 양 파티원들에게 결과를 통보함.
 	}
 	
-	if( bBehavior ) {
-		g_UserMng.AddMoverBehavior2
-			( this, GetPos(), m_pActMover->m_vDelta, GetAngle(), GetAngleX(), m_pActMover->m_fAccPower, m_pActMover->m_fTurnAngle, 
-			m_pActMover->GetState(), m_pActMover->GetStateFlag(), m_dwMotion, m_pActMover->m_nMotionEx, m_pModel->m_nLoop, m_dwMotionOption, 
-			g_TickCount.GetTickCount(), TRUE );
-	}
-	if( fValid )
-	{
-//		g_DPCoreClient.SendMoverDeath( this, pAttacker, dwMsg );
+	if( fValid ) {
 		g_UserMng.AddMoverDeath( this, pAttacker, dwMsg );
-		
-		RemoveAllEnemies();		// pAttacker->SendAIMsg( AIMSG_DSTDIE, GetId() );
+		RemoveAllEnemies();
 	}	// fValid
 	
 	if( pAttacker )
@@ -4437,8 +4336,14 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 			CInstanceDungeonHelper::GetInstance()->SetInstanceDungeonKill( GetWorld()->GetID(), static_cast<DWORD>( this->GetLayer() ), GetProp()->dwID );
 	}
 #ifdef __EVENTLUA_SPAWN
-	if( IsNPC() )
-		prj.m_EventLua.RemoveSpawnedMonster( GetId() );
+	if (IsNPC()) {
+		prj.m_EventLua.RemoveSpawnedMonster(GetId());
+
+		if (m_spawnerInfo) {
+			const bool refreshed = GetWorld()->m_respawner.IncrementIfAlone(m_spawnerInfo.value(), m_bActiveAttack, GetLayer());
+			if (refreshed) m_spawnerInfo = std::nullopt;
+		}
+	}
 #endif // __EVENTLUA_SPAWN
 
 #endif //__WORLDSERVER	
@@ -4544,21 +4449,11 @@ int	CMover::SubPK( CMover *pAttacker, int nReflect )
 			{
 				// 아이템 드롭 
 				// - 인벤 드롭( 장착부터 드롭하면 안됨 - 인벤공간이 부족하여 드롭할수 없음 )
-				CHAO_PROPENSITY Propensity = prj.GetPropensityPenalty( GetPKPropensity() );
-				int nInvenDrop = xRandom( Propensity.nInvenDorpMin, Propensity.nInvenDorpMax + 1 );
-				for( int i=0; i < nInvenDrop; ++i )
-				{
-					if( DoDropItemRandom( TRUE, pAttacker ) == 0 )	
-						break;
-				}
+				const CHAO_PROPENSITY & Propensity = prj.GetPropensityPenalty( GetPKPropensity() );
+				const int nInvenDrop = xRandom( Propensity.nInvenDorpMin, Propensity.nInvenDorpMax + 1 );
+				const int nEquipDrop = xRandom(Propensity.nEquipDorpMin, Propensity.nEquipDorpMax + 1);
 
-				// - 장착 드롭
-				int nEquipDrop = xRandom( Propensity.nEquipDorpMin, Propensity.nEquipDorpMax + 1 );
-				for( int i=0; i < nEquipDrop; ++i )
-				{
-					if( DoDropItemRandom( FALSE, pAttacker, TRUE ) == 0 )	
-						break;
-				}				
+				DoDropItemRandom(nInvenDrop, nEquipDrop);
 			}
 		}				
 	}
@@ -4632,35 +4527,17 @@ int CMover::SubWar( CMover *pAttacker )
 	return 1;
 }
 
-PVP_MODE CMover::GetPVPCase( CMover *pAttacker )
-{
-	BOOL bPKEnable = FALSE;
-	if( g_eLocal.GetState( EVE_18 ) == 1 )			// 18세 서버 
-		bPKEnable = TRUE;
+PVP_MODE CMover::GetPVPCase(const CMover * pAttacker) const {
+	if (g_eLocal.GetState(EVE_18) != 1) return PVP_MODE::NONE;
 
-	if( bPKEnable == FALSE || 
-		pAttacker == NULL  || 
-		pAttacker->IsNPC() || // 죽인놈이 NPC면 걍 리턴.
-		IsNPC() )			  // 죽은놈이 NPC면 걍리턴
-		return PVP_MODE_NONE;
-
-	// 이건 사람대 사람의 싸움이다!
-	if( m_idWar != WarIdNone && pAttacker->m_idWar == m_idWar )	// 나랑 같은 전쟁에 참가중인 놈인가.
-	{
-		return PVP_MODE_GUILDWAR;
-	}
-				
-	if( m_nDuel == 0 || m_nDuelState == 300 )	// PK
-	{
-/*		if( GetTickCount() < m_dwPKTargetLimit )		// PK선공불가시간동안에는 선공이 안됨  
-		{
-			return PVP_MODE_NONE;
-		}	*/	// mirchang 100114 듀얼중 타 유저에게 PK당한경우 경험치 하락이 되지 않는다. 내가 카오일 경우 카오수치만 떨어지기 때문에 악용의 소지가 있음..
-		return PVP_MODE_PK;
-	} 
-	else				//듀얼 상황.	
-	{
-		return PVP_MODE_DUEL; 
+	if (pAttacker == NULL || pAttacker->IsNPC() || IsNPC()) {
+		return PVP_MODE::NONE;
+	} else if (m_idWar != WarIdNone && pAttacker->m_idWar == m_idWar) {
+		return PVP_MODE::GUILDWAR;
+	} else if (m_nDuel == 0 || m_nDuelState == 300) {
+		return PVP_MODE::PK;
+	} else {
+		return PVP_MODE::DUEL;
 	}
 }
 
@@ -4700,19 +4577,18 @@ void CMover::SubPVP( CMover *pAttacker, int nReflect )
 		}
 	}
 
-	PVP_MODE mode = GetPVPCase( pAttacker );
-	switch( mode )
-	{
-	case PVP_MODE_GUILDWAR:
-		SubWar( pAttacker );
-		break;
-	case PVP_MODE_NONE:
-	case PVP_MODE_PK:
-		SubPK( pAttacker, nReflect );		// PK의 서브루틴.
-		break;
-	case PVP_MODE_DUEL:
-		SubDuel( pAttacker );
-		break;
+	const PVP_MODE mode = GetPVPCase(pAttacker);
+	switch (mode) {
+		case PVP_MODE::GUILDWAR:
+			SubWar(pAttacker);
+			break;
+		case PVP_MODE::NONE:
+		case PVP_MODE::PK:
+			SubPK(pAttacker, nReflect);
+			break;
+		case PVP_MODE::DUEL:
+			SubDuel(pAttacker);
+			break;
 	}
 }
 
@@ -4815,17 +4691,10 @@ int CMover::SubExperience( CMover *pDead )
 #ifdef __WORLDSERVER
 	EXPFLOAT fExpValue = 0;
 	float	fFxpValue = 0.0f;
-	#ifdef __S1108_BACK_END_SYSTEM
 //			fExpValue	= pMoverProp->nExpValue * static_cast<EXPFLOAT>( prj.m_fMonsterExpRate ) * static_cast<EXPFLOAT>( pMoverProp->m_fExp_Rate );
 //			fFxpValue	= pMoverProp->nFxpValue * prj.m_fMonsterExpRate * pMoverProp->m_fExp_Rate;
 			fExpValue	= pMoverProp->nExpValue * static_cast<EXPFLOAT>( pMoverProp->m_fExp_Rate );
 			fFxpValue	= pMoverProp->nFxpValue * pMoverProp->m_fExp_Rate;
-	#else // __S1108_BACK_END_SYSTEM
-//			fExpValue	= pMoverProp->nExpValue * static_cast<EXPFLOAT>( prj.m_fMonsterExpRate );
-// 			fFxpValue	= pMoverProp->nFxpValue * prj.m_fMonsterExpRate;
-			fExpValue	= pMoverProp->nExpValue;
- 			fFxpValue	= pMoverProp->nFxpValue;
-	#endif // __S1108_BACK_END_SYSTEM
 #else	// __WORLDSERVER
 	EXPFLOAT fExpValue	= static_cast<EXPFLOAT>( pMoverProp->nExpValue );
 	float	fFxpValue	= pMoverProp->nFxpValue;
@@ -5290,7 +5159,7 @@ BOOL CMover::SubPKPVPInspectionBase( CMover* pMover, CMover* pMover1, DWORD dwPK
 			return FALSE;
 		}
 	}
-#endif __WORLDSERVER
+#endif
 
 	if( IsRegionAttr( dwPKAttr ) == FALSE )	// 같은 지역에 있는지 확인
 	{
@@ -5496,24 +5365,17 @@ float CMover::SubDieDecExp( BOOL bTransfer, DWORD dwDestParam, BOOL bResurrectio
 #endif // WORLDSERVER
 
 
+#ifdef __WORLDSERVER
 
-BOOL CMover::DropItemByDied( CMover* pAttacker )
-{
-	BOOL bResult;
-	OBJID objid = GetMaxEnemyHitID();
-	if( objid != NULL_ID )
-	{
-		CMover* pMover	= prj.GetMover( objid );
-		if( IsValidObj( pMover ) )
-			bResult = DropItem( pMover );
-		else
-			objid = NULL_ID;
+BOOL CMover::DropItemByDied( CMover* pAttacker ) {
+	if (const OBJID objid = GetMaxEnemyHitID(); objid != NULL_ID) {
+		CMover * pMover = prj.GetMover(objid);
+		if (IsValidObj(pMover)) {
+			return DropItem(pMover);
+		}
 	}
 
-	if( objid == NULL_ID )
-		bResult = DropItem( pAttacker );
-
-	return bResult;
+	return DropItem( pAttacker );
 }
 
 // 몹이 죽어서 아이템을 드랍할때 사용
@@ -5522,7 +5384,6 @@ BOOL CMover::DropItemByDied( CMover* pAttacker )
 BOOL CMover::DropItem( CMover* pAttacker )
 {
 		MoverProp* lpMoverProp	= GetProp();
-#ifdef __WORLDSERVER
 	if( pAttacker->IsPlayer() && IsNPC() )
 	{
 #ifdef __VTN_TIMELIMIT
@@ -5653,11 +5514,9 @@ BOOL CMover::DropItem( CMover* pAttacker )
 			}
 		}
 
-		short nNum;
-		u_long uSizeOfQuestItem	= lpMoverProp->m_QuestItemGenerator.GetSize();
-		for( u_long i = 0; i < uSizeOfQuestItem; i++ ) 
-		{
-			QUESTITEM * pQuestItem	= lpMoverProp->m_QuestItemGenerator.GetAt( i );
+		for (const QUESTITEM & rQuestItem : lpMoverProp->m_QuestItemGenerator) {
+			const QUESTITEM * pQuestItem = &rQuestItem;
+
 			LPQUEST lpQuest = pAttacker->GetQuest( pQuestItem->dwQuest );
 			if( lpQuest && lpQuest->m_nState == pQuestItem->dwState ) 
 			{
@@ -5678,8 +5537,8 @@ BOOL CMover::DropItem( CMover* pAttacker )
 				if( xRandom( 3000000000 ) <= dwProbability ) 
 				{
 					if( pQuestItem->dwNumber == 0 )
-						Error( "CMover::DropItem : %s의 quest item drop %d번째의 dwNumber가 0", GetName(), i );
-					nNum	= (short)( xRandom( pQuestItem->dwNumber ) + 1 );
+						Error( "CMover::DropItem : %s quest item drop has number = 0", GetName() );
+					short nNum	= (short)( xRandom( pQuestItem->dwNumber ) + 1 );
 					if( pQuestItem->dwIndex == 0 )
 					{
 						WriteLog( "%s, %d\r\n\t%s", __FILE__, __LINE__, lpMoverProp->szName );
@@ -5835,10 +5694,12 @@ BOOL CMover::DropItem( CMover* pAttacker )
 		D3DXVECTOR3 vPos;		// 드랍될 위치.
 
 #ifdef __EVENT_MONSTER
+		const CEventMonster::Prop * pMoverEventProp = CEventMonster::GetEventMonster(lpMoverProp->dwID);
+
 		// 이벤트 몬스터는 설정에 따라 한번만 드랍한다.
-		if( CEventMonster::GetInstance()->SetEventMonster( lpMoverProp->dwID ) )
-			if( !CEventMonster::GetInstance()->IsGiftBoxAble() )
-				nloop = 1;
+		if (pMoverEventProp && !pMoverEventProp->bGiftBox) {
+			nloop = 1;
+		}
 #endif // __EVENT_MONSTER
 		
 		for( int k = 0 ; k < nloop ; k++ )
@@ -5853,8 +5714,8 @@ BOOL CMover::DropItem( CMover* pAttacker )
 			if( GetIndex() == MI_DEMIAN5 || GetIndex() == MI_KEAKOON5 || GetIndex() == MI_MUFFRIN5 )
 				bAdjDropRate = FALSE;		// 이벤트몹들도 레벨차에의한 드랍률 저하가 없다.
 #ifdef __EVENT_MONSTER
-			if( CEventMonster::GetInstance()->SetEventMonster( lpMoverProp->dwID ) )
-				bAdjDropRate = FALSE;
+			if (pMoverEventProp)
+				bAdjDropRate = FALSE;				
 #endif // __EVENT_MONSTER
 #ifdef __EVENTLUA_SPAWN
 			if( prj.m_EventLua.IsEventSpawnMonster( lpMoverProp->dwID ) )
@@ -5874,16 +5735,90 @@ BOOL CMover::DropItem( CMover* pAttacker )
 
 			if( xRandom( 100 ) < fItemDropRate )	// 아이템을 드롭할지 말지 결정. 레벨차가 많이 나면 아예 떨어트리지 않는다.
 			{
-				int nSize	= lpMoverProp->m_DropItemGenerator.GetSize();
+				if (k == 0) {
+					for (const CDropItemGenerator::Money & rDropMoney : lpMoverProp->m_DropItemGenerator.GetMoney()) {
+						int nNumGold = rDropMoney.dwNumber;
+						if (rDropMoney.dwNumber2 > rDropMoney.dwNumber) {
+							nNumGold += xRandom(rDropMoney.dwNumber2 - rDropMoney.dwNumber);
+						}
+						nNumGold = nNumGold * nPenyaRate / 100;
+						nNumGold = (int)(nNumGold * prj.m_fGoldDropRate * lpMoverProp->m_fPenya_Rate);
+						if (nNumGold == 0)
+							continue;
+
+						nNumGold = (int)(nNumGold * prj.m_EventLua.GetGoldDropFactor());
+
+						if (lpMoverProp->dwFlying) {
+							if (CanAdd(pAttacker->GetGold(), nNumGold))
+							{
+								pAttacker->AddGold(nNumGold);
+								((CUser *)pAttacker)->AddGoldText(nNumGold);
+							}
+						} else {
+							int	nSeedID;
+							// 돈액수에 따라 어떤모양의 시드를 사용할지 결정한다.
+							if (nNumGold <= (int)(prj.GetItemProp(II_GOLD_SEED1)->dwAbilityMax))
+								nSeedID = II_GOLD_SEED1;
+							else if (nNumGold <= (int)(prj.GetItemProp(II_GOLD_SEED2)->dwAbilityMax))
+								nSeedID = II_GOLD_SEED2;
+							else if (nNumGold <= (int)(prj.GetItemProp(II_GOLD_SEED3)->dwAbilityMax))
+								nSeedID = II_GOLD_SEED3;
+							else
+								nSeedID = II_GOLD_SEED4;
+
+							CItemElem * pItemElem = new CItemElem;
+							pItemElem->m_dwItemId = nSeedID;
+							pItemElem->m_nItemNum = nNumGold;	// 돈액수
+							pItemElem->m_nHitPoint = nNumGold;
+							CItem * pItem = new CItem;
+							pItem->m_pItemBase = pItemElem;
+							BOOL bJJim = TRUE;
+							if (lpMoverProp->dwClass == RANK_SUPER)		// 보스몹이 드롭한 아이템은 아무나 먹을수 있다.
+								bJJim = FALSE;
+							if (GetIndex() == MI_DEMIAN5 || GetIndex() == MI_KEAKOON5 || GetIndex() == MI_MUFFRIN5)
+								bJJim = FALSE;		// 얘들은 이벤트몹이므로 찜안해놔도 된다. 아무나 먹을수 있음
+							if (bJJim)
+							{
+								pItem->m_idOwn = pAttacker->GetId();	// 이 아이템의 소유가 pAttacker(어태커)꺼란걸 표시.
+								pItem->m_dwDropTime = timeGetTime();	// 드랍 했을당시의 시간을 기록함.
+							}
+							pItem->m_bDropMob = TRUE;		// 몹이 죽어서 떨군 돈은 표시를 해둠.
+							if (pItem->m_pItemBase->m_dwItemId == 0) Error("DropItem: 3rd %s\n", GetName());
+							pItem->SetIndex(D3DDEVICE, pItem->m_pItemBase->m_dwItemId);
+
+							vPos = GetPos();
+							vPos.x += (xRandomF(2.0f) - 1.0f);
+							vPos.z += (xRandomF(2.0f) - 1.0f);
+#ifdef __EVENT_MONSTER
+							// 이벤트 몬스터가 드랍한 아이템은 몬스터의 ID를 기억한다(펫이 못 줍게...)
+							if (pMoverEventProp)
+							{
+								// 이벤트 몬스터는 무조건 선점권을 갖는다.
+								pItem->m_idOwn = pAttacker->GetId();
+								pItem->m_dwDropTime = timeGetTime();
+
+								pItem->m_IdEventMonster = lpMoverProp->dwID;
+								float fItemDropRange = pMoverEventProp->fItemDropRange;
+								vPos = GetPos();
+								vPos.x += (xRandomF(fItemDropRange) - (fItemDropRange / 2.0f));
+								vPos.z += (xRandomF(fItemDropRange) - (fItemDropRange / 2.0f));
+							}
+#endif // __EVENT_MONSTER
+							pItem->SetPos(vPos);
+							GetWorld()->ADDOBJ(pItem, TRUE, GetLayer());
+						}
+					}
+				}
+
+
 				int nNumber	= 0;
-				DROPITEM* lpDropItem;
 		
-				for( int i = 0; i < nSize; i++ )
-				{
-					if( ( lpDropItem = lpMoverProp->m_DropItemGenerator.GetAt( i, bUnique, GetPieceItemDropRateFactor( pAttacker ) ) ) != NULL )
-					{
-						if( lpDropItem->dtType == DROPTYPE_NORMAL )
-						{
+				for (const auto & rDropItem : lpMoverProp->m_DropItemGenerator.GetItems()) {
+					const CDropItemGenerator::Item * lpDropItem = &rDropItem;
+
+					if (!lpDropItem->IsDropped(bUnique, GetPieceItemDropRateFactor(pAttacker)))
+						continue;
+
 							DWORD dwNum		= lpDropItem->dwNumber;
 							if(  dwNum == (DWORD)-1 )
 								dwNum	= 1;
@@ -5913,7 +5848,8 @@ BOOL CMover::DropItem( CMover* pAttacker )
 									}
 									if( lpDropItem->dwNumber != (DWORD)-1 )
 										nNumber++;
-									if(  (DWORD)( nNumber ) >= lpMoverProp->m_DropItemGenerator.m_dwMax )
+									if( !useless_params::DropIgnoreMaxItemsPerMonster
+									&& (DWORD)( nNumber ) >= lpMoverProp->m_DropItemGenerator.m_dwMax )
 										break;
 								}
 								continue;
@@ -5951,14 +5887,13 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							vPos.y = GetPos().y;
 					#ifdef __EVENT_MONSTER
 							// 이벤트 몬스터가 드랍한 아이템은 몬스터의 ID를 기억한다(펫이 못 줍게...)
-							if( CEventMonster::GetInstance()->SetEventMonster( lpMoverProp->dwID ) )
-							{
+							if (pMoverEventProp) {
 								// 이벤트 몬스터는 무조건 선점권을 갖는다.
 								pItem->m_idOwn	= pAttacker->GetId();
 								pItem->m_dwDropTime		= timeGetTime();
 
 								pItem->m_IdEventMonster = lpMoverProp->dwID;
-								float fItemDropRange = CEventMonster::GetInstance()->GetItemDropRange(); 
+								float fItemDropRange = pMoverEventProp->fItemDropRange;
 								vPos = GetPos();
 								vPos.x += ( xRandomF( fItemDropRange ) - (fItemDropRange / 2.0f) );
 								vPos.z += ( xRandomF( fItemDropRange ) - (fItemDropRange / 2.0f) );
@@ -5984,143 +5919,35 @@ BOOL CMover::DropItem( CMover* pAttacker )
 								}
 							}
 
-							if( nNumber == lpMoverProp->m_DropItemGenerator.m_dwMax )
+							if(!useless_params::DropIgnoreMaxItemsPerMonster
+								&& nNumber == lpMoverProp->m_DropItemGenerator.m_dwMax )
 								break;
-						} else
-						// 돈은 무조건떨어져야 한다.
-						if( lpDropItem->dtType == DROPTYPE_SEED && k == 0 )
-						{
-							int	nSeedID = 0;
-							int nNumGold = lpDropItem->dwNumber + xRandom( lpDropItem->dwNumber2 - lpDropItem->dwNumber );	// Number ~ Number2 사이의 랜덤값.
-							nNumGold	= nNumGold * nPenyaRate / 100;
-	#ifdef __S1108_BACK_END_SYSTEM
-							nNumGold	= (int)( nNumGold * prj.m_fGoldDropRate * lpMoverProp->m_fPenya_Rate );
-							if( nNumGold == 0 )
-								continue;
-	#else // __S1108_BACK_END_SYSTEM
-							nNumGold	*= prj.m_fGoldDropRate;
-	#endif // __S1108_BACK_END_SYSTEM
-							
-							nNumGold	= (int)( nNumGold * prj.m_EventLua.GetGoldDropFactor() );
+						
 
-
-							if( lpMoverProp->dwFlying )
-							{
-								if( CanAdd( pAttacker->GetGold(), nNumGold ) )
-								{
-									pAttacker->AddGold( nNumGold );
-									( (CUser*)pAttacker )->AddGoldText( nNumGold );
-								}
-							}
-							else
-							{
-								// 돈액수에 따라 어떤모양의 시드를 사용할지 결정한다.
-								if( nNumGold <= (int)( prj.GetItemProp( II_GOLD_SEED1 )->dwAbilityMax ) )
-									nSeedID = II_GOLD_SEED1;
-								else if( nNumGold <= (int)( prj.GetItemProp( II_GOLD_SEED2 )->dwAbilityMax ) )
-									nSeedID = II_GOLD_SEED2;
-								else if( nNumGold <= (int)( prj.GetItemProp( II_GOLD_SEED3 )->dwAbilityMax ) )
-									nSeedID = II_GOLD_SEED3;
-								else 
-									nSeedID = II_GOLD_SEED4;
-
-								CItemElem* pItemElem	= new CItemElem;
-								pItemElem->m_dwItemId	= nSeedID;
-								pItemElem->m_nItemNum	= nNumGold;	// 돈액수
-								pItemElem->m_nHitPoint	= nNumGold;
-								CItem* pItem	= new CItem;
-								pItem->m_pItemBase	= pItemElem;
-								BOOL bJJim = TRUE;
-								if( lpMoverProp->dwClass == RANK_SUPER )		// 보스몹이 드롭한 아이템은 아무나 먹을수 있다.
-									bJJim = FALSE;
-								if( GetIndex() == MI_DEMIAN5 || GetIndex() == MI_KEAKOON5 || GetIndex() == MI_MUFFRIN5 )
-									bJJim = FALSE;		// 얘들은 이벤트몹이므로 찜안해놔도 된다. 아무나 먹을수 있음
-								if( bJJim )
-								{
-									pItem->m_idOwn = pAttacker->GetId();	// 이 아이템의 소유가 pAttacker(어태커)꺼란걸 표시.
-									pItem->m_dwDropTime = timeGetTime();	// 드랍 했을당시의 시간을 기록함.
-								}
-								pItem->m_bDropMob = TRUE;		// 몹이 죽어서 떨군 돈은 표시를 해둠.
-								if( pItem->m_pItemBase->m_dwItemId == 0 ) Error("DropItem: 3rd %s\n", GetName() );
-								pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
-
-								vPos = GetPos();
-								vPos.x += ( xRandomF(2.0f) - 1.0f );
-								vPos.z += ( xRandomF(2.0f) - 1.0f );
-						#ifdef __EVENT_MONSTER
-								// 이벤트 몬스터가 드랍한 아이템은 몬스터의 ID를 기억한다(펫이 못 줍게...)
-								if( CEventMonster::GetInstance()->SetEventMonster( lpMoverProp->dwID ) )
-								{
-									// 이벤트 몬스터는 무조건 선점권을 갖는다.
-									pItem->m_idOwn	= pAttacker->GetId();
-									pItem->m_dwDropTime		= timeGetTime();
-									
-									pItem->m_IdEventMonster = lpMoverProp->dwID;
-									float fItemDropRange = CEventMonster::GetInstance()->GetItemDropRange(); 
-									vPos = GetPos();
-									vPos.x += ( xRandomF( fItemDropRange ) - (fItemDropRange / 2.0f) );
-									vPos.z += ( xRandomF( fItemDropRange ) - (fItemDropRange / 2.0f));
-								}
-						#endif // __EVENT_MONSTER
-								pItem->SetPos( vPos );
-								GetWorld()->ADDOBJ( pItem, TRUE, GetLayer() );
-							}
-						} // DROPTYPE_SEED
-					} // if
 					//////////////
 					//  여기까지 for-loop안내려오고 continue하는 수도 있으니까 여기다 코드 넣지 말것.
 					///////////
 				} // for nSize
 
-				nSize	= lpMoverProp->m_DropKindGenerator.GetSize();
-				DROPKIND* pDropKind;
-				CPtrArray* pItemKindAry;
-				int nAbilityOption; //, nDropLuck;
-				BOOL bDrop = FALSE;
-				for( int i = 0; i < nSize; i++ )
-				{
-					bDrop = FALSE;
-					pDropKind	= lpMoverProp->m_DropKindGenerator.GetAt( i );
-					pItemKindAry	= prj.GetItemKindAry( pDropKind->dwIK3 );
-					int nMinIdx	= -1,	nMaxIdx		= -1;
-					for( int j = pDropKind->nMinUniq; j <= pDropKind->nMaxUniq; j++ )
-					{
-						nMinIdx		= prj.GetMinIdx( pDropKind->dwIK3, j );
-						if( nMinIdx != -1 )
-							break;
-					}
-					for( int j = pDropKind->nMaxUniq; j >= pDropKind->nMinUniq; j-- )
-					{
-						nMaxIdx		= prj.GetMaxIdx( pDropKind->dwIK3, j );
-						if( nMaxIdx != -1 )
-							break;
-					}
-					if( nMinIdx < 0 || nMaxIdx < 0 )
-					{
-#ifdef __INTERNALSERVER
-						WriteLog( "dropkind, 1, dwIndex = %d, nIndex = %d", lpMoverProp->dwID, i );
-#endif	// __INTERNALSERVER
-						continue;
-					}
-					ItemProp* pItemProp		= (ItemProp*)pItemKindAry->GetAt( nMinIdx + xRandom( nMaxIdx - nMinIdx + 1 ) );
-					if( NULL == pItemProp )
-					{
-#ifdef __INTERNALSERVER
-						WriteLog( "dropkind, 2, dwIndex = %d, nIndex = %d", lpMoverProp->dwID, i );
-#endif	// __INTERNALSERVER
-						continue;
-					}
 
-					nAbilityOption	= xRandom( 11 );	// 0 ~ 10
-
-					DWORD dwAdjRand;
+				for (const DROPKIND & pDropKind : lpMoverProp->m_DropKindGenerator) {
+					const auto minMaxIdx = prj.GetItemKind3WithRarity(pDropKind);
 					
+					if (minMaxIdx.empty()) {
+						continue;
+					}
+
+					const ItemProp * pItemProp = minMaxIdx[xRandom(minMaxIdx.size())];
+
+					const int nAbilityOption	= xRandom( 11 );	// 0 ~ 10
+
+					bool bDrop = false;
 					for( int k = nAbilityOption; k >= 0; k-- )
 					{
 						DWORD dwPrabability		= (DWORD)( prj.m_adwExpDropLuck[( pItemProp->dwItemLV > 120? 119: pItemProp->dwItemLV-1 )][k]
 						* ( (float)lpMoverProp->dwCorrectionValue / 100.0f ) );
 
-						dwAdjRand	= xRandom( 3000000000 );
+						DWORD dwAdjRand	= xRandom( 3000000000 );
 						if( bUnique && dwPrabability <= 10000000 )
 							dwAdjRand	/= 2;
 						
@@ -6172,7 +5999,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							}
 							pItem->m_bDropMob	= TRUE;
 					#ifdef __EVENT_MONSTER
-							if( CEventMonster::GetInstance()->SetEventMonster( lpMoverProp->dwID ) )
+							if(pMoverEventProp)
 							{
 								// 이벤트 몬스터는 무조건 선점권을 갖는다.
 								pItem->m_idOwn	= pAttacker->GetId();
@@ -6185,7 +6012,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
 							pItem->SetPos( GetPos() );
 							GetWorld()->ADDOBJ( pItem, TRUE, GetLayer() );
-							bDrop = TRUE;
+							bDrop = true;
 
 							if( pItemProp->dwItemKind1 == IK1_WEAPON || pItemProp->dwItemKind1 == IK1_ARMOR || ( pItemProp->dwItemKind1 == IK1_GENERAL && pItemProp->dwItemKind2 == IK2_JEWELRY ) )
 							{
@@ -6212,22 +6039,18 @@ BOOL CMover::DropItem( CMover* pAttacker )
 	
 	if( IsNPC() )	// 몹이 죽었을때..
 	{
-		MoverProp* pMoverProp	= GetProp();
-		if( pMoverProp->m_nLoot == 2 )	// 2아 d옵션.  아이템 먹고 뱉기까지 하는 옵션.
+		if(lpMoverProp->m_nLoot == 2 )	// 2아 d옵션.  아이템 먹고 뱉기까지 하는 옵션.
 		{
-			int nSize = m_Inventory.GetSize();
-			int i;
-			CItemElem *pElem = NULL;
-			for( i = 0; i < nSize; i ++ )
+			const int nSize = m_Inventory.GetSize();
+			for( int i = 0; i < nSize; i ++ )
 			{
-				pElem = m_Inventory.GetAt( i );
+				CItemElem * pElem = m_Inventory.GetAt( i );
 				if( pElem )
 				{
 					D3DXVECTOR3 vPos = GetPos();
-				#ifdef __WORLDSERVER
 					vPos.x += ( xRandomF(2.0f) - 1.0f );
 					vPos.z += ( xRandomF(2.0f) - 1.0f );
-				#endif
+
 					CItem *pItem = DropItem( i, pElem->m_nItemNum, vPos, FALSE );
 					pItem->m_idOwn	= pAttacker->GetId();
 					pItem->m_dwDropTime		= timeGetTime();
@@ -6236,10 +6059,10 @@ BOOL CMover::DropItem( CMover* pAttacker )
 		}
 	}
 
-#endif	// __WORLDSERVER
 
 	return TRUE;
 }
+#endif	// __WORLDSERVER
 
 // this오브젝트에다 찜한사람(JJimer -_-;;;) 의 아이디를 박아둬서 
 // this가 찜당했다는걸 표시.
@@ -6254,7 +6077,7 @@ void CMover::SetJJim( CMover *pJJimer )
 
 #ifdef __EVENT_MONSTER
 	// 이벤트 몬스터는 스틸 허용
-	if( CEventMonster::GetInstance()->IsEventMonster( GetProp()->dwID ) )
+	if( CEventMonster::IsEventMonster( GetProp()->dwID ) )
 		return;
 #endif // __EVENT_MONSTER
 		
@@ -6466,7 +6289,7 @@ void CMover::ProcessRecovery()
 		// 서있을 때
 		m_dwTickRecovery = dwCurTick + NEXT_TICK_RECOVERY; // 앉아있기 회복을 막는다.
 		//if( m_pActMover->IsActAttack() == FALSE )	
-		if( IsAttackMode() == FALSE )	// IsActAttack은 공격동작일 때만, IsAttackMode는 전투중
+		if( !IsAttackMode() )	// IsActAttack은 공격동작일 때만, IsAttackMode는 전투중
 		{
 			// 어택상태가 아닐때만 일정시간마다 피찬다.
 			if( dwCurTick > m_dwTickRecoveryStand )	
@@ -7204,9 +7027,8 @@ void CMover::AddSkillPoint(const int nPoint) {
 }
 
 // 전투중인가?
-BOOL CMover::IsAttackMode()
-{
-	return ( m_nAtkCnt && m_nAtkCnt < (SEC1 * 10) );
+bool CMover::IsAttackMode() const {
+	return m_nAtkCnt && m_nAtkCnt < (SEC1 * 10);
 }
 
 BOOL CMover::IsDropable( CItemElem* pItemElem, BOOL bPK )
@@ -7218,7 +7040,8 @@ BOOL CMover::IsDropable( CItemElem* pItemElem, BOOL bPK )
 		&& !m_Inventory.IsEquip( pItemElem->m_dwObjId )
 		&& !IsUsing( pItemElem )
 		&& !( pItemElem->GetProp()->dwParts == PARTS_RIDE && pItemElem->GetProp()->dwItemJob == JOB_VAGRANT )
-		&& !pItemElem->IsCharged()
+		&& pItemElem->m_nResistSMItemId != 0
+		&& !pItemElem->GetProp()->bCharged
 		&& pItemElem->GetProp()->dwItemKind3 != IK3_EGG
 #ifdef __JEFF_11
 		&& pItemElem->m_dwItemId != II_CHP_RED

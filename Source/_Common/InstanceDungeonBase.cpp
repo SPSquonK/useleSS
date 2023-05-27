@@ -105,7 +105,7 @@ BOOL CInstanceDungeonBase::CreateDungeonLayer( ID_INFO & ID_Info, DWORD dwLayer 
 {
 #ifdef __WORLDSERVER
 	if( ID_Info.uMultiKey != g_uKey )
-		return TRUE;
+		return FALSE;
 
 	CWorld* pWorld = g_WorldMng.GetWorld( ID_Info.dwWorldId );
 	if( !pWorld || pWorld->m_linkMap.GetLinkMap( static_cast<int>( dwLayer ) ) )
@@ -138,7 +138,7 @@ BOOL CInstanceDungeonBase::DestroyDungeonLayer( ID_INFO & ID_Info, DWORD dwLayer
 {
 #ifdef __WORLDSERVER
 	if( ID_Info.uMultiKey != g_uKey )
-		return TRUE;
+		return FALSE;
 
 	CWorld* pWorld = g_WorldMng.GetWorld( ID_Info.dwWorldId );
 	if( !pWorld || !pWorld->m_linkMap.GetLinkMap( static_cast<int>( dwLayer ) ) )

@@ -549,19 +549,7 @@ void CMover::Serialize( CAr & ar )
 				{
 					ar >> m_aHonorTitle[l];
 #ifdef __CLIENT
-					int nNeed = CTitleManager::Instance()->GetNeedCount(l, -1);
-					if(m_aHonorTitle[l] >= nNeed && nNeed > 0)
-					{
-						CTitleManager::Instance()->AddEarned(l);	
-					}
-					else
-					{
-						// 획득된 타이틀이지만 요구사항을 충족못하게 될때
-						if(CTitleManager::Instance()->IsEarned(l))
-						{
-							CTitleManager::Instance()->RemoveEarned(l);
-						}
-					}
+					CTitleManager::Instance()->UpdateEarned(l, m_aHonorTitle[l]);
 #endif	// __CLIENT
 				}
 				ar >> m_idCampus;

@@ -47,6 +47,7 @@ void CDPLoginSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	
 	if( pfn ) {
 		( this->*( pfn ) )( ar );
+		if (ar.IsOverflow()) Error("Core-Login: Packet %08x overflowed", dw);
 	}
 	else {
 		ASSERT( 0 );
@@ -76,7 +77,7 @@ void CDPLoginSrvr::OnQueryTickCount( CAr & ar )
 	DWORD dwTime;
 	ar >> dwTime;
 
-	BroadcastPacket<PACKETTYPE_QUERYTICKCOUNT, __int64>(dwTime, g_TickCount.GetTickCount());
+	BroadcastPacket<PACKETTYPE_QUERYTICKCOUNT, DWORD, __int64>(dwTime, g_TickCount.GetTickCount());
 }
 
 void CDPLoginSrvr::OnPreJoin( CAr & ar )

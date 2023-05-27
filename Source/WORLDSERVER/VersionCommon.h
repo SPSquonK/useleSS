@@ -10,16 +10,13 @@
 #define		__SERVER						// 클라이언트 전용코드를 빌드하지 않기 위한 define
 #define		__X15
 #define		__VERIFY_LOOP041010
-#define		__S1108_BACK_END_SYSTEM			// 백앤드시스템 Trans, World, Neuz
 //#define		__PROFILE_RUN
-#define		__RES0807						// 리스폰 개선
 #define		__CPU_UTILDOWN_060502			// CPU 사용률 감소작업 
 #define		__SLIDE_060502					// 땅으로 꺼지는 문제 수정 
 #define		__S8_SERVER_PORT				// 2006월 11월 7일 업데이트 - World, Cache, CoreServer
 #define		__EVENT_1101					// 출첵 이벤트
 #define		__NEWYEARDAY_EVENT_COUPON		// 설 이벤트 - 헤어샾, 성형 무료이용권 관련.
 // 해외 6차 수정 적용
-#define		__LANG_1013						// 해외 버전 추가 시 스크립트로 적용 Neuz. World
 #define		__HACK_1130						// 미국 해킹 막기 - 강제 듀얼, 스크립트 실행
 #define		__QUEST_1208					// 스크립트 패킷 처리 제한
 #define		__TRAFIC_1222					// 중복 패킷 전송 막기
@@ -228,7 +225,6 @@
 //	#define		__LUASCRIPT060908			// lua 스크립트엔진( 아이템 ) 
 	#define		__Y_FLAG_SKILL_BUFF			// 팻, 변신 아이템 토글버프 적용... Neuz, World
 //	#define		__EVENT_FALL				// 단풍 이벤트 - 모델교체 Neuz, World
-//	#define		__LANG_1013					// 해외 버전 추가 스크립트
 //	#define		__JEFF_VER_8				// 8차 작업
 //	#define		__JHMA_VER_8_1				// 8차 게임내돈드롭금지	Neuz, World 
 //	#define		__JHMA_VER_8_2				// 8차 게임내아이템판매가격제한풀기	Neuz, World

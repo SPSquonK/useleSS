@@ -720,7 +720,10 @@ void CWndHonor::OnInitialUpdate() {
 void CWndHonor::RefreshList() {
 	GetDlgItem<CWndButton>(WIDC_BUTTON1)->EnableWindow(FALSE);
 
-	m_vecTitle = CTitleManager::Instance()->m_vecEarned;
+	m_vecTitle = std::vector(
+		CTitleManager::Instance()->m_vecEarned.begin(),
+		CTitleManager::Instance()->m_vecEarned.end()
+		);
 
 	if (g_pPlayer) m_nSelectedId = g_pPlayer->m_nHonor;
 
@@ -729,8 +732,8 @@ void CWndHonor::RefreshList() {
 
 	if (!m_vecTitle.empty()) {
 		pWndListBox->AddString(prj.GetText(TID_GAME_NOT_SELECTED_TITLE));
-		for (const EarnedTitle & title : m_vecTitle) {
-			pWndListBox->AddString(title.strTitle.GetString());
+		for (const int nId : m_vecTitle) {
+			pWndListBox->AddString(CTitleManager::Instance()->GetTitle(nId));
 		}
 	}
 }
@@ -747,7 +750,7 @@ BOOL CWndHonor::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 			if (pWndListBox->GetCurSel() == 0) {
 				m_nSelectedId = -1;
 			} else {
-				m_nSelectedId = m_vecTitle[pWndListBox->GetCurSel() - 1].nId;
+				m_nSelectedId = m_vecTitle[pWndListBox->GetCurSel() - 1];
 			}
 			GetDlgItem<CWndButton>(WIDC_BUTTON1)->EnableWindow(TRUE);
 			break;

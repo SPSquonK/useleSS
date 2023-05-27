@@ -126,6 +126,7 @@ void CDPCoreSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 	if( pfn ) 
 	{
 		( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)( (LPBYTE)lpMsg + nSize ), ( dwMsgSize - nSize - nSize ) );
+		if (ar.IsOverflow()) Error("Core-World: Packet %08x overflowed", dw);
 	}
 	else {
 		switch( dw )

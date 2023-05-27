@@ -183,21 +183,6 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 						AddDefinedText(TID_GAME_NOTOVERLAP_USE, ""); // 이 아이템과는 중복하여 사용할 수 없습니다
 					}
 					return FALSE;
-				} else {
-					if (pItemBase->m_dwItemId == II_SYS_SYS_SCR_RECCURENCE_LINK) {
-						g_dpDBClient.SendLogSMItemUse("1", this, pItemBase, pItemProp);
-					}
-
-					//////////////////////////////////////////////////////////////////////////
-					//	mulcom	BEGIN100125	이벤트용 리스킬 및 이벤트용 리스테트 사용 내역에 대한 로그 추가
-					//						( e-mail : [유럽] 아이템 로그 추가 ( 2010-01-25 17:33 ) 참고 )
-					else if (pItemBase->m_dwItemId == II_SYS_SYS_SCR_RECCURENCE && pItemBase->m_bCharged != TRUE) {
-						g_DPSrvr.PutItemLog(this, "w", "USE_RECCURENCE_ITEM", pItemBase, 1);
-					} else if (pItemBase->m_dwItemId == II_CHR_SYS_SCR_RESTATE && pItemBase->m_bCharged != TRUE) {
-						g_DPSrvr.PutItemLog(this, "w", "USE_RESTATE_ITEM", pItemBase, 1);
-					}
-					//	mulcom	END100125	이벤트용 리스킬 및 이벤트용 리스테트 사용 내역에 대한 로그 추가
-					//////////////////////////////////////////////////////////////////////////
 				}
 			}
 		}
@@ -369,9 +354,6 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 
 	OnAfterUseItem(pItemProp);	// raiders 06.04.20
 	pItemBase->UseItem();			// --m_nItemNum;
-
-	if (pItemBase->m_bCharged)		// 상용화 아이템 로그
-		g_dpDBClient.SendLogSMItemUse("1", this, pItemBase, pItemProp);
 
 	UI::Num operation = UI::Num::Sync(*pItemBase);
 	if (cooldownType == CCooltimeMgr::CooldownType::Available)	// 쿨타임 아이템이면 사용시각을 기록한다.
@@ -1007,20 +989,9 @@ CUser::DoUseSystemAnswer CUser::DoUseItemSystem(ItemProp * pItemProp, CItemElem 
 		case II_SYS_SYS_SCR_FRIENDSUMMON_A:
 		case II_SYS_SYS_SCR_FRIENDSUMMON_B:
 		{
-			int nState = GetSummonState();
-			if (nState != 0) {
-				DWORD dwMsgId = 0;
-				if (nState == 1)	// 거래중
-					dwMsgId = TID_GAME_TRADE_NOTUSE;
-				else if (nState == 2) // 죽음
-					dwMsgId = TID_GAME_DIE_NOTUSE;
-				else if (nState == 3) // 개인상점 중
-					dwMsgId = TID_GAME_VENDOR_NOTUSE;
-				else if (nState == 4) // 전투중
-					dwMsgId = TID_GAME_ATTACK_NOTUSE;
-				else if (nState == 5) // 비행중
-					dwMsgId = TID_GAME_FLY_NOTUSE;
-
+			const auto nState = GetSummonState();
+			if (nState != SummonState::Ok_0) {
+				const DWORD dwMsgId = GetSummonStateTIdForMyself(nState);
 				AddDefinedText(TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText(dwMsgId));
 			} else if (g_GuildCombat1to1Mng.IsPossibleUser((CUser *)this)) {
 				AddDefinedText(TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText(TID_GAME_ATTACK_NOTUSE));
@@ -1033,20 +1004,9 @@ CUser::DoUseSystemAnswer CUser::DoUseItemSystem(ItemProp * pItemProp, CItemElem 
 
 		case II_SYS_SYS_SCR_PERIN:
 		{
-			int nState = GetSummonState();
-			if (nState != 0) {
-				DWORD dwMsgId = 0;
-				if (nState == 1)	// 거래중
-					dwMsgId = TID_GAME_TRADE_NOTUSE;
-				else if (nState == 2) // 죽음
-					dwMsgId = TID_GAME_DIE_NOTUSE;
-				else if (nState == 3) // 개인상점 중
-					dwMsgId = TID_GAME_VENDOR_NOTUSE;
-				else if (nState == 4) // 전투중
-					dwMsgId = TID_GAME_ATTACK_NOTUSE;
-				else if (nState == 5) // 비행중
-					dwMsgId = TID_GAME_FLY_NOTUSE;
-
+			const auto nState = GetSummonState();
+			if (nState != SummonState::Ok_0) {
+				const DWORD dwMsgId = GetSummonStateTIdForMyself(nState);
 				AddDefinedText(TID_GAME_STATE_NOTUSE, "\"%s\"", prj.GetText(dwMsgId));
 				nResult = DoUseSystemAnswer::SilentError99;
 			} else {
@@ -1131,6 +1091,58 @@ CUser::DoUseSystemAnswer CUser::DoUseItemSystem(ItemProp * pItemProp, CItemElem 
 	return nResult;
 }
 
+CUser::SummonState CUser::GetSummonState()
+{
+	if (m_vtInfo.GetOther() != NULL)
+		return SummonState::Trade_1;
+	if (m_bBank)
+		return SummonState::Trade_1;
+	if (m_bGuildBank)
+		return SummonState::Trade_1;
+
+	if (IsDie())
+		return SummonState::Die_2;
+
+	if (m_vtInfo.VendorIsVendor() || m_vtInfo.IsVendorOpen())
+		return SummonState::Vendor_3;
+
+	if (IsAttackMode())
+		return SummonState::Attack_4;
+
+	if (IsFly())
+		return SummonState::Fly_5;
+
+	if (m_nDuel)
+		return SummonState::Duel_6;
+
+	return SummonState::Ok_0;
+}
+
+DWORD CUser::GetSummonStateTIdForMyself(SummonState state) {
+	switch (state) {
+		default:
+		case SummonState::Ok_0    : return NULL;
+		case SummonState::Trade_1 : return TID_GAME_TRADE_NOTUSE;
+		case SummonState::Die_2   : return TID_GAME_DIE_NOTUSE;
+		case SummonState::Vendor_3: return TID_GAME_VENDOR_NOTUSE;
+		case SummonState::Attack_4: return TID_GAME_ATTACK_NOTUSE;
+		case SummonState::Fly_5   : return TID_GAME_FLY_NOTUSE;
+		case SummonState::Duel_6  : return TID_GAME_ATTACK_NOTUSE;
+	}
+}
+
+DWORD CUser::GetSummonStateTIdForOther(SummonState state) {
+	switch (state) {
+		default:
+		case SummonState::Ok_0    : return NULL;
+		case SummonState::Trade_1 : return TID_GAME_TRADE_NOTUSE1;
+		case SummonState::Die_2   : return TID_GAME_DIE_NOTUSE1;
+		case SummonState::Vendor_3: return TID_GAME_VENDOR_NOTUSE1;
+		case SummonState::Attack_4: return TID_GAME_ATTACK_NOTUSE1;
+		case SummonState::Fly_5   : return TID_GAME_FLY_NOTUSE1;
+		case SummonState::Duel_6  : return TID_GAME_ATTACK_NOTUSE1;
+	}
+}
 
 // IK2_FOOD / IK2_REFRESHER
 bool CUser::DoUseItemFood(ItemProp & pItemProp) {
