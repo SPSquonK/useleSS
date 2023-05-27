@@ -1063,8 +1063,6 @@ inline BOOL CDbManager::VerifyString( const char* lpString, const char* lpFileNa
 	if( len > 0 && lpString[len-1] == '$' )
 		return TRUE;
 	WriteLog( "%s, %d\t%s", lpFileName, nLine, lpName );
-	if( NULL != lpOverlapped )
-		FreeRequest( lpOverlapped );
 	return FALSE;
 }
 
