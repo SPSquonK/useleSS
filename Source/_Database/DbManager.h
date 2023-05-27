@@ -671,7 +671,7 @@ public:
 	int				m_nItemUpdate;
 
 	DB_OVERLAPPED_PLUS*		AllocRequest( void );
-	void	FreeRequest( DB_OVERLAPPED_PLUS* pOverlappedPlus );
+	void	FreeRequest( DB_OVERLAPPED_PLUS* pOverlappedPlus);
 	void	MakeRequest( DB_OVERLAPPED_PLUS* pOverlappedPlus,  LPBYTE lpBuf, u_long uBufSize );
 
 #ifndef __TRANS_0413
