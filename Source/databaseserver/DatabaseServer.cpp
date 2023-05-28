@@ -27,6 +27,8 @@ extern	CProject	prj;
 
 #include "spevent.h"
 
+#include "DbSerializer.h"
+#include <source_location>
 #include "tlord.h"
 
 #define MAX_LOADSTRING 100
@@ -144,6 +146,8 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
+	CDBUnserializer::RunTests();
+
 	HWND hWnd;
 
 	hInst = hInstance; // Store instance handle in our global variable
@@ -699,3 +703,65 @@ BOOL LoadRemoveItem( LPCSTR lpszFileName )
 	return FALSE;
 }
 #endif // __ITEM_REMOVE_LIST
+
+///////////////////////////////////////////////////////////////////////////////
+
+bool CDBUnserializer::RunTests() {
+	bool allPassed = true;
+
+	CDBUnserializer * currentlyTested;
+
+	const auto AssertEqual = [&] <typename T> (T lhs, T rhs) {
+		if constexpr (std::same_as<const char *, T>) {
+			if (std::strcmp(lhs, rhs) != 0) {
+				Error(
+					__FUNCTION__ " Error: Read %s but expected %s (Leftovers: %s)",
+					lhs, rhs,
+					currentlyTested ? currentlyTested->currentPosition : "???"
+				);
+				allPassed = false;
+			}
+		} else {
+			if (lhs != rhs) {
+				Error(
+					__FUNCTION__ " Error: Read %lld but expected %lld (Leftovers: %s)",
+					static_cast<std::int64_t>(lhs), static_cast<std::int64_t>(rhs),
+					currentlyTested ? currentlyTested->currentPosition : "???"
+				);
+				allPassed = false;
+			}
+		}
+	};
+
+	{
+		CDBUnserializer unserializer{ "0,1,2/3/4,5,6/coucou,4/" };
+		currentlyTested = &unserializer;
+		
+		AssertEqual(unserializer.GetInt(), 0);
+		AssertEqual(unserializer.GetInt(), 1);
+		AssertEqual(unserializer.GetInt(), 2);
+		
+		AssertEqual(unserializer.GetPaInt(), 3);
+		AssertEqual(unserializer.GetPaInt(), 0);
+		AssertEqual(unserializer.GetPaInt(), 0);
+		unserializer.SkipCharacter();
+
+		AssertEqual(unserializer.GetInt(), 4);
+		AssertEqual(unserializer.GetPaInt(), 5);
+		AssertEqual(unserializer.GetPaInt(), 6);
+		AssertEqual(unserializer.GetPaInt(), 0);
+		AssertEqual(unserializer.GetPaStr(), "");
+
+		unserializer.SkipCharacter();
+
+		AssertEqual(unserializer.GetPaStr(), "coucou");
+		AssertEqual(unserializer.GetPaStr(), "4");
+		AssertEqual(unserializer.GetPaStr(), "");
+
+		currentlyTested = nullptr;
+	}
+
+	return allPassed;
+}
+
+
