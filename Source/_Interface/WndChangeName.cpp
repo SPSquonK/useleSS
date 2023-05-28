@@ -108,7 +108,6 @@ BOOL CWndChangeName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-#ifdef __PET_1024
 
 CWndChangePetName::CWndChangePetName() 
 { 
@@ -204,4 +203,3 @@ BOOL CWndChangePetName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
-#endif

@@ -991,13 +991,11 @@ void CDbManager::SaveOneItem( CItemElem* pItemElem, PItemStruct pItemStruct )
 				sprintf( szAvailLevel, ",%d", pItemElem->m_pPet->GetAvailLevel( i ) );
 				strcat( pItemStruct->szPet, szAvailLevel );
 			}
-#ifdef __PET_1024
 			char szTemp[MAX_PET_NAME_FMT+1]		= { 0,};
 			char szFmt[MAX_PET_NAME_FMT]	= { 0,};
 			SetDBFormatStr( szFmt, MAX_PET_NAME_FMT, pItemElem->m_pPet->GetName() );
 			sprintf( szTemp, ",%s", szFmt );
 			strcat( pItemStruct->szPet, szTemp );
-#endif	// __PET_1024
 			strcat( pItemStruct->szPet, "/" );
 		}
 		else

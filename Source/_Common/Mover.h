@@ -328,18 +328,14 @@ public:
 	CMover*	GetObj()	{	return m_pObj;		}
 	void	SetLevelup( BYTE nLevelup )		{	m_nLevelup	= nLevelup;		}
 	BYTE	GetLevelup()	{	return m_nLevelup;	}
-#ifdef __PET_1024
 	void	SetName( const char* szName );
 	char*	GetName()	{	return m_szName;	}
 	BOOL	HasName()	{	return strlen( m_szName ) > 0;	}
-#endif	// __PET_1024
 private:
 	CMover*	m_pObj;
 	BYTE	m_nLevelup;		// PLU_LEVEL_UP 이면, 펫 생성 시 펫 레벨업 효과 생성하고 0으로 초기화
 	
-#ifdef __PET_1024
 	char	m_szName[MAX_PET_NAME];
-#endif	// __PET_1024
 };
 #endif	// __CLIENT
 

@@ -669,9 +669,7 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_RAINBOWRACE_NOWSTATE:	OnRainbowRaceNowState( ar ); break;
 			case SNAPSHOTTYPE_RAINBOWRACE_MINIGAMESTATE: OnRainbowRaceMiniGameState( ar, FALSE ); break;
 			case SNAPSHOTTYPE_RAINBOWRACE_MINIGAMEEXTSTATE: OnRainbowRaceMiniGameState( ar, TRUE ); break;
-#ifdef __PET_1024
 			case SNAPSHOTTYPE_SET_PET_NAME:		OnSetPetName( objid, ar );	break;
-#endif	// __PET_1024
 			case SNAPSHOTTYPE_HOUSING_ALLINFO: OnHousingAllInfo( ar ); break;
 			case SNAPSHOTTYPE_HOUSING_FURNITURELIST: OnHousingSetFunitureList( ar ); break;
 			case SNAPSHOTTYPE_HOUSING_SETUPFURNITURE: OnHousingSetupFurniture( ar ); break;
@@ -8772,7 +8770,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		return;
 	}
 
-#ifdef __PET_1024
 	if( pItemProp->dwID == II_SYS_SYS_SCR_PET_NAMING )
 	{
 		// 펫 작명 입력 창을 활성화 시킨다.
@@ -8785,7 +8782,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		g_WndMng.m_pWndChangePetName->SetItemId(dwItemId);
 		return;
 	}
-#endif	// __PET_1024
 
 	BEFORESENDSOLE( ar, PACKETTYPE_DOUSEITEM, DPID_UNKNOWN );
 	ar << dwItemId << objid;
@@ -13529,10 +13525,8 @@ void CDPClient::OnPetCall( OBJID objid, CAr & ar )
 	DWORD dwPetId, dwIndex;
 	BYTE nPetLevel;
 	ar >> dwPetId >> dwIndex >> nPetLevel;
-#ifdef __PET_1024
 	char szPetName[MAX_PET_NAME]	= { 0,};
 	ar.ReadString( szPetName, MAX_PET_NAME );
-#endif	// __PET_1024
 	CMover* pMover	= prj.GetMover( objid );
 	if( IsValidObj( pMover ) )
 	{
@@ -13540,9 +13534,7 @@ void CDPClient::OnPetCall( OBJID objid, CAr & ar )
 			pMover->SetPetId( dwPetId );
 		else
 			pMover->SetPetId( MAKELONG( (WORD)dwIndex, (WORD)nPetLevel ) );
-#ifdef __PET_1024
 		pMover->m_pet.SetName( szPetName );
-#endif	//__PET_1024
 	}
 }
 
@@ -13570,9 +13562,7 @@ void CDPClient::OnPetRelease( OBJID objid, CAr & ar )
 			if(g_WndMng.m_pWndFoodConfirm != NULL)
 				g_WndMng.m_pWndFoodConfirm->Destroy();
 		}
-#ifdef __PET_1024
 		pMover->m_pet.SetName( "" );
-#endif	//__PET_1024
 	}
 }
 
@@ -15362,7 +15352,6 @@ void CDPClient::SendDoUseItemInput( DWORD dwData, const char* szInput )
 }
 #endif	// __AZRIA_1023
 
-#ifdef __PET_1024
 void CDPClient::SendClearPetName()
 {
 	SendHdr( PACKETTYPE_CLEAR_PET_NAME );
@@ -15392,7 +15381,6 @@ void CDPClient::OnSetPetName( OBJID objid, CAr & ar )
 		}
 	}
 }
-#endif	// __PET_1024
 
 void CDPClient::OnHousingAllInfo(CAr & ar) {
 	ar >> *CHousing::GetInstance();

@@ -1955,11 +1955,7 @@ void CMover::ActivateSystemPet( CItemElem* pItemElem )
 //#endif	// __PET_0519
 	g_dpDBClient.CalluspPetLog( m_idPlayer, pItemElem->GetSerialNumber(), 0, PETLOGTYPE_CALL, pItemElem->m_pPet );
 	// pet, log
-#ifdef __PET_1024
 	g_UserMng.AddPetCall( this, pItemElem->m_dwObjId, pItemElem->m_pPet->GetIndex(), (BYTE)pItemElem->m_pPet->GetLevel(), pItemElem->m_pPet->GetName() );
-#else	// __PET_1024
-	g_UserMng.AddPetCall( this, pItemElem->m_dwObjId, pItemElem->m_pPet->GetIndex(), (BYTE)pItemElem->m_pPet->GetLevel() );
-#endif	// __PET_1024
 	
 	if( bFirst )
 		static_cast<CUser*>(this )->AddPet( pItemElem->m_pPet, PF_PET );

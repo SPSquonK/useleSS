@@ -6372,7 +6372,6 @@ void CUser::AddRemoveAttribute( BOOL bSuccess )
 	m_Snapshot.ar << bSuccess;
 }
 
-#ifdef __PET_1024
 void CUserMng::AddSetPetName( CUser* pUser, const char* szPetName )
 {
 	CAr ar;
@@ -6386,21 +6385,14 @@ void CUserMng::AddSetPetName( CUser* pUser, const char* szPetName )
 		USERPTR->AddBlock( lpBuf, nBufSize );
 	NEXT_VISIBILITYRANGE( pUser )
 }
-#endif	// __PET_1024
 
-#ifdef __PET_1024
 void CUserMng::AddPetCall( CMover* pMover, DWORD dwPetId, DWORD dwIndex, BYTE nPetLevel, const char* szPetName )
-#else	// __PET_1024
-void CUserMng::AddPetCall( CMover* pMover, DWORD dwPetId, DWORD dwIndex, BYTE nPetLevel )
-#endif	// __PET_1024
 {
 	CAr ar;
 	
 	ar << GETID( pMover ) << SNAPSHOTTYPE_PET_CALL;
 	ar << dwPetId << dwIndex << nPetLevel;
-#ifdef __PET_1024
 	ar.WriteString( szPetName );
-#endif	// __PET_1024
 	
 	GETBLOCK( ar, lpBuf, nBufSize );
 	
@@ -7033,17 +7025,14 @@ CUser::DoUseSystemAnswer CUser::DoUseItemInput( ItemProp* pProp, CItemElem* pIte
 		return DoUseSystemAnswer::Ok;
 	}
 
-#ifdef __PET_1024
 	if (pProp->dwID == II_SYS_SYS_SCR_PET_NAMING) {
 		return DoUseItemPetNaming();
 	}
-#endif	// __PET_1024
 
 	return DoUseSystemAnswer::SilentError;
 }
 #endif	// __AZRIA_1023
 
-#ifdef __PET_1024
 CUser::DoUseSystemAnswer CUser::DoUseItemPetNaming() {
 	CPet * pPet = GetPet();
 	if (!pPet) {
@@ -7060,7 +7049,6 @@ CUser::DoUseSystemAnswer CUser::DoUseItemPetNaming() {
 	g_UserMng.AddSetPetName(this, pPet->GetName());
 	return DoUseSystemAnswer::Ok;
 }
-#endif	// __PET_1024
 
 void CUser::AddPCBangInfo(CPCBangInfo * pPI) {
 	SendSnapshotThisId<SNAPSHOTTYPE_PCBANG_INFO, CPCBangInfo>(*pPI);

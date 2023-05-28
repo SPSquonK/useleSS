@@ -107,10 +107,8 @@ private:
 #define	PETLOGTYPE_MISTAKE	7
 #define	PETLOGTYPE_LIFE	8
 
-#ifdef __PET_1024
 #define	MAX_PET_NAME_FMT	33	// 16 * 2 + 1
 #define	MAX_PET_NAME	17	// 한글 8자
-#endif	// __PET_1024
 
 class CPet final {
 private:
@@ -142,11 +140,9 @@ public:
 	int		GetEnergyPercent( void )	{	return GetEnergy() * 100 / GetMaxEnergy();	}
 	int		GetExpPercent( void )	{	return( GetExp() * 100 / GetMaxExp() );		}
 	int		GetMaxExp( void )	{	return ( m_nLevel == PL_EGG? MAX_PET_EGG_EXP: MAX_PET_EXP );	}
-#ifdef __PET_1024
 	void	SetName( const char* szName );
 	const char*	GetName()	{	return m_szName;	}
 	BOOL	HasName()	{	return strlen( m_szName ) > 0;	}
-#endif	// __PET_1024
 	void	InitEgg( void );
 	DWORD	GetItemId( void )
 		{
@@ -162,9 +158,7 @@ private:
 	WORD	m_wEnergy = 0;		// 기력 : 0
 	WORD	m_wLife = 0;	// 생명 :  0 ~ 99	// 디폴트 : 1	// 생명이 0인 상태에서 사망 시 객체 제거
 	std::array<BYTE, PL_MAX> m_anAvailLevel = { 0, 0, 0, 0, 0, 0 };	// 능력치
-#ifdef __PET_1024
 	char	m_szName[MAX_PET_NAME] = "";
-#endif	// __PET_1024
 };
 
 #ifdef __CLIENT

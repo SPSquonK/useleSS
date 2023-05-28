@@ -23,7 +23,6 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-#ifdef __PET_1024
 class CWndChangePetName : public CWndNeuz 
 { 
 private:
@@ -45,7 +44,6 @@ public:
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
-#endif
 
 #endif	// __WNDCHANGENAME__H
 

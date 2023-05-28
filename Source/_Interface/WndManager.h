@@ -357,9 +357,7 @@ namespace WndMgr {
 		CWndRoomList * m_pWndRoomList = nullptr;
 		CWndQuitRoom * m_pWndQuitRoom = nullptr;
 
-#ifdef __PET_1024
 		CWndChangePetName * m_pWndChangePetName = nullptr;
-#endif
 		CWndSmeltSafety * m_pWndSmeltSafety = nullptr;
 		CWndSmeltSafetyConfirm * m_pWndSmeltSafetyConfirm = nullptr;
 		CWndEquipBindConfirm * m_pWndEquipBindConfirm = nullptr;

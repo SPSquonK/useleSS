@@ -362,9 +362,7 @@ private:
 #ifdef __AZRIA_1023
 	void	OnDoUseItemInput( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );
 #endif	// __AZRIA_1023
-#ifdef __PET_1024
 	void	OnClearPetName( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );
-#endif	// __PET_1024
 
 	void	OnRainbowRacePrevRankingOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );
 	void	OnRainbowRaceApplicationOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long );

@@ -144,7 +144,6 @@
 #define		__LAYER_1020		// __LAYER_1015 테스트
 #define		__LAYER_1021		// __LAYER_1015 리스폰
 #define		__AZRIA_1023	// 입장권 층 적용
-#define		__PET_1024		// 펫 작명
 
 #define		__OCCUPATION_SHOPITEM	// 점령길드 전용 구매 가능 아이템
 

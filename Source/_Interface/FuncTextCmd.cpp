@@ -1790,7 +1790,6 @@ BOOL TextCmd_Summon(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-#ifdef __PET_1024
 BOOL TextCmd_ClearPetName( CScanner &)
 {
 #ifdef __CLIENT
@@ -1810,7 +1809,6 @@ BOOL TextCmd_SetPetName(CScanner & s, CPlayer_ * pUser) {
 #endif	// __WORLDSERVER
 	return TRUE;
 }
-#endif	// __PET_1024
 
 #ifdef __LAYER_1020
 BOOL TextCmd_CreateLayer(CScanner & s) {
@@ -4575,10 +4573,8 @@ CmdFunc::AllCommands::AllCommands() {
 	ON_TEXTCMDFUNC( TextCmd_GenRandomOption,		"GenRandomOption",	"gro",	"각성축복", "각축",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_InitializeRandomOption,	"InitializeRandomOption",	"iro",	"각성축복제거", "각축제거",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_SetRandomOption,		"SetRandomOption",	"sro",	"각성축복지정", "각지",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
-#ifdef __PET_1024
 	ON_TEXTCMDFUNC( TextCmd_SetPetName,             "SetPetName",           "setpetname",             "펫작명",       "펫작",    TCM_SERVER, AUTH_ADMINISTRATOR , "펫작명" )
 	ON_TEXTCMDFUNC( TextCmd_ClearPetName,           "ClearPetName",           "cpn",             "펫작명취소",       "펫작취",    TCM_CLIENT, AUTH_ADMINISTRATOR , "펫작명취소" )
-#endif	// __PET_1024
 	ON_TEXTCMDFUNC( TextCmd_Propose,				"Propose",           "propose",             "프러포즈",       "프러포즈",    TCM_SERVER, AUTH_ADMINISTRATOR , "프러포즈" )
 	ON_TEXTCMDFUNC( TextCmd_Refuse,					"Refuse",           "refuse",             "프러포즈거절",       "프거",    TCM_SERVER, AUTH_ADMINISTRATOR , "프러포즈거절" )
 	ON_TEXTCMDFUNC( TextCmd_Couple,					"Couple",           "couple",             "커플",       "커플",    TCM_SERVER, AUTH_ADMINISTRATOR , "커플" )

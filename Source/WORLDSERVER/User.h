@@ -518,9 +518,7 @@ public:
 	DoUseSystemAnswer DoUseItemInput(ItemProp * pProp, CItemElem * pItem);
 #endif	// __AZRIA_1023
 
-#ifdef __PET_1024
 	CUser::DoUseSystemAnswer DoUseItemPetNaming();
-#endif	// __PET_1024
 
 #ifdef __SYS_TICKET
 private:
@@ -876,12 +874,8 @@ public:
 #ifdef __EVENT_1101
 	void	CallTheRoll( int nBit );
 #endif	// __EVENT_1101
-#ifdef __PET_1024
 	void	AddPetCall( CMover* pMover, DWORD dwPetId, DWORD dwIndex, BYTE nPetLevel, const char* szPetName );
 	void	AddSetPetName( CUser* pUser, const char* szPetName );
-#else	// __PET_1024
-	void	AddPetCall( CMover* pMover, DWORD dwPetId, DWORD dwIndex, BYTE nPetLevel );
-#endif	// __PET_1024
 	void	AddPetRelease( CMover* pMover );
 	void	AddPetLevelup( CMover* pMover, DWORD dwPetId );
 	void	AddPetFeed( CMover* pMover, WORD wEnergy );

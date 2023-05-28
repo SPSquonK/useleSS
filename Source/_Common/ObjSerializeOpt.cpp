@@ -278,21 +278,15 @@ void CMover::Serialize( CAr & ar )
 				GETBLOCK( ar, pBlock, nBlockSize );
 				*(UNALIGNED u_char*)( pBlock + uOffset )	= uSize;
 				DWORD dwPetId	= NULL_ID;
-#ifdef __PET_1024
 				const char* pszPetName	= "";
-#endif	// __PET_1024
 				CItemElem* pItemElem	= GetPetItem();
 				if( pItemElem )
 				{
 					dwPetId		= MAKELONG( (WORD)pItemElem->m_pPet->GetIndex(), (WORD)pItemElem->m_pPet->GetLevel() );
-#ifdef __PET_1024
 					pszPetName	= pItemElem->m_pPet->GetName();
-#endif	// __PET_1024
 				}
 				ar << dwPetId;
-#ifdef __PET_1024
 				ar.WriteString( pszPetName );
-#endif	// __PET_1024
 			}
 		}
 		else	// NPC
@@ -530,13 +524,11 @@ void CMover::Serialize( CAr & ar )
 				DWORD dwPetId;
 				ar >> dwPetId;
 				SetPetId( dwPetId );
-	#ifdef __PET_1024
 	#ifdef __CLIENT
 				CPet* pPet	= GetPet();
 				if( pPet )
 					m_pet.SetName( const_cast<char*>( pPet->GetName() ) );
 	#endif	// __CLIENT
-	#endif	// __PET_1024
 				ar >> m_Pocket;
 
 #ifdef __JEFF_9_20
@@ -581,13 +573,11 @@ void CMover::Serialize( CAr & ar )
 				DWORD dwPetId;
 				ar >> dwPetId;
 				SetPetId( dwPetId );
-	#ifdef __PET_1024
 				char szPetName[MAX_PET_NAME]	= { 0,};
 				ar.ReadString( szPetName, MAX_PET_NAME );
 	#ifdef __CLIENT
 				m_pet.SetName( szPetName );
 	#endif	// __CLIENT
-	#endif	// __PET_1024
 			}
 
 		#if defined(__WORLDSERVER) || defined(__CLIENT)

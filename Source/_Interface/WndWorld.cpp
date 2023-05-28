@@ -4688,11 +4688,9 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 		g_WndMng.m_pWndPetAwakCancel = new CWndPetAwakCancel;
 		g_WndMng.m_pWndPetAwakCancel->Initialize(&g_WndMng);
 		break;
-#ifdef __PET_1024
 	case MMI_RENAME_CANCEL:
 		g_DPlay.SendClearPetName();
 		break;
-#endif
 		case MMI_QUERYEQUIP: // 살펴보기
 			{
 				if( pFocusMover && pFocusMover->IsPlayer() )

@@ -49,7 +49,6 @@ CTime CDbManager::GetStrTime(const char * strbuf) {
 	return CTime(atoi(cYear), atoi(cMonth), atoi(cDay), atoi(cHour), atoi(cMin), 0);
 }
 
-#ifdef __PET_1024
 void CDbManager::GetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc )
 {
 	char szDigit[3] = {0, };
@@ -97,7 +96,6 @@ void CDbManager::SetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc )
 	}
 	*pCur	= '\0';
 }
-#endif	// __PET_1024
 
 
 // szSrc - 16진수로 변환된 문자열, szDst - ascii문자열, n - szSrc에서 현재작업 index 
@@ -135,11 +133,7 @@ BOOL CDbManager::GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDb
 	char ObjIndexBank[512]		= { 0, };
 	char ExtBank[2000]			= {0,};	
 	char PirecingBank[4000]		= {0,};
-#ifdef __PET_1024
 	char szPet[4200]	= { 0,};
-#else	// __PET_1024
-	char szPet[2688]	= { 0,};
-#endif	// __PET_1024
 
 	u_long uPlayerid	= (u_long)qry->GetInt( "m_idPlayer" );
 	DWORD dwGold = qry->GetInt( "m_dwGoldBank" );
@@ -234,7 +228,6 @@ BOOL CDbManager::GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDb
 			pPet->SetExp( dwExp );
 			WORD wEnergy	= (WORD)GetIntFromStr( szPet, &CountStr );
 			pPet->SetEnergy( wEnergy );
-#ifdef __PET_1024
 			WORD wLife	= (WORD)GetIntPaFromStr( szPet, &CountStr );
 			pPet->SetLife( wLife );
 			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
@@ -247,15 +240,6 @@ BOOL CDbManager::GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDb
 			char szName[MAX_PET_NAME]	= { 0,};
 			GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
 			pPet->SetName( szName );
-#else	// __PET_1024
-			WORD wLife	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-#endif	// __PET_1024
 		}
 		nId++;
 	}
@@ -275,11 +259,7 @@ BOOL CDbManager::GetBankMover( CMover* pMover, CQuery *qry, int nSlot )
 	char ObjIndexBank[512]	= { 0, };
 	char ExtBank[2000] = {0,};	
 	char PirecingBank[4000] = {0,};
-#ifdef __PET_1024
 	char szPet[4200]	= { 0,};
-#else	// __PET_1024
-	char szPet[2688]	= { 0,};
-#endif	// __PET_1024
 	
 	qry->GetStr( "m_Bank", Bank );
 	qry->GetStr( "m_apIndex_Bank", m_apIndexBank );
@@ -364,7 +344,6 @@ BOOL CDbManager::GetBankMover( CMover* pMover, CQuery *qry, int nSlot )
 			pPet->SetExp( dwExp );
 			WORD wEnergy	= (WORD)GetIntFromStr( szPet, &CountStr );
 			pPet->SetEnergy( wEnergy );
-#ifdef __PET_1024
 			WORD wLife	= (WORD)GetIntPaFromStr( szPet, &CountStr );
 			pPet->SetLife( wLife );
 			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
@@ -377,15 +356,6 @@ BOOL CDbManager::GetBankMover( CMover* pMover, CQuery *qry, int nSlot )
 			char szName[MAX_PET_NAME]	= { 0,};
 			GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
 			pPet->SetName( szName );
-#else	// __PET_1024
-			WORD wLife	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-#endif	// __PET_1024
 		}
 		nId++;
 	}
@@ -444,11 +414,7 @@ void CDbManager::GetGuildBank( CItemContainer*  GuildBank, CQuery *qry )
 
 	CountStr	= 0;
 	int	nId	= 0;
-#ifdef __PET_1024
 	char szPet[4200]	= { 0, };
-#else	// __PET_1024
-	char szPet[2688]	= { 0, };
-#endif	// __PET_1024
 	qry->GetStr( "szGuildBankPet", szPet );
 	while( '$' != szPet[CountStr] )
 	{
@@ -465,7 +431,6 @@ void CDbManager::GetGuildBank( CItemContainer*  GuildBank, CQuery *qry )
 			pPet->SetExp( dwExp );
 			WORD wEnergy	= (WORD)GetIntFromStr( szPet, &CountStr );
 			pPet->SetEnergy( wEnergy );
-#ifdef __PET_1024
 			WORD wLife	= (WORD)GetIntPaFromStr( szPet, &CountStr );
 			pPet->SetLife( wLife );
 			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
@@ -478,15 +443,6 @@ void CDbManager::GetGuildBank( CItemContainer*  GuildBank, CQuery *qry )
 			char szName[MAX_PET_NAME]	= { 0,};
 			GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
 			pPet->SetName( szName );
-#else	// __PET_1024
-			WORD wLife	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-#endif	// __PET_1024
 		}
 		nId++;
 	}
@@ -499,11 +455,7 @@ BOOL CDbManager::GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS
 	char	szObjIndex[512]	= { 0,};
 	char	szExt[2000]		= { 0,};
 	char	szPiercing[4000]	= { 0,};
-#ifdef __PET_1024
 	char	szPet[4200]	= { 0,};
-#else	// __PET_1024
-	char	szPet[2688]	= { 0,};
-#endif	// __PET_1024
 
 	pQuery->GetStr( "szItem", szItem );
 	pQuery->GetStr( "szIndex", szIndex );
@@ -596,7 +548,6 @@ BOOL CDbManager::GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS
 				pPet->SetExp( dwExp );
 				WORD wEnergy	= (WORD)GetIntFromStr( szPet, &nOffset );
 				pPet->SetEnergy( wEnergy );
-#ifdef __PET_1024
 				WORD wLife	= (WORD)GetIntPaFromStr( szPet, &nOffset );
 				pPet->SetLife( wLife );
 				for( int j = PL_D; j <= pPet->GetLevel(); j++ )
@@ -609,15 +560,6 @@ BOOL CDbManager::GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS
 				char szName[MAX_PET_NAME]	= { 0,};
 				GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
 				pPet->SetName( szName );
-#else	// __PET_1024
-				WORD wLife	= (WORD)GetIntFromStr( szPet, &nOffset );
-				pPet->SetLife( wLife );
-				for( int j = PL_D; j <= pPet->GetLevel(); j++ )
-				{
-					BYTE nAvailLevel	= (BYTE)GetIntFromStr( szPet, &nOffset );
-					pPet->SetAvailLevel( j, nAvailLevel );
-				}
-#endif	// __PET_1024
 			}
 			i++;
 		}
@@ -713,11 +655,7 @@ BOOL CDbManager::GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS
 
 	CountStr	= 0;
 	int	nId	= 0;
-#ifdef __PET_1024
 	char szPet[4200]	= { 0, };
-#else	// __PET_1024
-	char szPet[2688]	= { 0, };
-#endif	// __PET_1024
 	qry->GetStr( "szInventoryPet", szPet );
 	VERIFYSTRING_RETURN( szPet, szPlayerName );
 	while( '$' != szPet[CountStr] )
@@ -735,7 +673,6 @@ BOOL CDbManager::GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS
 			pPet->SetExp( dwExp );
 			WORD wEnergy	= (WORD)GetIntFromStr( szPet, &CountStr );
 			pPet->SetEnergy( wEnergy );
-#ifdef __PET_1024
 			WORD wLife	= (WORD)GetIntPaFromStr( szPet, &CountStr );
 			pPet->SetLife( wLife );
 			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
@@ -748,15 +685,6 @@ BOOL CDbManager::GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS
 			char szName[MAX_PET_NAME]	= { 0,};
 			GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
 			pPet->SetName( szName );
-#else	// __PET_1024
-			WORD wLife	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-#endif	// __PET_1024
 		}
 		nId++;
 	}

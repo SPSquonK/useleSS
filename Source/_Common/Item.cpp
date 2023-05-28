@@ -502,11 +502,9 @@ CString CItemElem::GetName() const
 		MoverProp* pMoverProp	= prj.GetMoverProp( m_pPet->GetIndex() );
 		if( pMoverProp )
 		{
-#ifdef __PET_1024
 			if( m_pPet->HasName() )
 				strName.Format( prj.GetText( TID_GAME_CAGE_STRING ), m_pPet->GetName() );
 			else
-#endif	// __PET_1024
 				strName.Format( prj.GetText( TID_GAME_CAGE_STRING ), pMoverProp->szName );
 		}
 	}

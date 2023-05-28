@@ -927,10 +927,8 @@ public:
 #ifdef __AZRIA_1023
 	void	SendDoUseItemInput( DWORD dwData, const char* szInput );
 #endif	// __AZRIA_1023
-#ifdef __PET_1024
 	void	SendClearPetName();
 	void	OnSetPetName( OBJID objid, CAr & ar );
-#endif	// __PET_1024
 
 	void	SendTutorialState( int nState );
 	void	OnTutorialState( CAr & ar );

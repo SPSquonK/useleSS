@@ -238,10 +238,8 @@ void CWndPetStatus::PaintFrame( C2DRender* p2DRender )
 					if( pMoverProp )
 						strName		= pMoverProp->szName;
 				}
-#ifdef __PET_1024
 				if( m_pPetElem->m_pPet->HasName() )
 					strName		= m_pPetElem->m_pPet->GetName();
-#endif	// __PET_1024
 				sprintf( szNameLevel, "%s", strName );
 				SetTitle( szNameLevel );
 				

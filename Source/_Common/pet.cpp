@@ -319,9 +319,7 @@ CAr & operator<<(CAr & ar, const CPet & pet) {
 	ar << pet.m_wEnergy;
 	ar << pet.m_wLife;
 	ar << pet.m_anAvailLevel;
-#ifdef __PET_1024
 	ar.WriteString(pet.m_szName);
-#endif	// __PET_1024
 	return ar;
 }
 
@@ -332,9 +330,7 @@ CAr & operator>>(CAr & ar, CPet & pet) {
 	ar >> pet.m_wEnergy;
 	ar >> pet.m_wLife;
 	ar >> pet.m_anAvailLevel;
-#ifdef __PET_1024
 	ar.ReadString(pet.m_szName, MAX_PET_NAME);
-#endif	// __PET_1024
 	return ar;
 }
 
@@ -989,10 +985,8 @@ CItemElem* CTransformItemProperty::GetItem( int nTransform )
 #endif	// __WORLDSERVER
 
 
-#ifdef __PET_1024
 void CPet::SetName( const char* szName )
 {
 	strncpy( m_szName, szName, MAX_PET_NAME - 1 );
 	m_szName[MAX_PET_NAME-1]	= '\0';
 }
-#endif	// __PET_1024

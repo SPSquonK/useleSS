@@ -201,9 +201,7 @@ struct	MAIL_QUERYINFO
 	WORD	wEnergy;
 	WORD	wLife;
 	BYTE	anAvailLevel[PL_MAX];
-#ifdef __PET_1024
 	char	szPetName[MAX_PET_NAME];
-#endif	// __PET_1024
 
 	MAIL_QUERYINFO( LPCTSTR pszQueryType )
 		{
@@ -243,9 +241,7 @@ struct	MAIL_QUERYINFO
 			dwExp	= 0;
 			wEnergy	= wLife	= 0;
 			memset( anAvailLevel, 0, sizeof(BYTE) * PL_MAX );
-#ifdef __PET_1024
 			szPetName[0]	= '\0';
-#endif // __PET_1024
 		}
 };
 
@@ -545,11 +541,7 @@ typedef	struct	_ItemStruct
 	char	szExt[64];
 	char	szPiercing[256];
 
-#ifdef __PET_1024
 	char	szPet[100];
-#else	// __PET_1024
-	char	szPet[64];
-#endif	// __PET_1024
 
 	_ItemStruct()
 		{
@@ -567,11 +559,7 @@ typedef	struct	_ItemContainerStruct
 	char	szObjIndex[512];
 	char	szExt[2048];
 	char	szPiercing[8000];
-#ifdef __PET_1024
 	char	szPet[4200];	// 42 * 100
-#else	// __PET_1024
-	char	szPet[2688];	// 42 * 64
-#endif	// __PET_1024
 	_ItemContainerStruct()
 		{
 			*szItem	= '\0';
@@ -1036,10 +1024,8 @@ private:
 private:
 	static void	GetStrFromDBFormat( char* szDst, const char* szSrc, int& n );
 	static void SetStrDBFormat(char * szDst, const char * szSrc);
-#ifdef __PET_1024
 	void	GetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc );
 	void	SetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc );
-#endif	// __PET_1024
 
 	void	LoginProtectCert( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	

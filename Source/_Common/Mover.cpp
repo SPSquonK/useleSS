@@ -8439,10 +8439,8 @@ void CMover::ProcessPet( void )
 			if( dwIndex > 0 )
 			{
 				CMover* pPet	= (CMover *)CreateObj( D3DDEVICE, OT_MOVER, dwIndex );
-#ifdef __PET_1024
 				if( m_pet.HasName() )
 					pPet->SetName( m_pet.GetName() );
-#endif	// __PET_1024
 				pPet->InitMotion( MTI_STAND );
 				pPet->UpdateLocalMatrix();
 				pPet->m_pAIInterface	= new CAIEgg( pPet, GetId() );
@@ -9260,21 +9258,17 @@ CClientPet::CClientPet()
 m_pObj( NULL ),
 m_nLevelup( 0 )
 {
-#ifdef __PET_1024
 	m_szName[0]		= '\0';
-#endif	// __PET_1024
 }
 
 CClientPet::~CClientPet()
 {
 }
 
-#ifdef __PET_1024
 void CClientPet::SetName( const char * szName )
 {
 	strncpy( m_szName, szName, MAX_PET_NAME-1 );
 	m_szName[MAX_PET_NAME-1]		= '\0';
 }
-#endif	// __PET_1024
 #endif	// __CLIENT
 

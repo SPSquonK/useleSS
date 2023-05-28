@@ -2579,11 +2579,7 @@ void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 
 		CountStr	= 0;
 		int nGuildBankPet = 0;
-#ifdef __PET_1024
 		char szGuildBankPet[4200] = {0,};
-#else	// __PET_1024
-		char szGuildBankPet[2688] = {0,};
-#endif	// __PET_1024
 		pQuery->GetStr( "szGuildBankPet", szGuildBankPet );
 		VERIFYSTRING( szGuildBankPet, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
 		while( '$' != szGuildBankPet[CountStr] )
@@ -2601,7 +2597,6 @@ void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 				pPet->SetExp( dwExp );
 				WORD wEnergy	= (WORD)GetIntFromStr( szGuildBankPet, &CountStr );
 				pPet->SetEnergy( wEnergy );
-#ifdef __PET_1024
 				WORD wLife	= (WORD)GetIntPaFromStr( szGuildBankPet, &CountStr );
 				pPet->SetLife( wLife );
 				for( int i = PL_D; i <= pPet->GetLevel(); i++ )
@@ -2614,15 +2609,6 @@ void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 				char szName[MAX_PET_NAME]	= { 0,};
 				GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
 				pPet->SetName( szName );
-#else	// __PET_1024
-				WORD wLife	= (WORD)GetIntFromStr( szGuildBankPet, &CountStr );
-				pPet->SetLife( wLife );
-				for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-				{
-					BYTE nAvailLevel	= (BYTE)GetIntFromStr( szGuildBankPet, &CountStr );
-					pPet->SetAvailLevel( i, nAvailLevel );
-				}
-#endif	// __PET_1024
 			}
 //			++CountStr;
 			++nGuildBankPet;
@@ -4926,12 +4912,10 @@ void CDbManager::GetItemFromMail( CQuery* pQuery, CItemElem* pItemElem )
 		anAvailLevel[PL_B]	= (BYTE)pQuery->GetInt( "anAvailLevel_B" );
 		anAvailLevel[PL_A]	= (BYTE)pQuery->GetInt( "anAvailLevel_A" );
 		anAvailLevel[PL_S]	= (BYTE)pQuery->GetInt( "anAvailLevel_S" );
-#ifdef __PET_1024
 		char szPetName[MAX_PET_NAME]	= { 0,};
 		pQuery->GetStr( "szPetName", szPetName );
 		if( strcmp( szPetName, "NULL" ) == 0 )
 			szPetName[0]	= '\0';
-#endif	// __PET_1024
 		pPet->SetKind( nKind );
 		pPet->SetLevel( nLevel );
 		pPet->SetExp( dwExp );
@@ -4942,9 +4926,7 @@ void CDbManager::GetItemFromMail( CQuery* pQuery, CItemElem* pItemElem )
 		pPet->SetAvailLevel( PL_B, anAvailLevel[PL_B] );
 		pPet->SetAvailLevel( PL_A, anAvailLevel[PL_A] );
 		pPet->SetAvailLevel( PL_S, anAvailLevel[PL_S] );
-#ifdef __PET_1024
 		pPet->SetName( szPetName );
-#endif	// __PET_1024
 	}
 }
 

@@ -134,9 +134,7 @@ CDPSrvr::CDPSrvr()
 #ifdef __AZRIA_1023
 	OnMsg( PACKETTYPE_DO_USE_ITEM_INPUT, &CDPSrvr::OnDoUseItemInput );
 #endif	// __AZRIA_1023
-#ifdef __PET_1024
 	OnMsg( PACKETTYPE_CLEAR_PET_NAME, &CDPSrvr::OnClearPetName );
-#endif	// __PET_1024
 	OnMsg( PACKETTYPE_AVAIL_POCKET, &CDPSrvr::OnAvailPocket );
 	OnMsg( PACKETTYPE_MOVE_ITEM_POCKET, &CDPSrvr::OnMoveItemOnPocket );
 
@@ -9529,7 +9527,6 @@ void CDPSrvr::OnDoUseItemInput( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE,
 }
 #endif	// __AZRIA_1023
 
-#ifdef __PET_1024
 void CDPSrvr::OnClearPetName( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
@@ -9545,7 +9542,6 @@ void CDPSrvr::OnClearPetName( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u
 		g_UserMng.AddSetPetName( pUser, pPet->GetName() );
 	}
 }
-#endif	// __PET_1024
 
 void CDPSrvr::OnRainbowRacePrevRankingOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
