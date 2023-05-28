@@ -97,29 +97,6 @@ void CDbManager::SetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc )
 	*pCur	= '\0';
 }
 
-
-// szSrc - 16진수로 변환된 문자열, szDst - ascii문자열, n - szSrc에서 현재작업 index 
-void CDbManager::GetStrFromDBFormat( char* szDst, const char* szSrc, int& n )
-{
-	char szDigit[3] = {0, };
-	char ch;
-	int ch2;
-	
-	const char* pCur = szSrc + n;
-	while( *pCur != '/' && *pCur )		// 문자열은 '/' 로 끝난다. 안전하게 NULL도 검사 
-	{
-		szDigit[0] = pCur[0];
-		szDigit[1] = pCur[1];
-		pCur += 2;
-		
-		sscanf( szDigit, "%2X", &ch2 );
-		ch = ch2;
-		*szDst++ = ch;
-	}
-	*szDst = '\0';
-	n = (pCur - szSrc) + 1;				// +1은 '/'를 무시하기 위해서 
-}
-
 BOOL CDbManager::GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, int nSlot )
 {
 	int CountStr				= 0;
@@ -759,16 +736,16 @@ BOOL CDbManager::GetEquipment( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS
 
 BOOL CDbManager::GetTaskBar( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
-	static constexpr auto ReadShortcut = [](const char * serialization, int & CountStr) -> SHORTCUT {
+	static constexpr auto ReadShortcut = [](DBDeserialize::WordSplitter & splitter) -> SHORTCUT {
 		SHORTCUT retval;
-		retval.m_dwShortcut = static_cast<ShortcutType>(GetIntFromStr(serialization, &CountStr));
-		retval.m_dwId = (DWORD)GetIntFromStr(serialization, &CountStr);
-		const int type = GetIntFromStr(serialization, &CountStr);
-		retval.m_dwIndex = (DWORD)GetIntFromStr(serialization, &CountStr);
-		retval.m_dwUserId = (DWORD)GetIntFromStr(serialization, &CountStr);
-		retval.m_dwData = (DWORD)GetIntFromStr(serialization, &CountStr);
+		retval.m_dwShortcut = splitter.NextEnum<ShortcutType>();
+		retval.m_dwId = splitter.NextDWORD();
+		const int type = splitter.NextInt();
+		retval.m_dwIndex = splitter.NextDWORD();
+		retval.m_dwUserId = splitter.NextDWORD();
+		retval.m_dwData = splitter.NextDWORD();
 		if (retval.m_dwShortcut == ShortcutType::Chat) {
-			GetStrFromDBFormat(retval.m_szString, serialization, CountStr);
+			splitter.NextStringInBuffer(retval.m_szString);
 		} else {
 			retval.m_szString[0] = '\0';
 		}
@@ -780,32 +757,30 @@ BOOL CDbManager::GetTaskBar( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS l
 		return retval;
 	};
 
-	int CountStr	= 0;
 	const char * AppletTaskBar = qry->GetStrPtr( "m_aSlotApplet");
 	VERIFYSTRING_RETURN( AppletTaskBar, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	while( '$' != AppletTaskBar[CountStr] )
-	{
-		const int nIndex = GetIntFromStr( AppletTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotApplet[nIndex] = ReadShortcut(AppletTaskBar, CountStr);
+
+	for (auto splitter : DBDeserialize::SplitBySlash(AppletTaskBar)) {
+		const int nIndex = splitter.NextInt();
+		pMover->m_UserTaskBar.m_aSlotApplet[nIndex] = ReadShortcut(splitter);
 	}
 	
-	CountStr	= 0;
 	const char * ItemTaskBar = qry->GetStrPtr("m_aSlotItem");
 	VERIFYSTRING_RETURN( ItemTaskBar, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	while( '$' != ItemTaskBar[CountStr] )
-	{
-		const int nSlotIndex	= GetIntFromStr( ItemTaskBar, &CountStr );
-		const int nIndex	= GetIntFromStr( ItemTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotItem[nSlotIndex][nIndex] = ReadShortcut(ItemTaskBar, CountStr);
+
+	for (auto splitter : DBDeserialize::SplitBySlash(ItemTaskBar)) {
+		const int nSlotIndex = splitter.NextInt();
+		const int nIndex     = splitter.NextInt();
+		pMover->m_UserTaskBar.m_aSlotItem[nSlotIndex][nIndex] = ReadShortcut(splitter);
 	}
 	
-	CountStr	= 0;
 	const char * SkillTaskBar = qry->GetStrPtr("m_aSlotQueue");
 	VERIFYSTRING_RETURN( SkillTaskBar, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	while ('$' != SkillTaskBar[CountStr]) {
-		const int nIndex = GetIntFromStr(SkillTaskBar, &CountStr);
-		pMover->m_UserTaskBar.m_aSlotQueue[nIndex] = ReadShortcut(SkillTaskBar, CountStr);
+	for (auto splitter : DBDeserialize::SplitBySlash(SkillTaskBar)) {
+		const int nIndex = splitter.NextInt();
+		pMover->m_UserTaskBar.m_aSlotQueue[nIndex] = ReadShortcut(splitter);
 	}
+
 	pMover->m_UserTaskBar.m_nActionPoint = qry->GetInt( "m_SkillBar" );
 	return TRUE;
 }
