@@ -65,6 +65,8 @@ namespace DBDeserialize {
 
 		auto NextInt() { return NextIntegral<int>(); }
 		auto NextDWORD() { return NextIntegral<DWORD>(); }
+		auto NextBool() { return NextIntegral<int>() != 0; }
+		auto NextUShort() { return NextIntegral<unsigned short>(); }
 
 		// Skip the data stored at the current position
 		void Skip() { Next(FindUntil()); }

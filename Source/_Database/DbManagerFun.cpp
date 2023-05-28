@@ -535,41 +535,33 @@ BOOL CDbManager::GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS
 
 std::vector<std::pair<DWORD, CPet *>> CDbManager::GetPets(const char * szPet) {
 	std::vector<std::pair<DWORD, CPet *>> res;
-	int CountStr = 0;
 
 	DWORD nId = 0;
 
-	while ('$' != szPet[CountStr])
-	{
-		BOOL bPet = (BOOL)GetIntFromStr(szPet, &CountStr);
-		if (bPet)
-		{
+	for (auto splitter : DBDeserialize::SplitBySlash(szPet)) {
+		const bool isPet = splitter.NextBool();
+
+		if (isPet) {
 			CPet * pPet = new CPet;
-			BYTE nKind = (BYTE)GetIntFromStr(szPet, &CountStr);
-			pPet->SetKind(nKind);
-			BYTE nLevel = (BYTE)GetIntFromStr(szPet, &CountStr);
-			pPet->SetLevel(nLevel);
-			DWORD dwExp = (DWORD)GetIntFromStr(szPet, &CountStr);
-			pPet->SetExp(dwExp);
-			WORD wEnergy = (WORD)GetIntFromStr(szPet, &CountStr);
-			pPet->SetEnergy(wEnergy);
-			WORD wLife = (WORD)GetIntPaFromStr(szPet, &CountStr);
-			pPet->SetLife(wLife);
-			for (int i = PL_D; i <= pPet->GetLevel(); i++)
-			{
-				BYTE nAvailLevel = (BYTE)GetIntPaFromStr(szPet, &CountStr);
-				pPet->SetAvailLevel(i, nAvailLevel);
+			pPet->SetKind(static_cast<BYTE>(splitter.NextInt()));
+			pPet->SetLevel(static_cast<BYTE>(splitter.NextInt()));
+			pPet->SetExp(splitter.NextDWORD());
+			pPet->SetEnergy(splitter.NextUShort());
+			pPet->SetLife(splitter.NextUShort());
+
+			for (int i = PL_D; i <= pPet->GetLevel(); i++) {
+				pPet->SetAvailLevel(i, static_cast<BYTE>(splitter.NextInt()));
 			}
-			char szFmt[MAX_PET_NAME_FMT] = { 0, };
-			GetStrFromStr(szPet, szFmt, &CountStr);
+
 			char szName[MAX_PET_NAME] = { 0, };
-			GetDBFormatStr(szName, MAX_PET_NAME, szFmt);
+			splitter.NextStringInBuffer(szName);
+
 			pPet->SetName(szName);
 
 			res.emplace_back(nId, pPet);
 		}
 
-		nId++;
+		++nId;
 	}
 
 	return res;
