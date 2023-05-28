@@ -188,38 +188,12 @@ BOOL CDbManager::GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDb
 		++nPirecingBankCount;
 	}
 
-	CountStr	= 0;
-	int	nId	= 0;
-	while( '$' != szPet[CountStr] )
-	{
-		BOOL bPet	= (BOOL)GetIntFromStr( szPet, &CountStr );
-		if( bPet )
-		{
-			SAFE_DELETE( pMover->m_Bank[nSlot].m_apItem[nId].m_pPet );
-			CPet* pPet	= pMover->m_Bank[nSlot].m_apItem[nId].m_pPet		= new CPet;
-			BYTE nKind	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetKind( nKind );
-			BYTE nLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLevel( nLevel );
-			DWORD dwExp	= (DWORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetExp( dwExp );
-			WORD wEnergy	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetEnergy( wEnergy );
-			WORD wLife	= (WORD)GetIntPaFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntPaFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-			char szFmt[MAX_PET_NAME_FMT]	= { 0,};
-			GetStrFromStr( szPet, szFmt, &CountStr );
-			char szName[MAX_PET_NAME]	= { 0,};
-			GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
-			pPet->SetName( szName );
-		}
-		nId++;
+
+	for (const auto & [nId, pPet] : GetPets(szPet)) {
+		SAFE_DELETE(pMover->m_Bank[nSlot].m_apItem[nId].m_pPet);
+		pMover->m_Bank[nSlot].m_apItem[nId].m_pPet = pPet;
 	}
+
 	return TRUE;
 }
 
@@ -303,39 +277,12 @@ BOOL CDbManager::GetBankMover( CMover* pMover, CQuery *qry, int nSlot )
 		++nPirecingBankCount;
 	}
 
-	CountStr	= 0;
-	int	nId	= 0;
 	VERIFYSTRING_BANK( szPet, pMover->m_szName );
-	while( '$' != szPet[CountStr] )
-	{
-		BOOL bPet	= (BOOL)GetIntFromStr( szPet, &CountStr );
-		if( bPet )
-		{
-			SAFE_DELETE( pMover->m_Bank[nSlot].m_apItem[nId].m_pPet );
-			CPet* pPet	= pMover->m_Bank[nSlot].m_apItem[nId].m_pPet		= new CPet;
-			BYTE nKind	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetKind( nKind );
-			BYTE nLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLevel( nLevel );
-			DWORD dwExp	= (DWORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetExp( dwExp );
-			WORD wEnergy	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetEnergy( wEnergy );
-			WORD wLife	= (WORD)GetIntPaFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntPaFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-			char szFmt[MAX_PET_NAME_FMT]	= { 0,};
-			GetStrFromStr( szPet, szFmt, &CountStr );
-			char szName[MAX_PET_NAME]	= { 0,};
-			GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
-			pPet->SetName( szName );
-		}
-		nId++;
+	for (const auto & [nId, pPet] : GetPets(szPet)) {
+		SAFE_DELETE(pMover->m_Bank[nSlot].m_apItem[nId].m_pPet);
+		pMover->m_Bank[nSlot].m_apItem[nId].m_pPet = pPet;
 	}
+
 	return TRUE;
 }
 
@@ -389,39 +336,10 @@ void CDbManager::GetGuildBank( CItemContainer*  GuildBank, CQuery *qry )
 		++nPirecingBank;
 	}
 
-	CountStr	= 0;
-	int	nId	= 0;
-	char szPet[4200]	= { 0, };
-	qry->GetStr( "szGuildBankPet", szPet );
-	while( '$' != szPet[CountStr] )
-	{
-		BOOL bPet	= (BOOL)GetIntFromStr( szPet, &CountStr );
-		if( bPet )
-		{
-			SAFE_DELETE( GuildBank->m_apItem[nId].m_pPet );
-			CPet* pPet	= GuildBank->m_apItem[nId].m_pPet		= new CPet;
-			BYTE nKind	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetKind( nKind );
-			BYTE nLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLevel( nLevel );
-			DWORD dwExp	= (DWORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetExp( dwExp );
-			WORD wEnergy	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetEnergy( wEnergy );
-			WORD wLife	= (WORD)GetIntPaFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntPaFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-			char szFmt[MAX_PET_NAME_FMT]	= { 0,};
-			GetStrFromStr( szPet, szFmt, &CountStr );
-			char szName[MAX_PET_NAME]	= { 0,};
-			GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
-			pPet->SetName( szName );
-		}
-		nId++;
+	const char * szPet = qry->GetStrPtr( "szGuildBankPet" );
+	for (const auto & [nId, pPet] : GetPets(szPet)) {
+		SAFE_DELETE(GuildBank->m_apItem[nId].m_pPet);
+		GuildBank->m_apItem[nId].m_pPet = pPet;
 	}
 }
 
@@ -509,36 +427,10 @@ BOOL CDbManager::GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS
 			LoadPiercingInfo( pPocket->m_apItem[i], szPiercing, &nOffset );
 			i++;
 		}
-		nOffset		= i	= 0;
-		while( '$' != szPet[nOffset] )
-		{
-			BOOL bPet	= (BOOL)GetIntFromStr( szPet, &nOffset );
-			if( bPet )
-			{
-				SAFE_DELETE( pPocket->m_apItem[i].m_pPet );
-				CPet* pPet	= pPocket->m_apItem[i].m_pPet	= new CPet;
-				BYTE nKind	= (BYTE)GetIntFromStr( szPet, &nOffset );
-				pPet->SetKind( nKind );
-				BYTE nLevel	= (BYTE)GetIntFromStr( szPet, &nOffset );
-				pPet->SetLevel( nLevel );
-				DWORD dwExp	= (DWORD)GetIntFromStr( szPet, &nOffset );
-				pPet->SetExp( dwExp );
-				WORD wEnergy	= (WORD)GetIntFromStr( szPet, &nOffset );
-				pPet->SetEnergy( wEnergy );
-				WORD wLife	= (WORD)GetIntPaFromStr( szPet, &nOffset );
-				pPet->SetLife( wLife );
-				for( int j = PL_D; j <= pPet->GetLevel(); j++ )
-				{
-					BYTE nAvailLevel	= (BYTE)GetIntPaFromStr( szPet, &nOffset );
-					pPet->SetAvailLevel( j, nAvailLevel );
-				}
-				char szFmt[MAX_PET_NAME_FMT]	= { 0,};
-				GetStrFromStr( szPet, szFmt, &nOffset );
-				char szName[MAX_PET_NAME]	= { 0,};
-				GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
-				pPet->SetName( szName );
-			}
-			i++;
+
+		for (const auto & [i, pPet] : GetPets(szPet)) {
+			SAFE_DELETE(pPocket->m_apItem[i].m_pPet);
+			pPocket->m_apItem[i].m_pPet = pPet;
 		}
 	}
 	return TRUE;
@@ -630,42 +522,57 @@ BOOL CDbManager::GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS
 		++nPirecingInven;
 	}
 
-	CountStr	= 0;
-	int	nId	= 0;
-	char szPet[4200]	= { 0, };
-	qry->GetStr( "szInventoryPet", szPet );
+	const char * szPet = qry->GetStrPtr( "szInventoryPet" );
 	VERIFYSTRING_RETURN( szPet, szPlayerName );
-	while( '$' != szPet[CountStr] )
+
+	for (const auto & [nId, pPet] : GetPets(szPet)) {
+		SAFE_DELETE(pMover->m_Inventory.m_apItem[nId].m_pPet);
+		pMover->m_Inventory.m_apItem[nId].m_pPet = pPet;
+	}
+
+	return TRUE;
+}
+
+std::vector<std::pair<DWORD, CPet *>> CDbManager::GetPets(const char * szPet) {
+	std::vector<std::pair<DWORD, CPet *>> res;
+	int CountStr = 0;
+
+	DWORD nId = 0;
+
+	while ('$' != szPet[CountStr])
 	{
-		BOOL bPet	= (BOOL)GetIntFromStr( szPet, &CountStr );
-		if( bPet )
+		BOOL bPet = (BOOL)GetIntFromStr(szPet, &CountStr);
+		if (bPet)
 		{
-			SAFE_DELETE( pMover->m_Inventory.m_apItem[nId].m_pPet );
-			CPet* pPet	= pMover->m_Inventory.m_apItem[nId].m_pPet		= new CPet;
-			BYTE nKind	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetKind( nKind );
-			BYTE nLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLevel( nLevel );
-			DWORD dwExp	= (DWORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetExp( dwExp );
-			WORD wEnergy	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetEnergy( wEnergy );
-			WORD wLife	= (WORD)GetIntPaFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
+			CPet * pPet = new CPet;
+			BYTE nKind = (BYTE)GetIntFromStr(szPet, &CountStr);
+			pPet->SetKind(nKind);
+			BYTE nLevel = (BYTE)GetIntFromStr(szPet, &CountStr);
+			pPet->SetLevel(nLevel);
+			DWORD dwExp = (DWORD)GetIntFromStr(szPet, &CountStr);
+			pPet->SetExp(dwExp);
+			WORD wEnergy = (WORD)GetIntFromStr(szPet, &CountStr);
+			pPet->SetEnergy(wEnergy);
+			WORD wLife = (WORD)GetIntPaFromStr(szPet, &CountStr);
+			pPet->SetLife(wLife);
+			for (int i = PL_D; i <= pPet->GetLevel(); i++)
 			{
-				BYTE nAvailLevel	= (BYTE)GetIntPaFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
+				BYTE nAvailLevel = (BYTE)GetIntPaFromStr(szPet, &CountStr);
+				pPet->SetAvailLevel(i, nAvailLevel);
 			}
-			char szFmt[MAX_PET_NAME_FMT]	= { 0,};
-			GetStrFromStr( szPet, szFmt, &CountStr );
-			char szName[MAX_PET_NAME]	= { 0,};
-			GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
-			pPet->SetName( szName );
+			char szFmt[MAX_PET_NAME_FMT] = { 0, };
+			GetStrFromStr(szPet, szFmt, &CountStr);
+			char szName[MAX_PET_NAME] = { 0, };
+			GetDBFormatStr(szName, MAX_PET_NAME, szFmt);
+			pPet->SetName(szName);
+
+			res.emplace_back(nId, pPet);
 		}
+
 		nId++;
 	}
-	return TRUE;
+
+	return res;
 }
 
 void CDbManager::LoadPiercingInfo( CItemElem & itemElem, char* szPirecingInven, int* pLocation )

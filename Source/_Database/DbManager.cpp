@@ -2577,41 +2577,10 @@ void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 			++nPirecingBank;
 		}
 
-		CountStr	= 0;
-		int nGuildBankPet = 0;
-		char szGuildBankPet[4200] = {0,};
-		pQuery->GetStr( "szGuildBankPet", szGuildBankPet );
+		const char * szGuildBankPet = pQuery->GetStrPtr( "szGuildBankPet" );
 		VERIFYSTRING( szGuildBankPet, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
-		while( '$' != szGuildBankPet[CountStr] )
-		{
-//			SAFE_DELETE( GuildBank.m_apItem[nGuildBankPet].m_pPet );
-			BOOL bPet	= (BOOL)GetIntFromStr( szGuildBankPet, &CountStr );
-			if( bPet )
-			{
-				CPet* pPet	= GuildBank.m_apItem[nGuildBankPet].m_pPet	= new CPet;
-				BYTE nKind	= (BYTE)GetIntFromStr( szGuildBankPet, &CountStr );
-				pPet->SetKind( nKind );
-				BYTE nLevel	= (BYTE)GetIntFromStr( szGuildBankPet, &CountStr );
-				pPet->SetLevel( nLevel );
-				DWORD dwExp	= (DWORD)GetIntFromStr( szGuildBankPet, &CountStr );
-				pPet->SetExp( dwExp );
-				WORD wEnergy	= (WORD)GetIntFromStr( szGuildBankPet, &CountStr );
-				pPet->SetEnergy( wEnergy );
-				WORD wLife	= (WORD)GetIntPaFromStr( szGuildBankPet, &CountStr );
-				pPet->SetLife( wLife );
-				for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-				{
-					BYTE nAvailLevel	= (BYTE)GetIntPaFromStr( szGuildBankPet, &CountStr );
-					pPet->SetAvailLevel( i, nAvailLevel );
-				}
-				char szFmt[MAX_PET_NAME_FMT]	= { 0,};
-				GetStrFromStr( szGuildBankPet, szFmt, &CountStr );
-				char szName[MAX_PET_NAME]	= { 0,};
-				GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
-				pPet->SetName( szName );
-			}
-//			++CountStr;
-			++nGuildBankPet;
+		for (const auto & [nGuildBankPet, pPet] : GetPets(szGuildBankPet)) {
+			GuildBank.m_apItem[nGuildBankPet].m_pPet = pPet;
 		}
 
 		ar2 << nGuildId;

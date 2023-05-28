@@ -893,6 +893,8 @@ public:
 	
 	BOOL	GetBankMover( CMover* pMover, CQuery *qry, int nSlot );
 	void	GetGuildBank( CItemContainer*  GuildBank, CQuery *qry );
+	std::vector<std::pair<DWORD, CPet *>> GetPets(const char * szPet);
+
 	bool RemoveItemInvenBank( CMover* pMover );
 	bool RemoveItemGuildBank( int nGuildId, CItemContainer*  GuildBank );
 
