@@ -5,56 +5,6 @@
 // GetXXPaFromStr -> If a / is encountered, it is not passed
 // "1/2/3" GetIntPaFromStr x3 -> 1 0 0 (location is blocked on the first /)
 
-class CDBUnserializer {
-private:
-	const char * currentPosition;
-
-	char shortBuffer[50] = "";
-	std::string longerBuffer;
-
-public:
-	explicit CDBUnserializer(const char * text) : currentPosition(text) {}
-
-	const char * GetStr() { return GetStrMaybePa<false>(); }
-	const char * GetPaStr() { return GetStrMaybePa<true>(); }
-
-	int GetInt() { return std::atoi(GetStr()); }
-	int GetPaInt() { return std::atoi(GetPaStr()); }
-	__int64 GetInt64() { return std::atoll(GetStr()); }
-	__int64 GetPaInt64() { return std::atoll(GetPaStr()); }
-
-	SERIALNUMBER GetPaSerialNumber() { return std::strtoul(GetPaStr(), nullptr, 10); }
-
-	void SkipCharacter() { if (*currentPosition) ++currentPosition; }
-
-	static bool RunTests();
-
-private:
-	template<bool Pa>
-	const char * GetStrMaybePa() {
-		const char * from = currentPosition;
-		while (*currentPosition != ',' && *currentPosition != '/' && *currentPosition != '\0') {
-			++currentPosition;
-		}
-
-		const char * retval;
-		if (currentPosition - from < 49) {
-			std::memcpy(shortBuffer, from, currentPosition - from);
-			shortBuffer[currentPosition - from] = '\0';
-			retval = shortBuffer;
-		} else {
-			longerBuffer = std::string_view(from, currentPosition);
-			retval = longerBuffer.c_str();
-		}
-
-		if (*currentPosition && (!Pa || *currentPosition != '/')) {
-			++currentPosition;
-		}
-
-		return retval;
-	}
-};
-
 // ',', '/', '\0' 을 만날때까지 값을 리턴하고 커서는 다음...
 inline void GetStrFromStr(const char *pBuf, char *strReturn, int *pLocation)
 {
