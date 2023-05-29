@@ -99,9 +99,6 @@
     <ClCompile Include="..\_common\guildquest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ItemScript.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ItemUpgrade.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -199,9 +196,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WorldServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WScript.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\_Network\tools.cpp">
@@ -656,9 +650,6 @@
     <ClInclude Include="..\_common\guildquest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ItemScript.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ItemUpgrade.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -756,9 +747,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WorldDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WScript.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_network\CmnHdr.h">

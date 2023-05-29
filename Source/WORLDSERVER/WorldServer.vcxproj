@@ -126,8 +126,6 @@
     </ClCompile>
     <ClCompile Include="..\_common\guildquest.cpp">
     </ClCompile>
-    <ClCompile Include="ItemScript.cpp">
-    </ClCompile>
     <ClCompile Include="ItemUpgrade.cpp">
     </ClCompile>
     <ClCompile Include="layeredlinkmap.cpp">
@@ -196,8 +194,6 @@
     <ClCompile Include="WorldDialog.cpp">
     </ClCompile>
     <ClCompile Include="WorldServer.cpp">
-    </ClCompile>
-    <ClCompile Include="WScript.cpp">
     </ClCompile>
     <ClCompile Include="..\_Network\tools.cpp">
     </ClCompile>
@@ -476,7 +472,6 @@
     <ClInclude Include="FunctionsInfo.h" />
     <ClInclude Include="GlobalTime.h" />
     <ClInclude Include="..\_common\guildquest.h" />
-    <ClInclude Include="ItemScript.h" />
     <ClInclude Include="ItemUpgrade.h" />
     <ClInclude Include="layeredlinkmap.h" />
     <ClInclude Include="LinkMap.h" />
@@ -510,7 +505,6 @@
     <ClInclude Include="VersionCommon.h" />
     <ClInclude Include="vmlog.h" />
     <ClInclude Include="WorldDialog.h" />
-    <ClInclude Include="WScript.h" />
     <ClInclude Include="..\_network\CmnHdr.h" />
     <ClInclude Include="..\_Network\ErrorCode.h" />
     <ClInclude Include="..\_network\MsgHdr.h" />

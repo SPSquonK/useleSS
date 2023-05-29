@@ -22,7 +22,6 @@
 	#include "DPSrvr.h"
 	#include "DPCoreClient.h"
 	#include "dpdatabaseclient.h"
-	#include "ItemScript.h"
 #endif	// __CLIENT
 
 #include "accessory.h"
@@ -1539,10 +1538,6 @@ void CMover::SetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemElem,
 	if( pItemElem && pItemElem->IsFlag( CItemElem::expired ) )
 		return;
 
-#ifdef __WORLDSERVER
-	RunItemScript( this, pItemProp->dwID, ITEM_OP_EQUIP, NULL );
-#endif // __WORLDSERVER
-
 	for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
 		SetDestParam(i, *pItemProp, TRUE);
 	}
@@ -1611,18 +1606,9 @@ void CMover::ResetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemEle
 	if( pItemElem && pItemElem->IsFlag( CItemElem::expired ) )
 		return;
 
-#ifdef __WORLDSERVER
-	RunItemScript( this, pItemProp->dwID, ITEM_OP_UNEQUIP, NULL );
-#endif // __WORLDSERVER
-
-	if( pItemProp->dwDestParam1 != -1 )
-		ResetDestParam( pItemProp->dwDestParam1, pItemProp->nAdjParamVal1 );
-	if( pItemProp->dwDestParam2 != -1 )
-		ResetDestParam( pItemProp->dwDestParam2, pItemProp->nAdjParamVal2 );
-#ifdef __PROP_0827
-	if( pItemProp->dwDestParam3 != -1 )
-		ResetDestParam( pItemProp->dwDestParam3, pItemProp->nAdjParamVal3 );
-#endif	// __PROP_0827
+	for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
+		ResetDestParam(pItemProp->dwDestParam[i], pItemProp->nAdjParamVal[i]);
+	}
 	
 	if( pItemElem && pItemElem->m_nResistAbilityOption && pItemElem->GetProp()->dwItemKind1 == IK1_ARMOR )
 	{
