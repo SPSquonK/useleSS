@@ -187,8 +187,7 @@ public:
 	virtual	BOOL	IsTouchOBB_Line( const D3DXVECTOR3 &vStart, const D3DXVECTOR3 &vEnd, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, BOOL bNeedCollObject = TRUE ) { return FALSE;}
 	virtual	BOOL	TestIntersectionOBB_Line( const Segment3& segment, const CObj* pObj, BOOL bNeedCollObject = TRUE ) { return FALSE;}
 
-	FLOAT GetMaxWidth() { return ( m_vMax.x - m_vMin.x > m_vMax.z - m_vMin.z ) ? m_vMax.x - m_vMin.x : m_vMax.z - m_vMin.z; }
-	FLOAT GetMaxHeight() { return m_vMax.y - m_vMin.y; }
+	[[nodiscard]] FLOAT GetMaxHeight() const { return m_vMax.y - m_vMin.y; }
 };
 
 #endif

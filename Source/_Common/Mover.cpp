@@ -3102,8 +3102,7 @@ void CMover::Process()
 				{
 					int nMaxFrame	= pModel->GetMaxFrame();
 					FLOAT fSpeed	= GetSpeed( m_pActMover->m_fSpeed );
-//					FLOAT fMaxWidth	= pModel->GetMaxWidth();
-//					FLOAT fMaxHeight	= pModel->GetMaxHeight();
+
 					MoverProp* pProp	= GetProp();
 					if( IsNPC() )
 					{

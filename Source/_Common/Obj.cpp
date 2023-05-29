@@ -594,9 +594,6 @@ void CObj::SetPos( const D3DXVECTOR3& vPos )
 			else
 			{
 				// 같은 Landscape 안에서의 이동 
-				int nWidth = 0;
-				if(m_pModel) 
-					nWidth	= (int)( m_pModel->GetMaxWidth() );
 				DWORD dwLinkType	= GetLinkType();
 				if( pWorld->GetObjInLinkMap( m_vPos, dwLinkType, m_dwLinkLevel ) == this )
 					pWorld->SetObjInLinkMap( m_vPos, dwLinkType, m_dwLinkLevel, m_pNext );
@@ -758,11 +755,12 @@ FLOAT	CObj::GetRadiusXZ( void )
 	return fRadius;
 }
 
-const float INV_6 = 1.0f / 6.0f;
 
 // this의 반지름을 계산함. = 삼면 평균을 반지름으로 선택 
 FLOAT	CObj::GetRadius( void ) const
 {
+	static constexpr float INV_6 = 1.0f / 6.0f;
+
 	float fRadius = fabs(m_pModel->m_vMax.x - m_pModel->m_vMin.x);
 	fRadius      += fabs(m_pModel->m_vMax.y - m_pModel->m_vMin.y);
 	fRadius      += fabs(m_pModel->m_vMax.z - m_pModel->m_vMin.z);
