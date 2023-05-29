@@ -22,7 +22,7 @@ namespace DBDeserialize {
 	class Slasher {
 	private:
 		const char * current;
-		unsigned int index;
+		unsigned int index = 0;
 	
 	public:
 		explicit Slasher(const char * text) : current(text) {}
