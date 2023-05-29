@@ -1445,7 +1445,7 @@ void CWndRRMiniGameArithmetic::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate();
 	// 여기에 코딩하세요
 	CWndText::SetupDescription(
-		GetDlgItem<CWndText>(WIDC_TEXT1),
+		GetDlgItem<CWndText>(WIDC_TEXT2),
 		_T("RRMinigameArithmetic.inc")
 	);
 
@@ -1716,7 +1716,7 @@ void CWndRRMiniGameTyping::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 	CWndText::SetupDescription(
-		GetDlgItem<CWndText>(WIDC_TEXT1),
+		GetDlgItem<CWndText>(WIDC_TEXT4),
 		_T("RRMinigameTyping.inc")
 	);
 
