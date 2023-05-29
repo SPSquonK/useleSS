@@ -87,6 +87,7 @@ void LogPerformance( DWORD dwCurTick )
 	static int nFrame = 0;			
 	static DWORD dwPrev = 0;
 	static DWORD dwElapsed = 0;
+	static bool IsFirstOpLag = true;
 
 	++nFrame;
 	DWORD dwTick = dwCurTick - dwPrev; 
@@ -126,11 +127,15 @@ void LogPerformance( DWORD dwCurTick )
 #ifdef __INFINITE_0227
 	if( dwTick > 1000 )
 	{
-		char szBuffer[256];
-			sprintf( szBuffer, 
-					"OP: %d, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f\n",
-					dwTick, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12 );
-			Error( szBuffer );
+		if (IsFirstOpLag) {
+			IsFirstOpLag = false;
+		} else {
+			char szBuffer[256];
+			sprintf(szBuffer,
+				"OP: %d, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f\n",
+				dwTick, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12);
+			Error(szBuffer);
+		}
 	}
 #endif	// __INFINITE_0227
 
