@@ -40,10 +40,7 @@
 extern	CProject			prj;
 
 #define	VERIFYSTRING( lpString, lpszPlayer )	\
-		if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer, lpDbOverlappedPlus ) )		return;
-
-#define	VERIFY_GUILD_STRING( lpString, lpszGuild )	\
-if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszGuild ) )		return;
+		if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer ) )		return;
 
 CDbManager & g_DbManager = CDbManager::GetInstance();							// CDbManager 클래스 생성
 
@@ -2462,6 +2459,107 @@ void CDbManager::UpdateGuildSetName( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 	}
 }
 
+bool CDbManager::ReadItemContainer(CItemContainer & container, ItemContainerSerialization serialization) {
+	bool allValid = true;
+
+	{
+		int CountStr = 0;
+		int itemCount = 0;
+		while ('$' != serialization.apIndex[CountStr]) {
+			container.m_apIndex[itemCount] = static_cast<DWORD>(GetIntFromStr(serialization.apIndex, &CountStr));
+			itemCount++;
+		}
+	}
+
+	{
+		int CountStr = 0;
+		int IndexObjIndex = 0;
+		while ('$' != serialization.dwObjIndex[CountStr]) {
+			container.m_apItem[IndexObjIndex].m_dwObjIndex = (DWORD)GetIntFromStr(serialization.dwObjIndex, &CountStr);
+			IndexObjIndex++;
+		}
+	}
+
+	{
+		int iterationId = 0;
+		int CountStr = 0;
+		int IndexItem = 0;
+		while ('$' != serialization.main[CountStr])
+		{
+			CItemElem BufItemElem;
+			IndexItem = GetOneItem(&BufItemElem, serialization.main, &CountStr);
+			if (IndexItem == -1) {
+				Error("ReadItemContainer(%s) : IndexIdem == -1 [iteration=%d, itemId=%lu]",
+					serialization.debugString, iterationId, BufItemElem.m_dwItemId
+				);
+				allValid = false;
+			} else if (IndexItem >= container.GetMax()) {
+				Error("ReadItemContainer(%s) : IndexIdem = %d >= Max(%d) [iteration=%d, itemId=%lu]",
+					serialization.debugString,
+					IndexItem, container.GetMax(),
+					iterationId, BufItemElem.m_dwItemId
+				);
+				return false;
+			} else {
+				// Note: m_dwObjIndex is not overwritten by this operator= implementation
+				container.m_apItem[IndexItem] = BufItemElem;
+			}
+
+			++iterationId;
+		}
+	}
+
+	for (auto splitter : DBDeserialize::SplitBySlash(serialization.ext)) {
+		CItemElem & itemElem = container.m_apItem[splitter.Index()];
+
+		splitter.Skip(); // charged
+		itemElem.m_dwKeepTime = splitter.NextDWORD();
+
+		std::int64_t iRandomOptItemId = splitter.NextInt64();
+		if (iRandomOptItemId == -102) iRandomOptItemId = 0;
+		itemElem.SetRandomOptItemId(iRandomOptItemId);
+
+		itemElem.m_bTranformVisPet = splitter.NextBool() ? TRUE : FALSE;
+	}
+
+	{
+		int CountStr = 0;
+		int nPirecingBank = 0;
+		while ('$' != serialization.piercing[CountStr]) {
+			LoadPiercingInfo(container.m_apItem[nPirecingBank], serialization.piercing, &CountStr);
+			++nPirecingBank;
+		}
+	}
+
+	for (const auto & [nGuildBankPet, pPet] : GetPets(serialization.szPet)) {
+		SAFE_DELETE(container.m_apItem[nGuildBankPet].m_pPet);
+		container.m_apItem[nGuildBankPet].m_pPet = pPet;
+	}
+
+	return allValid;
+}
+
+bool CDbManager::ItemContainerSerialization::CheckValidity() const {
+	constexpr auto IndividualCheck = [](const char * debugString, const char * key, const char * content) -> bool {
+		size_t size = std::strlen(content);
+		const bool valid = size > 0 && content[size - 1] == '$';
+		if (!valid) {
+			WriteLog("Item Bad Serialization - %s\tkey= %s\tvalue=%s", debugString, key, content);
+		}
+		return valid;
+	};
+
+	// Using a single & to continue after the first error
+	return static_cast<bool>(
+		IndividualCheck(debugString, "main", main)
+		& IndividualCheck(debugString, "apIndex", apIndex)
+		& IndividualCheck(debugString, "dwObjIndex", dwObjIndex)
+		& IndividualCheck(debugString, "ext", ext)
+		& IndividualCheck(debugString, "piercing", piercing)
+		& IndividualCheck(debugString, "szPet", szPet)
+		);
+}
+
 void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	CAr	ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
@@ -2473,134 +2571,62 @@ void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 		return;
 	}
 
-	while( 1 )
+	while( true )
 	{
-	// 3. 월드 서버에 전송할 패킷을 생성한다.
-	BEFORESENDDUAL( ar2, PACKETTYPE_GUILD_BANK, DPID_UNKNOWN, DPID_UNKNOWN );
+		// 3. 월드 서버에 전송할 패킷을 생성한다.
+		BEFORESENDDUAL( ar2, PACKETTYPE_GUILD_BANK, DPID_UNKNOWN, DPID_UNKNOWN );
 
-	// 4. 로딩할 길드창고 데이터를 스택에 생성한다.
-//	CItemContainer<CItemElem>	GuildBank;	// 길드 창고
-	int							nGoldGuild; // 길드 Credit
-	int							nGuildId	= 0;
-	int							nBufsize	= 0;
-	int							nCount		= 0;
-	u_long						ulOffSet	= ar2.GetOffset();
+		// 4. 로딩할 길드창고 데이터를 스택에 생성한다.
+		int							nBufsize	= 0;
+		int							nCount		= 0;
+		u_long						ulOffSet	= ar2.GetOffset();
 
-	// 5. 쿼리한 결과를 저장한다.
-	ar2 << static_cast<int>(0);
-	BOOL bFetch	= FALSE;
-	while( bFetch = pQuery->Fetch() )
-	{
-		nCount++;
-		CItemContainer	GuildBank;	// 길드 창고
-		GuildBank.SetItemContainer( CItemContainer::ContainerTypes::GUILDBANK );
-//		GuildBank.Clear();
-		
-		nGuildId		= pQuery->GetInt( "m_idGuild" );
-		nGoldGuild		= pQuery->GetInt( "m_nGuildGold" );
-		
-		int		CountStr		= 0;
-		int		IndexItem		= 0;
-		int		itemCount		= 0;
-		
-		char m_apIndex[512]		= { 0, };
-		pQuery->GetStr( "m_apIndex", m_apIndex );
-		VERIFY_GUILD_STRING( m_apIndex, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
-		while( '$' != m_apIndex[CountStr] )
+		// 5. 쿼리한 결과를 저장한다.
+		ar2 << static_cast<int>(0);
+		BOOL bFetch	= FALSE;
+		while( bFetch = pQuery->Fetch() )
 		{
-			GuildBank.m_apIndex[itemCount]	= (DWORD)GetIntFromStr( m_apIndex, &CountStr );
-			itemCount++;
-		}
+			nCount++;
+			CItemContainer	GuildBank;	// 길드 창고
+			GuildBank.SetItemContainer( CItemContainer::ContainerTypes::GUILDBANK );
+	//		GuildBank.Clear();
 		
-		CountStr	= 0;
-		int IndexObjIndex	= 0;
-		char ObjIndex[512]	= {0,};
-		pQuery->GetStr( "m_dwObjIndex", ObjIndex );
-		VERIFY_GUILD_STRING( ObjIndex, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
-		while( '$' != ObjIndex[CountStr] )
-		{
-			GuildBank.m_apItem[IndexObjIndex].m_dwObjIndex	= (DWORD)GetIntFromStr( ObjIndex, &CountStr );
-			IndexObjIndex++;
-		}
+			const int nGuildId   = pQuery->GetInt( "m_idGuild" );
+			const int nGoldGuild = pQuery->GetInt( "m_nGuildGold" );
 		
-		
-		CountStr		= 0;
-		IndexItem		= 0;
-		char	Bank[7500]		= { 0, };
-		pQuery->GetStr( "m_GuildBank", Bank );
-		VERIFY_GUILD_STRING( Bank, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
-		while( '$' != Bank[CountStr] )
-		{
-			CItemElem BufItemElem;
-			IndexItem = GetOneItem( &BufItemElem, Bank, &CountStr );
-			if( IndexItem == -1 )
-			{
-				Error( "OpenQuery::GuildBank : << 프로퍼티 없음. %d, %d", nGuildId, BufItemElem.m_dwItemId );
-			}
-			else
-			{
-				if( IndexItem >= MAX_GUILDBANK )
-				{
-					Error( "OpenQueryGuildBank::GuildBank : << IndexItem %d, %d", nGuildId, IndexItem );
-					Error( "GuildBank = %s", Bank );
-					return;
-				}
-				GuildBank.m_apItem[IndexItem] = BufItemElem;
-			}
+			char debugString[256];
+			std::sprintf(debugString, __FUNCTION__" - Guild #%d %s", nGuildId, g_GuildMng.GetGuild(nGuildId)->m_szGuild);
 
+			ItemContainerSerialization serialization = {
+				.main = pQuery->GetStrPtr("m_GuildBank"),
+				.apIndex = pQuery->GetStrPtr("m_apIndex"),
+				.dwObjIndex = pQuery->GetStrPtr("m_dwObjIndex"),
+				.ext = pQuery->GetStrPtr("m_extGuildBank"),
+				.piercing = pQuery->GetStrPtr("m_GuildBankPiercing"),
+				.szPet = pQuery->GetStrPtr("szGuildBankPet"),
+
+				.debugString = debugString
+			};
+
+			if (!serialization.CheckValidity()) return;
+
+			ReadItemContainer(GuildBank, serialization);
+
+			ar2 << nGuildId << nGoldGuild << GuildBank;
+
+			if( nCount >= 1000 )
+				break;
 		}
+		// 패킷 헤더를 설정한다.
+		BYTE* pBuf = ar2.GetBuffer( &nBufsize );
 
-		CountStr	= 0;
-		int nExtBank = 0;
-		char ExtBank[2000] = {0,};
-		pQuery->GetStr( "m_extGuildBank", ExtBank );
-		VERIFYSTRING( ExtBank, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
-		while( '$' != ExtBank[CountStr] )
-		{
-			GetIntPaFromStr(ExtBank, &CountStr);
-			GuildBank.m_apItem[nExtBank].m_dwKeepTime				= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
-			GuildBank.m_apItem[nExtBank].SetRandomOptItemId( GetInt64PaFromStr( ExtBank, &CountStr ) );
-			GuildBank.m_apItem[nExtBank].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
+		*(UNALIGNED int*)( pBuf + ulOffSet )	= nCount;
+		// 패킷을 월드서버에 전송한다.
+		SEND( ar2, CDPTrans::GetInstance(), lpDbOverlappedPlus->dpid );
 
-			++CountStr;
-			++nExtBank;
-		}
-		
-		CountStr	= 0;
-		int nPirecingBank = 0;
-		char PirecingBank[4000] = {0,};
-		pQuery->GetStr( "m_GuildBankPiercing", PirecingBank );
-		VERIFYSTRING( PirecingBank, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
-		while( '$' != PirecingBank[CountStr] )
-		{
-			LoadPiercingInfo( GuildBank.m_apItem[nPirecingBank], PirecingBank, &CountStr );
-			++nPirecingBank;
-		}
-
-		const char * szGuildBankPet = pQuery->GetStrPtr( "szGuildBankPet" );
-		VERIFYSTRING( szGuildBankPet, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
-		for (const auto & [nGuildBankPet, pPet] : GetPets(szGuildBankPet)) {
-			GuildBank.m_apItem[nGuildBankPet].m_pPet = pPet;
-		}
-
-		ar2 << nGuildId;
-		ar2 << nGoldGuild;
-		ar2 << GuildBank;
-
-		if( nCount >= 1000 )
+		if( bFetch == FALSE )
 			break;
 	}
-	// 패킷 헤더를 설정한다.
-	BYTE* pBuf = ar2.GetBuffer( &nBufsize );
-
-	*(UNALIGNED int*)( pBuf + ulOffSet )	= nCount;
-	// 패킷을 월드서버에 전송한다.
-	SEND( ar2, CDPTrans::GetInstance(), lpDbOverlappedPlus->dpid );
-
-	if( bFetch == FALSE )
-		break;
-	}
-
 }
 
 void CDbManager::UpdateGuildBankUpdate( CQuery* pQuery, CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )

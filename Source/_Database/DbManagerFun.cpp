@@ -28,7 +28,7 @@ extern const char NullStr[2];
 extern	CProject			prj;
 
 #define	VERIFYSTRING_RETURN( lpString, lpszPlayer )	\
-	if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer, lpDbOverlappedPlus ) )		return FALSE;
+	if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer ) )		return FALSE;
 
 #define	VERIFYSTRING_BANK( lpString, lpszPlayer )	\
 	if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer ) )		return FALSE;
@@ -97,446 +97,121 @@ void CDbManager::SetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc )
 	*pCur	= '\0';
 }
 
-BOOL CDbManager::GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, int nSlot )
+BOOL CDbManager::GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS, int nSlot )
 {
-	int CountStr				= 0;
-	int itemCount				= 0;
-	int	IndexItem				= 0;
-	int IndexObjIndex			= 0;
-	int nExtBankCount			= 0;
-	int nPirecingBankCount		= 0;
-	char Bank[7500]				= { 0, };
-	char m_apIndexBank[512]		= { 0, };
-	char ObjIndexBank[512]		= { 0, };
-	char ExtBank[2000]			= {0,};	
-	char PirecingBank[4000]		= {0,};
-	char szPet[4200]	= { 0,};
-
 	u_long uPlayerid	= (u_long)qry->GetInt( "m_idPlayer" );
 	DWORD dwGold = qry->GetInt( "m_dwGoldBank" );
 
-	qry->GetStr( "m_Bank", Bank );
-	qry->GetStr( "m_apIndex_Bank", m_apIndexBank );
-	qry->GetStr( "m_dwObjIndex_Bank", ObjIndexBank );
-	qry->GetStr( "m_extBank", ExtBank );
-	qry->GetStr( "m_BankPiercing", PirecingBank );
-	qry->GetStr( "szBankPet", szPet );
-
-	VERIFYSTRING_RETURN( Bank, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	VERIFYSTRING_RETURN( m_apIndexBank, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	VERIFYSTRING_RETURN( ObjIndexBank, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	VERIFYSTRING_RETURN( ExtBank, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	VERIFYSTRING_RETURN( PirecingBank, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	VERIFYSTRING_RETURN( szPet, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	
 	pMover->m_idPlayerBank[nSlot] = uPlayerid;
-	pMover->m_dwGoldBank[nSlot]	= dwGold;
-	
-	CountStr	= 0;	IndexItem	= 0;			
-	while( '$' != Bank[CountStr] )
-	{
-		CItemElem BufItemElem;
-		IndexItem = GetOneItem( &BufItemElem, Bank, &CountStr );
-		if( IndexItem == -1 )
-		{
-			Error( "Join::Bank : << Not Prop. %d, %d \nBank = %s", uPlayerid, BufItemElem.m_dwItemId, Bank );
-		}
-		else
-		{
-			if( IndexItem >= MAX_BANK )
-			{
-				Error( "Join::Bank : << MAX_BANK %d\nBank = %s", uPlayerid, Bank );
-				return FALSE;
-			}
-			pMover->m_Bank[nSlot].m_apItem[IndexItem] = BufItemElem;
-		}
-	}
-	
-	CountStr	= 0;	itemCount	= 0;
-	while( '$' != m_apIndexBank[CountStr] )
-	{
-		pMover->m_Bank[nSlot].m_apIndex[itemCount]						= (DWORD)GetIntFromStr( m_apIndexBank, &CountStr );
-		itemCount++;
-	}
-	
-	CountStr	= 0;	IndexObjIndex	= 0;
-	while( '$' != ObjIndexBank[CountStr] )
-	{
-		pMover->m_Bank[nSlot].m_apItem[IndexObjIndex].m_dwObjIndex		= (DWORD)GetIntFromStr( ObjIndexBank, &CountStr );
-		IndexObjIndex++;
-	}
+	pMover->m_dwGoldBank[nSlot] = dwGold;
 
-	CountStr	= 0;	nExtBankCount	= 0;
-	while( '$' != ExtBank[CountStr] )
-	{
-		GetIntPaFromStr( ExtBank, &CountStr );
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_dwKeepTime		= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
-		__int64 iRandomOptItemId	= GetInt64PaFromStr( ExtBank, &CountStr );
-		if( iRandomOptItemId == -102 )
-			iRandomOptItemId	= 0;
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].SetRandomOptItemId( iRandomOptItemId );
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
-		++CountStr;
-
-		++nExtBankCount;
-	}
-
-	CountStr	= 0;	nPirecingBankCount = 0;
-	while( '$' != PirecingBank[CountStr] )
-	{
-		LoadPiercingInfo( pMover->m_Bank[nSlot].m_apItem[nPirecingBankCount], PirecingBank, &CountStr );
-		++nPirecingBankCount;
-	}
-
-
-	for (const auto & [nId, pPet] : GetPets(szPet)) {
-		SAFE_DELETE(pMover->m_Bank[nSlot].m_apItem[nId].m_pPet);
-		pMover->m_Bank[nSlot].m_apItem[nId].m_pPet = pPet;
-	}
-
-	return TRUE;
+	return GetBankMover(pMover, qry, nSlot);
 }
 
-BOOL CDbManager::GetBankMover( CMover* pMover, CQuery *qry, int nSlot )
+bool CDbManager::GetBankMover( CMover* pMover, CQuery *qry, int nSlot )
 {
-	int CountStr	= 0;
-	int itemCount	= 0;
-	int	IndexItem	= 0;
-	int IndexObjIndex	= 0;
-	int nExtBankCount = 0;
-	int nPirecingBankCount = 0;
-	char Bank[7500]		= { 0, };
-	char m_apIndexBank[512]		= { 0, };
-	char ObjIndexBank[512]	= { 0, };
-	char ExtBank[2000] = {0,};	
-	char PirecingBank[4000] = {0,};
-	char szPet[4200]	= { 0,};
-	
-	qry->GetStr( "m_Bank", Bank );
-	qry->GetStr( "m_apIndex_Bank", m_apIndexBank );
-	qry->GetStr("m_dwObjIndex_Bank", ObjIndexBank );
-	qry->GetStr( "m_extBank", ExtBank );
-	qry->GetStr( "m_BankPiercing", PirecingBank );
-	qry->GetStr( "szBankPet", szPet );
+	char debugString[256];
+	std::sprintf(debugString, __FUNCTION__" - Player Bank %s Slot %d", pMover->m_szName, nSlot);
 
-	CountStr	= 0;	IndexItem	= 0;			
-	VERIFYSTRING_BANK( Bank, pMover->m_szName );
-	while( '$' != Bank[CountStr] )
-	{
-		CItemElem BufItemElem;
-		IndexItem = GetOneItem( &BufItemElem, Bank, &CountStr );
-		if( IndexItem == -1 )
-		{
-			Error( "Bank = %s", Bank );
-		}
-		else
-		{
-			if( IndexItem >= MAX_BANK )
-			{
-				Error( "Bank = %s", Bank );
-				return FALSE;
-			}
-			pMover->m_Bank[nSlot].m_apItem[IndexItem] = BufItemElem;
-		}
-	}
-	
-	CountStr	= 0;	itemCount	= 0;
-	VERIFYSTRING_BANK( m_apIndexBank, pMover->m_szName );
-	while( '$' != m_apIndexBank[CountStr] )
-	{
-		pMover->m_Bank[nSlot].m_apIndex[itemCount]		= (DWORD)GetIntFromStr( m_apIndexBank, &CountStr );
-		itemCount++;
-	}
-	
-	CountStr	= 0;	IndexObjIndex	= 0;
-	VERIFYSTRING_BANK( ObjIndexBank, pMover->m_szName );
-	while( '$' != ObjIndexBank[CountStr] )
-	{
-		pMover->m_Bank[nSlot].m_apItem[IndexObjIndex].m_dwObjIndex		= (DWORD)GetIntFromStr( ObjIndexBank, &CountStr );
-		IndexObjIndex++;
-	}
-	
-	CountStr	= 0; 	nExtBankCount	= 0;
-	VERIFYSTRING_BANK( ExtBank, pMover->m_szName );
-	while( '$' != ExtBank[CountStr] )
-	{
-		GetIntPaFromStr( ExtBank, &CountStr );
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_dwKeepTime		= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].SetRandomOptItemId( GetInt64PaFromStr( ExtBank, &CountStr ) );
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
-		++CountStr;
-		++nExtBankCount;
-	}
-	
-	CountStr	= 0;
-	nPirecingBankCount = 0;
-	VERIFYSTRING_BANK( PirecingBank, pMover->m_szName );
-	while( '$' != PirecingBank[CountStr] )
-	{
-		LoadPiercingInfo( pMover->m_Bank[nSlot].m_apItem[nPirecingBankCount], PirecingBank, &CountStr );
-		++nPirecingBankCount;
-	}
+	ItemContainerSerialization serialization = {
+		.main = qry->GetStrPtr("m_Bank"),
+		.apIndex = qry->GetStrPtr("m_apIndex_Bank"),
+		.dwObjIndex = qry->GetStrPtr("m_dwObjIndex_Bank"),
+		.ext = qry->GetStrPtr("m_extBank"),
+		.piercing = qry->GetStrPtr("m_BankPiercing"),
+		.szPet = qry->GetStrPtr("szBankPet"),
 
-	VERIFYSTRING_BANK( szPet, pMover->m_szName );
-	for (const auto & [nId, pPet] : GetPets(szPet)) {
-		SAFE_DELETE(pMover->m_Bank[nSlot].m_apItem[nId].m_pPet);
-		pMover->m_Bank[nSlot].m_apItem[nId].m_pPet = pPet;
-	}
+		.debugString = debugString
+	};
 
-	return TRUE;
+	if (!serialization.CheckValidity()) return FALSE;
+	return ReadItemContainer(pMover->m_Bank[nSlot], serialization);
 }
 
-void CDbManager::GetGuildBank( CItemContainer*  GuildBank, CQuery *qry )
-{
-	int CountStr		= 0;
-	int IndexItem		= 0;
-	char	Bank[7500]		= { 0, };
-	qry->GetStr( "m_GuildBank", Bank );
-	while( '$' != Bank[CountStr] )
-	{
-		CItemElem BufItemElem;
-		IndexItem = GetOneItem( &BufItemElem, Bank, &CountStr );
-		if( IndexItem == -1 )
-		{
-			
-		}
-		else
-		{
-			if( IndexItem >= MAX_GUILDBANK )
-			{
-				Error( "GuildBank = %s", Bank );
-				return;
-			}
-			GuildBank->m_apItem[IndexItem] = BufItemElem;
-		}
-	}
-	CountStr	= 0;
-	int nExtBank = 0;
-	char ExtBank[2000] = {0,};
-	qry->GetStr( "m_extGuildBank", ExtBank );
-	while( '$' != ExtBank[CountStr] )
-	{
-		GetIntPaFromStr( ExtBank, &CountStr );
-		GuildBank->m_apItem[nExtBank].m_dwKeepTime				= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
-		__int64 iRandomOptItemId	= GetInt64PaFromStr( ExtBank, &CountStr );
-		if( iRandomOptItemId == -102 )
-			iRandomOptItemId	= 0;
-		GuildBank->m_apItem[nExtBank].SetRandomOptItemId( iRandomOptItemId );
-		GuildBank->m_apItem[nExtBank].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
-		++CountStr; 		++nExtBank;
-	}
-	
-	CountStr	= 0;
-	int nPirecingBank = 0;
-	char PirecingBank[4000] = {0,};
-	qry->GetStr( "m_GuildBankPiercing", PirecingBank );
-	while( '$' != PirecingBank[CountStr] )
-	{
-		LoadPiercingInfo( GuildBank->m_apItem[nPirecingBank], PirecingBank, &CountStr );
-		++nPirecingBank;
-	}
+void CDbManager::GetGuildBank( CItemContainer*  GuildBank, CQuery *qry ) {
+	ItemContainerSerialization serialization = {
+		.main = qry->GetStrPtr("m_GuildBank"),
+		.apIndex = "$",
+		.dwObjIndex = "$",
+		.ext = qry->GetStrPtr("m_extGuildBank"),
+		.piercing = qry->GetStrPtr("m_GuildBankPiercing"),
+		.szPet = qry->GetStrPtr("szGuildBankPet"),
 
-	const char * szPet = qry->GetStrPtr( "szGuildBankPet" );
-	for (const auto & [nId, pPet] : GetPets(szPet)) {
-		SAFE_DELETE(GuildBank->m_apItem[nId].m_pPet);
-		GuildBank->m_apItem[nId].m_pPet = pPet;
-	}
+		.debugString = __FUNCTION__
+	};
+
+	if (!serialization.CheckValidity()) return;
+	ReadItemContainer(*GuildBank, serialization);
 }
 
-BOOL CDbManager::GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
-{
-	char	szItem[7500]	= { 0,};
-	char	szIndex[512]	= { 0,};
-	char	szObjIndex[512]	= { 0,};
-	char	szExt[2000]		= { 0,};
-	char	szPiercing[4000]	= { 0,};
-	char	szPet[4200]	= { 0,};
+BOOL CDbManager::GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus ) {
+	const int nPocket = pQuery->GetInt("nPocket");
+	const BOOL bExpired = (BOOL)pQuery->GetInt("bExpired");
 
-	pQuery->GetStr( "szItem", szItem );
-	pQuery->GetStr( "szIndex", szIndex );
-	pQuery->GetStr( "szObjIndex", szObjIndex );
-	pQuery->GetStr( "szExt", szExt );
-	pQuery->GetStr( "szPiercing", szPiercing );
-	pQuery->GetStr( "szPet", szPet );
-
-	char szPlayerName[64] = {0, };
-	if( lpDbOverlappedPlus != NULL )
-	{
-		_tcscpy( szPlayerName, lpDbOverlappedPlus->AccountInfo.szPlayer );
+	const char * szPlayerName;
+	if (lpDbOverlappedPlus) {
+		szPlayerName = lpDbOverlappedPlus->AccountInfo.szPlayer;
+	} else {
+		szPlayerName = pMover->m_szName;
 	}
-	else
-	{
-		_tcscpy( szPlayerName, pMover->m_szName );
-	}
-	VERIFYSTRING_RETURN( szItem, szPlayerName );
-	VERIFYSTRING_RETURN( szIndex, szPlayerName );
-	VERIFYSTRING_RETURN( szObjIndex, szPlayerName );
-	VERIFYSTRING_RETURN( szExt, szPlayerName );
-	VERIFYSTRING_RETURN( szPiercing, szPlayerName );
-	VERIFYSTRING_RETURN( szPet, szPlayerName );
 
-	int nPocket	= pQuery->GetInt( "nPocket" );
-	BOOL bExpired	= (BOOL)pQuery->GetInt( "bExpired" );
+	char debugString[256];
+	std::sprintf(debugString, __FUNCTION__" Player %s Pocket %d", szPlayerName, nPocket);
 
-	if( szItem[0] != '$' || !bExpired )
-	{
+	ItemContainerSerialization serialization = {
+		.main = pQuery->GetStrPtr("szItem"),
+		.apIndex = pQuery->GetStrPtr("szIndex"),
+		.dwObjIndex = pQuery->GetStrPtr("szObjIndex"),
+		.ext = pQuery->GetStrPtr("szExt"),
+		.piercing = pQuery->GetStrPtr("szPiercing"),
+		.szPet = pQuery->GetStrPtr("szPet"),
+
+		.debugString = debugString
+	};
+
+	if (!serialization.CheckValidity()) return FALSE;
+
+	if( serialization.main[0] != '$' || !bExpired ) {
 		pMover->m_Pocket.Avail( nPocket );
 		CPocket* pPocket	= pMover->m_Pocket.GetPocket( nPocket );
 		pPocket->SetExpired( bExpired );
 		pPocket->SetExpirationDate( (time_t)pQuery->GetInt( "tExpirationDate" ) );
-		int nOffset	= 0, i	= 0;
-		while( '$' != szItem[nOffset] )
-		{
-			CItemElem itemElem;
-			i	= GetOneItem( &itemElem, szItem, &nOffset );
-			if( i == -1 )
-			{
-				Error( "Join:Pocket:Property not found" );
-			}
-			else
-			{
-				if( i >= POCKET_SLOT_SIZE_1_2 )
-				{
-					Error( "Join:Pocket:POCKET_SLOT_SIZE_1_2" );
-					return FALSE;
-				}
-				pPocket->m_apItem[i]	= itemElem;
-			}
-		}
-		nOffset		= i	= 0;
-		while( '$' != szIndex[nOffset] )
-			pPocket->m_apIndex[i++]		= (DWORD)GetIntFromStr( szIndex, &nOffset );
-		nOffset		= i	= 0;
-		while( '$' != szObjIndex[nOffset] )
-			pPocket->m_apItem[i++].m_dwObjIndex	= (DWORD)GetIntFromStr( szObjIndex, &nOffset );
-		nOffset		= i	= 0;
-		while( '$' != szExt[nOffset] )
-		{
-			GetIntPaFromStr( szExt, &nOffset );
-			pPocket->m_apItem[i].m_dwKeepTime	= (DWORD)GetIntPaFromStr( szExt, &nOffset );
-			__int64 iRandomOptItemId	= GetInt64PaFromStr( szExt, &nOffset );
-			pPocket->m_apItem[i].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( szExt, &nOffset ) );
-			if( iRandomOptItemId == -102 )
-				iRandomOptItemId	= 0;
-			pPocket->m_apItem[i++].SetRandomOptItemId( iRandomOptItemId );
-			nOffset++;
-		}
-		nOffset		= i	= 0;
-		while( '$' != szPiercing[nOffset] )
-		{
-			LoadPiercingInfo( pPocket->m_apItem[i], szPiercing, &nOffset );
-			i++;
-		}
 
-		for (const auto & [i, pPet] : GetPets(szPet)) {
-			SAFE_DELETE(pPocket->m_apItem[i].m_pPet);
-			pPocket->m_apItem[i].m_pPet = pPet;
-		}
+		ReadItemContainer(*pPocket, serialization);
 	}
+
 	return TRUE;
 }
 
 BOOL CDbManager::GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
-	int CountStr	= 0;
-	int IndexItem	= 0;
-	char Inven[6000]	= { 0, };
-	char szPlayerName[64] = {0, };
-	if( lpDbOverlappedPlus != NULL )
-	{
-		_tcscpy( szPlayerName, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	}
-	else
-	{
-		_tcscpy( szPlayerName, pMover->m_szName );
-	}
-	qry->GetStr("m_Inventory", Inven);
-	VERIFYSTRING_RETURN( Inven, szPlayerName );	// if false, return
-	while('$' != Inven[CountStr])
-	{
-		CItemElem BufItemElem;
-		IndexItem = GetOneItem( &BufItemElem, Inven, &CountStr );
-		if( IndexItem == -1 )
-		{
-			Error( "Inventory : << 프로퍼티 없음. %s, %d", pMover->m_szName, BufItemElem.m_dwItemId );
-		}
-		else
-		{
-			if( IndexItem >= MAX_INVENTORY + MAX_HUMAN_PARTS)
-			{
-				Error( "Join::Inventory : << IndexItem %s, %d", pMover->m_szName, IndexItem );
-				Error( "Inventory = %s", Inven );
-				return FALSE;
-			}
-			pMover->m_Inventory.m_apItem[IndexItem] = BufItemElem;
-		}
-	}
-	
-	CountStr	= 0;
-	int itemCount	= 0;
-	char m_apIndex[512]		= { 0, };
-	qry->GetStr( "m_apIndex", m_apIndex );
-	VERIFYSTRING_RETURN( m_apIndex, szPlayerName );
-	while( '$' != m_apIndex[CountStr] )
-	{
-		pMover->m_Inventory.m_apIndex[itemCount]	= (DWORD)GetIntFromStr( m_apIndex, &CountStr );
-		itemCount++;
-	}
-	
-	CountStr	= 0;
-	int IndexObjIndex	= 0;
-	char ObjIndex[512]	= {0,};
-	qry->GetStr( "m_dwObjIndex", ObjIndex );
-	VERIFYSTRING_RETURN( ObjIndex, szPlayerName );
-	while( '$' != ObjIndex[CountStr] )
-	{
-		pMover->m_Inventory.m_apItem[IndexObjIndex].m_dwObjIndex	= (DWORD)GetIntFromStr( ObjIndex, &CountStr );
-		IndexObjIndex++;
+	const char * szPlayerName;
+	if (lpDbOverlappedPlus) {
+		szPlayerName = lpDbOverlappedPlus->AccountInfo.szPlayer;
+	} else {
+		szPlayerName = pMover->m_szName;
 	}
 
-	CountStr	= 0;
-	int nExtInven = 0;
-	char ExtInven[2000] = {0,};
-	qry->GetStr( "m_extInventory", ExtInven );
-	VERIFYSTRING_RETURN( ExtInven, szPlayerName );
-	while( '$' != ExtInven[CountStr] )
-	{
-		GetIntPaFromStr( ExtInven, &CountStr );
-		pMover->m_Inventory.m_apItem[nExtInven].m_dwKeepTime				= (DWORD)GetIntPaFromStr( ExtInven, &CountStr );
-		__int64 iRandomOptItemId	= GetInt64PaFromStr( ExtInven, &CountStr );
-		if( iRandomOptItemId == -102 )
-			iRandomOptItemId	= 0;
-		pMover->m_Inventory.m_apItem[nExtInven].SetRandomOptItemId( iRandomOptItemId );
-		pMover->m_Inventory.m_apItem[nExtInven].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtInven, &CountStr ) );
-		++CountStr; 	++nExtInven;
-	}
+	char debugString[256];
+	std::sprintf(debugString, __FUNCTION__" Player %s Pocket %d", szPlayerName);
 
-	CountStr	= 0;
-	int nPirecingInven = 0;
-	char PirecingInven[4000] = {0,};
-	qry->GetStr( "m_InventoryPiercing", PirecingInven );
-	VERIFYSTRING_RETURN( PirecingInven, szPlayerName );
-	while( '$' != PirecingInven[CountStr] )
-	{
-		LoadPiercingInfo( pMover->m_Inventory.m_apItem[nPirecingInven], PirecingInven, &CountStr );
-		++nPirecingInven;
-	}
+	ItemContainerSerialization serialization = {
+		.main = qry->GetStrPtr("m_Inventory"),
+		.apIndex = qry->GetStrPtr("m_apIndex"),
+		.dwObjIndex = qry->GetStrPtr("m_dwObjIndex"),
+		.ext = qry->GetStrPtr("m_extInventory"),
+		.piercing = qry->GetStrPtr("m_InventoryPiercing"),
+		.szPet = qry->GetStrPtr("szInventoryPet"),
 
-	const char * szPet = qry->GetStrPtr( "szInventoryPet" );
-	VERIFYSTRING_RETURN( szPet, szPlayerName );
+		.debugString = debugString
+	};
 
-	for (const auto & [nId, pPet] : GetPets(szPet)) {
-		SAFE_DELETE(pMover->m_Inventory.m_apItem[nId].m_pPet);
-		pMover->m_Inventory.m_apItem[nId].m_pPet = pPet;
-	}
-
-	return TRUE;
+	if (!serialization.CheckValidity()) return FALSE;
+	return ReadItemContainer(pMover->m_Inventory, serialization) ? TRUE : FALSE;
 }
 
 std::vector<std::pair<DWORD, CPet *>> CDbManager::GetPets(const char * szPet) {
 	std::vector<std::pair<DWORD, CPet *>> res;
-
-	DWORD nId = 0;
 
 	for (auto splitter : DBDeserialize::SplitBySlash(szPet)) {
 		const bool isPet = splitter.NextBool();
@@ -558,18 +233,16 @@ std::vector<std::pair<DWORD, CPet *>> CDbManager::GetPets(const char * szPet) {
 
 			pPet->SetName(szName);
 
-			res.emplace_back(nId, pPet);
+			res.emplace_back(splitter.Index(), pPet);
 		}
-
-		++nId;
 	}
 
 	return res;
 }
 
-void CDbManager::LoadPiercingInfo( CItemElem & itemElem, char* szPirecingInven, int* pLocation )
+void CDbManager::LoadPiercingInfo( CItemElem & itemElem, const char* szPirecingInven, int* pLocation )
 {
-	ItemProp* itemProp = itemElem.GetProp();
+	const ItemProp* itemProp = itemElem.GetProp();
 	if( itemProp && itemProp->IsUltimate() )
 	{
 		itemElem.SetUltimatePiercingSize( GetIntPaFromStr( szPirecingInven, pLocation ) );
@@ -1032,7 +705,7 @@ BOOL CDbManager::GetSKillInfluence( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED
 	return TRUE;
 }
 
-int CDbManager::GetOneItem( CItemElem* pItemElem, char* pstrItem, int *pLocation )
+int CDbManager::GetOneItem( CItemElem* pItemElem, const char* pstrItem, int *pLocation )
 {
 	int IndexItem		= 0;
 	IndexItem	= GetIntPaFromStr( pstrItem, pLocation );

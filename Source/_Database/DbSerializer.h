@@ -22,6 +22,7 @@ namespace DBDeserialize {
 	class Slasher {
 	private:
 		const char * current;
+		unsigned int index;
 	
 	public:
 		explicit Slasher(const char * text) : current(text) {}
@@ -35,6 +36,7 @@ namespace DBDeserialize {
 			// Pass /
 			if (*current == '/') {
 				++current;
+				++index;
 			}
 
 			return *this;
@@ -60,11 +62,17 @@ namespace DBDeserialize {
 		// end sooner.
 		const char ** pCurrent;
 
+		unsigned int index;
+
 	public:
-		explicit WordSplitter(const char ** pCurrent) : pCurrent(pCurrent) {}
+		WordSplitter(const char ** pCurrent, unsigned int index)
+			: pCurrent(pCurrent), index(index) {}
+
+		[[nodiscard]] auto Index() const noexcept { return index; }
 
 		auto NextInt() { return NextIntegral<int>(); }
 		auto NextDWORD() { return NextIntegral<DWORD>(); }
+		auto NextInt64() { return NextIntegral<std::int64_t>(); }
 		auto NextBool() { return NextIntegral<int>() != 0; }
 		auto NextUShort() { return NextIntegral<unsigned short>(); }
 
@@ -152,7 +160,7 @@ namespace DBDeserialize {
 	};
 
 	inline WordSplitter Slasher::operator*() {
-		return WordSplitter(&current);
+		return WordSplitter(&current, index);
 	}
 
 	inline auto SplitBySlash(const char * text) {
@@ -227,7 +235,7 @@ inline int GetIntPaFromStr(const char *pBuf, int *pLocation )
 	return atoi(strTemp);
 }
 
-inline SERIALNUMBER	GetSerialNumberPaFromStr(char *pBuf, int *pLocation )
+inline SERIALNUMBER	GetSerialNumberPaFromStr(const char *pBuf, int *pLocation )
 {
 	char strTemp[50];
 	GetStrPaFromStr(pBuf, strTemp, pLocation);

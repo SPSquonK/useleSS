@@ -255,8 +255,8 @@ BOOL CDbManager::GetUserInventoryBank( CMover* pMover, CQuery* pQueryChar )
 	
 	// GetItem
 	LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus	= NULL;
-	//GetBankMover( pMover, pQueryChar, 0 );
-	if( GetInventory( pMover, pQueryChar, lpDbOverlappedPlus ) == FALSE || GetBankMover( pMover, pQueryChar, 0 ) == FALSE )
+
+	if( GetInventory( pMover, pQueryChar, lpDbOverlappedPlus ) == FALSE || !GetBankMover( pMover, pQueryChar, 0 ) )
 	{
 		return FALSE;
 	}

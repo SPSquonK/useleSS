@@ -22,6 +22,7 @@
 #include "..\_Network\Objects\Obj.h"
 #include "AccountCacheMgr.h"
 #include "sqktd/mutexed_object.h"
+#include <source_location>
 
 #ifdef __TRANS_0413
 	const int	MAX_GETTHREAD_SIZE		= 8;
@@ -838,10 +839,9 @@ public:
 	void	ChangeQuestUpdate( CQuery* pQuery );
 	void	ChangeJobNameUpdate( CQuery* pQuery );
 	void	ChangeSexUpdate( CQuery* pQuery );
-	//void	GetBank( BOOL bCache, ACCOUNT_CACHE* AccountCache, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, int nMySlot, char* pszBankPW );
 	BOOL	GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, int nSlot );
 	BOOL	GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	LoadPiercingInfo( CItemElem & itemElem, char* szPirecingInven, int* pLocation );
+	void	LoadPiercingInfo( CItemElem & itemElem, const char* szPirecingInven, int* pLocation );
 	void	GetPiercingInfoFromMail( CQuery* pQuery, CItemElem* pItemElem );
 	BOOL	GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
 	void	SavePocket( CMover* pMover, PPocketStruct pPocketStruct );
@@ -887,12 +887,27 @@ public:
 	void	DBQryWar( char* szSql, const WAR_QUERYINFO & info );
 	void	DBQryNewItemLog( char* qryLog, const LogItemInfo& info );
 
-	int		GetOneItem( CItemElem* pItemElem, char* pstrItem, int *pLocation );
+	int		GetOneItem( CItemElem* pItemElem, const char* pstrItem, int *pLocation );
 	void	GetOneSkill( LPSKILL pSkill, char* pstrSkill, int *pLocation );
 	QUEST GetOneQuest( const char* pstrQuest, int *pLocation );
 	
-	BOOL	GetBankMover( CMover* pMover, CQuery *qry, int nSlot );
+	bool	GetBankMover( CMover* pMover, CQuery *qry, int nSlot );
 	void	GetGuildBank( CItemContainer*  GuildBank, CQuery *qry );
+
+	struct ItemContainerSerialization {
+		// /!\ Pay attention to if you initialized the 6 first values
+		const char * main;
+		const char * apIndex;
+		const char * dwObjIndex;
+		const char * ext;
+		const char * piercing;
+		const char * szPet;
+
+		const char * debugString = "";
+
+		[[nodiscard]] bool CheckValidity() const;
+	};
+	bool ReadItemContainer(CItemContainer & container, ItemContainerSerialization serialization);
 	std::vector<std::pair<DWORD, CPet *>> GetPets(const char * szPet);
 
 	bool RemoveItemInvenBank( CMover* pMover );
@@ -938,7 +953,7 @@ private:
 	void	WriteTag( CAr &ar, int count, const TAG_ENTRY* tags );
 	void	InsertTag( CQuery *qry, CAr & arRead);
 	[[nodiscard]] static CTime GetStrTime(const char * strbuf);
-	BOOL	VerifyString( const char* lpString, const char* lpFileName, int nLine, const char* lpName, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus = NULL );
+	BOOL	VerifyString( const char* lpString, const char* lpFileName, int nLine, const char* lpName );
 	
 	void	LogPlayConnect(CQuery *qry, CAr & arRead);
 	void	LogPlayDeath(CQuery *qry, CAr & arRead);
@@ -1040,7 +1055,7 @@ private:
 	HANDLE			m_hWait;
 };
 
-inline BOOL CDbManager::VerifyString( const char* lpString, const char* lpFileName, int nLine, const char* lpName, LPDB_OVERLAPPED_PLUS lpOverlapped )
+inline BOOL CDbManager::VerifyString( const char* lpString, const char* lpFileName, int nLine, const char* lpName )
 {
 	int len		= strlen( lpString );
 	if( len > 0 && lpString[len-1] == '$' )

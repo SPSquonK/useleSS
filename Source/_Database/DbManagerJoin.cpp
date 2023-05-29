@@ -232,7 +232,7 @@ void CDbManager::Join( CQuery* qry, CQuery* qry1, CQuery* qrylog, LPDB_OVERLAPPE
 		if( nSlot == nPlayerSlot )
 			qry->GetStr( "m_BankPw", szBankPass );
 		
-		if( GetBank( &mover, qry, lpDBOP, nPlayerSlot ) == FALSE )
+		if( !GetBank( &mover, qry, lpDBOP, nPlayerSlot ) )
 		{
 			return;
 		}
