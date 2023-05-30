@@ -761,14 +761,16 @@ void CTaxDBController::LoadTaxInfo()
 		{ WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery ); return; }
 		while( pQuery->Fetch() )
 		{
-			BYTE nTaxKind = static_cast<BYTE>( pQuery->GetInt( "nTaxKind" ) );
-			if( taxInfo->mapTaxDetail.contains(nTaxKind) )
-			{
-				WriteLog( "LoadTaxInfo() - taxDetail is wrong, nContinent = %d, nTaxKind = %d", nContinent, nTaxKind );
+			BYTE nTaxKind = static_cast<BYTE>(pQuery->GetInt("nTaxKind"));
+
+			const auto itTaxDetail = taxInfo->mapTaxDetail.find(nTaxKind);
+
+			if (itTaxDetail == taxInfo->mapTaxDetail.end()) {
+				WriteLog("LoadTaxInfo() - taxDetail is wrong, nContinent = %d, nTaxKind = %d", nContinent, nTaxKind);
 				return;
 			}
 
-			__TAXDETAIL* taxDetail = &taxInfo->mapTaxDetail.find(nTaxKind)->second;
+			__TAXDETAIL* taxDetail = &itTaxDetail->second;
 			taxDetail->nTaxRate = pQuery->GetInt( "nTaxRate" );
 			taxDetail->nTaxCount = pQuery->GetInt( "nTaxCount" );
 			taxDetail->nTaxGold = pQuery->GetInt( "nTaxGold" );
