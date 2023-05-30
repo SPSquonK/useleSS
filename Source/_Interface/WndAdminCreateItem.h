@@ -1,20 +1,30 @@
 #pragma once
 
 #include "WndTListBox.hpp"
+#include <unordered_map>
 
 class CWndAdminCreateItem : public CWndNeuz { 
 public:
+	struct ExtraItemProp {
+		std::vector<std::string> names;
+		std::string otherName;
+	};
+
 	struct Item {
 		CString name;
 		const ItemProp * itemProp;
+		const ExtraItemProp * extraItemProp;
+		std::optional<CTexture *> texture;
 
-		explicit Item(const ItemProp * itemProp);
+		Item(const ItemProp * itemProp, const ExtraItemProp * extraItemProp);
 	};
 
 	struct Displayer {
+		bool hasIcons = true;
+
 		void Render(
-			C2DRender * const p2DRender, const CRect rect,
-			const Item & item, const DWORD color, const WndTListBox::DisplayArgs & misc
+			C2DRender * const p2DRender, CRect rect,
+			Item & item, DWORD color, const WndTListBox::DisplayArgs & misc
 		) const;
 	};
 
@@ -26,7 +36,21 @@ public:
 
 	static void BoundListBoxOfComboBoxSize(CWndComboBox & comboBox, std::optional<int> minSize, std::optional<int> maxSize);
 
+	static short GetQuantityToCreateOf(const ItemProp * itemProp);
+	static void STDStringToLower(std::string & string);
+	static std::map<CString, CString> LoadStrings(CScanner & scanner);
+
+private:
+	void LoadExtraItemProps();
+
 private:
 	[[nodiscard]] std::optional<DWORD> GetSelectedInComboBox(UINT comboBoxId) /* const */;
-	void UpdateItems(DWORD kind, DWORD sex, DWORD job, DWORD level);
+	void UpdateItems();
+	void UpdateItems(DWORD kind, DWORD sex, DWORD job, DWORD level, std::string textFilter);
+
+	void UpdateRendering();
+
+
+	CFixedArray<ExtraItemProp> extraItemProps;
+
 }; 

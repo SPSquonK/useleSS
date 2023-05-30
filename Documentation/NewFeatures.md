@@ -72,3 +72,25 @@ more things, in particular fashion items.
 
 This feature can be disabled in *CommonHeader.h*.
 
+
+## Anti anti fun policy
+
+Maximum number of item drop by monster is removed. This limitation mess up
+with the probabilities, and when I write 3% of chances to drop something, I
+actually mean it, and everyone should.
+
+
+
+## CreateItem Window
+
+Considering the initial CreateItem window is slow / glitchy, but this project
+does not intend to implement major features, the `CWndAdminCreateItem` has been
+reworked a bit.
+
+![](img/WndCreateItem.png)
+
+- There is a name filter
+- If you add a file `Resource/propItem.txt-french.txt`, the file is loaded to
+provide the frech names of the items
+
+
