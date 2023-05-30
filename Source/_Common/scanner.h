@@ -79,6 +79,7 @@ public:
 	BOOL			Load_FileIO( LPCTSTR lpszFileName, BOOL bMultiByte = TRUE );
 	void			SetProg( LPVOID pProg );
 	int				GetNumber( BOOL bComma = FALSE );
+	DWORD GetDWORD(BOOL bComma = FALSE);
 	__int64			GetInt64( BOOL bComma = FALSE );
 	FLOAT			GetFloat( BOOL bComma = FALSE );
 	DWORD			GetHex( BOOL bComma = FALSE );

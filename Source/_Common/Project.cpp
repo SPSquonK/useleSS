@@ -2447,7 +2447,7 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 					Error( "%s : %s�� defineItem.h�� ���ǵ��� �ʾ���", szFileName, script.token );
 				ASSERT( di.dwIndex != 0 );
 				script.GetToken();	// ,
-				di.dwProbability	= script.GetNumber();	// probability
+				di.dwProbability	= script.GetDWORD();	// probability
 				script.GetToken();	// ,
 				di.dwLevel	= script.GetNumber();	// level
 				script.GetToken();	// ,
@@ -3130,7 +3130,7 @@ BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
 			s.GetToken();	// (
 			di.dwIndex	= s.GetNumber();	// specific item index
 			s.GetToken();	// ,
-			di.dwProbability	= s.GetNumber();	// probability
+			di.dwProbability	= s.GetDWORD();	// probability
 			s.GetToken();	// ,
 			di.dwLevel	= s.GetNumber();	// level
 			s.GetToken();	// ,
