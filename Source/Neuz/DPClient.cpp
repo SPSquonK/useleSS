@@ -4968,11 +4968,9 @@ void CDPClient::OnFlyffEvent( CAr & ar )
 	for( int i = 0; i < MAX_EVENT; i++ )
 	{
 		BYTE nState	= g_eLocal.GetState( i );
-		if( nState != 0 )
-		{
-			PEVENT_GENERIC pEvent	= CEventGeneric::GetInstance()->GetEvent( i );
-			if( pEvent )
-			{
+		if (nState == 0) continue;
+		
+			if (const EVENT_GENERIC * pEvent = CEventGeneric::GetInstance()->GetEvent(i)) {
 				if( strlen( pEvent->pszTitle ) == 0 )
 					continue;
 				char lpString[200]	= { 0, };
@@ -4984,6 +4982,7 @@ void CDPClient::OnFlyffEvent( CAr & ar )
 				m_bEventTextColor = !m_bEventTextColor;
 				continue;
 			}
+
 			switch( i )
 			{
 				case EVE_0401A:
@@ -5034,7 +5033,7 @@ void CDPClient::OnFlyffEvent( CAr & ar )
 						break;
 					}
 			}
-		}
+		
 	}
 }
 
@@ -5044,23 +5043,21 @@ void CDPClient::OnSetLocalEvent( CAr & ar )
 	BYTE nState;
 	ar >> id >> nState;
 	g_eLocal.SetState( id, nState );
-	PEVENT_GENERIC pEvent	= CEventGeneric::GetInstance()->GetEvent( id );
-	if( pEvent )
-	{
-		if( strlen( pEvent->pszTitle ) == 0 )
+	
+	if (const EVENT_GENERIC * pEvent = CEventGeneric::GetInstance()->GetEvent(id)) {
+		if( std::strlen( pEvent->pszTitle ) == 0 )
 			return;
-		char lpString[200]	= { 0, };
-		if( nState == 0 )
-			sprintf( lpString, GETTEXT( TID_GAME_END_EVENT ), pEvent->pszTitle );
-		else
-			sprintf( lpString, GETTEXT( TID_GAME_START_EVENT ), pEvent->pszTitle );
 
-		if( m_bEventTextColor )
-			g_WndMng.PutString( lpString, NULL, 0xffffff99 );
-		else
-			g_WndMng.PutString( lpString, NULL, 0xffccffcc );
+		const DWORD textId = nState == 0 ? TID_GAME_END_EVENT : TID_GAME_START_EVENT;
+		const DWORD textColor = m_bEventTextColor ? 0xffffff99 : 0xffccffcc;
+
+		char lpString[200] = "";
+		std::sprintf(lpString, prj.GetText(textId), pEvent->pszTitle);
+		g_WndMng.PutString(lpString, NULL, textColor);
+		
 		m_bEventTextColor = !m_bEventTextColor;
 	}
+
 	switch( id )
 	{
 		case EVE_0401A:

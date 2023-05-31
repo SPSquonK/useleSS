@@ -2439,18 +2439,14 @@ void CDPDatabaseClient::OnEventGeneric( CAr & ar, DPID, DPID )
 	DWORD dwFlag;
 	ar >> *CEventGeneric::GetInstance();
 	ar >> dwFlag;
-	std::list<PEVENT_GENERIC>* pList	= CEventGeneric::GetInstance()->GetEventList();
-	for( auto i = pList->begin(); i != pList->end(); ++i )
-	{
-		PEVENT_GENERIC pEvent	= *i;
 
-		// ˬ
+	for (const EVENT_GENERIC & pEvent : CEventGeneric::GetInstance()->GetEventList()) {
 		char lpOutputString[512]	= { 0, };
-		sprintf( lpOutputString, "dwFlag=0x%08x, nId=%d, nFlag=%d", dwFlag, pEvent->nId, pEvent->nFlag );
+		sprintf( lpOutputString, "dwFlag=0x%08x, nId=%d, nFlag=%d", dwFlag, pEvent.nId, pEvent.nFlag );
 		OutputDebugString( lpOutputString );
 
-		if( dwFlag & pEvent->nFlag )
-			g_eLocal.SetState( pEvent->nId, 1 );
+		if( dwFlag & pEvent.nFlag )
+			g_eLocal.SetState( pEvent.nId, 1 );
 	}
 }
 
@@ -2464,33 +2460,30 @@ void CDPDatabaseClient::OnEventFlag( CAr & ar, DPID, DPID )
 	sprintf( lpOutputString, "OnEventFlag: dwFlag=0x%08x", dwFlag );
 	OutputDebugString( lpOutputString );
 
-	auto * pList	= CEventGeneric::GetInstance()->GetEventList();
-	for( auto i = pList->begin(); i != pList->end(); ++i )
-	{
-		PEVENT_GENERIC pEvent	= *i;
+	for (const EVENT_GENERIC & pEvent : CEventGeneric::GetInstance()->GetEventList()) {
 		char lpOutputString[100]	= { 0, };
-		sprintf( lpOutputString, "OnEventFlag: nId=%d, nFlag=%d", pEvent->nId, pEvent->nFlag );
+		sprintf( lpOutputString, "OnEventFlag: nId=%d, nFlag=%d", pEvent.nId, pEvent.nFlag );
 		OutputDebugString( lpOutputString );
 
-		if( dwFlag & pEvent->nFlag )
+		if( dwFlag & pEvent.nFlag )
 		{
-			if( g_eLocal.GetState( pEvent->nId ) == 0 )
+			if( g_eLocal.GetState( pEvent.nId ) == 0 )
 			{
-				if( g_eLocal.SetState( pEvent->nId, 1 ) )
+				if( g_eLocal.SetState( pEvent.nId, 1 ) )
 				{
-					g_UserMng.AddSetLocalEvent( pEvent->nId, 1 );
-					Error( "event: %d: 1", pEvent->nId );
+					g_UserMng.AddSetLocalEvent( pEvent.nId, 1 );
+					Error( "event: %d: 1", pEvent.nId );
 				}
 			}
 		}
 		else
 		{
-			if( g_eLocal.GetState( pEvent->nId ) == 1 )
+			if( g_eLocal.GetState( pEvent.nId ) == 1 )
 			{
-				if( g_eLocal.ClearEvent( pEvent->nId ) )
+				if( g_eLocal.ClearEvent( pEvent.nId ) )
 				{
-					g_UserMng.AddSetLocalEvent( pEvent->nId, 0 );
-					Error( "OnEvent: %d: 0", pEvent->nId );
+					g_UserMng.AddSetLocalEvent( pEvent.nId, 0 );
+					Error( "OnEvent: %d: 0", pEvent.nId );
 				}
 			}
 		}

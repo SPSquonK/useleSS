@@ -1,55 +1,42 @@
-#ifndef __SPEVENT_H__
-#define	__SPEVENT_H__
+#pragma once 
 
-#define	MAX_EVENT_TITLE		100
-typedef	struct	_EVENT_GENERIC
-{
-	int	nId;	// 이벤트 번호, 500이 시작, 최대는 531
-	int	nFlag;		// 이벤트 플레그, 1값을 (이벤트 번호 - 500) 왼쪽 시프트
-	time_t	tStart;		// 시작 시간
-	time_t	tEnd;		// 끝 시간
-	FLOAT	fExpFactor;
+struct EVENT_GENERIC {
+	static constexpr size_t MAX_EVENT_TITLE = 100;
+
+	int    nId          = 0; // Event number, 500 starts, max is 531
+	int    nFlag        = 0; // event flag, value 1 (event number - 500) left shift
+	time_t tStart       = 0;
+	time_t tEnd         = 0;
+	FLOAT  fExpFactor   = 1.0f;
 #ifdef __ITEMDROPRATE
-	FLOAT	fItemDropRate;
+	FLOAT fItemDropRate = 1.0f;
 #endif // __ITEMDROPRATE
-	char	pszTitle[MAX_EVENT_TITLE];
-	_EVENT_GENERIC()
-	{
-		nId	= 0;
-		nFlag	= 0;
-		tStart	= 0;
-		tEnd	= 0;
-		*pszTitle	= '\0';
-		fExpFactor	= 1.0f;
-#ifdef __ITEMDROPRATE
-		fItemDropRate = 1.0f;
-#endif // __ITEMDROPRATE
-	}
-}	EVENT_GENERIC,	*PEVENT_GENERIC;
+	char pszTitle[MAX_EVENT_TITLE] = "";
+};
 
 class CEventItem
 {
 private:
-	int		m_nMax;		// 일일 최대 드롭
+	int		m_nMax;		// Maximum daily drop
 	DWORD	m_adwInterval[24];
 	DWORD	m_dwTimeout;
 	LONG	m_lSkip;
 public:
-	DWORD	m_dwItemId;		// 아이템 번호
-	int		m_nNum;		// 일회 최대 드롭
+	DWORD	m_dwItemId;
+	int		m_nNum;		// Max drop at once
 public:
-//
+
 	CEventItem();
 	CEventItem( DWORD dwItemId, int nMax, int nNum );
-	virtual	~CEventItem()	{}
-//	op
-	BOOL	IsTimeout( int nHour );		// 드롭 주기 인가?
-	void	Skip( LONG lSkip );		// 드롭 주기에 드롭 무시 회수 설정
+
+	bool IsTimeout( int nHour );		// Is it a drop cycle?
+	void	Skip( LONG lSkip );		// Set number of drop ignores in drop cycle
 	friend CAr & operator<<(CAr & ar, const CEventItem & self);
 	friend CAr & operator>>(CAr & ar, CEventItem & self);
 };
-// 코어 서버에는 프로젝트를 로딩하지 않으므로
-// 트랜스 서버에서 객체를 관리한다.
+
+// Because the project is not loaded on the core server
+// Manage objects on the trans server.
 
 #ifdef __EVENT_0117
 typedef	struct	_REGION_GENERIC		// 스폰 이벤트 (아이템, 몬스터)에 쓰기 위한 영역 정보
@@ -111,8 +98,8 @@ class CEventGeneric
 {
 private:
 	DWORD	m_dwFlag;
-	std::list<PEVENT_GENERIC>	m_lspEvent;
-	std::map<int, std::list<CEventItem*>*>	m_mapEventItemList;
+	std::vector<EVENT_GENERIC> m_lspEvent;
+	std::map<int, std::vector<CEventItem>> m_mapEventItemList;
 
 #ifdef __EVENT_0117
 	std::vector<REGION_GENERIC>	m_aRegionGeneric;	// 모든 월드의 리스폰 영역을 벡터에 저장한다.	// 월드 번호, 지역, 레벨
@@ -126,10 +113,9 @@ public:
 	void Clear( BOOL bDestructor = TRUE );
 	// 스크립트 로드
 	BOOL	LoadScript( LPCSTR lpFilename );
-	// 이벤트 활성화 시 드롭되는 아이템 추가
-	BOOL	AddItem( int nEvent, DWORD dwItemId, int nMax, int nNum );
+
 #ifdef __WORLDSERVER
-	CEventItem*	GetItem( int* pnNum );
+	std::pair<CEventItem *, int> GetItem();
 	FLOAT	GetExpFactor( void );
 #ifdef __ITEMDROPRATE
 	FLOAT	GetItemDropRateFactor( void );
@@ -152,8 +138,7 @@ public:
 	friend CAr & operator>>(CAr & ar, CEventGeneric & self);
 	DWORD	GetFlag( void )		{	return m_dwFlag;	}
 	BOOL	Run( void );
-	std::list<PEVENT_GENERIC>*	GetEventList( void )	{	return &m_lspEvent;		}
-	PEVENT_GENERIC	GetEvent( int nEvent );
+	[[nodiscard]] std::span<const EVENT_GENERIC> GetEventList() const { return m_lspEvent; }
+	[[nodiscard]] const EVENT_GENERIC * GetEvent(int nEvent) const;
 };
 
-#endif	// __SPEVENT_H__

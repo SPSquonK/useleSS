@@ -5430,10 +5430,11 @@ BOOL CMover::DropItem( CMover* pAttacker )
 
 		if( ( pAttacker->m_nLevel - (int)lpMoverProp->dwLevel ) < 10 )
 		{
-			int nNum	= 0;
-			CEventItem* pEventItem	= CEventGeneric::GetInstance()->GetItem( &nNum );
-			while( pEventItem )
+			while( true )
 			{
+				const auto & [pEventItem, nNum] = CEventGeneric::GetInstance()->GetItem();
+				if (!pEventItem) break;
+
 #ifdef __BUGFIX_0326
 				if( lpMoverProp->dwFlying )	//
 				{
@@ -5469,8 +5470,8 @@ BOOL CMover::DropItem( CMover* pAttacker )
 					pItem->SetPos( vPos );
 					GetWorld()->ADDOBJ( pItem, TRUE, GetLayer() );
 				}
-				pEventItem	= CEventGeneric::GetInstance()->GetItem( &nNum );
 			}
+
 			std::map<DWORD, int> mapItemList = prj.m_EventLua.GetItem( lpMoverProp->dwLevel );
 
 			for( auto it=mapItemList.begin(); it!=mapItemList.end(); it++ )
