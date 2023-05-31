@@ -208,11 +208,7 @@ BOOL CRunObject::Init( void )
 #else	// __INVALID_LOGIN_0320
 	g_dpDBClient.CalluspXXXMultiServer( g_uIdofMulti, 0 );
 #endif	// __INVALID_LOGIN_0320
-	if( !CXMasEvent::GetInstance()->LoadScript( "spevent.txt" ) )
-	{
-		OutputDebugString( "can't read spevent.txt" );
-		return FALSE;
-	}
+
 	if( g_eLocal.GetState( EVE_SCHOOL ) )
 	{
 #ifdef __IDC

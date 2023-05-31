@@ -1,32 +1,6 @@
 #ifndef __SPEVENT_H__
 #define	__SPEVENT_H__
 
-class CSPEvent
-{
-private:
-
-public:
-	CSPEvent()	{}
-	virtual	~CSPEvent()	{}
-};
-
-class CXMasEvent : public CSPEvent
-{
-public:
-	CXMasEvent();
-	virtual	~CXMasEvent();
-	BOOL	LoadScript( LPCTSTR lpFilename );
-	BOOL	IsTimeout( int nHour );
-	void	Skip( LONG lSkip );
-
-	static	CXMasEvent*	GetInstance( void );
-
-private:
-	DWORD	m_adwInterval[24];
-	DWORD	m_dwTimeout;
-	LONG		m_lSkip;
-};
-
 #define	MAX_EVENT_TITLE		100
 typedef	struct	_EVENT_GENERIC
 {

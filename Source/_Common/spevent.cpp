@@ -9,69 +9,6 @@
 #endif	// __EVENT_0117
 #endif	// __WORLDSERVER
 
-CXMasEvent::CXMasEvent()
-: CSPEvent()
-{
-	m_dwTimeout	= GetTickCount();
-	memset( (void*)m_adwInterval, 0, sizeof(DWORD) * 24 );
-	m_lSkip		= 0;
-}
-
-CXMasEvent::~CXMasEvent()
-{
-
-}
-
-BOOL CXMasEvent::IsTimeout( int nHour )
-{
-	DWORD dwTickCount	= GetTickCount();
-	if( dwTickCount >= m_dwTimeout )
-	{
-		m_dwTimeout	= dwTickCount + m_adwInterval[nHour];
-
-		if( m_lSkip > 0 )
-		{
-			m_lSkip--;
-			return FALSE;
-		}
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL CXMasEvent::LoadScript( LPCTSTR lpFilename )
-{
-	CScript s;
-	if( s.Load( lpFilename ) == FALSE )
-		return FALSE;
-	
-	int an[24]	= { 0, };
-	int nTotal	= 0;
-	
-	int nMax	= s.GetNumber();	// drop num a day
-
-	for( int i = 0; i < 24; i++ )
-	{
-		an[i]	= s.GetNumber();
-		nTotal	+= an[i];
-	}
-	for( int i = 0; i < 24; i++ )
-		m_adwInterval[i]	= (DWORD)( (float)MIN( 60 ) / ( nMax * (float)an[i] / (float)nTotal ) );
-
-	return TRUE;
-}
-
-void CXMasEvent::Skip( LONG lSkip )
-{
-	m_lSkip		= lSkip;
-}
-
-CXMasEvent*	CXMasEvent::GetInstance( void )
-{
-	static	CXMasEvent	sXMasEvent;
-	return	&sXMasEvent;
-}
-
 CEventItem::CEventItem()
 {
 	m_dwItemId	= 0;
