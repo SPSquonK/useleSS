@@ -145,7 +145,7 @@ public:
 	void	SetModelType(int nModelType) { m_nModelType = nModelType; }
 	void	SetLoop( int nLoop ) { m_nLoop = nLoop; }
 	void	SetSpeed( float fPerSlerp ) { m_fPerSlerp = fPerSlerp; }	// 일반 0.5
-	const BOUND_BOX*	GetBBVector( void ) { return &m_BB; } // 바운딩박스의 8귀퉁이 좌표를 리턴
+	[[nodiscard]] const BOUND_BOX*	GetBBVector() const { return &m_BB; } // 바운딩박스의 8귀퉁이 좌표를 리턴
 	float	GetRadius( void );
 
 	DWORD	GetRenderEffect() { return m_dwRenderEffect; }

@@ -1202,8 +1202,7 @@ void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, std::span<CObj *> pList )
 	D3DXVec3Normalize( &vLightDir, &vLightDir );	// 빛방향 노말라이즈
 
 	float fDistLight = -100.0f;
-//	if( g_pPlayer->m_fDistCamera < 9.0f )
-//		fDistLight = -30.0;
+
 	fDistLight = 20.0f + (g_pPlayer->m_fDistCamera - 4.0f) * 5.375f;
 
 	D3DXVECTOR3 vLightPos = vLightDir * -fDistLight;		// 빛방향으로 28m 떨어진곳에서 빛이 비추도록 한다. 28이 적정값.
@@ -1233,26 +1232,20 @@ void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, std::span<CObj *> pList )
 				continue;
 			if( pObj->m_pModel && pObj->m_pModel->m_pModelElem->m_bShadow )		// 그림자를 드리워야 하는것만 한다.
 			{
-//				pObj->m_pModel->m_nNoTexture = 1;
 				pObj->m_pModel->m_nNoEffect = 2;	// 키값만 빠지게 하는 스테이트만 사용.
 				pObj->Render( pd3dDevice );
 				pObj->m_pModel->m_nNoEffect = 0;
-//				pObj->m_pModel->m_nNoTexture = 0;
 			}
 		}
 	}
 
 	pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
 	pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );	//
-//	pd3dDevice->SetRenderState( D3DRS_AMBIENT, D3DCOLOR_ARGB( 0,0,0,0) ); //m_dwAmbient );//D3DCOLOR_ARGB( 255,128,128,128) );//D3DCOLOR_ARGB( 255,50,50,70) );
 	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, FALSE );
 	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, D3DZB_FALSE );
 	
 
-//	pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB(255,255,255,255) );
-//	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TFACTOR);
-//	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_DIFFUSE );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
@@ -1269,9 +1262,8 @@ void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, std::span<CObj *> pList )
 
 void CWorld::RenderBoundBoxVertex( CObj* pObj )
 {
-	CModel* pModel = pObj->m_pModel;
-	D3DXVECTOR3 vPos = pObj->GetPos();
-	D3DXVECTOR3 vScale = pObj->GetScale();
+	const D3DXVECTOR3 vPos = pObj->GetPos();
+	const D3DXVECTOR3 vScale = pObj->GetScale();
 
 	D3DXMATRIX mat, matWorld;
 	D3DXMatrixIdentity( &matWorld );
@@ -1290,32 +1282,17 @@ void CWorld::RenderBoundBoxVertex( CObj* pObj )
 	m_pd3dDevice->SetVertexShader( NULL );
 	m_pd3dDevice->SetFVF ( D3DFVF_BOUNDBOXVERTEX );
 	m_pd3dDevice->SetStreamSource( 0, m_pBoundBoxVertexBuffer, 0, sizeof(BOUNDBOXVERTEX) );
-	m_pd3dDevice->DrawPrimitive( D3DPT_LINELIST, 0, m_nBoundBoxVertexNum / 2 );
+	m_pd3dDevice->DrawPrimitive( D3DPT_LINELIST, 0, BoundBoxVertexNum / 2 );
 
 }
-void CWorld::SetBoundBoxVertex( CObj* pObj )
+void CWorld::SetBoundBoxVertex( const CObj* pObj )
 {
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity( &matWorld );
+	D3DXMATRIX matWorld; D3DXMatrixIdentity( &matWorld );
 	m_pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
-	const BOUND_BOX* pBB;
-	CModel* pModel = pObj->m_pModel;
-	pBB = pModel->GetBBVector();
-	/*
-	switch( pModel->GetModelType() )
-	{
-		case MODELTYPE_BILLBOARD:
-			return;
-		case MODELTYPE_STATIC_MESH: 
-			pBB = ((CModelObject*)pModel)->GetBBVector(); 
-			break;
-		case MODELTYPE_BIPED_MESH: 
-			pBB = ((CModelObject*)pModel)->GetBBVector(); 
-			break;
-	}
-	*/
-	D3DXVECTOR3 vBoundBox;
+	const CModel * pModel = pObj->m_pModel;
+	const BOUND_BOX * pBB = pModel->GetBBVector();
+
 	//     - z
 	//   3 | 2
 	// - --+-- + x
@@ -1325,70 +1302,46 @@ void CWorld::SetBoundBoxVertex( CObj* pObj )
 	// - --+-- + x
 	//   4 | 5
 	BOUNDBOXVERTEX* pVertices;
-	m_pBoundBoxVertexBuffer->Lock( 0, m_nBoundBoxVertexNum * sizeof(BOUNDBOXVERTEX), (void**)&pVertices, 0 );
+	m_pBoundBoxVertexBuffer->Lock( 0, BoundBoxVertexNum * sizeof(BOUNDBOXVERTEX), (void**)&pVertices, 0 );
 
 	// 0
-	vBoundBox = pBB->m_vPos[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 1 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 0 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 1 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 1
-	vBoundBox = pBB->m_vPos[ 1 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 2 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 1 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 2 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 2
-	vBoundBox = pBB->m_vPos[ 2 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 3 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 2 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 3 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 3
-	vBoundBox = pBB->m_vPos[ 3 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 0 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 3 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 0 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 
 	// 4
-	vBoundBox = pBB->m_vPos[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 4 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 0 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 4 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 5
-	vBoundBox = pBB->m_vPos[ 1 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 5 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 1 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 5 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 6
-	vBoundBox = pBB->m_vPos[ 3 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 7 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 3 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 7 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 7
-	vBoundBox = pBB->m_vPos[ 2 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 6 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 2 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 6 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 
 	// 8
-	vBoundBox = pBB->m_vPos[ 4 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 5 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 4 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 5 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 9
-	vBoundBox = pBB->m_vPos[ 5 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 6 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 5 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 6 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 10
-	vBoundBox = pBB->m_vPos[ 6 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 7 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 6 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 7 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 11
-	vBoundBox = pBB->m_vPos[ 7 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 4 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 7 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 4 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 
 	m_pBoundBoxVertexBuffer->Unlock();
 }
@@ -1789,9 +1742,9 @@ HRESULT CWorld::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 			m_apLand[ i ]->RestoreDeviceObjects( pd3dDevice );
 	}
 	// 바운드 박스 버텍스 버퍼 만들기 
-	m_nBoundBoxVertexNum = 12 * 2; // 라인수 * 점 ( 하나의 라인은 점 두쌍 )
+	// BoundBoxVertexNum = 12 // 라인수 * 점 ( 하나의 라인은 점 두쌍 )
 	hr = m_pd3dDevice->CreateVertexBuffer( 
-		m_nBoundBoxVertexNum * sizeof( BOUNDBOXVERTEX ),
+		BoundBoxVertexNum * sizeof( BOUNDBOXVERTEX ),
 		D3DUSAGE_WRITEONLY, D3DFVF_BOUNDBOXVERTEX,
 		D3DPOOL_MANAGED, &m_pBoundBoxVertexBuffer, NULL );
 

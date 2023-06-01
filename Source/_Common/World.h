@@ -276,7 +276,7 @@ public:
 	int					m_nCharLandPosX;
 	int					m_nCharLandPosZ;
 
-	int                     m_nBoundBoxVertexNum;
+	static constexpr int BoundBoxVertexNum = 12;
 	LPDIRECT3DVERTEXBUFFER9 m_pBoundBoxVertexBuffer;
     LPDIRECT3DDEVICE9       m_pd3dDevice;        
 	D3DMATERIAL9			m_baseMaterial;
@@ -560,7 +560,7 @@ private:
 	void			RenderWater();
 	void			RenderObject( CD3DFont* pFont = NULL );
 	void			RenderBoundBoxVertex( CObj* pObj );
-	void			SetBoundBoxVertex( CObj* pObj );
+	void			SetBoundBoxVertex( const CObj* pObj );
 
 	void			RenderObj(CObj* pObj);
 
