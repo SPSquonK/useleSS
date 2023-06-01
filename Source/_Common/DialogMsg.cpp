@@ -273,39 +273,12 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 				
 
 				if( lpCustomText->m_nKind == CHAT_SHOUT )
-				{
-					char buffer[256] = { 0 };
-					
+				{					
 					// 텍스쳐렌더 버그 관련 수정
-					CTexture* pShoutTex = NULL;
+					const size_t nlen = _tcsclen(lpStr);
+					const char * buffer = GetTextDialogShout(nlen);
 
-					int nlen = _tcsclen(lpStr);
-
-					if( nlen >= 1 && nlen <= 1 )
-						strcpy( buffer, "texDialogBoxShout00.bmp" );
-					else
-						if( nlen >= 2 && nlen <= 3 )
-							strcpy( buffer, "texDialogBoxShout01.bmp" );
-						else
-							if( nlen >= 4 && nlen <= 5 )
-								strcpy( buffer, "texDialogBoxShout02.bmp" );
-							else
-								if( nlen >= 6 && nlen <= 9 )
-									strcpy( buffer, "texDialogBoxShout03.bmp" );
-								else
-									if( nlen >= 10 && nlen <= 20 )
-										strcpy( buffer, "texDialogBoxShout04.bmp" );
-									else
-										if( nlen >= 21 && nlen <= 40 )
-											strcpy( buffer, "texDialogBoxShout05.bmp" );
-										else
-											if( nlen >= 41 && nlen <= 60 )
-												strcpy( buffer, "texDialogBoxShout06.bmp" );
-											else
-												if( nlen >= 61 )
-													strcpy( buffer, "texDialogBoxShout07.bmp" );
-
-					pShoutTex = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, buffer ), 0xffff00ff );
+					CTexture * pShoutTex = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, buffer ), 0xffff00ff );
 					if( pShoutTex )
 					{
 						p2DRender->RenderTextureEx( CPoint( (int)( x-20 ), (int)( y-20 ) ), CPoint( (int)( fWidth+50.0f ), (int)( fHeight+40.0f ) ), pShoutTex, nAlpha, 1.0f, 1.0f, FALSE );
@@ -360,20 +333,20 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 				if( nWidth >= 6 )
 				{
 					point =  CPoint( (int)( x + ( 3 * nWidth / 5 ) * 8 ), (int)( y ) );
-					nIndex = 9;
 				}
 				else
 				if( nWidth == 4 || nWidth == 5 ) 
 				{
 					point =  CPoint( (int)( x + 3 * 8 ), (int)( y ) );
-					nIndex = 9;
 				}
 				else
 				if( nWidth == 3 ) 
 				{
 					point =  CPoint( (int)( x + 1 * 8 ), (int)( y ) );
-					nIndex = 9;
 				}
+
+				if (nWidth >= 3) nIndex = 9;
+
 				pTexture = m_texPack_ex[lpCustomText->m_nKind].GetAt( nIndex );
 
 				SetTextureVertex( pVertices, (FLOAT)( point.x ), (FLOAT)( point.y ), pTexture->m_fuLT, pTexture->m_fvLT );
@@ -400,24 +373,12 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 
 g_ShoutChat:
 
-				/*
-				CPoint point;
-				point.x = vOut.x + 8;;		
-				point.y = vOut.y + 8;;		
-				*/
-
 				x = vOut.x + 8;
 				y = vOut.y + 8;
 				x -= ptOrigin.x;
 				y -= ptOrigin.y;
-				/*
-				point.x -= ptOrigin.x;
-				MakeEven( point.x );
-				point.y -= ptOrigin.y;
-				*/
 				
 				lpCustomText->m_string.SetAlpha( nAlpha );
-//				p2DRender->TextOut_EditString( point.x, point.y, lpCustomText->m_string, 0, 0, 0 );
 				p2DRender->TextOut_EditString( (int)( x ), (int)( y ), lpCustomText->m_string, 0, 0, 0 );
 			}
 			}
@@ -510,6 +471,17 @@ g_ShoutChat:
 	}
 }
 
+const char * CDialogMsg::GetTextDialogShout(const size_t length) {
+	if (length <= 1) return "texDialogBoxShout00.bmp";
+	if (length <= 3) return "texDialogBoxShout01.bmp";
+	if (length <= 5) return "texDialogBoxShout02.bmp";
+	if (length <= 9) return "texDialogBoxShout03.bmp";
+	if (length <= 20) return "texDialogBoxShout04.bmp";
+	if (length <= 40) return "texDialogBoxShout05.bmp";
+	if (length <= 60) return "texDialogBoxShout06.bmp";
+	return "texDialogBoxShout07.bmp";
+}
+
 
 #define		MAX_CLIENTMSG_LEN		100
 
@@ -557,7 +529,7 @@ void CDialogMsg::AddTexture( CObj* pObj, CTexture* pTexture )
 	lpCustomText->m_pFont = CWndBase::m_Theme.m_pFontText;
 	lpCustomText->m_pObj = pObj;
 	lpCustomText->m_timer.Set( 5000 );
-	lpCustomText->m_bInfinite	= FALSE;	//( pObj->GetType() == OT_MOVER && ( (CMover*)pObj )->m_vtInfo.IsVendorOpen() );
+	lpCustomText->m_bInfinite	= FALSE;
 	lpCustomText->m_pTexture = pTexture;
 	m_textArray.Add( lpCustomText );
 }

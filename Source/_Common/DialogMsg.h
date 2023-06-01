@@ -85,6 +85,9 @@ public:
     HRESULT DeleteDeviceObjects();
     HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();
+
+private:
+	[[nodiscard]] static const char * GetTextDialogShout(size_t length);
 };
 extern CDialogMsg g_DialogMsg;
 #endif
