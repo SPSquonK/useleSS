@@ -146,7 +146,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		TRACE("LoadAddrPmttd false\n");
 	}	
 	
-	if( g_dpSrvr.LoadIPCut( "IPCut.ini" ) == FALSE )
+	if( g_dpSrvr.LoadIPCut( "IPCut.ini" ) == false )
 	{
 		TRACE( "LoadIPCut FALSE\n" );
 	}
