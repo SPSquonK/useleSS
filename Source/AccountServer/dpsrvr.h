@@ -7,15 +7,13 @@
 #include "ListedServer.h"
 #include "sqktd/mutexed_object.h"
 
-#undef	theClass
-#define theClass	CDPSrvr_AccToCert
-#undef theParameters
-#define theParameters	CAr & ar, DPID, DPID
-
 typedef std::map<std::string, int>	STRING2INT;
 
-class CDPSrvr_AccToCert : public CDPMng
+class CDPSrvr_AccToCert : public CDPMng, 
+	public DPMngFeatures::BroadcastPacketSole<CDPSrvr_AccToCert>
 {
+private:
+	DPMngFeatures::PacketHandler<CDPSrvr_AccToCert, DPID, DPID> m_handlers;
 public:
 	static constexpr size_t MAX_IP = 10240;
 
@@ -79,7 +77,11 @@ public:
 	void	GetABCClasstoString( LPCSTR lpszIP, char * lpABClass, int &nCClass );
 	void	InitIPCut( void );
 //	Handlers
-	USES_PFNENTRIES;
+private:
+	void OnMsg(DWORD packetId, decltype(m_handlers)::Handler handler) {
+		m_handlers.AddHandler(packetId, handler);
+	}
+
 	void	OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 );
 	void	OnRemoveAccount( CAr & ar, DPID dpid1, DPID dpid2 );
 	void	OnPing( CAr & ar, DPID dpid1, DPID dpid2 );

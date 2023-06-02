@@ -6,6 +6,7 @@
 #include "dpsock.h"
 #include "ar.h"
 #include "mymap.h"
+#include <sqktd/flatter_map.hpp>
 
 extern void UninitializeNetLib();
 extern BOOL InitializeNetLib();
@@ -223,6 +224,31 @@ public:
 		BEFORESENDDUAL(ar, PacketId, DPID_ALLPLAYERS, DPID_ALLPLAYERS);
 		ar.Accumulate(ts...);
 		SEND(ar, static_cast<Derived *>(this), DPID_ALLPLAYERS);
+	}
+};
+
+template<typename Self, typename ... ExtraTypes>
+class PacketHandler {
+public:
+	using Handler = void (Self :: *)(CAr &, ExtraTypes...);
+
+private:
+	sqktd::flatter_map<DWORD, Handler> m_handlers;
+
+public:
+	void AddHandler(DWORD packetId, Handler handler) {
+		m_handlers.emplace(packetId, handler);
+	}
+
+	bool Handle(Self & self, CAr & ar, DWORD packetId, ExtraTypes ... extra) {
+		const auto handler = m_handlers.get_at(packetId);
+
+		if (handler) {
+			(self.*(*handler))(ar, extra ...);
+			return true;
+		} else {
+			return false;
+		}
 	}
 };
 
