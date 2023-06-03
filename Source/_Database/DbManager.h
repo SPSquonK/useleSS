@@ -531,10 +531,7 @@ inline BOOL ACCOUNT_CACHE::IsReleaseable()
 
 #define	MAX_QUERY_RESERVED	2
 
-//typedef CMyMap2<CMover*>	C2Mover;
-//typedef CMyBucket2<CMover*> CMoverBucket;
 typedef std::map<u_long, std::string>	ULONG2STRING;
-typedef std::map<int, std::string>	INT2STRING;
 
 typedef	struct	_ItemStruct
 {
