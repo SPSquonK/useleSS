@@ -534,19 +534,12 @@ BOOL Script( LPCSTR lpszFileName )
 			{
 				prj.m_bBackEndSystem = TRUE;
 			}
-			else if( s.Token == "DSN_NAME_ITEMUPDATE" )
+			else if( s.Token == "DSN_NAME_ITEMUPDATE" || s.Token == "DB_ADMIN_ID_ITEMUPDATE" )
 			{
 				s.GetToken();
-				strcpy( DSN_NAME_ITEMUPDATE, s.Token );
-			}
-			else if( s.Token == "DB_ADMIN_ID_ITEMUPDATE" )
-			{
-				s.GetToken();
-				strcpy( DB_ADMIN_ID_ITEMUPDATE, s.Token );
 			}
 			else if( s.Token == "ITEMUPDATE" )
 			{
-				prj.m_bItemUpdate = TRUE;
 			}
 #ifdef __ITEM_REMOVE_LIST
 			else if( s.Token == "ConvStartItem" )
@@ -607,8 +600,6 @@ BOOL Script( LPCSTR lpszFileName )
 			else if( s.Token == "DB_PWD_ITEMUPDATE" )
 			{
 				s.GetToken();
-				::GetPWDFromToken( s.Token, db.DB_ADMIN_PASS_ITEMUPDATE ); 
-				TRACE("%s\n", db.DB_ADMIN_PASS_ITEMUPDATE ); 
 			}
 			else if( s.Token == "ITEM_ID" )
 			{

@@ -638,7 +638,6 @@ public:
 #ifdef __ITEM_REMOVE_LIST
 	std::set<std::string>	m_RemoveItem_List;
 #endif // __ITEM_REMOVE_LIST
-	INT2STRING		m_int2StrItemUpdate;
 
 	CAccountCacheMgr m_AccountCacheMgr;
 	CMclCritSec		m_AddRemoveLock;
@@ -654,9 +653,6 @@ public:
 	HANDLE			m_hIOCPGuild;			// ±æµå ¾÷µ«¿ë 
 	HANDLE			m_hWorker;
 	HANDLE			m_hCloseWorker;
-	HANDLE			m_hItemUpdateWorker;
-	HANDLE			m_hItemUpdateCloseWorker;
-	int				m_nItemUpdate;
 
 	DB_OVERLAPPED_PLUS*		AllocRequest( void );
 	void	FreeRequest( DB_OVERLAPPED_PLUS* pOverlappedPlus);
@@ -684,7 +680,6 @@ public:
 	char DB_ADMIN_PASS_LOG[256];
 	char DB_ADMIN_PASS_CHARACTER01[256];
 	char DB_ADMIN_PASS_BACKSYSTEM[256];
-	char DB_ADMIN_PASS_ITEMUPDATE[256]; 
 
 public:
 	static CDbManager & GetInstance();
@@ -832,13 +827,6 @@ public:
 	void	UpdateThread( void );
 	void	GuildThread( void );
 	void	BackSystem( void );
-	void	ItemUpdateThread( void );
-	void	ChangeItemUpdate( CQuery* pQuery );
-	void	ChangeSkillUpdate( CQuery* pQuery );
-	void	ChangeMonsterUpdate( CQuery* pQuery );
-	void	ChangeQuestUpdate( CQuery* pQuery );
-	void	ChangeJobNameUpdate( CQuery* pQuery );
-	void	ChangeSexUpdate( CQuery* pQuery );
 	BOOL	GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, int nSlot );
 	BOOL	GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	LoadPiercingInfo( CItemElem & itemElem, const char* szPirecingInven, int* pLocation );
@@ -862,7 +850,6 @@ public:
 	static	UINT	_UpdateThread( LPVOID pParam );
 	static	UINT	_GuildThread( LPVOID pParam );
 	static  UINT	_BackSystem( LPVOID pParam );
-	static	UINT	_ItemUpdateThread( LPVOID pParam );
 
 	void	Clear( void );
 

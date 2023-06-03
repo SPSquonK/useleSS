@@ -51,7 +51,6 @@ CProject::CProject()
 	ZeroMemory( m_chBackEndSystemChatTime, sizeof( m_chBackEndSystemChatTime ) );
 	ZeroMemory( m_chGMChat, sizeof( m_chGMChat ) );
 
-	m_bItemUpdate = FALSE;
 #ifdef __ITEM_REMOVE_LIST
 	m_dwConvMode = 0;
 #endif // __ITEM_REMOVE_LIST

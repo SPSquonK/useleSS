@@ -245,8 +245,6 @@
     </ClCompile>
     <ClCompile Include="..\_Database\DBConvertNew.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Database\DbItemUpdate.cpp">
-    </ClCompile>
     <ClCompile Include="..\_database\DbManager.cpp">
     </ClCompile>
     <ClCompile Include="..\_Database\DbManagerFun.cpp">

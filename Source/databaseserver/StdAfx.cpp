@@ -20,8 +20,7 @@ char	DB_ADMIN_ID_LOG[260];
 
 char	DSN_NAME_BACKSYSTEM[260];
 char	DB_ADMIN_ID_BACKSYSTEM[260];
-char	DSN_NAME_ITEMUPDATE[260];
-char	DB_ADMIN_ID_ITEMUPDATE[260];
+
 // TODO: reference any additional headers you need in STDAFX.H
 // and not in this file
 

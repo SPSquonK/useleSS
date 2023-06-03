@@ -64,7 +64,6 @@ CDPTrans::CDPTrans()
 	ON_MSG( PACKETTYPE_INSERTGUILDQUEST, &CDPTrans::OnInsertGuildQuest );
 	ON_MSG( PACKETTYPE_UPDATEGUILDQUEST, &CDPTrans::OnUpdateGuildQuest );
 	ON_MSG( PACKETTYPE_QUERYSETPLAYERNAME, &CDPTrans::OnQuerySetPlayerName );
-	ON_MSG( PACKETTYPE_ITEM_TBL_UPDATE, &CDPTrans::OnItemTBLUpdate );
 	ON_MSG( PACKETTYPE_PING, &CDPTrans::OnPing );
 	ON_MSG( PACKETTYPE_QUERYMAILBOX, &CDPTrans::OnQueryMailBox );
 
@@ -939,26 +938,6 @@ void CDPTrans::OnQuerySetPlayerName( CAr & ar, DPID dpid, DPID dpidCache, DPID d
 	g_DbManager.MakeRequest( lpDbOverlappedPlus, lpBuf, uBufSize );
 	lpDbOverlappedPlus->nQueryMode	= QM_SET_PLAYER_NAME;
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPPut, 1, NULL, &lpDbOverlappedPlus->Overlapped );
-}
-
-void CDPTrans::OnItemTBLUpdate( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	if( prj.m_bItemUpdate == FALSE )
-		return;
-
-	int nQuestCount;
-	ar >> nQuestCount;
-
-	int nQuestID;
-	char szQuestName[64];
-	for( int i = 0 ; i < nQuestCount ; ++i )
-	{
-		ZeroMemory( szQuestName, sizeof( szQuestName ) );
-		ar >> nQuestID;
-		ar.ReadString( szQuestName, 64 );
-		g_DbManager.m_int2StrItemUpdate.emplace(nQuestID, szQuestName);
-	}
-	g_DbManager.m_nItemUpdate = 1;
 }
 
 void CDPTrans::OnPing( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

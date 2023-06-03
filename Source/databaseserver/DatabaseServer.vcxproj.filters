@@ -273,9 +273,6 @@
     <ClCompile Include="..\_Database\DBConvertNew.cpp">
       <Filter>Database Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Database\DbItemUpdate.cpp">
-      <Filter>Database Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\_database\DbManager.cpp">
       <Filter>Database Files</Filter>
     </ClCompile>

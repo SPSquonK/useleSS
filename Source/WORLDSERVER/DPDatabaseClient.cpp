@@ -302,29 +302,6 @@ void CDPDatabaseClient::SendRecommend( CUser* pUser, int nValue )
 }
 #endif // __S_RECOMMAED_EVE
 
-void CDPDatabaseClient::SendITEM_TBL_Update()
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ITEM_TBL_UPDATE, DPID_UNKNOWN, DPID_UNKNOWN );
-	int nQuestCount = 0;
-	u_long uOffset	= ar.GetOffset();
-	ar << nQuestCount;
-	for( int i = 0; i < prj.m_aPropQuest.GetSize(); i++ )
-	{
-		QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( i );
-		if( pQuestProp )
-		{
-			ar << i;
-			ar.WriteString( pQuestProp->m_szTitle );
-			nQuestCount++;
-		}
-	}
-	int nBufSize1;
-	LPBYTE lpBuf1	= ar.GetBuffer( &nBufSize1 );
-	*(UNALIGNED int*)( lpBuf1 + uOffset )	= nQuestCount;
-
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPDatabaseClient::SendPreventLogin( LPCTSTR szAccount, DWORD dwPreventTime )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_PREVENT_LOGIN, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -1291,8 +1268,6 @@ void CDPDatabaseClient::OnContinueGC( CAr & ar, DPID, DPID )
 void CDPDatabaseClient::OnAllPlayerData( CAr & ar , DPID, DPID )
 {
 	CPlayerDataCenter::GetInstance()->Serialize( ar );
-//	if( g_uKey == 101 )
-//		SendITEM_TBL_Update();
 }
 
 void CDPDatabaseClient::OnAddPlayerData( CAr & ar, DPID, DPID )
@@ -2346,14 +2321,6 @@ void CDPDatabaseClient::OnReadMail( CAr & ar, DPID, DPID )
 
 void CDPDatabaseClient::OnAllMail( CAr & ar , DPID, DPID )
 {
-#ifdef __CHIPI_ITEMUPDATE_080804
-	if( ::GetLanguage() == LANG_KOR && g_uKey == 601 )
-		SendITEM_TBL_Update();
-	else
-#endif // __CHIPI_ITEMUPDATE_080804
-	if( g_uKey == 101 )
-		SendITEM_TBL_Update();
-
 	CPost::GetInstance()->Serialize( ar, FALSE );
 }
 

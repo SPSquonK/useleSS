@@ -32,7 +32,6 @@ public:
 
 	[[nodiscard]] bool IsAlive() const { return m_bAlive; }
 
-	void	SendITEM_TBL_Update( void );
 #ifdef __LAYER_1015
 	void	SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVECTOR3 & vPos, int nLayer, BOOL bLogout = FALSE );
 #else	// __LAYER_1015

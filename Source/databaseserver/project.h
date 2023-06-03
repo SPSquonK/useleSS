@@ -116,7 +116,6 @@ public:
 	char			m_chBackEndSystemChatTime[15];
 	char			m_chGMChat[10][256];
 
-	BOOL			m_bItemUpdate;		// 
 	TCHAR	m_apszWorld[MAX_WORLD][64];
 	TCHAR	m_apszWorldName[MAX_WORLD][64];
 	std::map<std::string, std::vector<D3DXVECTOR3>> m_mapBeginPos;

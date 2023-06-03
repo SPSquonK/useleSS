@@ -76,14 +76,11 @@ CDbManager::CDbManager()
 
 	m_hWorker	= m_hCloseWorker	= NULL;
 
-	m_hItemUpdateWorker = m_hItemUpdateCloseWorker = NULL;
-	m_nItemUpdate = 0;
 	memset( m_apQuery, 0, sizeof(m_apQuery) );
 
 	DB_ADMIN_PASS_LOG[0] = '\0';
 	DB_ADMIN_PASS_CHARACTER01[0] = '\0';
 	DB_ADMIN_PASS_BACKSYSTEM[0] = '\0';
-	DB_ADMIN_PASS_ITEMUPDATE[0] = '\0';
 	m_cbTrade	= 0;
 }
 
@@ -1388,10 +1385,6 @@ BOOL CDbManager::CreateDbWorkers( void )
 	m_hWorker	= chBEGINTHREADEX( NULL, 0, _BackSystem, this, 0, &dwThreadId );
 	ASSERT( m_hWorker );
 	
-	m_hItemUpdateCloseWorker	= CreateEvent( NULL, FALSE, FALSE, NULL );
-	m_hItemUpdateWorker	= chBEGINTHREADEX( NULL, 0, _ItemUpdateThread, this, 0, &dwThreadId );
-	ASSERT( m_hWorker );
-
 	for( int i = 0; i < MAX_QUERY_RESERVED; i++ )
 	{
 		m_apQuery[i]	= new CQuery;
@@ -1436,8 +1429,6 @@ void CDbManager::CloseDbWorkers( void )
 	}
 
 	CLOSE_THREAD( m_hWorker, m_hCloseWorker );
-
-	CLOSE_THREAD( m_hItemUpdateWorker, m_hItemUpdateCloseWorker );
 
 	CLOSE_THREAD( m_hSPThread, m_hCloseSPThread );
 
@@ -1486,13 +1477,6 @@ UINT CDbManager::_BackSystem( LPVOID pParam )
 {
 	CDbManager* pDbManager	= (CDbManager*)pParam;
 	pDbManager->BackSystem();
-	return 0;
-}
-
-UINT CDbManager::_ItemUpdateThread( LPVOID pParam )
-{
-	CDbManager* pDbManager	= (CDbManager*)pParam;
-	pDbManager->ItemUpdateThread();
 	return 0;
 }
 
