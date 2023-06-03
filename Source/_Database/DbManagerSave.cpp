@@ -79,7 +79,7 @@ void CDbManager::SavePlayer( CQuery *qry, CQuery* pQueryLog, CMover* pMover, cha
 	PutExpLog( pQueryLog, pMover, ( pMover->m_dwPeriodicTick == 0 ? 'O': 'P' ) );
 
 	//	mulcom	100218	유럽 페냐 관련 CHARACTER_STR U1 변경 ( U1 -> C1 )
-	sprintf( szQuery, "{call CHARACTER_STR('U1','%07d','%02d','',"
+	sprintf( szQuery, "{call CHARACTER_STR_SAVEPLAYER('U1','%07d','%02d','',"
 					  "?,?,?,?,?,?,?,?,?,?,?,"		// 1
 					  "?,?,?,?,?,?,?,?,?,?,?,"		// 2
 					  "?,?,?,?,?,?,?,?,?,?,?,"		// 3

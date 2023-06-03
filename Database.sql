@@ -9545,201 +9545,8 @@ end
 	 CHARACTER_STR 'S8',@im_idPlayer,@iserverindex,@iaccount
 	 CHARACTER_STR 'S8','425120','01','ata3k'
 */
-ELSE
-IF @iGu = 'U1' -- AÂ©Ã¸Â¢Â¬?AI AuAa
-	BEGIN
-		UPDATE CHARACTER_TBL
-		      SET	dwWorldID 				= @idwWorldID,
-						m_dwIndex 				= @im_dwIndex,			
-						m_dwSex	 				= @im_dwSex,
-						m_vScale_x 				= @im_vScale_x,						
-						m_dwMotion 				= @im_dwMotion,
-						m_vPos_x 					= @im_vPos_x,
-						m_vPos_y 					= @im_vPos_y,
-						m_vPos_z 					= @im_vPos_z,
-						m_dwHairMesh    	= @im_dwHairMesh,
-						m_dwHairColor	    	= @im_dwHairColor,
-						m_dwHeadMesh	   	= @im_dwHeadMesh,  -- 2004/11/08   AÂ©Â¬Â¡Ã†Â¢Â®  
-						m_fAngle 					= 0, --@im_fAngle,
-						m_szCharacterKey 	= @im_szCharacterKey,
-						m_nHitPoint 				= @im_nHitPoint,
-						m_nManaPoint 			= @im_nManaPoint,
-						m_nFatiguePoint 		= @im_nFatiguePoint,
-						m_nFuel						= @im_nFuel,
-						m_dwRideItemIdx 		= @im_dwRideItemIdx,
-						m_dwGold 					= @im_dwGold,
-						m_nJob 						= @im_nJob,
-						m_pActMover 			= @im_pActMover,
-						m_nStr 						= @im_nStr,
-						m_nSta 						= @im_nSta,
-						m_nDex 						= @im_nDex,
-						m_nInt 						= @im_nInt,
-						m_nLevel 					= @im_nLevel,
-						m_nMaximumLevel	= CASE WHEN m_nMaximumLevel < @im_nLevel THEN @im_nLevel ELSE m_nMaximumLevel END,
-						m_nExp1	 				= @im_nExp1,
-						m_nExp2 					= @im_nExp2,
-						m_aJobSkill 				= @im_aJobSkill,
-						m_aLicenseSkill 		= @im_aLicenseSkill,
-						m_aJobLv 					= @im_aJobLv,
-						m_dwExpertLv 			= @im_dwExpertLv,
-						m_idMarkingWorld 	= @im_idMarkingWorld,
-						m_vMarkingPos_x 	= @im_vMarkingPos_x,
-						m_vMarkingPos_y 	= @im_vMarkingPos_y,
-						m_vMarkingPos_z 	= @im_vMarkingPos_z,
-						m_nRemainGP 			= @im_nRemainGP,
-						m_nRemainLP 			= @im_nRemainLP,
-						m_nFlightLv 				= @im_nFlightLv,
-						m_nFxp 						= @im_nFxp,
-						m_nTxp 						= @im_nTxp,
-						m_lpQuestCntArray 	= @im_lpQuestCntArray,
-						m_aCompleteQuest = @im_aCompleteQuest,
-						m_dwMode 				= @im_dwMode,
-						m_idparty 					= @im_idparty,
-						m_idMuerderer 		= @im_idMuerderer,
-						m_nFame 					= @im_nFame,	
-						m_nDeathExp			= @im_nDeathExp,
-						m_nDeathLevel			= @im_nDeathLevel,
-						--m_dwFlyTime				= m_dwFlyTime + @im_dwFlyTime,
-						m_dwFlyTime = @im_dwFlyTime,
-						m_nMessengerState = @im_nMessengerState,
-						TotalPlayTime 			= TotalPlayTime + @iTotalPlayTime,
-						m_tmAccFuel 			= @im_tmAccFuel,
-						m_dwSkillPoint			= @im_dwSkillPoint,
-						m_dwReturnWorldID= @im_dwReturnWorldID,
-						m_vReturnPos_x		= @im_vReturnPos_x,
-						m_vReturnPos_y		= @im_vReturnPos_y,
-						m_vReturnPos_z		= @im_vReturnPos_z,
-						m_SkillPoint		=@im_SkillPoint,
-						m_SkillLv			=@im_SkillLv,
-				        m_SkillExp                      =@im_SkillExp
-				      -------------- (AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ : 2006 11 13 Attendant Event)
-				        , dwEventFlag                     =@idwEventFlag
-				        , dwEventTime                     =@idwEventTime
-				        , dwEventElapsed          =@idwEventElapsed
-				      -------------- (ADD: Version8-PK System)
-
-						, PKValue        	= @im_nPKValue
-						, PKPropensity   	= @im_dwPKPropensity
-						, PKExp         	= @im_dwPKExp
-				      -------------- (ADD: Version8-Angel System)
-						, AngelExp			= @im_nAngelExp
-						, AngelLevel		= @im_nAngelLevel
-					--------------------- Version9 Pet
-						, m_dwPetId = @im_dwPetId
-
-						, m_nExpLog = @im_nExpLog
-						, m_nAngelExpLog = @im_nAngelExpLog
-						, m_nCoupon = @im_nCoupon
-						------------- ver. 13
-						, m_nHonor = @im_nHonor
-						, m_nLayer = @im_nLayer
-						---------- Ver 15
-						, m_aCheckedQuest = @im_aCheckedQuest
-						, m_nCampusPoint = @im_nCampusPoint
-						, idCampus = @im_idCampus
-				WHERE   m_idPlayer                              = @im_idPlayer  
-				AND 	serverindex 				= @iserverindex
-
--- 		if object_id('QUEST_TBL') is not null
--- 			EXEC QUEST_STR 'A1',@im_idPlayer,@iserverindex,@im_lpQuestCntArray
-
-update tblLogout_Penya
-set m_dwGold = @im_dwGold, regdate = getdate()
-where m_idPlayer = @im_idPlayer and serverindex = @iserverindex
-
-		IF @im_nLevel>=120 BEGIN
-			UPDATE 	CHARACTER_TBL 
-				SET FinalLevelDt=getdate() 
-			WHERE 	serverindex=@iserverindex 
-				AND m_idPlayer=@im_idPlayer 
-				AND FinalLevelDt='2000-01-01'
-		END
-
-		--Â¨Ã¹UCoÂ¨Ã¹Â¢Ã§ Â¢Â¯aAÂ¡Ã­Â¡Ã­cCÂ¡Â¿ Â¨Â¬oÂ¢Â¬Â¥Ã¬ Â¡Ã†uÂ¡Â¤A
-		IF @im_dwSMTime > '' 
-			BEGIN
-				IF EXISTS(SELECT * FROM BILING_ITEM_TBL WHERE m_idPlayer= @im_idPlayer  AND serverindex 	= @iserverindex)
-				UPDATE BILING_ITEM_TBL
-						SET m_dwSMTime = @im_dwSMTime
-				 WHERE	m_idPlayer   				= @im_idPlayer 	
-					  AND 	serverindex 				= @iserverindex
-				ELSE
-				INSERT BILING_ITEM_TBL
-					(m_idPlayer,serverindex,m_dwSMTime)
-				VALUES
-					(@im_idPlayer,@iserverindex,@im_dwSMTime)
-			END
-		ELSE
-			 DELETE BILING_ITEM_TBL
-			 WHERE	m_idPlayer   				= @im_idPlayer 	
-			      AND 	serverindex 				= @iserverindex
-
-			
--- 		UPDATE 	CARD_CUBE_TBL 
--- 				SET m_Card 						= @im_Card,
--- 						m_apIndex_Card 		= @im_Index_Card,
--- 						m_dwObjIndex_Card= @im_ObjIndex_Card,
--- 						m_Cube 						= @im_Cube,
--- 						m_apIndex_Cube 	= @im_Index_Cube,
--- 						m_dwObjIndex_Cube=@im_ObjIndex_Cube 
--- 		 WHERE	m_idPlayer   				= @im_idPlayer 	
--- 			  AND 	serverindex 				= @iserverindex
-		
-		UPDATE INVENTORY_TBL 
-		      SET 	m_Inventory 				= @im_Inventory,
-						m_apIndex 				= @im_apIndex,
-						m_adwEquipment 	= @im_adwEquipment,
-						m_dwObjIndex 			= @im_dwObjIndex
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-		
-
-		
-		UPDATE TASKBAR_TBL 
-			  SET 	m_aSlotApplet 			= @im_aSlotApplet,
-						m_aSlotQueue 			= @im_aSlotQueue,
-						m_SkillBar					= @im_SkillBar
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
 
 
-
-
-		UPDATE TASKBAR_ITEM_TBL 
-			  SET 	m_aSlotItem 				= @im_aSlotItem						
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-
-		UPDATE BANK_TBL 
-			  SET 	m_Bank 						= @im_Bank,
-						m_apIndex_Bank 		= @im_apIndex_Bank, 
-						m_dwObjIndex_Bank = @im_dwObjIndex_Bank, 
-						m_dwGoldBank 		= @im_dwGoldBank
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-
-		UPDATE SKILLINFLUENCE_TBL
-			 SET SkillInfluence = @iSkillInfluence
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-
-		UPDATE INVENTORY_EXT_TBL 
-		      SET 	m_extInventory 				= @im_extInventory,
-						m_InventoryPiercing= @im_InventoryPiercing
-			,szInventoryPet	= @iszInventoryPet
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-
-		UPDATE BANK_EXT_TBL 
-			  SET 	m_extBank 						= @im_extBank,
-						m_BankPiercing			= @im_BankPiercing
-			, szBankPet = @iszBankPet
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-
-		SELECT fError = '1', fText = 'OK'
-		RETURN
-	END
 /*
 	
 	AÂ¢Â´Â¨Â¬Â¢Â¬Â¨ÃºÂ¡Ã€Â¥Ã¬Â¡ÃAIÂ¨Â¡Â¢Ã§
@@ -10490,6 +10297,363 @@ IF @iGu = 'I1' -- AEÂ¡Â¾a AÂ¢Â´Â¨Â¬Â¢Â¬ AOÂ¡Â¤A
 set nocount off
 RETURN
 
+GO
+
+/****** Object:  StoredProcedure [dbo].[[CHARACTER_STR_SAVEPLAYER]]    Script Date: 03.06.2023 21:43:09 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE proc [dbo].[CHARACTER_STR_SAVEPLAYER]
+	@iGu        		  				CHAR(2) 			= 'S1', 
+	@im_idPlayer   				CHAR(7) 			= '0000001',
+	@iserverindex  				CHAR(2) 			= '01',
+	/**********************************************
+	 INSERT Â¢Â¯e
+	**********************************************/
+	-- CHARACTER_TBL
+	@iaccount 						VARCHAR(32)	= '',
+	@im_szName 				VARCHAR(32)	= '',
+	@iplayerslot 					INT						= 0,
+	@idwWorldID 				INT 						= 0,
+	@im_dwIndex 				INT 						= 0,
+	@im_vPos_x 					REAL 					= 0,
+	@im_vPos_y 					REAL 					= 0,
+	@im_vPos_z 					REAL 					= 0,
+	@im_szCharacterKey 	VARCHAR(32)	= '',
+	@im_dwSkinSet 			INT						= 0,
+	@im_dwHairMesh 		INT						= 0,
+	@im_dwHairColor 		INT						= 0,
+	@im_dwHeadMesh 		INT						= 0,
+	@im_dwSex 					INT						= 0,
+	/**********************************************
+	 UPDATE Â¢Â¯e
+	**********************************************/
+	-- CHARACTER_TBL
+	@im_vScale_x				REAL					=	0,
+	@im_dwMotion				INT						=	0,
+	@im_fAngle					REAL					=	0,
+	@im_nHitPoint				INT						=	0,
+	@im_nManaPoint			INT						=	0,
+	@im_nFatiguePoint		INT						=	0,
+	@im_dwRideItemIdx		INT						=	0,
+	@im_dwGold					INT						=	0,
+	@im_nJob						INT						=	0,
+	@im_pActMover				VARCHAR(50)	=	'',
+	@im_nStr						INT						=	0,
+	@im_nSta						INT						=	0,
+	@im_nDex						INT						=	0,
+	@im_nInt							INT						=	0,
+	@im_nLevel					INT						=	0,
+	@im_nExp1					BIGINT						=	0,
+	@im_nExp2					BIGINT						=	0,
+	@im_aJobSkill				VARCHAR(500)	='',
+	@im_aLicenseSkill		VARCHAR(500)	='',
+	@im_aJobLv					VARCHAR(500)	='',
+	@im_dwExpertLv			INT						=	0,
+	@im_idMarkingWorld	INT						=	0,
+	@im_vMarkingPos_x	REAL					=	0,
+	@im_vMarkingPos_y	REAL					=	0,
+	@im_vMarkingPos_z	REAL					=	0,
+	@im_nRemainGP			INT						=	0,
+	@im_nRemainLP			INT						=	0,
+	@im_nFlightLv				INT						=	0,
+	@im_nFxp						INT						=	0,
+	@im_nTxp						INT						=	0,
+	@im_lpQuestCntArray	VARCHAR(3072)= '',
+	@im_chAuthority			CHAR(1)				= '',
+	@im_dwMode				INT						=	0,
+	@im_idparty					INT						=	0,
+	@im_idMuerderer			INT						=	0,
+	@im_nFame					INT						=	0,
+	@im_nDeathExp				BIGINT					=  0,
+	@im_nDeathLevel				INT					=  0,
+	@im_dwFlyTime					INT					=  0,
+	@im_nMessengerState 	INT					=  0,
+	@iTotalPlayTime			INT						= 	0
+	-------------- (ADD : Version8-PK System)
+	,@im_nPKValue    		int=0
+	,@im_dwPKPropensity    	int=0
+	,@im_dwPKExp     		int=0
+	-- CARD_CUBE_TBL
+	,@im_Card 						VARCHAR(1980)= '',
+	@im_Index_Card 			VARCHAR(215) 	= '',
+	@im_ObjIndex_Card 	VARCHAR(215) 	= '',
+	@im_Cube 						VARCHAR(1980)= '',
+	@im_Index_Cube 			VARCHAR(215) 	= '',
+	@im_ObjIndex_Cube 	VARCHAR(215) 	= '',
+	-- INVENTORY_TBL
+	@im_Inventory 				VARCHAR(6940)= '',
+	@im_apIndex 				VARCHAR(345) 	= '',
+	@im_adwEquipment 	VARCHAR(135) 	= '',
+	@im_dwObjIndex 			VARCHAR(345) 	= '',
+	-- TASKBAR_TBL
+	@im_aSlotApplet 			VARCHAR(3100)= '',
+	-- TASKBAR_ITEM_TBL
+	@im_aSlotItem 				VARCHAR(6885)= '',
+	-- TASKBAR_TBL
+	@im_aSlotQueue 			VARCHAR(225)= '',
+	@im_SkillBar					SMALLINT			= 0,
+	-- BANK_TBL
+	@im_Bank						VARCHAR(4290)= '',
+	@im_apIndex_Bank		VARCHAR(215)= '',
+	@im_dwObjIndex_Bank VARCHAR(215)= '',
+	@im_dwGoldBank			INT						= 0,
+	@im_nFuel						INT						= -1,
+	@im_tmAccFuel				INT 						= 0,
+	@im_dwSMTime			VARCHAR(2560)='',
+	@iSkillInfluence				varchar(2048) ='',
+	@im_dwSkillPoint			INT 						= 0,
+	@im_aCompleteQuest	varchar(3072) = '',
+	@im_extInventory			varchar(2000) = '',
+	@im_extBank					varchar(2000) = '',
+	@im_InventoryPiercing varchar(8000) = '',
+	@im_BankPiercing		varchar(8000) = '',
+	@im_dwReturnWorldID INT		 				= 1,
+	@im_vReturnPos_x 		REAL					= 0,
+	@im_vReturnPos_y 		REAL					= 0,
+	@im_vReturnPos_z 		REAL					= 0,
+	-------------- ( Version 7 : Skill Update)
+	@im_SkillPoint			int=0,
+	@im_SkillLv				int=0,
+	@im_SkillExp			bigint=0,
+	-------------- (AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ : 2006 11 13 Attendant Class)
+	@idwEventFlag                   bigint=0,
+	@idwEventTime          int=0,
+
+
+	@idwEventElapsed                int=0
+	-------------- (ADD : Version8-Angel System)
+	,@im_nAngelExp		bigint=0
+	,@im_nAngelLevel		int=0
+	--------------- Version 9 AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ PetÂ¡Ã†uÂ¡Â¤A
+,@iszInventoryPet	varchar(4200)     = '$'
+
+,@iszBankPet	varchar(4200)     = '$'
+,@im_dwPetId int = -1
+
+,@im_nExpLog int = 0
+,@im_nAngelExpLog int = 0
+,@im_nCoupon int = 0
+--------------- ver. 13
+, @im_nHonor int = -1
+, @im_nLayer int = 0
+---------- Ver 15
+--, @im_BankPW char(4) = '0000'
+, @im_aCheckedQuest varchar(100) =''
+, @im_nCampusPoint int = 0
+, @im_idCampus int = 0
+
+/*******************************************************
+	Gu Â¡Â¾Â¢Â¬Â¨Â¬Â¨Â¢
+    S : SELECT
+    I  : INSERT
+    U : UPDATE
+    D : DELETE
+
+
+2005.04.11 updated
+
+ALTER TABLE  CHARACTER_TBL  ADD   m_aCompleteQuest  varchar(1024) NULL
+ALTER TABLE CHARACTER_TBL  ALTER COLUMN   m_lpQuestCntArray	VARCHAR(3072) NULL
+
+*******************************************************/
+AS
+set nocount on
+declare @last_connect tinyint
+set @last_connect = 1
+
+DECLARE @om_chLoginAuthority CHAR(1),@oaccount VARCHAR(32),@oplayerslot INT
+
+
+
+
+
+	BEGIN
+		UPDATE CHARACTER_TBL
+		      SET	dwWorldID 				= @idwWorldID,
+						m_dwIndex 				= @im_dwIndex,			
+						m_dwSex	 				= @im_dwSex,
+						m_vScale_x 				= @im_vScale_x,						
+						m_dwMotion 				= @im_dwMotion,
+						m_vPos_x 					= @im_vPos_x,
+						m_vPos_y 					= @im_vPos_y,
+						m_vPos_z 					= @im_vPos_z,
+						m_dwHairMesh    	= @im_dwHairMesh,
+						m_dwHairColor	    	= @im_dwHairColor,
+						m_dwHeadMesh	   	= @im_dwHeadMesh,  -- 2004/11/08   AÂ©Â¬Â¡Ã†Â¢Â®  
+						m_fAngle 					= 0, --@im_fAngle,
+						m_szCharacterKey 	= @im_szCharacterKey,
+						m_nHitPoint 				= @im_nHitPoint,
+						m_nManaPoint 			= @im_nManaPoint,
+						m_nFatiguePoint 		= @im_nFatiguePoint,
+						m_nFuel						= @im_nFuel,
+						m_dwRideItemIdx 		= @im_dwRideItemIdx,
+						m_dwGold 					= @im_dwGold,
+						m_nJob 						= @im_nJob,
+						m_pActMover 			= @im_pActMover,
+						m_nStr 						= @im_nStr,
+						m_nSta 						= @im_nSta,
+						m_nDex 						= @im_nDex,
+						m_nInt 						= @im_nInt,
+						m_nLevel 					= @im_nLevel,
+						m_nMaximumLevel	= CASE WHEN m_nMaximumLevel < @im_nLevel THEN @im_nLevel ELSE m_nMaximumLevel END,
+						m_nExp1	 				= @im_nExp1,
+						m_nExp2 					= @im_nExp2,
+						m_aJobSkill 				= @im_aJobSkill,
+						m_aLicenseSkill 		= @im_aLicenseSkill,
+						m_aJobLv 					= @im_aJobLv,
+						m_dwExpertLv 			= @im_dwExpertLv,
+						m_idMarkingWorld 	= @im_idMarkingWorld,
+						m_vMarkingPos_x 	= @im_vMarkingPos_x,
+						m_vMarkingPos_y 	= @im_vMarkingPos_y,
+						m_vMarkingPos_z 	= @im_vMarkingPos_z,
+						m_nRemainGP 			= @im_nRemainGP,
+						m_nRemainLP 			= @im_nRemainLP,
+						m_nFlightLv 				= @im_nFlightLv,
+						m_nFxp 						= @im_nFxp,
+						m_nTxp 						= @im_nTxp,
+						m_lpQuestCntArray 	= @im_lpQuestCntArray,
+						m_aCompleteQuest = @im_aCompleteQuest,
+						m_dwMode 				= @im_dwMode,
+						m_idparty 					= @im_idparty,
+						m_idMuerderer 		= @im_idMuerderer,
+						m_nFame 					= @im_nFame,	
+						m_nDeathExp			= @im_nDeathExp,
+						m_nDeathLevel			= @im_nDeathLevel,
+						--m_dwFlyTime				= m_dwFlyTime + @im_dwFlyTime,
+						m_dwFlyTime = @im_dwFlyTime,
+						m_nMessengerState = @im_nMessengerState,
+						TotalPlayTime 			= TotalPlayTime + @iTotalPlayTime,
+						m_tmAccFuel 			= @im_tmAccFuel,
+						m_dwSkillPoint			= @im_dwSkillPoint,
+						m_dwReturnWorldID= @im_dwReturnWorldID,
+						m_vReturnPos_x		= @im_vReturnPos_x,
+						m_vReturnPos_y		= @im_vReturnPos_y,
+						m_vReturnPos_z		= @im_vReturnPos_z,
+						m_SkillPoint		=@im_SkillPoint,
+						m_SkillLv			=@im_SkillLv,
+				        m_SkillExp                      =@im_SkillExp
+				      -------------- (AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ : 2006 11 13 Attendant Event)
+				        , dwEventFlag                     =@idwEventFlag
+				        , dwEventTime                     =@idwEventTime
+				        , dwEventElapsed          =@idwEventElapsed
+				      -------------- (ADD: Version8-PK System)
+
+						, PKValue        	= @im_nPKValue
+						, PKPropensity   	= @im_dwPKPropensity
+						, PKExp         	= @im_dwPKExp
+				      -------------- (ADD: Version8-Angel System)
+						, AngelExp			= @im_nAngelExp
+						, AngelLevel		= @im_nAngelLevel
+					--------------------- Version9 Pet
+						, m_dwPetId = @im_dwPetId
+
+						, m_nExpLog = @im_nExpLog
+						, m_nAngelExpLog = @im_nAngelExpLog
+						, m_nCoupon = @im_nCoupon
+						------------- ver. 13
+						, m_nHonor = @im_nHonor
+						, m_nLayer = @im_nLayer
+						---------- Ver 15
+						, m_aCheckedQuest = @im_aCheckedQuest
+						, m_nCampusPoint = @im_nCampusPoint
+						, idCampus = @im_idCampus
+				WHERE   m_idPlayer                              = @im_idPlayer  
+				AND 	serverindex 				= @iserverindex
+
+update tblLogout_Penya
+set m_dwGold = @im_dwGold, regdate = getdate()
+where m_idPlayer = @im_idPlayer and serverindex = @iserverindex
+
+		IF @im_nLevel>=120 BEGIN
+			UPDATE 	CHARACTER_TBL 
+				SET FinalLevelDt=getdate() 
+			WHERE 	serverindex=@iserverindex 
+				AND m_idPlayer=@im_idPlayer 
+				AND FinalLevelDt='2000-01-01'
+		END
+
+		--Â¨Ã¹UCoÂ¨Ã¹Â¢Ã§ Â¢Â¯aAÂ¡Ã­Â¡Ã­cCÂ¡Â¿ Â¨Â¬oÂ¢Â¬Â¥Ã¬ Â¡Ã†uÂ¡Â¤A
+		IF @im_dwSMTime > '' 
+			BEGIN
+				IF EXISTS(SELECT * FROM BILING_ITEM_TBL WHERE m_idPlayer= @im_idPlayer  AND serverindex 	= @iserverindex)
+				UPDATE BILING_ITEM_TBL
+						SET m_dwSMTime = @im_dwSMTime
+				 WHERE	m_idPlayer   				= @im_idPlayer 	
+					  AND 	serverindex 				= @iserverindex
+				ELSE
+				INSERT BILING_ITEM_TBL
+					(m_idPlayer,serverindex,m_dwSMTime)
+				VALUES
+					(@im_idPlayer,@iserverindex,@im_dwSMTime)
+			END
+		ELSE
+			 DELETE BILING_ITEM_TBL
+			 WHERE	m_idPlayer   				= @im_idPlayer 	
+			      AND 	serverindex 				= @iserverindex
+		
+		UPDATE INVENTORY_TBL 
+		      SET 	m_Inventory 				= @im_Inventory,
+						m_apIndex 				= @im_apIndex,
+						m_adwEquipment 	= @im_adwEquipment,
+						m_dwObjIndex 			= @im_dwObjIndex
+		 WHERE 	m_idPlayer   				= @im_idPlayer 	
+			  AND 	serverindex 				= @iserverindex
+		
+
+		
+		UPDATE TASKBAR_TBL 
+			  SET 	m_aSlotApplet 			= @im_aSlotApplet,
+						m_aSlotQueue 			= @im_aSlotQueue,
+						m_SkillBar					= @im_SkillBar
+		 WHERE 	m_idPlayer   				= @im_idPlayer 	
+			  AND 	serverindex 				= @iserverindex
+
+
+
+
+		UPDATE TASKBAR_ITEM_TBL 
+			  SET 	m_aSlotItem 				= @im_aSlotItem						
+		 WHERE 	m_idPlayer   				= @im_idPlayer 	
+			  AND 	serverindex 				= @iserverindex
+
+		UPDATE BANK_TBL 
+			  SET 	m_Bank 						= @im_Bank,
+						m_apIndex_Bank 		= @im_apIndex_Bank, 
+						m_dwObjIndex_Bank = @im_dwObjIndex_Bank, 
+						m_dwGoldBank 		= @im_dwGoldBank
+		 WHERE 	m_idPlayer   				= @im_idPlayer 	
+			  AND 	serverindex 				= @iserverindex
+
+		UPDATE SKILLINFLUENCE_TBL
+			 SET SkillInfluence = @iSkillInfluence
+		 WHERE 	m_idPlayer   				= @im_idPlayer 	
+			  AND 	serverindex 				= @iserverindex
+
+		UPDATE INVENTORY_EXT_TBL 
+		      SET 	m_extInventory 				= @im_extInventory,
+						m_InventoryPiercing= @im_InventoryPiercing
+			,szInventoryPet	= @iszInventoryPet
+		 WHERE 	m_idPlayer   				= @im_idPlayer 	
+			  AND 	serverindex 				= @iserverindex
+
+		UPDATE BANK_EXT_TBL 
+			  SET 	m_extBank 						= @im_extBank,
+						m_BankPiercing			= @im_BankPiercing
+			, szBankPet = @iszBankPet
+		 WHERE 	m_idPlayer   				= @im_idPlayer 	
+			  AND 	serverindex 				= @iserverindex
+
+		SELECT fError = '1', fText = 'OK'
+		RETURN
+	END
+
+	
+set nocount off
+RETURN
 GO
 /****** Object:  StoredProcedure [dbo].[CHARACTER_DELETE_STR]    Script Date: 04/03/2010 12:42:39 ******/
 SET ANSI_NULLS ON
