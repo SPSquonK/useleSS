@@ -8994,124 +8994,10 @@ CREATE proc [dbo].[CHARACTER_STR]
 	@im_dwHairMesh 		INT						= 0,
 	@im_dwHairColor 		INT						= 0,
 	@im_dwHeadMesh 		INT						= 0,
-	@im_dwSex 					INT						= 0,
-	/**********************************************
-	 UPDATE Â¢Â¯e
-	**********************************************/
-	-- CHARACTER_TBL
-	@im_vScale_x				REAL					=	0,
-	@im_dwMotion				INT						=	0,
-	@im_fAngle					REAL					=	0,
-	@im_nHitPoint				INT						=	0,
-	@im_nManaPoint			INT						=	0,
-	@im_nFatiguePoint		INT						=	0,
-	@im_dwRideItemIdx		INT						=	0,
-	@im_dwGold					INT						=	0,
-	@im_nJob						INT						=	0,
-	@im_pActMover				VARCHAR(50)	=	'',
-	@im_nStr						INT						=	0,
-	@im_nSta						INT						=	0,
-	@im_nDex						INT						=	0,
-	@im_nInt							INT						=	0,
-	@im_nLevel					INT						=	0,
-	@im_nExp1					BIGINT						=	0,
-	@im_nExp2					BIGINT						=	0,
-	@im_aJobSkill				VARCHAR(500)	='',
-	@im_aLicenseSkill		VARCHAR(500)	='',
-	@im_aJobLv					VARCHAR(500)	='',
-	@im_dwExpertLv			INT						=	0,
-	@im_idMarkingWorld	INT						=	0,
-	@im_vMarkingPos_x	REAL					=	0,
-	@im_vMarkingPos_y	REAL					=	0,
-	@im_vMarkingPos_z	REAL					=	0,
-	@im_nRemainGP			INT						=	0,
-	@im_nRemainLP			INT						=	0,
-	@im_nFlightLv				INT						=	0,
-	@im_nFxp						INT						=	0,
-	@im_nTxp						INT						=	0,
-	@im_lpQuestCntArray	VARCHAR(3072)= '',
-	@im_chAuthority			CHAR(1)				= '',
-	@im_dwMode				INT						=	0,
-	@im_idparty					INT						=	0,
-	@im_idMuerderer			INT						=	0,
-	@im_nFame					INT						=	0,
-	@im_nDeathExp				BIGINT					=  0,
-	@im_nDeathLevel				INT					=  0,
-	@im_dwFlyTime					INT					=  0,
-	@im_nMessengerState 	INT					=  0,
-	@iTotalPlayTime			INT						= 	0
-	-------------- (ADD : Version8-PK System)
-	,@im_nPKValue    		int=0
-	,@im_dwPKPropensity    	int=0
-	,@im_dwPKExp     		int=0
-	-- CARD_CUBE_TBL
-	,@im_Card 						VARCHAR(1980)= '',
-	@im_Index_Card 			VARCHAR(215) 	= '',
-	@im_ObjIndex_Card 	VARCHAR(215) 	= '',
-	@im_Cube 						VARCHAR(1980)= '',
-	@im_Index_Cube 			VARCHAR(215) 	= '',
-	@im_ObjIndex_Cube 	VARCHAR(215) 	= '',
-	-- INVENTORY_TBL
-	@im_Inventory 				VARCHAR(6940)= '',
-	@im_apIndex 				VARCHAR(345) 	= '',
-	@im_adwEquipment 	VARCHAR(135) 	= '',
-	@im_dwObjIndex 			VARCHAR(345) 	= '',
-	-- TASKBAR_TBL
-	@im_aSlotApplet 			VARCHAR(3100)= '',
-	-- TASKBAR_ITEM_TBL
-	@im_aSlotItem 				VARCHAR(6885)= '',
-	-- TASKBAR_TBL
-	@im_aSlotQueue 			VARCHAR(225)= '',
-	@im_SkillBar					SMALLINT			= 0,
-	-- BANK_TBL
-	@im_Bank						VARCHAR(4290)= '',
-	@im_apIndex_Bank		VARCHAR(215)= '',
-	@im_dwObjIndex_Bank VARCHAR(215)= '',
-	@im_dwGoldBank			INT						= 0,
-	@im_nFuel						INT						= -1,
-	@im_tmAccFuel				INT 						= 0,
-	@im_dwSMTime			VARCHAR(2560)='',
-	@iSkillInfluence				varchar(2048) ='',
-	@im_dwSkillPoint			INT 						= 0,
-	@im_aCompleteQuest	varchar(3072) = '',
-	@im_extInventory			varchar(2000) = '',
-	@im_extBank					varchar(2000) = '',
-	@im_InventoryPiercing varchar(8000) = '',
-	@im_BankPiercing		varchar(8000) = '',
-	@im_dwReturnWorldID INT		 				= 1,
-	@im_vReturnPos_x 		REAL					= 0,
-	@im_vReturnPos_y 		REAL					= 0,
-	@im_vReturnPos_z 		REAL					= 0,
-	-------------- ( Version 7 : Skill Update)
-	@im_SkillPoint			int=0,
-	@im_SkillLv				int=0,
-	@im_SkillExp			bigint=0,
-	-------------- (AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ : 2006 11 13 Attendant Class)
-	@idwEventFlag                   bigint=0,
-	@idwEventTime          int=0,
+	@im_dwSex 					INT						= 0
 
 
-	@idwEventElapsed                int=0
-	-------------- (ADD : Version8-Angel System)
-	,@im_nAngelExp		bigint=0
-	,@im_nAngelLevel		int=0
-	--------------- Version 9 AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ PetÂ¡Ã†uÂ¡Â¤A
-,@iszInventoryPet	varchar(4200)     = '$'
 
-,@iszBankPet	varchar(4200)     = '$'
-,@im_dwPetId int = -1
-
-,@im_nExpLog int = 0
-,@im_nAngelExpLog int = 0
-,@im_nCoupon int = 0
---------------- ver. 13
-, @im_nHonor int = -1
-, @im_nLayer int = 0
----------- Ver 15
---, @im_BankPW char(4) = '0000'
-, @im_aCheckedQuest varchar(100) =''
-, @im_nCampusPoint int = 0
-, @im_idCampus int = 0
 
 /*******************************************************
 	Gu Â¡Â¾Â¢Â¬Â¨Â¬Â¨Â¢
@@ -10085,9 +9971,9 @@ IF @iGu = 'I1' -- AEÂ¡Â¾a AÂ¢Â´Â¨Â¬Â¢Â¬ AOÂ¡Â¤A
 						                            0, 
 						                            0,
 						                            0,
-							@im_SkillPoint,
-							@im_SkillLv,
-							@im_SkillExp
+							0,
+							0,
+							0
 							-- Ver 15
 							, '$'
 							, 0

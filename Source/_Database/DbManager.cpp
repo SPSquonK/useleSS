@@ -4318,90 +4318,11 @@ void CDbManager::DBQryCharacter( char* qryCharacter, const char* Gu, u_long idPl
 		szName, nPlayerslot, dwWorldID, dwIndex, vPos_x, vPos_y );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
 
-	sprintf( strCharacter, ",@im_vPos_z=%f,@im_szCharacterKey='%s',@im_dwSkinSet=%d,@im_dwHairMesh=%d,@im_dwHairColor=%d,@im_dwHeadMesh=%d,@im_dwSex=%d,@im_vScale_x=%f,@im_dwMotion=%d,@im_fAngle=%f",
-		vPos_z,szCharacterKey, dwSkinSet, dwHairMesh, dwHairColor, dwHeadMesh, dwSex, 0.0f, 0, 0.0f );
+	sprintf( strCharacter, ",@im_vPos_z=%f,@im_szCharacterKey='%s',@im_dwSkinSet=%d,@im_dwHairMesh=%d,@im_dwHairColor=%d,@im_dwHeadMesh=%d,@im_dwSex=%d",
+		vPos_z,szCharacterKey, dwSkinSet, dwHairMesh, dwHairColor, dwHeadMesh, dwSex );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
 
-	sprintf( strCharacter, ",@im_nHitPoint=%d,@im_nManaPoint=%d,@im_nFatiguePoint=%d,@im_dwRideItemIdx=%d,@im_dwGold=%d,@im_nJob=%d,@im_pActMover='%s',@im_nStr=%d,@im_nSta=%d,@im_nDex=%d",
-		0, 0, 0, 0, 0, 0, "", 0, 0, 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_nInt=%d,@im_nLevel=%d,@im_nExp1=%I64d,@im_nExp2=%I64d,@im_aJobSkill='%s',@im_aLicenseSkill='%s',@im_aJobLv='%s',@im_dwExpertLv=%d,@im_idMarkingWorld=%d,@im_vMarkingPos_x=%f",
-		0, 0, (EXPINTEGER)0, (EXPINTEGER)0, "", "", "", 0, 0, 0.0f );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-	
-	sprintf( strCharacter, ",@im_vMarkingPos_y=%f,@im_vMarkingPos_z=%f,@im_nRemainGP=%d,@im_nRemainLP=%d,@im_nFlightLv=%d,@im_nFxp=%d,@im_nTxp=%d,@im_lpQuestCntArray='%s',@im_chAuthority='%c',@im_dwMode=%d",
-		0.0f, 0.0f, 0, 0,	0, 0, 0, "", 'F', 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_idparty=%d,@im_idMuerderer=%d,@im_nFame=%d,@im_nDeathExp=%I64d,@im_nDeathLevel=%d,@im_dwFlyTime=%d,@im_nMessengerState=%d,@iTotalPlayTime=%d",
-		0, 0, 0, int64_t(0), 0, 0, 0, 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_Card='%s',@im_Index_Card='%s',@im_ObjIndex_Card='%s',@im_Cube='%s',@im_Index_Cube='%s',@im_ObjIndex_Cube='%s',@im_Inventory='%s',@im_apIndex='%s',@im_adwEquipment='%s',@im_dwObjIndex='%s'",
-		"", "", "", "", "", "", "", "", "", "" );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_aSlotApplet='%s',@im_aSlotItem='%s',@im_aSlotQueue='%s',@im_SkillBar=%d,@im_Bank='%s',@im_apIndex_Bank='%s',@im_dwObjIndex_Bank='%s',@im_dwGoldBank=%d,@im_nFuel=%d",
-		"", "", "", 0, "", "", "", 0, 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_tmAccFuel=%d", 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );	
-
-	sprintf( strCharacter, ",@im_dwSMTime='%s'", "" );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );	
-
-	sprintf( strCharacter, ",@iSkillInfluence='%s'", "" );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );	
-
-	sprintf( strCharacter, ",@im_aCompleteQuest='%s'", "" );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );	
-
-	sprintf( strCharacter, ",@im_extInventory='%s',@im_InventoryPiercing='%s',@im_extBank='%s',@im_BankPiercing ='%s'",
-		"", "", "", ""
-	);
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_dwReturnWorldID=%d,@im_vReturnPos_x=%f,@im_vReturnPos_y=%f,@im_vReturnPos_z=%f",
-		                     0, 0.0f, 0.0f, 0.0f );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-	
-	sprintf( strCharacter, ",@im_nPKValue=%d,@im_dwPKPropensity=%d,@im_dwPKExp=%d", 0, 0, 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-	sprintf( strCharacter, ",@im_nAngelExp=%I64d,@im_nAngelLevel=%d", int64_t(0), 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@iszInventoryPet='%s',@iszBankPet='%s', @im_dwPetId=%d", "", "", 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#ifdef __EXP_ANGELEXP_LOG
-	sprintf( strCharacter, ",@im_nExpLog=%d, @im_nAngelExpLog=%d", 0, 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#endif // __EXP_ANGELEXP_LOG
-#ifdef __EVENTLUA_COUPON
-	sprintf( strCharacter, ",@im_nCoupon=%d", 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#endif // __EVENTLUA_COUPON
-	sprintf(strCharacter, ",@im_nHonor=%d", -1);
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#ifdef __LAYER_1015
-	sprintf( strCharacter, ",@im_nLayer=%d", 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#endif	// __LAYER_1015
-	
-	sprintf( strCharacter, ",@im_nCampusPoint=%d", 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_idCampus=%d", 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_aCheckedQuest='%s'", "" );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	if( strlen(qryCharacter) > 40960 )
-	{
-		ASSERT(0);
-	}
+	ASSERT(strlen(qryCharacter) <= 40960);
 }
 
 BOOL CDbManager::BankToItemSendTbl( LPCSTR lpFileName )
