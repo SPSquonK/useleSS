@@ -350,60 +350,6 @@ struct GUILDLOG_QUERYINFO
 	};
 }; 
 
-struct ADDBANK_QUERYINFO
-{
-	LPCTSTR		pszType;
-	u_long		idPlayer;
-	LPCTSTR		pszBank;
-	LPCTSTR		pszBankIndex;
-	LPCTSTR		pszObjIndexBank;
-	LPCTSTR		pszExtBank;
-	LPCTSTR		pszPirecingBank;
-	DWORD		dwGoldBank;
-	LPCTSTR		pszBankPet;
-
-	ADDBANK_QUERYINFO( LPCTSTR pszQueryType )
-	{
-		pszType = pszQueryType;
-		idPlayer = 0;
-		pszBank = "";
-		pszBankIndex = "";
-		pszObjIndexBank = "";
-		pszExtBank = "";
-		pszPirecingBank = "";
-		dwGoldBank = 0;
-		pszBankPet	= "";
-	};
-};
-
-typedef	struct	_PocketParam
-{
-	u_long		idPlayer;
-	int		nPocket;
-	const char*	pszItem;
-	const char* pszIndex;
-	const char* pszObjIndex;
-	const char* pszExt;
-	const char* pszPiercing;
-	const char* pszPet;
-	BOOL	bExpired;
-	time_t	tExpirationDate;
-
-	_PocketParam()
-	{
-		idPlayer	= 0;
-		nPocket		= 0;
-		pszItem		= "";
-		pszIndex	= "";
-		pszObjIndex		= "";
-		pszExt	= "";
-		pszPiercing		= "";
-		pszPet	= "";
-		bExpired	= TRUE;
-		tExpirationDate		= 0;
-	}
-}	PocketParam;
-
 struct WAR_QUERYINFO
 {
 	LPCTSTR	pszType;
@@ -533,47 +479,37 @@ inline BOOL ACCOUNT_CACHE::IsReleaseable()
 
 typedef std::map<u_long, std::string>	ULONG2STRING;
 
-typedef	struct	_ItemStruct
-{
-	char	szItem[512];
-	char	szExt[64];
-	char	szPiercing[256];
+struct ItemStruct {
+	char	szItem[512] = "";
+	bool hasExt = false;
+	char	szExt[64] = "";
+	bool hasPiercing = false;
+	char	szPiercing[256] = "";
+	bool hasPet = false;
+	char	szPet[100] = "";
+};
 
-	char	szPet[100];
+struct ItemContainerStruct {
+	char	szItem[6144] = "";
+	char	szIndex[512] = "";
+	char	szObjIndex[512] = "";
+	char	szExt[2048] = "";
+	char	szPiercing[8000] = "";
+	char	szPet[4200] = "";	// 42 * 100
 
-	_ItemStruct()
-		{
-			szItem[0]	= '\0';
-			szExt[0]	= '\0';
-			szPiercing[0]	= '\0';
-			szPet[0]	= '\0';
-		}
-}	ItemStruct, *PItemStruct;
+	void Accumulate(const ItemStruct & is, DWORD apIndex, DWORD objIndex);
+	void Clear() {
+		szItem[0] = szIndex[0] = szObjIndex[0] = '\0';
+		szExt[0] = szPiercing[0] = szPet[0] = '\0';
+	}
+};
 
-typedef	struct	_ItemContainerStruct
-{
-	char	szItem[6144];
-	char	szIndex[512];
-	char	szObjIndex[512];
-	char	szExt[2048];
-	char	szPiercing[8000];
-	char	szPet[4200];	// 42 * 100
-	_ItemContainerStruct()
-		{
-			*szItem	= '\0';
-			*szIndex	= '\0';
-			*szObjIndex	= '\0';
-			*szExt	= '\0';
-			*szPiercing	= '\0';
-			*szPet	= '\0';
-		}
-}	ItemContainerStruct, *PItemContainerStruct;
+using PItemContainerStruct = ItemContainerStruct *;
 
-typedef	struct	_PocketStruct : public ItemContainerStruct
-{
+struct PocketStruct : public ItemContainerStruct {
 	BOOL	bExpired = TRUE;
 	time_t	tExpirationDate = 0;
-}	PocketStruct,	*PPocketStruct;
+};
 
 
 typedef	struct	_CONV_RESULT_ITEM
@@ -693,18 +629,15 @@ public:
 	void	SaveJobLv( CMover* pMover, char* szJobLv );
 	void	SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aCompleteQuest, char* szCheckedQuest );
 
-	void	SaveInventory( CMover* pMover, PItemContainerStruct pItemContainerStruct );
-	void	SaveBank( CMover* pMover, CItemContainer* pPlayerBank, PItemContainerStruct pItemContainerStruct );
-	void	SaveGuildBank( CItemContainer*  pGuildBank, PItemContainerStruct pItemContainerStruct );
+	void	SaveItemContainer(CItemContainer & itemContainer, ItemContainerStruct & stringified);
 
 	void	SaveEquipment( CMover* pMover, char* szEquipmen );
-	void	SaveCardCube( CMover* pMover, char* szCard, char* szsCardIndex, char* szsCardObjIndex, char* szCube, char* szsCubeIndex, char* szsCubeObjIndex );
 	void	SaveTaskBar( CMover* pMover, char* szAppletTaskBar, char* szItemTaskBar, char* szSkillTaskBar );
 	void	SaveSMCode( CMover* pMover, char* szszSMTime );
 	void	SaveSkillInfluence( CMover* pMover, char* szszSkillInfluence );
-	void	MakeQueryPocket( char* szQuery, const PocketParam & p );
-	void	DBQryAddBankSave( char* szSql, const ADDBANK_QUERYINFO & info );
-	void	SaveOneItem( CItemElem* pItemElem, PItemStruct pItemStruct );
+	void	MakeQueryPocket( char* szQuery, u_long idPlayer );
+	void	DBQryAddBankSave( char* szSql, u_long idPlayer);
+	static void SaveOneItem( CItemElem* pItemElem, ItemStruct * pItemStruct );
 	void	SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	SendJoin( CMover* pMover, LPDB_OVERLAPPED_PLUS lpDBOP, DWORD dwAuthKey, 
 						  DWORD dwBillingClass, LPCTSTR szPartyName, LPCTSTR szBankPass, 
@@ -829,7 +762,7 @@ public:
 	void	LoadPiercingInfo( CItemElem & itemElem, const char* szPirecingInven, int* pLocation );
 	void	GetPiercingInfoFromMail( CQuery* pQuery, CItemElem* pItemElem );
 	BOOL	GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
-	void	SavePocket( CMover* pMover, PPocketStruct pPocketStruct );
+	void	SavePocket( CMover* pMover, std::span<PocketStruct, MAX_POCKET> pPocketStruct );
 	BOOL	GetEquipment( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	BOOL	GetTaskBar( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	GetCardCube( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
@@ -1025,7 +958,7 @@ private:
 private:
 	static void SetStrDBFormat(char * szDst, const char * szSrc);
 	void	GetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc );
-	void	SetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc );
+	static void	SetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc );
 
 	void	LoginProtectCert( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	

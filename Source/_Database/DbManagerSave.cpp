@@ -47,9 +47,9 @@ void CDbManager::SavePlayer( CQuery *qry, CQuery* pQueryLog, CMover* pMover, cha
 
 	///////// Inventory
 	ItemContainerStruct	icsInventory, icsBank[3];
-	SaveInventory( pMover, &icsInventory );
+	SaveItemContainer( pMover->m_Inventory, icsInventory );
 	for( int k = 0 ; k < 3 ; ++k )
-		SaveBank( pMover, &pMover->m_Bank[k], &icsBank[k] );
+		SaveItemContainer( pMover->m_Bank[k], icsBank[k] );
 
 	///////// Equipment
 	char Equipment[500] = {0,};
@@ -157,7 +157,9 @@ int MAX_SAVEPARAM = 88;
 	
 	int nNumSkill = 0;
 	int nSlaughter = 0;
-	BOOL* bOK = new BOOL[MAX_SAVEPARAM];
+
+	std::unique_ptr<BOOL[]> bOK = std::unique_ptr<BOOL[]>(new BOOL[MAX_SAVEPARAM](FALSE));
+
 //	BOOL bOK[MAX_SAVEPARAM];
 //	qry->StartLogBindedParameters();
 	bOK[++j] = qry->BindParameter( ++i, pMover->m_szName, 32 );
@@ -316,7 +318,6 @@ int MAX_SAVEPARAM = 88;
 			qry->Clear();
 			// chipi_바인딩 실패시 DB Reconnect
 
-			SAFE_DELETE_ARRAY( bOK );
 			return;
 		}
 	}
@@ -324,7 +325,6 @@ int MAX_SAVEPARAM = 88;
 	if( qry->Exec( szQuery ) == FALSE )
 	{
 		WriteLog( "SavePlayer(%s) - Exec RETURN FALSE, ThreadID : %d", pMover->m_szName, ::GetCurrentThreadId() );
-		SAFE_DELETE_ARRAY( bOK );
 		return;
 	}
 
@@ -334,7 +334,6 @@ int MAX_SAVEPARAM = 88;
 		if( nError != 1 )
 		{
 			WriteLog( "SavePlayer(%s) - fError:%d", pMover->m_szName, nError );
-			SAFE_DELETE_ARRAY( bOK );
 			return;
 		}
 	}
@@ -351,70 +350,47 @@ int MAX_SAVEPARAM = 88;
 	{
 		if( pMover->m_idPlayerBank[i] != 0 && i != pMover->m_nSlot )
 		{
-			ADDBANK_QUERYINFO info( "U1" );
-			info.idPlayer			= pMover->m_idPlayerBank[i];
-			info.dwGoldBank			= pMover->m_dwGoldBank[i];
-			info.pszBank			= icsBank[i].szItem;
-			info.pszBankIndex		= icsBank[i].szIndex;
-			info.pszObjIndexBank	= icsBank[i].szObjIndex;
-			info.pszExtBank			= icsBank[i].szExt;
-			info.pszPirecingBank	= icsBank[i].szPiercing;
-			info.pszBankPet		= icsBank[i].szPet;
-
-			DBQryAddBankSave( szQuery, info );
+			DBQryAddBankSave( szQuery, pMover->m_idPlayerBank[i]);
 			
 			{
-				qry->BindParameter( 1, (char*)info.pszBank, 4290 );
-				qry->BindParameter( 2, (char*)info.pszBankIndex, 215 );
-				qry->BindParameter( 3, (char*)info.pszObjIndexBank, 215 );
-				qry->BindParameter( 4, &info.dwGoldBank );
-				qry->BindParameter( 5, (char*)info.pszExtBank, 2000 );
-				qry->BindParameter( 6, (char*)info.pszPirecingBank, 7800 );
-				qry->BindParameter( 7, (char*)info.pszBankPet, 2689 );
+				qry->BindParameter( 1, icsBank[i].szItem, 4290 );
+				qry->BindParameter( 2, icsBank[i].szIndex, 215 );
+				qry->BindParameter( 3, icsBank[i].szObjIndex, 215 );
+				qry->BindParameter( 4, &pMover->m_dwGoldBank[i]);
+				qry->BindParameter( 5, icsBank[i].szExt, 2000 );
+				qry->BindParameter( 6, icsBank[i].szPiercing, 7800 );
+				qry->BindParameter( 7, icsBank[i].szPet, 2689 );
 			}
 
 			if( FALSE == qry->Exec( szQuery ) )
 			{
-				SAFE_DELETE_ARRAY( bOK );
 				return;
 			}
 		}
 	}
+
 	PocketStruct	aPocket[3];
 	SavePocket( pMover, aPocket );
 	for( i = 0; i < MAX_POCKET; i++ )
 	{
-		PocketParam	p;
-		p.idPlayer	= pMover->m_idPlayer;
-		p.pszItem	= aPocket[i].szItem;
-		p.pszIndex	= aPocket[i].szIndex;
-		p.pszObjIndex	= aPocket[i].szObjIndex;
-		p.pszExt	= aPocket[i].szExt;
-		p.pszPiercing	= aPocket[i].szPiercing;
-		p.pszPet	= aPocket[i].szPet;
-		p.bExpired	= aPocket[i].bExpired;
-		p.tExpirationDate	= aPocket[i].tExpirationDate;
-
-		MakeQueryPocket( szQuery, p );
+		MakeQueryPocket( szQuery, pMover->m_idPlayer );
 
 		qry->BindParameter( 1, &i );
-		qry->BindParameter( 2, (char*)p.pszItem    , 4290);
-		qry->BindParameter( 3, (char*)p.pszIndex   , 215);
-		qry->BindParameter( 4, (char*)p.pszObjIndex, 215);
-		qry->BindParameter( 5, (char*)p.pszExt     , 2000);
-		qry->BindParameter( 6, (char*)p.pszPiercing, 7800);
-		qry->BindParameter( 7, (char*)p.pszPet     , 2689);
-		qry->BindParameter( 8, &p.bExpired );
-		qry->BindParameter( 9, &p.tExpirationDate );
+		qry->BindParameter( 2, aPocket[i].szItem    , 4290);
+		qry->BindParameter( 3, aPocket[i].szIndex   , 215);
+		qry->BindParameter( 4, aPocket[i].szObjIndex, 215);
+		qry->BindParameter( 5, aPocket[i].szExt     , 2000);
+		qry->BindParameter( 6, aPocket[i].szPiercing, 7800);
+		qry->BindParameter( 7, aPocket[i].szPet     , 2689);
+		qry->BindParameter( 8, &aPocket[i].bExpired );
+		qry->BindParameter( 9, &aPocket[i].tExpirationDate );
 
 		if( !qry->Exec( szQuery ) )
 		{
-			SAFE_DELETE_ARRAY( bOK );
 			return;
 		}
 	}
 
-	SAFE_DELETE_ARRAY( bOK );
 }
 
 void	CDbManager::SaveHonor( CQuery *qry, u_long uidPlayer, int * aHonor, char* szQuery )
@@ -544,7 +520,7 @@ void CDbManager::SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aComplet
 		szQuestCnt[0] = '\0';
 		for (const QUEST & quest : quests.current) {
 			sprintf(buffer, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d/",
-				quest.m_wId, quest.m_nState, quest.m_wTime,
+				quest.m_wId.get(), quest.m_nState, quest.m_wTime,
 				quest.m_nKillNPCNum[0], quest.m_nKillNPCNum[1],
 				quest.m_bPatrol  , quest.m_bReserve2, quest.m_bReserve3, quest.m_bReserve4,
 				quest.m_bReserve5, quest.m_bReserve6, quest.m_bReserve7, quest.m_bReserve8
@@ -555,14 +531,14 @@ void CDbManager::SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aComplet
 
 		szm_aCompleteQuest[0] = '\0';
 		for (const auto questId : quests.completed) {
-			sprintf(buffer, "%d/", questId);
+			sprintf(buffer, "%d/", questId.get());
 			strncat(szm_aCompleteQuest, buffer, sizeof(buffer));
 		}
 		strcat(szm_aCompleteQuest, NullStr);
 
 		szCheckedQuest[0] = '\0';
 		for (const auto questId : quests.checked) {
-			sprintf(buffer, "%d/", questId);
+			sprintf(buffer, "%d/", questId.get());
 			strncat(szCheckedQuest, buffer, sizeof(buffer));
 		}
 		strcat(szCheckedQuest, NullStr);
@@ -571,49 +547,15 @@ void CDbManager::SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aComplet
 	SaveQuest_(*pMover->m_quests, szQuestCnt, szm_aCompleteQuest, szCheckedQuest);
 }
 
-void	CDbManager::SavePocket( CMover* pMover, PPocketStruct pPocketStruct )
+void	CDbManager::SavePocket( CMover* pMover, std::span<PocketStruct, MAX_POCKET> pPocketStruct )
 {
 	for( int nPocket = 0; nPocket < MAX_POCKET; nPocket++ )
 	{
-		ItemStruct is;
-		BOOL	bExt	= FALSE;
-		BOOL	bPiercing	= FALSE;
-		BOOL	bPet	= FALSE;
-		char sIndex[10]		= { 0,};
-		char sObjIndex[16]		= { 0,};
 		CPocket* pPocket	= pMover->m_Pocket.GetPocket( nPocket );
 		if( pPocket )
 		{
-			for( DWORD i = 0; i < pPocket->m_dwItemMax; i++ )
-			{
-				SaveOneItem( &pPocket->m_apItem[i], &is );
-				strncat( pPocketStruct[nPocket].szItem, is.szItem, sizeof(is.szItem) );
-				strncat( pPocketStruct[nPocket].szExt, is.szExt, sizeof(is.szExt) );
-				strncat( pPocketStruct[nPocket].szPiercing, is.szPiercing, sizeof(is.szPiercing) );
-				sprintf( sIndex, "%d/", pPocket->m_apIndex[i] );
-				strncat( pPocketStruct[nPocket].szIndex, sIndex, sizeof(sIndex) );
-				sprintf( sObjIndex, "%d/", pPocket->m_apItem[i].m_dwObjIndex );
-				strcat( pPocketStruct[nPocket].szObjIndex, sObjIndex );
-				strncat( pPocketStruct[nPocket].szPet, is.szPet, sizeof(is.szPet) );
-				if( 0 < pPocket->m_apItem[i].m_dwKeepTime || 0 != pPocket->m_apItem[i].GetRandomOptItemId() )
-					bExt	= TRUE;
-				if( pPocket->m_apItem[i].IsPiercedItem() )
-					bPiercing	= TRUE;
-				if( pPocket->m_apItem[i].m_pPet )
-					bPet	= TRUE;
-			}
-			strncat( pPocketStruct[nPocket].szItem, NullStr, sizeof(NullStr) );
-			strncat( pPocketStruct[nPocket].szIndex, NullStr, sizeof(NullStr) );
-			strcat( pPocketStruct[nPocket].szObjIndex, NullStr );
-			if( bExt == FALSE )
-				*pPocketStruct[nPocket].szExt	= '\0';
-			if( bPiercing == FALSE )
-				*pPocketStruct[nPocket].szPiercing	= '\0';
-			if( bPet == FALSE )
-				*pPocketStruct[nPocket].szPet	= '\0';
-			strcat( pPocketStruct[nPocket].szExt, NullStr );
-			strcat( pPocketStruct[nPocket].szPiercing, NullStr );
-			strcat( pPocketStruct[nPocket].szPet, NullStr );
+			SaveItemContainer(*pPocket, pPocketStruct[nPocket]);
+
 			pPocketStruct[nPocket].bExpired		= pPocket->IsExpired();
 			pPocketStruct[nPocket].tExpirationDate	= pPocket->GetExpirationDate();
 		}
@@ -631,48 +573,47 @@ void	CDbManager::SavePocket( CMover* pMover, PPocketStruct pPocketStruct )
 	}
 }
 
-void CDbManager::SaveInventory( CMover* pMover, PItemContainerStruct pItemContainerStruct )
-{
-	ItemStruct	is;
-	char Onem_apIndex[10]		= {0,};
-	char sPerObjIndex[16]		= {0,};
-	BOOL bExtInven = FALSE;
-	BOOL bPirecingInven = FALSE;
+void ItemContainerStruct::Accumulate(const ItemStruct & is, const DWORD apIndex, const DWORD objIndex) {
+	std::strncat(szItem, is.szItem, sizeof(is.szItem));
+	std::strncat(szExt, is.szExt, sizeof(is.szExt));
+	std::strncat(szPiercing, is.szPiercing, sizeof(is.szPiercing));
+	std::strncat(szPet, is.szPet, sizeof(is.szPet));
 
-	BOOL	bPet	= FALSE;
+	char Onem_apIndex[16]; std::sprintf(Onem_apIndex, "%d/", apIndex);
+	std::strncat(szIndex, Onem_apIndex, sizeof(Onem_apIndex));
 
-	for( DWORD ch = 0; ch < pMover->m_Inventory.m_dwItemMax; ch++ )	// 0-504
-	{
-		SaveOneItem( &pMover->m_Inventory.m_apItem[ch], &is );
-		strncat( pItemContainerStruct->szItem, is.szItem, sizeof(is.szItem) );
-		strncat( pItemContainerStruct->szExt, is.szExt, sizeof(is.szExt) );
-		strncat( pItemContainerStruct->szPiercing, is.szPiercing, sizeof(is.szPiercing) );
-		sprintf( Onem_apIndex, "%d/", pMover->m_Inventory.m_apIndex[ch] );
-		strncat( pItemContainerStruct->szIndex, Onem_apIndex, sizeof(Onem_apIndex) );
-		sprintf( sPerObjIndex, "%d/", pMover->m_Inventory.m_apItem[ch].m_dwObjIndex );
-		strcat( pItemContainerStruct->szObjIndex, sPerObjIndex );
-		strncat( pItemContainerStruct->szPet, is.szPet, sizeof(is.szPet) );
+	std::sprintf(Onem_apIndex, "%d/", objIndex);
+	std::strcat(szObjIndex, Onem_apIndex);
+}
 
-		if( 0 < pMover->m_Inventory.m_apItem[ch].m_dwKeepTime || 0 != pMover->m_Inventory.m_apItem[ch].GetRandomOptItemId() )
-			bExtInven = TRUE;
-		if( pMover->m_Inventory.m_apItem[ch].IsPiercedItem() )
-			bPirecingInven = TRUE;
-		if( pMover->m_Inventory.m_apItem[ch].m_pPet )
-			bPet	= TRUE;
+void CDbManager::SaveItemContainer(CItemContainer & itemContainer, ItemContainerStruct & stringified) {
+	stringified.Clear();
+
+	ItemStruct is;
+
+	bool hasExt = false, hasPiercing = false, hasPet = false;
+
+	for (DWORD ch = 0; ch < itemContainer.m_dwItemMax; ch++) {
+		SaveOneItem(&itemContainer.m_apItem[ch], &is);
+		stringified.Accumulate(is, itemContainer.m_apIndex[ch], itemContainer.m_apItem[ch].m_dwObjIndex);
+
+		hasExt |= is.hasExt;
+		hasPiercing |= is.hasPiercing;
+		hasPet |= is.hasPet;
 	}
 
-	strncat( pItemContainerStruct->szItem, NullStr, sizeof(NullStr) );
-	strncat( pItemContainerStruct->szIndex, NullStr, sizeof(NullStr) );
-	strcat( pItemContainerStruct->szObjIndex, NullStr );
-	if( bExtInven == FALSE )
-		*pItemContainerStruct->szExt	= '\0';
-	if( bPirecingInven == FALSE )
-		*pItemContainerStruct->szPiercing	= '\0';
-	if( bPet == FALSE )
-		*pItemContainerStruct->szPet	= '\0';
-	strcat( pItemContainerStruct->szExt, NullStr );
-	strcat( pItemContainerStruct->szPiercing, NullStr );
-	strcat( pItemContainerStruct->szPet, NullStr );
+	// Finalize
+	strcat(stringified.szItem,     NullStr);
+	strcat(stringified.szIndex,    NullStr);
+	strcat(stringified.szObjIndex, NullStr);
+
+	if (!hasExt)      stringified.szExt[0] = '\0';
+	if (!hasPiercing) stringified.szPiercing[0] = '\0';
+	if (!hasPet)      stringified.szPet[0] = '\0';
+
+	strcat(stringified.szExt,      NullStr);
+	strcat(stringified.szPiercing, NullStr);
+	strcat(stringified.szPet,      NullStr);
 }
 
 void CDbManager::SaveEquipment( CMover* pMover, char* szEquipment )
@@ -684,92 +625,6 @@ void CDbManager::SaveEquipment( CMover* pMover, char* szEquipment )
 		strncat(szEquipment, OneEquipment, sizeof(OneEquipment));
 	}
 	strncat(szEquipment, NullStr, sizeof(NullStr));
-}
-
-void CDbManager::SaveBank( CMover* pMover, CItemContainer* pPlayerBank, ItemContainerStruct * pItemContainerStruct )
-{
-	ItemStruct	is;
-	char Onem_apIndex[10] = {0,};
-	char sPerObjIndex[16]	= { 0, };
-	BOOL bExtBank = FALSE;
-	BOOL bPirecingBank = FALSE;
-
-	BOOL	bPet	= FALSE;
-
-	for( DWORD ch = 0; ch < pPlayerBank->m_dwItemMax; ch++ )	// 0-504
-	{	
-		SaveOneItem( &pPlayerBank->m_apItem[ch], &is );
-		strncat( pItemContainerStruct->szItem, is.szItem, sizeof(is.szItem) );
-		strncat( pItemContainerStruct->szExt, is.szExt, sizeof(is.szExt) );
-		strncat( pItemContainerStruct->szPiercing, is.szPiercing, sizeof(is.szPiercing) );
-		sprintf( Onem_apIndex, "%d/", pPlayerBank->m_apIndex[ch]);
-		strncat( pItemContainerStruct->szIndex, Onem_apIndex, sizeof(Onem_apIndex) );
-		sprintf( sPerObjIndex, "%d/", pPlayerBank->m_apItem[ch].m_dwObjIndex );
-		strcat( pItemContainerStruct->szObjIndex, sPerObjIndex );
-		strncat( pItemContainerStruct->szPet, is.szPet, sizeof(is.szPet) );
-		if( 0 < pPlayerBank->m_apItem[ch].m_dwKeepTime || 0 != pPlayerBank->m_apItem[ch].GetRandomOptItemId() )
-			bExtBank = TRUE;
-		if( pPlayerBank->m_apItem[ch].IsPiercedItem() )
-			bPirecingBank = TRUE;
-		if( pPlayerBank->m_apItem[ch].m_pPet )
-			bPet	= TRUE;
-	}
-	strncat( pItemContainerStruct->szItem, NullStr, sizeof(NullStr) );
-	strncat( pItemContainerStruct->szIndex, NullStr, sizeof(NullStr) );
-	strcat( pItemContainerStruct->szObjIndex, NullStr );
-	if( bExtBank == FALSE )
-		*pItemContainerStruct->szExt	= '\0';
-	if( bPirecingBank == FALSE )
-		*pItemContainerStruct->szPiercing	= '\0';
-	if( bPet == FALSE )
-		*pItemContainerStruct->szPet	= '\0';
-	strcat( pItemContainerStruct->szExt, NullStr );
-	strcat( pItemContainerStruct->szPiercing, NullStr );
-	strcat( pItemContainerStruct->szPet, NullStr );
-}
-
-void CDbManager::SaveGuildBank( CItemContainer*  pGuildBank, PItemContainerStruct pItemContainerStruct )
-{
-	ItemStruct is;
-	char Onem_apIndex[10] = {0,};
-	char sPerObjIndex[16]	= { 0, };
-	BOOL bExtBank = FALSE;
-	BOOL bPirecingBank = FALSE;
-	BOOL bPet	= FALSE;
-
-	for( DWORD ch = 0; ch < pGuildBank->m_dwItemMax; ch++ )	// 0-504
-	{	
-		SaveOneItem( &pGuildBank->m_apItem[ch], &is );
-		strncat( pItemContainerStruct->szItem, is.szItem, sizeof(is.szItem) );
-		strncat( pItemContainerStruct->szExt, is.szExt, sizeof(is.szExt) );
-		strncat( pItemContainerStruct->szPiercing, is.szPiercing, sizeof(is.szPiercing) );
-		sprintf( Onem_apIndex, "%d/", pGuildBank->m_apIndex[ch]);
-		strncat( pItemContainerStruct->szIndex, Onem_apIndex, sizeof(Onem_apIndex) );
-		sprintf( sPerObjIndex, "%d/", pGuildBank->m_apItem[ch].m_dwObjIndex );
-		strcat( pItemContainerStruct->szObjIndex, sPerObjIndex );
-		strncat( pItemContainerStruct->szPet, is.szPet, sizeof(is.szPet) );
-
-		if( 0 < pGuildBank->m_apItem[ch].m_dwKeepTime || 0 != pGuildBank->m_apItem[ch].GetRandomOptItemId() )
-			bExtBank = TRUE;
-		if( pGuildBank->m_apItem[ch].IsPiercedItem() )
-			bPirecingBank = TRUE;
-		if( pGuildBank->m_apItem[ch].m_pPet )
-			bPet	= TRUE;
-	}
-	strncat( pItemContainerStruct->szItem, NullStr, sizeof(NullStr) );
-	strncat( pItemContainerStruct->szIndex, NullStr, sizeof(NullStr));
-	strcat( pItemContainerStruct->szObjIndex, NullStr );
-	if( bExtBank == FALSE )
-		*pItemContainerStruct->szExt	= '\0';
-	if( bPirecingBank == FALSE )
-		*pItemContainerStruct->szPiercing	= '\0';
-	strcat( pItemContainerStruct->szExt, NullStr );
-	strcat( pItemContainerStruct->szPiercing, NullStr );
-	strcat( pItemContainerStruct->szPet, NullStr );
-}
-
-void CDbManager::SaveCardCube( CMover* pMover, char* szCard, char* szsCardIndex, char* szsCardObjIndex, char* szCube, char* szsCubeIndex, char* szsCubeObjIndex )
-{
 }
 
 void CDbManager::SaveTaskBar(CMover * pMover, char * szAppletTaskBar, char * szItemTaskBar, char * szSkillTaskBar) {
@@ -896,122 +751,115 @@ void CDbManager::SavePlayTime( CQuery *qry, CAr & arRead, const char * szPlayer)
 	}
 }
 
-void CDbManager::DBQryAddBankSave( char* szSql, const ADDBANK_QUERYINFO & info )
+void CDbManager::DBQryAddBankSave( char* szSql, u_long idPlayer )
 {
-		sprintf( szSql, "{call ADD_BANK_STR('U1','%07d','%02d', ?, ?, ?, ?, ?, ?, ?)}", info.idPlayer, g_appInfo.dwSys ); 
+		sprintf( szSql, "{call ADD_BANK_STR('U1','%07d','%02d', ?, ?, ?, ?, ?, ?, ?)}", idPlayer, g_appInfo.dwSys );
 }
 
-void CDbManager::MakeQueryPocket( char* szQuery, const PocketParam & p )
+void CDbManager::MakeQueryPocket( char* szQuery, u_long idPlayer)
 {
-	sprintf( szQuery, "{call uspSavePocket( '%02d', '%07d', ?, ?, ?, ?, ?, ?, ?, ?, ?) }", g_appInfo.dwSys, p.idPlayer );
+	sprintf( szQuery, "{call uspSavePocket( '%02d', '%07d', ?, ?, ?, ?, ?, ?, ?, ?, ?) }", g_appInfo.dwSys, idPlayer);
 }
 
-void CDbManager::SaveOneItem( CItemElem* pItemElem, PItemStruct pItemStruct )
+void CDbManager::SaveOneItem( CItemElem* pItemElem, ItemStruct * pItemStruct )
 {
+	if (pItemElem->IsEmpty()) {
+		std::strcpy(pItemStruct->szItem, "");
+		pItemStruct->hasExt = false;
+		std::strcpy(pItemStruct->szExt, "0,0,0/");
+		pItemStruct->hasPiercing = false;
+		std::strcpy(pItemStruct->szPiercing, "0/");
+		pItemStruct->hasPet = false;
+		std::strcpy(pItemStruct->szPet, "0/");
+		return;
+	}
+
 	char szPiercing[32]		= {0,};
 
-	if( pItemElem->IsEmpty() == FALSE )
+	const char * itemText = pItemElem->m_szItemText;
+	if (pItemElem->m_dwItemId == II_SYS_SYS_SCR_SEALCHARACTER) {
+		itemText = "";
+	}
+
+	sprintf( pItemStruct->szItem, "%d,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d/",
+			pItemElem->m_dwObjId, pItemElem->m_dwItemId,
+			0, 0, itemText,
+			pItemElem->m_nItemNum, pItemElem->m_nRepairNumber,
+			pItemElem->m_nHitPoint, pItemElem->m_nRepair,
+			0, pItemElem->m_byFlag,
+			pItemElem->GetSerialNumber(), pItemElem->GetOption(), 
+  			pItemElem->m_bItemResist, pItemElem->m_nResistAbilityOption,
+  			pItemElem->m_idGuild,
+			pItemElem->m_nResistSMItemId
+		);
+
+
+	// ext
+	sprintf( pItemStruct->szExt, "0,%lu,%I64d,%d/",
+		pItemElem->m_dwKeepTime, pItemElem->GetRandomOptItemId()
+		, static_cast<int>( pItemElem->m_bTranformVisPet )
+		);
+	pItemStruct->hasExt = pItemElem->m_dwKeepTime > 0 || pItemElem->GetRandomOptItemId() != 0;
+
+
+	// piercing
+	pItemStruct->hasPiercing = pItemElem->IsPiercedItem();
+
+	const ItemProp* itemProp = prj.GetItemProp( pItemElem->m_dwItemId );
+	if( itemProp && itemProp->IsUltimate() )
 	{
-		if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_SEALCHARACTER )
-			sprintf( pItemStruct->szItem, "%d,%d,%d,%d,,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d/",
-					pItemElem->m_dwObjId, pItemElem->m_dwItemId,
-					0, 0, 
-					pItemElem->m_nItemNum, pItemElem->m_nRepairNumber,
-					pItemElem->m_nHitPoint, pItemElem->m_nRepair,
-					0, pItemElem->m_byFlag,
-					pItemElem->GetSerialNumber(), pItemElem->GetOption(), 
-  					pItemElem->m_bItemResist, pItemElem->m_nResistAbilityOption,
-  					pItemElem->m_idGuild,
-					pItemElem->m_nResistSMItemId
-				);
-		else
-			sprintf( pItemStruct->szItem, "%d,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d/",
-					pItemElem->m_dwObjId, pItemElem->m_dwItemId,
-					0, 0, pItemElem->m_szItemText,
-					pItemElem->m_nItemNum, pItemElem->m_nRepairNumber,
-					pItemElem->m_nHitPoint, pItemElem->m_nRepair,
-					0, pItemElem->m_byFlag,
-					pItemElem->GetSerialNumber(), pItemElem->GetOption(), 
-  					pItemElem->m_bItemResist, pItemElem->m_nResistAbilityOption,
-  					pItemElem->m_idGuild,
-					pItemElem->m_nResistSMItemId
-				);
-
-		// ext
-		sprintf( pItemStruct->szExt, "%d,%d,%I64d"
-			",%d"
-			"/", 0 /* charged */, pItemElem->m_dwKeepTime, pItemElem->GetRandomOptItemId()
-			, static_cast<int>( pItemElem->m_bTranformVisPet )
-			);
-
-		// piercing
-		ItemProp* itemProp = prj.GetItemProp( pItemElem->m_dwItemId );
-		if( itemProp && itemProp->IsUltimate() )
+		sprintf( pItemStruct->szPiercing, "%d", pItemElem->GetUltimatePiercingSize() );
+		for( int nPirecing = 0 ; nPirecing < pItemElem->GetUltimatePiercingSize(); ++nPirecing )
 		{
-			sprintf( pItemStruct->szPiercing, "%d", pItemElem->GetUltimatePiercingSize() );
-			for( int nPirecing = 0 ; nPirecing < pItemElem->GetUltimatePiercingSize(); ++nPirecing )
-			{
-				sprintf( szPiercing, ",%d", pItemElem->GetUltimatePiercingItem( nPirecing ) );
-				strncat( pItemStruct->szPiercing, szPiercing, sizeof(szPiercing) );
-			}
-			if( pItemElem->GetPiercingSize() > 0 )
-			{
-				sprintf( szPiercing, ",%d", pItemElem->GetPiercingSize() );
-				strncat( pItemStruct->szPiercing, szPiercing, sizeof(szPiercing) );
-			}
-		}
-		else
-			sprintf( pItemStruct->szPiercing, "%d", pItemElem->GetPiercingSize() );
-
-		for( int nPirecing = 0 ; nPirecing < pItemElem->GetPiercingSize(); ++nPirecing )
-		{
-			sprintf( szPiercing, ",%d", pItemElem->GetPiercingItem( nPirecing ) );
+			sprintf( szPiercing, ",%d", pItemElem->GetUltimatePiercingItem( nPirecing ) );
 			strncat( pItemStruct->szPiercing, szPiercing, sizeof(szPiercing) );
 		}
-		if( pItemElem->IsVisPet() )
+		if( pItemElem->GetPiercingSize() > 0 )
 		{
-			for( int nPirecing = 0; nPirecing < pItemElem->GetPiercingSize(); ++nPirecing )
-			{
-				sprintf( szPiercing, ",%d", pItemElem->GetVisKeepTime( nPirecing ) );
-				strncat( pItemStruct->szPiercing, szPiercing, sizeof(szPiercing) );
-			}
-		}
-		strcat( pItemStruct->szPiercing, "/" );
-
-		// pet
-		if( pItemElem->m_pPet )
-		{
-			sprintf( pItemStruct->szPet, "1,%d,%d,%d,%d,%d", 
-				pItemElem->m_pPet->GetKind(), pItemElem->m_pPet->GetLevel(),
-				pItemElem->m_pPet->GetExp(), pItemElem->m_pPet->GetEnergy(),
-				pItemElem->m_pPet->GetLife() );
-			for( int i = PL_D; i <= pItemElem->m_pPet->GetLevel(); i++ )
-			{
-				char szAvailLevel[16]	= { 0,};
-				sprintf( szAvailLevel, ",%d", pItemElem->m_pPet->GetAvailLevel( i ) );
-				strcat( pItemStruct->szPet, szAvailLevel );
-			}
-			char szTemp[MAX_PET_NAME_FMT+1]		= { 0,};
-			char szFmt[MAX_PET_NAME_FMT]	= { 0,};
-			SetDBFormatStr( szFmt, MAX_PET_NAME_FMT, pItemElem->m_pPet->GetName() );
-			sprintf( szTemp, ",%s", szFmt );
-			strcat( pItemStruct->szPet, szTemp );
-			strcat( pItemStruct->szPet, "/" );
-		}
-		else
-		{
-			sprintf( pItemStruct->szPet, "0/" );
+			sprintf( szPiercing, ",%d", pItemElem->GetPiercingSize() );
+			strncat( pItemStruct->szPiercing, szPiercing, sizeof(szPiercing) );
 		}
 	}
 	else
+		sprintf( pItemStruct->szPiercing, "%d", pItemElem->GetPiercingSize() );
+
+	for( int nPirecing = 0 ; nPirecing < pItemElem->GetPiercingSize(); ++nPirecing )
 	{
-		// item
-		ZeroMemory( pItemStruct->szItem, sizeof(pItemStruct->szItem) );
-		// ext
-		sprintf( pItemStruct->szExt, "%d,%d,%d/", 0, 0, 0 );
-		// piercing
-		sprintf( pItemStruct->szPiercing, "%d/", 0 );
-		// pet
-		sprintf( pItemStruct->szPet, "0/" );
+		sprintf( szPiercing, ",%d", pItemElem->GetPiercingItem( nPirecing ) );
+		strncat( pItemStruct->szPiercing, szPiercing, sizeof(szPiercing) );
 	}
+	if( pItemElem->IsVisPet() )
+	{
+		for( int nPirecing = 0; nPirecing < pItemElem->GetPiercingSize(); ++nPirecing )
+		{
+			sprintf( szPiercing, ",%d", pItemElem->GetVisKeepTime( nPirecing ) );
+			strncat( pItemStruct->szPiercing, szPiercing, sizeof(szPiercing) );
+		}
+	}
+	strcat( pItemStruct->szPiercing, "/" );
+
+	// pet
+	pItemStruct->hasPet = pItemElem->m_pPet;
+
+	if (!pItemElem->m_pPet) {
+		sprintf(pItemStruct->szPet, "0/");
+	} else {
+		sprintf(pItemStruct->szPet, "1,%d,%d,%d,%d,%d",
+			pItemElem->m_pPet->GetKind(), pItemElem->m_pPet->GetLevel(),
+			pItemElem->m_pPet->GetExp(), pItemElem->m_pPet->GetEnergy(),
+			pItemElem->m_pPet->GetLife());
+		for (int i = PL_D; i <= pItemElem->m_pPet->GetLevel(); i++) {
+			char szAvailLevel[16] = { 0, };
+			sprintf(szAvailLevel, ",%d", pItemElem->m_pPet->GetAvailLevel(i));
+			strcat(pItemStruct->szPet, szAvailLevel);
+		}
+
+		char szFmt[MAX_PET_NAME_FMT] = { 0, };
+		SetDBFormatStr(szFmt, MAX_PET_NAME_FMT, pItemElem->m_pPet->GetName());
+
+		strcat(pItemStruct->szPet, ",");
+		strcat(pItemStruct->szPet, szFmt);
+		strcat(pItemStruct->szPet, "/");
+	}
+
 }

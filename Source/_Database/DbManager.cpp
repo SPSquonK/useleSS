@@ -2647,7 +2647,7 @@ void CDbManager::UpdateGuildBankUpdate( CQuery* pQuery, CQuery* pQueryLog, LPDB_
 
 	char NullStr[2]				= "$";
 	ItemContainerStruct icsGuildBank;
-	SaveGuildBank( &GuildBank, &icsGuildBank );
+	SaveItemContainer( GuildBank, icsGuildBank );
 
 	char szQuery[QUERY_SIZE]	= { 0,};
 	sprintf( szQuery, 
@@ -4499,7 +4499,7 @@ BOOL CDbManager::BankToItemSendTbl( LPCSTR lpFileName )
 				}
 			}
 			ItemContainerStruct icsBank;
-			SaveBank( pMover, &pMover->m_Bank[0], &icsBank );
+			SaveItemContainer( pMover->m_Bank[0], icsBank );
 
 			sprintf( szSql, "UPDATE BANK_TBL"
 				" SET m_Bank = '%s', m_apIndex_Bank = '%s', m_dwObjIndex_Bank = '%s'"
@@ -4667,7 +4667,7 @@ BOOL CDbManager::InventoryToItemSendTbl( LPCSTR lpFileName )
 				}
 			}
 			ItemContainerStruct icsInventory;
-			SaveInventory( pMover, &icsInventory );
+			SaveItemContainer( pMover->m_Inventory, icsInventory );
 
 			sprintf( szSql, "UPDATE INVENTORY_TBL"
 				" SET m_Inventory = '%s', m_apIndex = '%s', m_dwObjIndex = '%s'"
@@ -5310,7 +5310,7 @@ BOOL CDbManager::RemoveInvalidItem( void )
 		if( bUpdate )
 		{
 			ItemContainerStruct is;
-			SaveInventory( pMover, &is );
+			SaveItemContainer( pMover->m_Inventory, is );
 			FILEOUT( "../INVENTORY_TBL.txt", "%07d\t%02d\t%s\t%s\t%s",
 				pMover->m_idPlayer,
 				nServer,
@@ -5355,7 +5355,7 @@ BOOL CDbManager::RemoveInvalidItem( void )
 		if( bUpdate )
 		{
 			ItemContainerStruct is;
-			SaveBank( pMover, &pMover->m_Bank[0], &is );
+			SaveItemContainer( pMover->m_Bank[0], is );
 			FILEOUT( "../BANK_TBL.txt", "%07d\t%02d\t%s\t%s\t%s",
 				pMover->m_idPlayer,
 				nServer,
@@ -5403,7 +5403,7 @@ BOOL CDbManager::RemoveInvalidItem( void )
 		if( bUpdate )
 		{
 			ItemContainerStruct is;
-			SaveGuildBank( &GuildBank, &is );
+			SaveItemContainer( GuildBank, is );
 			FILEOUT( "../GUILD_BANK_TBL.txt", "%06d\t%02d\t%s\t%s\t%s",
 				nGuildId,
 				nServer,
@@ -5614,7 +5614,7 @@ BOOL CDbManager::ConvInventory(std::map<DWORD, CONV_RESULT_ITEM> & mConv )
 		if( bUpdate )
 		{
 			ItemContainerStruct icsInventory;
-			SaveInventory( pMover, &icsInventory );
+			SaveItemContainer( pMover->m_Inventory, icsInventory );
 
 //			FILEOUT( "../queryItemid.txt", "UPDATE INVENTORY_TBL SET m_Inventory = '%s' where m_idPlayer = '%06d' and serverindex = '%02d'",
 //				szInventory, pMover->m_idPlayer, g_appInfo.dwSys );
@@ -5684,7 +5684,7 @@ BOOL CDbManager::ConvBank(std::map<DWORD, CONV_RESULT_ITEM> & mConv )
 		if( bUpdate )
 		{
 			ItemContainerStruct icsBank;
-			SaveBank( pMover, &pMover->m_Bank[0], &icsBank );
+			SaveItemContainer( pMover->m_Bank[0], icsBank );
 
 //			FILEOUT( "../queryItemId.txt", "UPDATE BANK_TBL SET m_Bank = '%s' where m_idPlayer = '%06d' and serverindex = '%02d'",
 //				szBank, pMover->m_idPlayer, g_appInfo.dwSys );
@@ -5759,7 +5759,7 @@ BOOL CDbManager::ConvGuildBank(std::map<DWORD, CONV_RESULT_ITEM> & mConv )
 		if( bUpdate )
 		{
 			ItemContainerStruct icsGuildBank;
-			SaveGuildBank( &GuildBank, &icsGuildBank );
+			SaveItemContainer( GuildBank, icsGuildBank );
 			
 //			FILEOUT( "../queryItemid.txt", "UPDATE GUILD_BANK_TBL SET m_GuildBank = '%s' where m_idGuild = '%06d' and serverindex = '%02d'",
 //				szBank, nGuildId, g_appInfo.dwSys );
@@ -5861,7 +5861,7 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 		if( f )
 		{
 			ItemContainerStruct icsInventory;
-			SaveInventory( pMover, &icsInventory );
+			SaveItemContainer( pMover->m_Inventory, icsInventory );
 
 			sprintf( szSql, "UPDATE INVENTORY_TBL"
 				" SET m_Inventory = '%s', m_apIndex = '%s', m_dwObjIndex = '%s'"
@@ -5926,7 +5926,7 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 		if( f )
 		{
 			ItemContainerStruct icsBank;
-			SaveBank( pMover, &pMover->m_Bank[0], &icsBank );
+			SaveItemContainer( pMover->m_Bank[0], icsBank );
 
 			sprintf( szSql, "UPDATE BANK_TBL"
 				" SET m_Bank = '%s', m_apIndex_Bank = '%s', m_dwObjIndex_Bank = '%s'"
@@ -6000,7 +6000,7 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 		if( f )
 		{
 			ItemContainerStruct icsGuildBank;
-			SaveGuildBank( &GuildBank, &icsGuildBank );
+			SaveItemContainer( GuildBank, icsGuildBank );
 					
 			sprintf( szSql, "UPDATE GUILD_BANK_TBL"
 				" SET m_GuildBank = '%s'"
@@ -6038,7 +6038,7 @@ BOOL CDbManager::QueryGetMailRealTime( CQuery* pQuery )
 	sprintf( szQuery, "MAIL_STR_REALTIME 'S1', '%02d'", g_appInfo.dwSys );
 	if( FALSE == pQuery->Exec( szQuery ) )
 	{
-		AfxMessageBox( szQuery );
+		// AfxMessageBox( szQuery );
 		return FALSE;
 	}
 
@@ -6381,7 +6381,7 @@ BOOL CDbManager::RestorePetInventory(std::map<DWORD, int> & mRestore )
 		if( bUpdate )
 		{
 			ItemContainerStruct icsInventory;
-			SaveInventory( pMover, &icsInventory );
+			SaveItemContainer( pMover->m_Inventory, icsInventory );
 			FILEOUT( "../queryRestorePet.txt", "UPDATE INVENTORY_TBL SET m_Inventory = '%s' where m_idPlayer = '%07d' and serverindex = '%02d'",
 				icsInventory.szItem, pMover->m_idPlayer, nServer );
 			FILEOUT( "../queryRestorePet.txt", "UPDATE INVENTORY_EXT_TBL SET szInventoryPet = '%s' where m_idPlayer = '%07d' and serverindex = '%02d'",
@@ -6454,7 +6454,7 @@ BOOL CDbManager::RestorePetBank(std::map<DWORD, int> & mRestore )
 		if( bUpdate )
 		{
 			ItemContainerStruct icsBank;
-			SaveBank( pMover, &pMover->m_Bank[0], &icsBank );
+			SaveItemContainer( pMover->m_Bank[0], icsBank );
 			FILEOUT( "../queryRestorePet.txt", "UPDATE BANK_TBL SET m_Bank = '%s' where m_idPlayer = '%07d' and serverindex = '%02d'",
 				icsBank.szItem, pMover->m_idPlayer, nServer );
 			FILEOUT( "../queryRestorePet.txt", "UPDATE BANK_EXT_TBL SET szBankPet = '%s' where m_idPlayer = '%07d' and serverindex = '%02d'",
@@ -6533,7 +6533,7 @@ BOOL CDbManager::RestorePetGuildBank(std::map<DWORD, int> & mRestore )
 		if( bUpdate )
 		{
 			ItemContainerStruct icsGuildBank;
-			SaveGuildBank( &GuildBank, &icsGuildBank );
+			SaveItemContainer( GuildBank, icsGuildBank );
 			FILEOUT( "../queryRestorePet.txt", "UPDATE GUILD_BANK_TBL SET m_GuildBank = '%s' where m_idGuild = '%06d' and serverindex = '%02d'",
 				icsGuildBank.szItem, nGuildId, nServer );
 			FILEOUT( "../queryRestorePet.txt", "UPDATE GUILD_BANK_EXT_TBL SET szGuildBankPet = '%s' where m_idGuild = '%06d' and serverindex = '%02d'",

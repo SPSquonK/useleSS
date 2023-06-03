@@ -265,9 +265,8 @@ BOOL CDbManager::GetUserInventoryBank( CMover* pMover, CQuery* pQueryChar )
 
 BOOL CDbManager::SaveUserInventoryBank( char* pszSQL, CMover* pMover, CQuery* pQueryChar, CQuery* pQuerySave )
 {
-	ItemContainerStruct icsInventory, icsBank;
-	SaveInventory( pMover, &icsInventory );
-	SaveBank( pMover, &pMover->m_Bank[0], &icsBank );
+	ItemContainerStruct icsInventory; SaveItemContainer(pMover->m_Inventory, icsInventory);
+	ItemContainerStruct icsBank;      SaveItemContainer(pMover->m_Bank[0]  , icsBank);	
 
 	sprintf( pszSQL, "UPDATE INVENTORY_TBL"
 		" SET m_Inventory = '%s', m_apIndex = '%s', m_dwObjIndex = '%s'"
@@ -356,7 +355,7 @@ BOOL CDbManager::SaveConvGuildBank( char* pszSQL, int nGuildId, CItemContainer* 
 {
 	// Guild Save
 	ItemContainerStruct	icsGuildBank;
-	SaveGuildBank( GuildBank, &icsGuildBank );
+	SaveItemContainer(*GuildBank, icsGuildBank);
 	
 	sprintf( pszSQL, "UPDATE GUILD_BANK_TBL"
 		" SET m_GuildBank = '%s'"
