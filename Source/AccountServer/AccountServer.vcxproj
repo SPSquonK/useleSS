@@ -116,10 +116,6 @@
     </ClCompile>
     <ClCompile Include="dpsrvr.cpp">
     </ClCompile>
-    <ClCompile Include="dpwldsrvr.cpp">
-    </ClCompile>
-    <ClCompile Include="globalgiftbox.cpp">
-    </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
@@ -173,8 +169,6 @@
     <ClInclude Include="DBManager.h" />
     <ClInclude Include="dpdbsrvr.h" />
     <ClInclude Include="dpsrvr.h" />
-    <ClInclude Include="dpwldsrvr.h" />
-    <ClInclude Include="globalgiftbox.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="VersionCommon.h" />
