@@ -10307,16 +10307,14 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE proc [dbo].[CHARACTER_STR_SAVEPLAYER]
-	@iGu        		  				CHAR(2) 			= 'S1', 
 	@im_idPlayer   				CHAR(7) 			= '0000001',
 	@iserverindex  				CHAR(2) 			= '01',
 	/**********************************************
 	 INSERT Â¢Â¯e
 	**********************************************/
 	-- CHARACTER_TBL
-	@iaccount 						VARCHAR(32)	= '',
+	-- 1
 	@im_szName 				VARCHAR(32)	= '',
-	@iplayerslot 					INT						= 0,
 	@idwWorldID 				INT 						= 0,
 	@im_dwIndex 				INT 						= 0,
 	@im_vPos_x 					REAL 					= 0,
@@ -10332,6 +10330,7 @@ CREATE proc [dbo].[CHARACTER_STR_SAVEPLAYER]
 	 UPDATE Â¢Â¯e
 	**********************************************/
 	-- CHARACTER_TBL
+	-- 2
 	@im_vScale_x				REAL					=	0,
 	@im_dwMotion				INT						=	0,
 	@im_fAngle					REAL					=	0,
@@ -10342,28 +10341,25 @@ CREATE proc [dbo].[CHARACTER_STR_SAVEPLAYER]
 	@im_dwGold					INT						=	0,
 	@im_nJob						INT						=	0,
 	@im_pActMover				VARCHAR(50)	=	'',
+	-- 3
 	@im_nStr						INT						=	0,
 	@im_nSta						INT						=	0,
 	@im_nDex						INT						=	0,
 	@im_nInt							INT						=	0,
 	@im_nLevel					INT						=	0,
 	@im_nExp1					BIGINT						=	0,
-	@im_nExp2					BIGINT						=	0,
-	@im_aJobSkill				VARCHAR(500)	='',
-	@im_aLicenseSkill		VARCHAR(500)	='',
 	@im_aJobLv					VARCHAR(500)	='',
-	@im_dwExpertLv			INT						=	0,
+	-- 4
 	@im_idMarkingWorld	INT						=	0,
 	@im_vMarkingPos_x	REAL					=	0,
 	@im_vMarkingPos_y	REAL					=	0,
 	@im_vMarkingPos_z	REAL					=	0,
 	@im_nRemainGP			INT						=	0,
-	@im_nRemainLP			INT						=	0,
 	@im_nFlightLv				INT						=	0,
 	@im_nFxp						INT						=	0,
 	@im_nTxp						INT						=	0,
 	@im_lpQuestCntArray	VARCHAR(3072)= '',
-	@im_chAuthority			CHAR(1)				= '',
+	-- 5
 	@im_dwMode				INT						=	0,
 	@im_idparty					INT						=	0,
 	@im_idMuerderer			INT						=	0,
@@ -10371,73 +10367,55 @@ CREATE proc [dbo].[CHARACTER_STR_SAVEPLAYER]
 	@im_nDeathExp				BIGINT					=  0,
 	@im_nDeathLevel				INT					=  0,
 	@im_dwFlyTime					INT					=  0,
-	@im_nMessengerState 	INT					=  0,
-	@iTotalPlayTime			INT						= 	0
+	@im_nMessengerState 	INT					=  0
 	-------------- (ADD : Version8-PK System)
+	-- 6
 	,@im_nPKValue    		int=0
 	,@im_dwPKPropensity    	int=0
 	,@im_dwPKExp     		int=0
-	-- CARD_CUBE_TBL
-	,@im_Card 						VARCHAR(1980)= '',
-	@im_Index_Card 			VARCHAR(215) 	= '',
-	@im_ObjIndex_Card 	VARCHAR(215) 	= '',
-	@im_Cube 						VARCHAR(1980)= '',
-	@im_Index_Cube 			VARCHAR(215) 	= '',
-	@im_ObjIndex_Cube 	VARCHAR(215) 	= '',
-	-- INVENTORY_TBL
-	@im_Inventory 				VARCHAR(6940)= '',
-	@im_apIndex 				VARCHAR(345) 	= '',
-	@im_adwEquipment 	VARCHAR(135) 	= '',
-	@im_dwObjIndex 			VARCHAR(345) 	= '',
+	,@im_Inventory 				VARCHAR(6940)= ''
+	,@im_apIndex 				VARCHAR(345) 	= ''
+	,@im_dwObjIndex 			VARCHAR(345) 	= ''
+	,@im_extInventory			varchar(2000) = ''
+	,@im_InventoryPiercing varchar(8000) = ''
+	,@iszInventoryPet	varchar(4200)     = '$'
+	,@im_adwEquipment 	VARCHAR(135) 	= '',
 	-- TASKBAR_TBL
+	-- 7
 	@im_aSlotApplet 			VARCHAR(3100)= '',
-	-- TASKBAR_ITEM_TBL
 	@im_aSlotItem 				VARCHAR(6885)= '',
-	-- TASKBAR_TBL
 	@im_aSlotQueue 			VARCHAR(225)= '',
 	@im_SkillBar					SMALLINT			= 0,
-	-- BANK_TBL
-	@im_Bank						VARCHAR(4290)= '',
-	@im_apIndex_Bank		VARCHAR(215)= '',
-	@im_dwObjIndex_Bank VARCHAR(215)= '',
-	@im_dwGoldBank			INT						= 0,
 	@im_nFuel						INT						= -1,
 	@im_tmAccFuel				INT 						= 0,
 	@im_dwSMTime			VARCHAR(2560)='',
 	@iSkillInfluence				varchar(2048) ='',
-	@im_dwSkillPoint			INT 						= 0,
 	@im_aCompleteQuest	varchar(3072) = '',
-	@im_extInventory			varchar(2000) = '',
-	@im_extBank					varchar(2000) = '',
-	@im_InventoryPiercing varchar(8000) = '',
-	@im_BankPiercing		varchar(8000) = '',
+	-- 8
 	@im_dwReturnWorldID INT		 				= 1,
 	@im_vReturnPos_x 		REAL					= 0,
 	@im_vReturnPos_y 		REAL					= 0,
 	@im_vReturnPos_z 		REAL					= 0,
 	-------------- ( Version 7 : Skill Update)
+	-- 9
 	@im_SkillPoint			int=0,
 	@im_SkillLv				int=0,
-	@im_SkillExp			bigint=0,
 	-------------- (AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ : 2006 11 13 Attendant Class)
 	@idwEventFlag                   bigint=0,
 	@idwEventTime          int=0,
-
-
 	@idwEventElapsed                int=0
 	-------------- (ADD : Version8-Angel System)
 	,@im_nAngelExp		bigint=0
 	,@im_nAngelLevel		int=0
 	--------------- Version 9 AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ PetÂ¡Ã†uÂ¡Â¤A
-,@iszInventoryPet	varchar(4200)     = '$'
 
-,@iszBankPet	varchar(4200)     = '$'
 ,@im_dwPetId int = -1
 
 ,@im_nExpLog int = 0
 ,@im_nAngelExpLog int = 0
 ,@im_nCoupon int = 0
 --------------- ver. 13
+	-- 10
 , @im_nHonor int = -1
 , @im_nLayer int = 0
 ---------- Ver 15
@@ -10446,31 +10424,8 @@ CREATE proc [dbo].[CHARACTER_STR_SAVEPLAYER]
 , @im_nCampusPoint int = 0
 , @im_idCampus int = 0
 
-/*******************************************************
-	Gu Â¡Â¾Â¢Â¬Â¨Â¬Â¨Â¢
-    S : SELECT
-    I  : INSERT
-    U : UPDATE
-    D : DELETE
-
-
-2005.04.11 updated
-
-ALTER TABLE  CHARACTER_TBL  ADD   m_aCompleteQuest  varchar(1024) NULL
-ALTER TABLE CHARACTER_TBL  ALTER COLUMN   m_lpQuestCntArray	VARCHAR(3072) NULL
-
-*******************************************************/
 AS
 set nocount on
-declare @last_connect tinyint
-set @last_connect = 1
-
-DECLARE @om_chLoginAuthority CHAR(1),@oaccount VARCHAR(32),@oplayerslot INT
-
-
-
-
-
 	BEGIN
 		UPDATE CHARACTER_TBL
 		      SET	dwWorldID 				= @idwWorldID,
@@ -10501,17 +10456,17 @@ DECLARE @om_chLoginAuthority CHAR(1),@oaccount VARCHAR(32),@oplayerslot INT
 						m_nLevel 					= @im_nLevel,
 						m_nMaximumLevel	= CASE WHEN m_nMaximumLevel < @im_nLevel THEN @im_nLevel ELSE m_nMaximumLevel END,
 						m_nExp1	 				= @im_nExp1,
-						m_nExp2 					= @im_nExp2,
-						m_aJobSkill 				= @im_aJobSkill,
-						m_aLicenseSkill 		= @im_aLicenseSkill,
+						m_nExp2 					= 0,
+						m_aJobSkill 				= '',
+						m_aLicenseSkill 		= '',
 						m_aJobLv 					= @im_aJobLv,
-						m_dwExpertLv 			= @im_dwExpertLv,
+						m_dwExpertLv 			= 0,
 						m_idMarkingWorld 	= @im_idMarkingWorld,
 						m_vMarkingPos_x 	= @im_vMarkingPos_x,
 						m_vMarkingPos_y 	= @im_vMarkingPos_y,
 						m_vMarkingPos_z 	= @im_vMarkingPos_z,
 						m_nRemainGP 			= @im_nRemainGP,
-						m_nRemainLP 			= @im_nRemainLP,
+						m_nRemainLP 			= 0,
 						m_nFlightLv 				= @im_nFlightLv,
 						m_nFxp 						= @im_nFxp,
 						m_nTxp 						= @im_nTxp,
@@ -10523,19 +10478,17 @@ DECLARE @om_chLoginAuthority CHAR(1),@oaccount VARCHAR(32),@oplayerslot INT
 						m_nFame 					= @im_nFame,	
 						m_nDeathExp			= @im_nDeathExp,
 						m_nDeathLevel			= @im_nDeathLevel,
-						--m_dwFlyTime				= m_dwFlyTime + @im_dwFlyTime,
 						m_dwFlyTime = @im_dwFlyTime,
 						m_nMessengerState = @im_nMessengerState,
-						TotalPlayTime 			= TotalPlayTime + @iTotalPlayTime,
 						m_tmAccFuel 			= @im_tmAccFuel,
-						m_dwSkillPoint			= @im_dwSkillPoint,
+						m_dwSkillPoint			= 0,
 						m_dwReturnWorldID= @im_dwReturnWorldID,
 						m_vReturnPos_x		= @im_vReturnPos_x,
 						m_vReturnPos_y		= @im_vReturnPos_y,
 						m_vReturnPos_z		= @im_vReturnPos_z,
 						m_SkillPoint		=@im_SkillPoint,
 						m_SkillLv			=@im_SkillLv,
-				        m_SkillExp                      =@im_SkillExp
+				        m_SkillExp          = 0
 				      -------------- (AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ : 2006 11 13 Attendant Event)
 				        , dwEventFlag                     =@idwEventFlag
 				        , dwEventTime                     =@idwEventTime
@@ -10612,19 +10565,8 @@ where m_idPlayer = @im_idPlayer and serverindex = @iserverindex
 		 WHERE 	m_idPlayer   				= @im_idPlayer 	
 			  AND 	serverindex 				= @iserverindex
 
-
-
-
 		UPDATE TASKBAR_ITEM_TBL 
 			  SET 	m_aSlotItem 				= @im_aSlotItem						
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-
-		UPDATE BANK_TBL 
-			  SET 	m_Bank 						= @im_Bank,
-						m_apIndex_Bank 		= @im_apIndex_Bank, 
-						m_dwObjIndex_Bank = @im_dwObjIndex_Bank, 
-						m_dwGoldBank 		= @im_dwGoldBank
 		 WHERE 	m_idPlayer   				= @im_idPlayer 	
 			  AND 	serverindex 				= @iserverindex
 
@@ -10637,13 +10579,6 @@ where m_idPlayer = @im_idPlayer and serverindex = @iserverindex
 		      SET 	m_extInventory 				= @im_extInventory,
 						m_InventoryPiercing= @im_InventoryPiercing
 			,szInventoryPet	= @iszInventoryPet
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-
-		UPDATE BANK_EXT_TBL 
-			  SET 	m_extBank 						= @im_extBank,
-						m_BankPiercing			= @im_BankPiercing
-			, szBankPet = @iszBankPet
 		 WHERE 	m_idPlayer   				= @im_idPlayer 	
 			  AND 	serverindex 				= @iserverindex
 

@@ -46,23 +46,13 @@ void CDbManager::SavePlayer( CQuery *qry, CQuery* pQueryLog, CMover* pMover, cha
 	SaveQuest( pMover, QuestCnt, m_aCompleteQuest, CheckedQuest );
 
 	///////// Inventory
-	ItemContainerStruct	icsInventory, icsBank[3];
+	ItemContainerStruct	icsInventory;
 	SaveItemContainer( pMover->m_Inventory, icsInventory );
-	for( int k = 0 ; k < 3 ; ++k )
-		SaveItemContainer( pMover->m_Bank[k], icsBank[k] );
 
 	///////// Equipment
 	char Equipment[500] = {0,};
 	SaveEquipment( pMover, Equipment );
-
-	///////// CardCube	
-	char Card[2]	= "$";
-	char sCardIndex[2]	= "$";
-	char sCardObjIndex[2]	= "$";
-	char Cube[2]	= "$";
-	char sCubeIndex[2]	= "$";
-	char sCubeObjIndex[2]	= "$";
-	
+		
 	///////// TaskBar
 	char AppletTaskBar[MAX_APPLETTASKBAR] = { 0, }; 
 	char ItemTaskBar[MAX_ITEMTASKBAR] = { 0, };  
@@ -79,91 +69,39 @@ void CDbManager::SavePlayer( CQuery *qry, CQuery* pQueryLog, CMover* pMover, cha
 	PutExpLog( pQueryLog, pMover, ( pMover->m_dwPeriodicTick == 0 ? 'O': 'P' ) );
 
 	//	mulcom	100218	유럽 페냐 관련 CHARACTER_STR U1 변경 ( U1 -> C1 )
-	sprintf( szQuery, "{call CHARACTER_STR_SAVEPLAYER('U1','%07d','%02d','',"
-					  "?,?,?,?,?,?,?,?,?,?,?,"		// 1
-					  "?,?,?,?,?,?,?,?,?,?,?,"		// 2
-					  "?,?,?,?,?,?,?,?,?,?,?,"		// 3
-					  "?,?,?,?,?,?,?,?,?,?,?,"		// 4
-					  "?,?,?,?,?,?,?,?,?,?,?,"		// 5
-					  "?,?,?,?,?,?,?,?,?,?,?,"		// 6
-					  "?,?,?,?,?,?,?,?,?,?,?,"		// 7
-//					  "?,?,?,?,?,?,?,?,?,?,?,"		// 8
-					  "?,?,?,?,?,?,?,?,?,%7.0f,%7.0f,"		// 8
-	#ifdef __EVENT_1101
-//					  "?,?,?,?,?,?"
-						"%7.0f,?,?,?,?,?"
-	#else	// __EVENT_1101
-					  "?,?,?"
-	#endif	// __EVENT_1101
-					  ",?"
-					  ",?,?"
-					  ",?,?,?"
-#ifdef __EXP_ANGELEXP_LOG
-					  ",?,?"
-#endif // __EXP_ANGELEXP_LOG
-#ifdef __EVENTLUA_COUPON
-					  ",?"
-#endif // __EVENTLUA_COUPON
-					  ",?"
-#ifdef __LAYER_1015
-					  ",?"
-#endif	// __LAYER_1015
-					  ",?"
-					  ",?,?"
+	const char * characterStrSaveFormat =
+		"{call CHARACTER_STR_SAVEPLAYER('%07d','%02d',"
+	// 1 2 3 4 5 6 7 8 9 0 1 2
+		"?,?,?,?,?,?,?,?,?,?,?,?,"  // 1: @im_szName -> @im_dwSex
+		"?,?,?,?,?,?,?,?,?,?,"      // 2: @im_vScale_x -> @im_pActMover
+		"?,?,?,?,?,?,?,"            // 3: @im_nStr -> @im_aJobLv
+		"?,?,?,?,?,?,?,?,?,"        // 4: @im_idMarkingWorld -> @im_lpQuestCntArray
+		"?,?,?,?,?,?,?,?,"          // 5: @im_dwMode -> @im_nMessengerState
+		"?,?,?,?,?,?,?,?,?,?,"      // 6: @im_nPKValue -> @im_adwEquipment
+		"?,?,?,?,?,?,?,?,?,"        // 7: @im_aSlotApplet -> @im_aCompleteQuest
+		"?,%7.0f,%7.0f,%7.0f,"      // 8: @im_dwReturnWorldID -> @im_vReturnPos_z
+		"?,?,?,?,?,?,?,?,?,?,?,"    // 9: @im_SkillPoint -> @im_nCoupon
+		"?,?,?,?,?"                 // 10: @im_nHonor -> @im_idCampus
+		")}";
 
-//					  ")}", pMover->m_idPlayer, g_appInfo.dwSys );		// +3
-					  ")}", pMover->m_idPlayer, g_appInfo.dwSys, pMover->m_vReturnPos.x, pMover->m_vReturnPos.y, pMover->m_vReturnPos.z );		// +3
+	sprintf( szQuery, characterStrSaveFormat,
+		pMover->m_idPlayer, g_appInfo.dwSys,
+		pMover->m_vReturnPos.x, pMover->m_vReturnPos.y, pMover->m_vReturnPos.z
+	);		// +3
 
-	char szAuthority[2] = "F";
-	int nSlot = 0;
 	int nSex = pMover->GetSex();
-	int nExpertLv = 0;
-	int nRemainLP = 0;
-	int nTotalPlayTime = 0;
 	DWORD dwGold = pMover->GetGold();
 	int i=0;
 	int j=-1;
-	__int64 nExp2 = 0;
-	__int64 nSkillExp = 0;
-	DWORD dwSkillPoint = 0;
-
-//////////////////////////////////////////////////////////////////////////////////////
-int MAX_SAVEPARAM = 88;
-	MAX_SAVEPARAM += 3;
-#ifdef __EVENT_1101
-		MAX_SAVEPARAM += 3;
-#endif // __EVENT_1101
-	MAX_SAVEPARAM += 1;
-	MAX_SAVEPARAM += 2;
-
-	MAX_SAVEPARAM += 3;
-
-#ifdef __EXP_ANGELEXP_LOG
-	MAX_SAVEPARAM += 2;
-#endif // __EXP_ANGELEXP_LOG
-
-#ifdef __EVENTLUA_COUPON
-	MAX_SAVEPARAM += 1;
-#endif // __EVENTLUA_COUPON
-
-	MAX_SAVEPARAM += 1;
-#ifdef __LAYER_1015
-	MAX_SAVEPARAM	+= 1;	// m_nLayer
-#endif	// __LAYER_1015
-	MAX_SAVEPARAM	+= 1;	// m_aCheckedQuest
-	MAX_SAVEPARAM	+= 2;	// m_nCampusPoint, m_idCampus
 
 //////////////////////////////////////////////////////////////////////////////////////
 	
-	int nNumSkill = 0;
-	int nSlaughter = 0;
+	std::array<bool, 256> bOK;
+	bOK.fill(false);
 
-	std::unique_ptr<BOOL[]> bOK = std::unique_ptr<BOOL[]>(new BOOL[MAX_SAVEPARAM](FALSE));
-
-//	BOOL bOK[MAX_SAVEPARAM];
 //	qry->StartLogBindedParameters();
+	// 1
 	bOK[++j] = qry->BindParameter( ++i, pMover->m_szName, 32 );
-	bOK[++j] = qry->BindParameter( ++i, &nSlot );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwWorldID );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwIndex );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vPos.x );
@@ -173,9 +111,9 @@ int MAX_SAVEPARAM = 88;
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwSkinSet );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwHairMesh );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwHairColor );
-	// 1
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwHeadMesh );
 	bOK[++j] = qry->BindParameter( ++i, &nSex );
+	// 2
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vScale.x );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwMotion );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_fAngle );
@@ -185,113 +123,82 @@ int MAX_SAVEPARAM = 88;
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwRideItemIdx );
 	bOK[++j] = qry->BindParameter( ++i, &dwGold );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nJob );
-	// 2
 	bOK[++j] = qry->BindParameter( ++i, cActMover, 50 );
+	// 3
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nStr );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nSta );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nDex );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nInt );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nLevel );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nExp1 );
-	bOK[++j] = qry->BindParameter( ++i, &nExp2 );
-	bOK[++j] = qry->BindParameter( ++i, JobSkill, 500 );
-	bOK[++j] = qry->BindParameter( ++i, LicenseSkill, 500 );
 	bOK[++j] = qry->BindParameter( ++i, JobLv, 500 );
-	// 3
-	bOK[++j] = qry->BindParameter( ++i, &nExpertLv );
+	// 4
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_idMarkingWorld );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vMarkingPos.x );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vMarkingPos.y );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vMarkingPos.z );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nRemainGP );
-	bOK[++j] = qry->BindParameter( ++i, &nRemainLP );
+
 	int nTutorialState	= pMover->GetTutorialState();
 	bOK[++j] = qry->BindParameter( ++i, &nTutorialState );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nFxp );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nFxp );
 	bOK[++j] = qry->BindParameter( ++i, QuestCnt, 3072 );
-	// 4
-	bOK[++j] = qry->BindParameter<SQL_CHAR>( ++i, szAuthority, 1 );
+	// 5
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwMode );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_idparty );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_idMurderer );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nFame );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nDeathExp );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nDeathLevel );
-#ifdef __JEFF_9_20
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwMute );
-#else	// __JEFF_9_20
-	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwFlyTime );
-#endif	// __JEFF_9_20
+
 	long dwState	= static_cast<long>(pMover->m_RTMessenger.GetState());
 	bOK[++j] = qry->BindParameter( ++i, &dwState );
-	bOK[++j] = qry->BindParameter( ++i, &nTotalPlayTime );
+	// 6
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nPKValue );
-	// 5
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwPKPropensity );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwPKExp );
-	bOK[++j] = qry->BindParameter( ++i, Card, 1980 );
-	bOK[++j] = qry->BindParameter( ++i, sCardIndex, 215 );
-	bOK[++j] = qry->BindParameter( ++i, sCardObjIndex, 215 );
-	bOK[++j] = qry->BindParameter( ++i, Cube, 1980 );
-	bOK[++j] = qry->BindParameter( ++i, sCubeIndex, 215 );
-	bOK[++j] = qry->BindParameter( ++i, sCubeObjIndex, 215 );
 	bOK[++j] = qry->BindParameter( ++i, icsInventory.szItem, 6940 );
 	bOK[++j] = qry->BindParameter( ++i, icsInventory.szIndex, 345  );
-	bOK[++j] = qry->BindParameter( ++i, Equipment, 135  );
-	// 6
 	bOK[++j] = qry->BindParameter( ++i, icsInventory.szObjIndex, 345  );
+	bOK[++j] = qry->BindParameter( ++i, icsInventory.szExt, 2000 );
+	bOK[++j] = qry->BindParameter( ++i, icsInventory.szPiercing, 7800 );
+	bOK[++j] = qry->BindParameter( ++i, icsInventory.szPet, 2000 );
+	bOK[++j] = qry->BindParameter( ++i, Equipment, 135  );
+	// 7
 	bOK[++j] = qry->BindParameter( ++i, AppletTaskBar, 3100 );
 	bOK[++j] = qry->BindParameter( ++i, ItemTaskBar, 6885 );
 	bOK[++j] = qry->BindParameter( ++i, SkillTaskBar, 225 );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_UserTaskBar.m_nActionPoint );
-	bOK[++j] = qry->BindParameter( ++i, icsBank[pMover->m_nSlot].szItem, 4290 );
-	bOK[++j] = qry->BindParameter( ++i, icsBank[pMover->m_nSlot].szIndex, 215 );
-	bOK[++j] = qry->BindParameter( ++i, icsBank[pMover->m_nSlot].szObjIndex, 215 );
-	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwGoldBank[pMover->m_nSlot] );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nFuel );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_tmAccFuel );
-	// 7
 	bOK[++j] = qry->BindParameter( ++i, szSMTime, 2560);
 	bOK[++j] = qry->BindParameter( ++i, szSkillInfluence, 7500);
-	bOK[++j] = qry->BindParameter( ++i, &dwSkillPoint );
 	bOK[++j] = qry->BindParameter( ++i, m_aCompleteQuest, 1024 );
-	bOK[++j] = qry->BindParameter( ++i, icsInventory.szExt, 2000 );
-	bOK[++j] = qry->BindParameter( ++i, icsBank[pMover->m_nSlot].szExt, 2000 );
-	bOK[++j] = qry->BindParameter( ++i, icsInventory.szPiercing, 7800 );
-	bOK[++j] = qry->BindParameter( ++i, icsBank[pMover->m_nSlot].szPiercing, 7800 );
+	// 8
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwReturnWorldID );
+	// Return position x, y, and z directly in sprintf
+	// 9
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nSkillPoint );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nSkillLevel );
-	bOK[++j] = qry->BindParameter( ++i, &nSkillExp );
-#ifdef __EVENT_1101
-	#ifdef __EVENT_1101_2
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nEventFlag );
-	#else // __EVENT_1101_2
-	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwEventFlag );
-	#endif // __EVENT_1101_2
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwEventTime );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwEventElapsed );
-#endif	// __EVENT_1101
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nAngelExp );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nAngelLevel );
-	bOK[++j] = qry->BindParameter( ++i, icsInventory.szPet, 2000 );
-	bOK[++j] = qry->BindParameter( ++i, icsBank[pMover->m_nSlot].szPet, 2000 );
 	DWORD dwPetId	= pMover->GetPetId();
 	bOK[++j] = qry->BindParameter( ++i, &dwPetId );
-#ifdef __EXP_ANGELEXP_LOG
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nExpLog );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nAngelExpLog );
-#endif // __EXP_ANGELEXP_LOG
-
-#ifdef __EVENTLUA_COUPON
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nCoupon );
-#endif // __EVENTLUA_COUPON
+
+	// 10
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_nHonor );
-#ifdef __LAYER_1015
+
 	int nLayer	= pMover->GetLayer();
 	bOK[++j]	= qry->BindParameter( ++i, &nLayer );
-#endif	// __LAYER_1015
+
 	bOK[++j] = qry->BindParameter( ++i, CheckedQuest, 100 );
 	int nCampusPoint	= pMover->GetCampusPoint();
 	bOK[++j]	= qry->BindParameter( ++i, &nCampusPoint );
@@ -346,26 +253,29 @@ int MAX_SAVEPARAM = 88;
 #endif // __S_NEW_SKILL_2
 
 	// 다른 캐릭터의 bank 저장
-	for( i = 0 ; i < 3 ; ++i )
-	{
-		if( pMover->m_idPlayerBank[i] != 0 && i != pMover->m_nSlot )
-		{
-			DBQryAddBankSave( szQuery, pMover->m_idPlayerBank[i]);
-			
-			{
-				qry->BindParameter( 1, icsBank[i].szItem, 4290 );
-				qry->BindParameter( 2, icsBank[i].szIndex, 215 );
-				qry->BindParameter( 3, icsBank[i].szObjIndex, 215 );
-				qry->BindParameter( 4, &pMover->m_dwGoldBank[i]);
-				qry->BindParameter( 5, icsBank[i].szExt, 2000 );
-				qry->BindParameter( 6, icsBank[i].szPiercing, 7800 );
-				qry->BindParameter( 7, icsBank[i].szPet, 2689 );
-			}
 
-			if( FALSE == qry->Exec( szQuery ) )
-			{
-				return;
-			}
+	
+	ItemContainerStruct icsBank[3];
+
+	for ( i = 0 ; i < 3 ; ++i ) {
+		const u_long playerBank = i == pMover->m_nSlot ? pMover->m_idPlayer : pMover->m_idPlayerBank[i];
+		if (playerBank == 0) continue;
+
+		SaveItemContainer(pMover->m_Bank[i], icsBank[i]);
+		DBQryAddBankSave( szQuery, playerBank);
+		
+		{
+			qry->BindParameter( 1, icsBank[i].szItem, 4290 );
+			qry->BindParameter( 2, icsBank[i].szIndex, 215 );
+			qry->BindParameter( 3, icsBank[i].szObjIndex, 215 );
+			qry->BindParameter( 4, &pMover->m_dwGoldBank[i]);
+			qry->BindParameter( 5, icsBank[i].szExt, 2000 );
+			qry->BindParameter( 6, icsBank[i].szPiercing, 7800 );
+			qry->BindParameter( 7, icsBank[i].szPet, 2689 );
+		}
+
+		if ( FALSE == qry->Exec( szQuery ) ) {
+			return;
 		}
 	}
 
