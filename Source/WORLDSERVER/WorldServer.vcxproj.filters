@@ -66,9 +66,6 @@
     <ClCompile Include="AttackArbiter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\auction.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\Campus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -606,9 +603,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="AttackArbiter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\auction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\Campus.h">

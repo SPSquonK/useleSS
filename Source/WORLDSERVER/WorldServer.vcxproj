@@ -102,8 +102,6 @@
     <ClCompile Include="..\_Interface\FuncTextCmd_ItemEnchant.cpp" />
     <ClCompile Include="AttackArbiter.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Common\auction.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\Campus.cpp">
     </ClCompile>
     <ClCompile Include="CampusHelper.cpp">
@@ -458,7 +456,6 @@
     <ClInclude Include="GroupedEmission.h" />
     <ClInclude Include="WantedListSnapshot.h" />
     <ClInclude Include="AttackArbiter.h" />
-    <ClInclude Include="..\_Common\auction.h" />
     <ClInclude Include="..\_Common\Campus.h" />
     <ClInclude Include="CampusHelper.h" />
     <ClInclude Include="..\_Common\couple.h" />
