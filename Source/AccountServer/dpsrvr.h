@@ -25,6 +25,7 @@ public:
 
 	struct IPRange { std::uint32_t from; std::uint32_t to; };
 	sqktd::mutexed_object<std::vector<IPRange>> m_IPCut;
+	bool m_IPCutIsEmpty = false; // If true, m_ipCut is guaranteed to be empty
 
 	sqktd::mutexed_on_write_object<CListedServers> m_servers;
 

@@ -248,11 +248,13 @@ bool CDPSrvr_AccToCert::LoadIPCut( LPCSTR lpszFileName ) {
 	bool result = false;
 
 	m_IPCut.access([&](std::vector<IPRange> & ipRange) {
+		m_IPCutIsEmpty = false;
 		ipRange.clear();
 
 		CScanner s;
 		if (!s.Load(lpszFileName)) {
 			result = false;
+			m_IPCutIsEmpty = true;
 			return;
 		}
 		
@@ -280,6 +282,8 @@ bool CDPSrvr_AccToCert::LoadIPCut( LPCSTR lpszFileName ) {
 
 			s.GetToken();
 		}
+
+		m_IPCutIsEmpty = ipRange.empty();
 		});
 
 	return result;
@@ -291,6 +295,13 @@ bool CDPSrvr_AccToCert::IsBanned(LPCSTR lpszIP) {
 		Error("AccountServer IPCut: Invalid IP received for checking %s", lpszIP);
 		return false;
 	}
+
+	if (m_IPCutIsEmpty) return false;
+	// Note: It may be possible that without the if, m_IPCutIsEmpty field would
+	// become false when reaching m_IPCut. But the only scenario that it could
+	// appear is if a new file is loaded between the previous line and the
+	// resource access. This is very unlikely and anyway, people connecting
+	// within the milliseconds their IP is banned is bound to happend anyway.
 
 	bool result = false;
 
