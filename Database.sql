@@ -1296,62 +1296,22 @@ CREATE TABLE [dbo].[MAIL_TBL](
 	[idReceiver] [char](7) NULL,
 	[idSender] [char](7) NULL,
 	[nGold] [bigint] NOT NULL,
-	[tmCreate] [int] NULL,
-	[byRead] [int] NULL,
+	[tmCreate] [int] NULL DEFAULT 0,
+	[byRead] [int] NULL DEFAULT 0,
 	[szTitle] [varchar](128) NOT NULL,
 	[szText] [varchar](255) NOT NULL,
-	[dwItemId] [int] NOT NULL,
-	[nItemNum] [int] NOT NULL,
-	[nRepairNumber] [int] NOT NULL,
-	[nHitPoint] [int] NOT NULL,
-	[nMaxHitPoint] [int] NOT NULL,
-	[nMaterial] [int] NOT NULL,
-	[byFlag] [int] NOT NULL,
-	[dwSerialNumber] [int] NOT NULL,
-	[nOption] [int] NOT NULL,
-	[bItemResist] [int] NOT NULL,
-	[nResistAbilityOption] [int] NOT NULL,
-	[idGuild] [int] NOT NULL,
-	[nResistSMItemId] [int] NOT NULL,
-	[bCharged] [int] NOT NULL,
-	[dwKeepTime] [int] NOT NULL,
-	[nRandomOptItemId] [bigint] NULL,
-	[nPiercedSize] [int] NOT NULL,
-	[dwItemId1] [int] NOT NULL,
-	[dwItemId2] [int] NOT NULL,
-	[dwItemId3] [int] NOT NULL,
-	[dwItemId4] [int] NOT NULL,
+	[szItem] [varchar](max) NOT NULL DEFAULT '',
+	[szExt] [varchar](max) NOT NULL DEFAULT '',
+	[szPiercing] [varchar](max) NOT NULL DEFAULT '',
+	[szPet] [varchar](max) NOT NULL DEFAULT '',
 	[SendDt] [datetime] NULL,
 	[ReadDt] [datetime] NULL,
 	[GetGoldDt] [datetime] NULL,
 	[DeleteDt] [datetime] NULL,
-	[ItemFlag] [int] NOT NULL,
+	[ItemFlag] [int] NOT NULL DEFAULT 0,
 	[ItemReceiveDt] [datetime] NULL,
-	[GoldFlag] [int] NOT NULL,
-	[bPet] [int] NULL,
-	[nKind] [int] NULL,
-	[nLevel] [int] NULL,
-	[dwExp] [int] NULL,
-	[wEnergy] [int] NULL,
-	[wLife] [int] NULL,
-	[anAvailLevel_D] [int] NULL,
-	[anAvailLevel_C] [int] NULL,
-	[anAvailLevel_B] [int] NULL,
-	[anAvailLevel_A] [int] NULL,
-	[anAvailLevel_S] [int] NULL,
-	[dwItemId5] [int] NULL,
-	[dwItemId6] [int] NULL,
-	[dwItemId7] [int] NULL,
-	[dwItemId8] [int] NULL,
-	[dwItemId9] [int] NULL,
-	[dwItemId10] [int] NULL,
-	[dwItemId11] [int] NULL,
-	[dwItemId12] [int] NULL,
-	[dwItemId13] [int] NULL,
-	[dwItemId14] [int] NULL,
-	[dwItemId15] [int] NULL,
-	[nPiercedSize2] [int] NULL,
-	[szPetName] [varchar](32) NULL,
+	[GoldFlag] [int] NOT NULL DEFAULT 0,
+
  CONSTRAINT [PK_MAIL_No] PRIMARY KEY CLUSTERED 
 (
 	[serverindex] ASC,
@@ -7302,13 +7262,12 @@ while @i <= @j
 set nocount off
 return
 GO
-/****** Object:  StoredProcedure [dbo].[MAIL_STR]    Script Date: 04/03/2010 12:42:39 ******/
+/****** Object:  StoredProcedure [dbo].[MAIL_STR_ADDMAIL]    Script Date: 2023-06-04 18:41:39 ******/
 SET ANSI_NULLS OFF
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE  proc [dbo].[MAIL_STR]
-	@iGu		CHAR(2),
+CREATE  proc [dbo].[MAIL_STR_ADDMAIL]
 	@nMail		INT,
 	@serverindex	CHAR(2),
 	@idReceiver	CHAR(7)	= '0000000',
@@ -7318,47 +7277,52 @@ CREATE  proc [dbo].[MAIL_STR]
 	@byRead	INT	= 0,
 	@szTitle		VARCHAR(128)	= '',
 	@szText		VARCHAR(1024)	= '',
-	@dwItemId	INT	= 0,
-	@nItemNum	INT	= 0,
-	@nRepairNumber	INT	= 0,
-	@nHitPoint	INT	= 0,
-	@nMaxHitPoint	INT	= 0,
-	@nMaterial	INT	= 0,
-	@byFlag		INT	= 0,
-	@dwSerialNumber	INT	= 0,
-	@nOption	INT	= 0,
-	@bItemResist	INT	= 0,
-	@nResistAbilityOption	INT	= 0,
-	@idGuild		INT	= 0,
-	@nResistSMItemId	INT	= 0,
-	@bCharged	INT	= 0,
-	@dwKeepTime	INT	= 0,
-	@nRandomOptItemId	BIGINT	= 0,
-	@nPiercedSize	INT	= 0,
-	@dwItemId1	INT	= 0,
-	@dwItemId2	INT	= 0,
-	@dwItemId3	INT	= 0,
-	@dwItemId4	INT	= 0
-	------------------- Version9 Pet
-	,@bPet    int = 0,
-	@nKind  int = 0,
-	@nLevel int = 0,
-	@dwExp              int = 0,
-	@wEnergy          int = 0,
-	@wLife   int = 0,
-	@anAvailLevel_D int = 0, 
-	@anAvailLevel_C int = 0,
-	@anAvailLevel_B int = 0,
-	@anAvailLevel_A int = 0,
-	@anAvailLevel_S int = 0,
+	@szItem VARCHAR(max) = '',
+	@szExt VARCHAR(max) = '',
+	@szPiercing VARCHAR(max) = '',
+	@szPet VARCHAR(max) = ''
+AS
+set nocount on
 
-	@dwItemId5 int = 0
-	---------------- ver.12
-	,@dwItemId6 int = 0, @dwItemId7 int = 0, @dwItemId8 int = 0, @dwItemId9 int = 0, @dwItemId10 int = 0
-	,@dwItemId11 int = 0, @dwItemId12 int = 0, @dwItemId13 int = 0, @dwItemId14 int = 0, @dwItemId15 int = 0
-	,@nPiercedSize2 int = 0
-	----------- Ver. 13
-	, @szPetName varchar(32) = ''
+
+		INSERT MAIL_TBL
+			(
+				nMail,
+				serverindex,
+				idReceiver, idSender,
+				nGold,
+				tmCreate,
+				byRead,
+				szTitle, szText,
+				SendDt,
+				szItem, szExt, szPiercing, szPet
+			)
+			VALUES 
+			(
+				@nMail,
+				@serverindex,
+				@idReceiver, @idSender,
+				@nGold,
+				@tmCreate,
+				@byRead,
+				@szTitle, @szText,
+				getdate(),
+				@szItem, @szExt, @szPiercing, @szPet
+			)
+
+set nocount off
+GO
+
+/****** Object:  StoredProcedure [dbo].[MAIL_STR]    Script Date: 04/03/2010 12:42:39 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE  proc [dbo].[MAIL_STR]
+	@iGu		CHAR(2),
+	@nMail		INT,
+	@serverindex	CHAR(2),
+	@tmCreate	INT	= 0
 
 AS
 set nocount on
@@ -7368,88 +7332,6 @@ IF @iGu	= 'S1'
 	RETURN
 	END
 ELSE
-IF @iGu	= 'A1'
-	BEGIN
-		INSERT MAIL_TBL
-			(
-				nMail,
-				serverindex,
-				idReceiver,
-				idSender,
-				nGold,
-				tmCreate,
-				byRead,
-				szTitle,
-				szText,
-				dwItemId,
-				nItemNum,
-				nRepairNumber,
-				nHitPoint,
-				nMaxHitPoint,
-				nMaterial,
-				byFlag,
-				dwSerialNumber,
-				nOption,
-				bItemResist,
-				nResistAbilityOption,
-				idGuild,
-				nResistSMItemId,
-				bCharged,
-				dwKeepTime,
-				nRandomOptItemId,
-				nPiercedSize,
-				dwItemId1,
-				dwItemId2,
-				dwItemId3,
-				dwItemId4,
-				SendDt
-				,bPet, nKind, nLevel, dwExp, wEnergy, wLife, anAvailLevel_D, anAvailLevel_C, anAvailLevel_B, anAvailLevel_A, anAvailLevel_S
-				,dwItemId5
-				, dwItemId6, dwItemId7, dwItemId8, dwItemId9, dwItemId10, dwItemId11
-				, dwItemId12, dwItemId13, dwItemId14, dwItemId15, nPiercedSize2
-				, szPetName
-			)
-			VALUES 
-			(
-				@nMail,
-				@serverindex,
-				@idReceiver,
-				@idSender,
-				@nGold,
-				@tmCreate,
-				@byRead,
-				@szTitle,
-				@szText,
-				@dwItemId,
-				@nItemNum,
-				@nRepairNumber,
-				@nHitPoint,
-				@nMaxHitPoint,
-				@nMaterial,
-				@byFlag,
-				@dwSerialNumber,
-				@nOption,
-				@bItemResist,
-				@nResistAbilityOption,
-				@idGuild,
-				@nResistSMItemId,
-				@bCharged,
-				@dwKeepTime,
-				@nRandomOptItemId,
-				@nPiercedSize,
-				@dwItemId1,
-				@dwItemId2,
-				@dwItemId3,
-				@dwItemId4,
-				getdate()
-				,@bPet, @nKind, @nLevel, @dwExp, @wEnergy, @wLife, @anAvailLevel_D, @anAvailLevel_C, @anAvailLevel_B, @anAvailLevel_A, @anAvailLevel_S
-				,@dwItemId5
-				, @dwItemId6, @dwItemId7, @dwItemId8, @dwItemId9, @dwItemId10, @dwItemId11
-				, @dwItemId12, @dwItemId13, @dwItemId14, @dwItemId15, @nPiercedSize2
-				, @szPetName
-			)
-	RETURN
-	END
 IF @iGu	= 'D1'
 	BEGIN
 		UPDATE MAIL_TBL SET byRead=90, DeleteDt=getdate() WHERE nMail = @nMail AND serverindex = @serverindex
@@ -12305,87 +12187,6 @@ ALTER TABLE [dbo].[ITEM_SEND_TBL] ADD  CONSTRAINT [DF_ITEM_SEND_TBL_adwUMItemId3
 GO
 /****** Object:  Default [DF_ITEM_SEND_TBL_adwUMItemId4]    Script Date: 04/03/2010 12:42:44 ******/
 ALTER TABLE [dbo].[ITEM_SEND_TBL] ADD  CONSTRAINT [DF_ITEM_SEND_TBL_adwUMItemId4]  DEFAULT ((0)) FOR [adwUMItemId4]
-GO
-/****** Object:  Default [DF_MAIL_TBL_tmCreate]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_tmCreate]  DEFAULT ((0)) FOR [tmCreate]
-GO
-/****** Object:  Default [DF_MAIL_TBL_byRead]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_byRead]  DEFAULT ((0)) FOR [byRead]
-GO
-/****** Object:  Default [DF_MAIL_TBL_ItemFlag]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_ItemFlag]  DEFAULT ((0)) FOR [ItemFlag]
-GO
-/****** Object:  Default [DF_MAIL_TBL_GoldFag]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_GoldFag]  DEFAULT ((0)) FOR [GoldFlag]
-GO
-/****** Object:  Default [DF__MAIL_TBL__bPet__6C040022]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__bPet__6C040022]  DEFAULT ((0)) FOR [bPet]
-GO
-/****** Object:  Default [DF__MAIL_TBL__nKind__6CF8245B]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__nKind__6CF8245B]  DEFAULT ((0)) FOR [nKind]
-GO
-/****** Object:  Default [DF__MAIL_TBL__nLevel__6DEC4894]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__nLevel__6DEC4894]  DEFAULT ((0)) FOR [nLevel]
-GO
-/****** Object:  Default [DF__MAIL_TBL__dwExp__6EE06CCD]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__dwExp__6EE06CCD]  DEFAULT ((0)) FOR [dwExp]
-GO
-/****** Object:  Default [DF__MAIL_TBL__wEnerg__6FD49106]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__wEnerg__6FD49106]  DEFAULT ((0)) FOR [wEnergy]
-GO
-/****** Object:  Default [DF__MAIL_TBL__wLife__70C8B53F]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__wLife__70C8B53F]  DEFAULT ((0)) FOR [wLife]
-GO
-/****** Object:  Default [DF__MAIL_TBL__anAvai__71BCD978]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__anAvai__71BCD978]  DEFAULT ((0)) FOR [anAvailLevel_D]
-GO
-/****** Object:  Default [DF__MAIL_TBL__anAvai__72B0FDB1]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__anAvai__72B0FDB1]  DEFAULT ((0)) FOR [anAvailLevel_C]
-GO
-/****** Object:  Default [DF__MAIL_TBL__anAvai__73A521EA]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__anAvai__73A521EA]  DEFAULT ((0)) FOR [anAvailLevel_B]
-GO
-/****** Object:  Default [DF__MAIL_TBL__anAvai__74994623]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__anAvai__74994623]  DEFAULT ((0)) FOR [anAvailLevel_A]
-GO
-/****** Object:  Default [DF__MAIL_TBL__anAvai__758D6A5C]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__anAvai__758D6A5C]  DEFAULT ((0)) FOR [anAvailLevel_S]
-GO
-/****** Object:  Default [DF__MAIL_TBL__dwItem__7D2E8C24]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__dwItem__7D2E8C24]  DEFAULT ((0)) FOR [dwItemId5]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId6]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId6]  DEFAULT ((0)) FOR [dwItemId6]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId7]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId7]  DEFAULT ((0)) FOR [dwItemId7]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId8]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId8]  DEFAULT ((0)) FOR [dwItemId8]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId9]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId9]  DEFAULT ((0)) FOR [dwItemId9]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId10]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId10]  DEFAULT ((0)) FOR [dwItemId10]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId11]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId11]  DEFAULT ((0)) FOR [dwItemId11]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId12]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId12]  DEFAULT ((0)) FOR [dwItemId12]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId13]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId13]  DEFAULT ((0)) FOR [dwItemId13]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId14]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId14]  DEFAULT ((0)) FOR [dwItemId14]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId15]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId15]  DEFAULT ((0)) FOR [dwItemId15]
-GO
-/****** Object:  Default [DF_MAIL_TBL_nPiercedSize2]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_nPiercedSize2]  DEFAULT ((0)) FOR [nPiercedSize2]
 GO
 /****** Object:  Default [DF_TAG_CreateTime]    Script Date: 04/03/2010 12:42:44 ******/
 ALTER TABLE [dbo].[TAG_TBL] ADD  CONSTRAINT [DF_TAG_CreateTime]  DEFAULT (getdate()) FOR [CreateTime]

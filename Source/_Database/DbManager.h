@@ -534,7 +534,7 @@ public:
 	void	SaveJobLv( CMover* pMover, char* szJobLv );
 	void	SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aCompleteQuest, char* szCheckedQuest );
 
-	void	SaveItemContainer(CItemContainer & itemContainer, ItemContainerStruct & stringified);
+	static void	SaveItemContainer(CItemContainer & itemContainer, ItemContainerStruct & stringified);
 
 	void	SaveEquipment( CMover* pMover, char* szEquipmen );
 	void	SaveTaskBar( CMover* pMover, char* szAppletTaskBar, char* szItemTaskBar, char* szSkillTaskBar );
@@ -563,7 +563,7 @@ public:
 	void	SerializePlayerPoint( CAr & ar );
 	BOOL	OpenGuildCombat( void );
 	BOOL	LoadPost( void );
-	void	GetItemFromMail( CQuery* pQuery, CItemElem* pItemElem );
+	std::unique_ptr<CItemElem> GetItemFromMail( const CQuery* pQuery );
 
 	void	RemoveMail(std::list<CMail*> & lspMail );
 
@@ -759,7 +759,7 @@ public:
 
 	BOOL	OpenWanted( CAr& ar );
 
-	static	void	MakeQueryAddMail( char* szSql, CMail* pMail, u_long idReceiver );
+	[[nodiscard]] static ItemContainerStruct MakeQueryAddMail(char * szSql, CMail * pMail, u_long idReceiver);
 
 private:
 			CDbManager();

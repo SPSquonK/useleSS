@@ -3173,77 +3173,28 @@ void CDbManager::DbQryMail(char * szSql, LPCTSTR pszType, int nMail) {
 	);
 }
 
-void CDbManager::MakeQueryAddMail( char* szSql, CMail* pMail, u_long idReceiver )
+ItemContainerStruct CDbManager::MakeQueryAddMail( char* szSql, CMail* pMail, u_long idReceiver )
 {
-	CItemElem item;
-	CPet pet;
-	BOOL bPet	= FALSE;
-	if( pMail->m_pItemElem )
-	{
-		item	= *pMail->m_pItemElem;
-		if( pMail->m_pItemElem->m_pPet )
-		{
-			pet		= *pMail->m_pItemElem->m_pPet;
-			bPet	= TRUE;
-		}
-	}
-	else
-		item.m_nItemNum = 0;
+	ItemContainerStruct ics;
 
-	if( item.GetProp() && item.GetProp()->IsUltimate() )
-	{
-		sprintf( szSql, "{call MAIL_STR('A1', %d, '%02d', '%07d', '%07d', %d, %d, %d, ?, ?,"
-			"%d, %d, %d, %d, %d, %d, %d, %d,"
-			"%d, %d, %d, %d, %d, %d, %d,"
-			"%I64d,"
-			"%d, %d, %d, %d, %d"
-			",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d"
-			",%d"
-			",%d, %d, %d, %d, %d"	// 추가 피어싱 아이템
-			",%d, %d, %d, %d, %d"	// 추가 피어싱 아이템
-			",%d"	// 추가 피어싱 사이즈
-			")}",
-
-			pMail->m_nMail, g_appInfo.dwSys, idReceiver, pMail->m_idSender, pMail->m_nGold, pMail->m_tmCreate, pMail->m_byRead,
-			item.m_dwItemId, item.m_nItemNum, item.m_nRepairNumber, item.m_nHitPoint, item.m_nRepair, 0, item.m_byFlag, item.GetSerialNumber(),
-			item.GetOption(), item.m_bItemResist, item.m_nResistAbilityOption, item.m_idGuild, item.m_nResistSMItemId, 0, item.m_dwKeepTime,
-			item.GetRandomOptItemId(),
-			item.GetUltimatePiercingSize(), item.GetUltimatePiercingItem( 0 ), item.GetUltimatePiercingItem( 1 ), item.GetUltimatePiercingItem( 2 ), item.GetUltimatePiercingItem( 3 ),
-			bPet, pet.GetKind(), pet.GetLevel(), pet.GetExp(), pet.GetEnergy(), pet.GetLife(),
-			pet.GetAvailLevel( PL_D ), pet.GetAvailLevel( PL_C ), pet.GetAvailLevel( PL_B ), pet.GetAvailLevel( PL_A ), pet.GetAvailLevel( PL_S )
-			, item.GetUltimatePiercingItem( 4 )
-			, item.GetPiercingItem( 0 ), item.GetPiercingItem( 1 ), item.GetPiercingItem( 2 ), item.GetPiercingItem( 3 ),  item.GetPiercingItem( 4 )
-			, item.GetPiercingItem( 5 ), item.GetPiercingItem( 6 ), item.GetPiercingItem( 7 ), item.GetPiercingItem( 8 ),  item.GetPiercingItem( 9 )
-			, item.GetPiercingSize()
-			);
+	if (pMail->m_pItemElem) {
+		CItemContainer itemContainer;
+		itemContainer.SetItemContainer(CItemContainer::ContainerTypes::POCKET0);
+		itemContainer.SetAtId(0, pMail->m_pItemElem);
+		SaveItemContainer(itemContainer, ics);
 	}
-	else
-	{
-		sprintf( szSql, "{call MAIL_STR('A1', %d, '%02d', '%07d', '%07d', %d, %d, %d, ?, ?,"
-			"%d, %d, %d, %d, %d, %d, %d, %d,"
-			"%d, %d, %d, %d, %d, %d, %d,"
-			"%I64d,"
-			"%d, %d, %d, %d, %d"
-			",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d"
-			",%d"
-			",%d, %d, %d, %d, %d"	// 추가 피어싱 아이템
-			",%d, %d, %d, %d, %d"	// 추가 피어싱 아이템
-			",%d"	// 추가 피어싱 사이즈
-			")}",
 
-			pMail->m_nMail, g_appInfo.dwSys, idReceiver, pMail->m_idSender, pMail->m_nGold, pMail->m_tmCreate, pMail->m_byRead,
-			item.m_dwItemId, item.m_nItemNum, item.m_nRepairNumber, item.m_nHitPoint, item.m_nRepair, 0, item.m_byFlag, item.GetSerialNumber(),
-			item.GetOption(), item.m_bItemResist, item.m_nResistAbilityOption, item.m_idGuild, item.m_nResistSMItemId, 0, item.m_dwKeepTime,
-			item.GetRandomOptItemId(),
-			item.GetPiercingSize(), item.GetPiercingItem( 0 ), item.GetPiercingItem( 1 ), item.GetPiercingItem( 2 ), item.GetPiercingItem( 3 ),
-			bPet, pet.GetKind(), pet.GetLevel(), pet.GetExp(), pet.GetEnergy(), pet.GetLife(),
-			pet.GetAvailLevel( PL_D ), pet.GetAvailLevel( PL_C ), pet.GetAvailLevel( PL_B ), pet.GetAvailLevel( PL_A ), pet.GetAvailLevel( PL_S )
-			, item.GetPiercingItem( 4 )
-			, item.GetPiercingItem( 5 ), item.GetPiercingItem( 6 ), item.GetPiercingItem( 7 ), item.GetPiercingItem( 8 ), item.GetPiercingItem( 9 )
-			, 0, 0, 0, 0, 0
-			, 0
-			);
-	}
+	sprintf(szSql, "{call MAIL_STR_ADDMAIL("
+		"%d, '%02d',"
+		"'%07d', '%07d', %d, %d, %d,"
+		"?, ?," // szTitle, szText
+		"?, ?, ?, ?" // is.szItem/szExt/szPiercing/szPet
+		")}",
+		pMail->m_nMail, g_appInfo.dwSys,
+		idReceiver, pMail->m_idSender, pMail->m_nGold, pMail->m_tmCreate, pMail->m_byRead
+		);
+
+	return ics;
 }
 
 void CDbManager::DBQryGuildLog( char* szSql, const GUILDLOG_QUERYINFO& info )
@@ -4603,7 +4554,7 @@ BOOL CDbManager::LoadPost( void )
 	std::set<int>	setnMail;
 	int	nTotal	= 0;
 
-	char szQuery[QUERY_SIZE]	= { 0, };
+	char szQuery[1024]	= { 0, };
 	DbQryMail(szQuery, "S1");
 	if( FALSE == m_qryPostProc.Exec( szQuery ) )
 	{
@@ -4646,16 +4597,13 @@ BOOL CDbManager::LoadPost( void )
 
 		m_qryPostProc.GetStr( "szText", pMail->m_szText );
 
-		int nItemFlag	= m_qryPostProc.GetInt( "ItemFlag" );
-		DWORD dwItemId	= m_qryPostProc.GetInt( "dwItemId" );
+		const char * szItem = m_qryPostProc.GetStrPtr("szItem");
 
-		if( dwItemId && nItemFlag == 0 )
-		{
-			pMail->m_pItemElem	= new CItemElem;
-			pMail->m_pItemElem->m_dwItemId	= dwItemId;
-			GetItemFromMail( &m_qryPostProc, pMail->m_pItemElem );
+		if (szItem[0] != '\0') {
 
-			if( CheckValidItem( dwItemId, pMail->m_pItemElem->m_nItemNum ) == FALSE )
+			pMail->m_pItemElem	= GetItemFromMail( &m_qryPostProc ).release();
+
+			if( CheckValidItem(pMail->m_pItemElem->m_dwItemId, pMail->m_pItemElem->m_nItemNum ) == FALSE )
 			{
 				nTotal++;
 				SAFE_DELETE( pMail );
@@ -4708,66 +4656,28 @@ BOOL CDbManager::LoadPost( void )
 	return TRUE;
 }
 
-void CDbManager::GetItemFromMail( CQuery* pQuery, CItemElem* pItemElem )
+std::unique_ptr<CItemElem> CDbManager::GetItemFromMail( const CQuery* pQuery )
 {
-	pItemElem->m_bItemResist	= pQuery->GetInt( "bItemResist" );
-	pItemElem->m_byFlag	= pQuery->GetInt( "byFlag" );
-	pItemElem->m_dwKeepTime	= pQuery->GetInt( "dwKeepTime" );
-	pItemElem->SetSerialNumber( pQuery->GetSerialNumber( "dwSerialNumber" ) );
-	pItemElem->m_idGuild	= pQuery->GetInt( "idGuild" );
-	pItemElem->SetOption( pQuery->GetInt( "nOption" ) );
-	pItemElem->m_nHitPoint	= pQuery->GetInt( "nHitPoint" );
-	pItemElem->m_nRepair = pQuery->GetInt( "nMaxHitPoint" );
-	pItemElem->m_nItemNum	= pQuery->GetInt( "nItemNum" );
-	__int64 iRandomOptItemId	= pQuery->GetInt64( "nRandomOptItemId" );
-	if( iRandomOptItemId == -102 )
-		iRandomOptItemId	= 0;
-	pItemElem->SetRandomOptItemId( iRandomOptItemId );
-	pItemElem->m_nRepairNumber	= pQuery->GetInt( "nRepairNumber" );
-	pItemElem->m_nResistAbilityOption	= pQuery->GetInt( "nResistAbilityOption" );
-	pItemElem->m_nResistSMItemId	= pQuery->GetInt( "nResistSMItemId" );
-	GetPiercingInfoFromMail( pQuery, pItemElem );
-	if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_SEALCHARACTER )
-	{
-		CPlayerDataCenter::GetInstance()->m_Access.Enter();
-		const char*	lpszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( pItemElem->m_nHitPoint );
-		if(lpszPlayer != NULL)
-			memcpy(pItemElem->m_szItemText,lpszPlayer,sizeof(pItemElem->m_szItemText));
-		CPlayerDataCenter::GetInstance()->m_Access.Leave();
-	}
+	ItemContainerSerialization ics{
+		.main = pQuery->GetStrPtr("szItem"),
+		.apIndex = "$",
+		.dwObjIndex = "$",
+		.ext = pQuery->GetStrPtr("szExt"),
+		.piercing = pQuery->GetStrPtr("szPiercing"),
+		.szPet = pQuery->GetStrPtr("szPet"),
+	};
 
-	BOOL bPet	= pQuery->GetInt( "bPet" );
-	if( bPet )
-	{
-		SAFE_DELETE( pItemElem->m_pPet );
-		CPet* pPet	= pItemElem->m_pPet	= new CPet;
-		BYTE nKind	= (BYTE)pQuery->GetInt( "nKind" );
-		BYTE nLevel		= (BYTE)pQuery->GetInt( "nLevel" );
-		DWORD dwExp	= (DWORD)pQuery->GetInt( "dwExp" );
-		WORD wEnergy	= (WORD)pQuery->GetInt( "wEnergy" );
-		WORD wLife	= (WORD)pQuery->GetInt( "wLife" );
-		BYTE anAvailLevel[PL_MAX];
-		anAvailLevel[PL_D]	= (BYTE)pQuery->GetInt( "anAvailLevel_D" );
-		anAvailLevel[PL_C]	= (BYTE)pQuery->GetInt( "anAvailLevel_C" );
-		anAvailLevel[PL_B]	= (BYTE)pQuery->GetInt( "anAvailLevel_B" );
-		anAvailLevel[PL_A]	= (BYTE)pQuery->GetInt( "anAvailLevel_A" );
-		anAvailLevel[PL_S]	= (BYTE)pQuery->GetInt( "anAvailLevel_S" );
-		char szPetName[MAX_PET_NAME]	= { 0,};
-		pQuery->GetStr( "szPetName", szPetName );
-		if( strcmp( szPetName, "NULL" ) == 0 )
-			szPetName[0]	= '\0';
-		pPet->SetKind( nKind );
-		pPet->SetLevel( nLevel );
-		pPet->SetExp( dwExp );
-		pPet->SetEnergy( wEnergy );
-		pPet->SetLife( wLife );
-		pPet->SetAvailLevel( PL_D, anAvailLevel[PL_D] );
-		pPet->SetAvailLevel( PL_C, anAvailLevel[PL_C] );
-		pPet->SetAvailLevel( PL_B, anAvailLevel[PL_B] );
-		pPet->SetAvailLevel( PL_A, anAvailLevel[PL_A] );
-		pPet->SetAvailLevel( PL_S, anAvailLevel[PL_S] );
-		pPet->SetName( szPetName );
-	}
+	CItemContainer container;
+	container.SetItemContainer(CItemContainer::ContainerTypes::POCKET0);
+	ReadItemContainer(container, ics);
+
+	CItemElem * firstItem = container.GetAt(0);
+	if (!firstItem) return nullptr;
+
+	CItemElem * pItemElem = new CItemElem;
+	*pItemElem = *firstItem;
+
+	return std::unique_ptr<CItemElem>(pItemElem);
 }
 
 void CDbManager::AddMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
@@ -4801,10 +4711,16 @@ void CDbManager::AddMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	if( bResult )
 	{
 		char szQuery[QUERY_SIZE]	= { 0,};
-		CDbManager::MakeQueryAddMail( szQuery, pMail, idReceiver );
+		ItemContainerStruct is = CDbManager::MakeQueryAddMail( szQuery, pMail, idReceiver );
 
-		if( !pQuery->BindParameter( 1, pMail->m_szTitle, 128)
-			|| !pQuery->BindParameter( 2, pMail->m_szText, 1024) )
+		const bool bindingResult = pQuery->BindParameter(1, pMail->m_szTitle, 128)
+			&& pQuery->BindParameter(2, pMail->m_szText, 1024)
+			&& pQuery->BindParameter(3, is.szItem, 0)
+			&& pQuery->BindParameter(4, is.szExt, 0)
+			&& pQuery->BindParameter(5, is.szPiercing, 0)
+			&& pQuery->BindParameter(6, is.szPet, 0);
+
+		if( !bindingResult)
 		{
 			Error( "QUERY: PACKETTYPE_QUERYPOSTMAIL" );
 			CDPTrans::GetInstance()->SendPostMail( FALSE, idReceiver, pMail );
@@ -5913,22 +5829,13 @@ BOOL CDbManager::QueryGetMailRealTime( CQuery* pQuery )
 
 		pQuery->GetStr( "szText", pMail->m_szText );
 
-		int nItemFlag	= pQuery->GetInt( "ItemFlag" );
-		DWORD dwItemId	= pQuery->GetInt( "dwItemId" );
 
-		if( dwItemId && nItemFlag == 0 )
-		{
-			const ItemProp* pItemProp	= prj.GetItemProp( dwItemId );
-			if( !pItemProp )
-			{
-				Error( "CDbManager::QueryGetMailRealTime: Not ItemProp = %d", dwItemId );
-				continue;
-			}
-			pMail->m_pItemElem	= new CItemElem;
-			pMail->m_pItemElem->m_dwItemId	= dwItemId;
-			GetItemFromMail( pQuery, pMail->m_pItemElem );
+		const char * szItem = m_qryPostProc.GetStrPtr("szItem");
+
+		if (szItem[0] != '\0') {
+			pMail->m_pItemElem	= GetItemFromMail( pQuery ).release();
 			
-			if( CheckValidItem( dwItemId, pMail->m_pItemElem->m_nItemNum ) == FALSE )
+			if( CheckValidItem(pMail->m_pItemElem->m_dwItemId, pMail->m_pItemElem->m_nItemNum ) == FALSE )
 			{
 				SAFE_DELETE( pMail );
 				continue;

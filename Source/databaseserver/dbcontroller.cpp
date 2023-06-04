@@ -216,9 +216,14 @@ namespace	post	{
 		if( bResult )
 		{
 			char szQuery[QUERY_SIZE]	= {0, };
-			CDbManager::MakeQueryAddMail( szQuery, pMail, idReceiver );
+			ItemContainerStruct is = CDbManager::MakeQueryAddMail( szQuery, pMail, idReceiver );
 			bool bOk	= pQuery->BindParameter( 1, pMail->m_szTitle, 128 )
-				&& pQuery->BindParameter( 2, pMail->m_szText, 1024 );
+				&& pQuery->BindParameter( 2, pMail->m_szText, 1024 )
+				&& pQuery->BindParameter( 3, is.szItem, 0 )
+				&& pQuery->BindParameter( 4, is.szExt, 0 )
+				&& pQuery->BindParameter( 5, is.szPiercing, 0 )
+				&& pQuery->BindParameter( 6, is.szPet, 0 );
+
 			if( bOk )
 				bOk		= pQuery->Exec( szQuery );
 			if( bOk )
