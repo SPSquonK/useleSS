@@ -5633,59 +5633,41 @@ void CWndInventory::UpdateParts()
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void CWndPostItemWarning::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	
-	// ������ �߾����� �ű��? �κ�.
+void CWndPostItemWarning::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
-} 
+}
 
-void CWndPostItemWarning::SetString( char* string )
-{
-	CWndEdit* pWndEdit	= (CWndEdit*)GetDlgItem( WIDC_CONTEXT );
-	
-	if( pWndEdit )
-	{
-		pWndEdit->SetString( string );
-		pWndEdit->EnableWindow( FALSE );	
+void CWndPostItemWarning::SetString(const char* string) {
+	if (CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_CONTEXT)) {
+		pWndEdit->SetString(string);
+		pWndEdit->EnableWindow(FALSE);
 	}
 }
 
-// ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndPostItemWarning::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( APP_QUEITMWARNING );
-	CRect rect = CRect( 0, 0, lpWndApplet->size.cx, lpWndApplet->size.cy );
-	
-	return CWndNeuz::Create( WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, APP_QUEITMWARNING ); 
-} 
+BOOL CWndPostItemWarning::Initialize(CWndBase * pWndParent, DWORD) {
+	LPWNDAPPLET lpWndApplet = m_resMng.GetAt(APP_QUEITMWARNING);
+	CRect rect{ CPoint(0, 0), lpWndApplet->size };
 
-BOOL CWndPostItemWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_BTN_YES || message == EN_RETURN )
-	{
-		g_DPlay.SendQueryGetMailItem( m_nMailIndex );					
+	return CWndNeuz::Create(WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, APP_QUEITMWARNING);
+}
+
+BOOL CWndPostItemWarning::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (nID == WIDC_BTN_YES || message == EN_RETURN) {
+		g_DPlay.SendQueryGetMailItem(m_nMailIndex);
+		Destroy();
+	} else if (nID == WIDC_BTN_NO) {
 		Destroy();
 	}
-	else if( nID == WIDC_BTN_NO )
-	{
-		Destroy();
-	}
-	
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
 
-
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
 
 
 
 CWndPost::~CWndPost() 
 { 
-#ifdef __MAIL_REQUESTING_BOX
-	//SaveLastMailBox();
 	CloseMailRequestingBox();
-#endif // __MAIL_REQUESTING_BOX
 } 
 
 void CWndPost::OnInitialUpdate() 
@@ -5696,9 +5678,7 @@ void CWndPost::OnInitialUpdate()
 
 	//	���⿡ �ڵ��ϸ� �˴ϴ�
 	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
-	CRect rect = GetClientRect();
-	rect.left = 5;
-	rect.top = 0;
+	CRect rect{ CPoint(5, 0), GetClientRect().BottomRight() };
 
 	Windows::DestroyIfOpened(APP_BAG_EX);
 
@@ -5714,19 +5694,9 @@ void CWndPost::OnInitialUpdate()
 	// ������ ���� ���? ��û
 	g_DPlay.SendQueryMailBox();	
 
-#ifdef __MAIL_REQUESTING_BOX
-	//CMailBox* pMailBox = CMailBox::GetInstance();
-	//if( pMailBox )
-	//{
-	//	pMailBox->Clear();
-	//}
-	//LoadLastMailBox();
-	//m_PostTabReceive.UpdateScroll();
-
 	CloseMailRequestingBox();
 	m_pWndMailRequestingBox = new CWndMailRequestingBox;
 	m_pWndMailRequestingBox->Initialize();
-#endif // __MAIL_REQUESTING_BOX
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
 BOOL CWndPost::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
@@ -5741,9 +5711,6 @@ BOOL CWndPost::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
 
 		if (pWndTabCtrl->GetSelectedTab() == &m_PostTabReceive) {
-#ifndef __MAIL_REQUESTING_BOX
-			m_PostTabSend.ClearData();
-#endif // __MAIL_REQUESTING_BOX
 			g_DPlay.SendQueryMailBox();
 		}
 	}
@@ -5751,86 +5718,9 @@ BOOL CWndPost::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-#ifdef __MAIL_REQUESTING_BOX
-void CWndPost::LoadLastMailBox( void )
-{
-	CString strFileName = _T( "" );
-	if( g_pPlayer == NULL )
-	{
-		return;
-	}
-	strFileName.Format( "%s_MailData.Temp", g_pPlayer->GetName() );
-	FILE* fp = fopen( strFileName, "rb" );
-	if( fp == NULL )
-	{
-		Error( "LoadLastMailBox : fp == NULL" );
-		return;
-	}
-
-	while( feof( fp ) == 0 )
-	{
-		CMail* pMail = new CMail;
-		fread( &( pMail->m_nGold ), sizeof( DWORD ), 1, fp );
-		fread( &( pMail->m_byRead ), sizeof( BYTE ), 1, fp );
-		fread( &( pMail->m_szTitle ), sizeof( char ), MAX_MAILTITLE, fp );
-		CMailBox::GetInstance()->AddMail( pMail );
-	}
-
-	fclose( fp );
+void CWndPost::CloseMailRequestingBox() {
+	SAFE_DELETE(m_pWndMailRequestingBox);
 }
-
-void CWndPost::SaveLastMailBox( void )
-{
-	CMailBox* pMailBox = CMailBox::GetInstance();
-	if( pMailBox == NULL )
-	{
-		return;
-	}
-
-	CMailBox& MailBox = *pMailBox;
-	if( MailBox.empty() == true )
-	{
-		CString strFileName = _T( "" );
-		if( g_pPlayer == NULL )
-		{
-			return;
-		}
-		strFileName.Format( "%s_MailData.Temp", g_pPlayer->GetName() );
-		DeleteFile( strFileName );
-
-		return;
-	}
-
-	CString strFileName = _T( "" );
-	if( g_pPlayer == NULL )
-	{
-		return;
-	}
-	strFileName.Format( "%s_MailData.Temp", g_pPlayer->GetName() );
-	FILE* fp = fopen( strFileName.GetBuffer(0), "wb" );
-	if( fp == NULL )
-	{
-		Error( "SaveLastMailBox : fp == NULL" );
-		return;
-	}
-
-	for( size_t i = 0; i < MailBox.size(); ++i )
-	{
-		fwrite( &( MailBox[ i ]->m_nGold ), sizeof( DWORD ), 1, fp );
-		fwrite( &( MailBox[ i ]->m_byRead ), sizeof( BYTE ), 1, fp );
-		fwrite( &( MailBox[ i ]->m_szTitle ), sizeof( char ), MAX_MAILTITLE, fp );
-	}
-
-	fclose( fp );
-}
-void CWndPost::CloseMailRequestingBox( void )
-{
-	if( m_pWndMailRequestingBox )
-	{
-		SAFE_DELETE( m_pWndMailRequestingBox );
-	}
-}
-#endif // __MAIL_REQUESTING_BOX
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////

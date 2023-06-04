@@ -70,6 +70,8 @@ typedef MailVector::iterator		MailVectorItr;
 class CMailBox : public MailVector
 {
 public:
+	static constexpr size_t SoftMaxMail = 50;
+
 	CMailBox();
 	CMailBox( u_long idReceiver );
 	virtual	~CMailBox();
@@ -117,28 +119,22 @@ public:
 #endif	// __WORLDSERVER
 };
 
-//	mulcom	BEGIN100420	메일 관련 사이즈 변경.
-//#define	MAX_MAIL	100
-#define	MAX_MAIL	50
-//	mulcom	END100420	메일 관련 사이즈 변경.
-class CPost
-{
+class CPost final {
 public:
-//	Constructions
-	CPost();
-	virtual	~CPost();
-	void	Clear( void );
+	void Clear();
 //	Operations
 	u_long	AddMail( u_long idReceiver, CMail* pMail );
 	CMailBox*	GetMailBox( u_long idReceiver );
 	BOOL	AddMailBox( CMailBox* pMailBox );
 	void	Serialize( CAr & ar, BOOL bData = TRUE );
+
 #ifdef __DBSERVER
 	std::map< u_long, CMail* >	m_mapMail4Proc;
 	CMclCritSec	m_csPost;
 	void	Process( void );
 #endif	// __DBSERVER
-	static	CPost*	GetInstance( void );
+
+	static CPost * GetInstance();
 private:
-	std::map< u_long, CMailBox* >	m_mapMailBox;
+	std::map<u_long, std::unique_ptr<CMailBox>> m_mapMailBox;
 };

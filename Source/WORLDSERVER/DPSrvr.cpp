@@ -5522,7 +5522,7 @@ void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 				return;
 			}
 			CMailBox* pMailBox	= CPost::GetInstance()->GetMailBox( idReceiver );
-			if( pMailBox && pMailBox->size() >= MAX_MAIL )
+			if( pMailBox && pMailBox->size() >= CMailBox::SoftMaxMail )
 			{
 				pUser->AddDefinedText( TID_GAME_MAILBOX_FULL, "%s", lpszReceiver );
 				return;

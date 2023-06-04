@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#ifdef __MAIL_REQUESTING_BOX
+
 #ifdef __CLIENT
 #include "WndMailRequestingBox.h"
 #include "ResData.h"
@@ -87,4 +87,3 @@ BOOL CWndMailRequestingBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLRe
 }
 //-----------------------------------------------------------------------------
 #endif // __CLIENT
-#endif // __MAIL_REQUESTING_BOX

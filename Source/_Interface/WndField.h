@@ -20,9 +20,7 @@ const int MAX_WANTED_LIST =	100;
 #include "honor.h"
 #include "WndSqKComponents.h"
 
-#ifdef __MAIL_REQUESTING_BOX
 #include "WndMailRequestingBox.h"
-#endif // __MAIL_REQUESTING_BOX
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -625,7 +623,7 @@ public:
 	int	   m_nMailIndex = -1;
 	
 	void	SetIndex( int nIndex ) { m_nMailIndex = nIndex; }
-	void	SetString( char* string );
+	void	SetString(const char * string);
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
@@ -697,15 +695,11 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 
-#ifdef __MAIL_REQUESTING_BOX
 public:
-	void LoadLastMailBox( void );
-	void SaveLastMailBox( void );
 	void CloseMailRequestingBox( void );
 
 private:
 	CWndMailRequestingBox* m_pWndMailRequestingBox = nullptr;
-#endif // __MAIL_REQUESTING_BOX
 };
 
 class CWndPostDeleteConfirm : public CWndNeuz

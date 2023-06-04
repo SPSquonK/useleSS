@@ -363,13 +363,11 @@ void CMailBox::Serialize( CAr & ar, BOOL bData )
 		int nSize;
 		ar >> nSize;
 
-#ifdef __MAIL_REQUESTING_BOX
+#ifdef __CLIENT
 		if( g_WndMng.m_bWaitRequestMail && nSize <= 0 )
 			g_DPlay.SendQueryMailBox();
-#endif //__MAIL_REQUESTING_BOX
 
-#ifdef __CLIENT
-			Error( _T( "CMailBox::Serialize m_idReceiver:%d, nSize:%d" ), m_idReceiver, nSize );
+		Error( _T( "CMailBox::Serialize m_idReceiver:%d, nSize:%d" ), m_idReceiver, nSize );
 #endif
 		for( int i = 0; i < nSize; i++ )
 		{
@@ -504,22 +502,8 @@ BOOL CMailBox::IsStampedMailExists( void )
 	return FALSE;
 }
 
-CPost::CPost()
-{
-}
-
-CPost::~CPost()
-{
-	Clear();
-}
-
 void CPost::Clear( void )
 {
-	for( auto i = m_mapMailBox.begin(); i != m_mapMailBox.end(); ++i )
-	{
-		CMailBox* pMailBox	= i->second;
-		SAFE_DELETE( pMailBox );
-	}
 	m_mapMailBox.clear();
 #ifdef __DBSERVER
 #ifdef _DEBUG
@@ -552,7 +536,7 @@ CMailBox* CPost::GetMailBox( u_long idReceiver )
 {
 	auto i = m_mapMailBox.find( idReceiver );
 	if( i != m_mapMailBox.end() )
-		return i->second;
+		return i->second.get();
 	return NULL;
 }
 
@@ -569,9 +553,7 @@ void CPost::Serialize( CAr & ar, BOOL bData )
 	if( ar.IsStoring() )
 	{
 		ar << m_mapMailBox.size();
-		for( auto i = m_mapMailBox.begin(); i != m_mapMailBox.end(); ++i )
-		{
-			CMailBox* pMailBox	= i->second;
+		for (const auto & [_, pMailBox] : m_mapMailBox) {
 			pMailBox->Serialize( ar, bData );
 		}
 	}

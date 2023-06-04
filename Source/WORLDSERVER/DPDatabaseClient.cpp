@@ -2072,15 +2072,10 @@ void CDPDatabaseClient::OnMailBox( CAr & ar, DPID, DPID )
 	CMailBox* pMailBox	= CPost::GetInstance()->GetMailBox( idReceiver );
 	if( pMailBox )
 	{
-// 		//	BEGINTEST
-// 		Error( "OnMailBox [%d]", idReceiver );
-
-		pMailBox->Read( ar );	// pMailBox->m_nStatus	= CMailBox::data;
+		pMailBox->Read( ar );
 		CUser* pUser	= g_UserMng.GetUserByPlayerID( idReceiver );
 		if( IsValidObj( pUser ) )
 		{
-// 			//	BEGINTEST
-// 			Error( "OnMailBox AddMailBox [%d]", idReceiver );
 
 			pUser->AddMailBox( pMailBox );
 			pUser->ResetCheckClientReq();
@@ -2107,8 +2102,7 @@ void CDPDatabaseClient::OnMailBoxReq( CAr & ar, DPID, DPID )
 
 	if( bHaveMailBox == TRUE )
 	{
-		CMailBox* pMailBox	= NULL;
-		pMailBox	= CPost::GetInstance()->GetMailBox( idReceiver );
+		CMailBox* pMailBox	= CPost::GetInstance()->GetMailBox( idReceiver );
 
 		if( pMailBox == NULL )
 		{

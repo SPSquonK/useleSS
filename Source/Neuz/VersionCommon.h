@@ -226,7 +226,6 @@
 
 //	#define		__NEW_WEB_BOX				// 새로운 웹 표현 창
 	#define		__PROTECT_AWAKE				//각성보호
-	#define		__MAIL_REQUESTING_BOX		// 메일 요청 박스
 	#define     __BS_SAFE_WORLD_DELETE		// CWorld::Process에서 safe delete obj( sfx 류로 확인댐 )
 //	#define		__GAME_GRADE_SYSTEM			// 게임물 등급 표시 시스템
 	#define		__BS_FIX_ARRIVEPOS_ALGO		// 마우스 이동시 도착 검사루틴 개선 ( 정뱡향 축으로 한곳만 도착했을때 멈추는 문제가있었음 )

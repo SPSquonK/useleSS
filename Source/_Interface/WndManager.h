@@ -588,9 +588,8 @@ public:
 
 	CWndGuildBank*	m_pWndGuildBank;
 
-#ifdef __MAIL_REQUESTING_BOX
 	BOOL	m_bWaitRequestMail;
-#endif
+
 	CWndGuildNickName* m_pWndGuildNickName;
 
 

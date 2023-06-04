@@ -358,9 +358,7 @@ CWndMgr::CWndMgr()
 	m_pWndSelectAwakeCase = NULL;
 #endif
 
-#ifdef __MAIL_REQUESTING_BOX
 	m_bWaitRequestMail = FALSE;
-#endif
 }
 
 void CWndMgr::InitSetItemTextColor( )
@@ -1766,14 +1764,12 @@ BOOL CWndMgr::Process()
 {
 	_PROFILE("CWndMgr::Process()");
 
-#ifdef __MAIL_REQUESTING_BOX
 	static DWORD dwTargetTime = g_tmCurrent + 5000;
 	if( m_bWaitRequestMail && dwTargetTime < g_tmCurrent )		//메일이 있다고 받고, 메일정보를 받지 못한채 5초가 흐름.
 	{
 		g_DPlay.SendQueryMailBox();
 		dwTargetTime = g_tmCurrent + 5000;
 	}
-#endif //__MAIL_REQUESTING_BOX
 
 #ifdef __BS_CONSOLE
 		_update_console( );

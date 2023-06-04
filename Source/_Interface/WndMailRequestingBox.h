@@ -1,7 +1,5 @@
-#ifndef __WND_MAIL_REQUESTING_BOX_H__
-#define __WND_MAIL_REQUESTING_BOX_H__
+#pragma once
 
-#ifdef __MAIL_REQUESTING_BOX
 #ifdef __CLIENT
 class CWndMailRequestingBox : public CWndNeuz
 {
@@ -24,6 +22,4 @@ private:
 	int m_nDestroyCounter;
 };
 #endif // __CLIENT
-#endif // __MAIL_REQUESTING_BOX
 
-#endif // __WND_MAIL_REQUESTING_BOX_H__

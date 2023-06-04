@@ -13167,7 +13167,6 @@ void CDPClient::OnMailBox( CAr & ar )
 	pMailBox->Serialize( ar );
 	CWndPost* pWndPost	= (CWndPost*)g_WndMng.GetWndBase( APP_POST );
 	if( pWndPost )
-#ifdef __MAIL_REQUESTING_BOX
 	{
 		pWndPost->EnableWindow( TRUE );
 		pWndPost->m_PostTabReceive.UpdateScroll();
@@ -13176,9 +13175,7 @@ void CDPClient::OnMailBox( CAr & ar )
 		//gmpbigsun
 		g_WndMng.m_bWaitRequestMail = FALSE;
 	}
-#else // __MAIL_REQUESTING_BOX
-		pWndPost->m_PostTabReceive.UpdateScroll();
-#endif // __MAIL_REQUESTING_BOX
+
 
 	//MAIL LOG
 	Error( "END OnMailBox" );
@@ -13211,15 +13208,12 @@ void CDPClient::OnMailBoxReq( CAr & ar )
 
 	if( bCheckTransMailBox )
 	{
-#ifdef __MAIL_REQUESTING_BOX
 		//받은거고 지금부터 5초세고 그래도 메일을 못받으면 메일 요청함.
 		g_WndMng.m_bWaitRequestMail = TRUE;
-#endif // __MAIL_REQUESTING_BOX
 	}
 	else 
 	{
 		
-#ifdef __MAIL_REQUESTING_BOX
 		// 요청 window는 닫아준다 메일이 없으므로,,,
 		CWndPost* pWndPost	= (CWndPost*)g_WndMng.GetWndBase( APP_POST );
 		if( pWndPost )
@@ -13251,7 +13245,7 @@ void CDPClient::OnMailBoxReq( CAr & ar )
 		{
 			Error( "OnMailBoxReq : Fail Delete %s ", strFileName );
 		}
-#endif //__MAIL_REQUESTING_BOX
+
 	}
 
 }
