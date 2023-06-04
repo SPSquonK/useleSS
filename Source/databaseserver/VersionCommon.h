@@ -70,11 +70,8 @@
 //	#define		__HONORABLE_TITLE			// 달인
 //	#define		__COUPLE_1117
 //	#define		__COUPLE_1202		// 커플 보상
-//	#define		__POST_1204		// 우편 삭제 최적화
 
 #define		__OCCUPATION_SHOPITEM	// 점령길드 전용 구매 가능 아이템
-
-#define		__POST_DUP_1209		// 우편 로드 시 무결성 검사
 
 #define		__LAYER_1015	// 레이어 저장	
 

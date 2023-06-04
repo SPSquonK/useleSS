@@ -575,11 +575,9 @@ public:
 	BOOL	OpenGuildCombat( void );
 	BOOL	LoadPost( void );
 	void	GetItemFromMail( CQuery* pQuery, CItemElem* pItemElem );
-#ifdef __POST_1204
-	void	RemoveMail(std::list<CMail*> & lspMail, time_t t );
-#else	// __POST_1204
+
 	void	RemoveMail(std::list<CMail*> & lspMail );
-#endif	// __POST_1204
+
 	CQuery*	m_apQuery[MAX_QUERY_RESERVED];
 	BOOL	QueryRemoveGuildBankTbl( void );
 	void	DeleteRemoveGuildBankTbl( CQuery* pQueryChar, CAr & ar );

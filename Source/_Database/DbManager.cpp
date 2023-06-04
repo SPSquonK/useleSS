@@ -4639,10 +4639,8 @@ BOOL CDbManager::LoadPost( void )
 		return FALSE;
 	}
 
-#ifdef __POST_DUP_1209
 	std::set<int>	setnMail;
 	int	nTotal	= 0;
-#endif	// __POST_DUP_1209
 
 	char szQuery[QUERY_SIZE]	= { 0, };
 	DbQryMail(szQuery, "S1");
@@ -4698,30 +4696,26 @@ BOOL CDbManager::LoadPost( void )
 
 			if( CheckValidItem( dwItemId, pMail->m_pItemElem->m_nItemNum ) == FALSE )
 			{
-#ifdef __POST_DUP_1209
 				nTotal++;
-#endif // __POST_DUP_1209
 				SAFE_DELETE( pMail );
 				continue;
 			}
 		}
-#ifdef __POST_DUP_1209
+
 		bool bResult	= setnMail.insert( pMail->m_nMail ).second;
 		if( !bResult )
 		{
 			AfxMessageBox( "CDbManager.LoadPost: duplicated" );
 			return FALSE;
 		}
-#endif	// __POST_DUP_1209
 
 		if( FALSE == CPost::GetInstance()->AddMail( idReceiver, pMail ) )
 		{
 			AfxMessageBox( "ERROR: LoadPost: AddMail" );
 			return FALSE;
 		}
-#ifdef __POST_DUP_1209
+
 		nTotal++;
-#endif	// __POST_DUP_1209
 	}
 
 	sprintf( szQuery, "uspLoadMaxMailID @pserverindex='%02d'", g_appInfo.dwSys );
@@ -4733,7 +4727,7 @@ BOOL CDbManager::LoadPost( void )
 	if( m_qryPostProc.Fetch() )
 	{
 		int nMaxMailID	= m_qryPostProc.GetInt( "MaxMailID" );
-#ifdef __POST_DUP_1209
+
 		int nCount	= m_qryPostProc.GetInt( "nCount" );
 		if( nTotal != nCount )
 		{
@@ -4742,7 +4736,7 @@ BOOL CDbManager::LoadPost( void )
 			AfxMessageBox( szTemp );
 			return FALSE;
 		}
-#endif	// __POST_DUP_1209
+
 		if( (int)( CMail::s_nMail ) > nMaxMailID )
 		{
 			AfxMessageBox( "MaxMailID is not valid" );

@@ -1,5 +1,4 @@
-#ifndef __POST_H__
-#define	__POST_H__
+#pragma once
 
 #include <map>
 #include <list>
@@ -143,4 +142,3 @@ public:
 private:
 	std::map< u_long, CMailBox* >	m_mapMailBox;
 };
-#endif	// __POST_H__

@@ -607,11 +607,9 @@ void CPost::Process( void )
 		if( pMail->m_tmCreate < t.GetTime() )
 			lspMail.push_back( pMail );
 	}
-#ifdef __POST_1204
-	g_DbManager.RemoveMail( lspMail, t.GetTime() );
-#else	// __POST_1204
+
 	g_DbManager.RemoveMail( lspMail );
-#endif	// __POST_1204
+
 	lspMail.clear();
 }
 #endif	// __DBSERVER
