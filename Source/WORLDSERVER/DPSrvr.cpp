@@ -3035,10 +3035,7 @@ void CDPSrvr::OnPutItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 			return;
 		}
 
-		if( (int)( nItemNum ) > pItemElem->m_nItemNum )
-			nItemNum = pItemElem->m_nItemNum;
-		if( nItemNum < 1 )
-			nItemNum = 1;
+		nItemNum = std::clamp<short>(static_cast<short>(nItemNum), 1, pItemElem->m_nItemNum);
 		
 		//	GUILD_BANK_STR 'S1','000000','01' 
 		//	GUILD BANK 전체 불러오기 ex ) GUILD_BANK_STR 'S1',@im_idGuild,@iserverindex GUILD_BANK_STR 'S1','000000','01'  
@@ -3120,13 +3117,7 @@ void CDPSrvr::OnGetItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 				aLogItem.itemNumber = nGold;
 				OnLogItem( aLogItem );
 
-				CGuildMember*	pMember;
-				CUser*			pUsertmp;
-				auto i = pGuild->m_mapPMember.begin();
-				for( ; i != pGuild->m_mapPMember.end(); ++i )
-				{
-					pMember		= i->second;
-					pUsertmp	= (CUser*)prj.GetUserByID( pMember->m_idPlayer );
+				for (CUser * pUsertmp : AllMembers(*pGuild)) {
 					if( IsValidObj( pUsertmp ) && pUsertmp != pUser )
 					{
 						pUsertmp->AddGetGoldGuildBank( nGold, 2, pUser->m_idPlayer, 0 );	// 2는 업데이트 해야할 클라이게
@@ -3147,10 +3138,7 @@ void CDPSrvr::OnGetItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 				if( NULL == pItemElem )
 					return;
 				
-				if( (int)( dwItemNum ) > pItemElem->m_nItemNum )
-					dwItemNum = pItemElem->m_nItemNum;
-				if( dwItemNum < 1 )
-					dwItemNum	= 1;
+				dwItemNum = std::clamp<short>(static_cast<short>(dwItemNum), 1, pItemElem->m_nItemNum);
 				
 				CItemElem itemElem;
 				itemElem	= *pItemElem;
