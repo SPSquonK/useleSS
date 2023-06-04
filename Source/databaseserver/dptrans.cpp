@@ -96,9 +96,6 @@ CDPTrans::CDPTrans()
 	ON_MSG( PACKETTYPE_CALL_USP_PET_LOG, &CDPTrans::OnCalluspPetLog );
 	
 	ON_MSG( PACKETTYPE_EVENTLUA_CHANGED, &CDPTrans::OnEventLuaChanged);
-#ifdef __S_RECOMMEND_EVE
-	ON_MSG( PACKETTYPE_EVE_RECOMMEND, &CDPTrans::OnEveRecommend );
-#endif // __S_RECOMMEND_EVE
 
 	ON_MSG( PACKETTYPE_GC1TO1_STATETODB, &CDPTrans::OnGC1to1StateToDBSrvr );
 	ON_MSG( PACKETTYPE_GC1TO1_TENDERTODB, &CDPTrans::OnGC1to1Tender );
@@ -1320,16 +1317,6 @@ void CDPTrans::OnEventLuaChanged( CAr & ar, DPID dpid, DPID dpidCache, DPID dpid
 		SendEventLuaState( prj.m_EventLua.m_mapState, FALSE );
 	prj.m_EventLua.m_Access.Leave();
 }
-
-#ifdef __S_RECOMMEND_EVE
-void CDPTrans::OnEveRecommend( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus = g_DbManager.AllocRequest();
-	g_DbManager.MakeRequest( lpDbOverlappedPlus, lpBuf, uBufSize );
-	lpDbOverlappedPlus->nQueryMode	= RECOMMEND_EVE;
-	PostQueuedCompletionStatus( g_DbManager.m_hIOCPGuild, 1, NULL, &lpDbOverlappedPlus->Overlapped );	
-}
-#endif // __S_RECOMMEND_EVE
 
 void CDPTrans::OnCalluspLoggingQuest( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {

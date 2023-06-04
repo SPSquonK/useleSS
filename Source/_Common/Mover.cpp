@@ -1846,6 +1846,19 @@ BOOL CMover::CreateItem( CItemElem * pItemBase, BYTE * pnId )
 	return fSuccess;
 }
 
+CUser::CreateOrSendResult CUser::CreateOrSendItem(CItemElem & itemElem, DWORD textIDForMail) {
+	if (CreateItem(&itemElem)) {
+		return CreateOrSendResult::Inventory;
+	} else {
+		g_dpDBClient.SendQueryPostMail(
+			m_idPlayer, 0, itemElem, 0, itemElem.GetProp()->szName,
+			prj.GetText(textIDForMail)
+		);
+
+		return CreateOrSendResult::Post;
+	}
+}
+
 void CMover::RemoveItem(BYTE nId, short nNum) {
 	CItemElem * pItemBase = GetItemId(nId);
 	if (pItemBase) {

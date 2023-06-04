@@ -42,9 +42,6 @@ public:
 	void	SaveSkill( CUser* pUser );
 #endif // __S_NEW_SKILL_2
 	
-#ifdef __S_RECOMMEND_EVE
-	void	SendRecommend( CUser* pUser, int nValue = 0 );
-#endif // __S_RECOMMEND_EVE
 	void	SendLogConnect( CUser* pUser );
 	void	SendLogPlayDeath( CMover* pMover, CMover* pSender );
 	void	SendLogLevelUp( CMover* pSender, int Action );

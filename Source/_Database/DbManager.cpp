@@ -3078,40 +3078,6 @@ void CDbManager::InsertTag( CQuery *qry, CAr & arRead)
 	}
 }
 
-#ifdef __S_RECOMMEND_EVE
-void CDbManager::RecommendEve( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
-{
-	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
-
-	char szAccount[MAX_ACCOUNT];
-	u_long idPlayer;
-	LONG nLevel;
-	BYTE nSex;
-	int nValue;
-	
-	arRead.ReadString( szAccount, MAX_ACCOUNT );
-	arRead >> idPlayer >> nLevel >> nSex >> nValue;
-
-#ifndef __GETMAILREALTIME
-	return;
-#endif // __GETMAILREALTIME
-
-	char szQuery[QUERY_SIZE]	= { 0,};
-	sprintf( szQuery, "MAIL_STR_REALTIME 'I1', '%02d', %d, %d, '%07d', %d, '%s', %d", g_appInfo.dwSys, nSex, nValue, idPlayer, nLevel, szAccount, time(NULL) );
-
-	if( FALSE == qry->Exec( szQuery ) )
-	{
-		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-		TRACE("CDbManager::RecommendEve -> qry->Exec %s\n", szQuery);
-		return;
-	}
-
-	if( qry->Fetch() )
-	{
-	}
-}
-#endif // __S_RECOMMEND_EVE
-
 void CDbManager::SchoolReport( CQuery* pQuery, CAr & ar)
 {
 	TRACE( "SCHOOL_REPORT\n" );
@@ -3570,11 +3536,6 @@ void CDbManager::GuildThread( void )
 			case READ_MAIL:
 				ReadMail( pQuery, lpDbOverlappedPlus );
 				break;
-#ifdef __S_RECOMMEND_EVE
-			case RECOMMEND_EVE:
-				RecommendEve( pQuery, lpDbOverlappedPlus );
-				break;
-#endif // __S_RECOMMEND_EVE
 #ifdef __GETMAILREALTIME
 			case QM_GETMAIL_REALTIME:
 				QueryGetMailRealTime( pQuery );
@@ -5906,7 +5867,7 @@ BOOL CDbManager::QueryGetMailRealTime( CQuery* pQuery )
 	if( NULL == pQuery )
 		return FALSE;
 
-	char szQuery[QUERY_SIZE]	= { 0, };
+	char szQuery[2048]	= { 0, };
 	sprintf( szQuery, "MAIL_STR_REALTIME 'S1', '%02d'", g_appInfo.dwSys );
 	if( FALSE == pQuery->Exec( szQuery ) )
 	{
@@ -5922,11 +5883,13 @@ BOOL CDbManager::QueryGetMailRealTime( CQuery* pQuery )
 		return FALSE;
 	}
 
-	__MAIL_REALTIME OneMail;
+	struct __MAIL_REALTIME { int nMail_Before; int nMail_After; };
+
 	std::vector< __MAIL_REALTIME > vecMailRT;
 
 	while( pQuery->Fetch() )
 	{
+		__MAIL_REALTIME OneMail;
 		u_long idReceiver	= pQuery->GetInt( "idReceiver" );
 		CMail* pMail	= new CMail;
 		OneMail.nMail_Before = pQuery->GetInt( "nMail" );
@@ -5955,7 +5918,7 @@ BOOL CDbManager::QueryGetMailRealTime( CQuery* pQuery )
 
 		if( dwItemId && nItemFlag == 0 )
 		{
-			ItemProp* pItemProp	= prj.GetItemProp( dwItemId );
+			const ItemProp* pItemProp	= prj.GetItemProp( dwItemId );
 			if( !pItemProp )
 			{
 				Error( "CDbManager::QueryGetMailRealTime: Not ItemProp = %d", dwItemId );
@@ -5975,7 +5938,6 @@ BOOL CDbManager::QueryGetMailRealTime( CQuery* pQuery )
 
 			pPost->m_csPost.Enter();
 			OneMail.nMail_After	= CPost::GetInstance()->AddMail( idReceiver, pMail );
-
 			pPost->m_csPost.Leave();
 			CDPTrans::GetInstance()->SendPostMail( TRUE, idReceiver, pMail );
 
@@ -5983,10 +5945,12 @@ BOOL CDbManager::QueryGetMailRealTime( CQuery* pQuery )
 		}
 	}
 
-	for( DWORD i = 0 ; i < vecMailRT.size() ; ++i )
-	{
-		sprintf( szQuery, "MAIL_STR_REALTIME 'U1', '%02d', %d, %d, '%07d', %d, '%s', %d, %d, %d", 
-							g_appInfo.dwSys, vecMailRT[i].nMail_Before, vecMailRT[i].nMail_After, 0, 0, "", 0, vecMailRT[i].m_liSerialNumber, vecMailRT[i].m_nHitPoint );
+
+	for (const __MAIL_REALTIME & mail : vecMailRT) {
+		sprintf( szQuery,
+			"MAIL_STR_REALTIME 'U1', '%02d', %d, %d", 
+			g_appInfo.dwSys, mail.nMail_Before, mail.nMail_After
+		);
 
 		if( FALSE == pQuery->Exec( szQuery ) )
 		{

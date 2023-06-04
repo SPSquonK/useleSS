@@ -841,10 +841,9 @@ int APIENTRY ChangeJob( NPCDIALOG_INFO* pInfo, int nJob )
 		pUser->AddSetChangeJob( v1 );
 		g_UserMng.AddNearSetChangeJob(pUser, v1);
 		// #dlvr
-		g_dpDBClient.SendLogLevelUp( (CUser*)pUser, 4 );
+		g_dpDBClient.SendLogLevelUp( pUser, 4 );
 #ifdef __S_RECOMMEND_EVE
-		if( g_eLocal.GetState( EVE_RECOMMEND ) && pUser->IsPlayer() )
-			g_dpDBClient.SendRecommend( (CUser*)pUser, v1 );
+		pUser->GiveRecommendEveItems( v1 );
 #endif // __S_RECOMMEND_EVE
 		g_dpDBClient.SendUpdatePlayerData( pUser );
 	}

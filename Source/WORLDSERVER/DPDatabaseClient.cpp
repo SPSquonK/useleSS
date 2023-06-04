@@ -290,15 +290,97 @@ void CDPDatabaseClient::SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVEC
 }
 
 #ifdef __S_RECOMMEND_EVE
-void CDPDatabaseClient::SendRecommend( CUser* pUser, int nValue )
+template<typename T>
+bool IsOneOf(T searched, std::convertible_to<T> auto ... among) {
+	return ((searched == among) || ...);
+};
+
+void CUser::GiveRecommendEveItems( int nValue )
 {
-	BEFORESENDDUAL( ar, PACKETTYPE_EVE_RECOMMEND, DPID_UNKNOWN, DPID_UNKNOWN );  
-	ar.WriteString( pUser->m_playAccount.lpszAccount );
-	ar << pUser->m_idPlayer;
-	ar << pUser->GetLevel();
-	ar << pUser->GetSex();
-	ar << nValue;
-	SEND( ar, this, DPID_SERVERPLAYER );	
+	if (!g_eLocal.GetState(EVE_RECOMMEND)) return;
+
+	struct Item { DWORD id; short quantity = 1; BYTE flag = 0; };
+
+	boost::container::small_vector<Item, 4> items;
+
+	if (nValue == 0) {
+		const int nLevel = GetLevel();
+
+		if (nLevel == 5 || nLevel == 15) {
+			items.emplace_back(Item{ II_CHR_SYS_SCR_UPCUTSTONE, 1, 2 });
+		} else if (nLevel == 10 || nLevel == 1) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESA, 3, 2 });
+		} else if (nLevel == 20) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESB, 3, 2 });
+			items.emplace_back(Item{ II_CHR_SYS_SCR_UPCUTSTONE, 2, 2 });
+		} else if (nLevel == 23 || nLevel == 29 || nLevel == 35 || nLevel == 43 || nLevel == 47 || nLevel == 51) {
+			items.emplace_back(Item{ II_CHR_SYS_SCR_UPCUTSTONE, 2, 2 });
+		} else if (nLevel == 26 || nLevel == 32 || nLevel == 38) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESB, 3, 2 });
+		} else if (nLevel == 40 || nLevel == 50) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESC, 2, 2 });
+			items.emplace_back(Item{ II_CHR_REF_REF_HOLD, 3, 2 });
+			items.emplace_back(Item{ II_CHR_POT_DRI_VITALX, 3, 2 });
+		} else if (nLevel == 45) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESC, 2, 2 });
+			items.emplace_back(Item{ II_CHR_REF_REF_HOLD, 1, 2 });
+			items.emplace_back(Item{ II_CHR_POT_DRI_VITALX, 1, 2 });
+		} else if (nLevel == 55) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESC, 2, 2 });
+			items.emplace_back(Item{ II_CHR_SYS_SCR_UPCUTSTONE, 2, 2 });
+		} else if (nLevel == 58) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESC, 2, 2 });
+			items.emplace_back(Item{ II_CHR_REF_REF_HOLD, 3, 2 });
+			items.emplace_back(Item{ II_CHR_POT_DRI_VITALX, 3, 2 });
+			items.emplace_back(Item{ II_CHR_SYS_SCR_UPCUTSTONE, 2, 2 });
+		} else if (nLevel == 60) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESS, 10, 2 });
+		}
+	} else if (IsOneOf(nValue, JOB_MERCENARY, JOB_MAGICIAN, JOB_ACROBAT, JOB_ASSIST)) {
+		items.emplace_back(Item{ II_SYS_SYS_SCR_BXCOSTUME01 });
+	} else if (IsOneOf(nValue, JOB_KNIGHT, JOB_BLADE)) {
+		if (GetSex() == SEX_MALE) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXMMER60SET });
+		} else {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXFMER60SET });
+		}
+
+		items.emplace_back(Item{ II_SYS_SYS_SCR_BXSUHO01 });
+
+	} else if (IsOneOf(nValue, JOB_RANGER, JOB_JESTER)) {
+		if (GetSex() == SEX_MALE) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXMACR60SET });
+		} else {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXFACR60SET });
+		}
+
+		items.emplace_back(Item{ II_SYS_SYS_SCR_BXSUHO01 });
+	} else if (IsOneOf(nValue, JOB_RINGMASTER, JOB_BILLPOSTER)) {
+		if (GetSex() == SEX_MALE) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXMASS60SET });
+		} else {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXFASS60SET });
+		}
+
+		items.emplace_back(Item{ II_SYS_SYS_SCR_BXSUHO01 });
+	} else if (IsOneOf(nValue, JOB_PSYCHIKEEPER, JOB_ELEMENTOR)) {
+		if (GetSex() == SEX_MALE) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXMMAG60SET });
+		} else {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXFMAG60SET });
+		}
+
+		items.emplace_back(Item{ II_SYS_SYS_SCR_BXSUHO01 });
+	}
+
+	for (const Item & item : items) {
+		CItemElem itemElem;
+		itemElem.m_dwItemId = item.id;
+		itemElem.m_nItemNum = item.quantity;
+		itemElem.m_byFlag = item.flag;
+
+		CreateOrSendItem(itemElem, TID_GAME_LEVELUP_CAPTION);
+	}
 }
 #endif // __S_RECOMMAED_EVE
 

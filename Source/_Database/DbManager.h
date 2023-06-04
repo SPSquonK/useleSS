@@ -95,9 +95,6 @@ enum QUERYMODE
 	SAVE_SKILL,
 #endif // __S_NEW_SKILL_2
 	QM_CALL_USP_PET_LOG,
-#ifdef __S_RECOMMEND_EVE
-	RECOMMEND_EVE,
-#endif // __S_RECOMMEND_EVE
 #ifdef __GETMAILREALTIME
 	QM_GETMAIL_REALTIME,
 #endif // __GETMAILREALTIME
@@ -474,14 +471,6 @@ class CDbManager
 		int		nJob = 0;
 		int		nPoint = 0;
 	};
-	
-	struct __MAIL_REALTIME
-	{
-		int nMail_Before;
-		int nMail_After;
-		SERIALNUMBER m_liSerialNumber;
-		int m_nHitPoint;
-	};
 
 public:
 #ifdef __ITEM_REMOVE_LIST
@@ -831,10 +820,6 @@ private:
 	BOOL	SendItemDeleteQuery( CQuery *pQry, char* szSql, int nNo );
 	BOOL	ItemLogQuery( CQuery *pQryLog, const char *szQueryState, const LogItemInfo& info, u_long uIdPlayer, int nNo, const char *szItemName );
 	BOOL	RemoveItemDeleteQuery( CQuery *pQry, char* szSql, int nNo );
-
-#ifdef __S_RECOMMEND_EVE
-	void	RecommendEve( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#endif // __S_RECOMMEND_EVE
 
 	void	LogGetHonorTime(CQuery *qry, CAr & arRead);
 	CQuery	m_qryPostProc;

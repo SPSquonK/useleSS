@@ -242,6 +242,12 @@ public:
 	void OnAfterUseItem(const ItemProp * pItemProp);
 #pragma endregion
 
+#ifdef __S_RECOMMEND_EVE
+	void GiveRecommendEveItems(int nValue = 0);
+#endif // __S_RECOMMEND_EVE
+	enum class CreateOrSendResult { Inventory, Post };
+	CreateOrSendResult CreateOrSendItem(CItemElem & itemElem, DWORD textIDForMail);
+
 	enum class SummonState {
 		Ok_0, Trade_1, Die_2, Vendor_3, Attack_4,
 		Fly_5, Duel_6

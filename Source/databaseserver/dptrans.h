@@ -83,9 +83,6 @@ public:
 	void	SendEventLuaChanged( void );
 	void	OnEventLuaChanged( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 
-#ifdef __S_RECOMMEND_EVE
-	void	OnEveRecommend( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-#endif // __S_RECOMMEND_EVE
 	// 나중에 USES_PFNENTRIES; 밑으로 옮기자 
 	void	OnSaveConcurrentUserNumber( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	

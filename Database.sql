@@ -11364,26 +11364,12 @@ CREATE         proc [dbo].[MAIL_STR_REALTIME]
 	@iGu		CHAR(2),
 	@serverindex 	CHAR(2),
 	@nMail_Before	INT = 0,
-	@nMail_After	INT = 0,
-	@idPlayer	CHAR(7) = '0000000',
-	@nLevel		INT = 0,
-	@iaccount 	VARCHAR(32) = '',
-	@tmCreate	INT = 0,
-	@dwSerialNumber	INT = 0,
-	@nHitPoint	INT = 0
+	@nMail_After	INT = 0
 as
 set nocount on
 
-declare @sdate datetime
-declare @edate datetime
 declare @iserverindex char(2)
 
---set @sdate = '2007-07-18 00:00:00'--'2007-07-10 00:00:00'	-- '2007-07-18 00:00:00'
---set @edate = '2007-08-31 23:59:00'--'2007-07-10 23:00:00'  -- '2007-08-31 23:59:00'
-
--- set @sdate = '2008-01-15 11:00:00'
--- set @edate = '2008-02-24 12:00:00'
-select @sdate = '2009-12-26 10:00:00', @edate = '2010-02-03 10:00:00'
 set @iserverindex = cast((cast(@serverindex as int) + 50) as char(2))
 
 IF @iGu	= 'S1'
@@ -11396,163 +11382,13 @@ IF @iGu	= 'S1'
 ELSE
 IF @iGu	= 'U1'
 	BEGIN
-		UPDATE MAIL_TBL SET nMail = @nMail_After, serverindex = @serverindex, dwSerialNumber = @dwSerialNumber, nHitPoint = @nHitPoint
+		UPDATE MAIL_TBL
+		SET nMail = @nMail_After,
+		  serverindex = @serverindex
 		WHERE serverindex = @iserverindex and nMail = @nMail_Before
 	RETURN
 	END
-ELSE
-IF @iGu  = 'I1'
 
-	BEGIN
-		-- ??? ???? ??
-		IF(getdate() < @sdate or getdate() > @edate) BEGIN
-			RETURN
-		END
-		-- ??? ??? ?? ?? 	
-		IF( NOT EXISTS(SELECT * FROM tbl_Event_NewAccount_0912 where  account  = @iaccount ) )	BEGIN
-			RETURN
-		END
-
---		if exists (select * from USELESS_ACCOUNT_DBF.dbo.ACCOUNT_TBL_DETAIL where account = @iaccount and (regdate >= @sdate and regdate <= @edate))
-		begin
-
-		declare @ItemID1 int, @ItemID2 int, @ItemID3 int, @ItemID4 int
-		declare @ItemNum1 int, @ItemNum2 int, @ItemNum3 int, @ItemNum4 int
-		declare @provide_count int, @provide_num int
-		declare @item_flag int
-
-		set @provide_num = 1
-
-		if (@nMail_After = 0)
-		begin
-			if (@nLevel = 5) or (@nLevel = 15)
-			begin
-				select @ItemID1 = 10270, @ItemNum1 = 1, @provide_count = 1, @item_flag = 2
-			end
-			if (@nLevel = 10) or (@nLevel = 1)
-			begin
-				select @ItemID1 = 26205, @ItemNum1 = 3, @provide_count = 1, @item_flag = 2
-			end
-			if (@nLevel = 20)
-			begin
-				select @ItemID1 = 26208, @ItemNum1 = 3, @ItemID2 = 10270, @ItemNum2 = 2, @provide_count = 2, @item_flag = 2
-			end
-			if (@nLevel = 23) or (@nLevel = 29) or (@nLevel = 35) or (@nLevel = 43) or (@nLevel = 47) or (@nLevel = 51)
-			begin
-				select @ItemID1 = 10270, @ItemNum1 = 2, @provide_count = 1, @item_flag = 2
-			end
-			if (@nLevel = 26) or (@nLevel = 32) or (@nLevel = 38)
-			begin
-				select @ItemID1 = 26208, @ItemNum1 = 3, @provide_count = 1, @item_flag = 2
-			end
-			if (@nLevel = 40) or (@nLevel = 50)
-			begin
-				select @ItemID1 = 26211, @ItemNum1 = 2, @ItemID2 = 10207, @ItemNum2 = 3, @ItemID3 = 10208, @ItemNum3 = 3, @provide_count = 3, @item_flag = 2
-			end
-			if (@nLevel = 45)
-			begin
-				select @ItemID1 = 26211, @ItemNum1 = 2, @ItemID2 = 10207, @ItemNum2 = 1, @ItemID3 = 10208, @ItemNum3 = 1, @provide_count = 3, @item_flag = 2
-			end
-			if (@nLevel = 55)
-			begin
-				select @ItemID1 = 26211, @ItemNum1 = 2, @ItemID2 = 10270, @ItemNum2 = 2, @provide_count = 2, @item_flag = 2
-			end
-			if (@nLevel = 58)
-			begin
-				select @ItemID1 = 26211, @ItemNum1 = 2, @ItemID2 = 10207, @ItemNum2 = 3, @ItemID3 = 10208, @ItemNum3 = 3, @ItemID4 = 10270, @ItemNum4 = 2, @provide_count = 4, @item_flag = 2
-			end
-			if (@nLevel = 60)
-			begin
-				select @ItemID1 = 30148, @ItemNum1 = 10,  @provide_count = 1, @item_flag = 2
-			end
-		end
-		if (@nMail_After in (1, 2, 3, 4))
-		begin
-				select @ItemID1 = 26650, @ItemNum1 = 1, @provide_count = 1, @item_flag = 0
-		end
-		if (@nMail_After in (6, 7))
-		begin
-			if (@nMail_Before = 0)
-			begin
-				select @ItemID1 = 22482, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-			if (@nMail_Before = 1)
-			begin
-				select @ItemID1 = 22483, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-		end
-
-		if (@nMail_After in (8, 9))
-		begin
-			if (@nMail_Before = 0)
-			begin
-				select @ItemID1 = 22484, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-			if (@nMail_Before = 1)
-			begin
-				select @ItemID1 = 22485, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-		end
-		if (@nMail_After in (10, 11))
-		begin
-			if (@nMail_Before = 0)
-			begin
-				select @ItemID1 = 22496, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-			if (@nMail_Before = 1)
-			begin
-				select @ItemID1 = 22497, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-		end
-		if (@nMail_After in (12, 13))
-		begin
-			if (@nMail_Before = 0)
-			begin
-				select @ItemID1 = 22498, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-			if (@nMail_Before = 1)
-			begin
-				select @ItemID1 = 22499, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-		end
-
-		while @provide_num <= @provide_count
-		begin
-			-- ?? ??? ?? ??
-			DECLARE @nMaxMailID int
-			SELECT @nMaxMailID = MAX(nMail) + 1 from MAIL_TBL where serverindex = @iserverindex
-			SET @nMaxMailID = ISNULL( @nMaxMailID, 0 )
-	
-			-- ??? ??
-			DECLARE @szTitle		VARCHAR(128)
-			DECLARE @szText		VARCHAR(1024)
-			if @nMail_After = 0
-				select @szTitle = '?? ?? ???', @szText = '?? ??!! ?? UP!!'
-			else
-				select @szTitle = '?? ?? ???', @szText = '??? ?? ????.'
-	
-			if @provide_num = 1
-			begin
-				EXEC dbo.MAIL_STR 'A1', @nMaxMailID, @iserverindex, @idPlayer, '0000000', 0, @tmCreate, 0, @szTitle, @szText,@ItemID1, @ItemNum1, 0, 0, 0, 0, @item_flag
-			end
-			if @provide_num = 2
-			begin
-				EXEC dbo.MAIL_STR 'A1', @nMaxMailID, @iserverindex, @idPlayer, '0000000', 0, @tmCreate, 0, @szTitle, @szText,@ItemID2, @ItemNum2, 0, 0, 0, 0, @item_flag
-			end
-			if @provide_num = 3
-			begin
-				EXEC dbo.MAIL_STR 'A1', @nMaxMailID, @iserverindex, @idPlayer, '0000000', 0, @tmCreate, 0, @szTitle, @szText,@ItemID3, @ItemNum3, 0, 0, 0, 0, @item_flag
-			end
-			if @provide_num = 4
-			begin
-				EXEC dbo.MAIL_STR 'A1', @nMaxMailID, @iserverindex, @idPlayer, '0000000', 0, @tmCreate, 0, @szTitle, @szText,@ItemID4, @ItemNum4, 0, 0, 0, 0, @item_flag
-			end
-	
-			set @provide_num = @provide_num + 1
-		end
-
-		end
-	END
 GO
 /****** Object:  StoredProcedure [dbo].[usp_CampusMember_Load]    Script Date: 04/03/2010 12:42:39 ******/
 SET ANSI_NULLS ON
