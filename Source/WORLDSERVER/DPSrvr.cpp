@@ -5486,11 +5486,10 @@ void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 	ar.ReadString( lpszTitle, MAX_MAILTITLE );
 	ar.ReadString( lpszText, MAX_MAILTEXT );
 
-	DWORD nPostGold = 100;
-
+	int nPostGold = 100;
 	if( ::GetLanguage() != LANG_KOR )
 		nPostGold = 500;
-					
+
 	if( nItem < 0 || nGold < 0 || ( nGold + nPostGold ) <= 0 )
 		return;
 
@@ -5557,18 +5556,13 @@ void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 					pUser->AddDiagText( prj.GetText( TID_GAME_CANNOT_DO_USINGITEM ) );
 					return;
 				}
-				ItemProp* pProp	= pItemElem->GetProp();
+				const ItemProp* pProp	= pItemElem->GetProp();
 				if( pProp->dwItemKind3 == IK3_CLOAK && pItemElem->m_idGuild != 0 )
 				{
 					pUser->AddDiagText( prj.GetText( TID_GAME_CANNOT_POST ) );
 					return;
 				}
 
-//				if( pItemElem->m_dwItemId == II_RID_RID_BOR_EVEINSHOVER || pItemElem->m_dwItemId == II_RID_RID_BOR_LADOLF )
-//				{
-//					pUser->AddDiagText( prj.GetText( TID_GAME_CANNOT_POST ) );
-//					return;
-//				}
 				if( pProp->dwParts == PARTS_RIDE && pProp->dwItemJob == JOB_VAGRANT )
 				{
 					pUser->AddDiagText( prj.GetText( TID_GAME_CANNOT_POST ) );
@@ -5580,13 +5574,13 @@ void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 				if( pItemElem->m_nItemNum < nItemNum )
 					nItemNum	= pItemElem->m_nItemNum;
 			}
-			if( pUser->GetGold() < (int)( ( nPostGold + nGold ) ) )
+			if( pUser->GetGold() < nPostGold + nGold )
 			{
 				pUser->AddDiagText( prj.GetText( TID_GAME_LACKMONEY ) );
 				return;
 			}
 
-			pUser->AddGold( (int)( (int)( nPostGold + nGold ) * (-1) ), TRUE );	// 사용료 지급
+			pUser->AddGold( - nPostGold - nGold , TRUE );	// 사용료 지급
 			
 			CItemElem	itemElem;
 			if( pItemElem )
