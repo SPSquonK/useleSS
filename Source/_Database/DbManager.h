@@ -162,90 +162,6 @@ typedef struct tagDB_OVERLAPPED_PLUS
 	}
 }	DB_OVERLAPPED_PLUS,	*LPDB_OVERLAPPED_PLUS;
 
-struct	MAIL_QUERYINFO
-{
-	LPCTSTR		pszType;
-	int		nMail;
-	u_long	idReceiver;
-	u_long	idSender;
-	int		nGold;
-	time_t	tmCreate;
-	BYTE	byRead;
-	LPCTSTR		szTitle;
-	LPCTSTR	szText;
-	DWORD	dwItemId;
-	int		nItemNum;
-	int		nRepairNumber;
-	int		nHitPoint;
-	int		nMaxHitPoint;
-	int		nMaterial;
-	BYTE	byFlag;
-	SERIALNUMBER	iSerialNumber;
-	int		nOption;
-	int		bItemResist;
-	int		nResistAbilityOption;
-	u_long	idGuild;
-	int		nResistSMItemId;
-	BYTE	bCharged;
-	DWORD	dwKeepTime;
-	__int64	iRandomOptItemId;
-	int		nPiercedSize;
-	DWORD	dwItemId1;
-	DWORD	dwItemId2;
-	DWORD	dwItemId3;
-	DWORD	dwItemId4;
-	DWORD	dwItemId5;
-	BOOL	bPet;
-	BYTE	nKind;
-	BYTE	nLevel;
-	DWORD	dwExp;
-	WORD	wEnergy;
-	WORD	wLife;
-	BYTE	anAvailLevel[PL_MAX];
-	char	szPetName[MAX_PET_NAME];
-
-	MAIL_QUERYINFO( LPCTSTR pszQueryType )
-		{
-			pszType	= pszQueryType;
-			nMail	= 0;
-			idReceiver	= 0;
-			idSender	= 0;
-			nGold	= 0;
-			tmCreate	= 0;
-			byRead	= 0;
-			szTitle	= "";
-			szText	= "";
-			dwItemId	= 0;
-			nItemNum	= 0;
-			nRepairNumber	= 0;
-			nHitPoint	= 0;
-			nMaxHitPoint	= 0;
-			nMaterial	= 0;
-			byFlag	= 0;
-			iSerialNumber	= 0;
-			nOption	= 0;
-			bItemResist	= 0;
-			nResistAbilityOption	= 0;
-			idGuild	= 0;
-			nResistSMItemId	= 0;
-			bCharged	= 0;
-			dwKeepTime	= 0;
-			iRandomOptItemId	= 0;
-			nPiercedSize	= 0;
-			dwItemId1	= 0;
-			dwItemId2	= 0;
-			dwItemId3	= 0;
-			dwItemId4	= 0;
-			dwItemId5	= 0;
-			bPet	= FALSE;
-			nKind	= nLevel	= 0;
-			dwExp	= 0;
-			wEnergy	= wLife	= 0;
-			memset( anAvailLevel, 0, sizeof(BYTE) * PL_MAX );
-			szPetName[0]	= '\0';
-		}
-};
-
 // 길드쿼리문장을 만든다.
 struct GUILD_QUERYINFO
 {
@@ -929,7 +845,8 @@ private:
 	void	RemoveMailItem( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
 	void	RemoveMailGold( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
 	void	ReadMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
-	void	DbQryMail( char* szSql, const MAIL_QUERYINFO & info );
+	static void DbQryMail(char * szSql, LPCTSTR pszType, int nMail = 0);
+
 	void	LogExpBox( CQuery *pQuery, CAr & ar );
 
 	void	GetGemeSettingtime( CQuery* pQuery, int nChat = 0 );

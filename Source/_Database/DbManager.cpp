@@ -3200,25 +3200,11 @@ void CDbManager::DBQryVote( char* szSql, const VOTE_QUERYINFO& info )
 	TRACE("%s\n", szSql);
 }
 
-void CDbManager::DbQryMail( char* szSql, const MAIL_QUERYINFO& info )
-{
-	sprintf( szSql, "MAIL_STR '%s', @nMail=%d, @serverindex='%02d', @idReceiver='%07d', @idSender='%07d', @nGold=%d, @tmCreate=%d, @byRead=%d, @szTitle='%s', @szText='%s',"
-		"@dwItemId=%d, @nItemNum=%d, @nRepairNumber=%d, @nHitPoint=%d, @nMaxHitPoint=%d, @nMaterial=%d, @byFlag=%d, @dwSerialNumber=%d,"
-		"@nOption=%d, @bItemResist=%d, @nResistAbilityOption=%d, @idGuild=%d, @nResistSMItemId=%d, @bCharged=%d, @dwKeepTime=%d,"
-		"@nRandomOptItemId=%I64d,"
-		"@nPiercedSize=%d, @dwItemId1=%d, @dwItemId2=%d, @dwItemId3=%d, @dwItemId4=%d"
-		", @bPet=%d, @nKind=%d, @nLevel=%d, @dwExp=%d, @wEnergy=%d, @wLife=%d,"
-		"@anAvailLevel_D=%d, @anAvailLevel_C=%d, @anAvailLevel_B=%d, @anAvailLevel_A=%d, @anAvailLevel_S=%d"
-		", @dwItemId5=%d"
-		,info.pszType, info.nMail, g_appInfo.dwSys, info.idReceiver, info.idSender, info.nGold, info.tmCreate, info.byRead, info.szTitle, info.szText, 
-		info.dwItemId, info.nItemNum, info.nRepairNumber, info.nHitPoint, info.nMaxHitPoint, info.nMaterial, info.byFlag, info.iSerialNumber,
-		info.nOption, info.bItemResist, info.nResistAbilityOption, info.idGuild, info.nResistSMItemId, info.bCharged, info.dwKeepTime,
-		info.iRandomOptItemId,
-		info.nPiercedSize, info.dwItemId1, info.dwItemId2, info.dwItemId3, info.dwItemId4
-		, info.bPet, info.nKind, info.nLevel, info.dwExp, info.wEnergy, info.wLife,
-		info.anAvailLevel[PL_D], info.anAvailLevel[PL_C], info.anAvailLevel[PL_B], info.anAvailLevel[PL_A], info.anAvailLevel[PL_S]
-		,info.dwItemId5
-		);
+void CDbManager::DbQryMail(char * szSql, LPCTSTR pszType, int nMail) {
+	sprintf(szSql,
+		"MAIL_STR '%s', @nMail=%d, @serverindex='%02d'",
+		pszType, nMail, g_appInfo.dwSys
+	);
 }
 
 void CDbManager::MakeQueryAddMail( char* szSql, CMail* pMail, u_long idReceiver )
@@ -4658,9 +4644,8 @@ BOOL CDbManager::LoadPost( void )
 	int	nTotal	= 0;
 #endif	// __POST_DUP_1209
 
-	MAIL_QUERYINFO info( "S1" );
 	char szQuery[QUERY_SIZE]	= { 0, };
-	DbQryMail( szQuery, info );
+	DbQryMail(szQuery, "S1");
 	if( FALSE == m_qryPostProc.Exec( szQuery ) )
 	{
 		AfxMessageBox( "QUERY: MAIL_STR 'S1'" );
@@ -4910,10 +4895,8 @@ void CDbManager::RemoveMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	{
 		pMailBox->RemoveMail( nMail );
 		pPost->m_csPost.Leave();	// u
-		MAIL_QUERYINFO info( "D1" );
-		info.nMail	= nMail;
 		char szQuery[QUERY_SIZE]	= { 0,};
-		DbQryMail( szQuery, info );
+		DbQryMail(szQuery, "D1", nMail);
 		if( FALSE == pQuery->Exec( szQuery ) )
 			Error( "QUERY: PACKETTYPE_QUERYREMOVEMAIL" );
 		else
@@ -4923,45 +4906,23 @@ void CDbManager::RemoveMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 		pPost->m_csPost.Leave();	// u
 }
 
-#ifdef __POST_1204
-void CDbManager::RemoveMail( list<CMail*> & lspMail, time_t t )
-{
-	char szQuery[QUERY_SIZE]	= { 0,};
-	MAIL_QUERYINFO info( "D2" );
-	info.tmCreate	= t;
-	DbQryMail( szQuery, info );
-	if( m_qryPostProc.Exec( szQuery ) )
-	{
-		for( list<CMail*>::iterator i = lspMail.begin(); i != lspMail.end(); ++i )
-		{
-			CMail* pMail	= *i;
-			CMailBox* pMailBox	= pMail->GetMailBox();
-			CDPTrans::GetInstance()->SendRemoveMail( pMailBox->m_idReceiver, pMail->m_nMail );
-			pMailBox->RemoveMail( pMail->m_nMail );
-		}
-	}
-}
-#else	// __POST_1204
-//{{AFX
 void CDbManager::RemoveMail(std::list<CMail*> & lspMail )
 {
 	char szQuery[QUERY_SIZE]	= { 0,};
 	for( auto i = lspMail.begin(); i != lspMail.end(); ++i )
 	{
 		CMail* pMail	= *i;
-		MAIL_QUERYINFO info( "D1" );
-		info.nMail	= pMail->m_nMail;
-		DbQryMail( szQuery, info );
+		const int nMail = pMail->m_nMail;
+		DbQryMail( szQuery, "D1", nMail );
 		if( m_qryPostProc.Exec( szQuery ) )
 		{
 			CMailBox* pMailBox	= pMail->GetMailBox();
-			pMailBox->RemoveMail( info.nMail );
-			CDPTrans::GetInstance()->SendRemoveMail( pMailBox->m_idReceiver, info.nMail );
+			pMailBox->RemoveMail( nMail );
+			CDPTrans::GetInstance()->SendRemoveMail( pMailBox->m_idReceiver, nMail );
 		}
 	}
 }
-//}}AFX
-#endif	// __POST_1204
+
 
 void CDbManager::RemoveMailItem( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 {
@@ -4979,10 +4940,8 @@ void CDbManager::RemoveMailItem( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	{
 		pMailBox->RemoveMailItem( nMail );
 		pPost->m_csPost.Leave();	// u
-		MAIL_QUERYINFO info( "U1" );
-		info.nMail	= nMail;
 		char szQuery[QUERY_SIZE]	= { 0,};
-		DbQryMail( szQuery, info );
+		DbQryMail(szQuery, "U1", nMail);
 		if( FALSE == pQuery->Exec( szQuery ) )
 			Error( "QUERY: PACKETTYPE_QUERYGETMAILITEM" );
 		else
@@ -5008,10 +4967,9 @@ void CDbManager::RemoveMailGold( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	{
 		pMailBox->RemoveMailGold( nMail );
 		pPost->m_csPost.Leave();	// u
-		MAIL_QUERYINFO info( "U2" );
-		info.nMail	= nMail;
+		
 		char szQuery[QUERY_SIZE]	= { 0,};
-		DbQryMail( szQuery, info );
+		DbQryMail( szQuery, "U2", nMail );
 		if( FALSE == pQuery->Exec( szQuery ) )
 			Error( "QUERY: PACKETTYPE_QUERYGETMAILITEM" );
 		else
@@ -5037,10 +4995,9 @@ void CDbManager::ReadMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	{
 		pMailBox->ReadMail( nMail );
 		pPost->m_csPost.Leave();	// u
-		MAIL_QUERYINFO info( "U3" );
-		info.nMail	= nMail;
+		
 		char szQuery[QUERY_SIZE]	= { 0,};
-		DbQryMail( szQuery, info );
+		DbQryMail( szQuery, "U3", nMail );
 		if( FALSE == pQuery->Exec( szQuery ) )
 			Error( "QUERY: PACKETTYPE_READMAIL" );
 		else
