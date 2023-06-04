@@ -5959,7 +5959,15 @@ BOOL CDbManager::QueryGetMailRealTime( CQuery* pQuery )
 	sprintf( szQuery, "MAIL_STR_REALTIME 'S1', '%02d'", g_appInfo.dwSys );
 	if( FALSE == pQuery->Exec( szQuery ) )
 	{
-		// AfxMessageBox( szQuery );
+		AfxMessageBox( szQuery );
+		
+		static bool firstRealTimePopup = true;
+		
+		if (firstRealTimePopup) {
+			AfxMessageBox("You probably need to set your ODBC connection to english");
+			firstRealTimePopup = false;
+		}
+
 		return FALSE;
 	}
 
