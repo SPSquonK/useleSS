@@ -5033,18 +5033,7 @@ void CWndWanted::OnInitialUpdate()
 	rect.left    = rect.right - 30;
 	rect.right   -= 10;
 
-	if(!m_aList.empty())
-	{
-		const int listSize = static_cast<int>(m_aList.size());
-		m_wndScrollBar.SetScrollRange(0, listSize);
-		m_wndScrollBar.SetScrollPage(std::min(listSize, MAX_WANTED_PER_PAGE));
-	}
-	else
-	{
-		m_wndScrollBar.SetScrollRange( 0, 1 );
-		m_wndScrollBar.SetScrollPage( 1 );
-	}
-
+	m_wndScrollBar.SetScrollFromSize(static_cast<int>(m_aList.size()), MAX_WANTED_PER_PAGE);
 	m_wndScrollBar.AddWndStyle( WBS_DOCKING );
 	m_wndScrollBar.Create( WBS_VERT, rect, this, 1000 );
 
@@ -6864,20 +6853,7 @@ void CWndGuildWarState::OnInitialUpdate()
 	rect.left    = rect.right - 30;
 	rect.right   -= 10;
 
-	if( m_nMax > 0 )
-	{
-		m_wndScrollBar.SetScrollRange( 0, m_nMax );
-		if( m_nMax < MAX_GUILDCOMBAT_LIST_PER_PAGE )
-			m_wndScrollBar.SetScrollPage( m_nMax );
-		else
-			m_wndScrollBar.SetScrollPage( MAX_GUILDCOMBAT_LIST_PER_PAGE );
-	}
-	else
-	{
-		m_wndScrollBar.SetScrollRange( 0, 1 );
-		m_wndScrollBar.SetScrollPage( 1 );
-	}
-
+	m_wndScrollBar.SetScrollFromSize(m_nMax, MAX_GUILDCOMBAT_LIST_PER_PAGE);
 	m_wndScrollBar.AddWndStyle( WBS_DOCKING );
 	m_wndScrollBar.Create( WBS_VERT, rect, this, 1000 );
 
@@ -7083,20 +7059,7 @@ void CWndGuildCombatRanking::OnInitialUpdate()
 	rect.left    = rect.right - 30;
 	rect.right   -= 10;
 
-	if( m_nMax > 0 )
-	{
-		m_wndScrollBar.SetScrollRange( 0, m_nMax );
-		if( m_nMax < MAX_GUILDCOMBAT_LIST_PER_PAGE )
-			m_wndScrollBar.SetScrollPage( m_nMax );
-		else
-			m_wndScrollBar.SetScrollPage( MAX_GUILDCOMBAT_LIST_PER_PAGE );
-	}
-	else
-	{
-		m_wndScrollBar.SetScrollRange( 0, 1 );
-		m_wndScrollBar.SetScrollPage( 1 );
-	}
-
+	m_wndScrollBar.SetScrollFromSize(m_nMax, MAX_GUILDCOMBAT_LIST_PER_PAGE);
 	m_wndScrollBar.AddWndStyle( WBS_DOCKING );
 	m_wndScrollBar.Create( WBS_VERT, rect, this, 1000 );
 
@@ -7785,21 +7748,8 @@ void CWndGuildCombatRank_Class::OnInitialUpdate()
 	rect.bottom -= 80;
 	rect.left    = rect.right - 30;
 	rect.right  -= 30;
-	
-	if( m_nMax > 0 )
-	{
-		m_wndScrollBar.SetScrollRange( 0, m_nMax );
-		if( m_nMax < MAX_GUILDCOMBAT_RANK_PER_PAGE )
-			m_wndScrollBar.SetScrollPage( m_nMax );
-		else
-			m_wndScrollBar.SetScrollPage( MAX_GUILDCOMBAT_RANK_PER_PAGE );
-	}
-	else
-	{
-		m_wndScrollBar.SetScrollRange( 0, 1 );
-		m_wndScrollBar.SetScrollPage( 1 );
-	}
-	
+
+	m_wndScrollBar.SetScrollFromSize(m_nMax, MAX_GUILDCOMBAT_RANK_PER_PAGE);
 	m_wndScrollBar.AddWndStyle( WBS_DOCKING );
 	m_wndScrollBar.Create( WBS_VERT, rect, this, 1000 );
 	
@@ -7833,19 +7783,7 @@ void CWndGuildCombatRank_Class::InsertRank( int nJob, u_long uidPlayer, int nPoi
 	
 	m_nMax++;	
 
-	if( m_nMax > 0 )
-	{
-		m_wndScrollBar.SetScrollRange( 0, m_nMax );
-		if( m_nMax < MAX_GUILDCOMBAT_RANK_PER_PAGE )
-			m_wndScrollBar.SetScrollPage( m_nMax );
-		else
-			m_wndScrollBar.SetScrollPage( MAX_GUILDCOMBAT_RANK_PER_PAGE );
-	}
-	else
-	{
-		m_wndScrollBar.SetScrollRange( 0, 1 );
-		m_wndScrollBar.SetScrollPage( 1 );
-	}		
+	m_wndScrollBar.SetScrollFromSize(m_nMax, MAX_GUILDCOMBAT_RANK_PER_PAGE);
 }
 
 

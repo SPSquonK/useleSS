@@ -467,9 +467,8 @@ void CWndAddItemLog::OnInitialUpdate()
 
 void CWndAddItemLog::UpdateScroll()
 {
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
-	nRange = m_vLogList.size();
+	const int nPage = GetClientRect().Height() / m_nFontHeight;
+	const int nRange = m_vLogList.size();
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 	m_wndScrollBar.SetScrollPos( 0 );
@@ -558,9 +557,8 @@ void CWndRemoveItemLog::OnInitialUpdate()
 
 void CWndRemoveItemLog::UpdateScroll()
 {
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
-	nRange = m_vLogList.size();
+	const int nPage = GetClientRect().Height() / m_nFontHeight;
+	const int nRange = m_vLogList.size();
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 	m_wndScrollBar.SetScrollPos( 0 );
@@ -648,9 +646,8 @@ void CWndReceivePenyaLog::OnInitialUpdate()
 
 void CWndReceivePenyaLog::UpdateScroll()
 {
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
-	nRange = m_vLogList.size();
+	const int nPage = GetClientRect().Height() / m_nFontHeight;
+	const int nRange = m_vLogList.size();
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 	m_wndScrollBar.SetScrollPos( 0 );

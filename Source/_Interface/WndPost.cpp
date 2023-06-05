@@ -936,19 +936,7 @@ void CWndPostReceive::UpdateScroll()
 	CMailBox* pMailBox	= CMailBox::GetInstance();
 	m_nMax = pMailBox->GetSize();
 	
-	if( m_nMax > 0 )
-	{
-		m_wndScrollBar.SetScrollRange( 0, m_nMax );
-		if( m_nMax < MAX_MAIL_LIST_PER_PAGE )
-			m_wndScrollBar.SetScrollPage( m_nMax );
-		else
-			m_wndScrollBar.SetScrollPage( MAX_MAIL_LIST_PER_PAGE );
-	}
-	else
-	{
-		m_wndScrollBar.SetScrollRange( 0, 1 );
-		m_wndScrollBar.SetScrollPage( 1 );
-	}	
+	m_wndScrollBar.SetScrollFromSize(m_nMax, MAX_MAIL_LIST_PER_PAGE);
 }
 void CWndPostReceive::OnDraw( C2DRender* p2DRender ) 
 { 

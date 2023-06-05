@@ -919,12 +919,11 @@ void CWndGuildCtrlEx::OnSize( UINT nType, int cx, int cy )
 	rect.left = rect.right - 15;
 	m_wndScrollBar.SetWndRect( rect );
 
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
+	const int nPage = GetClientRect().Height() / m_nFontHeight;
 	CGuild * pGuild = g_pPlayer->GetGuild();
 	if( pGuild )
 	{
-		nRange = pGuild->GetSize();
+		const int nRange = pGuild->GetSize();
 		m_wndScrollBar.SetScrollRange( 0, nRange );
 		m_wndScrollBar.SetScrollPage( nPage );
 	}
