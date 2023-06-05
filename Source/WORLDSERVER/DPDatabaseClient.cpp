@@ -2073,7 +2073,7 @@ void CDPDatabaseClient::OnMailBox( CAr & ar, DPID, DPID )
 	if( IsValidObj( pUser ) )
 	{
 		pUser->AddMailBox( pMailBox );
-		pUser->ResetCheckClientReq();
+		pUser->mailBoxRequest.ResetCheckClientReq();
 	}
 }
 
@@ -2083,13 +2083,13 @@ void CDPDatabaseClient::OnMailBoxReq( CAr & ar, DPID, DPID ) {
 	CUser* pUser	= g_UserMng.GetUserByPlayerID( idReceiver );
 	if( IsValidObj( pUser ) )
 	{
-		pUser->CheckTransMailBox( TRUE );
+		pUser->mailBoxRequest.CheckTransMailBox();
 		pUser->SendCheckMailBoxReq( bHaveMailBox );
 	}
 	
 	if (!bHaveMailBox) {
 		if (IsValidObj(pUser)) {
-			pUser->ResetCheckClientReq();
+			pUser->mailBoxRequest.ResetCheckClientReq();
 		}
 
 		return;
@@ -2114,7 +2114,7 @@ void CDPDatabaseClient::OnMailBoxReq( CAr & ar, DPID, DPID ) {
 	if( IsValidObj( pUser ) )
 	{
 		pUser->AddMailBox( pNewMailBox );
-		pUser->ResetCheckClientReq();
+		pUser->mailBoxRequest.ResetCheckClientReq();
 	}
 }
 
@@ -2343,27 +2343,27 @@ void CDPDatabaseClient::OnGetMailGold( CAr & ar, DPID, DPID )
 	}
 }
 
-void CDPDatabaseClient::OnReadMail( CAr & ar, DPID, DPID )
-{
+void CDPDatabaseClient::OnReadMail( CAr & ar, DPID, DPID ) {
 	u_long idReceiver, nMail;
 	ar >> idReceiver >> nMail;
+	
 	CMailBox* pMailBox	= CPost::GetInstance()->GetMailBox( idReceiver );
+	if (!pMailBox) return;
 
-	if( pMailBox )
-	{
-		pMailBox->ReadMail( nMail );
-		CUser* pUser	= (CUser*)prj.GetUserByID( idReceiver );
-		if( IsValidObj( pUser ) )
-		{
-			pUser->ResetCheckClientReq();
-			pUser->AddRemoveMail( nMail, CMail::read );
-			if( !pMailBox->IsStampedMailExists() && pUser->IsMode( MODE_MAILBOX ) )
-			{
-				pUser->SetNotMode( MODE_MAILBOX );
-				g_UserMng.AddModifyMode( pUser );
-			}
+	pMailBox->ReadMail( nMail );
+
+	CUser * pUser = prj.GetUserByID(idReceiver);
+
+	if (IsValidObj(pUser)) {
+		pUser->mailBoxRequest.ResetCheckClientReq();
+		pUser->AddRemoveMail(nMail, CMail::read);
+
+		if (!pMailBox->IsStampedMailExists() && pUser->IsMode(MODE_MAILBOX)) {
+			pUser->SetNotMode(MODE_MAILBOX);
+			g_UserMng.AddModifyMode(pUser);
 		}
 	}
+
 }
 
 void CDPDatabaseClient::OnAllMail( CAr & ar , DPID, DPID )

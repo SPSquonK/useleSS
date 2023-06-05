@@ -36,7 +36,32 @@ class CMail;
 class CMailBox;
 
 //////////////////////////////////////////////////////////////////////////
-#define CHECK_TICK_FROM_CLIENT	SEC(3)
+
+namespace Users {
+	class MailBoxRequest {
+	private:
+		static constexpr DWORD CHECK_TICK_FROM_CLIENT = SEC(3);
+
+		bool			m_bCheckTransMailBox = false;
+		int				m_nCountFromClient = 0;
+		DWORD			m_dwTickFromClient = 0;
+
+	public:
+		void Init() { *this = MailBoxRequest(); }
+
+		void CheckTransMailBox() { m_bCheckTransMailBox = true; }
+		[[nodiscard]] bool GetCheckTransMailBox() const noexcept {
+			return m_bCheckTransMailBox;
+		}
+
+		void			ResetCheckClientReq();
+		int				GetCountClientReq();
+
+	private:
+		bool			CheckClientReq();
+	};
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 class CLordSkill;
@@ -51,9 +76,6 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 
 private:
-	BOOL			m_bCheckTransMailBox;
-	int				m_nCountFromClient;
-	DWORD			m_dwTickFromClient;
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -156,6 +178,8 @@ public:
 	DWORD	m_dwLastTryBuyItem;
 	DWORD	m_dwLastBuyItemTick;
 #endif // __PERIN_BUY_BUG
+
+	Users::MailBoxRequest mailBoxRequest;
 
 public:
 	virtual void	Process();
@@ -266,19 +290,7 @@ public:
 	void			AddPostMail( CMail* pMail );
 	void			AddRemoveMail( u_long nMail, int nType );
 	void			AddMailBox( CMailBox* pMailBox );
-
-
-
-
-	//////////////////////////////////////////////////////////////////////////
-    void			SendCheckMailBoxReq( bool bCheckTransMailBox );
-	void			CheckTransMailBox( BOOL bCheckTransMailBox );
-	BOOL			GetCheckTransMailBox();
-	bool			CheckClientReq();
-	void			ResetCheckClientReq();
-	int				GetCountClientReq();
-	//////////////////////////////////////////////////////////////////////////
-
+	void			SendCheckMailBoxReq(bool bCheckTransMailBox);
 
 	void			SetPosting( BOOL bPosting )		{	m_bPosting	= bPosting;	}
 	BOOL			IsPosting( void )	{	return m_bPosting;	}

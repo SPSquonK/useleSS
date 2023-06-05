@@ -5747,12 +5747,7 @@ void CDPSrvr::OnQueryReadMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 }
 
 void CDPSrvr::OnQueryMailBox( CAr & ar, CUser * pUser) {
-	int	nClientReqCount;
-	if (pUser->CheckClientReq() == false) {
-		nClientReqCount = 1;
-	} else {
-		nClientReqCount = pUser->GetCountClientReq();
-	}
+	const int nClientReqCount = pUser->mailBoxRequest.GetCountClientReq();
 
 	CMailBox* pMailBox	= CPost::GetInstance()->GetMailBox(pUser->m_idPlayer);
 	if (pMailBox) {
@@ -5776,13 +5771,12 @@ void CDPSrvr::OnQueryMailBox( CAr & ar, CUser * pUser) {
 			pMailBox->m_nStatus = CMailBox::BoxStatus::read;
 		}
 
+	} else if (!pUser->mailBoxRequest.GetCheckTransMailBox()) {
+		// The user's mailbox does not exist in the world server. request to DB
+		g_dpDBClient.SendQueryMailBoxReq(pUser->m_idPlayer);
 	} else {
-		// The user's mailbox does not exist in the world server. request to trans
-		if (pUser->GetCheckTransMailBox() == FALSE) {
-			g_dpDBClient.SendQueryMailBoxReq(pUser->m_idPlayer);
-		} else {
-			pUser->SendCheckMailBoxReq(false);
-		}
+		// DB already said they had no mailbox for this user
+		pUser->SendCheckMailBoxReq(false);
 	}
 
 }

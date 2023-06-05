@@ -82,12 +82,7 @@ void CUser::Init( DPID dpidCache, DPID dpidUser )
 {
 	CMover::m_bPlayer	= TRUE;
 
-	
-	//////////////////////////////////////////////////////////////////////////
-	m_bCheckTransMailBox = FALSE;
-	m_nCountFromClient = 0;
-	m_dwTickFromClient = 0;
-	//////////////////////////////////////////////////////////////////////////
+	mailBoxRequest.Init();
 
 	m_nUsedSkillQueue = -1;
 
@@ -3126,7 +3121,7 @@ CUser* CUserMng::GetUser( DPID, const DPID dpidUser )
 
 CUser* CUserMng::GetUserByPlayerID( u_long idPlayer )
 {
-	return (CUser*)prj.GetUserByID( idPlayer );
+	return prj.GetUserByID( idPlayer );
 }
 
 #ifdef __LAYER_1015
@@ -3347,7 +3342,7 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 
 	
 	//////////////////////////////////////////////////////////////////////////
-	pUser->ResetCheckClientReq();
+	pUser->mailBoxRequest.ResetCheckClientReq();
 	//////////////////////////////////////////////////////////////////////////
 
 
@@ -5359,38 +5354,28 @@ void CUser::SendCheckMailBoxReq(bool bCheckTransMailBox) {
 	SendSnapshotNoTarget<SNAPSHOTTYPE_QUERYMAILBOX_REQ, bool>(bCheckTransMailBox);
 }
 
-
-void CUser::CheckTransMailBox( BOOL bCheckTransMailBox )
-{
-	m_bCheckTransMailBox = bCheckTransMailBox;
-}
-
-BOOL CUser::GetCheckTransMailBox()
-{
-	return m_bCheckTransMailBox;
-}
-
-bool CUser::CheckClientReq()
-{
+bool Users::MailBoxRequest::CheckClientReq() {
 	DWORD dwTick = GetTickCount();
-	if( dwTick >= m_dwTickFromClient + CHECK_TICK_FROM_CLIENT )
-	{
-		m_dwTickFromClient = dwTick;
-		++m_nCountFromClient;
-		return true;
+	if (dwTick < m_dwTickFromClient + CHECK_TICK_FROM_CLIENT) {
+		return false;
 	}
-	return false;
+	
+	m_dwTickFromClient = dwTick;
+	++m_nCountFromClient;
+	return true;
 }
 
-void CUser::ResetCheckClientReq()
-{
+void Users::MailBoxRequest::ResetCheckClientReq() {
 	m_dwTickFromClient = 0;
 	m_nCountFromClient = 0;
 }
 
-int CUser::GetCountClientReq()
-{
-	return m_nCountFromClient;
+int Users::MailBoxRequest::GetCountClientReq() {
+	if (CheckClientReq()) {
+		return m_nCountFromClient;
+	} else {
+		return 1;
+	}
 }
 
 // 신청 윈도우 띄움
