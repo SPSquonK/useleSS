@@ -222,6 +222,7 @@ public:
 	virtual void OnSize(UINT nType, int cx, int cy);
 
 	void MouseWheel(short zDelta);
+	void SetScrollFromSize(int nbElements, int maxPageSize);
 };
 
 //////////////////////////////////////////////////////////////////////////////

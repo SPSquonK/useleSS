@@ -1422,6 +1422,33 @@ void CWndScrollBar::OnSize(UINT nType, int cx, int cy)
 //	m_string.Reset( m_pFont, &GetClientRect() );
 	CWndBase::OnSize( nType, cx, cy);
 }
+
+void CWndScrollBar::SetScrollFromSize(int nbElements, int maxPageSize) {
+	if (nbElements <= 0) nbElements = 1;
+	
+	SetScrollRange(0, nbElements);
+	SetScrollPage(std::min(nbElements, maxPageSize));
+
+	/*
+	If you see this kind of code, you can call this method instead:
+		
+	if( m_nMax > 0 )
+	{
+		m_wndScrollBar.SetScrollRange( 0, m_nMax );
+		if( m_nMax < SOME_CONSTANT )
+			m_wndScrollBar.SetScrollPage( m_nMax );
+		else
+			m_wndScrollBar.SetScrollPage( SOME_CONSTANT );
+	}
+	else
+	{
+		m_wndScrollBar.SetScrollRange( 0, 1 );
+		m_wndScrollBar.SetScrollPage( 1 );
+	}
+	*/
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CWndListBox
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////

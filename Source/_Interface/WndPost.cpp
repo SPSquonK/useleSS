@@ -10,6 +10,9 @@
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+///////////////////////////////////////////////////////////////////////////////
+
 void CWndPostItemWarning::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
@@ -41,6 +44,7 @@ BOOL CWndPostItemWarning::OnChildNotify(UINT message, UINT nID, LRESULT * pLResu
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
 
 CWndPost::~CWndPost() 
 { 
@@ -54,7 +58,7 @@ void CWndPost::OnInitialUpdate()
 	EnableWindow( FALSE );
 
 	//	���⿡ �ڵ��ϸ� �˴ϴ�
-	CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
+	CWndTabCtrl * pWndTabCtrl = GetDlgItem<CWndTabCtrl>(WIDC_TABCTRL1);
 	CRect rect{ CPoint(5, 0), GetClientRect().BottomRight() };
 
 	Windows::DestroyIfOpened(APP_BAG_EX);
@@ -74,26 +78,23 @@ void CWndPost::OnInitialUpdate()
 	CloseMailRequestingBox();
 	m_pWndMailRequestingBox = new CWndMailRequestingBox;
 	m_pWndMailRequestingBox->Initialize();
-} 
-// ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndPost::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+}
 
-BOOL CWndPost::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( message == WNM_SELCHANGE )
-	{
-		CWndTabCtrl* pWndTabCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
+BOOL CWndPost::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_POST, pWndParent, 0, CPoint(0, 0));
+}
+
+BOOL CWndPost::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (message == WNM_SELCHANGE) {
+		CWndTabCtrl * pWndTabCtrl = GetDlgItem<CWndTabCtrl>(WIDC_TABCTRL1);
 
 		if (pWndTabCtrl->GetSelectedTab() == &m_PostTabReceive) {
 			g_DPlay.SendQueryMailBox();
 		}
 	}
 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
 
 void CWndPost::CloseMailRequestingBox() {
 	SAFE_DELETE(m_pWndMailRequestingBox);
@@ -104,8 +105,7 @@ void CWndPost::CloseMailRequestingBox() {
 ///////////////////////////////////////////////////////////////////////////
 // CWndPostSendMessageBox
 //////////////////////////////////////////////////////////////////////////////
-class CWndPostSendMessageBox : public CWndMessageBox
-{ 
+class CWndPostSendMessageBox : public CWndMessageBox {
 public: 
 	CWndText	m_wndText;
 	
@@ -115,22 +115,19 @@ public:
 	char		m_szReceiver[MAX_NAME];
 	char		m_szTitle[MAX_MAILTITLE];	
 	char		m_szText[MAX_MAILTEXT];		
-	void		SetValue( BYTE nItem, short nItemNum, char* lpszReceiver, int nGold, char* lpszTitle, char* lpszText );
+	void		SetValue( BYTE nItem, short nItemNum, const char* lpszReceiver, int nGold, const char* lpszTitle, const char* lpszText );
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-BOOL CWndPostSendMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
+BOOL CWndPostSendMessageBox::Initialize(CWndBase * pWndParent, DWORD) {
 	CString str;
-	str.Format( prj.GetText(TID_MAIL_SEND_CONFIRM), MAX_KEEP_MAX_DAY );
-	
-	return CWndMessageBox::Initialize( str, 
-		pWndParent, 
-		MB_OKCANCEL );	
+	str.Format(prj.GetText(TID_MAIL_SEND_CONFIRM), MAX_KEEP_MAX_DAY);
+
+	return CWndMessageBox::Initialize(str, pWndParent, MB_OKCANCEL);
 }
 
-void CWndPostSendMessageBox::SetValue( BYTE nItem, short nItemNum, char* lpszReceiver, int nGold, char* lpszTitle, char* lpszText )
+void CWndPostSendMessageBox::SetValue( BYTE nItem, short nItemNum, const char* lpszReceiver, int nGold, const char* lpszTitle, const char* lpszText )
 {
 	m_nItem		= nItem;
 	m_nItemNum	= nItemNum;
@@ -140,32 +137,25 @@ void CWndPostSendMessageBox::SetValue( BYTE nItem, short nItemNum, char* lpszRec
 	m_nGold		= nGold;
 }
 
-BOOL CWndPostSendMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
-{
-	if( nID == 1 )
-	{
-		if( g_pPlayer )
-		{
-			g_DPlay.SendQueryPostMail( m_nItem, m_nItemNum, m_szReceiver, m_nGold, m_szTitle, m_szText );			
-			
-			CWndPost * pWndPost = (CWndPost *)g_WndMng.GetWndBase( APP_POST );
-			
-			if( pWndPost )
-			{
+BOOL CWndPostSendMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) {
+	if (nID == 1) {
+		if (g_pPlayer) {
+			g_DPlay.SendQueryPostMail(m_nItem, m_nItemNum, m_szReceiver, m_nGold, m_szTitle, m_szText);
+
+			if (CWndPost * pWndPost = g_WndMng.GetWndBase<CWndPost>(APP_POST)) {
 				pWndPost->m_PostTabSend.ClearData();
 			}
 		}
-		
+
+		Destroy();
+	} else if (nID == 2) {
 		Destroy();
 	}
-	else if( nID == 2 )
-	{
-		Destroy();
-	}
+
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-
+//////////////////////////////////////////////////////////////////////////////
 
 CWndPostSend::~CWndPostSend() 
 { 
@@ -174,115 +164,95 @@ CWndPostSend::~CWndPostSend()
 
 void CWndPostSend::ClearData()
 {
-	CItemElem * pItemElem = g_pPlayer->m_Inventory.GetAtId( m_nItem );
-	
-	if(pItemElem)
-	{
-		// Ʈ���̵忡 �ɸ� �������� ����
-		if( !g_pPlayer->m_vtInfo.IsTrading( pItemElem ) )
-			pItemElem->SetExtra( 0 );
+	CItemElem * pItemElem = g_pPlayer->m_Inventory.GetAtId(m_nItem);
+	if (pItemElem) {
+		if (!g_pPlayer->m_vtInfo.IsTrading(pItemElem)) {
+			pItemElem->SetExtra(0);
+		}
 	}
 	
 	m_nItem		= 0xff;		
 	m_nCost		= 0;
 	m_nCount	= 0;
-	/*
-	CWndEdit* pWndEdit2	= (CWndEdit*)GetDlgItem( WIDC_EDIT2 );
-	CWndEdit* pWndEdit3	= (CWndEdit*)GetDlgItem( WIDC_EDIT3 );
-	CWndEdit* pWndEdit4	= (CWndEdit*)GetDlgItem( WIDC_EDIT4 );
-	
-	pWndEdit2->SetString("");
-	pWndEdit3->SetString("");
-	pWndEdit4->SetString("");
-	*/
 }
 
-void CWndPostSend::SetReceive( const char* pchar )
-{
-	CWndComboBox* pWndCombo = (CWndComboBox*)GetDlgItem( WIDC_COMBOBOX1 );	
-	pWndCombo->SetString( pchar );
+void CWndPostSend::SetReceive(const char * pchar) {
+	CWndComboBox * pWndCombo = GetDlgItem <CWndComboBox>(WIDC_COMBOBOX1);
+	pWndCombo->SetString(pchar);
 }
-void CWndPostSend::SetTitle( const char* pchar )
-{
-	CWndEdit* pWndEdit1	= (CWndEdit*)GetDlgItem( WIDC_EDIT2 );
-	
-	pWndEdit1->SetString( pchar );
+
+void CWndPostSend::SetTitle(const char * pchar) {
+	CWndEdit * pWndEdit1 = GetDlgItem<CWndEdit>(WIDC_EDIT2);
+	pWndEdit1->SetString(pchar);
 }
-void CWndPostSend::SetText( const char* pchar )
-{
-	CWndEdit* pWndEdit1	= (CWndEdit*)GetDlgItem( WIDC_EDIT3 );
-	
-	pWndEdit1->SetString( pchar );
+
+void CWndPostSend::SetText(const char * pchar) {
+	CWndEdit * pWndEdit1 = (CWndEdit *)GetDlgItem(WIDC_EDIT3);
+	pWndEdit1->SetString(pchar);
 }
+
 void CWndPostSend::OnDraw( C2DRender* p2DRender ) 
 { 
-	if( m_nItem != 0xff )
-	{
-		CItemElem* pItemElem = g_pPlayer->m_Inventory.GetAtId( m_nItem );
+	if (m_nItem == 0xFF) return;
+
+	CItemElem * pItemElem = g_pPlayer->m_Inventory.GetAtId(m_nItem);
+	if (!pItemElem) return;
 		
-		if( pItemElem )
-		{
-			LPWNDCTRL pCustom = NULL;
-			pCustom = GetWndCtrl( WIDC_STATIC3 );
+	LPWNDCTRL pCustom = GetWndCtrl( WIDC_STATIC3 );
 			
-			pItemElem->GetTexture()->Render( p2DRender, pCustom->rect.TopLeft(), 255 );
+	pItemElem->GetTexture()->Render( p2DRender, pCustom->rect.TopLeft(), 255 );
 
-			if( pItemElem->GetProp()->dwPackMax > 1 && pItemElem->GetExtra() > 0 )
-			{
-				CD3DFont* pOldFont = p2DRender->GetFont(); 
-				p2DRender->SetFont( CWndBase::m_Theme.m_pFontWndTitle ); 
+	if( pItemElem->GetProp()->dwPackMax > 1 && pItemElem->GetExtra() > 0 )
+	{
+		CD3DFont* pOldFont = p2DRender->GetFont(); 
+		p2DRender->SetFont( CWndBase::m_Theme.m_pFontWndTitle ); 
 				
-				TCHAR szTemp[32];
-				_stprintf( szTemp, "%d", pItemElem->GetExtra() );
-				p2DRender->TextOut( pCustom->rect.right-13,  pCustom->rect.bottom-13 , szTemp, 0xff0000ff );
-				p2DRender->TextOut( pCustom->rect.right-14,  pCustom->rect.bottom-14 , szTemp, 0xffb0b0f0 );
+		TCHAR szTemp[32];
+		_stprintf( szTemp, "%d", pItemElem->GetExtra() );
+		p2DRender->TextOut( pCustom->rect.right-13,  pCustom->rect.bottom-13 , szTemp, 0xff0000ff );
+		p2DRender->TextOut( pCustom->rect.right-14,  pCustom->rect.bottom-14 , szTemp, 0xffb0b0f0 );
 
-				p2DRender->SetFont( pOldFont );				
-			}	
+		p2DRender->SetFont( pOldFont );				
+	}	
 			
-			//*
-			CRect hitrect = pCustom->rect;
-			CPoint point = GetMousePoint();
-			if( hitrect.PtInRect( point ) )
-			{
-				CPoint point2 = point;
-				ClientToScreen( &point2 );
-				ClientToScreen( &hitrect );
+	CRect hitrect = pCustom->rect;
+	CPoint point = GetMousePoint();
+	if( hitrect.PtInRect( point ) )
+	{
+		CPoint point2 = point;
+		ClientToScreen( &point2 );
+		ClientToScreen( &hitrect );
 				
-				g_WndMng.PutToolTip_Item( pItemElem, point2, &hitrect );
-			}
-			/**/
-		}
+		g_WndMng.PutToolTip_Item( pItemElem, point2, &hitrect );
 	}
-} 
+}
+
 void CWndPostSend::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 
-	CWndEdit* pNotice = (CWndEdit*) GetDlgItem( WIDC_EDIT3 );
+	// Setup WIDC_EDIT3
+	CWndEdit * pNotice = GetDlgItem<CWndEdit>(WIDC_EDIT3);
 	pNotice->AddWndStyle( EBS_WANTRETURN );
 	pNotice->AddWndStyle( EBS_AUTOVSCROLL );
 
-	// �Ʒ��� �����? �������̴�. CWndEdit�� SetWndRect���� ��ũ�ѹ��� visible���¿� ���� �����ϰ� ����
-	// �θ�Ŭ������ CWndText�� OnInitialUpdate ȣ��Ǿ�? ��ũ�ѹ��� visible���¸� �����Ѵ�. �׷��� SetWndRect�� ��ȣ��....�Ѥ�;;;; �������� �����ϰ� ���Ҵ�.
-	// �������ϴ� �޽��� �޼��� â�� ���? OnSize���� SetWndRect�� ȣ���ؼ� ���������� �����ߴ� ��.
-	LPWNDCTRL pWndCtrl = GetWndCtrl( WIDC_EDIT3 );
-	if(pWndCtrl)
+	if (LPWNDCTRL pWndCtrl = GetWndCtrl(WIDC_EDIT3)) {
 		pNotice->SetWndRect(pWndCtrl->rect);
+	}
 
-	CWndComboBox* pWndCombo = (CWndComboBox*)GetDlgItem( WIDC_COMBOBOX1 );
-	CWndEdit* pWndEdit2	= (CWndEdit*)GetDlgItem( WIDC_EDIT2 );
-	CWndEdit* pWndEdit3	= (CWndEdit*)GetDlgItem( WIDC_EDIT3 );
-	
+	// Tab Stop
+	CWndComboBox* pWndCombo = GetDlgItem<CWndComboBox>( WIDC_COMBOBOX1 );
 	pWndCombo->SetTabStop( TRUE );
-	pWndEdit2->SetTabStop( TRUE );
-	pWndEdit3->SetTabStop( TRUE );
 
+	GetDlgItem<CWndEdit>(WIDC_EDIT2)->SetTabStop( TRUE );
+	pNotice->SetTabStop( TRUE );
 
+	// Fill the list of players
 	for (const u_long idPlayer : g_WndMng.m_RTMessenger | std::views::keys) {
 		pWndCombo->AddString(CPlayerDataCenter::GetInstance()->GetPlayerString(idPlayer));
 	}
 
+	// Non korean adjustements
 	if( ::GetLanguage() != LANG_KOR )
 	{
 		CWndStatic* pStatic2	= (CWndStatic *)GetDlgItem( WIDC_STATIC2 );
@@ -299,26 +269,21 @@ void CWndPostSend::OnInitialUpdate()
 	}
 
 	pWndCombo->SetFocus();
-} 
-// ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndPostSend::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	return CWndNeuz::InitDialog( APP_POST_SEND, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+}
 
-void CWndPostSend::SetItemId( BYTE nId )
-{ 
-	// ���� �������� �־����� Ȯ�� ����Ÿ�� �ʱ�ȭ �Ѵ�.
-	if( nId != m_nItem && m_nItem != 0xff )
-	{
-		CItemElem* pItemElem  = g_pPlayer->m_Inventory.GetAtId( m_nItem );
-		if( pItemElem )
-		{
-			pItemElem->SetExtra( 0 );				
+BOOL CWndPostSend::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_POST_SEND, pWndParent, 0, CPoint(0, 0));
+}
+
+void CWndPostSend::SetItemId(BYTE nId) {
+	if (nId != m_nItem && m_nItem != 0xff) {
+		CItemElem * pItemElem = g_pPlayer->m_Inventory.GetAtId(m_nItem);
+		if (pItemElem) {
+			pItemElem->SetExtra(0);
 		}
 	}
-	
-	m_nItem = nId; 
+
+	m_nItem = nId;
 }
 
 BOOL CWndPostSend::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
@@ -402,32 +367,19 @@ BOOL CWndPostSend::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	return TRUE;
 }
 
-void CWndPostSend::OnRButtonUp( UINT nFlags, CPoint point )
-{
-	LPWNDCTRL pCustom = NULL;
-	pCustom = GetWndCtrl( WIDC_STATIC3 );
-	
-	// ������( ���?, ���ⱸ )
-	if( PtInRect(&(pCustom->rect), point) )
-	{
-		CItemElem* pItemElem = g_pPlayer->m_Inventory.GetAtId( m_nItem );
-		
-		if(pItemElem)
-		{
-			pItemElem->SetExtra( 0 );				
+void CWndPostSend::OnRButtonUp(UINT, CPoint point) {
+	LPWNDCTRL pCustom = GetWndCtrl(WIDC_STATIC3);
+
+	if (pCustom->rect.PtInRect(point)) {
+		CItemElem * pItemElem = g_pPlayer->m_Inventory.GetAtId(m_nItem);
+		if (pItemElem) {
+			pItemElem->SetExtra(0);
 		}
 
-		m_nItem = 0xff;	
-	}		
+		m_nItem = 0xff;
+	}
 }
 
-void CWndPostSend::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFORMAT d3dFormat )
-{
-	CWndNeuz::AdditionalSkinTexture( pDest, sizeSurface, d3dFormat );
-}
-
-
-#define MAX_BYTE_POST		128
 
 BOOL CWndPostSend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -435,65 +387,43 @@ BOOL CWndPostSend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	{
 	case WIDC_SEND:	
 		{
-			CWndComboBox* pWndCombo = (CWndComboBox*)GetDlgItem( WIDC_COMBOBOX1 );
-			CWndEdit* pWndEdit2	= (CWndEdit*)GetDlgItem( WIDC_EDIT2 );
-			CWndEdit* pWndEdit3	= (CWndEdit*)GetDlgItem( WIDC_EDIT3 );
-			CWndEdit* pWndEdit4	= (CWndEdit*)GetDlgItem( WIDC_EDIT4 );
-			
-			LPCTSTR szstr1 = pWndCombo->GetString();
-			LPCTSTR szstr2 = pWndEdit2->GetString();
-			LPCTSTR szstr3 = pWndEdit3->GetString();
-			LPCTSTR szstr4 = pWndEdit4->GetString();
+			LPCTSTR szReceiver = GetDlgItem<CWndEdit>(WIDC_COMBOBOX1)->GetString();
+			LPCTSTR szTitle    = GetDlgItem<CWndEdit>(WIDC_EDIT2)->GetString();
+			LPCTSTR szText     = GetDlgItem<CWndEdit>(WIDC_EDIT3)->GetString();
+			LPCTSTR szMoney    = GetDlgItem<CWndEdit>(WIDC_EDIT4)->GetString();
 			
 			// �����? �޴»����? ������ ������
-			if( strlen( szstr1 ) <=0 || strlen( szstr2 ) <=0 )
-			{
+			if (strlen(szReceiver) <= 0 || strlen(szTitle) <= 0) {
 				return FALSE;
 			}
 			
 			// �����۰� ���? �ΰ��� �ϳ��� ��� ������
-			if( m_nItem == NULL_ID && strlen( szstr4 ) <=0 )
-			{
+			if (m_nItem == NULL_ID && strlen(szMoney) <= 0) {
 				return FALSE;
 			}
 
 			// �ݾ׶��� ���ڰ� �ƴϸ� ������
-			int nlen = strlen(szstr4);
-			BOOL bisdigit = TRUE;
-
-			if( nlen > 0 )
-			{
-				for( int i = 0 ; i < nlen ; i++ )
-				{
-					if( (isdigit2( szstr4[i] ) == FALSE) )
-					{
-						bisdigit = FALSE;
-						break;
-					}
-				}
-			}
+			int nlen = strlen(szMoney);
+			const bool bisdigit = std::all_of(szMoney, szMoney + nlen, isdigit2);
 			
-			if( bisdigit == FALSE )
-			{
+			if (!bisdigit) {
 				//g_WndMng.OpenMessageBoxUpper( prj.GetText(TID_GAME_GUILDONLYNUMBER) );
 				return FALSE;
 			}
 
-			__int64 liGold	= _atoi64(szstr4);
+			__int64 liGold	= _atoi64(szMoney);
 			if( liGold > 1000000000 )
 			{
 				g_WndMng.OpenMessageBoxUpper( prj.GetText(TID_GAME_LIMITPENYA) );
 				return FALSE;				
 			}
 			
-			if( strlen(szstr1) < 3 || strlen(szstr1) > 16 )
-			{
-				//�̸��� �ʹ� ��ϴ�?. �ٽ� �Է����ֽʽÿ�.
-				g_WndMng.OpenMessageBoxUpper( prj.GetText(TID_DIAG_0057) );
-				return FALSE;				
+			if (strlen(szReceiver) < 3 || strlen(szReceiver) > 16) {
+				g_WndMng.OpenMessageBoxUpper(prj.GetText(TID_DIAG_0057));
+				return FALSE;
 			}
 
-			if( strlen(szstr3) > ( MAX_MAILTEXT - 1 ) )		//gmpbigsun: ������ �������� 
+			if( strlen(szText) > ( MAX_MAILTEXT - 1 ) ) 
 			{
 				CString str;
 				str.Format( prj.GetText(TID_GAME_MAILBOX_TEXT_MAX), MAX_MAILTEXT );
@@ -501,7 +431,7 @@ BOOL CWndPostSend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				return FALSE;				
 			}
 
-			if( strlen(szstr2) > ( MAX_MAILTITLE - 1 ) )	//gmpbigsun: ������ ��������
+			if( strlen(szTitle) > ( MAX_MAILTITLE - 1 ) )
 			{
 				CString str;
 				str.Format( prj.GetText(TID_GAME_MAILBOX_TITLE_MAX), MAX_MAILTITLE );
@@ -510,21 +440,14 @@ BOOL CWndPostSend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 
 			CWndPostSendMessageBox* pBox = new CWndPostSendMessageBox;
-
-			if( pBox )
-			{
-				g_WndMng.OpenCustomBox( "", pBox );
+			g_WndMng.OpenCustomBox( "", pBox );
 				
-				CItemElem* pItemElem = g_pPlayer->m_Inventory.GetAtId( m_nItem );
+			CItemElem* pItemElem = g_pPlayer->m_Inventory.GetAtId( m_nItem );
 				
-				if( pItemElem )
-				{
-					pBox->SetValue( m_nItem, pItemElem->GetExtra(), (char*)szstr1, atoi(szstr4), (char*)szstr2, (char*)szstr3 );
-				}
-				else
-				{
-					pBox->SetValue( -1, 0, (char*)szstr1, atoi(szstr4), (char*)szstr2, (char*)szstr3 );
-				}
+			if (pItemElem) {
+				pBox->SetValue(m_nItem, pItemElem->GetExtra(), szReceiver, atoi(szMoney), szTitle, szText);
+			} else {
+				pBox->SetValue(-1, 0                         , szReceiver, atoi(szMoney), szTitle, szText);
 			}
 				
 			break;
@@ -536,15 +459,6 @@ BOOL CWndPostSend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndPostRead::CWndPostRead():m_nMailIndex(-1), m_bDrag(0), m_pWndPostItemWarning(0)
-{ 
-	m_pDeleteConfirm = NULL;
-} 
-CWndPostRead::~CWndPostRead() 
-{ 
-	ClearData();
-//	SAFE_DELETE(m_pWndPostItemWarning);
-} 
 
 void CWndPostRead::ClearData()
 {
@@ -627,21 +541,19 @@ void CWndPostRead::OnInitialUpdate()
 	rect.right	+= 32;
 	pWndEdit3->SetWndRect( rect, TRUE );
 
-	CWndButton* pWndButton = (CWndButton*)GetDlgItem( WIDC_BUTTON3 );
 	
 
 	pWndEdit1->EnableWindow(FALSE);
 	pWndEdit2->EnableWindow(FALSE);
 	pWndEdit3->EnableWindow(FALSE);
-//	pWndText->EnableWindow(FALSE);
 
+	CWndButton * pWndButton = (CWndButton *)GetDlgItem(WIDC_BUTTON3);
 	pWndButton->SetFocus();
 	MoveParentCenter();
 	
 	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_STATIC4 );
 	m_wndGold.Create( "g", WBS_NODRAWFRAME, lpWndCtrl->rect, this, WIDC_STATIC4 );
 	m_wndGold.AddWndStyle( WBS_NODRAWFRAME );
-	
 } 
 
 // ó�� �� �Լ��� �θ��� ������ ������.
@@ -653,14 +565,6 @@ BOOL CWndPostRead::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	return CWndNeuz::Create( WBS_MOVE | WBS_SOUND | WBS_CAPTION | WBS_MODAL, rect, pWndParent, APP_POST_READ ); 
 } 
 
-BOOL CWndPostRead::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndPostRead::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
 void CWndPostRead::OnLButtonUp( UINT nFlags, CPoint point ) 
 { 
 	m_bDrag = FALSE;
@@ -678,15 +582,14 @@ void CWndPostRead::OnLButtonDown( UINT nFlags, CPoint point )
 	if( !pMail )
 		return;	
 	
-	LPWNDCTRL pCustom = NULL;
-	pCustom = GetWndCtrl( WIDC_STATIC3 );
+	LPWNDCTRL pCustom = GetWndCtrl( WIDC_STATIC3 );
 	
 	// ������( ���?, ���ⱸ )
-	if( PtInRect(&(pCustom->rect), point) )
-	{
+	if (pCustom->rect.PtInRect(point)) {
 		m_bDrag = TRUE;
 	}
 } 
+
 void CWndPostRead::SetValue( int nMailIndex )
 {
 	m_nMailIndex	= nMailIndex;
@@ -699,10 +602,6 @@ void CWndPostRead::SetValue( int nMailIndex )
 	if( pMail == NULL )
 		return;
 
-	CWndEdit* pWndEdit1	= (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
-	CWndEdit* pWndEdit2	= (CWndEdit*)GetDlgItem( WIDC_EDIT2 );
-	CWndEdit* pWndEdit3	= (CWndEdit*)GetDlgItem( WIDC_EDIT3 );
-	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
 
 	TCHAR szCutTitle[128];
 
@@ -718,7 +617,8 @@ void CWndPostRead::SetValue( int nMailIndex )
 	
 	if( GetStrLen( lpszPlayer ) > 16 )
 		_tcscat( szCutTitle, "..." );
-	
+
+	CWndEdit * pWndEdit1 = (CWndEdit *)GetDlgItem(WIDC_EDIT1);
 	if( lstrlen( lpszPlayer ) > 0 )
 		pWndEdit1->SetString(szCutTitle);
 	else
@@ -731,7 +631,9 @@ void CWndPostRead::SetValue( int nMailIndex )
 	{
 		_tcscat( szCutTitle, "..." );
 	}
-	
+
+	CWndEdit * pWndEdit2 = (CWndEdit *)GetDlgItem(WIDC_EDIT2);
+	CWndText * pWndText = (CWndText *)GetDlgItem(WIDC_TEXT1);
 	if( lstrlen( lpszPlayer ) > 0 )
 	{
 		pWndEdit2->SetString(szCutTitle);
@@ -747,8 +649,10 @@ void CWndPostRead::SetValue( int nMailIndex )
 
 	char szbuffer[128] = {0};
 	sprintf( szbuffer, "%d", pMail->m_nGold );
+	CWndEdit * pWndEdit3 = (CWndEdit *)GetDlgItem(WIDC_EDIT3);
 	pWndEdit3->SetString(GetNumberFormatEx(szbuffer));
 }
+
 BOOL CWndPostRead::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
 	return TRUE;
@@ -773,7 +677,7 @@ void CWndPostRead::OnMouseMove(UINT nFlags, CPoint point )
 			m_GlobalShortcut.m_dwIndex    = 0xffffffff;
 			m_GlobalShortcut.m_dwId       = pMail->m_pItemElem->m_dwObjId;
 			m_GlobalShortcut.m_pTexture   = pMail->m_pItemElem->GetTexture();
-			m_GlobalShortcut.m_dwData     = (DWORD) pMail->m_pItemElem;
+			m_GlobalShortcut.m_dwData     = reinterpret_cast<DWORD>(pMail->m_pItemElem);
 			_tcscpy( m_GlobalShortcut.m_szString, pMail->m_pItemElem->GetProp()->szName);
 		}
 	}	
@@ -792,19 +696,12 @@ void CWndPostRead::OnRButtonUp( UINT nFlags, CPoint point )
 	if( !pMail )
 		return;	
 
-	LPWNDCTRL pCustom = NULL;
-	pCustom = GetWndCtrl( WIDC_STATIC3 );
-	
 	// ������( ���?, ���ⱸ )
-	if( PtInRect(&(pCustom->rect), point) )
-	{
+	if (GetWndCtrl(WIDC_STATIC3)->rect.PtInRect(point)) {
 		MailReceiveItem();
 	}
 	
-	pCustom = GetWndCtrl( WIDC_STATIC4 );
-
-	if( PtInRect(&(pCustom->rect), point) )
-	{
+	if (GetWndCtrl(WIDC_STATIC4)->rect.PtInRect(point)) {
 		MailReceiveGold();
 	}
 }
@@ -827,9 +724,7 @@ void CWndPostRead::MailReceiveItem()
 		// �⺻ �����ϼ��� ������!!!
 		if( (MAX_KEEP_MAX_DAY*24) - dwTime > (MAX_KEEP_BASIC_DAY*24) )
 		{
-			FLOAT fCustody = 0.0f;
-			FLOAT fPay = 0.0f;
-			fCustody = (FLOAT)( (FLOAT)( MAX_KEEP_MAX_DAY - MAX_KEEP_BASIC_DAY - nDay ) / (FLOAT)( MAX_KEEP_MAX_DAY - MAX_KEEP_BASIC_DAY ) );
+			FLOAT fCustody = (FLOAT)( (FLOAT)( MAX_KEEP_MAX_DAY - MAX_KEEP_BASIC_DAY - nDay ) / (FLOAT)( MAX_KEEP_MAX_DAY - MAX_KEEP_BASIC_DAY ) );
 
 			m_bDrag = FALSE;
 //			SAFE_DELETE(m_pWndPostItemWarning);
@@ -837,7 +732,7 @@ void CWndPostRead::MailReceiveItem()
 			m_pWndPostItemWarning->Initialize( this, 0 );
 			m_pWndPostItemWarning->SetIndex( pMail->m_nMail );
 
-			fPay = pMail->m_pItemElem->GetCost() * fCustody;
+			FLOAT fPay = pMail->m_pItemElem->GetCost() * fCustody;
 			if( fPay < 0.0f )
 				fPay = 0.0f;
 
@@ -936,7 +831,7 @@ BOOL CWndPostRead::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 				CString str = "Re:";
 				str += pWndEdit2->GetString();
-				pWndPost->m_PostTabSend.SetTitle(str.GetBuffer(0));
+				pWndPost->m_PostTabSend.SetTitle(str.GetString());
 				Destroy();
 			}
 		}
@@ -1057,21 +952,15 @@ void CWndPostReceive::UpdateScroll()
 }
 void CWndPostReceive::OnDraw( C2DRender* p2DRender ) 
 { 
-	const DWORD dwColor = D3DCOLOR_XRGB(0, 0, 0);
-	int	sx, sy;
+	static constexpr DWORD dwColor = D3DCOLOR_XRGB(0, 0, 0);
 	
-	sx = 9;
-	sy = 30;
+	static constexpr int sx = 9;
+	int sy = 30;
 	
 	CRect rc( sx, 5, sx+310, 7 ); 	
 	rc += CPoint( 0, 20 );
 	
-	int nBase = m_wndScrollBar.GetScrollPos();
-	if( nBase < 0 )
-	{
-		nBase = 0;
-		TRACE("aa\n");
-	}
+	int nBase = std::max(m_wndScrollBar.GetScrollPos(), 0);
 	
 	TCHAR szTemp[32];
 
@@ -1081,8 +970,8 @@ void CWndPostReceive::OnDraw( C2DRender* p2DRender )
 	p2DRender->RenderTexture( CPoint(sx+4, sy - 4), &m_Texture[0], 150  );
 
 	// �Ⱓ ���� ��ȭ
-	D3DXVECTOR2 v2_1 = D3DXVECTOR2( 255, 0 );
-	D3DXVECTOR2 v2_2 = D3DXVECTOR2( 0, 150 );
+	const D3DXVECTOR2 v2_1 = D3DXVECTOR2( 255, 0 );
+	const D3DXVECTOR2 v2_2 = D3DXVECTOR2( 0, 150 );
 	D3DXVECTOR2 v2Result;
 
 	TCHAR szCutTitle[128];
@@ -1235,7 +1124,6 @@ void CWndPostReceive::OnMouseWndSurface( CPoint point )
 	CMailBox* pMailBox	= CMailBox::GetInstance();	
 	CMailBox& mailbox = *pMailBox;
 
-	COleDateTime dt;
 	CString strDateTime;
 
 	CPoint cpoint	= point;
@@ -1258,7 +1146,7 @@ void CWndPostReceive::OnMouseWndSurface( CPoint point )
 			{
 				ClientToScreen( &cpoint );
 				ClientToScreen( &rc );
-				dt = mailbox[i]->m_tmCreate;
+				COleDateTime dt = mailbox[i]->m_tmCreate;
 				strDateTime.Format( prj.GetText( TID_GAME_MAIL_RECEIVE_DATE ), dt.Format() );
 				g_toolTip.PutToolTip( (DWORD)this, strDateTime, rc, cpoint );
 				break;
@@ -1294,11 +1182,7 @@ void CWndPostReceive::OnLButtonDblClk( UINT nFlags, CPoint point )
 
 	if( m_wndPostRead )
 	{
-#ifdef __FIX_WND_1109
 		m_wndPostRead->Initialize( this );
-#else	// __FIX_WND_1109
-		m_wndPostRead->Initialize();
-#endif	// __FIX_WND_1109
 		m_wndPostRead->SetValue( m_nSelect );
 	}
 }
@@ -1313,20 +1197,7 @@ void CWndPostReceive::OnInitialUpdate()
 	rect.left    = rect.right - 40;
 	rect.right   -= 30;
 	
-	if( m_nMax > 0 )
-	{
-		m_wndScrollBar.SetScrollRange( 0, m_nMax );
-		if( m_nMax < MAX_MAIL_LIST_PER_PAGE )
-			m_wndScrollBar.SetScrollPage( m_nMax );
-		else
-			m_wndScrollBar.SetScrollPage( MAX_MAIL_LIST_PER_PAGE );
-	}
-	else
-	{
-		m_wndScrollBar.SetScrollRange( 0, 1 );
-		m_wndScrollBar.SetScrollPage( 1 );
-	}
-	
+	m_wndScrollBar.SetScrollFromSize(m_nMax, MAX_MAIL_LIST_PER_PAGE);	
 	m_wndScrollBar.AddWndStyle( WBS_DOCKING );
 	m_wndScrollBar.Create( WBS_VERT, rect, this, 1000 );
 	
@@ -1338,11 +1209,10 @@ void CWndPostReceive::OnInitialUpdate()
 	m_Texture[2].LoadTexture(g_Neuz.m_pd3dDevice, MakePath( "item\\", "itm_GolGolSeed.dds" ), 0xffff00ff );	
 	
 } 
-// ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndPostReceive::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	return CWndNeuz::InitDialog( APP_POST_RECEIVE, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+
+BOOL CWndPostReceive::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_POST_RECEIVE, pWndParent, 0, CPoint(0, 0));
+}
 
 void CWndPostReceive::OnLButtonDown( UINT nFlags, CPoint point ) 
 { 
@@ -1353,27 +1223,8 @@ void CWndPostReceive::OnLButtonDown( UINT nFlags, CPoint point )
 	if( nSelect != -1 )
 		m_nSelect = nSelect;	
 } 
-BOOL CWndPostReceive::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
 
-BOOL CWndPostReceive::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
-{
-	if( zDelta < 0 )
-	{
-		if( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() > m_wndScrollBar.GetScrollPos() )
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetScrollPos()+1 );
-		else
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() );
-	}
-	else
-	{
-		if( m_wndScrollBar.GetMinScrollPos() < m_wndScrollBar.GetScrollPos() )
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetScrollPos()-1 );
-		else
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetMinScrollPos() );
-	}
-	
+BOOL CWndPostReceive::OnMouseWheel(UINT, short zDelta, CPoint) {
+	m_wndScrollBar.MouseWheel(zDelta);
 	return TRUE;
 }

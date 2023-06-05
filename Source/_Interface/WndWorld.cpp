@@ -4115,7 +4115,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				
 				SAFE_DELETE( g_WndMng.m_pWndPost );
 				g_WndMng.m_pWndPost = new CWndPost;
-				g_WndMng.m_pWndPost->Initialize( NULL, APP_POST );	
+				g_WndMng.m_pWndPost->Initialize( NULL );	
 			}
 			break;
 		case MMI_BEAUTYSHOP:

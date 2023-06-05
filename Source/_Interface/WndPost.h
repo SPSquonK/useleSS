@@ -24,7 +24,6 @@ public:
 	virtual	void OnInitialUpdate(); 
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );		
 	virtual void OnRButtonUp( UINT nFlags, CPoint point );
-	virtual void AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4 );
 };
 
 class CWndPostItemWarning : public CWndNeuz 
@@ -42,26 +41,22 @@ public:
 class CWndPostDeleteConfirm;
 class CWndPostRead : public CWndNeuz
 {
-	int					m_nMailIndex;
+	int					m_nMailIndex = -1;
 	CWndGold			m_wndGold;
-	BOOL				m_bDrag;
-	CWndPostDeleteConfirm* m_pDeleteConfirm;
+	BOOL				m_bDrag = FALSE;
+	CWndPostDeleteConfirm* m_pDeleteConfirm = nullptr;
 	
 public:	
-	CWndPostItemWarning*		m_pWndPostItemWarning;
+	CWndPostItemWarning*		m_pWndPostItemWarning = nullptr;
 	void MailReceiveItem();
 	void MailReceiveGold();
 	void ClearData();
-	CWndPostRead(); 
-	virtual ~CWndPostRead(); 
 	
 	void SetValue( int nMailIndex );
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnMouseMove(UINT nFlags, CPoint point );	
@@ -86,7 +81,6 @@ public:
 
 	int          GetSelectIndex( const CPoint& point );	
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
