@@ -11,6 +11,7 @@
 #include "MsgHdr.h"
 #include "WndMessenger.h"
 #include "WndIndirectTalk.h"
+#include "WndPost.h"
 
 #include "guild.h"
 

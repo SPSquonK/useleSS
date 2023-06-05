@@ -42,6 +42,7 @@
 #endif //__Y_INTERFACE_VER3
 
 #include "WndSelectVillage.h"
+#include "WndPost.h"
 
 #include "randomoption.h"
 

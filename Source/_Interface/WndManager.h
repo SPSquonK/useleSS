@@ -85,6 +85,7 @@ class CWndGuildBank;
 class CWndGuildNickName;
 class CWndCommercialElem; class CWndRemoveElem;
 class CWndReSkillWarning;
+class CWndPost;
 
 #define REG_VERSION 1
 

@@ -18,6 +18,7 @@
 #include "wndmessenger.h"
 #include "WndSkillTree.h"
 #include "WndQuest.h" 
+#include "WndPost.h"
 #include "mover.h"
 #include "Ship.h"
 #include "Sfx.h"
@@ -13091,7 +13092,7 @@ void CDPClient::OnMailBoxReq( CAr & ar )
 	{
 		
 		// 요청 window는 닫아준다 메일이 없으므로,,,
-		CWndPost* pWndPost	= (CWndPost*)g_WndMng.GetWndBase( APP_POST );
+		CWndPost* pWndPost	= g_WndMng.GetWndBase<CWndPost>( APP_POST );
 		if( pWndPost )
 		{
 			pWndPost->CloseMailRequestingBox();
