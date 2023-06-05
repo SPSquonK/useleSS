@@ -1101,7 +1101,7 @@ void CDPTrans::SendAllMail( DPID dpid )
 	ar << DPID_UNKNOWN << DPID_UNKNOWN << PACKETTYPE_ALLMAIL;
 
 	CPost::GetInstance()->m_csPost.Enter();
-	CPost::GetInstance()->Serialize( ar, FALSE );
+	ar << CPost::GetInstance()->AsStructure();
 	CPost::GetInstance()->m_csPost.Leave();
 
 	SEND( ar, this, dpid );

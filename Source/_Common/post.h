@@ -39,7 +39,7 @@ public:
 	void	SetMailBox( CMailBox* pMailBox )	{	m_pMailBox	= pMailBox;	}
 	CMailBox*	GetMailBox( void )	{	return m_pMailBox;	}
 #endif	// __DBSERVER
-	void	Serialize( CAr & ar, BOOL bData = TRUE );
+	void	Serialize( CAr & ar );
 public:
 	u_long	m_nMail;
 	u_long	m_idSender;
@@ -74,7 +74,7 @@ public:
 	~CMailBox();
 
 	u_long	AddMail( CMail* pMail );
-	void	Serialize( CAr & ar, BOOL bData = TRUE );
+	void	Serialize( CAr & ar );
 
 #ifdef __DBSERVER
 	void	WriteMailContent( CAr & ar );
@@ -133,8 +133,6 @@ public:
 	u_long	AddMail( u_long idReceiver, CMail* pMail );
 	CMailBox*	GetMailBox( u_long idReceiver );
 	BOOL	AddMailBox( CMailBox* pMailBox );
-	void	Serialize( CAr & ar, BOOL bData = TRUE );
-
 #ifdef __DBSERVER
 	std::map< u_long, CMail* >	m_mapMail4Proc;
 	CMclCritSec	m_csPost;
@@ -144,6 +142,25 @@ public:
 	static CPost * GetInstance();
 private:
 	std::map<u_long, std::unique_ptr<CMailBox>> m_mapMailBox;
+
+public:
+	// Post structure sending =
+	// - List of mailboxes
+	// - List of mails with only ID / read / time
+	// Not using directly operator<</>> because it would give the wrong idea
+	// that using these sends everything
+
+	struct Structure {
+		CPost * post;
+	};
+#ifdef __WORLDSERVER
+	friend CAr & operator>>(CAr & ar, const Structure & structure);
+#endif
+#ifdef __DBSERVER
+	friend CAr & operator<<(CAr & ar, const Structure & structure);
+#endif
+
+	[[nodiscard]] Structure AsStructure() { return Structure{ this }; }
 };
 
 #endif

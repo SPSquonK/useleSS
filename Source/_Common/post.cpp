@@ -64,10 +64,9 @@ std::pair<int, DWORD> CMail::GetMailInfo() const {
 	return std::make_pair(nGap, dwKeepingTime);
 }
 
-void CMail::Serialize( CAr & ar, BOOL bData )
+void CMail::Serialize( CAr & ar )
 {
-	if( bData )
-	{
+
 		if( ar.IsStoring() )
 		{
 			ar << m_nMail << m_idSender;
@@ -112,24 +111,7 @@ void CMail::Serialize( CAr & ar, BOOL bData )
 			ar.ReadString( m_szTitle, MAX_MAILTITLE );
 			ar.ReadString( m_szText, MAX_MAILTEXT );
 		}
-	}
-	else	// no data
-	{
-		if( ar.IsStoring() )
-		{
-			ar << m_nMail;
-			ar << time_null() - m_tmCreate;
-			ar << m_byRead;
-		}
-		else	// load
-		{
-			ar >> m_nMail;
-			time_t tm;
-			ar >> tm;
-			m_tmCreate	= time_null() - tm; 
-			ar >> m_byRead;
-		}
-	}
+
 }
 
 CMailBox::~CMailBox()
@@ -187,7 +169,7 @@ void CMailBox::WriteMailContent(CAr & ar) {
 
 	for (CMail * pMail : m_mails) {
 		ar << pMail->m_nMail;
-		pMail->Serialize(ar, TRUE);
+		pMail->Serialize(ar);
 	}
 }
 #endif	// __DBSERVER
@@ -201,11 +183,11 @@ void CMailBox::ReadMailContent(CAr & ar) {
 		CMail* pMail = GetMail( nMail );
 		if (pMail) {
 			pMail->Clear();
-			pMail->Serialize( ar, TRUE );
+			pMail->Serialize( ar );
 		} else {
 			CMail * pNewMail = new CMail();
 			pNewMail->Clear();
-			pNewMail->Serialize(ar, TRUE);
+			pNewMail->Serialize(ar);
 			m_mails.push_back(pNewMail);
 			Error("CMailBox::ReadMailContent - Create NewMail. nMail : %d, Sender : %07d", nMail, pNewMail->m_idSender);
 		}
@@ -215,14 +197,14 @@ void CMailBox::ReadMailContent(CAr & ar) {
 }
 #endif	// __WORLDSERVER
 
-void CMailBox::Serialize( CAr & ar, BOOL bData )
+void CMailBox::Serialize( CAr & ar )
 {
 	if( ar.IsStoring() )
 	{
 		ar << m_idReceiver;
 		ar << (std::uint32_t) m_mails.size();
 		for (CMail * pMail : m_mails) {
-			pMail->Serialize( ar, bData );
+			pMail->Serialize( ar );
 		}
 	}
 	else
@@ -239,7 +221,7 @@ void CMailBox::Serialize( CAr & ar, BOOL bData )
 		for(std::uint32_t i = 0; i < nSize; i++ )
 		{
 			CMail* pMail	= new CMail;
-			pMail->Serialize( ar, bData );
+			pMail->Serialize( ar );
 			AddMail( pMail );
 		}
 	}
@@ -382,27 +364,53 @@ BOOL CPost::AddMailBox( CMailBox* pMailBox )
 	return m_mapMailBox.emplace(pMailBox->m_idReceiver, pMailBox).second;
 }
 
-void CPost::Serialize( CAr & ar, BOOL bData )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_mapMailBox.size();
-		for (const auto & [_, pMailBox] : m_mapMailBox) {
-			pMailBox->Serialize( ar, bData );
+#ifdef __DBSERVER
+CAr & operator<<(CAr & ar, const CPost::Structure & structure) {
+	CPost & post = *structure.post;
+
+	ar << static_cast<std::uint32_t>(post.m_mapMailBox.size());
+	for (const auto & [_, pMailBox] : post.m_mapMailBox) {
+		ar << pMailBox->m_idReceiver;
+
+		ar << static_cast<std::uint32_t>(pMailBox->m_mails.size());
+		for (CMail * pMail : pMailBox->m_mails) {
+			ar << pMail->m_nMail;
+			ar << time_null() - pMail->m_tmCreate;
+			ar << pMail->m_byRead;
 		}
 	}
-	else
-	{
-		int nSize;
-		ar >> nSize;
-		for( int i = 0; i < nSize; i++ )
-		{
-			CMailBox* pMailBox	= new CMailBox;
-			pMailBox->Serialize( ar, bData );
-			AddMailBox( pMailBox );
-		}
-	}
+
+	return ar;
 }
+#endif
+
+#ifdef __WORLDSERVER
+CAr & operator>>(CAr & ar, const CPost::Structure & structure) {
+	CPost & post = *structure.post;
+
+	std::uint32_t nbMailBoxes; ar >> nbMailBoxes;
+	for (std::uint32_t iMailBoxes = 0; iMailBoxes != nbMailBoxes; ++iMailBoxes) {
+		CMailBox * pMailBox = new CMailBox();
+		ar >> pMailBox->m_idReceiver;
+
+		std::uint32_t nbMails; ar >> nbMails;
+		for (std::uint32_t iMails = 0; iMails != nbMails; ++iMails) {
+			CMail * pMail = new CMail();
+			ar >> pMail->m_nMail;
+			
+			time_t tm; ar >> tm;
+			pMail->m_tmCreate = time_null() - tm;
+			ar >> pMail->m_byRead;
+
+			pMailBox->AddMail(pMail);
+		}
+
+		post.AddMailBox(pMailBox);
+	}
+
+	return ar;
+}
+#endif
 
 CPost*	CPost::GetInstance( void )
 {

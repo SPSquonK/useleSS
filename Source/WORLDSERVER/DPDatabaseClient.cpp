@@ -2366,9 +2366,8 @@ void CDPDatabaseClient::OnReadMail( CAr & ar, DPID, DPID ) {
 
 }
 
-void CDPDatabaseClient::OnAllMail( CAr & ar , DPID, DPID )
-{
-	CPost::GetInstance()->Serialize( ar, FALSE );
+void CDPDatabaseClient::OnAllMail(CAr & ar, DPID, DPID) {
+	ar >> CPost::GetInstance()->AsStructure();
 }
 
 void CDPDatabaseClient::OnQueryRemoveGuildBankTbl( CAr & ar, DPID, DPID )
