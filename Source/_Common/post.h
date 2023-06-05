@@ -39,7 +39,9 @@ public:
 	void	SetMailBox( CMailBox* pMailBox )	{	m_pMailBox	= pMailBox;	}
 	CMailBox*	GetMailBox( void )	{	return m_pMailBox;	}
 #endif	// __DBSERVER
-	void	Serialize( CAr & ar );
+
+	friend CAr & operator<<(CAr & ar, const CMail & mail);
+	friend CAr & operator>>(CAr & ar, CMail & mail);
 public:
 	u_long	m_nMail;
 	u_long	m_idSender;
@@ -74,7 +76,8 @@ public:
 	~CMailBox();
 
 	u_long	AddMail( CMail* pMail );
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CMailBox & mailBox);
+	friend CAr & operator>>(CAr & ar, CMailBox & mailBox);
 
 #ifdef __DBSERVER
 	void	WriteMailContent( CAr & ar );
@@ -114,7 +117,7 @@ public:
 private:
 	std::vector<CMail *>::iterator Find( u_long nMail );
 #ifdef __DBSERVER
-	CPost*	m_pPost;
+	CPost*	m_pPost = nullptr;
 #endif	// __DBSERVER
 
 public:

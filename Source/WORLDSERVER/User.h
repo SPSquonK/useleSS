@@ -287,9 +287,8 @@ public:
 
 
 
-	void			AddPostMail( CMail* pMail );
 	void			AddRemoveMail( u_long nMail, int nType );
-	void			AddMailBox( CMailBox* pMailBox );
+	void			AddMailBox(const CMailBox * pMailBox);
 	void			SendCheckMailBoxReq(bool bCheckTransMailBox);
 
 	void			SetPosting( BOOL bPosting )		{	m_bPosting	= bPosting;	}

@@ -1051,15 +1051,8 @@ void CDPTrans::OnReadMail( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, L
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPGuild, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
 
-void CDPTrans::SendPostMail( BOOL bResult, u_long idReceiver, CMail* pMail )
-{
-// 	//	BEGINTEST
-// 	Error( "CDPTrans::SendPostMail Result[%d], Receiver[%d]", bResult, idReceiver );
-
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYPOSTMAIL, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << bResult << idReceiver;
-	pMail->Serialize( ar );
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendPostMail(BOOL bResult, u_long idReceiver, CMail * pMail) {
+	BroadcastPacket<PACKETTYPE_QUERYPOSTMAIL, BOOL, u_long, CMail>(bResult, idReceiver, *pMail);
 }
 
 void CDPTrans::SendRemoveMail( u_long idReceiver, u_long nMail )

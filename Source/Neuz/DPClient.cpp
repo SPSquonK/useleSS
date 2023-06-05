@@ -13049,7 +13049,7 @@ void CDPClient::SendQueryMailBox() {
 
 void CDPClient::OnPostMail(CAr & ar) {
 	CMail * pMail = new CMail;
-	pMail->Serialize(ar);
+	ar >> *pMail;
 	CMailBox::GetInstance()->AddMail(pMail);
 }
 
@@ -13066,7 +13066,7 @@ void CDPClient::OnRemoveMail(CAr & ar) {
 }
 
 void CDPClient::OnMailBox( CAr & ar ) {
-	CMailBox::GetInstance()->Serialize(ar);
+	ar >> *CMailBox::GetInstance();
 
 	if (CWndPost * pWndPost = g_WndMng.GetWndBase<CWndPost>(APP_POST)) {
 		pWndPost->EnableWindow( TRUE );

@@ -64,54 +64,40 @@ std::pair<int, DWORD> CMail::GetMailInfo() const {
 	return std::make_pair(nGap, dwKeepingTime);
 }
 
-void CMail::Serialize( CAr & ar )
-{
+CAr & operator<<(CAr & ar, const CMail & mail) {
+	ar << mail.m_nMail << mail.m_idSender;
+	if (mail.m_pItemElem) {
+		ar << true;
+		ar << *mail.m_pItemElem;
+	} else {
+		ar << false;
+	}
+	ar << mail.m_nGold;
+	ar << time_null() - mail.m_tmCreate;
 
-		if( ar.IsStoring() )
-		{
-			ar << m_nMail << m_idSender;
-			if( m_pItemElem )
-			{
-				ar << (BYTE)1;
-				ar << *m_pItemElem;
-			}
-			else
-			{
-				ar << (BYTE)0;
-			}
-			ar << m_nGold;
-	//		ar << m_tmCreate;
-			ar << time_null() - m_tmCreate;
+	ar << mail.m_byRead;
+	ar << mail.m_szTitle << mail.m_szText;
 
-			ar << m_byRead;
-			ar.WriteString( m_szTitle );
-			ar.WriteString( m_szText );
-		}
-		else
-		{
-			ar >> m_nMail >> m_idSender;
+	return ar;
+}
 
-			// 메일 로그
-//			//	BEGINTEST
-// 			Error( _T( "m_nMail:%d, m_idSender:%d" ), m_nMail, m_idSender );
+CAr & operator>>(CAr & ar, CMail & mail) {
+	ar >> mail.m_nMail >> mail.m_idSender;
 
-			BYTE byItemElem;
-			ar >> byItemElem;
-			if( byItemElem )
-			{
-				m_pItemElem	= new CItemElem;
-				ar >> *m_pItemElem;
-			}
-			ar >> m_nGold;
-			time_t tm;
-			ar >> tm;
-			m_tmCreate	= time_null() - tm; 
-	//		ar >> m_tmCreate;
-			ar >> m_byRead;
-			ar.ReadString( m_szTitle, MAX_MAILTITLE );
-			ar.ReadString( m_szText, MAX_MAILTEXT );
-		}
+	bool byItemElem; ar >> byItemElem;
+	if (byItemElem) {
+		mail.m_pItemElem = new CItemElem;
+		ar >> *mail.m_pItemElem;
+	}
+	ar >> mail.m_nGold;
+	
+	time_t tm; ar >> tm;
+	mail.m_tmCreate = time_null() - tm;
+	
+	ar >> mail.m_byRead;
+	ar >> mail.m_szTitle >> mail.m_szText;
 
+	return ar;
 }
 
 CMailBox::~CMailBox()
@@ -168,8 +154,7 @@ void CMailBox::WriteMailContent(CAr & ar) {
 	ar << static_cast<std::uint32_t>(m_mails.size());
 
 	for (CMail * pMail : m_mails) {
-		ar << pMail->m_nMail;
-		pMail->Serialize(ar);
+		ar << pMail->m_nMail << *pMail;
 	}
 }
 #endif	// __DBSERVER
@@ -183,11 +168,11 @@ void CMailBox::ReadMailContent(CAr & ar) {
 		CMail* pMail = GetMail( nMail );
 		if (pMail) {
 			pMail->Clear();
-			pMail->Serialize( ar );
+			ar >> *pMail;
 		} else {
 			CMail * pNewMail = new CMail();
 			pNewMail->Clear();
-			pNewMail->Serialize(ar);
+			ar >> *pNewMail;
 			m_mails.push_back(pNewMail);
 			Error("CMailBox::ReadMailContent - Create NewMail. nMail : %d, Sender : %07d", nMail, pNewMail->m_idSender);
 		}
@@ -197,34 +182,36 @@ void CMailBox::ReadMailContent(CAr & ar) {
 }
 #endif	// __WORLDSERVER
 
-void CMailBox::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_idReceiver;
-		ar << (std::uint32_t) m_mails.size();
-		for (CMail * pMail : m_mails) {
-			pMail->Serialize( ar );
-		}
+CAr & operator<<(CAr & ar, const CMailBox & mailBox) {
+	ar << mailBox.m_idReceiver;
+
+	ar << (std::uint32_t)mailBox.m_mails.size();
+	for (const CMail * pMail : mailBox.m_mails) {
+		ar << *pMail;
 	}
-	else
-	{
-		Clear();
-		ar >> m_idReceiver;
-		std::uint32_t nSize;
-		ar >> nSize;
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CMailBox & mailBox) {
+	mailBox.Clear();
+	ar >> mailBox.m_idReceiver;
+
+	std::uint32_t nSize; ar >> nSize;
 
 #ifdef __CLIENT
-		if( g_WndMng.m_bWaitRequestMail && nSize <= 0 )
-			g_DPlay.SendQueryMailBox();
-#endif
-		for(std::uint32_t i = 0; i < nSize; i++ )
-		{
-			CMail* pMail	= new CMail;
-			pMail->Serialize( ar );
-			AddMail( pMail );
-		}
+	if (g_WndMng.m_bWaitRequestMail && nSize <= 0) {
+		g_DPlay.SendQueryMailBox();
 	}
+#endif
+
+	for (std::uint32_t i = 0; i < nSize; i++) {
+		CMail * pMail = new CMail;
+		ar >> *pMail;
+		mailBox.AddMail(pMail);
+	}
+
+	return ar;
 }
 
 std::vector<CMail *>::iterator CMailBox::Find(const u_long nMail) {

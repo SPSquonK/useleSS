@@ -2170,51 +2170,35 @@ void CDPDatabaseClient::SendQueryReadMail( u_long idReceiver, u_long nMail )
 
 void CDPDatabaseClient::OnPostMail( CAr & ar, DPID, DPID )
 {
-// 	//	BEGINTEST
-// 	Error( "CDPDatabaseClient::OnPostMail" );
+	const auto [bResult, idReceiver] = ar.Extract<BOOL, u_long>();
+	CMail * pMail = new CMail; ar >> *pMail;
 
-	BOOL	bResult;
-	u_long idReceiver;
-	ar >> bResult >> idReceiver;
-	CMail* pMail	= new CMail;
-	pMail->Serialize( ar );
-
-	BOOL bBuying	= FALSE;
-
-	if( TRUE == bResult )
+	if( bResult )
 	{
 		if( CPost::GetInstance()->AddMail( idReceiver, pMail ) <= 0 )
 		{
 			Error( "OnPostMail - pMail->m_nMail : %d", pMail->m_nMail );
 		}
-		else	//SUCCESS
-		{
-// 			//	BEGINTEST
-// 			Error( "CDPDatabaseClient::OnPostMail Receiver[%d] nMail[%d]", idReceiver, pMail->m_nMail );
-		}
 
-		CUser* pUser	= (CUser*)prj.GetUserByID( idReceiver );
-		if( IsValidObj( pUser ) )
-		{
-			if( pUser->IsPosting() )
-			{
-				pUser->AddPostMail( pMail );
+		CUser * pReceiver = prj.GetUserByID(idReceiver);
+		if (IsValidObj(pReceiver)) {
+			if (pReceiver->IsPosting()) {
+				pReceiver->SendSnapshotNoTarget<SNAPSHOTTYPE_POSTMAIL, CMail>(*pMail);
 			}
 
-//			if( pUser->IsMode( MODE_MAILBOX ) == FALSE )
-			{
-				pUser->SetMode( MODE_MAILBOX );
-				g_UserMng.AddModifyMode( pUser );
-			}
+			pReceiver->SetMode(MODE_MAILBOX);
+			g_UserMng.AddModifyMode(pReceiver);
 		}
-		pUser	= (CUser*)prj.GetUserByID( pMail->m_idSender );
-		if( IsValidObj( pUser ) && !bBuying )
-			pUser->AddDiagText( prj.GetText(TID_MAIL_SEND_OK) );
-	}	// FAIL
+
+		CUser * pSender = prj.GetUserByID(pMail->m_idSender);
+		if (IsValidObj(pSender)) {
+			pSender->AddDiagText(prj.GetText(TID_MAIL_SEND_OK));
+		}
+	}
 	else
 	{
 		Error( "OnPostMail - Send Mail Failed. idSender : %d, idReceiver : %d", pMail->m_idSender, idReceiver );
-		CUser* pUser	= (CUser*)prj.GetUserByID( pMail->m_idSender );
+		CUser* pUser	= prj.GetUserByID( pMail->m_idSender );
 		if( IsValidObj( pUser ) )
 		{
 			if( pMail->m_pItemElem )
@@ -2234,10 +2218,7 @@ void CDPDatabaseClient::OnPostMail( CAr & ar, DPID, DPID )
 				g_dpDBClient.SavePlayer( pUser, pWorld->GetID(), pUser->GetPos() );
 #endif	// __LAYER_1015
 		}
-		else
-		{
-			// ˬ
-		}
+
 		SAFE_DELETE( pMail );
 	}
 }

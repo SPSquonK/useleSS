@@ -5317,37 +5317,12 @@ void CUser::AddReturnScroll()
 	
 }
 
-void CUser::AddPostMail( CMail* pMail )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_POSTMAIL;
-	pMail->Serialize( m_Snapshot.ar );
-	
+void CUser::AddRemoveMail(u_long nMail, int nType) {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_REMOVEMAIL, u_long, int>(nMail, nType);
 }
 
-void CUser::AddRemoveMail( u_long nMail, int nType )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_REMOVEMAIL;
-	m_Snapshot.ar << nMail << nType;
-	
-}
-
-void CUser::AddMailBox( CMailBox* pMailBox )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_QUERYMAILBOX;
-	pMailBox->Serialize( m_Snapshot.ar );
-	
+void CUser::AddMailBox(const CMailBox * pMailBox) {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_QUERYMAILBOX, CMailBox>(*pMailBox);
 }
 
 void CUser::SendCheckMailBoxReq(bool bCheckTransMailBox) {
