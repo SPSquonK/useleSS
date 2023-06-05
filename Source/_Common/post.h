@@ -72,22 +72,14 @@ public:
 	virtual	~CMailBox();
 	u_long	AddMail( CMail* pMail );
 	void	Serialize( CAr & ar, BOOL bData = TRUE );
+
 #ifdef __DBSERVER
-	void	Write( CAr & ar );
+	void	WriteMailContent( CAr & ar );
 #endif	// __DBSERVER
 #ifdef __WORLDSERVER
-	void	Read( CAr & ar );
-
-
-
-
-	//////////////////////////////////////////////////////////////////////////
-	void	ReadReq( CAr & ar );
-	//////////////////////////////////////////////////////////////////////////
-
-
-
+	void ReadMailContent(CAr & ar);
 #endif	// __WORLDSERVER
+
 	CMail*	GetMail( u_long nMail );
 	BOOL	RemoveMail( u_long nMail );
 	BOOL	RemoveMailItem( u_long nMail );

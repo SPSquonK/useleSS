@@ -13201,10 +13201,8 @@ void CDPClient::OnMailBox( CAr & ar )
 
 void CDPClient::OnMailBoxReq( CAr & ar )
 {
-	BOOL bCheckTransMailBox = FALSE;
+	bool bCheckTransMailBox = FALSE;
 	ar >> bCheckTransMailBox;
-
-	Error( "CDPClient::OnMailBoxReq bCheckTransMailBox:%d", bCheckTransMailBox );
 
 	if( bCheckTransMailBox )
 	{

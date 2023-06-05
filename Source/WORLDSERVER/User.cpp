@@ -5355,14 +5355,8 @@ void CUser::AddMailBox( CMailBox* pMailBox )
 	
 }
 
-void CUser::SendCheckMailBoxReq( BOOL bCheckTransMailBox )
-{
-	if( IsDelete() )	return;
-
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_QUERYMAILBOX_REQ;
-	m_Snapshot.ar << bCheckTransMailBox;
+void CUser::SendCheckMailBoxReq(bool bCheckTransMailBox) {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_QUERYMAILBOX_REQ, bool>(bCheckTransMailBox);
 }
 
 

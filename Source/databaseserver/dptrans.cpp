@@ -65,12 +65,12 @@ CDPTrans::CDPTrans()
 	ON_MSG( PACKETTYPE_UPDATEGUILDQUEST, &CDPTrans::OnUpdateGuildQuest );
 	ON_MSG( PACKETTYPE_QUERYSETPLAYERNAME, &CDPTrans::OnQuerySetPlayerName );
 	ON_MSG( PACKETTYPE_PING, &CDPTrans::OnPing );
-	ON_MSG( PACKETTYPE_QUERYMAILBOX, &CDPTrans::OnQueryMailBox );
 
 
 	//////////////////////////////////////////////////////////////////////////
+	ON_MSG( PACKETTYPE_QUERYMAILBOX      , &CDPTrans::OnQueryMailBox );
 	ON_MSG( PACKETTYPE_QUERYMAILBOX_COUNT, &CDPTrans::OnQueryMailBoxCount );
-	ON_MSG( PACKETTYPE_QUERYMAILBOX_REQ, &CDPTrans::OnQueryMailBoxReq );
+	ON_MSG( PACKETTYPE_QUERYMAILBOX_REQ  , &CDPTrans::OnQueryMailBoxReq );
 	//////////////////////////////////////////////////////////////////////////
 	
 
@@ -951,58 +951,28 @@ void CDPTrans::OnPing( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYT
 
 void CDPTrans::OnQueryMailBox( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-#ifdef __JEFF_FIX_0
 	LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus		= g_DbManager.AllocRequest();
 	g_DbManager.MakeRequest( lpDbOverlappedPlus, lpBuf, uBufSize );
 	lpDbOverlappedPlus->nQueryMode	= QM_QUERY_MAIL_BOX;
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPGuild, 1, NULL, &lpDbOverlappedPlus->Overlapped );
-#else	// __JEFF_FIX_0
-	u_long idReceiver;
-	ar >> idReceiver;
-
-	CPost *pPost    = CPost::GetInstance();
-
-	CMclAutoLock	Lock( pPost->m_csPost );
-
-	CMailBox* pMailBox	= NULL;
-	pMailBox = pPost->GetMailBox( idReceiver );
-	
-	if( pMailBox != NULL )
-	{
-		SendMailBox( pMailBox, dpid );
-	}
-	else
-	{
-		SendMailBoxReq( idReceiver, dpid, FALSE, pMailBox );
-	}
-
-#endif	// __JEFF_FIX_0
 }
 
 
-void CDPTrans::OnQueryMailBoxCount( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPTrans::OnQueryMailBoxCount( CAr & ar, DPID dpid, DPID, DPID, LPBYTE , u_long )
 {
 	u_long idReceiver;
-	int nCount;
-	ar >> idReceiver >> nCount;
+	ar >> idReceiver;
 
-	CPost *pPost    = CPost::GetInstance();
+	CPost * pPost = CPost::GetInstance();
 
-	CMclAutoLock	Lock( pPost->m_csPost );
+	CMclAutoLock	Lock(pPost->m_csPost);
 
-	CMailBox* pMailBox	= NULL;
-	pMailBox = pPost->GetMailBox( idReceiver );
-	
-	if( pMailBox != NULL )
-	{
-		SendMailBox( pMailBox, dpid );
+	CMailBox * pMailBox = pPost->GetMailBox(idReceiver);
+	if (pMailBox) {
+		SendMailBox(pMailBox, dpid);
+	} else {
+		SendMailBoxReq(idReceiver, dpid, nullptr);
 	}
-	else
-	{
-		SendMailBoxReq( idReceiver, dpid, FALSE, pMailBox );
-	}
-
-	return;
 }
 
 void CDPTrans::OnQueryMailBoxReq( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -1010,41 +980,34 @@ void CDPTrans::OnQueryMailBoxReq( CAr & ar, DPID dpid, DPID dpidCache, DPID dpid
 	u_long idReceiver;
 	ar >> idReceiver;
 
-	CPost *pPost    = CPost::GetInstance();
+	CPost * pPost = CPost::GetInstance();
 
-	CMclAutoLock	Lock( pPost->m_csPost );
+	CMclAutoLock	Lock(pPost->m_csPost);
 
-	CMailBox* pMailBox	= NULL;
-	pMailBox = pPost->GetMailBox( idReceiver );
-
-	BOOL	bHaveMailBox = FALSE;
-	if( pMailBox != NULL )
-	{
-		bHaveMailBox = TRUE;
-	}
-
-	SendMailBoxReq( idReceiver, dpid, bHaveMailBox, pMailBox );
-
-	return;
+	CMailBox * pMailBox = pPost->GetMailBox(idReceiver);
+	SendMailBoxReq(idReceiver, dpid, pMailBox);
 }
 
 void CDPTrans::SendMailBox( CMailBox* pMailBox, DPID dpid )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_QUERYMAILBOX, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << pMailBox->m_idReceiver;
-	pMailBox->Write( ar );
+	pMailBox->WriteMailContent( ar );
 	SEND( ar, this, dpid );
 }
 
-void CDPTrans::SendMailBoxReq( u_long idReceiver, DPID dpid, BOOL bHaveMailBox, CMailBox* pMailBox )
+void CDPTrans::SendMailBoxReq( u_long idReceiver, DPID dpid, CMailBox* pMailBox )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_QUERYMAILBOX_REQ, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << idReceiver;
-	ar << bHaveMailBox;
-	if( pMailBox != NULL )
-	{
-		pMailBox->Write( ar );
+	
+	if (pMailBox) {
+		ar << true;
+		pMailBox->WriteMailContent(ar);
+	} else {
+		ar << false;
 	}
+
 	SEND( ar, this, dpid );
 }
 

@@ -82,7 +82,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	void	SendQueryMailBoxReq( u_long idReceiver );
-	void	SendQueryMailBoxCount( u_long idReceiver, int nCount );
+	void	SendQueryMailBoxCount( u_long idReceiver );
 	void	OnMailBoxReq( CAr & ar, DPID, DPID );
 	//////////////////////////////////////////////////////////////////////////
 

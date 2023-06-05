@@ -192,96 +192,35 @@ u_long CMailBox::AddMail( CMail* pMail )
 }
 
 #ifdef __DBSERVER
-void CMailBox::Write( CAr & ar )
-{
-	ar << (int)size();
+void CMailBox::WriteMailContent(CAr & ar) {
+	ar << static_cast<std::uint32_t>(size());
 
-	for( auto i = begin(); i != end(); ++i )
-	{
-		CMail* pMail	= *i;
+	for (CMail * pMail : *this) {
 		ar << pMail->m_nMail;
-		pMail->Serialize( ar, TRUE );
+		pMail->Serialize(ar, TRUE);
 	}
 }
 #endif	// __DBSERVER
 
 #ifdef __WORLDSERVER
-void CMailBox::Read( CAr & ar )
-{
-	int nSize;
-	ar >> nSize;
-	CMail temp;
-	for( int i = 0; i < nSize; i++ )
-	{
-		u_long nMail;
-		ar >> nMail;
-		CMail* pMail	= GetMail( nMail );
-		if( pMail )
-		{
+void CMailBox::ReadMailContent(CAr & ar) {
+	std::uint32_t nSize; ar >> nSize;
+	
+	for (std::uint32_t i = 0; i < nSize; ++i) {
+		u_long nMail; ar >> nMail;
+		CMail* pMail = GetMail( nMail );
+		if (pMail) {
 			pMail->Clear();
 			pMail->Serialize( ar, TRUE );
-		}
-		else
-		{
-			// mail not found
-			Error( "CMailBox::Read - GetMail return NULL. nMail : %d", nMail );
-			//temp.Clear();
-			//temp.Serialize( ar, TRUE );
-			CMail* pNewMail = new CMail;
-			if( pNewMail != NULL )
-			{
-				pNewMail->Clear();
-				pNewMail->Serialize( ar, TRUE );
-				push_back( pNewMail );
-				Error( "CMailBox::Read - Create NewMail. nMail : %d, Sender : %07d", nMail, pNewMail->m_idSender );
-			}
-			else
-			{
-				Error( "CMailBox::Read - Create NewMail Failed. nMail : %d", nMail );
-				temp.Clear();
-				temp.Serialize( ar, TRUE );
-			}
+		} else {
+			CMail * pNewMail = new CMail();
+			pNewMail->Clear();
+			pNewMail->Serialize(ar, TRUE);
+			push_back(pNewMail);
+			Error("CMailBox::ReadMailContent - Create NewMail. nMail : %d, Sender : %07d", nMail, pNewMail->m_idSender);
 		}
 	}
-	m_nStatus	= CMailBox::data;
-}
 
-void CMailBox::ReadReq( CAr & ar )
-{
-	int nSize;
-	ar >> nSize;
-
-	for( int i = 0; i < nSize; i++ )
-	{
-		u_long nMail;
-		ar >> nMail;
-
-		CMail* pMail	= GetMail( nMail );
-
-		if( pMail != NULL )
-		{
-			Error( "CMailBox::ReadReq - Mail Exist. nMail : %d", nMail );
-			pMail->Clear();
-			pMail->Serialize( ar, TRUE );
-		}
-		else
-		{
-			CMail* pNewMail = new CMail;
-			if( pNewMail != NULL )
-			{
-				pNewMail->Clear();
-				pNewMail->Serialize( ar, TRUE );
-				push_back( pNewMail );
-			}
-			else
-			{
-				Error( "CMailBox::ReadReq - New Failed. nMail : %d", nMail );
-				CMail temp;
-				temp.Clear();
-				temp.Serialize( ar, TRUE );
-			}
-		}
-	}
 	m_nStatus	= CMailBox::data;
 }
 #endif	// __WORLDSERVER

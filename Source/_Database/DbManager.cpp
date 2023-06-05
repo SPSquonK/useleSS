@@ -3534,25 +3534,21 @@ void CDbManager::GuildThread( void )
 				}
 			case QM_QUERY_MAIL_BOX:
 				{
-// 					//	BEGINTEST
-// 					Error( "QM_QUERY_MAIL_BOX");
-
 					CAr ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
+
+					// From here, the code is identical to CDPTrans::OnQueryMailBoxCount
 					u_long idReceiver;
 					ar >> idReceiver;
-					CPost *pPost    = CPost::GetInstance();
-					CMclAutoLock	Lock( pPost->m_csPost );
 
-					CMailBox* pMailBox	= NULL;
-					pMailBox = pPost->GetMailBox( idReceiver );
-					
-					if( pMailBox != NULL )
-					{
-						CDPTrans::GetInstance()->SendMailBox( pMailBox, lpDbOverlappedPlus->dpid );
-					}
-					else
-					{
-						CDPTrans::GetInstance()->SendMailBoxReq( idReceiver, lpDbOverlappedPlus->dpid, FALSE, pMailBox );
+					CPost * pPost = CPost::GetInstance();
+
+					CMclAutoLock	Lock(pPost->m_csPost);
+
+					CMailBox * pMailBox = pPost->GetMailBox(idReceiver);
+					if (pMailBox) {
+						CDPTrans::GetInstance()->SendMailBox(pMailBox, lpDbOverlappedPlus->dpid);
+					} else {
+						CDPTrans::GetInstance()->SendMailBoxReq(idReceiver, lpDbOverlappedPlus->dpid, nullptr);
 					}
 
 					break;

@@ -79,10 +79,11 @@ CDPDatabaseClient::CDPDatabaseClient()
 	ON_MSG( PACKETTYPE_QUERYGETMAILGOLD,	&CDPDatabaseClient::OnGetMailGold );
 	ON_MSG( PACKETTYPE_READMAIL,	&CDPDatabaseClient::OnReadMail );
 	ON_MSG( PACKETTYPE_ALLMAIL, &CDPDatabaseClient::OnAllMail );
-	ON_MSG( PACKETTYPE_QUERYMAILBOX, &CDPDatabaseClient::OnMailBox );
+	
 	
 
 	//////////////////////////////////////////////////////////////////////////
+	ON_MSG( PACKETTYPE_QUERYMAILBOX    , &CDPDatabaseClient::OnMailBox );
 	ON_MSG( PACKETTYPE_QUERYMAILBOX_REQ, &CDPDatabaseClient::OnMailBoxReq );
 	//////////////////////////////////////////////////////////////////////////
 
@@ -2041,28 +2042,20 @@ void CDPDatabaseClient::OnPing( CAr & ar, DPID, DPID )
 	m_bAlive	= TRUE;
 }
 
-void CDPDatabaseClient::SendQueryMailBox( u_long idReceiver )
-{
-// 	//	BEGINTEST
-// 	Error( "SendQueryMailBox [%d]", idReceiver );
-
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYMAILBOX, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryMailBox(u_long idReceiver) {
+	// Load the mailbox through guild's completion queue, suppose
+	// that the box already exists in WorldServer
+	SendPacket<PACKETTYPE_QUERYMAILBOX, u_long>(idReceiver);
 }
 
-void CDPDatabaseClient::SendQueryMailBoxReq( u_long idReceiver )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYMAILBOX_REQ, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryMailBoxReq(u_long idReceiver) {
+	// Load the mail box and send it through Req (does not exist in WorldServer)
+	SendPacket<PACKETTYPE_QUERYMAILBOX_REQ, u_long>(idReceiver);
 }
 
-void CDPDatabaseClient::SendQueryMailBoxCount( u_long idReceiver, int nCount )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYMAILBOX_COUNT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver << nCount;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryMailBoxCount(u_long idReceiver) {
+	// Load the mail box and send it through normal (already exists in WorldServer)
+	SendPacket<PACKETTYPE_QUERYMAILBOX_COUNT, u_long>(idReceiver);
 }
 
 void CDPDatabaseClient::OnMailBox( CAr & ar, DPID, DPID )
@@ -2070,28 +2063,22 @@ void CDPDatabaseClient::OnMailBox( CAr & ar, DPID, DPID )
 	u_long idReceiver;
 	ar >> idReceiver;
 	CMailBox* pMailBox	= CPost::GetInstance()->GetMailBox( idReceiver );
-	if( pMailBox )
-	{
-		pMailBox->Read( ar );
-		CUser* pUser	= g_UserMng.GetUserByPlayerID( idReceiver );
-		if( IsValidObj( pUser ) )
-		{
-
-			pUser->AddMailBox( pMailBox );
-			pUser->ResetCheckClientReq();
-		}
+	if (!pMailBox) {
+		Error("GetMailBox - pMailBox is NULL. idReceiver : %d", idReceiver);
+		return;
 	}
-	else
+
+	pMailBox->ReadMailContent( ar );
+	CUser* pUser	= g_UserMng.GetUserByPlayerID( idReceiver );
+	if( IsValidObj( pUser ) )
 	{
-		Error( "GetMailBox - pMailBox is NULL. idReceiver : %d", idReceiver );
+		pUser->AddMailBox( pMailBox );
+		pUser->ResetCheckClientReq();
 	}
 }
 
-void CDPDatabaseClient::OnMailBoxReq( CAr & ar, DPID, DPID )
-{
-	u_long idReceiver;
-	BOOL bHaveMailBox = FALSE;
-	ar >> idReceiver >> bHaveMailBox;
+void CDPDatabaseClient::OnMailBoxReq( CAr & ar, DPID, DPID ) {
+	const auto [idReceiver, bHaveMailBox] = ar.Extract<u_long, bool>();
 
 	CUser* pUser	= g_UserMng.GetUserByPlayerID( idReceiver );
 	if( IsValidObj( pUser ) )
@@ -2099,51 +2086,35 @@ void CDPDatabaseClient::OnMailBoxReq( CAr & ar, DPID, DPID )
 		pUser->CheckTransMailBox( TRUE );
 		pUser->SendCheckMailBoxReq( bHaveMailBox );
 	}
-
-	if( bHaveMailBox == TRUE )
-	{
-		CMailBox* pMailBox	= CPost::GetInstance()->GetMailBox( idReceiver );
-
-		if( pMailBox == NULL )
-		{
-			CMailBox* pNewMailBox = new CMailBox( idReceiver );
-			if( pNewMailBox != NULL )
-			{
-				if( CPost::GetInstance()->AddMailBox( pNewMailBox ) == TRUE )
-				{
-					pNewMailBox->ReadReq( ar );	// pMailBox->m_nStatus	= CMailBox::data;
-
-					CUser* pUser	= g_UserMng.GetUserByPlayerID( idReceiver );
-					if( IsValidObj( pUser ) )
-					{
-						pUser->AddMailBox( pNewMailBox );
-						pUser->ResetCheckClientReq();
-					}
-				}
-				else
-				{
-					Error( "CDPDatabaseClient::OnMailBoxReq - AddMailBox Failed. idReceiver : %d", idReceiver );
-				}
-			}
-			else
-			{
-				Error( "CDPDatabaseClient::OnMailBoxReq - MailBox Create Failed" );
-			}
-		}
-		else
-		{
-			//////////////////////////////////////////////////////////////////////////
-			//	??????????
-			Error( "CDPDatabaseClient::OnMailBoxReq - pMailBox is NOT NULL. idReceiver : %d", idReceiver );
-		}
-	}
-	else
-	{
-		CUser* pUser	= g_UserMng.GetUserByPlayerID( idReceiver );
-		if( IsValidObj( pUser ) )
-		{
+	
+	if (!bHaveMailBox) {
+		if (IsValidObj(pUser)) {
 			pUser->ResetCheckClientReq();
 		}
+
+		return;
+	}
+	
+	if (CPost::GetInstance()->GetMailBox(idReceiver)) {
+		Error("CDPDatabaseClient::OnMailBoxReq - pMailBox is NOT NULL. idReceiver : %d", idReceiver);
+		return;
+	}
+	
+	CMailBox* pNewMailBox = new CMailBox( idReceiver );
+
+	const bool added = CPost::GetInstance()->AddMailBox(pNewMailBox);
+
+	if (!added) {
+		Error("CDPDatabaseClient::OnMailBoxReq - AddMailBox Failed. idReceiver : %d", idReceiver);
+		return;
+	}
+
+	pNewMailBox->ReadMailContent( ar );	// pMailBox->m_nStatus	= CMailBox::data;
+
+	if( IsValidObj( pUser ) )
+	{
+		pUser->AddMailBox( pNewMailBox );
+		pUser->ResetCheckClientReq();
 	}
 }
 

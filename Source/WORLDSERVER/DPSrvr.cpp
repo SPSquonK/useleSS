@@ -5746,17 +5746,18 @@ void CDPSrvr::OnQueryReadMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 	}
 }
 
-void CDPSrvr::OnQueryMailBox( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnQueryMailBox( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE , u_long  )
 {
-// 	//	BEGINTEST
-// 	Error( "OnQueryMailBox [%d]", dpidUser );
-
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 
-	int	nClientReqCount	= 1;
 
-	if( IsValidObj( pUser ) )
-	{
+	if (!IsValidObj(pUser)) {
+		Error("CDPSrvr::OnQueryMailBox - Invalid User : %d", dpidUser);
+		return;
+	}
+
+	int	nClientReqCount = 1;
+
 		if( pUser->CheckClientReq()== false )
 		{
 			nClientReqCount	= 1;
@@ -5779,18 +5780,16 @@ void CDPSrvr::OnQueryMailBox( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 						}
 						else
 						{
-							g_dpDBClient.SendQueryMailBoxCount( pUser->m_idPlayer, pUser->GetCountClientReq() );
+							g_dpDBClient.SendQueryMailBoxCount( pUser->m_idPlayer );
 						}
 
-// 						//	BEGINTEST
-// 						Error( "OnQueryMailBox CMailBox::data [%d]", dpidUser );
 					}
 					break;
 				case CMailBox::nodata:	// 데이터가 없는 메일 박스면 트랜스 서버에 정보 요청, 상태는 읽는 중
 					{
 						if( nClientReqCount >= 2 )
 						{
-							g_dpDBClient.SendQueryMailBoxCount( pUser->m_idPlayer, pUser->GetCountClientReq() );
+							g_dpDBClient.SendQueryMailBoxCount( pUser->m_idPlayer );
 						}
 						else
 						{
@@ -5804,16 +5803,12 @@ void CDPSrvr::OnQueryMailBox( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 					{
 						if( nClientReqCount >= 2 )
 						{
-							g_dpDBClient.SendQueryMailBoxCount( pUser->m_idPlayer, pUser->GetCountClientReq() );
+							g_dpDBClient.SendQueryMailBoxCount( pUser->m_idPlayer );
 						}
-// 						//	BEGINTEST
-// 						Error( "OnQueryMailBox CMailBox::read [%d]", dpidUser );
 					}
 					break;
 				default:
 					{
-// 						//	BEGINTEST
-// 						Error( "OnQueryMailBox default [%d]", dpidUser );
 					}
 					break;
 			}
@@ -5826,14 +5821,10 @@ void CDPSrvr::OnQueryMailBox( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lp
 			}
 			else
 			{
-				pUser->SendCheckMailBoxReq( FALSE );
+				pUser->SendCheckMailBoxReq( false );
 			}
 		}
-	}
-	else
-	{
-		Error( "CDPSrvr::OnQueryMailBox - Invalid User : %d", dpidUser );
-	}
+
 }
 
 void CDPSrvr::OnGCApp( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )

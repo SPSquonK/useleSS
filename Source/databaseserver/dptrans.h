@@ -60,7 +60,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	void	OnQueryMailBoxCount( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnQueryMailBoxReq( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	void	SendMailBoxReq( u_long idReceiver, DPID dpid, BOOL bHaveMailBox, CMailBox* pMailBox );
+	void	SendMailBoxReq( u_long idReceiver, DPID dpid, CMailBox* pMailBox );
 	//////////////////////////////////////////////////////////////////////////
 
 

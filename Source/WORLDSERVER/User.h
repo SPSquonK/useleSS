@@ -271,7 +271,7 @@ public:
 
 
 	//////////////////////////////////////////////////////////////////////////
-    void			SendCheckMailBoxReq( BOOL bCheckTransMailBox );
+    void			SendCheckMailBoxReq( bool bCheckTransMailBox );
 	void			CheckTransMailBox( BOOL bCheckTransMailBox );
 	BOOL			GetCheckTransMailBox();
 	bool			CheckClientReq();
