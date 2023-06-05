@@ -63,13 +63,16 @@ private:
 class CPost;
 #endif	// __DBSERVER
 
-class CMailBox : public std::vector<CMail *>
-{
+class CMailBox final {
 public:
 	static constexpr size_t SoftMaxMail = 50;
+	std::vector<CMail *> m_mails;
 
-	explicit CMailBox( u_long idReceiver = 0 );
-	virtual	~CMailBox();
+	explicit CMailBox(u_long idReceiver = 0) : m_idReceiver(idReceiver) {}
+	CMailBox(const CMailBox &) = delete;
+	CMailBox & operator=(const CMailBox &) = delete;
+	~CMailBox();
+
 	u_long	AddMail( CMail* pMail );
 	void	Serialize( CAr & ar, BOOL bData = TRUE );
 
@@ -86,7 +89,7 @@ public:
 	BOOL	RemoveMailGold( u_long nMail );
 	BOOL	ReadMail( u_long nMail );
 	[[nodiscard]] bool IsStampedMailExists() const;
-	void	Clear( void );
+	void	Clear();
 #ifdef __DBSERVER
 	void	SetPost( CPost* pPost )	{	m_pPost	= pPost;	}
 	CPost*	GetPost( void )	{	return m_pPost;	}
@@ -94,7 +97,20 @@ public:
 
 #ifdef __CLIENT
 	static	CMailBox*	GetInstance( void );
+
+	[[nodiscard]] CMail * operator[](int nIndex) {
+		if (nIndex < 0 || std::cmp_greater_equal(nIndex, m_mails.size())) {
+			return nullptr;
+		}
+
+		return m_mails[nIndex];
+	}
+
+	[[nodiscard]] int GetSize() const {
+		return static_cast<int>(m_mails.size());
+	}
 #endif
+
 private:
 	std::vector<CMail *>::iterator Find( u_long nMail );
 #ifdef __DBSERVER
@@ -104,8 +120,8 @@ private:
 public:
 	u_long	m_idReceiver;
 #ifdef __WORLDSERVER
-	enum	{	nodata	= 0,	read	= 1,	data	= 2	};
-	int		m_nStatus;
+	enum class BoxStatus { nodata = 0, read = 1, data = 2 };
+	BoxStatus m_nStatus = BoxStatus::nodata;
 #endif	// __WORLDSERVER
 };
 

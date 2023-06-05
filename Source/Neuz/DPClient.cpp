@@ -13025,178 +13025,56 @@ void CDPClient::SendQueryPostMail( BYTE nItem, short nItemNum, char* lpszReceive
 	ar.WriteString( lpszTitle );
 	ar.WriteString( lpszText );
 	SEND( ar, this, DPID_SERVERPLAYER );
-
-	//MAIL LOG
-	Error( "SendQueryPostMail nItem:%d, nItemNum:%d, receiver:%s, nGold:%d, Title:%s, Text:%s ", nItem, nItemNum, lpszReceiver, nGold, lpszTitle, lpszText );
 }
 
-void CDPClient::SendQueryRemoveMail( u_long nMail )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERYREMOVEMAIL, DPID_UNKNOWN );
-	ar << nMail;
-	SEND( ar, this, DPID_SERVERPLAYER );
-
-	//MAIL LOG
-	Error( "SendQueryRemoveMail nMail:%d", nMail );
+void CDPClient::SendQueryRemoveMail(u_long nMail) {
+	SendPacket<PACKETTYPE_QUERYREMOVEMAIL, u_long>(nMail);
 }
 
-void CDPClient::SendQueryGetMailItem( u_long nMail )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERYGETMAILITEM, DPID_UNKNOWN );
-	ar << nMail;
-	SEND( ar, this, DPID_SERVERPLAYER );
-
-	//MAIL LOG
-	Error( "SendQueryGetMailItem nMail:%d", nMail );
+void CDPClient::SendQueryGetMailItem(u_long nMail) {
+	SendPacket<PACKETTYPE_QUERYGETMAILITEM, u_long>(nMail);
 }
 
-void CDPClient::SendQueryGetMailGold( u_long nMail )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERYGETMAILGOLD, DPID_UNKNOWN );
-	ar << nMail;
-	SEND( ar, this, DPID_SERVERPLAYER );
-
-	//MAIL LOG
-	Error( "SendQueryGetMailGold nMail:%d", nMail );
+void CDPClient::SendQueryGetMailGold(u_long nMail) {
+	SendPacket<PACKETTYPE_QUERYGETMAILGOLD, u_long>(nMail);
 }
 
-void CDPClient::SendQueryReadMail( u_long nMail )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_READMAIL, DPID_UNKNOWN );
-	ar << nMail;
-	SEND( ar, this, DPID_SERVERPLAYER );
-
-	//MAIL LOG
-	Error( "SendQueryReadMail nMail:%d", nMail );
+void CDPClient::SendQueryReadMail(u_long nMail) {
+	SendPacket<PACKETTYPE_READMAIL, u_long>(nMail);
 }
 
-void CDPClient::SendQueryMailBox( void )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERYMAILBOX, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
-
-	//MAIL LOG
-	Error( "SendQueryMailBox" );
+void CDPClient::SendQueryMailBox() {
+	SendPacket<PACKETTYPE_QUERYMAILBOX>();
 }
 
-void CDPClient::OnPostMail( CAr & ar )
-{
-	CMail* pMail	= new CMail;
-	pMail->Serialize( ar );
-
-	u_long nMail	= CMailBox::GetInstance()->AddMail( pMail );
-
-	// 메일 로그
-	Error( _T( "CDPClient::OnPostMail- mail:%d, title:%s, text:%s, item:%s, num:%d" ), nMail, pMail->m_szTitle, pMail->m_szText, pMail->m_pItemElem->GetProp()->szName, pMail->m_pItemElem->m_nItemNum );
-
-#ifdef _DEBUG
-	char lpOutputString[100]	= { 0, };
-	if( pMail->m_pItemElem )
-		sprintf( lpOutputString, "CDPClient::OnPostMail- mail:%d, title:%s, text:%s, item:%s, num:%d", nMail, pMail->m_szTitle, pMail->m_szText, pMail->m_pItemElem->GetProp()->szName, pMail->m_pItemElem->m_nItemNum );
-	else
-		sprintf( lpOutputString, "CDPClient::OnPostMail- mail:%d, title:%s, text:%s, item:n/a", nMail, pMail->m_szTitle, pMail->m_szText );
-//	OutputDebugString( lpOutputString );
-	g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );
-#endif	// _DEBUG
+void CDPClient::OnPostMail(CAr & ar) {
+	CMail * pMail = new CMail;
+	pMail->Serialize(ar);
+	CMailBox::GetInstance()->AddMail(pMail);
 }
 
-void CDPClient::OnRemoveMail( CAr & ar )
-{
-	u_long nMail;
-	int nType;
-	ar >> nMail >> nType;
+void CDPClient::OnRemoveMail(CAr & ar) {
+	const auto [nMail, nType] = ar.Extract<u_long, int>();
 
-	// 메일 로그
-	Error( _T( "CDPClient::OnRemoveMail- mail:%d, type:%d" ), nMail, nType );
-
-	CMailBox* pMailBox	= CMailBox::GetInstance();
-	switch( nType )
-	{
-		case CMail::mail:
-			{
-				BOOL bResult	= pMailBox->RemoveMail( nMail );
-#ifdef _DEBUG
-				char lpOutputString[100]	= { 0, };
-				sprintf( lpOutputString, "CDPClient::OnRemoveMail:mail- mail:%d, result:%d", nMail, bResult );
-				//	OutputDebugString( lpOutputString );
-				g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );
-#endif	// _DEBUG
-				break;
-			}
-		case CMail::item:
-			{
-				BOOL bResult	= pMailBox->RemoveMailItem( nMail );
-#ifdef _DEBUG
-				char lpOutputString[100]	= { 0, };
-				sprintf( lpOutputString, "CDPClient::OnRemoveMail:item- mail:%d, result:%d", nMail, bResult );
-				g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );
-#endif	// _DEBUG
-				break;
-			}
-		case CMail::gold:
-			{
-				BOOL bResult	= pMailBox->RemoveMailGold( nMail );
-#ifdef _DEBUG
-				char lpOutputString[100]	= { 0, };
-				sprintf( lpOutputString, "CDPClient::OnRemoveMail:gold- mail:%d, result:%d", nMail, bResult );
-				g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );
-#endif	// _DEBUG
-				break;
-			}
-		case CMail::read:
-			{
-				BOOL bResult	= pMailBox->ReadMail( nMail );
-#ifdef _DEBUG
-				char lpOutputString[100]	= { 0, };
-				sprintf( lpOutputString, "CDPClient::OnRemoveMail:read- mail:%d, result:%d", nMail, bResult );
-				g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );
-#endif	// _DEBUG
-				break;
-			}
-		default:
-			break;
+	CMailBox * pMailBox = CMailBox::GetInstance();
+	switch (nType) {
+		case CMail::mail: pMailBox->RemoveMail(nMail);     break;
+		case CMail::item: pMailBox->RemoveMailItem(nMail); break;
+		case CMail::gold: pMailBox->RemoveMailGold(nMail); break;
+		case CMail::read: pMailBox->ReadMail(nMail);       break;
 	}
 }
 
-void CDPClient::OnMailBox( CAr & ar )
-{
-	//MAIL LOG
-	Error( "BEGIN OnMailBox" );
+void CDPClient::OnMailBox( CAr & ar ) {
+	CMailBox::GetInstance()->Serialize(ar);
 
-	CMailBox* pMailBox	= CMailBox::GetInstance();
-	pMailBox->Serialize( ar );
-	CWndPost* pWndPost	= (CWndPost*)g_WndMng.GetWndBase( APP_POST );
-	if( pWndPost )
-	{
+	if (CWndPost * pWndPost = g_WndMng.GetWndBase<CWndPost>(APP_POST)) {
 		pWndPost->EnableWindow( TRUE );
 		pWndPost->m_PostTabReceive.UpdateScroll();
 		pWndPost->CloseMailRequestingBox();
 
-		//gmpbigsun
 		g_WndMng.m_bWaitRequestMail = FALSE;
 	}
-
-
-	//MAIL LOG
-	Error( "END OnMailBox" );
-/*
-#ifdef _DEBUG
-//	OutputDebugString( "CDPClient::OnMailBox" );
-	char lpOutputString[256]	= { 0, };
-	sprintf( lpOutputString, "CDPClient::OnMailBox- size:%d", pMailBox->size() );
-	g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );	
-
-	for( vector<CMail*>::iterator i = pMailBox->begin(); i != pMailBox->end(); ++i )
-	{
-		CMail* pMail	= *i;
-		if( pMail->m_pItemElem )
-			sprintf( lpOutputString, "CDPClient::OnMailBox- mail:%d, title:%s, text:%s, item:%s, num:%d", pMail->m_nMail, pMail->m_szTitle, pMail->m_szText, pMail->m_pItemElem->GetProp()->szName, pMail->m_pItemElem->m_nItemNum );
-		else
-			sprintf( lpOutputString, "CDPClient::OnMailBox- mail:%d, title:%s, text:%s, item:n/a", pMail->m_nMail, pMail->m_szTitle, pMail->m_szText );
-		g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );	
-	}
-#endif	// _DEBUG
-*/
 }
 
 void CDPClient::OnMailBoxReq( CAr & ar )
@@ -13220,11 +13098,7 @@ void CDPClient::OnMailBoxReq( CAr & ar )
 			pWndPost->EnableWindow( TRUE );			//메일이 없으면 활성화 
 		}
 
-		CMailBox* pMailBox = CMailBox::GetInstance();
-		if( pMailBox )
-		{
-			pMailBox->Clear();
-		}
+		CMailBox::GetInstance()->Clear();
 
 		// 메일이 없기 때문에 받은 목록을 초기화
 		if( pWndPost )
@@ -13233,11 +13107,12 @@ void CDPClient::OnMailBoxReq( CAr & ar )
 		}
 
 		// 사용자의 마지막 메일 정보 저장해 놓은 파일 삭제
-		CString strFileName = _T( "" );
 		if( g_pPlayer == NULL )
 		{
 			return;
 		}
+
+		CString strFileName = _T("");
 		strFileName.Format( "%s_MailData.Temp", g_pPlayer->GetName() );
 		if( DeleteFile( strFileName ) == FALSE)
 		{

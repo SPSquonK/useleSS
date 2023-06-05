@@ -132,14 +132,6 @@ void CMail::Serialize( CAr & ar, BOOL bData )
 	}
 }
 
-CMailBox::CMailBox( u_long idReceiver )
-{
-	m_idReceiver	= idReceiver;
-#ifdef __WORLDSERVER
-	m_nStatus	= CMailBox::nodata;
-#endif	// __WORLDSERVER
-}
-
 CMailBox::~CMailBox()
 {
 	Clear();
@@ -153,17 +145,15 @@ CMailBox*	CMailBox::GetInstance( void )
 }
 #endif
 
-void CMailBox::Clear( void )
-{
-	for( auto i = begin(); i != end(); ++i )
-	{
+void CMailBox::Clear() {
+	for (CMail * pMail : m_mails) {
 #ifdef __DBSERVER
-		if( m_pPost )
-			m_pPost->m_mapMail4Proc.erase( (*i)->m_nMail );
+		if (m_pPost)
+			m_pPost->m_mapMail4Proc.erase(pMail->m_nMail);
 #endif	// __DBSERVER
-		SAFE_DELETE( *i );
+		SAFE_DELETE(pMail);
 	}
-	clear();
+	m_mails.clear();
 }
 
 u_long CMailBox::AddMail( CMail* pMail )
@@ -176,7 +166,7 @@ u_long CMailBox::AddMail( CMail* pMail )
 	// 康: POST: m_nMail이 같은 메일이 이미 없는지 확인해야 한다.
 	// 이미 있다면 별도의 예외 처리를 하자.
 
-	push_back( pMail );
+	m_mails.push_back( pMail );
 #ifdef __DBSERVER
 	pMail->SetMailBox( this );
 	if( m_pPost )
@@ -193,9 +183,9 @@ u_long CMailBox::AddMail( CMail* pMail )
 
 #ifdef __DBSERVER
 void CMailBox::WriteMailContent(CAr & ar) {
-	ar << static_cast<std::uint32_t>(size());
+	ar << static_cast<std::uint32_t>(m_mails.size());
 
-	for (CMail * pMail : *this) {
+	for (CMail * pMail : m_mails) {
 		ar << pMail->m_nMail;
 		pMail->Serialize(ar, TRUE);
 	}
@@ -216,12 +206,12 @@ void CMailBox::ReadMailContent(CAr & ar) {
 			CMail * pNewMail = new CMail();
 			pNewMail->Clear();
 			pNewMail->Serialize(ar, TRUE);
-			push_back(pNewMail);
+			m_mails.push_back(pNewMail);
 			Error("CMailBox::ReadMailContent - Create NewMail. nMail : %d, Sender : %07d", nMail, pNewMail->m_idSender);
 		}
 	}
 
-	m_nStatus	= CMailBox::data;
+	m_nStatus	= CMailBox::BoxStatus::data;
 }
 #endif	// __WORLDSERVER
 
@@ -230,10 +220,8 @@ void CMailBox::Serialize( CAr & ar, BOOL bData )
 	if( ar.IsStoring() )
 	{
 		ar << m_idReceiver;
-		ar << (int)size();
-		for( auto i = begin(); i != end(); ++i )
-		{
-			CMail* pMail	= *i;
+		ar << (std::uint32_t) m_mails.size();
+		for (CMail * pMail : m_mails) {
 			pMail->Serialize( ar, bData );
 		}
 	}
@@ -241,14 +229,14 @@ void CMailBox::Serialize( CAr & ar, BOOL bData )
 	{
 		Clear();
 		ar >> m_idReceiver;
-		int nSize;
+		std::uint32_t nSize;
 		ar >> nSize;
 
 #ifdef __CLIENT
 		if( g_WndMng.m_bWaitRequestMail && nSize <= 0 )
 			g_DPlay.SendQueryMailBox();
 #endif
-		for( int i = 0; i < nSize; i++ )
+		for(std::uint32_t i = 0; i < nSize; i++ )
 		{
 			CMail* pMail	= new CMail;
 			pMail->Serialize( ar, bData );
@@ -257,35 +245,35 @@ void CMailBox::Serialize( CAr & ar, BOOL bData )
 	}
 }
 
-std::vector<CMail *>::iterator CMailBox::Find( u_long nMail ) {
-	return std::find_if(begin(), end(),
+std::vector<CMail *>::iterator CMailBox::Find(const u_long nMail) {
+	return std::find_if(m_mails.begin(), m_mails.end(),
 		[nMail](CMail * pMail) { return pMail->m_nMail == nMail; }
 	);
 }
 
-CMail* CMailBox::GetMail( u_long nMail )
-{
-	auto i = Find( nMail );
-	if( i != end() )
+CMail* CMailBox::GetMail(const u_long nMail) {
+	const auto i = Find( nMail );
+	if (i != m_mails.end()) {
 		return *i;
+	}
 
 #ifdef __CLIENT
 	Error( _T( "CMailBox::GetMail failed!!!!" ) );
 #endif
-	return NULL;
+	return nullptr;
 }
 
 BOOL CMailBox::RemoveMail( u_long nMail )
 {
 	auto i = Find( nMail );
-	if( i != end() )
+	if( i != m_mails.end() )
 	{
 #ifdef __DBSERVER
 		if( m_pPost )
 			m_pPost->m_mapMail4Proc.erase( (*i)->m_nMail );
 #endif	// __DBSERVER
 		SAFE_DELETE( *i );
-		erase( i );
+		m_mails.erase( i );
 
 		return TRUE;
 	}
@@ -341,7 +329,7 @@ BOOL CMailBox::ReadMail( u_long nMail )
 
 bool CMailBox::IsStampedMailExists() const {
 	return std::any_of(
-		begin(), end(),
+		m_mails.begin(), m_mails.end(),
 		[](CMail * pMail) { return pMail->m_byRead == FALSE; }
 	);
 }

@@ -5522,7 +5522,7 @@ void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 				return;
 			}
 			CMailBox* pMailBox	= CPost::GetInstance()->GetMailBox( idReceiver );
-			if( pMailBox && pMailBox->size() >= CMailBox::SoftMaxMail )
+			if( pMailBox && pMailBox->m_mails.size() >= CMailBox::SoftMaxMail )
 			{
 				pUser->AddDefinedText( TID_GAME_MAILBOX_FULL, "%s", lpszReceiver );
 				return;
@@ -5746,84 +5746,44 @@ void CDPSrvr::OnQueryReadMail( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE l
 	}
 }
 
-void CDPSrvr::OnQueryMailBox( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE , u_long  )
-{
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-
-
-	if (!IsValidObj(pUser)) {
-		Error("CDPSrvr::OnQueryMailBox - Invalid User : %d", dpidUser);
-		return;
+void CDPSrvr::OnQueryMailBox( CAr & ar, CUser * pUser) {
+	int	nClientReqCount;
+	if (pUser->CheckClientReq() == false) {
+		nClientReqCount = 1;
+	} else {
+		nClientReqCount = pUser->GetCountClientReq();
 	}
 
-	int	nClientReqCount = 1;
-
-		if( pUser->CheckClientReq()== false )
-		{
-			nClientReqCount	= 1;
-		}
-		else
-		{
-			nClientReqCount	= pUser->GetCountClientReq();
-		}
-
-		CMailBox* pMailBox	= CPost::GetInstance()->GetMailBox( pUser->m_idPlayer );
-		if( pMailBox )
-		{
-			switch( pMailBox->m_nStatus )
-			{
-				case CMailBox::data:	// 데이터가 들어있는 메일 박스면 바로 사용자 전송
-					{
-						if( nClientReqCount <= 1 )
-						{
-							pUser->AddMailBox( pMailBox );
-						}
-						else
-						{
-							g_dpDBClient.SendQueryMailBoxCount( pUser->m_idPlayer );
-						}
-
-					}
+	CMailBox* pMailBox	= CPost::GetInstance()->GetMailBox(pUser->m_idPlayer);
+	if (pMailBox) {
+		if (nClientReqCount >= 2) {
+			g_dpDBClient.SendQueryMailBoxCount(pUser->m_idPlayer);
+		} else {
+			switch (pMailBox->m_nStatus) {
+				case CMailBox::BoxStatus::nodata:
+					g_dpDBClient.SendQueryMailBox(pUser->m_idPlayer);
 					break;
-				case CMailBox::nodata:	// 데이터가 없는 메일 박스면 트랜스 서버에 정보 요청, 상태는 읽는 중
-					{
-						if( nClientReqCount >= 2 )
-						{
-							g_dpDBClient.SendQueryMailBoxCount( pUser->m_idPlayer );
-						}
-						else
-						{
-							g_dpDBClient.SendQueryMailBox( pUser->m_idPlayer );
-						}
-
-						pMailBox->m_nStatus		= CMailBox::read;
-					}
+				case CMailBox::BoxStatus::read:
+					// Currently waiting for an answer from DBServer, do nothing
 					break;
-				case CMailBox::read:	// 데이터를 요청하고 대기하는 상태면 무시
-					{
-						if( nClientReqCount >= 2 )
-						{
-							g_dpDBClient.SendQueryMailBoxCount( pUser->m_idPlayer );
-						}
-					}
-					break;
-				default:
-					{
-					}
+				case CMailBox::BoxStatus::data:
+					pUser->AddMailBox(pMailBox);
 					break;
 			}
 		}
-		else // 월드서버에 유저의 메일박스가 없다. 트랜스에 요청
-		{
-			if( pUser->GetCheckTransMailBox() == FALSE )
-			{
-				g_dpDBClient.SendQueryMailBoxReq( pUser->m_idPlayer );
-			}
-			else
-			{
-				pUser->SendCheckMailBoxReq( false );
-			}
+
+		if (pMailBox->m_nStatus == CMailBox::BoxStatus::nodata) {
+			pMailBox->m_nStatus = CMailBox::BoxStatus::read;
 		}
+
+	} else {
+		// The user's mailbox does not exist in the world server. request to trans
+		if (pUser->GetCheckTransMailBox() == FALSE) {
+			g_dpDBClient.SendQueryMailBoxReq(pUser->m_idPlayer);
+		} else {
+			pUser->SendCheckMailBoxReq(false);
+		}
+	}
 
 }
 

@@ -6662,7 +6662,7 @@ int CWndPostReceive::GetSelectIndex( const CPoint& point )
 void CWndPostReceive::UpdateScroll()
 {
 	CMailBox* pMailBox	= CMailBox::GetInstance();
-	m_nMax = pMailBox->size();
+	m_nMax = pMailBox->GetSize();
 	
 	if( m_nMax > 0 )
 	{
@@ -6719,7 +6719,7 @@ void CWndPostReceive::OnDraw( C2DRender* p2DRender )
 		if( i >= m_nMax )	
 			break;
 
-		if( (int)( mailbox.size() ) <= i )
+		if( mailbox.GetSize() <= i )
 			continue;
 			
 		if( mailbox[i] == NULL ) 
@@ -6868,7 +6868,7 @@ void CWndPostReceive::OnMouseWndSurface( CPoint point )
 		if( i >= m_nMax )	
 			break;
 
-		if( (int)( mailbox.size() ) <= i )
+		if( mailbox.GetSize() <= i )
 			continue;
 			
 		if( mailbox[i] == NULL ) 
