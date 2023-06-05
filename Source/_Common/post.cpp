@@ -110,10 +110,6 @@ CMailBox*	CMailBox::GetInstance( void )
 
 void CMailBox::Clear() {
 	for (CMail * pMail : m_mails) {
-#ifdef __DBSERVER
-		if (m_pPost)
-			m_pPost->m_mapMail4Proc.erase(pMail->m_nMail);
-#endif	// __DBSERVER
 		SAFE_DELETE(pMail);
 	}
 	m_mails.clear();
@@ -130,14 +126,6 @@ u_long CMailBox::AddMail( CMail* pMail )
 	// 이미 있다면 별도의 예외 처리를 하자.
 
 	m_mails.push_back( pMail );
-#ifdef __DBSERVER
-	if (m_pPost) {
-		const bool bResult = m_pPost->m_mapMail4Proc.emplace(pMail->m_nMail, std::make_pair(this, pMail)).second;
-		if (!bResult) {
-			Error("AddMail Failed - nMail : %d, idSender : %d", pMail->m_nMail, pMail->m_idSender);
-		}
-	}
-#endif	// __DBSERVER
 	return pMail->m_nMail;
 }
 
@@ -229,10 +217,6 @@ BOOL CMailBox::RemoveMail( u_long nMail )
 	auto i = Find( nMail );
 	if( i != m_mails.end() )
 	{
-#ifdef __DBSERVER
-		if( m_pPost )
-			m_pPost->m_mapMail4Proc.erase( (*i)->m_nMail );
-#endif	// __DBSERVER
 		SAFE_DELETE( *i );
 		m_mails.erase( i );
 
@@ -297,15 +281,8 @@ bool CMailBox::IsStampedMailExists() const {
 
 #if defined(__DBSERVER) || defined(__WORLDSERVER)
 
-void CPost::Clear( void )
-{
+void CPost::Clear() {
 	m_mapMailBox.clear();
-#ifdef __DBSERVER
-#ifdef _DEBUG
-	TRACE( "CPost::m_mapMail4Proc.size() = %d\n", m_mapMail4Proc.size() );
-#endif	// _DEBUG
-	m_mapMail4Proc.clear();
-#endif	// __DBSERVER
 }
 
 u_long CPost::AddMail( u_long idReceiver, CMail* pMail )
@@ -335,11 +312,7 @@ CMailBox* CPost::GetMailBox( u_long idReceiver )
 	return NULL;
 }
 
-BOOL CPost::AddMailBox( CMailBox* pMailBox )
-{
-#ifdef __DBSERVER
-	pMailBox->SetPost( this );
-#endif	// __DBSERVER
+BOOL CPost::AddMailBox(CMailBox * pMailBox) {
 	return m_mapMailBox.emplace(pMailBox->m_idReceiver, pMailBox).second;
 }
 
@@ -405,9 +378,11 @@ void CPost::Process( void )
 
 	std::vector<std::pair<CMailBox *, CMail *>> lpsMail;
 
-	for (const auto & pair : m_mapMail4Proc | std::views::values) {
-		if (pair.second->m_tmCreate < t.GetTime()) {
-			lpsMail.emplace_back(pair);
+	for (const auto & [_, pMailBox] : m_mapMailBox) {
+		for (CMail * pMail : pMailBox->m_mails) {
+			if (pMail->m_tmCreate < t.GetTime()) {
+				lpsMail.emplace_back(pMailBox.get(), pMail);
+			}
 		}
 	}
 

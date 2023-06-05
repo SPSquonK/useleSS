@@ -73,9 +73,6 @@ public:
 	BOOL	ReadMail( u_long nMail );
 	[[nodiscard]] bool IsStampedMailExists() const;
 	void	Clear();
-#ifdef __DBSERVER
-	void	SetPost( CPost* pPost )	{	m_pPost	= pPost;	}
-#endif	// __DBSERVER
 
 #ifdef __CLIENT
 	static	CMailBox*	GetInstance( void );
@@ -95,9 +92,6 @@ public:
 
 private:
 	std::vector<CMail *>::iterator Find( u_long nMail );
-#ifdef __DBSERVER
-	CPost*	m_pPost = nullptr;
-#endif	// __DBSERVER
 
 public:
 	u_long	m_idReceiver;
@@ -116,7 +110,6 @@ public:
 	CMailBox*	GetMailBox( u_long idReceiver );
 	BOOL	AddMailBox( CMailBox* pMailBox );
 #ifdef __DBSERVER
-	std::map< u_long, std::pair<CMailBox *, CMail *>> m_mapMail4Proc;
 	CMclCritSec	m_csPost;
 	void	Process();
 #endif	// __DBSERVER
