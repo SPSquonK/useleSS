@@ -432,7 +432,7 @@ typedef	struct	_CONV_RESULT_ITEM
 }	CONV_RESULT_ITEM;
 
 class CGuildMng;
-class CMail;
+class CMailBox; class CMail;
 
 typedef	std::map<DWORD, CONV_RESULT_ITEM>	MDC;
 
@@ -565,7 +565,7 @@ public:
 	BOOL	LoadPost( void );
 	std::unique_ptr<CItemElem> GetItemFromMail( const CQuery* pQuery );
 
-	void	RemoveMail(std::list<CMail*> & lspMail );
+	void	RemoveMail(std::span<const std::pair<CMailBox *, CMail *>> lspMail);
 
 	CQuery*	m_apQuery[MAX_QUERY_RESERVED];
 	BOOL	QueryRemoveGuildBankTbl( void );

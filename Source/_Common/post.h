@@ -3,42 +3,30 @@
 #include <map>
 #include <list>
 
-//	mulcom	BEGIN100420	메일 관련 사이즈 변경.
-//#define	MAX_MAILTITLE	128
+
 #define	MAX_MAILTITLE	32
-//	mulcom	END100420	메일 관련 사이즈 변경.
 #define	MAX_MAILTEXT	256
 
-#ifdef __INTERNALSERVER
-// 내부
-#define MAX_KEEP_MAX_DAY		7   // 최대 보관일수 5일
-#define MAX_KEEP_BASIC_DAY		2   // 기본 보관일수 1일
-#else //__INTERNALSERVER
-// 정섭
 #define MAX_KEEP_MAX_DAY		15  // 최대 보관일수 15일
 #define MAX_KEEP_BASIC_DAY		7	// 기본 보관일수 7일
-#endif //__INTERNALSERVER
 
 class CItemElem;
-#ifdef __DBSERVER
 class CMailBox;
-#endif	// __DBSERVER
 
-class CMail final
-{
+class CMail final {
 public:
+	static u_long s_nMail;
+
 	CMail();
-	CMail( u_long idSender, CItemElem* pItemElem, int nGold, char* szTitle, char* szText );
+	CMail(u_long idSender, CItemElem * pItemElem, int nGold,
+		const char * szTitle, const char * szText
+	);
 	~CMail();
 
 	enum	{	mail,	item,	gold,	read	};
 
-	void	Clear( void );
-
-#ifdef __DBSERVER
-	void	SetMailBox( CMailBox* pMailBox )	{	m_pMailBox	= pMailBox;	}
-	CMailBox*	GetMailBox( void )	{	return m_pMailBox;	}
-#endif	// __DBSERVER
+	void Clear();
+	[[nodiscard]] std::pair<int, DWORD> GetMailInfo() const;
 
 	friend CAr & operator<<(CAr & ar, const CMail & mail);
 	friend CAr & operator>>(CAr & ar, CMail & mail);
@@ -51,14 +39,6 @@ public:
 	BYTE	m_byRead;
 	char	m_szTitle[MAX_MAILTITLE];
 	char	m_szText[MAX_MAILTEXT];
-
-	[[nodiscard]] std::pair<int, DWORD> GetMailInfo() const;
-
-	static	u_long	s_nMail;
-#ifdef __DBSERVER
-private:
-	CMailBox*	m_pMailBox;
-#endif	// __DBSERVER
 };
 
 #ifdef __DBSERVER
@@ -95,7 +75,6 @@ public:
 	void	Clear();
 #ifdef __DBSERVER
 	void	SetPost( CPost* pPost )	{	m_pPost	= pPost;	}
-	CPost*	GetPost( void )	{	return m_pPost;	}
 #endif	// __DBSERVER
 
 #ifdef __CLIENT
@@ -137,9 +116,9 @@ public:
 	CMailBox*	GetMailBox( u_long idReceiver );
 	BOOL	AddMailBox( CMailBox* pMailBox );
 #ifdef __DBSERVER
-	std::map< u_long, CMail* >	m_mapMail4Proc;
+	std::map< u_long, std::pair<CMailBox *, CMail *>> m_mapMail4Proc;
 	CMclCritSec	m_csPost;
-	void	Process( void );
+	void	Process();
 #endif	// __DBSERVER
 
 	static CPost * GetInstance();

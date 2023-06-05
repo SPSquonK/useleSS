@@ -4773,19 +4773,18 @@ void CDbManager::RemoveMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 		pPost->m_csPost.Leave();	// u
 }
 
-void CDbManager::RemoveMail(std::list<CMail*> & lspMail )
-{
-	char szQuery[QUERY_SIZE]	= { 0,};
-	for( auto i = lspMail.begin(); i != lspMail.end(); ++i )
-	{
-		CMail* pMail	= *i;
+void CDbManager::RemoveMail(std::span<const std::pair<CMailBox *, CMail *>> lspMail) {
+	if (lspMail.empty()) return;
+
+	char szQuery[1024] = { 0,};
+
+	for (const auto & [pMailBox, pMail] : lspMail) {
 		const int nMail = pMail->m_nMail;
-		DbQryMail( szQuery, "D1", nMail );
-		if( m_qryPostProc.Exec( szQuery ) )
-		{
-			CMailBox* pMailBox	= pMail->GetMailBox();
-			pMailBox->RemoveMail( nMail );
-			CDPTrans::GetInstance()->SendRemoveMail( pMailBox->m_idReceiver, nMail );
+		DbQryMail(szQuery, "D1", nMail);
+
+		if (m_qryPostProc.Exec(szQuery)) {
+			pMailBox->RemoveMail(nMail);
+			CDPTrans::GetInstance()->SendRemoveMail(pMailBox->m_idReceiver, nMail);
 		}
 	}
 }

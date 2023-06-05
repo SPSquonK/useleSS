@@ -21,14 +21,12 @@ CMail::CMail()
 	m_byRead	= FALSE;
 	*m_szTitle	= '\0';
 	*m_szText	= '\0';
-#ifdef __DBSERVER
-	m_pMailBox	= NULL;
-#endif	// __DBSERVER
 	m_nGold		= 0;
 }
 
-CMail::CMail( u_long idSender, CItemElem* pItemElem, int nGold, char* szTitle, char* szText )
-{
+CMail::CMail(u_long idSender, CItemElem* pItemElem, int nGold,
+	const char* szTitle, const char* szText
+) {
 	m_nMail	= 0;
 	m_idSender	= idSender;
 	m_pItemElem	= pItemElem;
@@ -36,9 +34,6 @@ CMail::CMail( u_long idSender, CItemElem* pItemElem, int nGold, char* szTitle, c
 	m_byRead	= FALSE;
 	lstrcpy( m_szTitle, szTitle );
 	lstrcpy( m_szText, szText );
-#ifdef __DBSERVER
-	m_pMailBox	= NULL;
-#endif	// __DBSERVER
 	m_nGold		= 0;
 }
 
@@ -136,13 +131,10 @@ u_long CMailBox::AddMail( CMail* pMail )
 
 	m_mails.push_back( pMail );
 #ifdef __DBSERVER
-	pMail->SetMailBox( this );
-	if( m_pPost )
-	{
-		bool bResult	= m_pPost->m_mapMail4Proc.emplace(pMail->m_nMail, pMail).second;
-		if( bResult == FALSE )
-		{
-			Error( "AddMail Failed - nMail : %d, idSender : %d", pMail->m_nMail, pMail->m_idSender );
+	if (m_pPost) {
+		const bool bResult = m_pPost->m_mapMail4Proc.emplace(pMail->m_nMail, std::make_pair(this, pMail)).second;
+		if (!bResult) {
+			Error("AddMail Failed - nMail : %d, idSender : %d", pMail->m_nMail, pMail->m_idSender);
 		}
 	}
 #endif	// __DBSERVER
@@ -411,17 +403,15 @@ void CPost::Process( void )
 	CMclAutoLock	Lock( m_csPost );
 	CTime t	= CTime::GetCurrentTime() - CTimeSpan( MAX_KEEP_MAX_DAY, 0, 0, 0 );
 
-	std::list<CMail*>	lspMail;
-	for( auto i = m_mapMail4Proc.begin(); i != m_mapMail4Proc.end(); ++i )
-	{
-		CMail* pMail	= i->second;
-		if( pMail->m_tmCreate < t.GetTime() )
-			lspMail.push_back( pMail );
+	std::vector<std::pair<CMailBox *, CMail *>> lpsMail;
+
+	for (const auto & pair : m_mapMail4Proc | std::views::values) {
+		if (pair.second->m_tmCreate < t.GetTime()) {
+			lpsMail.emplace_back(pair);
+		}
 	}
 
-	g_DbManager.RemoveMail( lspMail );
-
-	lspMail.clear();
+	g_DbManager.RemoveMail(lpsMail);
 }
 #endif	// __DBSERVER
 
