@@ -2285,7 +2285,7 @@ void CDPDatabaseClient::OnRemoveMail( CAr & ar, DPID, DPID )
 		if( IsValidObj( pUser ) )
 		{
 			pUser->AddRemoveMail( nMail, CMail::mail );
-			if( pMailBox->IsStampedMailExists() == FALSE && pUser->IsMode( MODE_MAILBOX ) )
+			if( !pMailBox->IsStampedMailExists() && pUser->IsMode( MODE_MAILBOX ) )
 			{
 				pUser->SetNotMode( MODE_MAILBOX );
 				g_UserMng.AddModifyMode( pUser );
@@ -2386,7 +2386,7 @@ void CDPDatabaseClient::OnReadMail( CAr & ar, DPID, DPID )
 		{
 			pUser->ResetCheckClientReq();
 			pUser->AddRemoveMail( nMail, CMail::read );
-			if( pMailBox->IsStampedMailExists() == FALSE && pUser->IsMode( MODE_MAILBOX ) )
+			if( !pMailBox->IsStampedMailExists() && pUser->IsMode( MODE_MAILBOX ) )
 			{
 				pUser->SetNotMode( MODE_MAILBOX );
 				g_UserMng.AddModifyMode( pUser );

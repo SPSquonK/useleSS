@@ -23,17 +23,18 @@ class CItemElem;
 #ifdef __DBSERVER
 class CMailBox;
 #endif	// __DBSERVER
-class CMail
+
+class CMail final
 {
 public:
 	CMail();
 	CMail( u_long idSender, CItemElem* pItemElem, int nGold, char* szTitle, char* szText );
-	virtual	~CMail();
+	~CMail();
 
 	enum	{	mail,	item,	gold,	read	};
 
 	void	Clear( void );
-	DWORD	GetCost( void );
+
 #ifdef __DBSERVER
 	void	SetMailBox( CMailBox* pMailBox )	{	m_pMailBox	= pMailBox;	}
 	CMailBox*	GetMailBox( void )	{	return m_pMailBox;	}
@@ -49,7 +50,7 @@ public:
 	char	m_szTitle[MAX_MAILTITLE];
 	char	m_szText[MAX_MAILTEXT];
 
-	void	GetMailInfo( int* nKeepingDay, DWORD* dwKeepingTime = NULL );
+	[[nodiscard]] std::pair<int, DWORD> GetMailInfo() const;
 
 	static	u_long	s_nMail;
 #ifdef __DBSERVER
@@ -62,18 +63,12 @@ private:
 class CPost;
 #endif	// __DBSERVER
 
-
-typedef	std::vector<CMail*>			MailVector;
-typedef MailVector::iterator		MailVectorItr;
-
-
-class CMailBox : public MailVector
+class CMailBox : public std::vector<CMail *>
 {
 public:
 	static constexpr size_t SoftMaxMail = 50;
 
-	CMailBox();
-	CMailBox( u_long idReceiver );
+	explicit CMailBox( u_long idReceiver = 0 );
 	virtual	~CMailBox();
 	u_long	AddMail( CMail* pMail );
 	void	Serialize( CAr & ar, BOOL bData = TRUE );
@@ -98,15 +93,18 @@ public:
 	BOOL	RemoveMailItem( u_long nMail );
 	BOOL	RemoveMailGold( u_long nMail );
 	BOOL	ReadMail( u_long nMail );
-	BOOL	IsStampedMailExists( void );
+	[[nodiscard]] bool IsStampedMailExists() const;
 	void	Clear( void );
 #ifdef __DBSERVER
 	void	SetPost( CPost* pPost )	{	m_pPost	= pPost;	}
 	CPost*	GetPost( void )	{	return m_pPost;	}
 #endif	// __DBSERVER
+
+#ifdef __CLIENT
 	static	CMailBox*	GetInstance( void );
+#endif
 private:
-	MailVectorItr Find( u_long nMail );
+	std::vector<CMail *>::iterator Find( u_long nMail );
 #ifdef __DBSERVER
 	CPost*	m_pPost;
 #endif	// __DBSERVER
@@ -119,6 +117,7 @@ public:
 #endif	// __WORLDSERVER
 };
 
+#if defined(__DBSERVER) || defined(__WORLDSERVER)
 class CPost final {
 public:
 	void Clear();
@@ -138,3 +137,6 @@ public:
 private:
 	std::map<u_long, std::unique_ptr<CMailBox>> m_mapMailBox;
 };
+
+#endif
+

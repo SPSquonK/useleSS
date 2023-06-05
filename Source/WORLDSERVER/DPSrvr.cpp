@@ -5665,9 +5665,7 @@ void CDPSrvr::OnQueryGetMailItem( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 			if( pMail && pMail->m_pItemElem )
 			{
 				// 기본 보관일수 지났는지를 검사하여 보관료 부과한다.
-				int nDay = 0;
-				DWORD dwTime = 0;
-				pMail->GetMailInfo( &nDay, &dwTime );
+				const auto [nDay, dwTime] = pMail->GetMailInfo();
 
 				// 기본 보관일수가 지났다!!!
 				if( (MAX_KEEP_MAX_DAY*24) - dwTime > (MAX_KEEP_BASIC_DAY*24) )

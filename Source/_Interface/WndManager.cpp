@@ -783,7 +783,7 @@ void CWndMgr::OpenTitle( BOOL bFirstTime )
 		g_GuildWarMng.Clear();
 		g_GuildMng.Clear();
 		g_GuildCombatMng.GuildCombatClear( 99 );
-		CPost::GetInstance()->Clear();
+		CMailBox::GetInstance()->Clear();
 		CCoupleHelper::Instance()->Clear();
 		CRainbowRace::GetInstance()->m_dwRemainTime = 0;
 		CPlayerDataCenter::GetInstance()->Clear();

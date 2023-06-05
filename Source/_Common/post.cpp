@@ -52,37 +52,16 @@ void CMail::Clear( void )
 	SAFE_DELETE( m_pItemElem );
 }
 
-DWORD CMail::GetCost( void )
-{
-	return 0;
-}
-
-void CMail::GetMailInfo( int* nKeepingDay, DWORD* dwKeepingTime )
-{
-	COleDateTime BaseTime;
-	COleDateTime CurrentTime;
+std::pair<int, DWORD> CMail::GetMailInfo() const {
+	const CTime BaseTime = m_tmCreate;
+	const CTime CurrentTime = CTime::GetCurrentTime();
 	
-	CTime cBase    = m_tmCreate;
-	CTime cCurrent = CTime::GetCurrentTime();
-	
-	BaseTime.SetDateTime( cBase.GetYear(), cBase.GetMonth(), cBase.GetDay(), cBase.GetHour(), cBase.GetMinute(), cBase.GetSecond() );		
-	CurrentTime.SetDateTime( cCurrent.GetYear(), cCurrent.GetMonth(), cCurrent.GetDay(), cCurrent.GetHour(), cCurrent.GetMinute(), cCurrent.GetSecond() );
-	
-	COleDateTimeSpan temp( BaseTime.GetDay(), BaseTime.GetHour(), BaseTime.GetMinute(), BaseTime.GetSecond() );
-	COleDateTimeSpan temp2( CurrentTime.GetDay(), CurrentTime.GetHour(), CurrentTime.GetMinute(), CurrentTime.GetSecond() );
+	const CTimeSpan ts = CurrentTime - BaseTime;
 
-	COleDateTimeSpan ts = temp2 - temp;
+	const int nGap = (int)( (MAX_KEEP_MAX_DAY+1) - ts.GetDays() );
+	const DWORD dwKeepingTime = (DWORD)( (MAX_KEEP_MAX_DAY*24) - ts.GetTotalHours() );
 
-	int nGap = -1;
-
-	nGap = (int)( (MAX_KEEP_MAX_DAY+1) - ts.GetTotalDays() );
-
-	if( dwKeepingTime )
-	{
-		*dwKeepingTime = (DWORD)( (MAX_KEEP_MAX_DAY*24) - ts.GetTotalHours() );
-	}
-
-	*nKeepingDay = nGap;
+	return std::make_pair(nGap, dwKeepingTime);
 }
 
 void CMail::Serialize( CAr & ar, BOOL bData )
@@ -153,44 +132,30 @@ void CMail::Serialize( CAr & ar, BOOL bData )
 	}
 }
 
-CMailBox::CMailBox()
-{
-	m_idReceiver	= 0;
-#ifdef __WORLDSERVER
-	m_nStatus	= CMailBox::nodata;
-#endif	// __WORLDSERVER
-}
-
 CMailBox::CMailBox( u_long idReceiver )
 {
 	m_idReceiver	= idReceiver;
 #ifdef __WORLDSERVER
 	m_nStatus	= CMailBox::nodata;
 #endif	// __WORLDSERVER
-
-#ifdef __CLIENT
-	Error( _T( "CMailBox::CMailBox" ) );
-#endif
 }
 
 CMailBox::~CMailBox()
 {
 	Clear();
-
-#ifdef __CLIENT
-	Error( _T( "CMailBox::~CMailBox" ) );
-#endif
 }
 
+#ifdef __CLIENT
 CMailBox*	CMailBox::GetInstance( void )
 {
 	static CMailBox	sMailBox;
 	return &sMailBox;
 }
+#endif
 
 void CMailBox::Clear( void )
 {
-	for( MailVectorItr i = begin(); i != end(); ++i )
+	for( auto i = begin(); i != end(); ++i )
 	{
 #ifdef __DBSERVER
 		if( m_pPost )
@@ -199,10 +164,6 @@ void CMailBox::Clear( void )
 		SAFE_DELETE( *i );
 	}
 	clear();
-
-#ifdef __CLIENT
-	Error( _T( "CMailBox::Clear" ) );
-#endif
 }
 
 u_long CMailBox::AddMail( CMail* pMail )
@@ -211,10 +172,6 @@ u_long CMailBox::AddMail( CMail* pMail )
 		pMail->m_nMail	= ++CMail::s_nMail;
 	else
 		CMail::s_nMail	= pMail->m_nMail;
-
-#ifdef __CLIENT
-	Error( _T( "CMailBox::AddMail  nMail:%d sMail:%d" ), pMail->m_nMail, CMail::s_nMail );
-#endif
 
 	// 康: POST: m_nMail이 같은 메일이 이미 없는지 확인해야 한다.
 	// 이미 있다면 별도의 예외 처리를 하자.
@@ -229,11 +186,6 @@ u_long CMailBox::AddMail( CMail* pMail )
 		{
 			Error( "AddMail Failed - nMail : %d, idSender : %d", pMail->m_nMail, pMail->m_idSender );
 		}
-		else
-		{
-// 			//	BEGINTEST
-// 			Error( "CMailBox::AddMail Sender[%d] nMail[%d]", pMail->m_idSender, pMail->m_nMail );
-		}
 	}
 #endif	// __DBSERVER
 	return pMail->m_nMail;
@@ -244,10 +196,7 @@ void CMailBox::Write( CAr & ar )
 {
 	ar << (int)size();
 
-// 	//	BEGINTEST
-// 	Error( "CMailBox::Write [%d]", (int)size() );
-
-	for( MailVectorItr i = begin(); i != end(); ++i )
+	for( auto i = begin(); i != end(); ++i )
 	{
 		CMail* pMail	= *i;
 		ar << pMail->m_nMail;
@@ -269,18 +218,11 @@ void CMailBox::Read( CAr & ar )
 		CMail* pMail	= GetMail( nMail );
 		if( pMail )
 		{
-// 			//	BEGINTEST
-// 			Error( "CMailBox::Read " );
-
 			pMail->Clear();
 			pMail->Serialize( ar, TRUE );
 		}
 		else
 		{
-
-// 			//	BEGINTEST
-// 			Error( "CMailBox::Read pMail == NULL" );
-
 			// mail not found
 			Error( "CMailBox::Read - GetMail return NULL. nMail : %d", nMail );
 			//temp.Clear();
@@ -350,7 +292,7 @@ void CMailBox::Serialize( CAr & ar, BOOL bData )
 	{
 		ar << m_idReceiver;
 		ar << (int)size();
-		for( MailVectorItr i = begin(); i != end(); ++i )
+		for( auto i = begin(); i != end(); ++i )
 		{
 			CMail* pMail	= *i;
 			pMail->Serialize( ar, bData );
@@ -366,8 +308,6 @@ void CMailBox::Serialize( CAr & ar, BOOL bData )
 #ifdef __CLIENT
 		if( g_WndMng.m_bWaitRequestMail && nSize <= 0 )
 			g_DPlay.SendQueryMailBox();
-
-		Error( _T( "CMailBox::Serialize m_idReceiver:%d, nSize:%d" ), m_idReceiver, nSize );
 #endif
 		for( int i = 0; i < nSize; i++ )
 		{
@@ -378,21 +318,15 @@ void CMailBox::Serialize( CAr & ar, BOOL bData )
 	}
 }
 
-MailVectorItr CMailBox::Find( u_long nMail )
-{
-	MailVectorItr i = begin();
-	for( ; i != end(); ++i )
-	{
-		CMail* pMail	= *i;
-		if( pMail->m_nMail == nMail )
-			break;
-	}
-	return i;
+std::vector<CMail *>::iterator CMailBox::Find( u_long nMail ) {
+	return std::find_if(begin(), end(),
+		[nMail](CMail * pMail) { return pMail->m_nMail == nMail; }
+	);
 }
 
 CMail* CMailBox::GetMail( u_long nMail )
 {
-	MailVectorItr i = Find( nMail );
+	auto i = Find( nMail );
 	if( i != end() )
 		return *i;
 
@@ -404,7 +338,7 @@ CMail* CMailBox::GetMail( u_long nMail )
 
 BOOL CMailBox::RemoveMail( u_long nMail )
 {
-	MailVectorItr i = Find( nMail );
+	auto i = Find( nMail );
 	if( i != end() )
 	{
 #ifdef __DBSERVER
@@ -414,9 +348,6 @@ BOOL CMailBox::RemoveMail( u_long nMail )
 		SAFE_DELETE( *i );
 		erase( i );
 
-#ifdef __CLIENT
-		Error( _T( "CMailBox::RemoveMail OK nMail:%d"), nMail  );
-#endif
 		return TRUE;
 	}
 
@@ -432,10 +363,6 @@ BOOL CMailBox::RemoveMailItem( u_long nMail )
 	if( pMail && pMail->m_pItemElem )
 	{
 		SAFE_DELETE( pMail->m_pItemElem );
-
-#ifdef __CLIENT
-		Error( _T( "CMailBox::RemoveMailItem nMail:%d" ), nMail );
-#endif
 		return TRUE;
 	}
 
@@ -451,9 +378,6 @@ BOOL CMailBox::RemoveMailGold( u_long nMail )
 	if( pMail && pMail->m_nGold > 0 )
 	{
 		pMail->m_nGold	= 0;
-#ifdef __CLIENT
-		Error( _T( "CMailBox::RemoveMailGold nMail:%d" ), nMail );
-#endif
 		return TRUE;
 	}
 #ifdef __CLIENT
@@ -465,13 +389,8 @@ BOOL CMailBox::RemoveMailGold( u_long nMail )
 BOOL CMailBox::ReadMail( u_long nMail )
 {
 	CMail* pMail	= GetMail( nMail );
-	if( pMail )
-	{
+	if( pMail ) {
 		pMail->m_byRead	= TRUE;
-
-#ifdef __CLIENT
-		Error( _T( "CMailBox::ReadMail nMail:%d" ), nMail );
-#endif
 		return TRUE;
 	}
 
@@ -481,26 +400,14 @@ BOOL CMailBox::ReadMail( u_long nMail )
 	return FALSE;
 }
 
-BOOL CMailBox::IsStampedMailExists( void )
-{
-	MailVectorItr i = begin();
-	for( ; i != end(); ++i )
-	{
-		CMail* pMail	= *i;
-		if( pMail->m_byRead == FALSE )
-		{
-#ifdef __CLIENT
-		Error( _T( "CMailBox::IsStampedMailExists" ) );
-#endif
-			return TRUE;
-		}
-	}
-
-#ifdef __CLIENT
-		Error( _T( "CMailBox::IsStampedMailExists Failed" ) );
-#endif
-	return FALSE;
+bool CMailBox::IsStampedMailExists() const {
+	return std::any_of(
+		begin(), end(),
+		[](CMail * pMail) { return pMail->m_byRead == FALSE; }
+	);
 }
+
+#if defined(__DBSERVER) || defined(__WORLDSERVER)
 
 void CPost::Clear( void )
 {
@@ -595,3 +502,6 @@ void CPost::Process( void )
 	lspMail.clear();
 }
 #endif	// __DBSERVER
+
+#endif
+

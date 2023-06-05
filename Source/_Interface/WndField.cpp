@@ -6445,9 +6445,7 @@ void CWndPostRead::MailReceiveItem()
 	if( pMail && pMail->m_pItemElem )
 	{
 		// �⺻ �����ϼ� ���������� �˻��Ͽ� ������ �ΰ��Ѵ�.
-		int nDay = 0;
-		DWORD dwTime = 0;
-		pMail->GetMailInfo( &nDay, &dwTime );
+		const auto [nDay, dwTime] = pMail->GetMailInfo();
 
 		// �⺻ �����ϼ��� ������!!!
 		if( (MAX_KEEP_MAX_DAY*24) - dwTime > (MAX_KEEP_BASIC_DAY*24) )
@@ -6786,9 +6784,7 @@ void CWndPostReceive::OnDraw( C2DRender* p2DRender )
 			p2DRender->TextOut( sx + 60,  sy+3, "Unknown",  D3DCOLOR_XRGB( 0, 0, 0 ) );
 		}
 
-		int nDay = 0;
-		DWORD dwTime = 0;
-		mailbox[i]->GetMailInfo( &nDay, &dwTime );  // �������� �˻�
+		const auto [nDay, dwTime] = mailbox[i]->GetMailInfo();  // �������� �˻�
 
 		CString szDay;
 
