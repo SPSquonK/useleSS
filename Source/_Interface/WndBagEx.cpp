@@ -61,43 +61,7 @@ void CWndBagEx::OnDraw( C2DRender* p2DRender )
 	
 	int     nBag[2] = { WIDC_CUSTOM4, WIDC_CUSTOM5};
 	int     nIco[2] = { WIDC_ICO_BAG1, WIDC_ICO_BAG2};
-	if(g_pPlayer)
-	{
-		/*
-		if(g_pPlayer->m_Pocket.IsAvailable(1)) 
-		{
-			m_bUse[0] = TRUE;
-		}
-		else								   
-			m_bUse[0] = FALSE;
-		if(g_pPlayer->m_Pocket.IsAvailable(2)) 
-		{
-			m_bUse[1] = TRUE;
-		}
-		else								   
-			m_bUse[1] = FALSE;
-		if(g_pPlayer->m_Pocket.IsAvailable(0)) 
-		{
-			m_wndItemCtrl[0].InitItem( g_pPlayer->m_Pocket.GetPocket(0), APP_CANCEL_BLESSING );
-		}
-		// 가방이 활성화 돼있는지 확인
-		if(g_pPlayer->m_Pocket.IsAvailable(1)) 
-		{
-			m_bUse[0] = TRUE;
-			m_wndItemCtrl[1].InitItem( g_pPlayer->m_Pocket.GetPocket(1), APP_CANCEL_BLESSING );
-		}
-		else								   
-			m_bUse[0] = FALSE;
-		if(g_pPlayer->m_Pocket.IsAvailable(2)) 
-		{
-			m_bUse[1] = TRUE;
-			m_wndItemCtrl[2].InitItem( g_pPlayer->m_Pocket.GetPocket(2), APP_CANCEL_BLESSING );
-		}
-		else								   
-			m_bUse[1] = FALSE;
-		*/
-	}
-	else 
+	if(!g_pPlayer)
 		return;
 
 	for( int i = 1 ; i < 3 ; ++i )
@@ -170,30 +134,6 @@ BOOL CWndBagEx::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_BAG_EX, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndBagEx::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndBagEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndBagEx::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndBagEx::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndBagEx::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
 } 
 
 BOOL CWndBagEx::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
@@ -276,13 +216,6 @@ void CWndBagEx::OnMouseWndSurface( CPoint point )
 		{
 			// 사용하면 시간을 보여준다
 			time_t nRemain = (g_pPlayer->m_Pocket.GetPocket(1))->GetExpirationDate() - time(NULL);
-			/*
-			int nHour = (int)(nRemain / 3600);
-			int nMin  = (int)((nRemain % 3600) / 60);
-			if(nHour < 0) nHour = 0;
-			if(nMin < 0) nMin = 0;
-			strText.Format(prj.GetText(TID_TOOLTIP_BAG_TIME), nHour, nMin);
-			*/
 			CTimeSpan time(nRemain);
 			strText.Format(prj.GetText(TID_TOOLTIP_BAG_TIME), static_cast<int>(time.GetDays()), time.GetHours(), time.GetMinutes());
 		}
@@ -310,13 +243,6 @@ void CWndBagEx::OnMouseWndSurface( CPoint point )
 		{
 			// 사용하면 시간을 보여준다
 			time_t nRemain = (g_pPlayer->m_Pocket.GetPocket(2))->GetExpirationDate() - time(NULL);
-			/*
-			int nHour = (int)(nRemain / 3600);
-			int nMin  = (int)((nRemain % 3600) / 60);
-			if(nHour < 0) nHour = 0;
-			if(nMin < 0) nMin = 0;
-			strText.Format(prj.GetText(TID_TOOLTIP_BAG_TIME), nHour, nMin);
-			*/
 			CTimeSpan time(nRemain);
 			strText.Format(prj.GetText(TID_TOOLTIP_BAG_TIME), static_cast<int>(time.GetDays()), time.GetHours(), time.GetMinutes());
 		}
@@ -329,13 +255,6 @@ void CWndBagEx::OnMouseWndSurface( CPoint point )
 
 	}
 }
-
-BOOL CWndBagEx::process()
-{
-
-	return TRUE;
-}
-
 
 BOOL CWndBagEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -381,10 +300,9 @@ BOOL CWndBagEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						if (itemElem->GetProp()->dwItemKind3 == IK3_QUEST) {
 							g_WndMng.PutString(TID_GAME_ERROR_DONT_MOVE_QUEST_ITEM_TO_BAG_EX);
 						} else {
-							const auto source = CWndTradeGoldwithFunction::SourceItem{ lpShortcut->m_dwId };
-							CWndTradeGoldwithFunction::Create(
-								source,
-								[source, nSlot](int quantity) {
+							CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceItem>(
+								{ lpShortcut->m_dwId },
+								[nSlot](auto source, int quantity) {
 									g_DPlay.SendMoveItem_Pocket(-1, source.itemId, quantity, nSlot);
 								}
 							);
@@ -415,10 +333,9 @@ BOOL CWndBagEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					if (SelectCount != 1) {
 						g_WndMng.PutString(TID_GAME_EQUIPPUT);
 					} else {
-						const auto source = CWndTradeGoldwithFunction::SourceBag{ nPutSlot, lpShortcut->m_dwId };
-						CWndTradeGoldwithFunction::Create(
-							source,
-							[source, nSlot](int quantity) {
+						CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceBag>(
+							{ nPutSlot, lpShortcut->m_dwId },
+							[nSlot](auto source, int quantity) {
 								g_DPlay.SendMoveItem_Pocket(source.bagId, source.itemId, quantity, nSlot);
 							}
 						);
@@ -427,19 +344,7 @@ BOOL CWndBagEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 		}
 	}
-	if( message == WNM_CLICKED )
-	{
-		switch( nID )
-		{
-			case 100: // icon
-//				m_wndItemCtrl.SetWndRect( m_wndItemCtrl.GetWindowRect( TRUE ) );
-				break;
-			case WTBID_REPORT:
-				break;
-			case WTBID_CLOSE: // 종료
-				break;
-		}
-	}	
+
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 

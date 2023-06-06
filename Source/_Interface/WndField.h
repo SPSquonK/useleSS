@@ -448,7 +448,15 @@ public:
 		DWORD countTID;
 	};
 
-	static void Create(Source item, std::function<void(int)> m_onValidation);
+	template<typename SourceType>
+	static void Create(SourceType source, std::function<void(SourceType, int)> onValidation) {
+		return CreateGeneric(source,
+			[source, onValidation = std::move(onValidation)](int quantity) {
+				onValidation(source, quantity);
+			});
+	}
+
+	static void CreateGeneric(Source source, std::function<void(int)> m_onValidation);
 	static Initializer GetInitialValueOf(Source source);
 	static int FinalizeQuantity(Source source, int quantity);
 

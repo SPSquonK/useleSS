@@ -1475,10 +1475,9 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						if(!g_pPlayer->m_Pocket.IsAvailable(2)) return FALSE;
 					}
 					
-					const auto source = CWndTradeGoldwithFunction::SourceBag{ nSlot, lpShortcut->m_dwId };
-					CWndTradeGoldwithFunction::Create(
-						source,
-						[source](int quantity) {
+					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceBag>(
+						{ nSlot, lpShortcut->m_dwId },
+						[](auto source, int quantity) {
 							g_DPlay.SendMoveItem_Pocket(source.bagId, source.itemId, quantity, -1);
 						}
 					);
@@ -2584,7 +2583,7 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void CWndTradeGoldwithFunction::Create(
+void CWndTradeGoldwithFunction::CreateGeneric(
 	Source source, std::function<void(int)> m_onValidation
 ) {
 	SAFE_DELETE(g_WndMng.m_pWndTradeGoldFunc);
