@@ -25,7 +25,7 @@ CWndGuildBank::CWndGuildBank()
 CWndGuildBank::~CWndGuildBank() 
 { 
 	SAFE_DELETE( m_pwndGuildMerit );
-	SAFE_DELETE( g_WndMng.m_pWndTradeGoldFunc );
+	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 	SAFE_DELETE( g_WndMng.m_pWndGuildBankLog );
 } 
 void CWndGuildBank::OnDraw( C2DRender* p2DRender ) 
@@ -148,7 +148,7 @@ BOOL CWndGuildBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							g_WndMng.PutString(TID_GAME_EQUIPPUT);
 							
 						} else {
-							CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceItem>(
+							CWndTradeGold::Create<SHORTCUT::Source::Inventory>(
 								{ lpShortcut->m_dwId  },
 								[](auto source, int quantity) {
 									g_DPlay.SendPutItemGuildBank(source.itemPos, quantity, 1);

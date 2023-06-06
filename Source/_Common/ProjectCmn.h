@@ -8,6 +8,7 @@
 #include <boost/container/small_vector.hpp>
 #include "FlyFFTypes.h"
 #include "defineJob.h"
+#include <variant>
 
 #define	MAX_OBJARRAY			8
 #define	MAX_QUICKSLOT			21
@@ -834,6 +835,27 @@ struct SHORTCUT {
 
 	friend CAr & operator<<(CAr & ar, const SHORTCUT & self);
 	friend CAr & operator>>(CAr & ar, SHORTCUT & self);
+
+	// ==========================================================================
+
+	struct Source {
+		struct Inventory { DWORD itemPos; };
+		struct Penya {};
+		struct Bag { int bagId; DWORD itemPos; };
+		struct Bank { int slot; DWORD itemPos; };
+		struct BankPenya { int slot; };
+		struct Guild { DWORD itemPos; };
+		struct GuildMoney {};
+	};
+
+	struct Sources {
+		using ItemOrMoney = std::variant<
+			Source::Inventory, Source::Penya,
+			Source::Bank, Source::BankPenya,
+			Source::Guild, Source::GuildMoney,
+			Source::Bag
+		>;
+	};
 };
 using LPSHORTCUT = SHORTCUT *;
 

@@ -1488,7 +1488,7 @@ void CDPClient::OnRemoveObj( OBJID objid )
 				if( pWndTradeConfirm )
 					pWndTradeConfirm->Destroy();
 
-				SAFE_DELETE( g_WndMng.m_pWndTradeGoldFunc );
+				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 
 				g_pPlayer->OnTradeRemoveUser();
 				g_pPlayer->m_vtInfo.SetOther( NULL );
@@ -2407,7 +2407,7 @@ void CDPClient::OnTradeCancel( OBJID objid, CAr & ar )
 		Windows::DestroyIfOpened(APP_TRADE_CONFIRM);
 	}
 
-	SAFE_DELETE( g_WndMng.m_pWndTradeGoldFunc );
+	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 }
 
 void CDPClient::OnTradelastConfirmOk( OBJID objid, CAr & ar )

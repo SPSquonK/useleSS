@@ -320,7 +320,7 @@ BOOL CWndPostSend::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	{
 		SetItemId((BYTE)(pItemElem->m_dwObjId));
 
-		CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceItem>(
+		CWndTradeGold::Create<SHORTCUT::Source::Inventory>(
 			{ pItemElem->m_dwObjId },
 			[](auto source, int quantity) {
 				if (!g_WndMng.m_pWndPost) return;

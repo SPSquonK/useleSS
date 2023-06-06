@@ -16,7 +16,7 @@
 
 CWndBank::~CWndBank() {
 	g_DPlay.SendCloseBankWnd();
-	SAFE_DELETE( g_WndMng.m_pWndTradeGoldFunc );
+	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 } 
 
 void CWndBank::OnDraw( C2DRender* p2DRender ) 
@@ -169,7 +169,7 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					if (SelectCount != 1) {
 						g_WndMng.PutString(TID_GAME_EQUIPPUT);
 					} else {
-						CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceItem>(
+						CWndTradeGold::Create<SHORTCUT::Source::Inventory>(
 							{ lpShortcut->m_dwId },
 							[nSlot](auto source, int quantity) {
 								g_DPlay.SendPutItemBank(nSlot, source.itemPos, quantity);
@@ -179,7 +179,7 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				}
 				else
 				{
-					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceMoney>(
+					CWndTradeGold::Create<SHORTCUT::Source::Penya>(
 						{},
 						[nSlot](auto, int quantity) {
 							g_DPlay.SendPutGoldBank(nSlot, quantity);
@@ -200,7 +200,7 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					if ( SelectCount != 1) {
 						g_WndMng.PutString(TID_GAME_EQUIPPUT);
 					} else {
-						CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceBank>(
+						CWndTradeGold::Create<SHORTCUT::Source::Bank>(
 							{ nPutSolt, lpShortcut->m_dwId },
 							[nSlot](auto source, int quantity) {
 								g_DPlay.SendPutItemBankToBank(source.slot, nSlot, source.itemPos, quantity);
@@ -212,7 +212,7 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				{
 					nPutSolt = GetPosOfGold(pWndPut);
 
-					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceBankMoney>(
+					CWndTradeGold::Create<SHORTCUT::Source::BankPenya>(
 						{ nPutSolt },
 						[nSlot](auto source, int quantity) {
 							g_DPlay.SendPutGoldBankToBank(source.slot, nSlot, quantity);

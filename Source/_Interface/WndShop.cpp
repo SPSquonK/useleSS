@@ -416,7 +416,7 @@ BOOL CWndItemCtrlVendor::OnDropIcon(LPSHORTCUT pShortcut, CPoint point) {
 CWndShop::~CWndShop() {
 	SAFE_DELETE(m_pWndConfirmSell);
 	SAFE_DELETE(m_pWndWarning);
-	SAFE_DELETE(g_WndMng.m_pWndTradeGoldFunc);
+	SAFE_DELETE(g_WndMng.m_pWndTradeGold);
 }
 
 void CWndShop::OnDraw( C2DRender* p2DRender ) 

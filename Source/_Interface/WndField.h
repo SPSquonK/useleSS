@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <functional>
 
 #include "post.h"
 #include "guild.h"
@@ -403,46 +404,9 @@ public:
 	virtual	void OnInitialUpdate();
 };	
 
-class CWndTradeGold : public CWndNeuz 
-{ 
-public: 
-	UINT m_nIdWndTo;
-	SHORTCUT m_Shortcut;
-	D3DXVECTOR3 m_vPos;
-	DWORD m_dwGold = 0;
-	CWndBase* m_pWndBase = nullptr;
-	CWndStatic* pStatic;
-	CWndStatic* pStaticCount;
-	char m_nSlot = 0;
-	char m_nPutSlot = 100;
-	CWndTradeGold(); 
-
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual BOOL Process( void );
-	virtual	void OnInitialUpdate(); 
-};
-
-#include <functional>
-
-class CWndTradeGoldwithFunction : public CWndNeuz {
+class CWndTradeGold : public CWndNeuz {
 public:
-	struct SourceItem { DWORD itemPos; };
-	struct SourceBag { int bagId; DWORD itemPos; };
-	struct SourceBank { int slot; DWORD itemPos; };
-	struct SourceMoney {};
-	struct SourceBankMoney { int slot; };
-	struct SourceGuildBank { DWORD itemPos; };
-	struct SourceGuildMoney {};
-
-	using Source = std::variant<
-		SourceItem, SourceMoney,
-		SourceBank, SourceBankMoney,
-		SourceGuildBank, SourceGuildMoney,
-		SourceBag
-	>;
-
-	Source m_source;
+	SHORTCUT::Sources::ItemOrMoney m_source;
 	std::function<void(int)> m_onValidation;
 	std::function<void()> m_onCancel;
 
@@ -463,7 +427,7 @@ public:
 	};
 
 	template<typename SourceType>
-	static CWndTradeGoldwithFunction * Create(
+	static CWndTradeGold * Create(
 		SourceType source,
 		std::function<void(SourceType, int)> onValidation,
 		ExtraCreateParam extra = {}
@@ -476,17 +440,16 @@ public:
 		);
 	}
 
-	static CWndTradeGoldwithFunction * CreateGeneric(
-		Source source,
+	static CWndTradeGold * CreateGeneric(
+		SHORTCUT::Sources::ItemOrMoney source,
 		std::function<void(int)> m_onValidation,
 		ExtraCreateParam extra = {}
 	);
-	static Initializer GetInitialValueOf(Source source);
-	static int FinalizeQuantity(Source source, int quantity);
+	static Initializer GetInitialValueOf(SHORTCUT::Sources::ItemOrMoney source);
 
 
 private:
-	CWndTradeGoldwithFunction() = default;
+	CWndTradeGold() = default;
 	void SetInitialValue(int value);
 };
 

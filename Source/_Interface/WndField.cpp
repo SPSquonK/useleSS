@@ -1404,7 +1404,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				{
 					nSlot = g_WndMng.m_pWndBank->GetPosOfItemCtrl(pWndTaget);
 					
-					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceBank>(
+					CWndTradeGold::Create<SHORTCUT::Source::Bank>(
 						{ nSlot, lpShortcut->m_dwId },
 						[](auto source, int quantity) {
 							g_DPlay.SendGetItemBank(source.slot, source.itemPos, quantity);
@@ -1413,7 +1413,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				} else {
 					nSlot = g_WndMng.m_pWndBank->GetPosOfGold(pWndTaget);
 
-					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceBankMoney>(
+					CWndTradeGold::Create<SHORTCUT::Source::BankPenya>(
 						{ nSlot },
 						[](auto source, int quantity) {
 							g_DPlay.SendGetGoldBank(source.slot, quantity);
@@ -1446,7 +1446,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						if(!g_pPlayer->m_Pocket.IsAvailable(2)) return FALSE;
 					}
 					
-					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceBag>(
+					CWndTradeGold::Create<SHORTCUT::Source::Bag>(
 						{ nSlot, lpShortcut->m_dwId },
 						[](auto source, int quantity) {
 							g_DPlay.SendMoveItem_Pocket(source.bagId, source.itemPos, quantity, -1);
@@ -1480,7 +1480,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			{
 				if( lpShortcut->m_dwData != 0 )
 				{
-					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceGuildBank>(
+					CWndTradeGold::Create<SHORTCUT::Source::Guild>(
 						{ lpShortcut->m_dwId },
 						[](auto source, int quantity) {
 							g_DPlay.SendGetItemGuildBank(source.itemPos, quantity, 1);
@@ -1489,7 +1489,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				}
 				else
 				{
-					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceGuildMoney>(
+					CWndTradeGold::Create<SHORTCUT::Source::GuildMoney>(
 						{},
 						[](auto, int quantity) {
 							g_DPlay.SendGetItemGuildBank(0, quantity, 0);
@@ -2219,100 +2219,12 @@ void CWndInventory::InitializeInvenRect(std::array<CRect, MAX_HUMAN_PARTS> & inv
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndTradeGold::CWndTradeGold() 
-{ 
-	m_nIdWndTo = APP_INVENTORY;
-} 
-
-BOOL CWndTradeGold::Process( void )
-{
-	CItemElem * pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
-	if (!pItemBase) return TRUE;
-
-	if (pItemBase->GetExtra() > 0) {
-		Destroy();
-	}
-
-	return TRUE;
-}
-
-void CWndTradeGold::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT );
-	CWndButton* pWndOk = (CWndButton *)GetDlgItem( WIDC_OK );	
-	pWndOk->SetDefault( TRUE );
-	pWndEdit->SetFocus();
-
-	if( m_dwGold > INT_MAX )
-		m_dwGold = INT_MAX;
-	
-	TCHAR szNumber[ 64 ];
-	_itot( m_dwGold, szNumber, 10 );
-	pWndEdit->SetString( szNumber );
-}
-
-BOOL CWndTradeGold::Initialize( CWndBase* pWndParent, DWORD ) 
-{ 
-	return InitDialog( APP_TRADE_GOLD, pWndParent, WBS_MODAL, 0 );
-}
-
-BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_OK || message == EN_RETURN )
-	{
-		CRect rect = GetClientRect();
-		CWorld* pWorld	= g_WorldMng.Get();
-		CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT );
-
-		CString string = pWndEdit->GetString();
-		int nCost = _ttoi( string );
-		if( nCost < 1 )
-			nCost = 1;
-		
-		if( m_nIdWndTo == APP_POST_SEND )
-		{
-			if( m_Shortcut.m_dwData != 0 ) // ��
-			{
-				CItemElem * pItemBase = g_pPlayer->GetItemId(m_Shortcut.m_dwId);
-				if (pItemBase) {
-					if (nCost > pItemBase->m_nItemNum) {
-						nCost = pItemBase->m_nItemNum;
-					}
-
-					pItemBase->SetExtra(nCost);
-
-					if (g_WndMng.m_pWndPost) {
-						g_WndMng.m_pWndPost->m_PostTabSend.SetItemId((BYTE)(m_Shortcut.m_dwId));
-						g_WndMng.m_pWndPost->m_PostTabSend.SetCount(nCost);
-					}
-				}
-
-			}
-		}			
-		Destroy();
-	}
-
-	if( nID == WIDC_CANCEL )
-	{
-		if( m_nIdWndTo == APP_POST_SEND )
-		{
-			g_WndMng.m_pWndPost->m_PostTabSend.SetItemId(0xff);
-			g_WndMng.m_pWndPost->m_PostTabSend.SetCount(0);
-		}
-		Destroy();
-	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-CWndTradeGoldwithFunction * CWndTradeGoldwithFunction::CreateGeneric(
-	Source source,
+CWndTradeGold * CWndTradeGold::CreateGeneric(
+	SHORTCUT::Sources::ItemOrMoney source,
 	std::function<void(int)> m_onValidation,
 	ExtraCreateParam extra
 ) {
-	SAFE_DELETE(g_WndMng.m_pWndTradeGoldFunc);
+	SAFE_DELETE(g_WndMng.m_pWndTradeGold);
 
 	if (!g_pPlayer) {
 		extra.onCancel();
@@ -2331,37 +2243,50 @@ CWndTradeGoldwithFunction * CWndTradeGoldwithFunction::CreateGeneric(
 		return nullptr;
 	}
 
-	g_WndMng.m_pWndTradeGoldFunc = new CWndTradeGoldwithFunction();
-	g_WndMng.m_pWndTradeGoldFunc->Initialize(&g_WndMng, APP_TRADE_GOLD);
+	g_WndMng.m_pWndTradeGold = new CWndTradeGold();
+	g_WndMng.m_pWndTradeGold->Initialize(&g_WndMng, APP_TRADE_GOLD);
 
-	g_WndMng.m_pWndTradeGoldFunc->SetInitialValue(initialQuantity);
-	g_WndMng.m_pWndTradeGoldFunc->m_source = source;
-	g_WndMng.m_pWndTradeGoldFunc->m_onValidation = std::move(m_onValidation);
-	g_WndMng.m_pWndTradeGoldFunc->m_onCancel = std::move(extra.onCancel);
+	g_WndMng.m_pWndTradeGold->SetInitialValue(initialQuantity);
+	g_WndMng.m_pWndTradeGold->m_source = source;
+	g_WndMng.m_pWndTradeGold->m_onValidation = std::move(m_onValidation);
+	g_WndMng.m_pWndTradeGold->m_onCancel = std::move(extra.onCancel);
 
-	g_WndMng.m_pWndTradeGoldFunc->GetDlgItem(WIDC_STATIC)
+	g_WndMng.m_pWndTradeGold->GetDlgItem(WIDC_STATIC)
 		->m_strTitle = prj.GetText(titleTID);
-	g_WndMng.m_pWndTradeGoldFunc->GetDlgItem(WIDC_CONTROL1)
+	g_WndMng.m_pWndTradeGold->GetDlgItem(WIDC_CONTROL1)
 		->m_strTitle = prj.GetText(countTID);
 
-	return g_WndMng.m_pWndTradeGoldFunc;
+	return g_WndMng.m_pWndTradeGold;
 }
 
 
-BOOL CWndTradeGoldwithFunction::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndTradeGold::Initialize(CWndBase * pWndParent, DWORD) {
 	return InitDialog(APP_TRADE_GOLD, pWndParent, WBS_MODAL, 0);
 }
 
-BOOL CWndTradeGoldwithFunction::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+BOOL CWndTradeGold::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	if (nID == WIDC_OK || message == EN_RETURN) {
 		CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT);
 
 		LPCTSTR string = pWndEdit->GetString();
 		int nCost = std::atoi(string);
-		nCost = FinalizeQuantity(m_source, nCost);
+
+		const auto initializer = GetInitialValueOf(m_source);
+
+		if (initializer.initialQuantity <= 0) {
+			nCost = 0;
+		} else if (initializer.skipIf1) {
+			// Item: at least one
+			nCost = std::clamp<int>(nCost, 1, initializer.initialQuantity);
+		} else {
+			// Money: 0 can be considered
+			nCost = std::clamp<int>(nCost, 0, initializer.initialQuantity);
+		}
 
 		if (nCost > 0) {
 			m_onValidation(nCost);
+		} else {
+			m_onCancel();
 		}
 
 		Destroy();
@@ -2377,32 +2302,34 @@ BOOL CWndTradeGoldwithFunction::OnChildNotify(UINT message, UINT nID, LRESULT * 
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
-CWndTradeGoldwithFunction::Initializer CWndTradeGoldwithFunction::GetInitialValueOf(CWndTradeGoldwithFunction::Source source) {
+CWndTradeGold::Initializer CWndTradeGold::GetInitialValueOf(SHORTCUT::Sources::ItemOrMoney source) {
+	using Source = SHORTCUT::Source;
+	
 	struct VisitorQuantity {
-		int operator()(SourceItem sourceItem) {
+		int operator()(Source::Inventory sourceItem) {
 			const CItemElem * pItemBase = g_pPlayer->GetItemId(sourceItem.itemPos);
 			return pItemBase && pItemBase->GetExtra() == 0 ? pItemBase->m_nItemNum : 0;
 		}
 
-		int operator()(SourceBag sourceBag) {
+		int operator()(Source::Penya sourceItem) {
+			return g_pPlayer->GetGold();
+		}
+
+		int operator()(Source::Bag sourceBag) {
 			const CItemElem * pItemBase = g_pPlayer->m_Pocket.GetAt(sourceBag.bagId, sourceBag.itemPos);
 			return pItemBase && pItemBase->GetExtra() == 0 ? pItemBase->m_nItemNum : 0;
 		}
 
-		int operator()(SourceMoney sourceItem) {
-			return g_pPlayer->GetGold();
-		}
-
-		int operator()(SourceBank sourceBank) {
+		int operator()(Source::Bank sourceBank) {
 			const CItemElem * pItemBase = g_pPlayer->GetItemBankId(sourceBank.slot, sourceBank.itemPos);
 			return pItemBase && pItemBase->GetExtra() == 0 ? pItemBase->m_nItemNum : 0;
 		}
 
-		int operator()(SourceBankMoney source) {
+		int operator()(Source::BankPenya source) {
 			return g_pPlayer->m_dwGoldBank[source.slot];
 		}
 
-		int operator()(SourceGuildBank source) {
+		int operator()(Source::Guild source) {
 			CGuild * pGuild = g_pPlayer->GetGuild();
 			if (!pGuild) return 0;
 			if (!pGuild->IsGetItem(g_pPlayer->m_idPlayer)) return 0;
@@ -2411,7 +2338,7 @@ CWndTradeGoldwithFunction::Initializer CWndTradeGoldwithFunction::GetInitialValu
 			return pItemBase && pItemBase->GetExtra() == 0 ? pItemBase->m_nItemNum : 0;
 		}
 
-		int operator()(SourceGuildMoney source) {
+		int operator()(Source::GuildMoney source) {
 			CGuild * pGuild = g_pPlayer->GetGuild();
 			if (!pGuild) return 0;
 			if (!pGuild->IsGetPenya(g_pPlayer->m_idPlayer)) return 0;
@@ -2422,10 +2349,10 @@ CWndTradeGoldwithFunction::Initializer CWndTradeGoldwithFunction::GetInitialValu
 
 	const int initialQuantiy = std::visit(VisitorQuantity{}, source);
 
-	if (std::holds_alternative<SourceItem>(source)
-		|| std::holds_alternative<SourceBag>(source)
-		|| std::holds_alternative<SourceGuildBank>(source)
-		|| std::holds_alternative<SourceBank>(source)
+	if (std::holds_alternative<Source::Inventory>(source)
+		|| std::holds_alternative<Source::Bank>(source)
+		|| std::holds_alternative<Source::Guild>(source)
+		|| std::holds_alternative<Source::Bag>(source)
 		) {
 		return Initializer{
 			.initialQuantity = initialQuantiy,
@@ -2443,22 +2370,10 @@ CWndTradeGoldwithFunction::Initializer CWndTradeGoldwithFunction::GetInitialValu
 	}
 }
 
-int CWndTradeGoldwithFunction::FinalizeQuantity(CWndTradeGoldwithFunction::Source source, int quantity) {
-	const auto initializer = GetInitialValueOf(source);
+BOOL CWndTradeGold::Process() {
+	using Source = SHORTCUT::Source;
 
-	if (initializer.initialQuantity <= 0) return 0;
-
-	if (initializer.skipIf1) {
-		// Item: at least one
-		return std::clamp<int>(quantity, 1, initializer.initialQuantity);
-	} else {
-		// Money: 0 can be considered
-		return std::clamp<int>(quantity, 0, initializer.initialQuantity);
-	}
-}
-
-BOOL CWndTradeGoldwithFunction::Process() {
-	if (const SourceItem * srcItem = std::get_if<SourceItem>(&m_source)) {
+	if (const Source::Inventory * srcItem = std::get_if<Source::Inventory>(&m_source)) {
 		const CItemElem * pItemBase = g_pPlayer->GetItemId(srcItem->itemPos);
 		if (!pItemBase || pItemBase->GetExtra() > 0) {
 			Destroy();
@@ -2468,7 +2383,7 @@ BOOL CWndTradeGoldwithFunction::Process() {
 	return TRUE;
 }
 
-void CWndTradeGoldwithFunction::OnInitialUpdate() {
+void CWndTradeGold::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
 
 	GetDlgItem(WIDC_EDIT)->SetFocus();
@@ -2477,7 +2392,7 @@ void CWndTradeGoldwithFunction::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-void CWndTradeGoldwithFunction::SetInitialValue(int value) {
+void CWndTradeGold::SetInitialValue(int value) {
 	value = std::max(value, 0);
 	const std::string szNumber = std::to_string(value);
 
@@ -2609,7 +2524,7 @@ CWndTrade::CWndTrade()
 CWndTrade::~CWndTrade()
 {
 	g_DPlay.SendTradeCancel();
-	SAFE_DELETE( g_WndMng.m_pWndTradeGoldFunc );
+	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 }
 
 void CWndTrade::OnDraw(C2DRender* p2DRender)
@@ -2714,12 +2629,12 @@ BOOL CWndTrade::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 		if (shortcut.m_dwData == 0) {
 			if (m_nGoldI == 0) {
-				CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceMoney>(
+				CWndTradeGold::Create<SHORTCUT::Source::Penya>(
 					{}, [](auto, int quantity) { g_DPlay.SendTradePutGold(quantity); }
 				);
 			}
 		} else {
-			CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceItem>(
+			CWndTradeGold::Create<SHORTCUT::Source::Inventory>(
 				{ shortcut.m_dwId },
 				[tradePos = shortcut.m_dwData - 100](auto source, int quantity) {
 					g_DPlay.SendTradePut((BYTE)(tradePos), 0, source.itemPos, quantity);
