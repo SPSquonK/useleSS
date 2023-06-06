@@ -86,6 +86,7 @@ class CWndGuildNickName;
 class CWndCommercialElem; class CWndRemoveElem;
 class CWndReSkillWarning;
 class CWndPost;
+class CWndTradeGoldwithFunction;
 
 #define REG_VERSION 1
 
@@ -203,6 +204,7 @@ namespace WndMgr {
 		CWndShop * m_pWndShop = nullptr;
 		CWndTrade * m_pWndTrade = nullptr;
 		CWndTradeGold * m_pWndTradeGold = nullptr;
+		CWndTradeGoldwithFunction * m_pWndTradeGoldFunc = nullptr;
 		CWndDropItem * m_pWndDropItem = nullptr;
 		CWndConfirmTrade * m_pWndConfirmTrade = nullptr;
 		CWndCommand * m_pWndCommand = nullptr;

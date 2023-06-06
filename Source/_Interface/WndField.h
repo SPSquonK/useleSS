@@ -423,6 +423,40 @@ public:
 	virtual	void OnInitialUpdate(); 
 };
 
+#include <functional>
+
+class CWndTradeGoldwithFunction : public CWndNeuz {
+public:
+	struct SourceItem { DWORD itemId; };
+	struct SourceMoney {};
+
+	using Source = std::variant<SourceItem, SourceMoney>;
+
+	Source m_source;
+	std::function<void(int)> m_onValidation;
+
+	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	BOOL Process() override;
+	void OnInitialUpdate() override;
+
+	struct Initializer {
+		int initialQuantity;
+		bool skipIf1;
+		DWORD titleTID;
+		DWORD countTID;
+	};
+
+	static void Create(Source item, std::function<void(int)> m_onValidation);
+	static Initializer GetInitialValueOf(Source source);
+	static int FinalizeQuantity(Source source, int quantity);
+
+
+private:
+	CWndTradeGoldwithFunction() = default;
+	void SetInitialValue(int value);
+};
+
 class CWndConfirmTrade : public CWndNeuz 
 { 
 	OBJID m_objid = 0;

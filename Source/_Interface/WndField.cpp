@@ -2337,7 +2337,7 @@ void CWndTradeGold::OnInitialUpdate()
 	pWndEdit->SetString( szNumber );
 }
 
-BOOL CWndTradeGold::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndTradeGold::Initialize( CWndBase* pWndParent, DWORD ) 
 { 
 	return InitDialog( APP_TRADE_GOLD, pWndParent, WBS_MODAL, 0 );
 }
@@ -2616,6 +2616,136 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void CWndTradeGoldwithFunction::Create(
+	Source source, std::function<void(int)> m_onValidation
+) {
+	if (!g_pPlayer) return;
+
+	const auto [initialQuantity, skipIf1, titleTID, countTID] = GetInitialValueOf(source);
+
+	if (initialQuantity <= 0) return;
+
+	if (initialQuantity == 1 && skipIf1) {
+		m_onValidation(1);
+		return;
+	}
+
+	g_WndMng.m_pWndTradeGoldFunc = new CWndTradeGoldwithFunction();
+	g_WndMng.m_pWndTradeGoldFunc->Initialize(&g_WndMng, APP_TRADE_GOLD);
+
+	g_WndMng.m_pWndTradeGoldFunc->SetInitialValue(initialQuantity);
+	g_WndMng.m_pWndTradeGoldFunc->m_source = source;
+	g_WndMng.m_pWndTradeGoldFunc->m_onValidation = std::move(m_onValidation);
+
+	g_WndMng.m_pWndTradeGoldFunc->GetDlgItem(WIDC_STATIC)
+		->m_strTitle = prj.GetText(titleTID);
+	g_WndMng.m_pWndTradeGoldFunc->GetDlgItem(WIDC_CONTROL1)
+		->m_strTitle = prj.GetText(countTID);
+}
+
+
+BOOL CWndTradeGoldwithFunction::Initialize(CWndBase * pWndParent, DWORD) {
+	return InitDialog(APP_TRADE_GOLD, pWndParent, WBS_MODAL, 0);
+}
+
+BOOL CWndTradeGoldwithFunction::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (nID == WIDC_OK || message == EN_RETURN) {
+		CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT);
+
+		LPCTSTR string = pWndEdit->GetString();
+		int nCost = std::atoi(string);
+		nCost = FinalizeQuantity(m_source, nCost);
+
+		if (nCost > 0) {
+			m_onValidation(nCost);
+		}
+
+		Destroy();
+	}
+
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
+
+CWndTradeGoldwithFunction::Initializer CWndTradeGoldwithFunction::GetInitialValueOf(CWndTradeGoldwithFunction::Source source) {
+	struct VisitorQuantity {
+		int operator()(SourceItem sourceItem) {
+			const CItemElem * pItemBase = g_pPlayer->GetItemId(sourceItem.itemId);
+			return pItemBase && pItemBase->GetExtra() == 0 ? pItemBase->m_nItemNum : 0;
+		}
+
+		int operator()(SourceMoney sourceItem) {
+			return g_pPlayer->GetGold();
+		}
+	};
+
+	const int initialQuantiy = std::visit(VisitorQuantity{}, source);
+
+	if (std::holds_alternative<SourceItem>(source)) {
+		return Initializer{
+			.initialQuantity = initialQuantiy,
+			.skipIf1 = true,
+			.titleTID = TID_GAME_MOVECOUNT,
+			.countTID = TID_GAME_NUMCOUNT
+		};
+	} else {
+		return Initializer{
+			.initialQuantity = initialQuantiy,
+			.skipIf1 = false,
+			.titleTID = TID_GAME_MOVEPENYA,
+			.countTID = TID_GAME_PENYACOUNT
+		};
+	}
+}
+
+int CWndTradeGoldwithFunction::FinalizeQuantity(CWndTradeGoldwithFunction::Source source, int quantity) {
+	struct Visitor {
+		int quantity;
+
+		int operator()(SourceItem sourceItem) {
+			const CItemElem * pItemBase = g_pPlayer->GetItemId(sourceItem.itemId);
+			if (!pItemBase) return 0;
+			return std::clamp<int>(quantity, 1, pItemBase->m_nItemNum);
+		}
+
+		int operator()(SourceMoney sourceItem) {
+			return std::clamp<int>(quantity, 0, g_pPlayer->GetGold());
+		}
+	};
+
+	return std::visit(Visitor{ quantity }, source);
+}
+
+BOOL CWndTradeGoldwithFunction::Process() {
+	if (const SourceItem * srcItem = std::get_if<SourceItem>(&m_source)) {
+		const CItemElem * pItemBase = g_pPlayer->GetItemId(srcItem->itemId);
+		if (!pItemBase || pItemBase->GetExtra() > 0) {
+			Destroy();
+		}
+	}
+
+	return TRUE;
+}
+
+void CWndTradeGoldwithFunction::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
+
+	GetDlgItem(WIDC_EDIT)->SetFocus();
+	GetDlgItem(WIDC_OK)->SetDefault(TRUE);
+
+	MoveParentCenter();
+}
+
+void CWndTradeGoldwithFunction::SetInitialValue(int value) {
+	value = std::max(value, 0);
+	const std::string szNumber = std::to_string(value);
+
+	CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT);
+	pWndEdit->SetString(szNumber.c_str());
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
