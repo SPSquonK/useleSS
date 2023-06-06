@@ -636,16 +636,16 @@ void CWndMgr::OnDestroyChildWnd( CWndBase* pWndChild )
 	{
 		SAFE_DELETE( m_pWndBank );
 		pWndChild = NULL;
-		if( m_pWndTradeGold )
-			m_pWndTradeGold->Destroy();
+		if(m_pWndTradeGoldFunc)
+			m_pWndTradeGoldFunc->Destroy();
 	} else
 	if( m_pWndGuildBank == pWndChild )
 	{
 		g_DPlay.SendCloseGuildBankWnd();
 		SAFE_DELETE( m_pWndGuildBank );
 		pWndChild = NULL;
-		if( m_pWndTradeGold )
-			m_pWndTradeGold->Destroy();
+		if(m_pWndTradeGoldFunc)
+			m_pWndTradeGoldFunc->Destroy();
 	}
 
 //#endif

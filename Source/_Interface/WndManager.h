@@ -203,7 +203,6 @@ namespace WndMgr {
 		CWndDialog * m_pWndDialog = nullptr;
 		CWndShop * m_pWndShop = nullptr;
 		CWndTrade * m_pWndTrade = nullptr;
-		CWndTradeGold * m_pWndTradeGold = nullptr;
 		CWndTradeGoldwithFunction * m_pWndTradeGoldFunc = nullptr;
 		CWndDropItem * m_pWndDropItem = nullptr;
 		CWndConfirmTrade * m_pWndConfirmTrade = nullptr;

@@ -150,7 +150,6 @@ CDPSrvr::CDPSrvr()
 	OnMsg( PACKETTYPE_TRADECONFIRM, &CDPSrvr::OnTradelastConfrim );
 	OnMsg( PACKETTYPE_MOVERFOCOUS, &CDPSrvr::OnMoverFocus );
 	OnMsg( PACKETTYPE_DROPITEM, &CDPSrvr::OnDropItem );
-	OnMsg( PACKETTYPE_DROPGOLD, &CDPSrvr::OnDropGold );
 	OnMsg( PACKETTYPE_BUYITEM, &CDPSrvr::OnBuyItem );
 	OnMsg( PACKETTYPE_BUYCHIPITEM, &CDPSrvr::OnBuyChipItem );
 	OnMsg( PACKETTYPE_SELLITEM, &CDPSrvr::OnSellItem );
@@ -691,16 +690,6 @@ void CDPSrvr::OnDropItem(CAr & ar, CUser & pUser) {
 		pUser.DropItem(dwItemId, nDropNum, vPos);
 	}
 }
-
-void CDPSrvr::OnDropGold( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-
-
-	return;
-
-
-}
-
 
 void CDPSrvr::OnReplace( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {

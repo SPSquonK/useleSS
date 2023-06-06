@@ -1400,53 +1400,25 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				CWndBase* pWndTaget = pWndFrame->m_pCurFocus;
 				BYTE nSlot;
 
-				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 				if( lpShortcut->m_dwData != 0 )
 				{
 					nSlot = g_WndMng.m_pWndBank->GetPosOfItemCtrl(pWndTaget);
 					
-					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
-					
-					CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-					if( itemElem->m_nItemNum > 1 )
-					{ 
-						g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-						memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-						g_WndMng.m_pWndTradeGold->m_dwGold = itemElem->m_nItemNum;
-						g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_GOLD; // �κ��丮 �ε� ���� �־ Gold�� ��.
-						g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-						g_WndMng.m_pWndTradeGold->m_nSlot = nSlot;
-						
-						g_WndMng.m_pWndTradeGold->Initialize( &g_WndMng, APP_TRADE_GOLD );
-						g_WndMng.m_pWndTradeGold->MoveParentCenter();
-						CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-						CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-						pStatic->m_strTitle = prj.GetText(TID_GAME_MOVECOUNT);
-						pStaticCount->m_strTitle = prj.GetText(TID_GAME_NUMCOUNT);
-					}
-					else
-					{
-						g_DPlay.SendGetItemBank( nSlot, (BYTE)( lpShortcut->m_dwId ), 1 );
-					}
-				}
-				else
-				{
+					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceBank>(
+						{ nSlot, lpShortcut->m_dwId },
+						[](auto source, int quantity) {
+							g_DPlay.SendGetItemBank(source.slot, source.itemPos, quantity);
+						}
+					);
+				} else {
 					nSlot = g_WndMng.m_pWndBank->GetPosOfGold(pWndTaget);
 
-					// ���? (��)
-					g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-					memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-					g_WndMng.m_pWndTradeGold->m_dwGold = g_pPlayer->m_dwGoldBank[nSlot];
-					g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_GOLD;	// �κ��丮 �ε� ���� �־ Gold�� ��.
-					g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-					g_WndMng.m_pWndTradeGold->m_nSlot = nSlot;
-					
-					g_WndMng.m_pWndTradeGold->Initialize( &g_WndMng, APP_TRADE_GOLD );
-					g_WndMng.m_pWndTradeGold->MoveParentCenter();
-					CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-					CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-					pStatic->m_strTitle = prj.GetText(TID_GAME_MOVEPENYA);
-					pStaticCount->m_strTitle = prj.GetText(TID_GAME_PENYACOUNT);
+					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceBankMoney>(
+						{ nSlot },
+						[](auto source, int quantity) {
+							g_DPlay.SendGetGoldBank(source.slot, quantity);
+						}
+					);
 				}
 				bForbid = FALSE;
 			}
@@ -1457,7 +1429,6 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				CWndBase* pWndFrom = pWndFrame->m_pCurFocus;
 				BYTE nSlot;
 
-				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 				if( lpShortcut->m_dwData != 0 )
 				{
 					if( pWndFrom->m_pParentWnd->GetWndId() == WIDC_BASIC )
@@ -1478,7 +1449,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceBag>(
 						{ nSlot, lpShortcut->m_dwId },
 						[](auto source, int quantity) {
-							g_DPlay.SendMoveItem_Pocket(source.bagId, source.itemId, quantity, -1);
+							g_DPlay.SendMoveItem_Pocket(source.bagId, source.itemPos, quantity, -1);
 						}
 					);
 				}
@@ -1507,59 +1478,23 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			else	
 			if( pWndFrame->GetWndId() == APP_GUILD_BANK )
 			{
-				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 				if( lpShortcut->m_dwData != 0 )
 				{
-					CGuild* pGuild = g_pPlayer->GetGuild();
-					if( pGuild && pGuild->IsGetItem( g_pPlayer->m_idPlayer ))
-					{
-						CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
-						
-						CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-						if( itemElem->m_nItemNum > 1 )
-						{ 
-							g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-							memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-							g_WndMng.m_pWndTradeGold->m_dwGold = itemElem->m_nItemNum;
-							g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_MESSENGER;	// ****�߿�****
-							g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-							
-							g_WndMng.m_pWndTradeGold->Initialize( &g_WndMng, APP_TRADE_GOLD );
-							g_WndMng.m_pWndTradeGold->MoveParentCenter();
-							CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-							CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-							CString strMain = prj.GetText( TID_GAME_MOVECOUNT );//"��� �̵��Ͻðڽ��ϱ�?";
-							CString strCount = prj.GetText(TID_GAME_NUMCOUNT);//" ���� : ";
-							pStatic->m_strTitle = strMain;
-							pStaticCount->m_strTitle = strCount;
+					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceGuildBank>(
+						{ lpShortcut->m_dwId },
+						[](auto source, int quantity) {
+							g_DPlay.SendGetItemGuildBank(source.itemPos, quantity, 1);
 						}
-						else
-						{
-							g_DPlay.SendGetItemGuildBank( (BYTE)( lpShortcut->m_dwId ), 1, 1 );
-						}
-					}
+					);
 				}
 				else
 				{
-					CGuild* pGuild = g_pPlayer->GetGuild();
-					if( pGuild && pGuild->IsGetPenya( g_pPlayer->m_idPlayer ))
-					{
-						// ���? (��)
-						g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-						memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-						g_WndMng.m_pWndTradeGold->m_dwGold = pGuild->m_nGoldGuild;
-						g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_MESSENGER;	// �κ��丮 �ε� ���� �־ Gold�� ��.
-						g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-						
-						g_WndMng.m_pWndTradeGold->Initialize( &g_WndMng, APP_TRADE_GOLD );
-						g_WndMng.m_pWndTradeGold->MoveParentCenter();
-						CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-						CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-						CString strMain = prj.GetText( TID_GAME_MOVEPENYA );//"�󸶸� �̵��Ͻðڽ��ϱ�?";
-						CString strCount = prj.GetText(TID_GAME_PENYACOUNT);//" SEED : ";
-						pStatic->m_strTitle = strMain;
-						pStaticCount->m_strTitle = strCount;
-					}
+					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceGuildMoney>(
+						{},
+						[](auto, int quantity) {
+							g_DPlay.SendGetItemGuildBank(0, quantity, 0);
+						}
+					);
 				}
 				bForbid = FALSE;
 			}
@@ -2334,241 +2269,30 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		int nCost = _ttoi( string );
 		if( nCost < 1 )
 			nCost = 1;
-		if( m_nIdWndTo == APP_INVENTORY )
-		{
-			if( nCost > g_pPlayer->GetGold() )
-				nCost = g_pPlayer->GetGold();
-
-			g_DPlay.SendDropGold( nCost, g_pPlayer->GetPos(), m_vPos );
-		}
-		else
-		if( m_nIdWndTo == APP_TRADE )
-		{
-			if( m_Shortcut.m_dwData == 0 ) // ��
-			{
-				if( nCost > g_pPlayer->GetGold() )
-					nCost = g_pPlayer->GetGold();
-
-				if( nCost > 0 )
-				{
-					g_DPlay.SendTradePutGold( nCost );
-				}
-				else
-				{
-					// error message
-				}
-			}
-			else // ������
-			{
-				CItemElem * pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
-				if( pItemBase )
-				{
-					if (nCost > pItemBase->m_nItemNum) {
-						nCost = pItemBase->m_nItemNum;
-					}
-
-					m_Shortcut.m_dwData -= 100;
-					g_DPlay.SendTradePut( (BYTE)( m_Shortcut.m_dwData ), 0, (BYTE)( m_Shortcut.m_dwId ), nCost );
-				}
-			}
-		}
-		else
-		if( m_nIdWndTo == APP_BANK )
-		{
-			if( m_Shortcut.m_dwData == 0 ) // ��
-			{
-				if( nCost > g_pPlayer->GetGold() )
-					nCost = g_pPlayer->GetGold();
-
-				g_DPlay.SendPutGoldBank( m_nSlot, nCost );
-			}
-			else // ������
-			{
-				CItemElem * pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
-				if( pItemBase )
-				{
-					if (nCost > pItemBase->m_nItemNum) {
-						nCost = pItemBase->m_nItemNum;
-					}
-					m_Shortcut.m_dwData -= 100;
-					g_DPlay.SendPutItemBank( m_nSlot, (BYTE)( m_Shortcut.m_dwId ), nCost );
-				}
-			}
-		}
-		// �ڽ��� �κ��丮���� ����?���� �������� �̵�
-		else
-		if (m_nIdWndTo == APP_GUILD_BANK)
-		{
-			if( m_Shortcut.m_dwData != 0 ) // ������
-			{
-				CItemElem * pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
-				if( pItemBase )
-				{
-					if (nCost > pItemBase->m_nItemNum) {
-						nCost = pItemBase->m_nItemNum;
-					}
-					
-					m_Shortcut.m_dwData -= 100;
-
-					g_DPlay.SendPutItemGuildBank( (BYTE)( m_Shortcut.m_dwId ), nCost, 1 );
-
-				}
-			}
-		}
-		//	����?������ �ڽ��� �κ����� �����ö�
-		//	APP_MESSENGER�� �׳� ����
-		else
-		if (m_nIdWndTo == APP_MESSENGER)
-		{
-			if (g_pPlayer->GetGuild())
-			{
-				if( m_Shortcut.m_dwData == 0 ) // ��
-				{
-					if( (DWORD)nCost > ( g_pPlayer->GetGuild()->m_nGoldGuild ) )
-						nCost = g_pPlayer->GetGuild()->m_nGoldGuild;
-					
-					if( nCost > 0 )
-					{
-						g_DPlay.SendGetItemGuildBank( (BYTE)( m_Shortcut.m_dwId ), nCost, 0); // 0�� ��İ�? ����ƴٴ�? ���� �ǹ��Ѵ�.
-					}
-				}
-				else // ������
-				{
-					CItemElem * pItemBase = nullptr;
-						pItemBase = g_pPlayer->GetGuild()->m_GuildBank.GetAtId( m_Shortcut.m_dwId );
-
-
-					if( pItemBase )
-					{
-						if (nCost > pItemBase->m_nItemNum) {
-							nCost = pItemBase->m_nItemNum;
-						}
-						
-						m_Shortcut.m_dwData -= 100;
-						g_DPlay.SendGetItemGuildBank( (BYTE)( m_Shortcut.m_dwId ), nCost, 1 ); // 1�� �������� ����ƴٴ�? ���� �ǹ��Ѵ�.
-					}
-				}
-			}
-		}
-
-		else
-		// �κ��丮 �ε� ���� �־ Gold�� ��.
-		if( m_nIdWndTo == APP_GOLD ) // ��ũ���� �κ��丮�� ����
-		{
-			if( m_Shortcut.m_dwData == 0 ) // ��
-			{
-				if( nCost > (int)( g_pPlayer->m_dwGoldBank[m_nSlot] ) )
-					nCost = g_pPlayer->m_dwGoldBank[m_nSlot];
-				
-				if( nCost > 0 )
-				{
-					g_DPlay.SendGetGoldBank( m_nSlot, nCost );
-				}
-				else
-				{
-					// error message
-				}
-			}
-			else // ������
-			{
-				CItemElem * pItemBase = NULL;
-
-					pItemBase = g_pPlayer->GetItemBankId( m_nSlot, m_Shortcut.m_dwId );
-
-					if( pItemBase )
-					{
-						if( nCost > pItemBase->m_nItemNum )
-						{
-							nCost = pItemBase->m_nItemNum;
-						}
-						
-						m_Shortcut.m_dwData -= 100;
-						g_DPlay.SendGetItemBank( m_nSlot, (BYTE)( m_Shortcut.m_dwId ), nCost );
-					}
-
-			}
-		}
-		else
-		if( m_nIdWndTo == APP_COMMON_BANK )
-		{
-			if( m_Shortcut.m_dwData == 0 ) // ��
-			{
-				if( nCost > (int)( g_pPlayer->m_dwGoldBank[m_nPutSlot] ) )
-					nCost = g_pPlayer->m_dwGoldBank[m_nPutSlot];
-				
-				if( nCost > 0 ) 
-				{
-					g_DPlay.SendPutGoldBankToBank( m_nPutSlot, m_nSlot, nCost );
-				}
-				else
-				{
-					// error message
-				}
-			}
-			else // ������
-			{
-				CItemElem * pItemBase = NULL;
-
-					pItemBase = g_pPlayer->GetItemBankId( m_nPutSlot, m_Shortcut.m_dwId );
-					if( pItemBase )
-					{				
-						if (nCost > pItemBase->m_nItemNum) {
-							nCost = pItemBase->m_nItemNum;
-						}
-						
-						m_Shortcut.m_dwData -= 100;
-						g_DPlay.SendPutItemBankToBank( m_nPutSlot, m_nSlot, (BYTE)( m_Shortcut.m_dwId ), nCost );
-					}
-
-			}
-		}
-		else
+		
 		if( m_nIdWndTo == APP_POST_SEND )
 		{
-			if( m_Shortcut.m_dwData == 0 ) // ��
+			if( m_Shortcut.m_dwData != 0 ) // ��
 			{
-				if( nCost > g_pPlayer->GetGold()  )
-					nCost = g_pPlayer->GetGold();
-				
-				if( nCost > 0 ) 
-				{
-					// ������ â�� �ִ´�.
-					if( g_WndMng.m_pWndPost )
-					{
-						g_WndMng.m_pWndPost->m_PostTabSend.SetCost(nCost);
+				CItemElem * pItemBase = g_pPlayer->GetItemId(m_Shortcut.m_dwId);
+				if (pItemBase) {
+					if (nCost > pItemBase->m_nItemNum) {
+						nCost = pItemBase->m_nItemNum;
+					}
+
+					pItemBase->SetExtra(nCost);
+
+					if (g_WndMng.m_pWndPost) {
+						g_WndMng.m_pWndPost->m_PostTabSend.SetItemId((BYTE)(m_Shortcut.m_dwId));
+						g_WndMng.m_pWndPost->m_PostTabSend.SetCount(nCost);
 					}
 				}
-				else
-				{
-					// error message
-				}
-			}
-			else // ������
-			{
-				CItemElem * pItemBase = NULL;
-
-					pItemBase = g_pPlayer->GetItemId( m_Shortcut.m_dwId );
-					if( pItemBase )
-					{				
-						if (nCost > pItemBase->m_nItemNum) {
-							nCost = pItemBase->m_nItemNum;
-						}
-						
-						pItemBase->SetExtra( nCost );		
-
-						m_Shortcut.m_dwData -= 100;
-
-						if( g_WndMng.m_pWndPost )
-						{
-							g_WndMng.m_pWndPost->m_PostTabSend.SetItemId( (BYTE)( m_Shortcut.m_dwId ) );
-							g_WndMng.m_pWndPost->m_PostTabSend.SetCount(nCost);
-						}						
-					}
 
 			}
 		}			
 		Destroy();
 	}
+
 	if( nID == WIDC_CANCEL )
 	{
 		if( m_nIdWndTo == APP_POST_SEND )
@@ -2583,20 +2307,28 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void CWndTradeGoldwithFunction::CreateGeneric(
-	Source source, std::function<void(int)> m_onValidation
+CWndTradeGoldwithFunction * CWndTradeGoldwithFunction::CreateGeneric(
+	Source source,
+	std::function<void(int)> m_onValidation,
+	ExtraCreateParam extra
 ) {
 	SAFE_DELETE(g_WndMng.m_pWndTradeGoldFunc);
 
-	if (!g_pPlayer) return;
+	if (!g_pPlayer) {
+		extra.onCancel();
+		return nullptr;
+	}
 
 	const auto [initialQuantity, skipIf1, titleTID, countTID] = GetInitialValueOf(source);
 
-	if (initialQuantity <= 0) return;
+	if (initialQuantity <= 0) {
+		extra.onCancel();
+		return nullptr;
+	}
 
 	if (initialQuantity == 1 && skipIf1) {
 		m_onValidation(1);
-		return;
+		return nullptr;
 	}
 
 	g_WndMng.m_pWndTradeGoldFunc = new CWndTradeGoldwithFunction();
@@ -2605,11 +2337,14 @@ void CWndTradeGoldwithFunction::CreateGeneric(
 	g_WndMng.m_pWndTradeGoldFunc->SetInitialValue(initialQuantity);
 	g_WndMng.m_pWndTradeGoldFunc->m_source = source;
 	g_WndMng.m_pWndTradeGoldFunc->m_onValidation = std::move(m_onValidation);
+	g_WndMng.m_pWndTradeGoldFunc->m_onCancel = std::move(extra.onCancel);
 
 	g_WndMng.m_pWndTradeGoldFunc->GetDlgItem(WIDC_STATIC)
 		->m_strTitle = prj.GetText(titleTID);
 	g_WndMng.m_pWndTradeGoldFunc->GetDlgItem(WIDC_CONTROL1)
 		->m_strTitle = prj.GetText(countTID);
+
+	return g_WndMng.m_pWndTradeGoldFunc;
 }
 
 
@@ -2632,23 +2367,56 @@ BOOL CWndTradeGoldwithFunction::OnChildNotify(UINT message, UINT nID, LRESULT * 
 		Destroy();
 	}
 
+	if (nID == WIDC_CANCEL) {
+		m_onCancel();
+		Destroy();
+	} else if (nID == WTBID_CLOSE) {
+		m_onCancel();
+	}
+
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
 CWndTradeGoldwithFunction::Initializer CWndTradeGoldwithFunction::GetInitialValueOf(CWndTradeGoldwithFunction::Source source) {
 	struct VisitorQuantity {
 		int operator()(SourceItem sourceItem) {
-			const CItemElem * pItemBase = g_pPlayer->GetItemId(sourceItem.itemId);
+			const CItemElem * pItemBase = g_pPlayer->GetItemId(sourceItem.itemPos);
 			return pItemBase && pItemBase->GetExtra() == 0 ? pItemBase->m_nItemNum : 0;
 		}
 
 		int operator()(SourceBag sourceBag) {
-			const CItemElem * pItemBase = g_pPlayer->m_Pocket.GetAt(sourceBag.bagId, sourceBag.itemId);
+			const CItemElem * pItemBase = g_pPlayer->m_Pocket.GetAt(sourceBag.bagId, sourceBag.itemPos);
 			return pItemBase && pItemBase->GetExtra() == 0 ? pItemBase->m_nItemNum : 0;
 		}
 
 		int operator()(SourceMoney sourceItem) {
 			return g_pPlayer->GetGold();
+		}
+
+		int operator()(SourceBank sourceBank) {
+			const CItemElem * pItemBase = g_pPlayer->GetItemBankId(sourceBank.slot, sourceBank.itemPos);
+			return pItemBase && pItemBase->GetExtra() == 0 ? pItemBase->m_nItemNum : 0;
+		}
+
+		int operator()(SourceBankMoney source) {
+			return g_pPlayer->m_dwGoldBank[source.slot];
+		}
+
+		int operator()(SourceGuildBank source) {
+			CGuild * pGuild = g_pPlayer->GetGuild();
+			if (!pGuild) return 0;
+			if (!pGuild->IsGetItem(g_pPlayer->m_idPlayer)) return 0;
+
+			const CItemElem * pItemBase = pGuild->m_GuildBank.GetAtId(source.itemPos);
+			return pItemBase && pItemBase->GetExtra() == 0 ? pItemBase->m_nItemNum : 0;
+		}
+
+		int operator()(SourceGuildMoney source) {
+			CGuild * pGuild = g_pPlayer->GetGuild();
+			if (!pGuild) return 0;
+			if (!pGuild->IsGetPenya(g_pPlayer->m_idPlayer)) return 0;
+
+			return pGuild->m_nGoldGuild;
 		}
 	};
 
@@ -2656,6 +2424,8 @@ CWndTradeGoldwithFunction::Initializer CWndTradeGoldwithFunction::GetInitialValu
 
 	if (std::holds_alternative<SourceItem>(source)
 		|| std::holds_alternative<SourceBag>(source)
+		|| std::holds_alternative<SourceGuildBank>(source)
+		|| std::holds_alternative<SourceBank>(source)
 		) {
 		return Initializer{
 			.initialQuantity = initialQuantiy,
@@ -2674,32 +2444,22 @@ CWndTradeGoldwithFunction::Initializer CWndTradeGoldwithFunction::GetInitialValu
 }
 
 int CWndTradeGoldwithFunction::FinalizeQuantity(CWndTradeGoldwithFunction::Source source, int quantity) {
-	struct Visitor {
-		int quantity;
+	const auto initializer = GetInitialValueOf(source);
 
-		int operator()(SourceItem sourceItem) {
-			const CItemElem * pItemBase = g_pPlayer->GetItemId(sourceItem.itemId);
-			if (!pItemBase) return 0;
-			return std::clamp<int>(quantity, 1, pItemBase->m_nItemNum);
-		}
+	if (initializer.initialQuantity <= 0) return 0;
 
-		int operator()(SourceBag sourceBag) {
-			const CItemElem * pItemBase = g_pPlayer->m_Pocket.GetAt(sourceBag.bagId, sourceBag.itemId);
-			if (!pItemBase) return 0;
-			return std::clamp<int>(quantity, 1, pItemBase->m_nItemNum);
-		}
-
-		int operator()(SourceMoney sourceItem) {
-			return std::clamp<int>(quantity, 0, g_pPlayer->GetGold());
-		}
-	};
-
-	return std::visit(Visitor{ quantity }, source);
+	if (initializer.skipIf1) {
+		// Item: at least one
+		return std::clamp<int>(quantity, 1, initializer.initialQuantity);
+	} else {
+		// Money: 0 can be considered
+		return std::clamp<int>(quantity, 0, initializer.initialQuantity);
+	}
 }
 
 BOOL CWndTradeGoldwithFunction::Process() {
 	if (const SourceItem * srcItem = std::get_if<SourceItem>(&m_source)) {
-		const CItemElem * pItemBase = g_pPlayer->GetItemId(srcItem->itemId);
+		const CItemElem * pItemBase = g_pPlayer->GetItemId(srcItem->itemPos);
 		if (!pItemBase || pItemBase->GetExtra() > 0) {
 			Destroy();
 		}
@@ -2849,7 +2609,7 @@ CWndTrade::CWndTrade()
 CWndTrade::~CWndTrade()
 {
 	g_DPlay.SendTradeCancel();
-	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
+	SAFE_DELETE( g_WndMng.m_pWndTradeGoldFunc );
 }
 
 void CWndTrade::OnDraw(C2DRender* p2DRender)
@@ -2950,54 +2710,23 @@ BOOL CWndTrade::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	}
 	if( message == WIN_ITEMDROP && ( nID == 10001 || nID == 10002 ) )
 	{
-		BOOL TradeGold = FALSE;
-		SAFE_DELETE( g_WndMng.m_pWndTradeGold );
-		g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-		memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-		if( g_WndMng.m_pWndTradeGold->m_Shortcut.m_dwData == 0 ) // ��
-		{
-			TradeGold = TRUE;
- 			g_WndMng.m_pWndTradeGold->m_dwGold = g_pPlayer->GetGold();
-		}
-		else // ������
-		{
-			CItemElem * pItemBase = g_pPlayer->GetItemId( g_WndMng.m_pWndTradeGold->m_Shortcut.m_dwId );
-			g_WndMng.m_pWndTradeGold->m_dwGold = pItemBase->m_nItemNum;
-		}
-		g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_TRADE;
-		g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-		
-		if( TradeGold )
-		{
-			if( m_nGoldI == 0 )
-			{
-				g_WndMng.m_pWndTradeGold->Initialize( &g_WndMng, APP_TRADE_GOLD );
-				g_WndMng.m_pWndTradeGold->MoveParentCenter();
-				CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-				CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-				g_WndMng.m_pWndTradeGold->SetTitle( "Penya" );
-				CString strMain = prj.GetText( TID_GAME_MOVEPENYA );//"�󸶸� �̵��Ͻðڽ��ϱ�?";
-				CString strCount = prj.GetText(TID_GAME_PENYACOUNT);//" SEED : ";
-				pStatic->m_strTitle = strMain;
-				pStaticCount->m_strTitle = strCount;
+		SHORTCUT & shortcut = reinterpret_cast<SHORTCUT &>(*pLResult);
+
+		if (shortcut.m_dwData == 0) {
+			if (m_nGoldI == 0) {
+				CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceMoney>(
+					{}, [](auto, int quantity) { g_DPlay.SendTradePutGold(quantity); }
+				);
 			}
-			else
-			{
-				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
-			}
+		} else {
+			CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceItem>(
+				{ shortcut.m_dwId },
+				[tradePos = shortcut.m_dwData - 100](auto source, int quantity) {
+					g_DPlay.SendTradePut((BYTE)(tradePos), 0, source.itemPos, quantity);
+				}
+			);
 		}
-		else
-		{
-			g_WndMng.m_pWndTradeGold->Initialize( &g_WndMng, APP_TRADE_GOLD );
-			g_WndMng.m_pWndTradeGold->MoveParentCenter();
-			CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-			CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-			g_WndMng.m_pWndTradeGold->SetTitle( "Item" );
-			CString strMain = prj.GetText( TID_GAME_MOVECOUNT );//"��� �̵��Ͻðڽ��ϱ�?";
-			CString strCount = prj.GetText(TID_GAME_NUMCOUNT);//" ���� : ";
-			pStatic->m_strTitle = strMain;
-			pStaticCount->m_strTitle = strCount;
-		}
+
 	}
 	else
 	{

@@ -285,7 +285,7 @@ BOOL CWndBagEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			if( pWndFrame->GetWndId() == APP_INVENTORY )
 			{
-				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
+				SAFE_DELETE( g_WndMng.m_pWndTradeGoldFunc );
 				if( lpShortcut->m_dwData != 0 )
 				{
 					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
@@ -303,7 +303,7 @@ BOOL CWndBagEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceItem>(
 								{ lpShortcut->m_dwId },
 								[nSlot](auto source, int quantity) {
-									g_DPlay.SendMoveItem_Pocket(-1, source.itemId, quantity, nSlot);
+									g_DPlay.SendMoveItem_Pocket(-1, source.itemPos, quantity, nSlot);
 								}
 							);
 
@@ -314,7 +314,7 @@ BOOL CWndBagEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			else if( pWndFrame->GetWndId() == APP_BAG_EX )
 			{
 			
-				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
+				SAFE_DELETE( g_WndMng.m_pWndTradeGoldFunc );
 				if( lpShortcut->m_dwData != 0 )
 				{
 					BYTE nPutSlot;
@@ -336,7 +336,7 @@ BOOL CWndBagEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceBag>(
 							{ nPutSlot, lpShortcut->m_dwId },
 							[nSlot](auto source, int quantity) {
-								g_DPlay.SendMoveItem_Pocket(source.bagId, source.itemId, quantity, nSlot);
+								g_DPlay.SendMoveItem_Pocket(source.bagId, source.itemPos, quantity, nSlot);
 							}
 						);
 					}

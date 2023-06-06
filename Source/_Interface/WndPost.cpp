@@ -317,50 +317,36 @@ BOOL CWndPostSend::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	
 	// ������( ���?, ���ⱸ )
 	if( PtInRect(&(pCustom->rect), point) )
-	{		
-		if( pItemElem->m_nItemNum > 1 )
-		{ 
-			SetItemId( (BYTE)( pItemElem->m_dwObjId ) );
+	{
+		SetItemId((BYTE)(pItemElem->m_dwObjId));
 
-			g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-			memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pShortcut, sizeof(SHORTCUT) );
-			g_WndMng.m_pWndTradeGold->m_dwGold = pItemElem->m_nItemNum;
-			g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_POST_SEND; // �κ��丮 �ε� ���� �־ Gold�� ��.
-			g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-			g_WndMng.m_pWndTradeGold->m_nSlot = 0;
-			
-			g_WndMng.m_pWndTradeGold->Initialize( &g_WndMng, APP_TRADE_GOLD );
-			g_WndMng.m_pWndTradeGold->AddWndStyle( WBS_MODAL );
-			g_WndMng.m_pWndTradeGold->MoveParentCenter();
+		CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceItem>(
+			{ pItemElem->m_dwObjId },
+			[](auto source, int quantity) {
+				if (!g_WndMng.m_pWndPost) return;
 
-			CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-			CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-			CString strMain = prj.GetText( TID_GAME_MOVECOUNT );//"��� �̵��Ͻðڽ��ϱ�?";
-			CString strCount = prj.GetText(TID_GAME_NUMCOUNT);//" ���� : ";
-			pStatic->m_strTitle = strMain;
-			pStaticCount->m_strTitle = strCount;
-			g_WndMng.m_pWndTradeGold->SetTitle("");
+				CItemElem * pItemBase = g_pPlayer->m_Inventory.GetAtId(source.itemPos);
+				if (!pItemBase) {
+					g_WndMng.m_pWndPost->m_PostTabSend.SetItemId(0xff);
+					g_WndMng.m_pWndPost->m_PostTabSend.SetCount(0);
+					return;
+				}
 
-			if( pItemElem->GetProp() )
+				pItemBase->SetExtra(quantity);
+				g_WndMng.m_pWndPost->m_PostTabSend.SetItemId(pItemBase->m_dwObjId);
+				g_WndMng.m_pWndPost->m_PostTabSend.SetCount(quantity);
+			},
 			{
-				CWndEdit* pWndEdit2	= (CWndEdit*)GetDlgItem( WIDC_EDIT2 );
-
-				if( stricmp( pWndEdit2->GetString(), pItemElem->GetProp()->szName ) != 0 )
-					pWndEdit2->SetString(pItemElem->GetProp()->szName);
+				.onCancel = []() {
+					if (!g_WndMng.m_pWndPost) return;
+					g_WndMng.m_pWndPost->m_PostTabSend.SetItemId(0xff);
+					g_WndMng.m_pWndPost->m_PostTabSend.SetCount(0);
+				}
 			}
-		}
-		else
-		{
-			SetItemId( (BYTE)( pItemElem->m_dwObjId ) );
-			pItemElem->SetExtra( 1 );				
+		);
 
-			if( pItemElem->GetProp() )
-			{
-				CWndEdit* pWndEdit2	= (CWndEdit*)GetDlgItem( WIDC_EDIT2 );
-
-				if( stricmp( pWndEdit2->GetString(), pItemElem->GetProp()->szName ) != 0 )
-					pWndEdit2->SetString(pItemElem->GetProp()->szName);
-			}			
+		if (const ItemProp * pItemProp = pItemElem->GetProp()) {
+			GetDlgItem<CWndEdit>(WIDC_EDIT2)->SetString(pItemProp->szName);
 		}
 	}		
 			

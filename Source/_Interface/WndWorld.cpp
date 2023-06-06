@@ -556,7 +556,6 @@ m_buffs( NULL )
 
 	//m_pCaptureObj = NULL;
 
-	//m_pWndTradeGold = NULL;
 	m_objidTracking		= NULL_ID;
 	m_dwDropTime	= GetTickCount();
 	

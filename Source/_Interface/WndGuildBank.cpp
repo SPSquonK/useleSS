@@ -25,7 +25,7 @@ CWndGuildBank::CWndGuildBank()
 CWndGuildBank::~CWndGuildBank() 
 { 
 	SAFE_DELETE( m_pwndGuildMerit );
-	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
+	SAFE_DELETE( g_WndMng.m_pWndTradeGoldFunc );
 	SAFE_DELETE( g_WndMng.m_pWndGuildBankLog );
 } 
 void CWndGuildBank::OnDraw( C2DRender* p2DRender ) 
@@ -138,49 +138,23 @@ BOOL CWndGuildBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				if( nID == 11 ) // item
 				{
 					BOOL bForbid = TRUE;
-					SAFE_DELETE( g_WndMng.m_pWndTradeGold );
+
 					if( lpShortcut->m_dwData != 0 )
 					{
 						CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 						
 						UINT SelectCount = pWndItemCtrl->GetSelectedCount();
-						if( SelectCount != 1)
-						{
-							//g_WndMng.PutString( "장착 되어 있는것은 넣을수 없습니다", NULL, 0xffffff00 );
-							g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor( TID_GAME_EQUIPPUT ) );
+						if( SelectCount != 1) {
+							g_WndMng.PutString(TID_GAME_EQUIPPUT);
 							
-						}
-						else
-						{
-							for( int i = 0; i < (int)( SelectCount ); i++ )
-							{
-								int nItem = pWndItemCtrl->GetSelectedItem( i );
-								pWndItemCtrl->GetItem( nItem );
-							}
-							CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-							
-							if( itemElem->m_nItemNum > 1 )
-							{ 
-								g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-								memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-								g_WndMng.m_pWndTradeGold->m_dwGold = itemElem->m_nItemNum;
-								g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_GUILD_BANK;
-								g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-								
-								g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-								g_WndMng.m_pWndTradeGold->MoveParentCenter();
-								CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-								CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-								CString strMain = prj.GetText(TID_GAME_MOVECOUNT);//"몇개를 이동하시겠습니까?";
-								CString strCount = prj.GetText(TID_GAME_NUMCOUNT);// " 갯수 : ";
-								pStatic->m_strTitle = strMain;
-								pStaticCount->m_strTitle = strCount;
-							}
-							else
-							{
-								g_DPlay.SendPutItemGuildBank( (BYTE)( lpShortcut->m_dwId ), 1, 1 );
-							}
-							
+						} else {
+							CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceItem>(
+								{ lpShortcut->m_dwId  },
+								[](auto source, int quantity) {
+									g_DPlay.SendPutItemGuildBank(source.itemPos, quantity, 1);
+								}
+							);
+
 						}
 					}
 				}

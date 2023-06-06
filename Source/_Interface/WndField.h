@@ -427,14 +427,24 @@ public:
 
 class CWndTradeGoldwithFunction : public CWndNeuz {
 public:
-	struct SourceItem { DWORD itemId; };
-	struct SourceBag { int bagId; DWORD itemId; };
+	struct SourceItem { DWORD itemPos; };
+	struct SourceBag { int bagId; DWORD itemPos; };
+	struct SourceBank { int slot; DWORD itemPos; };
 	struct SourceMoney {};
+	struct SourceBankMoney { int slot; };
+	struct SourceGuildBank { DWORD itemPos; };
+	struct SourceGuildMoney {};
 
-	using Source = std::variant<SourceItem, SourceBag, SourceMoney>;
+	using Source = std::variant<
+		SourceItem, SourceMoney,
+		SourceBank, SourceBankMoney,
+		SourceGuildBank, SourceGuildMoney,
+		SourceBag
+	>;
 
 	Source m_source;
 	std::function<void(int)> m_onValidation;
+	std::function<void()> m_onCancel;
 
 	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
@@ -448,15 +458,29 @@ public:
 		DWORD countTID;
 	};
 
+	struct ExtraCreateParam {
+		std::function<void()> onCancel;
+	};
+
 	template<typename SourceType>
-	static void Create(SourceType source, std::function<void(SourceType, int)> onValidation) {
+	static CWndTradeGoldwithFunction * Create(
+		SourceType source,
+		std::function<void(SourceType, int)> onValidation,
+		ExtraCreateParam extra = {}
+	) {
 		return CreateGeneric(source,
 			[source, onValidation = std::move(onValidation)](int quantity) {
 				onValidation(source, quantity);
-			});
+			},
+			std::move(extra)
+		);
 	}
 
-	static void CreateGeneric(Source source, std::function<void(int)> m_onValidation);
+	static CWndTradeGoldwithFunction * CreateGeneric(
+		Source source,
+		std::function<void(int)> m_onValidation,
+		ExtraCreateParam extra = {}
+	);
 	static Initializer GetInitialValueOf(Source source);
 	static int FinalizeQuantity(Source source, int quantity);
 

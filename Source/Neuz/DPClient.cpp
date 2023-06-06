@@ -1488,7 +1488,7 @@ void CDPClient::OnRemoveObj( OBJID objid )
 				if( pWndTradeConfirm )
 					pWndTradeConfirm->Destroy();
 
-				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
+				SAFE_DELETE( g_WndMng.m_pWndTradeGoldFunc );
 
 				g_pPlayer->OnTradeRemoveUser();
 				g_pPlayer->m_vtInfo.SetOther( NULL );
@@ -2407,7 +2407,7 @@ void CDPClient::OnTradeCancel( OBJID objid, CAr & ar )
 		Windows::DestroyIfOpened(APP_TRADE_CONFIRM);
 	}
 
-	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
+	SAFE_DELETE( g_WndMng.m_pWndTradeGoldFunc );
 }
 
 void CDPClient::OnTradelastConfirmOk( OBJID objid, CAr & ar )
@@ -7535,17 +7535,6 @@ void CDPClient::SendDropItem(DWORD dwItemId, short nITemNum, const D3DXVECTOR3 &
 	CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
 	if (pWndWorld)
 		pWndWorld->m_dwDropTime = GetTickCount();
-}
-
-void CDPClient::SendDropGold( DWORD dwGold, const D3DXVECTOR3 & vPlayerPos, const D3DXVECTOR3 & vPos )
-{
-	D3DXVECTOR3 vOut, v	= vPos - vPlayerPos;
-	D3DXVec3Normalize( &vOut, &v );
-	v	= vPlayerPos + vOut;
-
-	BEFORESENDSOLE( ar, PACKETTYPE_DROPGOLD, DPID_UNKNOWN );
-	ar << dwGold << v;
-	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
 void CDPClient::SendTrade( CMover* pTrader )

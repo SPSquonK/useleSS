@@ -16,7 +16,7 @@
 
 CWndBank::~CWndBank() {
 	g_DPlay.SendCloseBankWnd();
-	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
+	SAFE_DELETE( g_WndMng.m_pWndTradeGoldFunc );
 } 
 
 void CWndBank::OnDraw( C2DRender* p2DRender ) 
@@ -162,126 +162,62 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			if( pWndFrame->GetWndId() == APP_INVENTORY )
 			{
-				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 				if( lpShortcut->m_dwData != 0 )
 				{
 					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 					UINT SelectCount = pWndItemCtrl->GetSelectedCount();
-					if( SelectCount != 1)
-					{
+					if (SelectCount != 1) {
 						g_WndMng.PutString(TID_GAME_EQUIPPUT);
-						
-					}
-					else
-					{
-
-						CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-						if( itemElem->m_nItemNum > 1 )
-						{ 
-							g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-							memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-							g_WndMng.m_pWndTradeGold->m_dwGold = itemElem->m_nItemNum;
-							g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_BANK;
-							g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-							g_WndMng.m_pWndTradeGold->m_nSlot = nSlot;
-							
-							g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-							g_WndMng.m_pWndTradeGold->MoveParentCenter();
-							CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-							CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-							pStatic->m_strTitle = prj.GetText(TID_GAME_MOVECOUNT);
-							pStaticCount->m_strTitle = prj.GetText(TID_GAME_NUMCOUNT);
-						}
-						else
-						{
-							g_DPlay.SendPutItemBank( nSlot, (BYTE)( lpShortcut->m_dwId ), 1 );
-						}
-						
+					} else {
+						CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceItem>(
+							{ lpShortcut->m_dwId },
+							[nSlot](auto source, int quantity) {
+								g_DPlay.SendPutItemBank(nSlot, source.itemPos, quantity);
+							}
+						);
 					}
 				}
 				else
 				{
-					// Æä³Ä (µ·)
-					g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-					memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-					g_WndMng.m_pWndTradeGold->m_dwGold = g_pPlayer->GetGold();
-					g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_BANK;
-					g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-					g_WndMng.m_pWndTradeGold->m_nSlot = nSlot;
-					
-					g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-					g_WndMng.m_pWndTradeGold->MoveParentCenter();
-					CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-					CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-
-					pStatic->m_strTitle = prj.GetText(TID_GAME_MOVEPENYA);
-					pStaticCount->m_strTitle = prj.GetText(TID_GAME_PENYACOUNT);
+					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceMoney>(
+						{},
+						[nSlot](auto, int quantity) {
+							g_DPlay.SendPutGoldBank(nSlot, quantity);
+						}
+					);
 				}
 			}
 			else if( pWndFrame->GetWndId() == APP_COMMON_BANK )
 			{
 				BYTE nPutSolt;
 			
-				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 				if( lpShortcut->m_dwData != 0 )
 				{
 					nPutSolt = GetPosOfItemCtrl(pWndPut);
 
 					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 					UINT SelectCount = pWndItemCtrl->GetSelectedCount();
-					if( SelectCount != 1)
-					{
+					if ( SelectCount != 1) {
 						g_WndMng.PutString(TID_GAME_EQUIPPUT);
-						
-					}
-					else
-					{
-
-						CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-						if( itemElem->m_nItemNum > 1 )
-						{ 
-							g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-							memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-							g_WndMng.m_pWndTradeGold->m_dwGold = itemElem->m_nItemNum;
-							g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_COMMON_BANK;
-							g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-							g_WndMng.m_pWndTradeGold->m_nSlot = nSlot;
-							g_WndMng.m_pWndTradeGold->m_nPutSlot = nPutSolt;
-							
-							g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-							g_WndMng.m_pWndTradeGold->MoveParentCenter();
-							CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-							CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-							pStatic->m_strTitle = prj.GetText(TID_GAME_MOVECOUNT);
-							pStaticCount->m_strTitle = prj.GetText(TID_GAME_NUMCOUNT);
-						}
-						else
-						{
-							g_DPlay.SendPutItemBankToBank( nPutSolt, nSlot, (BYTE)( lpShortcut->m_dwId ), 1 );
-						}
-						
+					} else {
+						CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceBank>(
+							{ nPutSolt, lpShortcut->m_dwId },
+							[nSlot](auto source, int quantity) {
+								g_DPlay.SendPutItemBankToBank(source.slot, nSlot, source.itemPos, quantity);
+							}
+						);
 					}
 				}
 				else
 				{
 					nPutSolt = GetPosOfGold(pWndPut);
-					
-					// Æä³Ä (µ·)
-					g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-					memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-					g_WndMng.m_pWndTradeGold->m_dwGold = g_pPlayer->m_dwGoldBank[nPutSolt];
-					g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_COMMON_BANK;
-					g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-					g_WndMng.m_pWndTradeGold->m_nSlot = nSlot;
-					g_WndMng.m_pWndTradeGold->m_nPutSlot = nPutSolt;
-					
-					g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-					g_WndMng.m_pWndTradeGold->MoveParentCenter();
-					CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-					CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
 
-					pStatic->m_strTitle = prj.GetText(TID_GAME_MOVEPENYA);
-					pStaticCount->m_strTitle = prj.GetText(TID_GAME_PENYACOUNT);
+					CWndTradeGoldwithFunction::Create<CWndTradeGoldwithFunction::SourceBankMoney>(
+						{ nPutSolt },
+						[nSlot](auto source, int quantity) {
+							g_DPlay.SendPutGoldBankToBank(source.slot, nSlot, quantity);
+						}
+					);
 				}
 			}
 		}

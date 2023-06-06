@@ -42,7 +42,7 @@ CWndVendor::~CWndVendor()
 	SAFE_DELETE( m_pWndVendorBuy );
 
 	SAFE_DELETE( m_pwndVenderMessage );
-	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
+	SAFE_DELETE( g_WndMng.m_pWndTradeGoldFunc );
 }
 
 void CWndVendor::SetVendor( CMover* pVendor )

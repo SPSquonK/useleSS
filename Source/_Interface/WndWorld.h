@@ -268,7 +268,6 @@ public:
 	CTexture m_texGauFillNormal ;
 	LPDIRECT3DVERTEXBUFFER9 m_pVBGauge;
 
-	//CWndTradeGold* m_pWndTradeGold;
 	int		m_nMouseMode;		// 비행중일때. 0:우버튼+드래그 빗자루회전   1:걍드래그 빗자루회전.
 	
 	int		ControlPlayer( DWORD dwMessage, CPoint point );

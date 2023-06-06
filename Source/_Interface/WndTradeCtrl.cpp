@@ -103,9 +103,9 @@ void CWndTradeCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 BOOL CWndTradeCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
-	CWndTradeGold* pWndTradeGold	= (CWndTradeGold*)g_WndMng.GetWndBase( APP_TRADE_GOLD );
-	if( pWndTradeGold != NULL )
+	if (g_WndMng.GetWndBase(APP_TRADE_GOLD)) {
 		return TRUE;
+	}
 
 	int nDstId = -1;
 	CRect rect = GetClientRect();
