@@ -373,25 +373,19 @@ BOOL CWndBagEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					UINT SelectCount = pWndItemCtrl->GetSelectedCount();
 					if( SelectCount != 1)
 					{
-						//g_WndMng.PutString( "장착 되어 있는것은 넣을수 없습니다", NULL, 0xffffff00 );
-						g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor( TID_GAME_EQUIPPUT ) );
-						
+						g_WndMng.PutString(TID_GAME_EQUIPPUT);
 					}
 					else
 					{
-
 						CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-						if( itemElem->GetProp()->dwItemKind3 == IK3_QUEST )
-						{
-							// 퀘스트 아이템은 휴대 가방으로 옮길 수 없습니다.
+						if (itemElem->GetProp()->dwItemKind3 == IK3_QUEST) {
 							g_WndMng.PutString(TID_GAME_ERROR_DONT_MOVE_QUEST_ITEM_TO_BAG_EX);
-						}
-						else
-						{
+						} else {
+							const auto source = CWndTradeGoldwithFunction::SourceItem{ lpShortcut->m_dwId };
 							CWndTradeGoldwithFunction::Create(
-								CWndTradeGoldwithFunction::SourceItem{ lpShortcut->m_dwId },
-								[itemId = lpShortcut->m_dwId, nSlot](int quantity) {
-									g_DPlay.SendMoveItem_Pocket(-1, itemId, quantity, nSlot);
+								source,
+								[source, nSlot](int quantity) {
+									g_DPlay.SendMoveItem_Pocket(-1, source.itemId, quantity, nSlot);
 								}
 							);
 
@@ -401,66 +395,33 @@ BOOL CWndBagEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 			else if( pWndFrame->GetWndId() == APP_BAG_EX )
 			{
-				BYTE nPutSlot;
 			
 				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 				if( lpShortcut->m_dwData != 0 )
 				{
-					if( pWndPut == &(m_wndItemCtrl[0]) )
-					{
+					BYTE nPutSlot;
+					if (pWndPut == &(m_wndItemCtrl[0])) {
 						nPutSlot = 0;
-					}
-					else if( pWndPut == &(m_wndItemCtrl[1]) )
-					{
+					} else if( pWndPut == &(m_wndItemCtrl[1]) ) {
 						nPutSlot = 1;
 						if(!m_bUse[0]) return FALSE;
-					}
-					else
-					{
+					} else {
 						nPutSlot = 2;
 						if(!m_bUse[1]) return FALSE;
 					}
 
 					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 					UINT SelectCount = pWndItemCtrl->GetSelectedCount();
-					if( SelectCount != 1)
-					{
-						//g_WndMng.PutString( "장착 되어 있는것은 넣을수 없습니다", NULL, 0xffffff00 );
-						g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor( TID_GAME_EQUIPPUT ) );
-						
-					}
-					else
-					{
-						for( int i = 0; i < (int)( SelectCount ); i++ )
-						{
-							int nItem = pWndItemCtrl->GetSelectedItem( i );
-							pWndItemCtrl->GetItem( nItem );
-						}
-						CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-						if( itemElem->m_nItemNum > 1 )
-						{ 
-							g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-							memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-							g_WndMng.m_pWndTradeGold->m_dwGold = itemElem->m_nItemNum;
-							g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_BAG_EX;
-							g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-							g_WndMng.m_pWndTradeGold->m_nSlot = nSlot;
-							g_WndMng.m_pWndTradeGold->m_nPutSlot = nPutSlot;
-							
-							g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-							g_WndMng.m_pWndTradeGold->MoveParentCenter();
-							CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-							CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-							CString strMain = prj.GetText(TID_GAME_MOVECOUNT);//"몇개를 이동하시겠습니까?";
-							CString strCount = prj.GetText(TID_GAME_NUMCOUNT);// " 갯수 : ";
-							pStatic->m_strTitle = strMain;
-							pStaticCount->m_strTitle = strCount;
-						}
-						else
-						{
-							g_DPlay.SendMoveItem_Pocket( nPutSlot, lpShortcut->m_dwId, 1 , nSlot);
-						}
-						
+					if (SelectCount != 1) {
+						g_WndMng.PutString(TID_GAME_EQUIPPUT);
+					} else {
+						const auto source = CWndTradeGoldwithFunction::SourceBag{ nPutSlot, lpShortcut->m_dwId };
+						CWndTradeGoldwithFunction::Create(
+							source,
+							[source, nSlot](int quantity) {
+								g_DPlay.SendMoveItem_Pocket(source.bagId, source.itemId, quantity, nSlot);
+							}
+						);
 					}
 				}
 			}

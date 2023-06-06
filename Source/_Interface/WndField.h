@@ -428,9 +428,10 @@ public:
 class CWndTradeGoldwithFunction : public CWndNeuz {
 public:
 	struct SourceItem { DWORD itemId; };
+	struct SourceBag { int bagId; DWORD itemId; };
 	struct SourceMoney {};
 
-	using Source = std::variant<SourceItem, SourceMoney>;
+	using Source = std::variant<SourceItem, SourceBag, SourceMoney>;
 
 	Source m_source;
 	std::function<void(int)> m_onValidation;

@@ -1475,32 +1475,13 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						if(!g_pPlayer->m_Pocket.IsAvailable(2)) return FALSE;
 					}
 					
-					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
-					
-					CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-					if( itemElem->m_nItemNum > 1 )
-					{ 
-						g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-						memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-						g_WndMng.m_pWndTradeGold->m_dwGold = itemElem->m_nItemNum;
-						g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_BAG_EX; // �κ��丮 �ε� ���� �־ Gold�� ��.
-						g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-						g_WndMng.m_pWndTradeGold->m_nSlot = -1;
-						g_WndMng.m_pWndTradeGold->m_nPutSlot = nSlot;
-						
-						g_WndMng.m_pWndTradeGold->Initialize( &g_WndMng, APP_TRADE_GOLD );
-						g_WndMng.m_pWndTradeGold->MoveParentCenter();
-						CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-						CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-						CString strMain = prj.GetText( TID_GAME_MOVECOUNT );//"��� �̵��Ͻðڽ��ϱ�?";
-						CString strCount = prj.GetText(TID_GAME_NUMCOUNT);//" ���� : ";
-						pStatic->m_strTitle = strMain;
-						pStaticCount->m_strTitle = strCount;
-					}
-					else
-					{
-						g_DPlay.SendMoveItem_Pocket( nSlot, lpShortcut->m_dwId, 1 , -1);
-					}
+					const auto source = CWndTradeGoldwithFunction::SourceBag{ nSlot, lpShortcut->m_dwId };
+					CWndTradeGoldwithFunction::Create(
+						source,
+						[source](int quantity) {
+							g_DPlay.SendMoveItem_Pocket(source.bagId, source.itemId, quantity, -1);
+						}
+					);
 				}
 				
 				bForbid = FALSE;
@@ -2415,22 +2396,6 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				}
 			}
 		}
-		else
-		if( m_nIdWndTo == APP_BAG_EX )
-		{
-			if( m_Shortcut.m_dwData != 0 )
-			{
-				
-				if( nCost > (int)( ( m_dwGold ) ) )
-				{
-					nCost = m_dwGold;
-				}
-				m_Shortcut.m_dwData -= 100;
-				//g_DPlay.SendPutItemBank( m_nSlot, m_Shortcut.m_dwId, nCost );
-				g_DPlay.SendMoveItem_Pocket( m_nPutSlot, m_Shortcut.m_dwId, nCost , m_nSlot);
-				
-			}
-		}
 		// �ڽ��� �κ��丮���� ����?���� �������� �̵�
 		else
 		if (m_nIdWndTo == APP_GUILD_BANK)
@@ -2622,6 +2587,8 @@ BOOL CWndTradeGold::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 void CWndTradeGoldwithFunction::Create(
 	Source source, std::function<void(int)> m_onValidation
 ) {
+	SAFE_DELETE(g_WndMng.m_pWndTradeGoldFunc);
+
 	if (!g_pPlayer) return;
 
 	const auto [initialQuantity, skipIf1, titleTID, countTID] = GetInitialValueOf(source);
@@ -2676,6 +2643,11 @@ CWndTradeGoldwithFunction::Initializer CWndTradeGoldwithFunction::GetInitialValu
 			return pItemBase && pItemBase->GetExtra() == 0 ? pItemBase->m_nItemNum : 0;
 		}
 
+		int operator()(SourceBag sourceBag) {
+			const CItemElem * pItemBase = g_pPlayer->m_Pocket.GetAt(sourceBag.bagId, sourceBag.itemId);
+			return pItemBase && pItemBase->GetExtra() == 0 ? pItemBase->m_nItemNum : 0;
+		}
+
 		int operator()(SourceMoney sourceItem) {
 			return g_pPlayer->GetGold();
 		}
@@ -2683,7 +2655,9 @@ CWndTradeGoldwithFunction::Initializer CWndTradeGoldwithFunction::GetInitialValu
 
 	const int initialQuantiy = std::visit(VisitorQuantity{}, source);
 
-	if (std::holds_alternative<SourceItem>(source)) {
+	if (std::holds_alternative<SourceItem>(source)
+		|| std::holds_alternative<SourceBag>(source)
+		) {
 		return Initializer{
 			.initialQuantity = initialQuantiy,
 			.skipIf1 = true,
@@ -2706,6 +2680,12 @@ int CWndTradeGoldwithFunction::FinalizeQuantity(CWndTradeGoldwithFunction::Sourc
 
 		int operator()(SourceItem sourceItem) {
 			const CItemElem * pItemBase = g_pPlayer->GetItemId(sourceItem.itemId);
+			if (!pItemBase) return 0;
+			return std::clamp<int>(quantity, 1, pItemBase->m_nItemNum);
+		}
+
+		int operator()(SourceBag sourceBag) {
+			const CItemElem * pItemBase = g_pPlayer->m_Pocket.GetAt(sourceBag.bagId, sourceBag.itemId);
 			if (!pItemBase) return 0;
 			return std::clamp<int>(quantity, 1, pItemBase->m_nItemNum);
 		}
