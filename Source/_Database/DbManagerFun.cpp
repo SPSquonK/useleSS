@@ -314,7 +314,7 @@ BOOL CDbManager::GetTaskBar( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS l
 		retval.m_dwId = splitter.NextDWORD();
 		const int type = splitter.NextInt();
 		retval.m_dwIndex = splitter.NextDWORD();
-		retval.m_dwUserId = splitter.NextDWORD();
+		/* m_dwUserId */ splitter.NextDWORD();
 		retval.m_dwData = splitter.NextDWORD();
 		if (retval.m_dwShortcut == ShortcutType::Chat) {
 			splitter.NextStringInBuffer(retval.m_szString);

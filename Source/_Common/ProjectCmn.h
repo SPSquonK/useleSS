@@ -827,7 +827,6 @@ struct SHORTCUT {
 	ShortcutType m_dwShortcut = ShortcutType::None;
 	DWORD     m_dwId = 0;
 	DWORD     m_dwIndex = 0;
-	DWORD     m_dwUserId = 0;
 	DWORD     m_dwData = NULL;
 	TCHAR     m_szString[MAX_SHORTCUT_STRING] = ""; // SHORTCUT_CHAT일 경우 저장.
 	BOOL IsEmpty() const { return m_dwShortcut == ShortcutType::None; }

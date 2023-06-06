@@ -956,7 +956,6 @@ void CWndTaskBar::SetShortcut( int nIndex, ShortcutType dwShortcut, DWORD dwType
 	pShortcut.m_dwShortcut = dwShortcut;
 	pShortcut.m_dwIndex = nIndex;
 	pShortcut.m_dwId = dwId;
-	pShortcut.m_dwUserId = 0;
 	pShortcut.m_dwData = nWhere == CTaskbar::BarName::Applet ? 0 : 1;
 	strcpy(pShortcut.m_szString, m_GlobalShortcut.m_szString);
 
@@ -1172,7 +1171,6 @@ BOOL CWndTaskBar::SetSkillQueue( int nIndex, const DWORD skillId, CTexture* pTex
 	pShortcut->m_dwShortcut = ShortcutType::Skill;
 	pShortcut->m_dwIndex    = nIndex;//dwIndex; // 스킬 콘트롤에서의 순서 
 	pShortcut->m_dwId       = skillId; // 스킬 인덱스 
-	pShortcut->m_dwUserId   = 0 ;
 	pShortcut->m_dwData     = 2;
 	_tcscpy( pShortcut->m_szString, m_GlobalShortcut.m_szString );
 	g_DPlay.SendSkillTaskBar();
