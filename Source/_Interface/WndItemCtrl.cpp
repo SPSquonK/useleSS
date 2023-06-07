@@ -490,52 +490,24 @@ void CWndItemCtrl::OnDraw(C2DRender* p2DRender)
 
 					if( pWndBase )
 					{
-						if( pWndBase->m_bSexSort && pWndBase->m_bLevelSort )
-						{
-							if( pItemProp->dwItemSex != 0xffffffff && pItemProp->dwLimitLevel1 != 0xffffffff )
-							{
-								if( pItemProp->dwItemSex == g_pPlayer->GetSex() && !pItemElem->IsLimitLevel( g_pPlayer ) )
-									m_pArrayItemElem[m_nArrayCount++] = pItemElem;
+						bool emplaceItem = true;
+
+						if (pWndBase->m_bSexSort && pItemProp->dwItemSex != 0xffffffff) {
+							if (pItemProp->dwItemSex != g_pPlayer->GetSex()) {
+								emplaceItem = false;
 							}
-							else
-							if( pItemProp->dwItemSex != 0xffffffff )
-							{
-								if( pItemProp->dwItemSex == g_pPlayer->GetSex() )
-									m_pArrayItemElem[m_nArrayCount++] = pItemElem;
-							}
-							else
-							if( pItemProp->dwLimitLevel1 != 0xffffffff )
-							{
-								if( !pItemElem->IsLimitLevel( g_pPlayer ) )
-									m_pArrayItemElem[m_nArrayCount++] = pItemElem;
-							}
-							else
-								m_pArrayItemElem[m_nArrayCount++] = pItemElem;
 						}
-						else
-						if( pWndBase->m_bSexSort )
-						{
-							if( pItemProp->dwItemSex != 0xffffffff )
-							{
-								if( pItemProp->dwItemSex == g_pPlayer->GetSex() )
-									m_pArrayItemElem[m_nArrayCount++] = pItemElem;
+
+						if (pWndBase->m_bLevelSort && pItemProp->dwLimitLevel1 != 0xffffffff) {
+							if (pItemElem->IsLimitLevel(g_pPlayer)) {
+								emplaceItem = false;
 							}
-							else
-								m_pArrayItemElem[m_nArrayCount++] = pItemElem;
 						}
-						else
-						if( pWndBase->m_bLevelSort )
-						{
-							if( pItemProp->dwLimitLevel1 != 0xffffffff )
-							{
-								if( !pItemElem->IsLimitLevel( g_pPlayer ) )
-									m_pArrayItemElem[m_nArrayCount++] = pItemElem;
-							}
-							else
-								m_pArrayItemElem[m_nArrayCount++] = pItemElem;
-						}
-						else
+						
+						if (emplaceItem) {
 							m_pArrayItemElem[m_nArrayCount++] = pItemElem;
+						}
+
 					}
 				}
 			}
