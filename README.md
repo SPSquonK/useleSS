@@ -66,14 +66,15 @@ Do not forget to put a message like `// Original code: SquonK, https://github.co
 
 Examples of code that you might find usefull include:
 - `SendPacket` / `BroadcastPacket` API
-- WorldServer's OnSnapshot error handling
-- The `CWndTListBox` class
+- Neuz OnSnapshot error handling
+- `CWndTListBox` class: a CWndListBox templated by the type of the objects to display and the way to display them
+- New `CWndTradeGold` API: relies on callbacks instead of modifying its OnChildNotify method
 
 Very common ideas in this repository include:
-- Simplification of `CWndBase` derived classes
-- STL-ization of many classes (`CFixedArray`, … are considered obsolete)
+- Simplification of `CWndBase` derived classes by removing duplicated methods
+- STL-ization of many classes: `CPtrArray`, … are considered obsolete
 
-Note that some changes are very opiniated, for example:
+Note that some changes are very opinionated, for example:
 - `UIVariant` API (The design choices behind these changes in french: https://www.sà.fr/2022/06/04/uivariant/)
 
 ## Contributing
