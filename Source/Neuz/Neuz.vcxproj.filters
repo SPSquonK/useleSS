@@ -394,9 +394,6 @@
     <ClCompile Include="..\_Interface\WndRepairItem.cpp">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Interface\WndRepairItemCtrl.cpp">
-      <Filter>Source Files\_Interface\WndApplet</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Interface\WndSealChar.cpp">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClCompile>
@@ -1255,9 +1252,6 @@
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>
     <ClInclude Include="..\_Interface\WndRepairItem.h">
-      <Filter>Source Files\_Interface\WndApplet</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndRepairItemCtrl.h">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>
     <ClInclude Include="..\_Interface\WndSealChar.h">

@@ -1,13 +1,39 @@
-#ifndef __WNDREPAIRITEM__H
-#define __WNDREPAIRITEM__H
+#pragma once
 
-#include "WndRepairItemCtrl.h"
+class C2DRender;
+class CItemElem;
+
+class CWndRepairItemCtrl : public CWndBase {
+	CItemElem * m_pFocusItem;
+	int		m_nCurSel;
+
+public:
+	//	Constructions
+	CWndRepairItemCtrl();
+	~CWndRepairItemCtrl() override = default;
+
+	DWORD * m_pdwIdRepair;
+
+	void	InitItem(DWORD * pdwIdRepair);
+	void	Create(DWORD dwListCtrlStyle, const RECT & rect, CWndBase * pParentWnd, UINT nID);
+
+	int		HitTest(CPoint point);
+
+	void OnLButtonDown(UINT nFlags, CPoint point) override;
+
+	virtual	void	SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE);
+	virtual	void	OnInitialUpdate(void);
+	virtual	void	OnDraw(C2DRender * p2DRender);
+	virtual	BOOL	OnEraseBkgnd(C2DRender * p2DRender);
+	virtual	void	PaintFrame(C2DRender * p2DRender);
+	virtual	BOOL	OnDropIcon(LPSHORTCUT pShortcut, CPoint point = 0);
+	//	Implementation
+};
+
 
 class CWndRepairItem : public CWndNeuz 
 { 
 public:
-//	CWndItemCtrl		m_wndItemCtrl;
-//	CItemContainer< CItemElem > pRepairItem;
 	CWndStatic* pWndStaticCost;
 	CWndRepairItemCtrl	m_wndItemCtrl;
 	DWORD	m_adwIdRepair[MAX_REPAIRINGITEM];
@@ -22,12 +48,9 @@ public:
 
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual	void OnDestroy( void );
+
+private:
+	void OnItemElemDrop(CItemElem * pItemBase, DWORD targetSlot);
 }; 
-#endif	// __WNDREPAIRITEM__H

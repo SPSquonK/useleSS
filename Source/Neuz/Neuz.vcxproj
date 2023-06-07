@@ -298,8 +298,6 @@
     </ClCompile>
     <ClCompile Include="..\_Interface\WndRepairItem.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Interface\WndRepairItemCtrl.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Interface\WndSealChar.cpp">
     </ClCompile>
     <ClCompile Include="..\_Interface\WndSelectCh.cpp">
@@ -769,7 +767,6 @@
     <ClInclude Include="..\_Interface\WndQuestQuickInfo.h" />
     <ClInclude Include="..\_Interface\WndRainbowRace.h" />
     <ClInclude Include="..\_Interface\WndRepairItem.h" />
-    <ClInclude Include="..\_Interface\WndRepairItemCtrl.h" />
     <ClInclude Include="..\_Interface\WndSealChar.h" />
     <ClInclude Include="..\_Interface\WndSelectCh.h" />
     <ClInclude Include="..\_Interface\WndShop.h" />
