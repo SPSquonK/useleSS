@@ -370,46 +370,6 @@ void CWndItemCtrl::OnDraw(C2DRender* p2DRender)
 		return;
 	}
 
-	//
-	// 리포트 출력 
-	//
-	if( 0 ) //m_dwListCtrlStyle == WLVS_REPORT )
-	{
-		m_nFontHeight = GetFontHeight( );
-		pt.y -= ( m_nFontHeight + 3 ) * m_wndScrollBar.GetScrollPos();
-		for( int i = 0; i < (int)( m_pItemContainer->m_dwIndexNum ); i++ ) 
-		{
-			//LVITEM* pItems = (LVITEM*)m_aItems.GetAt( m_pItemContainer->m_apIndex[ i ] );
-			DWORD dwColor = 0xffffffff;
-			if( i == m_nCurSelect )
-				dwColor = 0xff00ff00; 
-			CItemElem* pItemElem = &m_pItemContainer->m_apItem[ i ];
-			if(  pItemElem->m_dwItemId )
-			{
-				for( int i2 = 0, x = 0; i2 < m_aColumns.GetSize(); i2++ ) 
-				{
-					switch( i2 )
-					{
-					case 0:
-						p2DRender->TextOut( x + 2, pt.y, pItemElem->GetName(), dwColor ); 
-						break;
-					case 1:
-						break;
-					case 2:
-						break;
-					}
-					LVCOLUMN* pColumn = (LVCOLUMN*)m_aColumns.GetAt( i2 );
-					x += pColumn->cx + 7;
-				}
-			}
-			pt.y += m_nFontHeight + 3;
-		}
-	}
-	//
-	// 아이콘 출력
-	// CCtrllist
-	if( 1 ) //m_dwListCtrlStyle == WLVS_ICON )
-	{
 		CRect rect = GetClientRect();
 		int nWidth = rect.Width() / 32;
 		int nHeight = rect.Height() / 32;
@@ -641,7 +601,7 @@ void CWndItemCtrl::OnDraw(C2DRender* p2DRender)
 				}
 			}
 		}
-	}
+	
 }
 void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 {
@@ -993,31 +953,7 @@ int CWndItemCtrl::HitTest( CPoint point )
 		return -1;
 
 	int nDstId = -1;
-	CPoint pt( 3, 3 );
-	CRect rect;
-	//
-	// 리포트  
-	//
-	if( 0 ) //m_dwListCtrlStyle == WLVS_REPORT )
-	{
-		pt.y -= (m_nFontHeight + 3) * m_wndScrollBar.GetScrollPos();
-		for( int i = 0; i < (int)( m_pItemContainer->m_dwIndexNum ); i++ ) 
-		{
-			CItemElem* pItemElem = &m_pItemContainer->m_apItem[ m_pItemContainer->m_apIndex[ i ] ] ;
-			rect.SetRect( pt.x, pt.y, pt.x + m_rectWindow.Width() - m_wndScrollBar.GetClientRect().Width(), pt.y + m_nFontHeight );
-			if( rect.PtInRect( point ) )
-			{
-				nDstId = i;
-				break;
-			}
-			pt.y += m_nFontHeight + 3;
-		}
-	}
-	//
-	// 아이콘 
-	//
-	if( 1 ) //m_dwListCtrlStyle == WLVS_ICON )
-	{
+
 		CRect rect = GetClientRect();
 		int nWidth = rect.Width() / 32;
 		int nHeight = rect.Height() / 32;
@@ -1070,7 +1006,7 @@ int CWndItemCtrl::HitTest( CPoint point )
 				}
 			}
 		}
-	}
+	
 	return nDstId;
 }
 BOOL CWndItemCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
@@ -1334,68 +1270,13 @@ void CWndItemCtrl::SetWndRect( CRect rectWnd, BOOL bOnSize )
 
 	if( m_pItemContainer ) 
 	{
-		if( 0 ) //m_dwListCtrlStyle == WLVS_REPORT )
-		{
-			int nPage = GetClientRect().Height() / (m_nFontHeight + 3);
-			int nRange = m_pItemContainer->m_dwIndexNum;// - nPage;
-			if( !( nRange - nPage <= 0 ) )
-				m_rectClient.right -= 15; // 스크롤 바가 보이면 
-			m_rectClient.top += 15; // 리포트 칼럼 
-		}
-		if( 1 ) //m_dwListCtrlStyle == WLVS_ICON )
-		{
-			CRect rect = GetClientRect();
-			int nWidth = rect.Width() / 32;
-			int nHeight = rect.Height() / 32;
-			int nPage = nHeight;
-			int nRange = m_pItemContainer->m_dwIndexNum / nWidth;// - nPage;
-			//if( !( nRange - nPage <= 0 ) )
-				m_rectClient.right -= 15; // 스크롤 바가 보이면 
-		}
+			m_rectClient.right -= 15; // 스크롤 바가 보이면 
 	}
 	if( bOnSize )
 		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
 }
 void CWndItemCtrl::PaintFrame( C2DRender* p2DRender )
 {
-	return;
-	CRect rect = GetWindowRect();
-	//m_pTheme->RenderWndTextFrame( p2DRender, &rect );
-	/*
-	DWORD dwColor1 = D3DCOLOR_ARGB( 100, 0, 0,  0 );//D3DCOLOR_TEMP( 255,   0,   0,  50 );//
-	DWORD dwColor2 = D3DCOLOR_ARGB( 180, 240, 240,  240 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
-	DWORD dwColor3 = D3DCOLOR_ARGB( 100, 200, 200,  200 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
-
-	p2DRender->RenderFillRect ( rect, dwColor1 );
-	p2DRender->RenderRoundRect( rect, dwColor2 );
-	rect.DeflateRect( 1 , 1 );
-	p2DRender->RenderRect( rect, dwColor3 );
-	*/
-	DWORD dwColor1 = D3DCOLOR_ARGB( 100, 0, 0,  0 );//D3DCOLOR_TEMP( 255,   0,   0,  50 );//
-	DWORD dwColor2 = D3DCOLOR_ARGB( 255, 240, 240,  240 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
-	DWORD dwColor3 = D3DCOLOR_ARGB( 100, 200, 200,  200 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
-
-	p2DRender->RenderFillRect ( rect, dwColor1 );
-	p2DRender->RenderRoundRect( rect, dwColor2 );
-	rect.DeflateRect( 1 , 1 );
-	p2DRender->RenderRect( rect, dwColor2 );
-	rect.DeflateRect( 1 , 1 );
-	p2DRender->RenderRect( rect, dwColor3 );
-
-	int nPage, nRange;
-	if( 0 ) //m_dwListCtrlStyle == WLVS_REPORT )
-	{
-		nPage = GetClientRect().Height() / ( GetFontHeight( ) + 3 );
-		nRange = m_pItemContainer->m_dwIndexNum;// - nPage;
-	}
-	if( 1 ) //m_dwListCtrlStyle == WLVS_ICON )
-	{
-		CRect rect = GetClientRect();
-		nPage = rect.Height() / 32;
-		nRange = m_pItemContainer->m_dwIndexNum / ( rect.Width() / 32 );// - nPage;
-	}
-	m_wndScrollBar.SetScrollRange( 0, nRange );
-	m_wndScrollBar.SetScrollPage( nPage );
 }
 
 BOOL CWndItemCtrl::OnEraseBkgnd( C2DRender* p2DRender )
