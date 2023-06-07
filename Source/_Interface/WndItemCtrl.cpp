@@ -15,13 +15,8 @@
 // CWndItemCtrl
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CTextureMng CWndItemCtrl::m_textureMng;
-
 CWndItemCtrl::CWndItemCtrl() 
 {
-	m_nWndColor    = D3DCOLOR_TEMP( 255,  0x5 << 3,  0x5 << 3,  0x5 << 3 );
-	m_nFontColor   = D3DCOLOR_TEMP( 255, 255, 255, 255 );
-	m_nSelectColor = D3DCOLOR_TEMP( 255, 255, 255, 0   );
 	m_nCurSelect = -1;
 	m_pFocusItem = NULL;
 	m_pItemContainer = NULL;
@@ -1283,39 +1278,9 @@ BOOL CWndItemCtrl::OnEraseBkgnd( C2DRender* p2DRender )
 {
 	return TRUE;
 }
-BOOL CWndItemCtrl::SetItem( const LVITEM* pItem )
-{
-	if( pItem->iItem < m_aItems.GetSize() && m_aItems.GetAt( pItem->iItem ) == NULL ) 
-		return FALSE; // 존재하지 않는다.
-	LVITEM* pItems = (LVITEM*)m_aItems.GetAt( pItem->iItem );
-	memcpy( &pItems[ pItem->iSubItem ], pItem, sizeof( LVITEM ) );
-	pItems[ pItem->iSubItem ].pszText = new _TCHAR[ _tcslen( pItem->pszText ) + sizeof( _TCHAR ) ];
-	_tcscpy( pItems[ pItem->iSubItem ].pszText, pItem->pszText );
-	return TRUE;
-}
 
-int CWndItemCtrl::GetItemCount() const
-{
-	return m_aItems.GetSize();
-}
-
-BOOL CWndItemCtrl::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
-{
-	if( zDelta < 0 )
-	{
-		if( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() > m_wndScrollBar.GetScrollPos() )
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetScrollPos()+1 );
-		else
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() );
-	}
-	else
-	{
-		if( m_wndScrollBar.GetMinScrollPos() < m_wndScrollBar.GetScrollPos() )
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetScrollPos()-1 );
-		else
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetMinScrollPos() );
-	}
-	
+BOOL CWndItemCtrl::OnMouseWheel(UINT, short zDelta, CPoint) {
+	m_wndScrollBar.MouseWheel(zDelta);
 	return TRUE;
 }
 
