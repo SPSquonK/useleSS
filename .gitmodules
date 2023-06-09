@@ -1,0 +1,3 @@
+[submodule "ServerStarter"]
+	path = ServerStarter
+	url = https://github.com/SPSquonK/ServerStarter
