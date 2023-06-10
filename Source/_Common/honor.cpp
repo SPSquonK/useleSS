@@ -1,16 +1,6 @@
 #include "stdafx.h"
 #include "..\_Common\honor.h"
 
-
-CTitleManager::CTitleManager()
-{
-	m_mapMonster.clear();
-	m_mapItem.clear();
-	m_mapEtc.clear();
-	m_mapAll.clear();
-	m_nCurrentTitleCount = 0;
-}
-
 CTitleManager* CTitleManager::Instance( void )
 {
 	static CTitleManager tManager;
@@ -19,15 +9,11 @@ CTitleManager* CTitleManager::Instance( void )
 
 BOOL	CTitleManager::LoadTitle(LPCTSTR lpszFileName)
 {
-	HonorData	TempData;
 	CScript		script;
-
-
 	if( script.Load( lpszFileName ) == FALSE )
 		return FALSE;
 
 	script.tok = 0;
-
 
 	while(true) {
 		HonorData TempData = HonorData();
@@ -57,7 +43,6 @@ BOOL	CTitleManager::LoadTitle(LPCTSTR lpszFileName)
 		};
 
 		m_mapAll.emplace(TempData.nID, TempData);
-		m_nCurrentTitleCount++;
 	}
 	
 	return TRUE;

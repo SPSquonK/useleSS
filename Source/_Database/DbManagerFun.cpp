@@ -430,107 +430,38 @@ void CDbManager::GetBaseCharacter( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_
 	pMover->m_nHonor	= qry->GetInt( "m_nHonor" );
 
 }
-void	CDbManager::GetHonor( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
+bool	CDbManager::GetHonor( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	// 내가 등록한 아이디 가지고 오기
 	char szQuery[QUERY_SIZE]	= { 0,};
-	sprintf( szQuery,
-		"usp_Master_Select '%02d','%07d'",
-		g_appInfo.dwSys, pMover->m_idPlayer );
-	if( FALSE == qry->Exec( szQuery ) )
-	{
-		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-		return;
+	sprintf( szQuery, "usp_Master_Select '%02d','%07d'", g_appInfo.dwSys, pMover->m_idPlayer );
+	if (!qry->Exec(szQuery)) {
+		WriteLog("%s, %d\t%s", __FILE__, __LINE__, szQuery);
+		return false;
 	}
 	
-	int aTempHonor[3][50]={0,};
-	int nSec = 0;
-	while( qry->Fetch() )
-	{
-		int nSec = qry->GetInt( "sec" );
-		nSec--;
-		if(nSec > 2 || nSec < 0 )
-			return;
+	const char * serialized = qry->GetStrPtr("progress");
+	
+	std::ranges::fill(pMover->m_aHonorTitle, 0);
 
-		aTempHonor[nSec][0] = qry->GetInt( "c01" );
-		aTempHonor[nSec][1] = qry->GetInt( "c02" );
-		aTempHonor[nSec][2] = qry->GetInt( "c03" );
-		aTempHonor[nSec][3] = qry->GetInt( "c04" );
-		aTempHonor[nSec][4] = qry->GetInt( "c05" );
-		aTempHonor[nSec][5] = qry->GetInt( "c06" );
-		aTempHonor[nSec][6] = qry->GetInt( "c07" );
-		aTempHonor[nSec][7] = qry->GetInt( "c08" );
-		aTempHonor[nSec][8] = qry->GetInt( "c09" );
-		aTempHonor[nSec][9] = qry->GetInt( "c10" );
+	VERIFYSTRING_RETURN(serialized, lpDbOverlappedPlus->AccountInfo.szPlayer);
 
-		aTempHonor[nSec][10] = qry->GetInt( "c11" );
-		aTempHonor[nSec][11] = qry->GetInt( "c12" );
-		aTempHonor[nSec][12] = qry->GetInt( "c13" );
-		aTempHonor[nSec][13] = qry->GetInt( "c14" );
-		aTempHonor[nSec][14] = qry->GetInt( "c15" );
-		aTempHonor[nSec][15] = qry->GetInt( "c16" );
-		aTempHonor[nSec][16] = qry->GetInt( "c17" );
-		aTempHonor[nSec][17] = qry->GetInt( "c18" );
-		aTempHonor[nSec][18] = qry->GetInt( "c19" );
-		aTempHonor[nSec][19] = qry->GetInt( "c20" );
+	for (auto splitter : DBDeserialize::SplitBySlash(serialized)) {
+		const int nIndex = splitter.NextInt();
+		const int progress = splitter.NextInt();
 
-		aTempHonor[nSec][20] = qry->GetInt( "c21" );
-		aTempHonor[nSec][21] = qry->GetInt( "c22" );
-		aTempHonor[nSec][22] = qry->GetInt( "c23" );
-		aTempHonor[nSec][23] = qry->GetInt( "c24" );
-		aTempHonor[nSec][24] = qry->GetInt( "c25" );
-		aTempHonor[nSec][25] = qry->GetInt( "c26" );
-		aTempHonor[nSec][26] = qry->GetInt( "c27" );
-		aTempHonor[nSec][27] = qry->GetInt( "c28" );
-		aTempHonor[nSec][28] = qry->GetInt( "c29" );
-		aTempHonor[nSec][29] = qry->GetInt( "c30" );
-
-		aTempHonor[nSec][30] = qry->GetInt( "c31" );
-		aTempHonor[nSec][31] = qry->GetInt( "c32" );
-		aTempHonor[nSec][32] = qry->GetInt( "c33" );
-		aTempHonor[nSec][33] = qry->GetInt( "c34" );
-		aTempHonor[nSec][34] = qry->GetInt( "c35" );
-		aTempHonor[nSec][35] = qry->GetInt( "c36" );
-		aTempHonor[nSec][36] = qry->GetInt( "c37" );
-		aTempHonor[nSec][37] = qry->GetInt( "c38" );
-		aTempHonor[nSec][38] = qry->GetInt( "c39" );
-		aTempHonor[nSec][39] = qry->GetInt( "c40" );
-
-		aTempHonor[nSec][40] = qry->GetInt( "c41" );
-		aTempHonor[nSec][41] = qry->GetInt( "c42" );
-		aTempHonor[nSec][42] = qry->GetInt( "c43" );
-		aTempHonor[nSec][43] = qry->GetInt( "c44" );
-		aTempHonor[nSec][44] = qry->GetInt( "c45" );
-		aTempHonor[nSec][45] = qry->GetInt( "c46" );
-		aTempHonor[nSec][46] = qry->GetInt( "c47" );
-		aTempHonor[nSec][47] = qry->GetInt( "c48" );
-		aTempHonor[nSec][48] = qry->GetInt( "c49" );
-		aTempHonor[nSec][49] = qry->GetInt( "c50" );
-	}
-
-	int nMonster = 0,nItem = 0,nEtc = 0;
-	int nType = 0;
-	int nCurrentTitleCount =  CTitleManager::Instance()->m_nCurrentTitleCount;
-	ASSERT( nCurrentTitleCount <= MAX_HONOR_TITLE );
-	for(int i=0;i<nCurrentTitleCount;i++)
-	{
-		nType = CTitleManager::Instance()->GetIdxType(i);
-		if( nType == HI_HUNT_MONSTER)
-		{
-			pMover->SetHonorCount(i,aTempHonor[2][nMonster]);
-			nMonster++;
-		}
-		else if( nType == HI_USE_ITEM)
-		{
-			pMover->SetHonorCount(i,aTempHonor[1][nItem]);
-			nItem++;
-		}
-		else
-		{
-			pMover->SetHonorCount(i,aTempHonor[0][nEtc]);
-			nEtc++;
+		if (nIndex >= 0 && std::cmp_less_equal(nIndex, std::span(pMover->m_aHonorTitle).size())) {
+			pMover->m_aHonorTitle[nIndex] = progress;
+		} else {
+			Error(__FUNCTION__": %s has the success (id=%d, progress=%d) but the maximum id is supposed to be %lu",
+				lpDbOverlappedPlus->AccountInfo.szPlayer,
+				nIndex, progress, 
+				std::span(pMover->m_aHonorTitle).size()
+				);
 		}
 	}
+
+	return true;
 }
 
 

@@ -23,6 +23,7 @@
 #include "AccountCacheMgr.h"
 #include "sqktd/mutexed_object.h"
 #include <source_location>
+#include <span>
 
 #ifdef __TRANS_0413
 	const int	MAX_GETTHREAD_SIZE		= 8;
@@ -528,7 +529,7 @@ public:
 	void	PostSavePlayer( u_long idPlayer, BYTE nSlot );
 	void	SavePlayer( CQuery *qry, CQuery* pQueryLog, CMover* pMover, char* szQuery );
 	void	SavePlayTime( CQuery *qry, CAr & arRead, const char * szPlayer);
-	void	SaveHonor( CQuery *qry, u_long uidPlayer, int * aHonor, char* szQuery );
+	void	SaveHonor( CQuery *qry, u_long uidPlayer, std::span<const int> aHonor, char* szQuery );
 
 	void	SaveSkill( CQuery *qry, u_long uidPlayer, const MoverSkills & aJobSkill, char* szQuery );
 	void	SaveJobLv( CMover* pMover, char* szJobLv );
@@ -675,7 +676,7 @@ public:
 	BOOL	GetQuest( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	BOOL	GetSMMode( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	BOOL	GetSKillInfluence( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	GetHonor( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
+	bool	GetHonor( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 
 	static	UINT	_GetThread( LPVOID pParam );
 	static	UINT	_PutThread( LPVOID pParam );

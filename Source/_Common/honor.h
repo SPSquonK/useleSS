@@ -24,11 +24,10 @@ private:
 	std::map<int, HonorData>		m_mapEtc;
 	std::map<int, HonorData>		m_mapAll;
 
+	CTitleManager() = default;
 public:
-	CTitleManager();
 	static	CTitleManager*	Instance();
 
-	int		m_nCurrentTitleCount;
 	BOOL	LoadTitle(LPCTSTR lpszFileName);
 	const char*	GetTitle(int nId);
 	int		GetNeedCount(int nId,int nGroup);

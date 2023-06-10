@@ -1957,59 +1957,10 @@ GO
 SET ANSI_PADDING ON
 GO
 CREATE TABLE [dbo].[tblMaster_all](
-	[serverindex] [char](2) NULL,
-	[m_idPlayer] [char](7) NULL,
-	[sec] [tinyint] NULL,
-	[c01] [int] NULL,
-	[c02] [int] NULL,
-	[c03] [int] NULL,
-	[c04] [int] NULL,
-	[c05] [int] NULL,
-	[c06] [int] NULL,
-	[c07] [int] NULL,
-	[c08] [int] NULL,
-	[c09] [int] NULL,
-	[c10] [int] NULL,
-	[c11] [int] NULL,
-	[c12] [int] NULL,
-	[c13] [int] NULL,
-	[c14] [int] NULL,
-	[c15] [int] NULL,
-	[c16] [int] NULL,
-	[c17] [int] NULL,
-	[c18] [int] NULL,
-	[c19] [int] NULL,
-	[c20] [int] NULL,
-	[c21] [int] NULL,
-	[c22] [int] NULL,
-	[c23] [int] NULL,
-	[c24] [int] NULL,
-	[c25] [int] NULL,
-	[c26] [int] NULL,
-	[c27] [int] NULL,
-	[c28] [int] NULL,
-	[c29] [int] NULL,
-	[c30] [int] NULL,
-	[c31] [int] NULL,
-	[c32] [int] NULL,
-	[c33] [int] NULL,
-	[c34] [int] NULL,
-	[c35] [int] NULL,
-	[c36] [int] NULL,
-	[c37] [int] NULL,
-	[c38] [int] NULL,
-	[c39] [int] NULL,
-	[c40] [int] NULL,
-	[c41] [int] NULL,
-	[c42] [int] NULL,
-	[c43] [int] NULL,
-	[c44] [int] NULL,
-	[c45] [int] NULL,
-	[c46] [int] NULL,
-	[c47] [int] NULL,
-	[c48] [int] NULL,
-	[c49] [int] NULL,
-	[c50] [int] NULL
+	[serverindex] [char](2),
+	[m_idPlayer] [char](7),
+	[progress] [varchar](max) DEFAULT '',
+	CONSTRAINT PK_tblMaster_all PRIMARY KEY (serverindex, m_idPlayer)
 ) ON [PRIMARY]
 GO
 SET ANSI_PADDING OFF
@@ -5324,35 +5275,16 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 create proc [dbo].[usp_Master_Update]
-@serverindex char(2),
-@m_idPlayer char(7),
-@sec tinyint,
-@c01 int = 0, @c02 int = 0, @c03 int = 0, @c04 int = 0, @c05 int = 0,
-@c06 int = 0, @c07 int = 0, @c08 int = 0, @c09 int = 0, @c10 int = 0,
-@c11 int = 0, @c12 int = 0, @c13 int = 0, @c14 int = 0, @c15 int = 0,
-@c16 int = 0, @c17 int = 0, @c18 int = 0, @c19 int = 0, @c20 int = 0,
-@c21 int = 0, @c22 int = 0, @c23 int = 0, @c24 int = 0, @c25 int = 0,
-@c26 int = 0, @c27 int = 0, @c28 int = 0, @c29 int = 0, @c30 int = 0,
-@c31 int = 0, @c32 int = 0, @c33 int = 0, @c34 int = 0, @c35 int = 0,
-@c36 int = 0, @c37 int = 0, @c38 int = 0, @c39 int = 0, @c40 int = 0,
-@c41 int = 0, @c42 int = 0, @c43 int = 0, @c44 int = 0, @c45 int = 0,
-@c46 int = 0, @c47 int = 0, @c48 int = 0, @c49 int = 0, @c50 int = 0
+	@serverindex char(2),
+	@m_idPlayer char(7),
+	@progress varchar(max)
 as
 set nocount on
 set xact_abort on
 
 update tblMaster_all
-set	c01 = @c01, c02 = @c02, c03 = @c03, c04 = @c04, c05 = @c05,
-	c06 = @c06, c07 = @c07, c08 = @c08, c09 = @c09, c10 = @c10,
-	c11 = @c11, c12 = @c12, c13 = @c13, c14 = @c14, c15 = @c15,
-	c16 = @c16, c17 = @c17, c18 = @c18, c19 = @c19, c20 = @c20,
-	c21 = @c21, c22 = @c22, c23 = @c23, c24 = @c24, c25 = @c25,
-	c26 = @c26, c27 = @c27, c28 = @c28, c29 = @c29, c30 = @c30,
-	c31 = @c31, c32 = @c32, c33 = @c33, c34 = @c34, c35 = @c35,
-	c36 = @c36, c37 = @c37, c38 = @c38, c39 = @c39, c40 = @c40,
-	c41 = @c41, c42 = @c42, c43 = @c43, c44 = @c44, c45 = @c45,
-	c46 = @c46, c47 = @c47, c48 = @c48, c49 = @c49, c50 = @c50
-where serverindex = @serverindex and m_idPlayer = @m_idPlayer and sec = @sec
+  set   progress = @progress
+  where serverindex = @serverindex and m_idPlayer = @m_idPlayer
 GO
 /****** Object:  StoredProcedure [dbo].[usp_Master_Select]    Script Date: 04/03/2010 12:42:39 ******/
 SET ANSI_NULLS ON
@@ -5366,15 +5298,9 @@ create proc [dbo].[usp_Master_Select]
 as
 set nocount on
 
-select 	serverindex, m_idPlayer, sec,
-	c01, c02, c03, c04, c05, c06, c07, c08, c09, c10,
-	c11, c12, c13, c14, c15, c16, c17, c18, c19, c20,
-	c21, c22, c23, c24, c25, c26, c27, c28, c29, c30,
-	c31, c32, c33, c34, c35, c36, c37, c38, c39, c40,
-	c41, c42, c43, c44, c45, c46, c47, c48, c49, c50
-from tblMaster_all with (nolock)
-where serverindex = @serverindex and m_idPlayer = @m_idPlayer
-order by sec
+select 	serverindex, m_idPlayer, progress
+  from tblMaster_all with (nolock)
+  where serverindex = @serverindex and m_idPlayer = @m_idPlayer
 GO
 /****** Object:  StoredProcedure [dbo].[uspAttendance]    Script Date: 04/03/2010 12:42:39 ******/
 SET ANSI_NULLS OFF
@@ -10029,12 +9955,8 @@ IF @iGu = 'I1' -- AEÂ¡Â¾a AÂ¢Â´Â¨Â¬Â¢Â¬ AOÂ¡Â¤A
 	VALUES ( @iserverindex, @om_idPlayer, 2, '$', '$', '$' )
 
 	------------------- ver. 13
-	insert into tblMaster_all (serverindex, m_idPlayer, sec)
-	select @iserverindex, @om_idPlayer, 1
-	insert into tblMaster_all (serverindex, m_idPlayer, sec)
-	select @iserverindex, @om_idPlayer, 2
-	insert into tblMaster_all (serverindex, m_idPlayer, sec)
-	select @iserverindex, @om_idPlayer, 3
+	insert into tblMaster_all (serverindex, m_idPlayer, progress)
+	  select @iserverindex, @om_idPlayer, ''
 
 	------------------- ver. 15
 	insert into tblRestPoint (serverindex, m_idPlayer)
@@ -12322,156 +12244,6 @@ ALTER TABLE [dbo].[tblLordSkill] ADD  CONSTRAINT [DF_tblLordSkill_nTick]  DEFAUL
 GO
 /****** Object:  Default [DF_tblLordSkill_s_date]    Script Date: 04/03/2010 12:42:44 ******/
 ALTER TABLE [dbo].[tblLordSkill] ADD  CONSTRAINT [DF_tblLordSkill_s_date]  DEFAULT (getdate()) FOR [s_date]
-GO
-/****** Object:  Default [DF_tblMaster_all_c01]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c01]  DEFAULT ((0)) FOR [c01]
-GO
-/****** Object:  Default [DF_tblMaster_all_c02]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c02]  DEFAULT ((0)) FOR [c02]
-GO
-/****** Object:  Default [DF_tblMaster_all_c03]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c03]  DEFAULT ((0)) FOR [c03]
-GO
-/****** Object:  Default [DF_tblMaster_all_c04]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c04]  DEFAULT ((0)) FOR [c04]
-GO
-/****** Object:  Default [DF_tblMaster_all_c05]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c05]  DEFAULT ((0)) FOR [c05]
-GO
-/****** Object:  Default [DF_tblMaster_all_c06]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c06]  DEFAULT ((0)) FOR [c06]
-GO
-/****** Object:  Default [DF_tblMaster_all_c07]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c07]  DEFAULT ((0)) FOR [c07]
-GO
-/****** Object:  Default [DF_tblMaster_all_c08]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c08]  DEFAULT ((0)) FOR [c08]
-GO
-/****** Object:  Default [DF_tblMaster_all_c09]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c09]  DEFAULT ((0)) FOR [c09]
-GO
-/****** Object:  Default [DF_tblMaster_all_c10]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c10]  DEFAULT ((0)) FOR [c10]
-GO
-/****** Object:  Default [DF_tblMaster_all_c11]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c11]  DEFAULT ((0)) FOR [c11]
-GO
-/****** Object:  Default [DF_tblMaster_all_c12]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c12]  DEFAULT ((0)) FOR [c12]
-GO
-/****** Object:  Default [DF_tblMaster_all_c13]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c13]  DEFAULT ((0)) FOR [c13]
-GO
-/****** Object:  Default [DF_tblMaster_all_c14]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c14]  DEFAULT ((0)) FOR [c14]
-GO
-/****** Object:  Default [DF_tblMaster_all_c15]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c15]  DEFAULT ((0)) FOR [c15]
-GO
-/****** Object:  Default [DF_tblMaster_all_c16]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c16]  DEFAULT ((0)) FOR [c16]
-GO
-/****** Object:  Default [DF_tblMaster_all_c17]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c17]  DEFAULT ((0)) FOR [c17]
-GO
-/****** Object:  Default [DF_tblMaster_all_c18]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c18]  DEFAULT ((0)) FOR [c18]
-GO
-/****** Object:  Default [DF_tblMaster_all_c19]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c19]  DEFAULT ((0)) FOR [c19]
-GO
-/****** Object:  Default [DF_tblMaster_all_c20]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c20]  DEFAULT ((0)) FOR [c20]
-GO
-/****** Object:  Default [DF_tblMaster_all_c21]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c21]  DEFAULT ((0)) FOR [c21]
-GO
-/****** Object:  Default [DF_tblMaster_all_c22]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c22]  DEFAULT ((0)) FOR [c22]
-GO
-/****** Object:  Default [DF_tblMaster_all_c23]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c23]  DEFAULT ((0)) FOR [c23]
-GO
-/****** Object:  Default [DF_tblMaster_all_c24]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c24]  DEFAULT ((0)) FOR [c24]
-GO
-/****** Object:  Default [DF_tblMaster_all_c25]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c25]  DEFAULT ((0)) FOR [c25]
-GO
-/****** Object:  Default [DF_tblMaster_all_c26]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c26]  DEFAULT ((0)) FOR [c26]
-GO
-/****** Object:  Default [DF_tblMaster_all_c27]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c27]  DEFAULT ((0)) FOR [c27]
-GO
-/****** Object:  Default [DF_tblMaster_all_c28]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c28]  DEFAULT ((0)) FOR [c28]
-GO
-/****** Object:  Default [DF_tblMaster_all_c29]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c29]  DEFAULT ((0)) FOR [c29]
-GO
-/****** Object:  Default [DF_tblMaster_all_c30]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c30]  DEFAULT ((0)) FOR [c30]
-GO
-/****** Object:  Default [DF_tblMaster_all_c31]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c31]  DEFAULT ((0)) FOR [c31]
-GO
-/****** Object:  Default [DF_tblMaster_all_c32]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c32]  DEFAULT ((0)) FOR [c32]
-GO
-/****** Object:  Default [DF_tblMaster_all_c33]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c33]  DEFAULT ((0)) FOR [c33]
-GO
-/****** Object:  Default [DF_tblMaster_all_c34]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c34]  DEFAULT ((0)) FOR [c34]
-GO
-/****** Object:  Default [DF_tblMaster_all_c35]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c35]  DEFAULT ((0)) FOR [c35]
-GO
-/****** Object:  Default [DF_tblMaster_all_c36]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c36]  DEFAULT ((0)) FOR [c36]
-GO
-/****** Object:  Default [DF_tblMaster_all_c37]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c37]  DEFAULT ((0)) FOR [c37]
-GO
-/****** Object:  Default [DF_tblMaster_all_c38]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c38]  DEFAULT ((0)) FOR [c38]
-GO
-/****** Object:  Default [DF_tblMaster_all_c39]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c39]  DEFAULT ((0)) FOR [c39]
-GO
-/****** Object:  Default [DF_tblMaster_all_c40]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c40]  DEFAULT ((0)) FOR [c40]
-GO
-/****** Object:  Default [DF_tblMaster_all_c41]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c41]  DEFAULT ((0)) FOR [c41]
-GO
-/****** Object:  Default [DF_tblMaster_all_c42]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c42]  DEFAULT ((0)) FOR [c42]
-GO
-/****** Object:  Default [DF_tblMaster_all_c43]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c43]  DEFAULT ((0)) FOR [c43]
-GO
-/****** Object:  Default [DF_tblMaster_all_c44]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c44]  DEFAULT ((0)) FOR [c44]
-GO
-/****** Object:  Default [DF_tblMaster_all_c45]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c45]  DEFAULT ((0)) FOR [c45]
-GO
-/****** Object:  Default [DF_tblMaster_all_c46]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c46]  DEFAULT ((0)) FOR [c46]
-GO
-/****** Object:  Default [DF_tblMaster_all_c47]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c47]  DEFAULT ((0)) FOR [c47]
-GO
-/****** Object:  Default [DF_tblMaster_all_c48]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c48]  DEFAULT ((0)) FOR [c48]
-GO
-/****** Object:  Default [DF_tblMaster_all_c49]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c49]  DEFAULT ((0)) FOR [c49]
-GO
-/****** Object:  Default [DF_tblMaster_all_c50]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c50]  DEFAULT ((0)) FOR [c50]
 GO
 /****** Object:  Default [DF_tblMessenger_dwState]    Script Date: 04/03/2010 12:42:44 ******/
 ALTER TABLE [dbo].[tblMessenger] ADD  CONSTRAINT [DF_tblMessenger_dwState]  DEFAULT ((0)) FOR [bBlock]
