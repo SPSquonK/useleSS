@@ -5,9 +5,9 @@ FlyFF v15 code with some refactor.
 The base code is from Blouflash V15
 https://www.elitepvpers.com/forum/flyff-pserver-guides-releases/4244222-visual-studio-2017-source-files.html 
 
-Some v22 resource compatiblity have been added. See [Documentation/v15plus.md](Documentation/v15plus.md).
+Some v22 resource compatibility have been added. See [Documentation/v15plus.md](Documentation/v15plus.md).
 
-This source is developped on Visual Studio 2022 with the C++lastest option.
+This source is developed on Visual Studio 2022 with the C++latest option.
 
 - This repository **does not** provide a production ready of the source code. Many exploits are not (yet) fixed.
 - **/!\ Server developer /!\: Read the How to use section of this document**
@@ -24,7 +24,7 @@ This source is developped on Visual Studio 2022 with the C++lastest option.
     - ODBC source `useless_account` = table `USELESS_ACCOUNT_DBF`
     - ODBC source `useless_character` = table `USELESS_CHARACTER_01_DBF`
     - ODBC source `useless_log` = table `USELESS_LOGGING_01_DBF`
-- Use [Server Starter](https://github.com/SPSquonK/ServerStarter): `git clone https://github.com/SPSquonK/ServerStarter.git`
+    - ODBC sources must be set to english language
 
 ## Dependencies
 
@@ -47,24 +47,24 @@ in your project code.
 
 **This repository does not provide a production ready version of a FlyFF server.**
 
-In particular, specific code that is explicitely commented with a reference to
+In particular, specific code that is explicitly commented with a reference to
 the
 [SquonK Hidden Boss License](http://squonk.fr/SquonK-Hidden-Boss-License.txt)
 should keep their comments.
 
 
 
-The [Source/Libraries/boost/pfr/detail/core17_generated.hpp file](Source/Libraries/boost/pfr/detail/core17_generated.hpp) is licensied under the Boost License by its author. It is included in the project to break through the 100 limit.
+The [Source/Libraries/boost/pfr/detail/core17_generated.hpp file](Source/Libraries/boost/pfr/detail/core17_generated.hpp) is licensed under the Boost License by its author. It is included in the project to break through the 100 limit.
 
 ## How to use this repository as a server developer?
 
-As this repository does not fix bugs/exploits, change some parts of the architecture and does not implement new major features, using it as the start point of your project is probably counter productive.
+As this repository does not fix bugs/exploits, change some parts of the architecture and does not implement new major features, using it as the start point for your project is probably counterproductive.
 
-The best way to use this repository is probably to clone two versions of it, `git checkout original-code` on one code, and use diff between the current HEAD and the initial commit (for example with a tool like WinMerge) to check for all the modifications. Then, integrate the modifications that you find usefull in your own code.
+The best way to use this repository is probably to clone two versions of it, `git checkout original-code` on one code, and use diff between the current HEAD and the initial commit (for example with a tool like WinMerge) to check for all the modifications. Then, integrate the modifications that you find useful in your own code.
 
 Do not forget to put a message like `// Original code: SquonK, https://github.com/SPSquonK/useless` if you copy several lines of code.
 
-Examples of code that you might find usefull include:
+Examples of code that you might find useful include:
 - `SendPacket` / `BroadcastPacket` API
 - Neuz OnSnapshot error handling
 - `CWndTListBox` class: a CWndListBox templated by the type of the objects to display and the way to display them
@@ -80,8 +80,3 @@ Note that some changes are very opinionated, for example:
 ## Contributing
 
 Any contribution of any kind is welcomed. This includes some casual messages like "hey, check out this thing. They changed it in V21 / this private server source code release and it is probably better than the V15 / what you've done here.", bug report, pull requests, ...
-
-
-
-
-
