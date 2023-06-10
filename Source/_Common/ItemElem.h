@@ -81,7 +81,7 @@ public:
 #endif
 
 #if defined(__CLIENT) || defined(__WORLDSERVER)
-	[[nodiscard]] BOOL IsQuest();
+	[[nodiscard]] bool IsQuest() const;
 	CTexture * GetTexture() const;
 
 	[[nodiscard]] int GetCost() const;

@@ -83,21 +83,15 @@ DWORD CItemElem::GetChipCost() const {
 }
 
 // 퀘스트 아이템인가?
-BOOL CItemElem::IsQuest()
-{
-	ItemProp* p = GetProp();
-	if( p->dwItemKind3 == IK3_QUEST )
-	{
-		if( ::GetLanguage() == LANG_JAP )
-		{
-			if( p->dwID == II_SYS_SYS_QUE_REDSOCKS )	// 예외 
-				return FALSE;
-		}
+bool CItemElem::IsQuest() const {
+	const ItemProp * p = GetProp();
+	if (p->dwItemKind3 != IK3_QUEST) return false;
 
-		return TRUE;
+	if (::GetLanguage() == LANG_JAP && p->dwID == II_SYS_SYS_QUE_REDSOCKS) {
+		return false;
 	}
 
-	return FALSE;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////
