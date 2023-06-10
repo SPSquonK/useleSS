@@ -32,36 +32,4 @@
 
 // 지위 획득 - definejob에 있는거라 여긴 참고용으로 주석처리함
 #define	HS_LORD				92	// 군주
-// Master
-//#define JOB_KNIGHT_MASTER      		16
-//#define JOB_BLADE_MASTER				17
-//#define JOB_JESTER_MASTER		        18
-//#define JOB_RANGER_MASTER             19
-//#define JOB_RINGMASTER_MASTER         20
-//#define JOB_BILLPOSTER_MASTER         21
-//#define JOB_PSYCHIKEEPER_MASTER		22
-//#define JOB_ELEMENTOR_MASTER			23
-//#define MAX_MASTER					24
 
-// Hero
-//#define JOB_KNIGHT_HERO      			24
-//#define JOB_BLADE_HERO				25
-//#define JOB_JESTER_HERO		        26
-//#define JOB_RANGER_HERO               27
-//#define JOB_RINGMASTER_HERO           28
-//#define JOB_BILLPOSTER_HERO           29
-//#define JOB_PSYCHIKEEPER_HERO			30
-//#define JOB_ELEMENTOR_HERO			31
-
-// 몬스터 사냥
-#define HS_KILL_COUNT		1	// 몬스터 사냥
-
-// 아이템 사용
-#define	HS_USE_COUNT		1	// 아이템 사용
-
-// 기타
-#define MONSTER_TITLE_MAX		70		// 몬스터 관련 타이틀 제한 수치
-#define ITEM_TITLE_MAX			70		// 아이템 관련 타이틀 제한 수치
-
-#define	HM_SATISFIED			-1		// 리턴값 - 타이틀 획득 자격을 얻음
-#define	HM_NONE					0		// 리턴값 - 해당 타이틀이 없음

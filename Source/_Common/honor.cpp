@@ -28,11 +28,13 @@ BOOL	CTitleManager::LoadTitle(LPCTSTR lpszFileName)
 
 	script.tok = 0;
 
-	TempData = HonorData();
-	TempData.nID		= script.GetNumber(); // ID
 
-	while(script.tok != FINISHED)
-	{
+	while(true) {
+		HonorData TempData = HonorData();
+		TempData.nID = script.GetNumber(); // ID
+		if (script.tok == FINISHED) {
+			break;
+		}
 		
 		TempData.nLGrouping = script.GetNumber();	// 대분류
 		TempData.nSGrouping = script.GetNumber();	// 소분류
@@ -42,39 +44,20 @@ BOOL	CTitleManager::LoadTitle(LPCTSTR lpszFileName)
 		switch(TempData.nLGrouping)
 		{
 			case HI_HUNT_MONSTER:
-				if(m_mapMonster.size() < MONSTER_TITLE_MAX)
-				{
-					m_mapMonster.emplace(TempData.nSGrouping, TempData);
-					m_mapAll.emplace(TempData.nID, TempData);
-				}
-				else
-				{
-					Error("Too many title about monster!");
-					return FALSE;
-				}
+				m_mapMonster.emplace(TempData.nSGrouping, TempData);
 				break;
 
 			case HI_USE_ITEM:
-				if(m_mapItem.size() < MONSTER_TITLE_MAX)
-				{
-					m_mapItem.emplace(TempData.nSGrouping, TempData);
-					m_mapAll.emplace(TempData.nID, TempData);
-				}
-				else
-				{
-					Error("Too many title about item!");
-					return FALSE;
-				}
+				m_mapItem.emplace(TempData.nSGrouping, TempData);
 				break;
 
 			default:
 				m_mapEtc.emplace(TempData.nSGrouping, TempData);
-				m_mapAll.emplace(TempData.nID, TempData);
 				break;
 		};
+
+		m_mapAll.emplace(TempData.nID, TempData);
 		m_nCurrentTitleCount++;
-		TempData = HonorData();
-		TempData.nID		= script.GetNumber(); // ID
 	}
 	
 	return TRUE;
@@ -82,11 +65,11 @@ BOOL	CTitleManager::LoadTitle(LPCTSTR lpszFileName)
 const char	*CTitleManager::GetTitle(int nId)		// 타이틀을 반환
 {
 	if(nId == -1) return NULL; 
-	//int nGroup = GetIdxType(nId);
+
 	auto iter = m_mapAll.find(nId);	// 몬스터 아이디로 검색
 	if(iter != m_mapAll.end()) 
 	{
-		return (LPSTR)(LPCSTR)iter->second.strTitle;
+		return iter->second.strTitle.GetString();
 	}
 
 	return NULL;
@@ -173,44 +156,18 @@ HonorData*		CTitleManager::GetHonorDataByID(int nId,int nGroup)
 	};
 	return NULL;
 }
-int	CTitleManager::GetIdx(int nId, int nGroup)		// 
-{
+int	CTitleManager::GetIdx(int nId, int nGroup) {
+	std::map<int, HonorData> * map;
+	switch (nGroup) {
+		case HI_HUNT_MONSTER: map = &m_mapMonster; break;
+		case HI_USE_ITEM:     map = &m_mapItem;    break;
+		default:              map = &m_mapEtc;     break;
+	}
 
-	std::map<int, HonorData>::iterator iter;
+	const auto iter = map->find(nId);
+	if (iter == map->end()) return -1;
 
-	switch(nGroup)
-	{
-		case HI_HUNT_MONSTER:
-			iter = m_mapMonster.find(nId); // 몬스터 아이디로 검색
-			if(iter != m_mapMonster.end()) 
-			{
-				return iter->second.nID;
-			}
-			else
-				return -1;
-			break;
-
-		case HI_USE_ITEM:
-			iter = m_mapItem.find(nId);	// 아이템 아이디로 검색
-			if(iter != m_mapItem.end()) 
-			{
-				return iter->second.nID;
-			}
-			else
-				return -1;
-			break;
-
-		default:
-			iter = m_mapEtc.find(nId);	// 아이템 아이디로 검색
-			if(iter != m_mapEtc.end()) 
-			{
-				return iter->second.nID;
-			}
-			else
-				return -1;
-			break;
-	};
-	return -1;
+	return iter->second.nID;
 }
 
 
@@ -229,14 +186,14 @@ int		CTitleManager::GetIdxType(int nId)
 
 int CTitleManager::GetIdxByName(LPCTSTR chName)		// 
 {
-	for(auto iter = m_mapAll.begin(); iter != m_mapAll.end(); ++iter) // 그외는 1대1 탐색..갯수가 얼마안되서 무리 없을듯..
-	{
-		HonorData	TempData = iter->second;
-		if(lstrcmp(TempData.strTitle,chName) == 0 )
-           return TempData.nID;
-	};
-	return -1;
-	
+	const auto it = std::find_if(
+		m_mapAll.begin(), m_mapAll.end(),
+		[&](const auto & pair) {
+			return lstrcmp(pair.second.strTitle, chName) == 0;
+		}
+	);
+
+	return it != m_mapAll.end() ? it->second.nID : -1;
 }
 int     CTitleManager::GetIdxByGroup(int nLarge,int nSmall)
 {
