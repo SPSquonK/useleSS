@@ -148,7 +148,7 @@ void CWndDialog::OnMouseWndSurface( CPoint point )
 		{
 			SetMouseCursor( CUR_SELECT );
 			pKeyButton->bStatus = TRUE;
-			CString string;// = prj.GetWordToolTip( pKeyButton->text );
+			CString string;
 			string.Format( prj.GetText(TID_GAME_ABOUTQUESTION), pKeyButton->szWord );
 			if( string.IsEmpty() == FALSE )
 			{
@@ -453,7 +453,7 @@ void CWndDialog::ParsingString( LPCTSTR lpszString )
 					bKey = FALSE;
 					if( strOriginal.IsEmpty() )
 						strOriginal = strWord;
-					m_mapWordToOriginal.SetAt( strWord, strOriginal );
+					m_mapWordToOriginal[strWord] = strOriginal;
 				}
 			}
 		}
@@ -525,7 +525,8 @@ void CWndDialog::BeginText()
 		safe_delete( pEditString );
 	}
 	m_strArray.RemoveAll();
-	m_mapWordToOriginal.RemoveAll();
+	m_mapWordToOriginal.clear();
+
 	m_nWordButtonNum = 0;
 	for( int i = 0; i < 6; i++ )
 	{
@@ -545,7 +546,7 @@ void CWndDialog::MakeContextButton()
 	TCHAR strHan[ 3 ];
 	CRect rectWord(0, 0, 0, 0);
 	DWORD dwMark = 0;
-	CString strKey, strWord;
+	CString strWord;
 	BOOL bLinkWord = FALSE;
 	for( int i = 0; i < (int)( dwLineCount ); i++)
 	{
@@ -597,8 +598,8 @@ void CWndDialog::MakeContextButton()
 					strWord = m_aContextButton[ m_nContextButtonNum - 1 ].szWord;
 					strWord += strTemp;
 				}
-				CString strKey;
-				m_mapWordToOriginal.Lookup( strWord, strKey );
+
+				const char * strKey = GetOriginalOfWord(strWord);
 				strcpy( m_aContextButton[ m_nContextButtonNum ].szWord, strTemp );
 				strcpy( m_aContextButton[ m_nContextButtonNum ].szKey, strKey );
 				if( bLinkWord )
@@ -620,7 +621,8 @@ void CWndDialog::MakeContextButton()
 			m_aContextButton[ m_nContextButtonNum ].bStatus = FALSE;
 			m_aContextButton[ m_nContextButtonNum ].nLinkIndex = m_nContextButtonNum + 1;
 			m_aContextButton[ m_nContextButtonNum ].dwParam2 = m_dwQuest;
-			m_mapWordToOriginal.Lookup( strWord, strKey );
+			
+			const char * strKey = GetOriginalOfWord(strWord);
 			strcpy( m_aContextButton[ m_nContextButtonNum ].szWord, strWord );
 			strcpy( m_aContextButton[ m_nContextButtonNum ].szKey, strKey );
 			rectWord.SetRect( lpWndCtrl->rect.left, y, lpWndCtrl->rect.left, y + dwMaxHeight );
@@ -628,6 +630,13 @@ void CWndDialog::MakeContextButton()
 		}
 	}
 }
+
+const char * CWndDialog::GetOriginalOfWord(const CString & strWord) const {
+	const auto it = m_mapWordToOriginal.find(strWord);
+	if (it != m_mapWordToOriginal.end()) return it->second.GetString();
+	return strWord.GetString();
+}
+
 void CWndDialog::AddKeyButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam, DWORD dwQuest )
 {
 	WORDBUTTON* lpKeyButton;// = &m_aKeyButton[ m_nKeyButtonNum ];

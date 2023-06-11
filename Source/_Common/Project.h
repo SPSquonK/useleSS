@@ -4,7 +4,7 @@
 static_assert(false, "Project.h was included")
 #endif
 
-
+#include <functional>
 #include <memory>
 #include <set>
 #include <boost/container/small_vector.hpp>
@@ -747,8 +747,7 @@ public:
 
 #ifdef __CLIENT
 	CTerrainMng					m_terrainMng;
-	CMapStringToString			m_mapHelp;
-	CMapStringToString			m_mapWordToolTip;	
+	std::map<std::string, std::string, std::less<>> m_mapHelp;
 #endif
 	
 	FLOAT						m_fMonsterRebirthRate;	// 몬스터 리스폰률(시간)
@@ -894,10 +893,8 @@ public:
 
 #ifdef __CLIENT
 	BOOL			LoadFilter( LPCTSTR lpszFileName );
-	BOOL			LoadWordToolTip( LPCTSTR lpszFileName );
 	BOOL			LoadHelp( LPCTSTR lpszFileName ); 
-	CString			GetHelp( LPCTSTR lpStr );
-	CString			GetWordToolTip( LPCTSTR lpStr );
+	[[nodiscard]] LPCTSTR GetHelp(LPCTSTR lpStr) const;
 	CSfx*			GetSfx( OBJID objid );
 #endif	// __CLIENT
 

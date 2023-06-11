@@ -48,7 +48,7 @@ public:
 	int m_nCurArray;
 	CPtrArray m_strArray;
 	OBJID m_idMover;
-	CMapStringToString m_mapWordToOriginal;
+	std::map<CString, CString> m_mapWordToOriginal;
 
 	struct ListedQuest {
 		CEditString displayName;
@@ -106,6 +106,7 @@ public:
 
 private:
 	std::pair<ListedQuest, bool> MakeListedQuest(const LPCTSTR lpszWord, const LPCTSTR lpszKey, QuestId dwQuest);
+	[[nodiscard]] const char * GetOriginalOfWord(const CString & strWord) const;
 
 public:
 

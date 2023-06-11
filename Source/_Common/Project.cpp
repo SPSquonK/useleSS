@@ -168,11 +168,6 @@ m_nMaxSequence( 0 )
 
 CProject::~CProject()
 {
-#ifdef __CLIENT
-	m_mapHelp.RemoveAll();
-	m_mapWordToolTip.RemoveAll();
-#endif	// __CLIENT
-
 	int i, j;
 	POSITION pos = m_mapCharacter.GetStartPosition();
 	LPCHARACTER lpCharacter;
@@ -840,22 +835,15 @@ BOOL CProject::LoadHelp( LPCTSTR lpszFileName )
 			 string		+= "\n\n   ";
 			s.GetToken();
 		}
-		m_mapHelp.SetAt( strKeyword, string );
+		m_mapHelp[strKeyword.GetString()] = string.GetString();
 		s.GetToken();
 	}
 	return TRUE;
 }
-CString CProject::GetHelp( LPCTSTR lpStr )
-{
-	CString string;
-	m_mapHelp.Lookup( lpStr, string );
-	return string;
-}
-CString CProject::GetWordToolTip( LPCTSTR lpStr )
-{
-	CString string;
-	m_mapWordToolTip.Lookup( lpStr, string );
-	return string;
+LPCTSTR CProject::GetHelp(LPCTSTR lpStr) const {
+	const auto it = m_mapHelp.find(lpStr);
+	if (it == m_mapHelp.end()) return "";
+	return it->second.c_str();
 }
 BOOL CProject::LoadFilter( LPCTSTR lpszFileName )
 {	
@@ -897,23 +885,6 @@ BOOL CProject::LoadFilter( LPCTSTR lpszFileName )
 #ifndef __FILTER_0705
 	m_aWordFilter.Optimize();
 #endif	// __FILTER_0705
-	return TRUE;
-}
-BOOL CProject::LoadWordToolTip( LPCTSTR lpszFileName )
-{
-	CScanner scanner;
-	if(scanner.Load(lpszFileName)==FALSE)
-		return FALSE;
-	CString strWord;
-	CString strToolTip;
-	scanner.GetToken();
-	while( scanner.tok != FINISHED )
-	{
-		strWord = scanner.Token;
-		scanner.GetToken();
-		m_mapWordToolTip.SetAt( strWord, scanner.token );
-		scanner.GetToken(); 
-	}
 	return TRUE;
 }
 #endif
