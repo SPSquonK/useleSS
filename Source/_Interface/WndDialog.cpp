@@ -16,13 +16,7 @@
   WndId : APP_DIALOG - Dialog
 ****************************************************/
 
-CWndDialog::~CWndDialog() 
-{ 
-	for (int i = 0; i < m_strArray.GetSize(); i++) {
-		CEditString * pEditString = (CEditString *)m_strArray.GetAt(i);
-		safe_delete(pEditString);
-	}
-	
+CWndDialog::~CWndDialog() {
 	if (CWndQuest * pWndQuest = CWndBase::GetWndBase<CWndQuest>(APP_QUEST_EX_LIST)) {
 		pWndQuest->Update();
 	}
@@ -172,22 +166,14 @@ void CWndDialog::OnMouseWndSurface( CPoint point )
 			return;
 		}
 	}
-	CString strWord, strOriginal;
+
 	for( int i = 0; i < m_nContextButtonNum; i++ )
 	{
-		DWORD dwColor = 0xff101010;
 		WORDBUTTON* pKeyButton = &m_aContextButton[ i ];
 		if( pKeyButton->rect.PtInRect( point ) )
 		{
 			SetMouseCursor( CUR_HELP );
 			pKeyButton->bStatus = TRUE;
-			CRect rect = pKeyButton->rect;
-			ClientToScreen( &rect );
-
-			CPoint point2 = point;
-			ClientToScreen( &point2 );
-			rect.InflateRect( 2, 2);
-
 			return;
 		}
 	}
@@ -253,13 +239,7 @@ void CWndDialog::OnInitialUpdate()
 			PlayMusic( lpCharacter->m_dwMusicId, 1 );
 	}
 	m_nCurArray = 0;
-	for( int i = 0; i < m_strArray.GetSize(); i++ )
-	{
-		CEditString* pEditString = (CEditString*) m_strArray.GetAt( i );
-		safe_delete( pEditString );
-	}
-	m_strArray.RemoveAll();
-
+	m_strArray.clear();
 
 	MakeKeyButton();
 	
@@ -406,7 +386,7 @@ void CWndDialog::ParsingString( LPCTSTR lpszString )
 	CMover* pMover = prj.GetMover( m_idMover );
 	if( pMover == NULL ) return;
 
-	int nPos =  m_strArray.GetSize();
+	size_t nPos =  m_strArray.size();
 	m_aContextMark[ nPos ].RemoveAll();
 
 	CEditString editString;
@@ -500,15 +480,15 @@ void CWndDialog::ParsingString( LPCTSTR lpszString )
 		}
 	}
 	pEditString->Align( pEditString->m_pFont, 0 );
-	m_strArray.Add( pEditString );
+	m_strArray.emplace_back( pEditString );
 }
 void CWndDialog::EndSay()
 {
-	if( m_strArray.GetSize() )
+	if( !m_strArray.empty() )
 	{
 		LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
 		m_string.Init( m_pFont, &lpWndCtrl->rect );
-		m_string.SetEditString( *(CEditString*)m_strArray.GetAt( 0 ) );//, 0xff000000 );
+		m_string.SetEditString( *m_strArray[0] );
 		m_nCurArray = 0;
 	}
 	MakeKeyButton();
@@ -519,12 +499,7 @@ void CWndDialog::EndSay()
 }
 void CWndDialog::BeginText()
 {
-	for( int i = 0; i < m_strArray.GetSize(); i++ )
-	{
-		CEditString* pEditString = (CEditString*) m_strArray.GetAt( i );
-		safe_delete( pEditString );
-	}
-	m_strArray.RemoveAll();
+	m_strArray.clear();
 	m_mapWordToOriginal.clear();
 
 	m_nWordButtonNum = 0;
@@ -739,8 +714,10 @@ void CWndDialog::MakeKeyButton()
 void CWndDialog::MakeAnswerButton()
 {
 	m_bWordButtonEnable = FALSE;
-	if( m_nCurArray == m_strArray.GetSize() - 1 )
-	{
+
+	if (m_nCurArray + 1 != m_strArray.size())
+		return;
+
 		DWORD dwMaxHeight = m_pFont->GetMaxHeight() + 6;
 		LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
 		
@@ -824,13 +801,13 @@ void CWndDialog::MakeAnswerButton()
 		}
 
 		m_bWordButtonEnable = TRUE;
-	}
+
 }
 
 void CWndDialog::UpdateButtonEnable()
 {
 	CWndButton* pEnter = (CWndButton*)GetDlgItem( WIDC_BUTTON1 );
-	if( m_strArray.GetSize() == 0 || m_strArray.GetSize() - 1 == m_nCurArray )
+	if( m_strArray.empty() || m_strArray.size() == m_nCurArray + 1 )
 	{
 		pEnter->SetVisible( FALSE );
 	}
@@ -846,12 +823,12 @@ BOOL CWndDialog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	switch( nID )
 	{
 	case WIDC_BUTTON1:
-		if( m_nCurArray < m_strArray.GetSize() - 1 )
+		if( m_nCurArray + 1 < m_strArray.size() )
 		{
 			m_nCurArray++;
 			LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
 			m_string.Init( m_pFont, &lpWndCtrl->rect );
-			m_string.SetEditString( *(CEditString*)m_strArray.GetAt( m_nCurArray ) );
+			m_string.SetEditString( *m_strArray[m_nCurArray] );
 			MakeContextButton();
 			MakeAnswerButton();
 		}

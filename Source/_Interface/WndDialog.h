@@ -45,8 +45,8 @@ public:
 
 	DWORD m_dwQuest = 0;// context 버튼에서 사용함 
 	BOOL m_bSay;
-	int m_nCurArray;
-	CPtrArray m_strArray;
+	size_t m_nCurArray;
+	std::vector<std::unique_ptr<CEditString>> m_strArray;
 	OBJID m_idMover;
 	std::map<CString, CString> m_mapWordToOriginal;
 
