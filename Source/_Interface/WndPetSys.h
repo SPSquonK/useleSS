@@ -281,25 +281,16 @@ class CWndPetLifeConfirm : public CWndNeuz
 public:
 	CWndButton m_wndButton1;
 	CWndButton m_wndButton2;
-	int m_nId;
+	int m_nId = -1;
 	
 protected:
-	CString m_strText;
 	CWndText m_wndText;
 	
 public:
-	CWndPetLifeConfirm();
-	~CWndPetLifeConfirm();
-	
-	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
+	void OnDestroy() override;
+	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 ) override;
+	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
+	void OnInitialUpdate() override; 
 
 	void SetItem(int nId);
 }; 

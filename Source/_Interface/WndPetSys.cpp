@@ -1593,48 +1593,36 @@ void CWndPetFoodMill::ReceiveResult(int nResult, int nCount)
 //	CWndPetLifeConfirm
 //////////////////////////////////////////////////////////////////////////
 
-CWndPetLifeConfirm::CWndPetLifeConfirm() 
-{
-	m_nId	= -1;
+void CWndPetLifeConfirm::OnDestroy() {
 }
 
-CWndPetLifeConfirm::~CWndPetLifeConfirm() 
-{ 
-} 
-
-void CWndPetLifeConfirm::OnDestroy()
-{
+void CWndPetLifeConfirm::SetItem(int nId) {
+	m_nId = nId;
 }
 
-void CWndPetLifeConfirm::SetItem(int nId)
-{
-	m_nId	= nId;
-}
-
-void CWndPetLifeConfirm::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndPetLifeConfirm::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate();
-	// 여기에 코딩하세요
+
+	// Text
 	CRect rect = GetClientRect();
-	int x = m_rectClient.Width() / 2;
-	int y = m_rectClient.Height() - 30;
-	CSize size = CSize(60,25);
-	
-	CRect rect2_1( x - size.cx - 10, y, ( x - size.cx - 10 ) + size.cx, y + size.cy );
-	CRect rect2_2( x + 10          , y, ( x + 10           ) + size.cx, y + size.cy );
-	
 	rect.DeflateRect( 10, 10, 10, 35 );
 	m_wndText.AddWndStyle( WBS_VSCROLL );
 	m_wndText.Create( WBS_NODRAWFRAME, rect, this, 0 );
-	m_strText = prj.GetText( TID_GAME_PET_USELIFE );
-	m_wndText.SetString( m_strText, 0xff000000 );
+	const char * strText = prj.GetText( TID_GAME_PET_USELIFE );
+	m_wndText.SetString( strText ? strText : "", 0xff000000);
 	m_wndText.ResetString();
+
+	// Yes / No buttons
+	const int x = m_rectClient.Width() / 2;
+	const int y = m_rectClient.Height() - 30;
+	const CSize size = CSize(60,25);
 	
-	m_wndButton1.Create("YES"    , 0, rect2_1, this, IDYES);
-	m_wndButton2.Create("NO", 0, rect2_2, this, IDNO);
+	const CRect rect2_1( CPoint (x - size.cx - 10, y), size );
+	const CRect rect2_2( CPoint (x + 10          , y), size );
+	
+	m_wndButton1.Create("YES", 0, rect2_1, this, IDYES);
+	m_wndButton2.Create("NO" , 0, rect2_2, this, IDNO);
 	m_wndButton1.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtYes.tga" ) );
 	m_wndButton2.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtNo.tga" ) );
 	m_wndButton1.FitTextureSize();
@@ -1643,36 +1631,18 @@ void CWndPetLifeConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPetLifeConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_MESSAGEBOX, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-BOOL CWndPetLifeConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndPetLifeConfirm::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndPetLifeConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndPetLifeConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndPetLifeConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == IDYES )
-	{
+BOOL CWndPetLifeConfirm::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_MESSAGEBOX, pWndParent, 0, CPoint(0, 0));
+}
+
+BOOL CWndPetLifeConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) { 
+	if( nID == IDYES ) {
 		//Send to Server..
-		if(	m_nId != -1 )
-			g_DPlay.SendDoUseItem( MAKELONG( 0, m_nId ), NULL_ID, -1, FALSE);
-	}
-	else if( nID == IDNO )
-	{
-		//그냥 종료
+		if (m_nId != -1) {
+			g_DPlay.SendDoUseItem(MAKELONG(0, m_nId), NULL_ID, -1, FALSE);
+		}
+	} else if (nID == IDNO) {
+		// Destroy
 	}
 	
 	Destroy();
