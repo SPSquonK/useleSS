@@ -97,8 +97,10 @@ CWndNeuz::CWndNeuz()
 CWndNeuz::~CWndNeuz()
 {
 	// PLAYSND( SND_INF_CLOSE );
-	for( int i = 0; i < m_wndArrayTemp.GetSize(); i++ )
-		safe_delete( (CWndBase*)m_wndArrayTemp.GetAt( i ) );
+	for (CWndBase * child : m_wndArrayTemp) {
+		safe_delete(child);
+	}
+
 	// 타일 형태의 윈도는 윈도가 종료할 때 텍스춰를 파괴해야한다.
 	if( m_strTexture.IsEmpty() == FALSE )
 	{
@@ -159,7 +161,7 @@ void CWndNeuz::OnInitialUpdate()
 
 
 		for (WNDCTRL * pWndCtrl : lpWndApplet->ptrCtrlArray) {
-			m_wndArrayTemp.Add(CreateControl(m_pApp->GetSafeHwnd(), pWndCtrl));
+			m_wndArrayTemp.emplace_back(CreateControl(m_pApp->GetSafeHwnd(), pWndCtrl));
 		}
 	}
 

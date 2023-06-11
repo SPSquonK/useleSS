@@ -49,7 +49,7 @@ class CWndNeuz : public CWndBase
 protected:
 	CWndTitleBar m_wndTitleBar;
 	CRect m_rectBackup;
-	CPtrArray m_wndArrayTemp; // List of created controls (to be able to release them only)
+	std::vector<CWndBase *> m_wndArrayTemp; // List of created controls (to be able to release them only)
 
 public:
 	CPoint m_ptMouseCenter;
@@ -98,14 +98,17 @@ public:
 template<typename T, typename D>
 	requires (WndTListBox::DisplayerOf<T, D>)
 CWndTListBox<T, D> & CWndNeuz::ReplaceListBox(UINT listboxId) {
-	for (int i = 0; i != m_wndArrayTemp.GetSize(); ++i) {
-		CWndBase * oldComponent = (CWndBase *) m_wndArrayTemp.GetAt(i);
-		if (oldComponent->GetWndId() == listboxId) {
-			RemoveWnd(oldComponent);
-			oldComponent->Destroy(true);
-			m_wndArrayTemp.RemoveAt(i);
-			break;
+	const auto itOldComponent = std::find_if(
+		m_wndArrayTemp.begin(), m_wndArrayTemp.end(),
+		[listboxId](CWndBase * pOldComponent) {
+			return pOldComponent->GetWndId() == listboxId;
 		}
+	);
+
+	if (itOldComponent != m_wndArrayTemp.end()) {
+		RemoveWnd(*itOldComponent);
+		(*itOldComponent)->Destroy(TRUE);
+		m_wndArrayTemp.erase(itOldComponent);
 	}
 
 	CWndTListBox<T, D> * e = new CWndTListBox<T, D>();
@@ -119,6 +122,6 @@ CWndTListBox<T, D> & CWndNeuz::ReplaceListBox(UINT listboxId) {
 		e->m_strTexture = lpWndCtrl->strTexture;
 	e->m_bTile = (lpWndCtrl->bTile != FALSE);
 
-	m_wndArrayTemp.Add(e);
+	m_wndArrayTemp.emplace_back(e);
 	return *e;
 }
