@@ -11,36 +11,22 @@
 // CWndTradeCtrl
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define MAX_TRADE 25
-CTextureMng CWndTradeCtrl::m_textureMng;
-
-CWndTradeCtrl::CWndTradeCtrl() 
-{
-	m_nWndColor    = D3DCOLOR_TEMP( 255,  0x5 << 3,  0x5 << 3,  0x5 << 3 );
-	m_nFontColor   = D3DCOLOR_TEMP( 255, 255, 255, 255 );
-	m_nSelectColor = D3DCOLOR_TEMP( 255, 255, 255, 0   );
-	m_nCurSelect = -1;
-	m_pFocusItem = NULL;
+CWndTradeCtrl::CWndTradeCtrl() {
 	m_pMover = NULL;
-	m_bDrag = FALSE;
-}
-CWndTradeCtrl::~CWndTradeCtrl()
-{
-}
-void CWndTradeCtrl::Create( DWORD dwListCtrlStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID )
-{
-	m_dwListCtrlStyle = dwListCtrlStyle;
-	CWndBase::Create( m_dwListCtrlStyle|WBS_CHILD, rect, pParentWnd, nID );
-}
-void CWndTradeCtrl::InitItem( CMover* pMover )
-{
-	m_pMover = pMover;
-	m_pFocusItem	= NULL;
 }
 
-void CWndTradeCtrl::OnInitialUpdate()
-{
+void CWndTradeCtrl::Create(DWORD dwListCtrlStyle, const RECT & rect, CWndBase * pParentWnd, UINT nID) {
+	m_dwListCtrlStyle = dwListCtrlStyle;
+	CWndBase::Create(m_dwListCtrlStyle | WBS_CHILD, rect, pParentWnd, nID);
 }
+
+void CWndTradeCtrl::InitItem(CMover * pMover) {
+	m_pMover = pMover;
+}
+
+void CWndTradeCtrl::OnInitialUpdate() {
+}
+
 void CWndTradeCtrl::OnDraw(C2DRender* p2DRender) 
 {
 	CPoint pt( 3, 3 );
@@ -72,8 +58,6 @@ void CWndTradeCtrl::OnDraw(C2DRender* p2DRender)
 
 				g_WndMng.PutToolTip_Item( pItemBase, point2, &rectHittest );
 			}
-			if( i == m_nCurSelect )
-				p2DRender->RenderRect( CRect( x * 32, y * 32, x * 32 + 32 - 2, y * 32 + 32 - 2 ), 0xffffffff );
 
 			if(pItemBase->GetProp()->dwPackMax > 1 )
 			{
@@ -92,13 +76,6 @@ void CWndTradeCtrl::OnDraw(C2DRender* p2DRender)
 void CWndTradeCtrl::OnLButtonUp( UINT nFlags, CPoint point )
 {
 	ReleaseCapture();
-	m_bDrag = FALSE;
-}
-void CWndTradeCtrl::OnMouseMove(UINT nFlags, CPoint point)
-{
-	if( m_bDrag == FALSE )
-		return;
-	m_bDrag = FALSE;
 }
 
 BOOL CWndTradeCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
@@ -160,28 +137,13 @@ BOOL CWndTradeCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	return TRUE;
 }
 
-void CWndTradeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
-{
-}
-void CWndTradeCtrl::OnRButtonUp( UINT nFlags, CPoint point )
-{
-}
-void CWndTradeCtrl::OnRButtonDown( UINT nFlags, CPoint point )
-{
-}
-void CWndTradeCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-}
-void CWndTradeCtrl::OnRButtonDblClk( UINT nFlags, CPoint point)
-{
-}
-void CWndTradeCtrl::OnSize( UINT nType, int cx, int cy )
-{
+void CWndTradeCtrl::OnSize( UINT nType, int cx, int cy ) {
 	CRect rect = GetWindowRect();
 	rect.left = rect.right - 15;
 
 	CWndBase::OnSize( nType, cx, cy);
 }
+
 void CWndTradeCtrl::SetWndRect( CRect rectWnd, BOOL bOnSize )
 {
 	m_rectWindow = rectWnd;
@@ -191,13 +153,13 @@ void CWndTradeCtrl::SetWndRect( CRect rectWnd, BOOL bOnSize )
 	if( bOnSize )
 		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
 }
-void CWndTradeCtrl::PaintFrame( C2DRender* p2DRender )
-{
+
+void CWndTradeCtrl::PaintFrame( C2DRender* p2DRender ) {
 	CRect rect = GetWindowRect();
 
-	DWORD dwColor1 = D3DCOLOR_ARGB( 100, 0, 0,  0 );//D3DCOLOR_TEMP( 255,   0,   0,  50 );//
-	DWORD dwColor2 = D3DCOLOR_ARGB( 255, 240, 240,  240 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
-	DWORD dwColor3 = D3DCOLOR_ARGB( 100, 200, 200,  200 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
+	static constexpr DWORD dwColor1 = D3DCOLOR_ARGB( 100, 0, 0,  0 );//D3DCOLOR_TEMP( 255,   0,   0,  50 );//
+	static constexpr DWORD dwColor2 = D3DCOLOR_ARGB( 255, 240, 240,  240 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
+	static constexpr DWORD dwColor3 = D3DCOLOR_ARGB( 100, 200, 200,  200 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
 
 	p2DRender->RenderFillRect ( rect, dwColor1 );
 	p2DRender->RenderRoundRect( rect, dwColor2 );
@@ -207,34 +169,6 @@ void CWndTradeCtrl::PaintFrame( C2DRender* p2DRender )
 	p2DRender->RenderRect( rect, dwColor3 );
 }
 
-BOOL CWndTradeCtrl::OnEraseBkgnd( C2DRender* p2DRender )
-{
+BOOL CWndTradeCtrl::OnEraseBkgnd(C2DRender * p2DRender) {
 	return TRUE;
 }
-
-BOOL CWndTradeCtrl::SetItem( const LVITEM* pItem )
-{
-	if( pItem->iItem < m_aItems.GetSize() && m_aItems.GetAt( pItem->iItem ) == NULL ) 
-		return FALSE; // 존재하지 않는다.
-	LVITEM* pItems = (LVITEM*)m_aItems.GetAt( pItem->iItem );
-	memcpy( &pItems[ pItem->iSubItem ], pItem, sizeof( LVITEM ) );
-	pItems[ pItem->iSubItem ].pszText = new _TCHAR[ _tcslen( pItem->pszText ) + sizeof( _TCHAR ) ];
-	_tcscpy( pItems[ pItem->iSubItem ].pszText, pItem->pszText );
-	return TRUE;
-}
-int CWndTradeCtrl::InsertItem( const LVITEM* pItem )
-{
-	if( pItem->iItem < m_aItems.GetSize() && m_aItems.GetAt( pItem->iItem ) ) 
-		return -1; // 이미 존재한다.
-	LVITEM* pNewItems = new LVITEM[ 3 ]; // m_aColumns.GetSize()
-	memcpy( &pNewItems[ pItem->iSubItem ], pItem, sizeof( LVITEM ) );
-	pNewItems[ pItem->iSubItem ].pszText = new _TCHAR[ _tcslen( pItem->pszText ) + sizeof( _TCHAR ) ];
-	_tcscpy( pNewItems[ pItem->iSubItem ].pszText, pItem->pszText );
-	m_aItems.SetAtGrow( pItem->iItem, (void*)pNewItems );
-	return pItem->iItem;
-}
-int CWndTradeCtrl::GetItemCount() const
-{
-	return m_aItems.GetSize();
-}
-

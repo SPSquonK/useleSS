@@ -16,8 +16,6 @@ class CWndVendorCtrl : public CWndBase
 	DWORD	m_nWndColor;
 	DWORD	m_nFontColor;
 	DWORD	m_nSelectColor;
-//	CPtrArray	m_aItems;
-//	CPtrArray	m_aColumns;
 
 public:
 //	Constructions
