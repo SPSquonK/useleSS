@@ -64,7 +64,6 @@
 #include "patch.h"
 #include "Path.h"
 #include "Scanner.h"
-#include "ScriptDialog.h"
 #include "Script.h"
 #include "Project.h"
 #include "landscape.h"

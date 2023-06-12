@@ -9,6 +9,7 @@
 #include "Mymap.h"
 #include "EventLua.h"
 #include "GuildCombat1to1.h"
+#include <optional>
 
 
 #define	MAX_WORLD	256

@@ -419,8 +419,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\script.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Common\scriptdialog.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\ScriptHelper.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\scriptlib.cpp">
@@ -619,7 +617,6 @@
     <ClInclude Include="..\_AIInterface\ActionShip.h" />
     <ClInclude Include="..\_Common\scanner.h" />
     <ClInclude Include="..\_Common\script.h" />
-    <ClInclude Include="..\_Common\scriptdialog.h" />
     <ClInclude Include="..\_Common\ScriptHelper.h" />
     <ClInclude Include="..\_AIInterface\AIBear.h" />
     <ClInclude Include="..\_AIInterface\AIBigMuscle.h" />

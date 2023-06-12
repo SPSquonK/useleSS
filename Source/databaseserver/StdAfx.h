@@ -45,7 +45,7 @@
 #include "file.h"
 #include "authorization.h"
 #include "Scanner.h"
-#include "ScriptDialog.h"
+#include "Script.h"
 #include "Project.h"
 #include "Timer.h"
 #include "Debug.h"

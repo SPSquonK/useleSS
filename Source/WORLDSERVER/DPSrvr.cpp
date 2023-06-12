@@ -732,9 +732,7 @@ void CDPSrvr::OnScriptDialogReq( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE
 			{
 				return;
 			}
-		#if !defined(__REMOVE_SCIRPT_060712)
-			CScriptDialog::SetLatestDialog( pMover->GetName(), lpKey );
-		#endif
+
 			if( pMover->m_pNpcProperty &&
 				pMover->m_pNpcProperty->IsDialogLoaded() )
 			{

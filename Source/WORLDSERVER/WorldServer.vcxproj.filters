@@ -534,9 +534,6 @@
     <ClCompile Include="..\_Common\script.cpp">
       <Filter>Neuz Common Files\Common Files\Script</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\scriptdialog.cpp">
-      <Filter>Neuz Common Files\Common Files\Script</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\ScriptHelper.cpp">
       <Filter>Neuz Common Files\Common Files\Script</Filter>
     </ClCompile>
@@ -1092,9 +1089,6 @@
       <Filter>Neuz Common Files\Common Files\Script</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\script.h">
-      <Filter>Neuz Common Files\Common Files\Script</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\scriptdialog.h">
       <Filter>Neuz Common Files\Common Files\Script</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\ScriptHelper.h">
