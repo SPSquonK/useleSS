@@ -83,7 +83,9 @@ public:
 
 	CLandLayer(LPDIRECT3DDEVICE9 pd3dDevice,WORD nTex);
 	CLandLayer(const CLandLayer &) = delete;
+	CLandLayer(CLandLayer &&) noexcept;
 	CLandLayer & operator=(const CLandLayer &) = delete;
+	CLandLayer & operator=(CLandLayer &&) noexcept;
 	~CLandLayer();
 };
 
@@ -150,7 +152,7 @@ public:
 	static	int			m_nWidthLinkMap[ MAX_LINKLEVEL ];
 
 	DWORD				m_dwVersion;
-	std::vector<std::unique_ptr<CLandLayer>> m_aLayer; // 이 랜드스케이프에 사용될 레이어들의 배열
+	std::vector<CLandLayer> m_aLayer; // 이 랜드스케이프에 사용될 레이어들의 배열
 	BOOL				m_abPatchRendered[NUM_PATCHES_PER_SIDE*NUM_PATCHES_PER_SIDE];
 	
 	std::array<ExistingObjects<CObj, 5000>, MAX_OBJARRAY> m_apObjects;

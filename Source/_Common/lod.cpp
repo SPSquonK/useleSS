@@ -629,6 +629,7 @@ HRESULT CLandscape::InvalidateDeviceObjects()
 
 	return S_OK;
 }
+
 HRESULT CLandscape::DeleteDeviceObjects()
 {
 	SAFE_RELEASE( m_texMiniMap.m_pTexture );
@@ -640,8 +641,8 @@ HRESULT CLandscape::DeleteDeviceObjects()
 		}
 	}
 
-	for (auto & pLandLayer : m_aLayer) {
-		SAFE_RELEASE(pLandLayer->m_pLightMap);
+	for (CLandLayer & pLandLayer : m_aLayer) {
+		SAFE_RELEASE(pLandLayer.m_pLightMap);
 	}
 
 	return S_OK;
@@ -781,11 +782,11 @@ void CLandscape::SetVertices()
 
 BOOL CLandscape::ForceTexture(LPDIRECT3DTEXTURE9 pNewTex)
 {
-	for (auto & pLayer : m_aLayer) {
-		if( pLayer->m_bVisible == FALSE )
+	for (CLandLayer & pLayer : m_aLayer) {
+		if( pLayer.m_bVisible == FALSE )
 			continue;
 
-		prj.m_terrainMng.GetTerrain( pLayer->m_nTex )->m_pTexture = pNewTex;
+		prj.m_terrainMng.GetTerrain( pLayer.m_nTex )->m_pTexture = pNewTex;
 	}	
 
 	return TRUE;
@@ -798,18 +799,18 @@ void CLandscape::RenderPatches()
 	for(int i = 0; i < NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE; i++ )
 		m_abPatchRendered[ i ] = FALSE;
 
-	for (auto & pLayer : m_aLayer) {
-		if( pLayer->m_bVisible == FALSE )
+	for (CLandLayer & pLayer : m_aLayer) {
+		if( pLayer.m_bVisible == FALSE )
 			continue;
 
-		if(prj.m_terrainMng.GetTerrain(pLayer->m_nTex)->m_pTexture == NULL )
-			prj.m_terrainMng.LoadTexture( pLayer->m_nTex );
+		if(prj.m_terrainMng.GetTerrain(pLayer.m_nTex)->m_pTexture == NULL )
+			prj.m_terrainMng.LoadTexture( pLayer.m_nTex );
 
-		if(prj.m_terrainMng.GetTerrain(pLayer->m_nTex)->m_pTexture == NULL )
+		if(prj.m_terrainMng.GetTerrain(pLayer.m_nTex)->m_pTexture == NULL )
 			continue;
 
-		m_pd3dDevice->SetTexture( 0, prj.m_terrainMng.GetTerrain(pLayer->m_nTex)->m_pTexture );
-		m_pd3dDevice->SetTexture( 1, pLayer->m_pLightMap );
+		m_pd3dDevice->SetTexture( 0, prj.m_terrainMng.GetTerrain(pLayer.m_nTex)->m_pTexture );
+		m_pd3dDevice->SetTexture( 1, pLayer.m_pLightMap );
 		m_pd3dDevice->SetIndices( g_pIB );
 
 		for (int Y=0; Y < NUM_PATCHES_PER_SIDE; Y++)
@@ -819,7 +820,7 @@ void CLandscape::RenderPatches()
 				CPatch * patch = &(m_aPatches[Y][X]);
 				if (!patch->isVisibile()) continue;
 				
-					if(pLayer->m_aPatchEnable[X+Y*NUM_PATCHES_PER_SIDE] ) 
+					if(pLayer.m_aPatchEnable[X+Y*NUM_PATCHES_PER_SIDE] ) 
 					{
 						if(m_abPatchRendered[X+Y*NUM_PATCHES_PER_SIDE]) 
 						{
@@ -1253,13 +1254,14 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 	}
 	BYTE nLayer;
 	file.Read( &nLayer, sizeof(BYTE) , 1 );
-	CLandLayer* pLayer;
-	WORD nTex;
+	
+	
 	for(int j = 0; j < nLayer; j++ )  
 	{
+		WORD nTex;
 		file.Read( &( nTex ), sizeof(WORD), 1 );
 
-		pLayer = NewLayer( nTex );
+		CLandLayer * pLayer = NewLayer( nTex );
 		file.Read( pLayer->m_aPatchEnable, sizeof( BOOL ), NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE );
 		
 		D3DLOCKED_RECT rectLock;
@@ -1269,14 +1271,14 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 	}
 
 	// 해당 레이어에 존재하는 텍스춰가 없을 시에는 삭제 
-	for (auto ppLayer = m_aLayer.begin(); ppLayer != m_aLayer.end();) {
-		if (prj.m_terrainMng.GetTerrain((*ppLayer)->m_nTex)->m_pTexture == NULL)
-			prj.m_terrainMng.LoadTexture( (*ppLayer)->m_nTex);
+	for (auto pLayer = m_aLayer.begin(); pLayer != m_aLayer.end();) {
+		if (prj.m_terrainMng.GetTerrain(pLayer->m_nTex)->m_pTexture == NULL)
+			prj.m_terrainMng.LoadTexture( pLayer->m_nTex);
 		
-		if( prj.m_terrainMng.GetTerrain( (*ppLayer)->m_nTex)->m_pTexture == NULL) {
-			ppLayer = m_aLayer.erase(ppLayer);
+		if( prj.m_terrainMng.GetTerrain( pLayer->m_nTex)->m_pTexture == NULL) {
+			pLayer = m_aLayer.erase(pLayer);
 		} else {
-			++ppLayer;
+			++pLayer;
 		}
 	}
 	MakeHgtAttrVertexBuffer();
@@ -1498,31 +1500,26 @@ CLandLayer* CLandscape::NewLayer( WORD nTex )
 {
 	const auto it = std::find_if(
 		m_aLayer.begin(), m_aLayer.end(),
-		[nTex](auto & pLayer) { return pLayer->m_nTex == nTex; }
+		[nTex](const CLandLayer & pLayer) { return pLayer.m_nTex == nTex; }
 	);
-	if (it != m_aLayer.end()) return it->get();
+	if (it != m_aLayer.end()) return &*it;
 
-	CLandLayer * pLayer = new CLandLayer(m_pd3dDevice,nTex);
+	CLandLayer * pLayer = &m_aLayer.emplace_back(m_pd3dDevice, nTex);
 
 	if( m_aLayer.empty() ) 
 	{
-		for( int i=0;i<NUM_PATCHES_PER_SIDE*NUM_PATCHES_PER_SIDE;i++) 
-			pLayer->m_aPatchEnable[i]=TRUE;
+		std::ranges::fill(pLayer->m_aPatchEnable, TRUE);
 	}
 	else 
 	{
 		D3DLOCKED_RECT rectLock;
 		pLayer->m_pLightMap->LockRect( 0 , &rectLock, 0, 0);
-		for( int i = 0; i < MAP_SIZE * MAP_SIZE; i++ ) 
-		{
-			((WORD *)rectLock.pBits)[i] = 0;
-		}
+		std::memset(rectLock.pBits, 0, sizeof(WORD) * MAP_SIZE * MAP_SIZE);
 		pLayer->m_pLightMap->UnlockRect(0);
-		for( int i=0;i<NUM_PATCHES_PER_SIDE*NUM_PATCHES_PER_SIDE;i++) 
-			pLayer->m_aPatchEnable[i]=FALSE;
+
+		std::ranges::fill(pLayer->m_aPatchEnable, FALSE);
 	}
 
-	m_aLayer.emplace_back(pLayer);
 	return pLayer;
 }
 
@@ -1589,6 +1586,20 @@ CLandLayer::CLandLayer(LPDIRECT3DDEVICE9 pd3dDevice,WORD nTex)
 		for( int i = 0; i < NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE; i++ ) 
 			m_aPatchEnable[ i ]=FALSE;
 	}
+}
+
+CLandLayer::CLandLayer(CLandLayer && other) noexcept {
+	std::memcpy(this, &other, sizeof(CLandLayer));
+	other.m_pLightMap = nullptr;
+}
+
+
+CLandLayer & CLandLayer::operator=(CLandLayer && other) noexcept {
+	if (this == &other) return *this;
+	LPDIRECT3DTEXTURE9 myLightMap = m_pLightMap;
+	std::memcpy(this, &other, sizeof(CLandLayer));
+	other.m_pLightMap = myLightMap;
+	return *this;
 }
 
 CLandLayer::~CLandLayer() 
