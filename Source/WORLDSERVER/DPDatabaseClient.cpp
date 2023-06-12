@@ -5,7 +5,7 @@
 #include "User.h"
 #include "WorldMng.h"
 #include "misc.h"
-
+#include "sqktd/util.hpp"
 #include "playerdata.h"
 
 #include "eveschool.h"
@@ -291,11 +291,6 @@ void CDPDatabaseClient::SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVEC
 }
 
 #ifdef __S_RECOMMEND_EVE
-template<typename T>
-bool IsOneOf(T searched, std::convertible_to<T> auto ... among) {
-	return ((searched == among) || ...);
-};
-
 void CUser::GiveRecommendEveItems( int nValue )
 {
 	if (!g_eLocal.GetState(EVE_RECOMMEND)) return;
@@ -337,9 +332,9 @@ void CUser::GiveRecommendEveItems( int nValue )
 		} else if (nLevel == 60) {
 			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESS, 10, 2 });
 		}
-	} else if (IsOneOf(nValue, JOB_MERCENARY, JOB_MAGICIAN, JOB_ACROBAT, JOB_ASSIST)) {
+	} else if (sqktd::is_among(nValue, JOB_MERCENARY, JOB_MAGICIAN, JOB_ACROBAT, JOB_ASSIST)) {
 		items.emplace_back(Item{ II_SYS_SYS_SCR_BXCOSTUME01 });
-	} else if (IsOneOf(nValue, JOB_KNIGHT, JOB_BLADE)) {
+	} else if (sqktd::is_among(nValue, JOB_KNIGHT, JOB_BLADE)) {
 		if (GetSex() == SEX_MALE) {
 			items.emplace_back(Item{ II_SYS_SYS_SCR_BXMMER60SET });
 		} else {
@@ -348,7 +343,7 @@ void CUser::GiveRecommendEveItems( int nValue )
 
 		items.emplace_back(Item{ II_SYS_SYS_SCR_BXSUHO01 });
 
-	} else if (IsOneOf(nValue, JOB_RANGER, JOB_JESTER)) {
+	} else if (sqktd::is_among(nValue, JOB_RANGER, JOB_JESTER)) {
 		if (GetSex() == SEX_MALE) {
 			items.emplace_back(Item{ II_SYS_SYS_SCR_BXMACR60SET });
 		} else {
@@ -356,7 +351,7 @@ void CUser::GiveRecommendEveItems( int nValue )
 		}
 
 		items.emplace_back(Item{ II_SYS_SYS_SCR_BXSUHO01 });
-	} else if (IsOneOf(nValue, JOB_RINGMASTER, JOB_BILLPOSTER)) {
+	} else if (sqktd::is_among(nValue, JOB_RINGMASTER, JOB_BILLPOSTER)) {
 		if (GetSex() == SEX_MALE) {
 			items.emplace_back(Item{ II_SYS_SYS_SCR_BXMASS60SET });
 		} else {
@@ -364,7 +359,7 @@ void CUser::GiveRecommendEveItems( int nValue )
 		}
 
 		items.emplace_back(Item{ II_SYS_SYS_SCR_BXSUHO01 });
-	} else if (IsOneOf(nValue, JOB_PSYCHIKEEPER, JOB_ELEMENTOR)) {
+	} else if (sqktd::is_among(nValue, JOB_PSYCHIKEEPER, JOB_ELEMENTOR)) {
 		if (GetSex() == SEX_MALE) {
 			items.emplace_back(Item{ II_SYS_SYS_SCR_BXMMAG60SET });
 		} else {
