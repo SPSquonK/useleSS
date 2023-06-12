@@ -73,7 +73,7 @@ class CWorld;
 
 // 랜드스케이프에서 사용하는 레이어 클래스
 // 하나당 한 종류의 텍스쳐가 어떻게 깔려있는지의 정보를 가진다
-struct CLandLayer
+struct CLandLayer final
 {
 public:
 	BOOL m_bVisible;
@@ -82,8 +82,9 @@ public:
 	LPDIRECT3DTEXTURE9 m_pLightMap; // 라이트맵 포인터
 
 	CLandLayer(LPDIRECT3DDEVICE9 pd3dDevice,WORD nTex);
+	CLandLayer(const CLandLayer &) = delete;
+	CLandLayer & operator=(const CLandLayer &) = delete;
 	~CLandLayer();
-	BOOL GetPatchEnable(int x, int z) { return m_aPatchEnable[x+z*NUM_PATCHES_PER_SIDE]; } // 이 부분의 패치의 표시 상태를 리턴
 };
 
 
@@ -149,7 +150,7 @@ public:
 	static	int			m_nWidthLinkMap[ MAX_LINKLEVEL ];
 
 	DWORD				m_dwVersion;
-	CPtrArray			m_aLayer; // 이 랜드스케이프에 사용될 레이어들의 배열
+	std::vector<std::unique_ptr<CLandLayer>> m_aLayer; // 이 랜드스케이프에 사용될 레이어들의 배열
 	BOOL				m_abPatchRendered[NUM_PATCHES_PER_SIDE*NUM_PATCHES_PER_SIDE];
 	
 	std::array<ExistingObjects<CObj, 5000>, MAX_OBJARRAY> m_apObjects;
