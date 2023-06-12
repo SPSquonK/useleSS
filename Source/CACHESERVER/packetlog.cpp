@@ -2,106 +2,119 @@
 #include "packetlog.h"
 #include <vector>
 #include <algorithm>
+#include <tuple>
 
-CPacketLog::CPacketLog()
-{
+
+///////////////////////////////////////////////////////////////////////////////
+
+void CPacketLog::PacketRecvd::AddPacket(std::uint64_t bytes) {
+	dwPackets += 1;
+	dwBytes += bytes;
 }
 
-CPacketLog::~CPacketLog()
-{
+CPacketLog::PacketRecvd & CPacketLog::PacketRecvd::operator+=(const CPacketLog::PacketRecvd & other) {
+	dwPackets += other.dwPackets;
+	dwBytes += other.dwBytes;
+	return *this;
 }
 
-CPacketLog* CPacketLog::Instance()
-{
+std::map<DWORD, CPacketLog::PacketRecvd> & operator+=(
+	std::map<DWORD, CPacketLog::PacketRecvd> & dest,
+	const std::map<DWORD, CPacketLog::PacketRecvd> & src
+	) {
+
+	for (const auto & [packetId, packetRecvd] : src) {
+		dest[packetId] += packetRecvd;
+	}
+
+	return dest;
+}
+
+static bool pllpr2(
+	const std::pair<DWORD, CPacketLog::PacketRecvd> & l,
+	const std::pair<DWORD, CPacketLog::PacketRecvd> & r
+) {
+	return std::tuple(l.second.dwBytes, l.second.dwPackets)
+		> std::tuple(r.second.dwBytes, r.second.dwPackets);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+CPacketLog * CPacketLog::Instance() {
 	static CPacketLog	sPacketLog;
 	return &sPacketLog;
 }
 
-void CPacketLog::Add( DPID dpid, DWORD dwHdr, DWORD dwBytes )
-{
-	CMclAutoLock lock( m_AccessLock );
-
-	auto i	= m_players.find( dpid );
-	if( i == m_players.end() )
-	{
-		MPAR mpar;
-		mpar.emplace( dwHdr, PacketRecvd( dwHdr, dwBytes ) );
-		m_players.emplace( dpid, PlayerRecvd( dpid, dwBytes, mpar ) );
-	}
-	else
-	{
-		i->second.dwTotalBytes	+= dwBytes;
-		++i->second.dwTotalPackets;
-		MPAR& mpar	= i->second.mpar;
-		const auto j = mpar.find( dwHdr );
-		if( j == mpar.end() )
-		{
-			mpar.emplace( dwHdr, PacketRecvd( dwHdr, dwBytes ) );
-		}
-		else
-		{
-			j->second.dwPackets++;
-			j->second.dwBytes	+= dwBytes;
-		}
-	}
+void CPacketLog::Add(DPID dpid, DWORD dwHdr, std::uint64_t dwBytes) {
+	std::lock_guard lg(m_AccessLock);
+	m_players[dpid].AddPacket(dwHdr, dwBytes);
 }
 
-void CPacketLog::Reset()
-{
-	CMclAutoLock lock( m_AccessLock );
+void CPacketLog::Reset() {
+	std::lock_guard lg(m_AccessLock);
 	m_players.clear();
-	Error( "[CPacketLog.Reset]" );
+	Error("[CPacketLog.Reset]");
 }
 
-bool pllpr1( PlayerRecvd & l, PlayerRecvd & r )
-{
-	return l.dwTotalBytes > r.dwTotalBytes;
+static bool pllpr1(
+	const std::pair<DPID, CPacketLog::PlayerRecvd> & l,
+	const std::pair<DPID, CPacketLog::PlayerRecvd> & r
+) {
+	return std::tuple(l.second.dwTotalBytes, l.second.dwTotalPackets, l.first)
+		> std::tuple(r.second.dwTotalBytes, r.second.dwTotalPackets, r.first);
 }
 
-bool pllpr2( PacketRecvd & l, PacketRecvd & r )
-{
-	return l.dwBytes > r.dwBytes;
+static float ComputeRatio(std::uint64_t value, std::uint64_t over) {
+	if (over == 0) return 0.0f;
+	return static_cast<float>(value * 100) / static_cast<float>(over);
 }
 
-#define	MAX_DETAIL_PACKETLOG	100
-void CPacketLog::Print()
-{
-	CMclAutoLock lock( m_AccessLock );
+void CPacketLog::Print() {
+	static constexpr size_t MAX_DETAIL_PACKETLOG = 100;
 
-	VPLR	vPlayers;
+	std::lock_guard lg(m_AccessLock);
+
+	std::vector<std::pair<DPID, PlayerRecvd>> vPlayers;
 	DWORD dwTotalBytes	= 0, dwTotalPackets	= 0;
-	for( auto i = m_players.begin(); i != m_players.end(); ++i )
-	{
-		dwTotalBytes	+= i->second.dwTotalBytes;
-		dwTotalPackets	+= i->second.dwTotalPackets;
-		vPlayers.push_back( i->second );
+	for (const auto & player : m_players) {
+		dwTotalBytes   += player.second.dwTotalBytes;
+		dwTotalPackets += player.second.dwTotalPackets;
+		vPlayers.push_back(player);
 	}
-	std::sort( vPlayers.begin(), vPlayers.end(), pllpr1 );
+	std::sort(vPlayers.begin(), vPlayers.end(), pllpr1);
 
-	Error( "\r\n\r\nTotalBytesReceived: %d(bytes)\t%d(packets)", dwTotalBytes, dwTotalPackets );
+	Error( "\r\n\r\nTotalBytesReceived: %llu(bytes)\t%llu(packets)", dwTotalBytes, dwTotalPackets );
 
-	if( dwTotalBytes == 0 )
-		dwTotalBytes	= 1;
-	FILE* f;
-	if( ( f = fopen( "error.txt","a" ) ) )
-	{
-		int c	= 0;
-		for( auto j = vPlayers.begin(); j != vPlayers.end(); ++j )
-		{
-			VPAR vPackets;
-			for( auto k = j->mpar.begin(); k != j->mpar.end(); ++k )
-				vPackets.push_back( k->second );
-			std::sort( vPackets.begin(), vPackets.end(), pllpr2 );
+	FILE * f = fopen("error.txt", "a");
+	if (!f) return;
 
-			fprintf( f, "\t(%3.2f%%) %d(socket) %d(bytes) %d(packets)\r\n", (float)j->dwTotalBytes * 100 / (float)dwTotalBytes, j->dpid, j->dwTotalBytes, j->dwTotalPackets );
-			if( j->dwTotalBytes == 0 )
-				j->dwTotalBytes	= 1;
-			if( c++ < MAX_DETAIL_PACKETLOG )
-			{
-				for( auto m = vPackets.begin(); m != vPackets.end(); ++m )
-					fprintf( f, "\t\t(%3.2f%%)\t%08X: %d(bytes) %d(packets)\r\n", (float)m->dwBytes * 100 / (float)j->dwTotalBytes, m->dwHdr, m->dwBytes, m->dwPackets );
+	size_t c = 0;
+
+	for (const auto & [playerDPID, playerPackets] : vPlayers) {
+		std::vector<std::pair<DWORD, PacketRecvd>> vPackets;
+		for (const auto & packet : playerPackets.mpar) {
+			vPackets.emplace_back(packet);
+		}
+		std::sort(vPackets.begin(), vPackets.end(), pllpr2);
+
+		fprintf( f, "\t(%3.2f%%) %d(socket) %llu(bytes) %llu(packets)\r\n",
+			ComputeRatio(playerPackets.dwTotalBytes, dwTotalBytes),
+			playerDPID,
+			playerPackets.dwTotalBytes, playerPackets.dwTotalPackets
+		);
+		
+		if( c++ < MAX_DETAIL_PACKETLOG ) {
+			for (const auto & [packetId, packetStats] : vPackets) {
+				fprintf(f, "\t\t(%3.2f%%)\t%08X: %llu(bytes) %llu(packets)\r\n",
+					ComputeRatio(packetStats.dwBytes, playerPackets.dwTotalBytes),
+					packetId,
+					packetStats.dwBytes, packetStats.dwPackets
+				);
 			}
 		}
 	}
-	fclose( f );
+
+	fclose(f);
 }
