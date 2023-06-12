@@ -4,106 +4,57 @@
 #include "WndManager.h"
 #include "defineText.h"
 
-
-CWndMotion::CWndMotion() 
-{ 
-} 
-CWndMotion::~CWndMotion() 
-{ 
-} 
-void CWndMotion::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndMotion::OnMouseWndSurface( CPoint point )
-{
-}	
-void CWndMotion::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-
+void CWndMotion::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 
 	CRect rect = GetClientRect();
 	rect.left = 0;
 	rect.top = 0;
-	CWndTabCtrl* lpTapCtrl = (CWndTabCtrl*)GetDlgItem( WIDC_TABCTRL1 );
-	m_wndMotion1.Create( WBS_CHILD | WBS_NODRAWFRAME , rect, lpTapCtrl, 100000 );
-	m_wndEmoticon.Create( WBS_CHILD | WBS_NODRAWFRAME , rect, lpTapCtrl, 1000001 );
+	CWndTabCtrl * lpTapCtrl = (CWndTabCtrl *)GetDlgItem(WIDC_TABCTRL1);
+	m_wndMotion1.Create(WBS_CHILD | WBS_NODRAWFRAME, rect, lpTapCtrl, 100000);
+	m_wndEmoticon.Create(WBS_CHILD | WBS_NODRAWFRAME, rect, lpTapCtrl, 1000001);
 
-	lpTapCtrl->InsertItem(&m_wndMotion1, prj.GetText(TID_GAME_TOOLTIP_MOTION));	
+	lpTapCtrl->InsertItem(&m_wndMotion1, prj.GetText(TID_GAME_TOOLTIP_MOTION));
 	lpTapCtrl->InsertItem(&m_wndEmoticon, prj.GetText(TID_GAME_TOOLTIP_EMOTICON));
-	lpTapCtrl->SetCurSel( 0 );
-	
-	lpTapCtrl->SetButtonLength( 130 );
+	lpTapCtrl->SetCurSel(0);
 
-	
+	lpTapCtrl->SetButtonLength(130);
+
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CPoint point( rectRoot.left, rectRoot.top  );
-	
-	CRect rectWindow = GetWindowRect();
-	Move( point );
-} 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndMotion::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_MOTION, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-BOOL CWndMotion::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndMotion::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndMotion::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndMotion::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndMotion::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-void CWndMotion::OnMouseMove( UINT nFlags, CPoint point )
-{
+	Move(rectRoot.TopLeft());
 }
+
+BOOL CWndMotion::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+	return CWndNeuz::InitDialog(APP_MOTION, pWndParent, 0, CPoint(0, 0));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 CWndMotion1::CWndMotion1()
 {
 	m_pSelectMotion = NULL;
 	m_nSelect = 0;	
 }
-CWndMotion1::~CWndMotion1()
-{
-}
+
 void CWndMotion1::OnDraw(C2DRender* p2DRender)
 {
-	MotionProp* pMotionProp = NULL;
 	int j = 0;
-	int ny;
-	for( int i = 0; i < m_motionArray.GetSize(); i++ )
-	{
-		pMotionProp = (MotionProp*)m_motionArray.GetAt( i );
-		if( pMotionProp )
-		{
-			ny = j / 8;
-			p2DRender->RenderTexture( CPoint( ( j - ( ny * 8 ) ) * 32 + 3, 7 + ( ny * 32 ) ), pMotionProp->pTexture );
-			j++;
-		}
-	}	
+	
+	for (const MotionProp * pMotionProp : m_motionArray) {
+		const int ny = j / 8;
+		p2DRender->RenderTexture( CPoint( ( j - ( ny * 8 ) ) * 32 + 3, 7 + ( ny * 32 ) ), pMotionProp->pTexture );
+		j++;
+	}
 }
 void CWndMotion1::OnInitialUpdate()
 {
 	CWndBase::OnInitialUpdate();
 
-	MotionProp* pMotionProp = NULL;
-	int j = 0;
 	for (MotionProp & pMotionProp : prj.m_aPropMotion) {
-		m_motionArray.SetAtGrow( j, &pMotionProp ); j++;
+		m_motionArray.emplace_back(&pMotionProp);
 		pMotionProp.pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pMotionProp.szIconName ), 0xffff00ff );
 	}
+
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
@@ -126,38 +77,26 @@ void CWndMotion1::OnLButtonUp(UINT nFlags, CPoint point)
 }
 void CWndMotion1::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	CPoint pt;
-	MotionProp* pMotionProp = NULL;
 	int j = 0;
-	int ny;
-	for( int i = 0; i < m_motionArray.GetSize(); i++ )
-	{
-		pMotionProp = (MotionProp*)m_motionArray.GetAt( i );
-		if( pMotionProp )
-		{
-			ny = j / 8;
-			pt = CPoint( ( j - ( ny * 8 ) ) * 32 + 3, 7 + ( ny * 32 ) );
-			CRect rect( pt.x, pt.y, pt.x+32, pt.y+32 );
-			
-			CPoint pt2 = point;
-			
-			ClientToScreen( &pt2 );
-			ClientToScreen( &rect );
 
-			if( PtInRect(&rect, pt2))
+	m_pSelectMotion = NULL;
+	m_nSelect = 0;
+
+	for (MotionProp * pMotionProp : m_motionArray) {
+
+			const int ny = j / 8;
+			CPoint pt = CPoint( ( j - ( ny * 8 ) ) * 32 + 3, 7 + ( ny * 32 ) );
+			CRect rect( pt, CSize(32, 32) );
+			
+			if( PtInRect(&rect, point) )
 			{
 				m_pSelectMotion = pMotionProp;
-				m_nSelect = i;
+				m_nSelect = j;
 				break;
-			}
-			else
-			{
-				m_pSelectMotion = NULL;
-				m_nSelect = 0;
 			}
 			
 			j++;
-		}
+		
 	}
 }
 
@@ -171,11 +110,9 @@ BOOL CWndMotion1::Process( void )
 	MotionProp* pMotionProp = NULL;
 	int j = 0;
 	int ny;
-	for( int i = 0; i < m_motionArray.GetSize(); i++ )
-	{
-		pMotionProp = (MotionProp*)m_motionArray.GetAt( i );
-		if( pMotionProp  )
-		{
+
+	for (MotionProp * pMotionProp : m_motionArray) {
+
 			if( pMotionProp->dwID != MOT_BASE_CHEER )
 			{
 				j++;
@@ -225,7 +162,7 @@ BOOL CWndMotion1::Process( void )
 				break;
 			}
 			j++;
-		}
+		
 	}
 
 	return TRUE;
@@ -233,32 +170,24 @@ BOOL CWndMotion1::Process( void )
 
 void CWndMotion1::OnMouseWndSurface( CPoint point )
 {
-	CPoint pt;
-	MotionProp* pMotionProp = NULL;
 	int j = 0;
-	int ny;
-	for( int i = 0; i < m_motionArray.GetSize(); i++ )
-	{
-		pMotionProp = (MotionProp*)m_motionArray.GetAt( i );
-		if( pMotionProp )
-		{
-			ny = j / 8;
-			pt = CPoint( ( j - ( ny * 8 ) ) * 32 + 3, 7 + ( ny * 32 ) );
-			CRect rect( pt.x, pt.y, pt.x+32, pt.y+32 );
+
+	for (MotionProp * pMotionProp : m_motionArray) {
+
+			const int ny = j / 8;
+			CPoint pt = CPoint( ( j - ( ny * 8 ) ) * 32 + 3, 7 + ( ny * 32 ) );
+			CRect rect( pt, CSize(32, 32) );
 	
 			CPoint pt2 = point;
 			
 			ClientToScreen( &pt2 );
 			ClientToScreen( &rect );
 			
-			TCHAR szDesc [ 1024 ] = { 0 };
-			_tcscpy( szDesc, pMotionProp->szDesc );
-
 			if( pMotionProp->dwID != MOT_BASE_CHEER )		
-				g_toolTip.PutToolTip( pt.x + 10000, szDesc, rect, pt2, 0 );
+				g_toolTip.PutToolTip( pt.x + 10000, pMotionProp->szDesc, rect, pt2, 0 );
 			
 			j++;
-		}
+		
 	}
 }	
 void CWndMotion1::OnMouseMove( UINT nFlags, CPoint point )
@@ -273,23 +202,19 @@ void CWndMotion1::OnMouseMove( UINT nFlags, CPoint point )
 		m_GlobalShortcut.m_dwData     = (DWORD) m_pSelectMotion;
 	}
 }
-CWndEmoticon::CWndEmoticon()
-{
-}
-CWndEmoticon::~CWndEmoticon()
-{
-}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void CWndEmoticon::OnDraw(C2DRender* p2DRender)
 {
 	int j = 0;
-	int ny = 0;
 	
 	for( int i=0; i < (int)( g_DialogMsg.m_texEmoticonUser.GetNumber() ); i++ )
 	{
 		CTexture *pTexture = g_DialogMsg.m_texEmoticonUser.GetAt(i);
 		if( pTexture )
 		{
-			ny = j / 8;
+			const int ny = j / 8;
 			p2DRender->RenderTexture( CPoint( ( j - ( ny * 8 ) ) * 32 + 3, 7 + ( ny * 32 ) ), pTexture );
 			j++;
 		}
@@ -307,18 +232,7 @@ BOOL CWndEmoticon::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	CRect rect( 240, 0, 240 + 330, 255 - 135 ); 
 	return CWndBase::Create(WBS_THICKFRAME|WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
 }
-BOOL CWndEmoticon::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
-{ 
-	return CWndBase::OnChildNotify( message, nID, pLResult );
-}
-BOOL CWndEmoticon::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndBase::OnCommand(nID,dwMessage,pWndBase);
-}
-void CWndEmoticon::OnSize(UINT nType, int cx, int cy)
-{
-	CWndBase::OnSize( nType, cx, cy );
-}
+
 void CWndEmoticon::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	if( m_pSelectTexture )
@@ -326,10 +240,7 @@ void CWndEmoticon::OnLButtonUp(UINT nFlags, CPoint point)
 }
 void CWndEmoticon::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	CPoint pt;
-	MotionProp* pMotionProp = NULL;
 	int j = 0;
-	int ny;
 	m_nSelect = -1;
 
 	for( int i=0; i < (int)( g_DialogMsg.m_texEmoticonUser.GetNumber() ); i++ )
@@ -337,8 +248,8 @@ void CWndEmoticon::OnLButtonDown(UINT nFlags, CPoint point)
 		CTexture *pTexture = g_DialogMsg.m_texEmoticonUser.GetAt(i);
 		if( pTexture )
 		{
-			ny = j / 8;
-			pt = CPoint( ( j - ( ny * 8 ) ) * 32 + 3, 7 + ( ny * 32 ) );
+			const int ny = j / 8;
+			const CPoint pt = CPoint( ( j - ( ny * 8 ) ) * 32 + 3, 7 + ( ny * 32 ) );
 			CRect rect( pt.x, pt.y, pt.x+32, pt.y+32 );
 			
 			CPoint pt2 = point;
@@ -359,16 +270,14 @@ void CWndEmoticon::OnLButtonDown(UINT nFlags, CPoint point)
 }
 void CWndEmoticon::OnMouseWndSurface( CPoint point )
 {
-	CPoint pt;
 	int j = 0;
-	int ny;
 	for( int i = 0; i < (int)( g_DialogMsg.m_texEmoticonUser.GetNumber() ) ; i++ )
 	{
 		CTexture *pTexture = g_DialogMsg.m_texEmoticonUser.GetAt(i);
 		if( pTexture )
 		{
-			ny = j / 8;
-			pt = CPoint( ( j - ( ny * 8 ) ) * 32 + 3, 7 + ( ny * 32 ) );
+			const int ny = j / 8;
+			const CPoint pt = CPoint( ( j - ( ny * 8 ) ) * 32 + 3, 7 + ( ny * 32 ) );
 			CRect rect( pt.x, pt.y, pt.x+32, pt.y+32 );
 			
 			CPoint pt2 = point;
