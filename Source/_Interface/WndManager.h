@@ -751,7 +751,7 @@ protected:
 	void	FormalizeChatString( CString & str );
 };
 
-extern CPtrArray      m_wndOrder;
+extern std::vector<CWndBase *> m_wndOrder;
 extern CWndMgr          g_WndMng; // 윈도 매니저 클래스 
 
 extern void RenderEnchant( C2DRender* p2DRender, CPoint pt );

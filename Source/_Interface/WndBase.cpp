@@ -6,6 +6,7 @@
 #include "AppDefine.h"
 #include "resdata.h"
 #include "WndSkillTree.h"
+#include "sqktd/util.hpp"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -66,10 +67,10 @@ BOOL CWndBase::SetForbidTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileN
 }
 void CWndBase::AlighWindow( CRect rcOld, CRect rcNew )
 {
-	for(int i = 0; i < m_wndOrder.GetSize(); i++ )
-	{
-		CWndBase* pWndBase = (CWndBase*) m_wndOrder.GetAt( i );
-		CRect rcWnd = pWndBase->GetWindowRect( TRUE );
+	for (size_t i = 0; i < m_wndOrder.size(); ++i) {
+		CWndBase* pWndBase = m_wndOrder[i];
+
+		const CRect rcWnd = pWndBase->GetWindowRect( TRUE );
 		CPoint point = rcWnd.TopLeft();
 		if( pWndBase != m_pWndRoot )
 		{
@@ -190,36 +191,36 @@ void CWndBase::AddWnd( CWndBase* pWndBase )
 	{
 		if(pWndBase->m_dwStyle & WBS_MANAGER)
 		{
-			int i = 0;
-			for( ; i < m_wndOrder.GetSize(); i++)
-			{
-				CWndBase* pWndBase = (CWndBase*)m_wndOrder.GetAt( i );
-				if( !( pWndBase->m_dwStyle & WBS_MANAGER) )
-					break;
-			}
-			m_wndOrder.InsertAt( i, pWndBase );
+			// Manager after all managers
+			const auto it = std::find_if(
+				m_wndOrder.begin(), m_wndOrder.end(),
+				[](CWndBase * pWnd) { return !(pWnd->m_dwStyle & WBS_MANAGER); }
+			);
+			m_wndOrder.insert(it, pWndBase);
 		}
 		else
 		{
-			if( m_wndOrder.GetSize() )
-			{
-				if( pWndBase->IsWndStyle( WBS_TOPMOST ) || pWndBase->IsWndStyle( WBS_MODAL ) || pWndBase->IsWndStyle( WBS_POPUP ) )
-					m_wndOrder.Add( pWndBase );
-				else
-				{
-					int i = 0;
-					for( ; i < m_wndOrder.GetSize(); i++ )
-					{
-						CWndBase* pWnd = (CWndBase*)m_wndOrder[ i ];
-						if( ( pWnd->IsWndStyle( WBS_TOPMOST ) || pWnd->IsWndStyle( WBS_POPUP ) || pWnd->IsWndStyle( WBS_MODAL ) ) && pWnd->IsVisible() )
-							break;
-					}
-					m_wndOrder.InsertAt( i, pWndBase );
-				}
+			// Insert but maintain some window style in back
+			static constexpr auto IsWindowAlwaysInBack = [](CWndBase * pWnd) {
+				return pWnd->IsWndStyle(WBS_TOPMOST)
+					|| pWnd->IsWndStyle(WBS_MODAL)
+					|| pWnd->IsWndStyle(WBS_POPUP);
+			};
+
+			if (m_wndOrder.empty()) {
+				m_wndOrder.emplace_back(pWndBase);
+			} else if (IsWindowAlwaysInBack(pWndBase)) {
+				m_wndOrder.emplace_back(pWndBase);
+			} else {
+				const auto it = std::find_if(
+					m_wndOrder.begin(), m_wndOrder.end(),
+					IsWindowAlwaysInBack
+				);
+
+				m_wndOrder.insert(it, pWndBase);
 			}
-			else
-				m_wndOrder.Add(pWndBase);
 		}
+
 		if( !( pWndBase->m_dwStyle & WBS_NOFOCUS ) )
 		{
 			if(pWndBase) pWndBase->SetFocus();
@@ -237,14 +238,9 @@ void CWndBase::AddWnd( CWndBase* pWndBase )
 }
 void CWndBase::RemoveWnd(CWndBase* pWndBase)
 {
-	for(int i = 0; i < m_wndOrder.GetSize(); i++)
-	{
-		if(m_wndOrder.GetAt(i) == pWndBase)
-		{
-			m_wndOrder.RemoveAt(i); 
-			break;
-		}
-	}
+	const auto itOrder = std::find(m_wndOrder.begin(), m_wndOrder.end(), pWndBase);
+	if (itOrder != m_wndOrder.end()) m_wndOrder.erase(itOrder);
+
 	if(pWndBase == m_pWndFocus)
 	{
 		CWndBase* pWndBaseTemp = m_pWndFocus->GetParentWnd(); 
@@ -334,22 +330,20 @@ void CWndBase::PaintRoot( C2DRender* p2DRender )
 	
 	// m_wndOrder 리스트에 있는 윈도는 차일드(종속) 윈도가 아니기 때문에
 	// 좌표계 이동이 필요 없고 단지 클립 영역만 지정해 주면 된다.
-	const int nSize = m_wndOrder.GetSize();
-	for( int i = 0; i < nSize; i++ )
+	const size_t nSize = m_wndOrder.size();
+	for( size_t i = 0; i < nSize; i++ )
 	{
-		CWndBase* pWnd = (CWndBase*)m_wndOrder[i];
-		if( pWnd->IsVisible() )
-		{
-			p2DRender->m_clipRect = pWnd->m_rectWindow;
-			if( rectOld.Clipping( p2DRender->m_clipRect ) )
-			{
-				p2DRender->SetViewportOrg( pWnd->m_rectWindow.TopLeft() );
-				p2DRender->SetViewport( p2DRender->m_clipRect );
-				pWnd->m_rectCurrentWindow = pWnd->m_rectWindow;
-				pWnd->m_rectCurrentClient = pWnd->m_rectClient;
-				pWnd->Paint(p2DRender);
-			}
-		}
+		CWndBase* pWnd = m_wndOrder[i];
+		if (!pWnd->IsVisible()) continue;
+		
+		p2DRender->m_clipRect = pWnd->m_rectWindow;
+		if( !rectOld.Clipping( p2DRender->m_clipRect ) ) continue;
+			
+		p2DRender->SetViewportOrg( pWnd->m_rectWindow.TopLeft() );
+		p2DRender->SetViewport( p2DRender->m_clipRect );
+		pWnd->m_rectCurrentWindow = pWnd->m_rectWindow;
+		pWnd->m_rectCurrentClient = pWnd->m_rectClient;
+		pWnd->Paint(p2DRender);
 	}
 	p2DRender->m_clipRect = rectOld;
 	p2DRender->SetViewportOrg( ptViewPortOld );
@@ -724,33 +718,27 @@ LRESULT CWndBase::WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam )
 		m_pWndOnMouseMove = m_pWndCapture;
 		m_pWndOnSetCursor = m_pWndCapture;
 		pWndOnMouseMain = m_pWndCapture;
-	}
-	else
-	// 클릭할 때만 윈도를 검색하는 최적화가 필요함.
-	for( int i = m_wndOrder.GetSize() - 1; i >= 0 ; i-- )
-	{
-		CWndBase* pWndBase = (CWndBase*)m_wndOrder[ i ];
-		if( pWndBase->IsVisible() )
-		{
-			CRect rect = pWndBase->GetScreenRect();
-			if( rect.PtInRect( ptClient ) ) 
-			{
-				// 마우스가 있는 윈도를 골랐다. 
-				pWndOnMouseMain = pWndBase;
-				if( m_pWndCapture == NULL )
-				{
-					// 차일드, 차일드프레임 모두 포함 
-					CWndBase* pWndChild = pWndBase->GetChildFocus( ptClient );
-					if( pWndBase != pWndChild )
-					{
-						pWndBase = pWndChild;
-						pWndOnMouseChild = pWndChild;
-					}
-					m_pWndOnSetCursor = pWndBase;
-					m_pWndOnMouseMove = pWndBase;
+	} else {
+		// 클릭할 때만 윈도를 검색하는 최적화가 필요함.
+		for (CWndBase * pWndBase : m_wndOrder | std::views::reverse) {
+			if (!pWndBase->IsVisible()) continue;
+
+			const CRect rect = pWndBase->GetScreenRect();
+			if (!rect.PtInRect(ptClient)) continue;
+
+			// 마우스가 있는 윈도를 골랐다. 
+			pWndOnMouseMain = pWndBase;
+			if (m_pWndCapture == NULL) {
+				// 차일드, 차일드프레임 모두 포함 
+				CWndBase * pWndChild = pWndBase->GetChildFocus(ptClient);
+				if (pWndBase != pWndChild) {
+					pWndBase = pWndChild;
+					pWndOnMouseChild = pWndChild;
 				}
-				break;
+				m_pWndOnSetCursor = pWndBase;
+				m_pWndOnMouseMove = pWndBase;
 			}
+			break;
 		}
 	}
 	// 시스템 처리부 
@@ -972,9 +960,9 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 			{
 				rectWnd.left += pt.x; 
 				// 다른 확대 윈도도 현재 윈도와 같은 사이즈로 맞춘다.
-				for( int i = 0; i < m_wndOrder.GetSize(); i++)
+				for( size_t i = 0; i < m_wndOrder.size(); i++)
 				{
-					CWndBase* pWnd = (CWndBase*) m_wndOrder.GetAt( i );
+					CWndBase* pWnd = m_wndOrder[i];
 					if(pWnd != this && pWnd->m_nWinSize == 2)
 						pWnd->SetWndRect(rectWnd);
 				}
@@ -1383,27 +1371,41 @@ void CWndBase::SetFocus()
 	}
 	else
 	{
-		if( !IsWndStyle( WBS_CHILD ) && m_wndOrder.GetSize() )
-		{
-			if( !( m_dwStyle & WBS_MANAGER ) && this != m_pWndRoot )
-			{
-				CWndBase* pWndTop = (CWndBase*)m_wndOrder.GetAt( m_wndOrder.GetUpperBound() );
-				for( int i = m_wndOrder.GetSize()-1; i >= 0; i-- )
-				{
-					CWndBase* pWnd = (CWndBase*)m_wndOrder[i];
-					if( this == pWnd && pWnd->IsVisible() )
-					{
-						m_wndOrder.RemoveAt( i );
-						for( ; i < m_wndOrder.GetSize(); i++ )
-						{
-							CWndBase* pWnd2 = (CWndBase*)m_wndOrder[ i ];
-							if( ( pWnd2->IsWndStyle( WBS_TOPMOST ) || ( pWnd2->IsWndStyle( WBS_POPUP ) && !pWnd->IsWndStyle( WBS_POPUP ) ) || pWnd2->IsWndStyle( WBS_MODAL ) ) && pWnd2->IsVisible() )
-								break;
-						}
-						m_wndOrder.InsertAt( i, this );
+		const bool changeOrder =
+			!IsWndStyle(WBS_CHILD)
+			&& !m_wndOrder.empty()
+			&& !(m_dwStyle & WBS_MANAGER)
+			&& this != m_pWndRoot
+			&& IsVisible();
+
+		if (changeOrder) {
+			int i;
+			for (i = static_cast<int>(m_wndOrder.size()) - 1; i >= 0; i--) {
+				if (m_wndOrder[i] == this) {
+					break;
+				}
+			}
+
+			if (i != -1) {
+				m_wndOrder.erase(m_wndOrder.begin() + i);
+
+				for (; i < static_cast<int>(m_wndOrder.size()); ++i) {
+					CWndBase * pWnd2 = m_wndOrder[i];
+
+					const bool insertHere =
+						pWnd2->IsVisible()
+						&& (
+							pWnd2->IsWndStyle(WBS_TOPMOST)
+							|| (pWnd2->IsWndStyle(WBS_POPUP) && !this->IsWndStyle(WBS_POPUP))
+							|| pWnd2->IsWndStyle(WBS_MODAL)
+							);
+
+					if (insertHere) {
 						break;
 					}
 				}
+
+				m_wndOrder.insert(m_wndOrder.begin() + i, this);
 			}
 		}
 
@@ -1611,15 +1613,13 @@ CRect CWndBase::GetLayoutRect(BOOL bParent)
 	return rect;
 }
 
-CWndBase* CWndBase::FindFullWnd()
-{
-	for( int i = 0; i < m_wndOrder.GetSize(); i++)
-	{
-		CWndBase* pWnd = (CWndBase*) m_wndOrder.GetAt( i );
-		if(pWnd->m_nWinSize == 2)
-			return pWnd;
-	}
-	return NULL;
+CWndBase* CWndBase::FindFullWnd() {
+	const auto it = std::find_if(
+		m_wndOrder.begin(), m_wndOrder.end(),
+		[](const CWndBase * pWnd) { return pWnd->m_nWinSize == 2; }
+	);
+
+	return it != m_wndOrder.end() ? *it : nullptr;
 }
 void CWndBase::ClipStrArray(C2DRender* p2DRender,CRect rect,int nLineHeight,CStringArray* pStringArray,CStringArray* pNewStringArray)
 {
@@ -1740,52 +1740,54 @@ BOOL CWndBase::IsPickupSpace(CPoint ptWindow)
 
 	return rect.PtInRect(ptWindow);
 }
-CWndBase* CWndBase::GetWndBase_Sub(UINT idWnd) 
-{ 
-	for(int i = 0; i < m_wndOrder.GetSize(); i++)
-	{
-		CWndBase* pWnd = (CWndBase*)m_wndOrder.GetAt(i);
-		if(idWnd == pWnd->GetWndId())
-			return pWnd;
-	}
-	return NULL;
+CWndBase* CWndBase::GetWndBase_Sub(UINT idWnd) {
+	const auto it = std::find_if(
+		m_wndOrder.begin(), m_wndOrder.end(),
+		[idWnd](CWndBase * pWnd) { return pWnd->GetWndId() == idWnd; }
+	);
+
+	return it != m_wndOrder.end() ? *it : nullptr;
 }
 CWndBase* CWndBase::GetWndBase()
 {
-	for( int i = m_wndOrder.GetSize() - 1; i >= 0 ; i-- )
-	{
-		CWndBase* pWnd = (CWndBase*)m_wndOrder.GetAt(i);
-		if(pWnd && pWnd->IsVisible() && !pWnd->IsWndStyle(WBS_MANAGER|WBS_TOPMOST) )
-		{
-			// 상태창과 네비게이션은 걸러낸다...
-			if( pWnd->GetWndId() == APP_SKILL_ )
-			{
-				CWndBase* pWndBase = g_WndMng.GetWndBase<CWndBase>( APP_QUEITMWARNING );
-				if( pWndBase )
-					return nullptr;			// 스킬 확인창이면 스킬창을 닫을수가 없음.
+	for (CWndBase * pWnd : m_wndOrder | std::views::reverse) {
+		if (!pWnd) continue;
+		if (!pWnd->IsVisible()) continue;
+		if (pWnd->IsWndStyle(WBS_MANAGER | WBS_TOPMOST)) continue;
 
-				if( ((CWndSkillTreeCommon*)pWnd)->GetCurrSkillPoint() != g_pPlayer->m_nSkillPoint )
+		// 상태창과 네비게이션은 걸러낸다...
+		if( pWnd->GetWndId() == APP_SKILL_ )
+		{
+			CWndBase* pWndBase = g_WndMng.GetWndBase<CWndBase>( APP_QUEITMWARNING );
+			if( pWndBase )
+				return nullptr;			// 스킬 확인창이면 스킬창을 닫을수가 없음.
+
+			if( ((CWndSkillTreeCommon*)pWnd)->GetCurrSkillPoint() != g_pPlayer->m_nSkillPoint )
+			{
+				if( pWndBase == NULL )
 				{
-					if( pWndBase == NULL )
-					{
-						SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
-						g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(true);
-						g_WndMng.m_pWndReSkillWarning->Initialize(NULL);
-					}
-					return NULL;
+					SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
+					g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(true);
+					g_WndMng.m_pWndReSkillWarning->Initialize(NULL);
 				}
+				return NULL;
 			}
-			if( pWnd->GetWndId() == APP_STATUS1 || pWnd->GetWndId() == APP_NAVIGATOR || pWnd->GetWndId() == APP_REVIVAL 
-				|| pWnd->GetWndId() == APP_BUFF_STATUS || pWnd->GetWndId() == APP_RAINBOWRACE_BUTTON )
-				continue;
-			if( pWnd->GetWndId() == APP_VENDOR_REVISION )
-				continue;
-#ifdef __S_SERVER_UNIFY
-			if( g_WndMng.m_bAllAction == FALSE && (pWnd->GetWndId() == APP_GUILDNAME || pWnd->GetWndId() == APP_CHANGENAME ) )
-				continue;
-#endif // __S_SERVER_UNIFY
-			return pWnd;
 		}
+
+		if (sqktd::is_among(pWnd->GetWndId(),
+			APP_STATUS1, APP_NAVIGATOR, APP_REVIVAL,
+			APP_BUFF_STATUS, APP_RAINBOWRACE_BUTTON,
+			APP_VENDOR_REVISION
+			)) {
+			continue;
+		}
+
+#ifdef __S_SERVER_UNIFY
+		if( g_WndMng.m_bAllAction == FALSE && (pWnd->GetWndId() == APP_GUILDNAME || pWnd->GetWndId() == APP_CHANGENAME ) )
+			continue;
+#endif // __S_SERVER_UNIFY
+		return pWnd;
+		
 	}
 	return NULL;
 }

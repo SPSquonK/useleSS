@@ -72,7 +72,7 @@ extern DWORD FULLSCREEN_HEIGHT;
 #define CLIENT_WIDTH FULLSCREEN_WIDTH
 #define CLIENT_HEIGHT FULLSCREEN_HEIGHT
 
-CPtrArray      m_wndOrder;
+std::vector<CWndBase *> m_wndOrder;
 
 CWndMgr          g_WndMng;
 
@@ -447,32 +447,33 @@ CWndMgr::~CWndMgr() {
 
 void CWndMgr::AlighWindow( CRect rcOld, CRect rcNew )
 {
-	for(int i = 0; i < m_wndOrder.GetSize(); i++ )
-	{
-		CWndBase* pWndBase = (CWndBase*) m_wndOrder.GetAt( i );
-		CRect rcWnd = pWndBase->GetWindowRect( TRUE );
-		CPoint point = rcWnd.TopLeft();
-		if( pWndBase != this && pWndBase != m_pWndTaskBar )
+	for (size_t i = 0; i < m_wndOrder.size(); ++i) {
+		CWndBase* pWndBase = m_wndOrder[i];
+
+		if (pWndBase == this || pWndBase == m_pWndTaskBar) continue;
+
+		if( pWndBase->m_nWinSize == WSIZE_MAX )
 		{
-			if( pWndBase->m_nWinSize == WSIZE_MAX )
-			{
-				pWndBase->SetWndRect( rcNew );
-			}
-			else
-			{
-				if( rcWnd.left   < rcNew.left   ) point.x = rcNew.left;
-				if( rcWnd.top    < rcNew.top    ) point.y = rcNew.top;
-				if( rcWnd.right  > rcNew.right  ) point.x = rcNew.right - rcWnd.Width();
-				if( rcWnd.bottom > rcNew.bottom ) point.y = rcNew.bottom - rcWnd.Height();
-
-				if( rcWnd.left   == rcOld.left   ) point.x = rcNew.left;
-				if( rcWnd.top    == rcOld.top    ) point.y = rcNew.top;
-				if( rcWnd.right  == rcOld.right  ) point.x = rcNew.right - rcWnd.Width();
-				if( rcWnd.bottom == rcOld.bottom ) point.y = rcNew.bottom - rcWnd.Height();
-
-				pWndBase->Move( point );
-			}
+			pWndBase->SetWndRect( rcNew );
 		}
+		else
+		{
+			const CRect rcWnd = pWndBase->GetWindowRect(TRUE);
+			CPoint point = rcWnd.TopLeft();
+
+			if( rcWnd.left   < rcNew.left   ) point.x = rcNew.left;
+			if( rcWnd.top    < rcNew.top    ) point.y = rcNew.top;
+			if( rcWnd.right  > rcNew.right  ) point.x = rcNew.right - rcWnd.Width();
+			if( rcWnd.bottom > rcNew.bottom ) point.y = rcNew.bottom - rcWnd.Height();
+
+			if( rcWnd.left   == rcOld.left   ) point.x = rcNew.left;
+			if( rcWnd.top    == rcOld.top    ) point.y = rcNew.top;
+			if( rcWnd.right  == rcOld.right  ) point.x = rcNew.right - rcWnd.Width();
+			if( rcWnd.bottom == rcOld.bottom ) point.y = rcNew.bottom - rcWnd.Height();
+
+			pWndBase->Move( point );
+		}
+		
 	}
 }
 
