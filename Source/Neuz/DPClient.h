@@ -637,7 +637,6 @@ public:
 	void	OnGCGetPenyaPlayer( CAr & ar );
 	void	OnGCWinGuild( CAr & ar );
 	void	OnGCBestPlayer( CAr & ar );
-	void	OnGCWarPlayerList( CAr & ar );
 	void	OnGCTele( CAr & ar );
 	void	OnGCDiagMessage( CAr & ar );	
 	void	OnIsRequest( CAr & ar );

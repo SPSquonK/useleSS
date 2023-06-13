@@ -130,25 +130,28 @@ public:
 	void MoveButtons();
 };
 
-struct GuildWarInfo {
-	struct GUILDRATE {
-		u_long m_uidPlayer;
-		int    nLife;
-		bool   bJoinReady;
+namespace WndWorld {
+	struct GuildCombatInfo {
+		struct GUILDRATE {
+			u_long m_uidPlayer;
+			int    nLife;
+			bool   bJoinReady;
+		};
+
+		std::vector<GUILDRATE> GuildStatus;
+		std::set<u_long> m_gc_defenders;
+		boost::container::flat_map<u_long, int> m_gc_warstates;
+
+		void OnGuildStatus(CAr & ar);
+		void ClearGuildStatus();
+		void OnPlayerList(CAr & ar);
+		void ClearPlayerList();
+		bool IsGCStatusDefender(u_long uidDefender) const;
+		int  IsGCStatusPlayerWar(u_long uidPlayer) const;
+
 	};
 
-
-	std::vector<GUILDRATE> GuildStatus;
-
-	void Clear();
-};
-
-
-typedef struct __GCWARSTATE
-{
-	u_long m_uidPlayer;
-	BOOL   m_bWar;
-} __GCWARSTATE;
+}
 
 struct __PGUEST_TIME_TEXT {
 	BOOL bFlag;
@@ -289,10 +292,7 @@ public:
 	CTexture		m_TexGuildBest;
 	std::multimap< int, CString >	m_mmapGuildCombat_GuildPrecedence;
 	std::multimap< int, u_long >		m_mmapGuildCombat_PlayerPrecedence;
-	GuildWarInfo m_guildCombat;
-
-	std::set<u_long> m_gc_defenders;
-	std::vector<__GCWARSTATE> m_gc_warstates;
+	WndWorld::GuildCombatInfo m_infoGC;
 
 	CWndBase* m_pWndBuffStatus;
 
@@ -300,8 +300,6 @@ public:
 	void InitEyeFlash();
 	void AddGuildPrecedence( int, CString );
 	void AddPlayerPrecedence( int, u_long );
-	bool IsGCStatusDefender( u_long uidDefender ) const;
-	int  IsGCStatusPlayerWar( u_long uidPlayer );
 	void ClearGuildPrecedence()   { m_mmapGuildCombat_GuildPrecedence.clear(); }
 	void ClearPlayerPrecedence()  { m_mmapGuildCombat_PlayerPrecedence.clear(); }
 	void SetViewMap(BOOL bViewMap){ m_bViewMap = bViewMap; }

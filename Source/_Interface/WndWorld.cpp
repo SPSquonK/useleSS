@@ -1330,7 +1330,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 	// 길드원들 리스트 & 부활 정보
 	if( g_pPlayer && g_pPlayer->GetGuild() )
 	{
-		int nState = IsGCStatusPlayerWar(g_pPlayer->m_idPlayer);
+		int nState = m_infoGC.IsGCStatusPlayerWar(g_pPlayer->m_idPlayer);
 
 		if( nState != -1 && nState != -2 )
 		{	
@@ -1347,7 +1347,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 			crBoard.top  = cPoint.y - 30;
 			crBoard.right = cPoint.x + 130;
 			
-			crBoard.bottom = crBoard.top + ((m_guildCombat.GuildStatus.size()+2) * 16);
+			crBoard.bottom = crBoard.top + ((m_infoGC.GuildStatus.size()+2) * 16);
 			p2DRender->RenderFillRect( crBoard, D3DCOLOR_ARGB( 30, 0, 0, 0 ) );
 
 			BOOL bJoinMessage = FALSE;
@@ -1361,12 +1361,12 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 			CMover* pObjMember = NULL;
 			int		nLeftTemp = 0;
 
-			for (const GuildWarInfo::GUILDRATE & GuildRate : m_guildCombat.GuildStatus) {
+			for (const WndWorld::GuildCombatInfo::GUILDRATE & GuildRate : m_infoGC.GuildStatus) {
 				nRate++;
 
 				LPCTSTR str	= CPlayerDataCenter::GetInstance()->GetPlayerString( GuildRate.m_uidPlayer );
 				
-				memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
+				memset( szBuf, 0, sizeof(szBuf) );
 				
 				GetStrCut( str, szBuf, 5 );
 				
@@ -1420,7 +1420,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 					}
 				}
 
-				if( IsGCStatusDefender( GuildRate.m_uidPlayer ) )
+				if( m_infoGC.IsGCStatusDefender( GuildRate.m_uidPlayer ) )
 				{
 					p2DRender->TextOut( cPoint.x - 6, cPoint.y, "D", dwFontColor, 0xFF000000 );
 				}
@@ -3298,7 +3298,7 @@ void CWndWorld::OnInitialUpdate()
 	m_AdvMgr.Init( this );
 	m_mmapGuildCombat_GuildPrecedence.clear();
 	m_mmapGuildCombat_PlayerPrecedence.clear();
-	m_guildCombat.Clear();
+	m_infoGC.ClearGuildStatus();
 	// 일단 노가다다...추후 비스트 고쳐서 해야함...-_-
 	m_bViewMap = FALSE;	
 	CWorldMap* pWorldMap = CWorldMap::GetInstance();
@@ -3313,10 +3313,6 @@ void CWndWorld::OnInitialUpdate()
 
 }
 
-void GuildWarInfo::Clear() {
-	GuildStatus.clear();
-}
-
 void CWndWorld::AddGuildPrecedence( int nRate, CString str)
 {
 	m_mmapGuildCombat_GuildPrecedence.emplace( nRate, str );
@@ -3325,30 +3321,6 @@ void CWndWorld::AddGuildPrecedence( int nRate, CString str)
 void CWndWorld::AddPlayerPrecedence( int nRate, u_long uiPlayer)
 {
 	m_mmapGuildCombat_PlayerPrecedence.emplace( nRate, uiPlayer );
-}
-
-bool CWndWorld::IsGCStatusDefender( u_long uidDefender ) const {
-	return m_gc_defenders.contains( uidDefender );
-}
-
-int CWndWorld::IsGCStatusPlayerWar( u_long uidPlayer )
-{
-	// 아무것도 없을시..-2 리턴
-	if(m_gc_warstates.empty() )
-		return -2;
-
-	const auto it = std::find_if(
-		m_gc_warstates.begin(), m_gc_warstates.end(),
-		[uidPlayer](const __GCWARSTATE & warState) {
-			return warState.m_uidPlayer == uidPlayer;
-		}
-	);
-
-	if (it == m_gc_warstates.end()) {
-		return -1;
-	}
-
-	return it->m_bWar;
 }
 
 BOOL CWndWorld::Initialize( CWndBase* pWndParent, DWORD dwWndId )
@@ -9651,4 +9623,54 @@ BOOL CWndWorld::MenuException( CPoint point )
 		}
 	}
 	return TRUE;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+namespace WndWorld {
+
+void GuildCombatInfo::ClearGuildStatus() {
+	GuildStatus.clear();
+}
+
+void GuildCombatInfo::OnPlayerList(CAr & ar) {
+	m_gc_defenders.clear();
+	m_gc_warstates.clear();
+
+	int nSizeGuild; ar >> nSizeGuild;
+	for (int i = 0; i < nSizeGuild; ++i) {
+		u_long uidDefender; ar >> uidDefender;		// 디펜더
+
+		m_gc_defenders.emplace(uidDefender);
+
+		int nSizeMember;    ar >> nSizeMember;
+		for (int j = 0; j < nSizeMember; ++j) {
+			u_long uidPlayer; ar >> uidPlayer;
+			int nStatus;      ar >> nStatus;		// 전쟁 상태 == 1 ; 대기자 == 0
+
+			m_gc_warstates.emplace(uidPlayer, nStatus);
+		}
+	}
+}
+
+void GuildCombatInfo::ClearPlayerList() {
+	m_gc_defenders.clear();
+	m_gc_warstates.clear();
+}
+
+bool GuildCombatInfo::IsGCStatusDefender(u_long uidDefender) const {
+	return m_gc_defenders.contains(uidDefender);
+}
+
+int GuildCombatInfo::IsGCStatusPlayerWar(u_long uidPlayer) const {
+	// 아무것도 없을시..-2 리턴
+	if (m_gc_warstates.empty())
+		return -2;
+
+	const auto itWarState = m_gc_warstates.find(uidPlayer);
+	if (itWarState == m_gc_warstates.end()) return -1;
+
+	return itWarState->second;
+}
+
 }

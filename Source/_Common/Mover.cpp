@@ -2673,21 +2673,21 @@ void CMover::ProcessETC()
 	// 길드컴뱃 맵이라면...부하를 줄이기 위해 상태에 따라 랜더링을 금지한다.
 	if( GetWorld() && GetWorld()->GetID() == WI_WORLD_GUILDWAR )
 	{
-		CWndWorld *pWndWorld = (CWndWorld *)g_WndMng.m_pWndWorld;
+		CWndWorld *pWndWorld = g_WndMng.m_pWndWorld;
 		
 		if( IsPlayer() && g_pPlayer && pWndWorld )
 		{
-			BOOL bFlag = FALSE;
-			int nActivePlayer = pWndWorld->IsGCStatusPlayerWar( g_pPlayer->m_idPlayer );
-			int nPlayer = pWndWorld->IsGCStatusPlayerWar( m_idPlayer );
+			const int nActivePlayer = pWndWorld->m_infoGC.IsGCStatusPlayerWar( g_pPlayer->m_idPlayer );
+			const int nPlayer = pWndWorld->m_infoGC.IsGCStatusPlayerWar( m_idPlayer );
 			
+			bool display = false;
 			// 액티브(주인공)이 전쟁중이면
 			if( nActivePlayer == 1 )
 			{
 				// 전쟁중이 아닌애들은 랜더금지
 				if( nPlayer != 1 )
 				{
-					bFlag = TRUE;
+					display = true;
 				}
 			}
 			else
@@ -2697,31 +2697,25 @@ void CMover::ProcessETC()
 				// 일반인들은 랜더금지
 				if( nPlayer == -1 )
 				{
-					bFlag = TRUE;
+					display = true;
 				}
 			}
 
-			if( bFlag )
-			{
-				m_dwMode |= GCWAR_NOT_CLICK_MODE;
-				m_dwMode |= GCWAR_RENDER_SKIP_MODE;
-			}
-			else
-			{
-				m_dwMode &= ~GCWAR_NOT_CLICK_MODE;
-				m_dwMode &= ~GCWAR_RENDER_SKIP_MODE;				
+			if (display) {
+				m_dwMode |=  (GCWAR_NOT_CLICK_MODE | GCWAR_RENDER_SKIP_MODE);
+			} else {
+				m_dwMode &= ~(GCWAR_NOT_CLICK_MODE | GCWAR_RENDER_SKIP_MODE);		
 			}
 		}
 	}
 	else
 	{
-		m_dwMode &= ~GCWAR_NOT_CLICK_MODE;
-		m_dwMode &= ~GCWAR_RENDER_SKIP_MODE;				
+		m_dwMode &= ~(GCWAR_NOT_CLICK_MODE | GCWAR_RENDER_SKIP_MODE);
 	}
 #ifdef __QUIZ
 	if( GetWorld() && GetWorld()->GetID() == WI_WORLD_QUIZ )
 	{
-		CWndWorld *pWndWorld = (CWndWorld *)g_WndMng.m_pWndWorld;
+		CWndWorld *pWndWorld = g_WndMng.m_pWndWorld;
 		
 		if( IsPlayer() && CQuiz::GetInstance()->GetZoneType( this ) != CQuiz::ZONE_QUIZ && pWndWorld )
 			m_dwMode |= QUIZ_RENDER_SKIP_MODE;
