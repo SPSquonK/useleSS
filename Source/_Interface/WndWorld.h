@@ -130,12 +130,19 @@ public:
 	void MoveButtons();
 };
 
-typedef struct __GUILDRATE
-{
-	u_long m_uidPlayer;
-	int    nLife;
-	BOOL   bJoinReady;
-} __GUILDRATE;
+struct GuildWarInfo {
+	struct GUILDRATE {
+		u_long m_uidPlayer;
+		int    nLife;
+		bool   bJoinReady;
+	};
+
+
+	std::vector<GUILDRATE> GuildStatus;
+
+	void Clear();
+};
+
 
 typedef struct __GCWARSTATE
 {
@@ -282,7 +289,8 @@ public:
 	CTexture		m_TexGuildBest;
 	std::multimap< int, CString >	m_mmapGuildCombat_GuildPrecedence;
 	std::multimap< int, u_long >		m_mmapGuildCombat_PlayerPrecedence;
-	std::vector  < __GUILDRATE >		m_vecGuildCombat_GuildStatus;
+	GuildWarInfo m_guildCombat;
+
 	std::map< u_long, std::vector<__GCWARSTATE> >  m_mapGC_GuildStatus;
 	CWndBase* m_pWndBuffStatus;
 
@@ -290,13 +298,11 @@ public:
 	void InitEyeFlash();
 	void AddGuildPrecedence( int, CString );
 	void AddPlayerPrecedence( int, u_long );
-	void AddGuildStatus( u_long uidPlayer, int nLife, BOOL bJoinReady );
 	void AddGCStatus( u_long uidDefender, u_long uidPlayer, BOOL bWar );
 	u_long GetGCStatusDefender( u_long uidDefender );
 	int  IsGCStatusPlayerWar( u_long uidPlayer );
 	void ClearGuildPrecedence()   { m_mmapGuildCombat_GuildPrecedence.clear(); }
 	void ClearPlayerPrecedence()  { m_mmapGuildCombat_PlayerPrecedence.clear(); }
-	void ClearGuildStatus()		  { m_vecGuildCombat_GuildStatus.clear(); }
 	void SetViewMap(BOOL bViewMap){ m_bViewMap = bViewMap; }
 	BOOL IsViewMap()			  { return m_bViewMap; }
 	BOOL GetBuffIconRect( DWORD dwID, const CPoint& point );

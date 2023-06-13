@@ -5758,35 +5758,24 @@ void CDPClient::OnGCUserState( CAr & ar )
 	}
 }
 // 자신의 길드 상황
-void CDPClient::OnGCGuildStatus( CAr & ar )
-{
-	int nSize;
-	u_long uidPlayer;
-	int nLife, nJoinCount;
-	ar >> nJoinCount;
-	ar >> nSize;
+void CDPClient::OnGCGuildStatus(CAr & ar) {
+	CWndWorld * pWndWorld = g_WndMng.GetWndBase<CWndWorld>(APP_WORLD);
+	if (!pWndWorld) return;
 
-	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-	if( pWndWorld )
-		pWndWorld->ClearGuildStatus();
+	int nJoinCount; ar >> nJoinCount;
+	int nSize;  ar >> nSize;
 
-	for( int i = 0  ; i < nSize ; ++i )
-	{
-		ar >> uidPlayer;	
-		ar >> nLife;
+	std::vector<GuildWarInfo::GUILDRATE> guildRates;
 
-		if( pWndWorld )
-		{
-			if( nJoinCount == i && nJoinCount != 0 )
-				pWndWorld->AddGuildStatus( uidPlayer, nLife, TRUE );
-			else
-				pWndWorld->AddGuildStatus( uidPlayer, nLife, FALSE );			
-		}
+	for (int i = 0; i < nSize; ++i) {
+		GuildWarInfo::GUILDRATE rate;
+		ar >> rate.m_uidPlayer;
+		ar >> rate.nLife;
+		rate.bJoinReady = nJoinCount == i && nJoinCount != 0;
+		guildRates.emplace_back(rate);
 	}
 
-	// 순위 i
-	// 캐릭아이디 uidPlayer
-	// 캐릭 남은 생명 nLife
+	pWndWorld->m_guildCombat.GuildStatus = std::move(guildRates);
 }
 // 길드 순위
 void CDPClient::OnGCGuildPrecedence( CAr & ar )

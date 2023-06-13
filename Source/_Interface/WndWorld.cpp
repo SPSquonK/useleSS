@@ -1338,21 +1338,17 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 			CString str;
 			int   nRate = 0;
 			int	  nGap  = 16;
-			__GUILDRATE GuildRate;
 			DWORD dwFontColor = 0xFFFFFF99;
 			char szBuf[MAX_NAME] = {0,};
 			
-			CPoint cPoint;
+			CPoint cPoint(10, 150);
 			CRect  crBoard;
-
-			cPoint.x = 10;
-			cPoint.y = 150;
 
 			crBoard.left = cPoint.x - 5;
 			crBoard.top  = cPoint.y - 30;
 			crBoard.right = cPoint.x + 130;
 			
-			crBoard.bottom = crBoard.top + ((m_vecGuildCombat_GuildStatus.size()+2) * 16);
+			crBoard.bottom = crBoard.top + ((m_guildCombat.GuildStatus.size()+2) * 16);
 			p2DRender->RenderFillRect( crBoard, D3DCOLOR_ARGB( 30, 0, 0, 0 ) );
 
 			BOOL bJoinMessage = FALSE;
@@ -1366,13 +1362,10 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 			CMover* pObjMember = NULL;
 			int		nLeftTemp = 0;
 
-			for( int k = 0; k < (int)( m_vecGuildCombat_GuildStatus.size() ); k++ )
-			{
-				GuildRate = m_vecGuildCombat_GuildStatus[k];
-
+			for (const GuildWarInfo::GUILDRATE & GuildRate : m_guildCombat.GuildStatus) {
 				nRate++;
 
-				str	= CPlayerDataCenter::GetInstance()->GetPlayerString( GuildRate.m_uidPlayer );
+				LPCTSTR str	= CPlayerDataCenter::GetInstance()->GetPlayerString( GuildRate.m_uidPlayer );
 				
 				memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
 				
@@ -1448,11 +1441,11 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 				p2DRender->TextOut( cPoint.x+110, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
 
 				// HP바를 그린다.
-				pObjMember = prj.GetUserByID( GuildRate.m_uidPlayer );
-				FLOAT fPersent	= ( IsValidObj( pObjMember ) ? (FLOAT)pObjMember->GetHitPoint() / (FLOAT)pObjMember->GetMaxHitPoint() : 0 );
+				CMover * pObjMember = prj.GetUserByID( GuildRate.m_uidPlayer );
+				const FLOAT fPersent	= ( IsValidObj( pObjMember ) ? (FLOAT)pObjMember->GetHitPoint() / (FLOAT)pObjMember->GetMaxHitPoint() : 0 );
 				
-				const FLOAT fFullWidth = 60;
-				FLOAT fDrawHP = fFullWidth*fPersent;
+				static constexpr FLOAT fFullWidth = 60;
+				const FLOAT fDrawHP = fFullWidth*fPersent;
 
 				cRectHP.SetRect( cPoint.x+140, cPoint.y, (int)( cPoint.x+140+fFullWidth ), cPoint.y + 11 );
 				p2DRender->RenderFillRect( cRectHP, D3DCOLOR_ARGB( 100, 0, 0, 0)  );
@@ -3306,7 +3299,7 @@ void CWndWorld::OnInitialUpdate()
 	m_AdvMgr.Init( this );
 	m_mmapGuildCombat_GuildPrecedence.clear();
 	m_mmapGuildCombat_PlayerPrecedence.clear();
-	m_vecGuildCombat_GuildStatus.clear();
+	m_guildCombat.Clear();
 	// 일단 노가다다...추후 비스트 고쳐서 해야함...-_-
 	m_bViewMap = FALSE;	
 	CWorldMap* pWorldMap = CWorldMap::GetInstance();
@@ -3321,6 +3314,10 @@ void CWndWorld::OnInitialUpdate()
 
 }
 
+void GuildWarInfo::Clear() {
+	GuildStatus.clear();
+}
+
 void CWndWorld::AddGuildPrecedence( int nRate, CString str)
 {
 	m_mmapGuildCombat_GuildPrecedence.emplace( nRate, str );
@@ -3329,15 +3326,6 @@ void CWndWorld::AddGuildPrecedence( int nRate, CString str)
 void CWndWorld::AddPlayerPrecedence( int nRate, u_long uiPlayer)
 {
 	m_mmapGuildCombat_PlayerPrecedence.emplace( nRate, uiPlayer );
-}
-
-void CWndWorld::AddGuildStatus( u_long uidPlayer, int nLife, BOOL bJoinReady )
-{
-	__GUILDRATE GuildRate;
-	GuildRate.m_uidPlayer = uidPlayer;
-	GuildRate.nLife		  = nLife;
-	GuildRate.bJoinReady  = bJoinReady;
-	m_vecGuildCombat_GuildStatus.push_back( GuildRate );
 }
 
 void CWndWorld::AddGCStatus( u_long uidDefender, u_long uidPlayer, BOOL bWar )
