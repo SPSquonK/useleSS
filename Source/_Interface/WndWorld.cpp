@@ -63,15 +63,12 @@ vector<CString> g_vecHelpInsKey;
 
 void CCaption::RemoveAll() {
 	m_aCaption.clear();
-	m_nCount = 0;
 	m_nAlpha = 255;
 	m_bEnd = false;
 }
 
 void CCaption::Process()
 {
-	if(	m_nCount == 0 && !m_aCaption.empty() )
-		m_nCount = 1;
 	if( m_bEnd )
 	{
 		if( m_timer.IsTimeOut() )
@@ -84,30 +81,19 @@ void CCaption::Process()
 		return;
 	}
 	
-	for( size_t i = 0; i < m_nCount; i++ )
-	{
-		CAPTION * lpCaption = &m_aCaption[i];
-		lpCaption->m_fAddScale += 0.002f;
-		lpCaption->m_fScale += lpCaption->m_fAddScale;
-		if( lpCaption->m_fScale > 1.0f ) 
-			lpCaption->m_fScale = 1.0f; 
+	for (CAPTION & caption : m_aCaption) {
+		caption.m_fAddScale += 0.002f;
+		caption.m_fScale += caption.m_fAddScale;
+		if (caption.m_fScale > 1.0f)
+			caption.m_fScale = 1.0f;
 
-		if( lpCaption->m_fScale > 0.1f ) 
-		{ 
-			if( i + 1 == m_nCount ) 
-			{ 
-				m_nCount++; 
-				if( m_nCount > m_aCaption.size() ) 
-				{
-					m_nCount = m_aCaption.size();
-					if( lpCaption->m_fScale >= 1.0f ) 
-					{
-						m_bEnd = TRUE;
-						m_timer.Set( SEC( 5 ) );
-					}
-				}
-				break; 
-			}
+		if (caption.m_fScale <= 0.1f) break;
+	}
+
+	if (!m_aCaption.empty()) {
+		if (m_aCaption.back().m_fScale >= 1.0f) {
+			m_bEnd = TRUE;
+			m_timer.Set(SEC(5));
 		}
 	}
 }
@@ -134,32 +120,29 @@ void CCaption::Render( CPoint ptBegin, C2DRender* p2DRender )
 	if (m_nAlpha == 0) {
 		return;
 	}
-	const size_t nCount = std::min(m_nCount, m_aCaption.size());
 
-	for( size_t i = 0; i < nCount; i++ )
-	{
-		CAPTION * lpCaption = &m_aCaption[i];
-
-		const CRect rect = p2DRender->m_clipRect;//GetWndRect();
+	for (CAPTION & lpCaption : m_aCaption) {
+		const CRect rect = p2DRender->m_clipRect;
 		CPoint point = CPoint( rect.Width() / 2, 0 );
 
+		const CSize size = lpCaption.m_size;
 
-		const CSize size = lpCaption->m_size;
-
-		const FLOAT fScale = ( 7.0f - lpCaption->m_fScale * 6.0f ); // 최대 7배 사이즈 
+		const FLOAT fScale = ( 7.0f - lpCaption.m_fScale * 6.0f ); // 최대 7배 사이즈 
 		point.x	= (LONG)( point.x - ( ( size.cx / 2 ) * fScale ) );
 		point += ptBegin;
 
 
 		if( ::GetLanguage() == LANG_JAP || g_osVersion <= WINDOWS_ME ) {
-			CWndBase::m_Theme.m_pFontCaption->DrawText( (FLOAT)( point.x ), (FLOAT)( point.y ), fScale, fScale, D3DCOLOR_ARGB(  (int)(lpCaption->m_fScale * 255) - ( 255 - m_nAlpha), 250, 250, 255 ), lpCaption->m_szCaption );
-		} else if( lpCaption->m_texture.m_pTexture ) {
-			p2DRender->RenderTexture( point, &lpCaption->m_texture, (int)(lpCaption->m_fScale * 255) - ( 255 - m_nAlpha), fScale, fScale  );
+			CWndBase::m_Theme.m_pFontCaption->DrawText( (FLOAT)( point.x ), (FLOAT)( point.y ), fScale, fScale, D3DCOLOR_ARGB(  (int)(lpCaption.m_fScale * 255) - ( 255 - m_nAlpha), 250, 250, 255 ), lpCaption.m_szCaption );
+		} else if( lpCaption.m_texture.m_pTexture ) {
+			p2DRender->RenderTexture( point, &lpCaption.m_texture, (int)(lpCaption.m_fScale * 255) - ( 255 - m_nAlpha), fScale, fScale  );
 		} else {
-			lpCaption->m_pFont->DrawText( (FLOAT)( point.x ), (FLOAT)( point.y ), fScale, fScale, D3DCOLOR_ARGB(  (int)(lpCaption->m_fScale * 255) - ( 255 - m_nAlpha), 250, 250, 255 ), lpCaption->m_szCaption );
+			lpCaption.m_pFont->DrawText( (FLOAT)( point.x ), (FLOAT)( point.y ), fScale, fScale, D3DCOLOR_ARGB(  (int)(lpCaption.m_fScale * 255) - ( 255 - m_nAlpha), 250, 250, 255 ), lpCaption.m_szCaption );
 		}
 		
 		ptBegin.y += size.cy;
+
+		if (lpCaption.m_fScale <= 0.1f) break;
 	}
 }
 

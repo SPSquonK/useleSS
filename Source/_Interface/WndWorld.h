@@ -33,7 +33,6 @@ private:
 
 	bool m_bEnd = false;
 	CTimer m_timer;
-	size_t m_nCount = 0;
 	int m_nAlpha = 255;
 	boost::container::stable_vector<CAPTION> m_aCaption;
 
