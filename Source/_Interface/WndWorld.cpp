@@ -1328,151 +1328,8 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 	}
 		
 	// 길드원들 리스트 & 부활 정보
-	if( g_pPlayer && g_pPlayer->GetGuild() )
-	{
-		int nState = m_infoGC.IsGCStatusPlayerWar(g_pPlayer->m_idPlayer);
-
-		if( nState != -1 && nState != -2 )
-		{	
-			CString str;
-			int   nRate = 0;
-			int	  nGap  = 16;
-			DWORD dwFontColor = 0xFFFFFF99;
-			char szBuf[MAX_NAME] = {0,};
-			
-			CPoint cPoint(10, 150);
-			CRect  crBoard;
-
-			crBoard.left = cPoint.x - 5;
-			crBoard.top  = cPoint.y - 30;
-			crBoard.right = cPoint.x + 130;
-			
-			crBoard.bottom = crBoard.top + ((m_infoGC.GuildStatus.size()+2) * 16);
-			p2DRender->RenderFillRect( crBoard, D3DCOLOR_ARGB( 30, 0, 0, 0 ) );
-
-			BOOL bJoinMessage = FALSE;
-			BOOL bJoinReady = FALSE;
-			BOOL bSpace     = FALSE;
-			
-			CString strFormat = g_pPlayer->GetGuild()->m_szGuild;
-			p2DRender->TextOut( cPoint.x, cPoint.y-(nGap+5) ,strFormat, 0xFFEBAD18, 0xFF000000 );
-
-			CRect   cRectHP;
-			CMover* pObjMember = NULL;
-			int		nLeftTemp = 0;
-
-			for (const WndWorld::GuildCombatInfo::GUILDRATE & GuildRate : m_infoGC.GuildStatus) {
-				nRate++;
-
-				LPCTSTR str	= CPlayerDataCenter::GetInstance()->GetPlayerString( GuildRate.m_uidPlayer );
-				
-				memset( szBuf, 0, sizeof(szBuf) );
-				
-				GetStrCut( str, szBuf, 5 );
-				
-				if( 5 <= GetStrLen(str) )
-				{
-					strcat( szBuf, "..." );
-				}
-				else
-				{
-					strcpy( szBuf, str );
-				}			
-
-				if( GuildRate.m_uidPlayer == g_pPlayer->m_idPlayer  )
-				{
-					dwFontColor = 0xFF9ED3FF;
-
-					// 주인공이고 들어갈 차례이면서 라이프가 남아 있으면 메세지 출력
-					if( GuildRate.bJoinReady == TRUE && GuildRate.nLife > 0 )
-						bJoinMessage = TRUE;
-				}
-				else
-				{
-					dwFontColor = 0xFFFFFF99;
-				}
-				
-				// 다음차례에 출전할 경우라면 메세지를 띄워준다.
-				if( GuildRate.bJoinReady && GuildRate.nLife > 0 )
-				{
-					cPoint.y += nGap;
-					bJoinReady = TRUE;
-				}
-				
-				// 부활기회가 없는 사람들은 이름을 회색으로 표시한다.
-				if( GuildRate.nLife <= 0 && bSpace == FALSE )
-				{
-					cPoint.y += nGap;
-					bSpace = TRUE;
-				}
-
-				if( bJoinReady || bSpace )
-				{
-					if( bJoinReady )
-					{
-						dwFontColor = 0xFF00CB00;
-						bJoinReady  = FALSE;
-					}
-					else
-					if( bSpace )
-					{
-						dwFontColor = 0xFFCBCBCB;
-					}
-				}
-
-				if( m_infoGC.IsGCStatusDefender( GuildRate.m_uidPlayer ) )
-				{
-					p2DRender->TextOut( cPoint.x - 6, cPoint.y, "D", dwFontColor, 0xFF000000 );
-				}
-
-				strFormat.Format( "%2d", nRate );
-				p2DRender->TextOut( cPoint.x, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
-				
-				strFormat.Format( "%s", szBuf );
-				p2DRender->TextOut( cPoint.x+25, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
-				
-				nLeftTemp = GuildRate.nLife-1;
-
-				if( nLeftTemp < 0 )
-					nLeftTemp = 0;
-				
-				strFormat.Format( "%d", nLeftTemp );
-				p2DRender->TextOut( cPoint.x+110, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
-
-				// HP바를 그린다.
-				CMover * pObjMember = prj.GetUserByID( GuildRate.m_uidPlayer );
-				const FLOAT fPersent	= ( IsValidObj( pObjMember ) ? (FLOAT)pObjMember->GetHitPoint() / (FLOAT)pObjMember->GetMaxHitPoint() : 0 );
-				
-				static constexpr FLOAT fFullWidth = 60;
-				const FLOAT fDrawHP = fFullWidth*fPersent;
-
-				cRectHP.SetRect( cPoint.x+140, cPoint.y, (int)( cPoint.x+140+fFullWidth ), cPoint.y + 11 );
-				p2DRender->RenderFillRect( cRectHP, D3DCOLOR_ARGB( 100, 0, 0, 0)  );
-
-				cRectHP.DeflateRect( 1, 1, (int)( (fFullWidth-fDrawHP)+1 ), 1 );
-				p2DRender->RenderFillRect( cRectHP, D3DCOLOR_ARGB( 100, 0, 255, 0)  );
-				////////////////////////////////////
-				
-				cPoint.y += nGap;			
-			}
-			
-			if( bJoinMessage && g_GuildCombatMng.m_nState == CGuildCombat::WAR_STATE )
-			{
-				CD3DFont* pOldFont = g_Neuz.m_2DRender.GetFont();
-				g_Neuz.m_2DRender.SetFont( CWndBase::m_Theme.m_pFontGuildCombatText );				
-
-				strFormat   = prj.GetText(TID_GAME_GUILDCOMBAT_JOIN_READY);
-				int nCenter = p2DRender->m_pFont->GetTextExtent( strFormat ).cx / 2;
-				int nY      = p2DRender->m_pFont->GetTextExtent( strFormat ).cy;
-				p2DRender->TextOut( (g_Option.m_nResWidth / 2 ) - nCenter, (g_Option.m_nResHeight / 2 )-150, strFormat, 0xFFFFFF00, 0xFF000000 );
-				
-				strFormat = prj.GetText(TID_GAME_GUILDCOMBAT_JOIN_READY2);
-				nCenter = p2DRender->m_pFont->GetTextExtent( strFormat ).cx / 2;
-				p2DRender->TextOut( (g_Option.m_nResWidth / 2 ) - nCenter, ((g_Option.m_nResHeight / 2 )-148)+nY, strFormat, 0xFFFFFF00, 0xFF000000 );
-
-				g_Neuz.m_2DRender.SetFont( pOldFont );		
-			}
-		}
+	if (g_pPlayer && g_pPlayer->GetGuild()) {
+		m_infoGC.RenderMyGuildStatus(p2DRender);
 	}
 
 	
@@ -9671,6 +9528,126 @@ int GuildCombatInfo::IsGCStatusPlayerWar(u_long uidPlayer) const {
 	if (itWarState == m_gc_warstates.end()) return -1;
 
 	return itWarState->second;
+}
+
+void GuildCombatInfo::RenderMyGuildStatus(C2DRender * p2DRender) {
+	static constexpr int nGap = 16;
+
+	const int nState = IsGCStatusPlayerWar(g_pPlayer->m_idPlayer);
+
+	if (nState == -1 || nState == -2) return;			
+	
+	CPoint cPoint(10, 150);
+		
+	{
+		CRect  crBoard{
+			CPoint(cPoint.x - 5, cPoint.y - 30),
+			CSize( 5 + 130     , (GuildStatus.size() + 2) * 16)
+		};
+		p2DRender->RenderFillRect(crBoard, D3DCOLOR_ARGB(30, 0, 0, 0));
+	}
+
+	LPCTSTR szGuildName = g_pPlayer->GetGuild()->m_szGuild;
+	p2DRender->TextOut(cPoint.x, cPoint.y - (nGap + 5), szGuildName, 0xFFEBAD18, 0xFF000000);
+
+	char szBuf[MAX_NAME] = { 0, };
+	CString strFormat;
+
+	bool bJoinMessage = false;
+	bool bSpace       = false;
+	
+	int nRate = 0;
+	for (const WndWorld::GuildCombatInfo::GUILDRATE & GuildRate : GuildStatus) {
+		nRate++;
+
+		LPCTSTR str	= CPlayerDataCenter::GetInstance()->GetPlayerString( GuildRate.m_uidPlayer );
+		
+		if (5 <= GetStrLen(str)) {
+			memset(szBuf, 0, sizeof(szBuf));
+			GetStrCut(str, szBuf, 5);
+			strcat(szBuf, "...");
+		} else {
+			strcpy(szBuf, str);
+		}		
+
+		DWORD dwFontColor;
+		if (GuildRate.m_uidPlayer == g_pPlayer->m_idPlayer) {
+			dwFontColor = 0xFF9ED3FF;
+
+			// 주인공이고 들어갈 차례이면서 라이프가 남아 있으면 메세지 출력
+			if( GuildRate.bJoinReady && GuildRate.nLife > 0 )
+				bJoinMessage = true;
+		} else {
+			dwFontColor = 0xFFFFFF99;
+		}
+				
+		// 다음차례에 출전할 경우라면 메세지를 띄워준다.
+		bool bJoinReady = false;
+		if (GuildRate.bJoinReady && GuildRate.nLife > 0) {
+			cPoint.y += nGap;
+			bJoinReady = true;
+		}
+				
+		// 부활기회가 없는 사람들은 이름을 회색으로 표시한다.
+		if (GuildRate.nLife <= 0 && !bSpace) {
+			cPoint.y += nGap;
+			bSpace = true;
+		}
+
+		if (bJoinReady) {
+			dwFontColor = 0xFF00CB00;
+		} else if (bSpace) {
+			dwFontColor = 0xFFCBCBCB;
+		}
+
+		if (IsGCStatusDefender(GuildRate.m_uidPlayer)) {
+			p2DRender->TextOut(cPoint.x - 6, cPoint.y, "D", dwFontColor, 0xFF000000);
+		}
+
+		strFormat.Format("%2d", nRate);
+		p2DRender->TextOut(cPoint.x, cPoint.y, strFormat, dwFontColor, 0xFF000000);
+		
+		p2DRender->TextOut(cPoint.x + 25, cPoint.y, szBuf, dwFontColor, 0xFF000000);
+				
+		const int nLeftTemp = std::max(GuildRate.nLife - 1, 0);
+				
+		strFormat.Format( "%d", nLeftTemp );
+		p2DRender->TextOut(cPoint.x + 110, cPoint.y, strFormat, dwFontColor, 0xFF000000);
+
+		// HP바를 그린다.
+		CMover * pObjMember = prj.GetUserByID( GuildRate.m_uidPlayer );
+		const FLOAT fPersent	= ( IsValidObj( pObjMember ) ? (FLOAT)pObjMember->GetHitPoint() / (FLOAT)pObjMember->GetMaxHitPoint() : 0 );
+				
+		static constexpr FLOAT fFullWidth = 60;
+		const FLOAT fDrawHP = fFullWidth*fPersent;
+
+		CRect cRectHP(cPoint + CPoint(140, 0), CSize(static_cast<int>(fFullWidth), 11));
+		p2DRender->RenderFillRect( cRectHP, D3DCOLOR_ARGB( 100, 0, 0, 0)  );
+
+		cRectHP.DeflateRect( 1, 1, static_cast<int>( (fFullWidth-fDrawHP)+1 ), 1 );
+		p2DRender->RenderFillRect( cRectHP, D3DCOLOR_ARGB( 100, 0, 255, 0)  );
+		////////////////////////////////////
+				
+		cPoint.y += nGap;			
+	}
+			
+	if( bJoinMessage && g_GuildCombatMng.m_nState == CGuildCombat::WAR_STATE )
+	{
+		CD3DFont* pOldFont = g_Neuz.m_2DRender.GetFont();
+		g_Neuz.m_2DRender.SetFont( CWndBase::m_Theme.m_pFontGuildCombatText );				
+
+		LPCTSTR strFormat;
+		strFormat    = prj.GetText(TID_GAME_GUILDCOMBAT_JOIN_READY);
+		int nCenter  = p2DRender->m_pFont->GetTextExtent( strFormat ).cx / 2;
+		const int nY = p2DRender->m_pFont->GetTextExtent( strFormat ).cy;
+		p2DRender->TextOut( (g_Option.m_nResWidth / 2 ) - nCenter, (g_Option.m_nResHeight / 2 )-150, strFormat, 0xFFFFFF00, 0xFF000000 );
+				
+		strFormat    = prj.GetText(TID_GAME_GUILDCOMBAT_JOIN_READY2);
+		nCenter      = p2DRender->m_pFont->GetTextExtent( strFormat ).cx / 2;
+		p2DRender->TextOut( (g_Option.m_nResWidth / 2 ) - nCenter, ((g_Option.m_nResHeight / 2 )-148)+nY, strFormat, 0xFFFFFF00, 0xFF000000 );
+
+		g_Neuz.m_2DRender.SetFont( pOldFont );		
+	}
 }
 
 }

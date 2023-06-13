@@ -149,6 +149,7 @@ namespace WndWorld {
 		bool IsGCStatusDefender(u_long uidDefender) const;
 		int  IsGCStatusPlayerWar(u_long uidPlayer) const;
 
+		void RenderMyGuildStatus(C2DRender * p2DRender);
 	};
 
 }
