@@ -5972,31 +5972,33 @@ void CDPClient::OnGCTele( CAr & ar )
 }
 void CDPClient::OnGCWarPlayerList( CAr & ar )
 {
-	int nSizeGuild, nSizeMember, nStatus;
-	u_long uidDefender, uidPlayer;
-
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
+	if (!pWndWorld) return;
 
-	if( pWndWorld )
+	pWndWorld->m_gc_defenders.clear();
+	pWndWorld->m_gc_warstates.clear();
+
+	int nSizeGuild; ar >> nSizeGuild;
+	for( int i = 0 ; i < nSizeGuild ; ++i )
 	{
-		pWndWorld->m_mapGC_GuildStatus.clear();
+		u_long uidDefender; ar >> uidDefender;		// 디펜더
 
-		ar >> nSizeGuild;
+		pWndWorld->m_gc_defenders.emplace(uidDefender);
 
-		for( int i = 0 ; i < nSizeGuild ; ++i )
+		int nSizeMember;    ar >> nSizeMember;
+		for( int j = 0 ; j < nSizeMember ; ++j )
 		{
-			ar >> uidDefender;		// 디펜더
-			ar >> nSizeMember;
+			u_long uidPlayer; ar >> uidPlayer;
+			int nStatus;      ar >> nStatus;		// 전쟁 상태 == 1 ; 대기자 == 0
 
-			for( int j = 0 ; j < nSizeMember ; ++j )
-			{
-				ar >> uidPlayer;
-				ar >> nStatus;		// 전쟁 상태 == 1 ; 대기자 == 0
+			__GCWARSTATE gcTemp{
+				.m_uidPlayer = uidPlayer,
+				.m_bWar = nStatus
+			};
 
-				pWndWorld->AddGCStatus( uidDefender, uidPlayer, nStatus );
-			}
+			pWndWorld->m_gc_warstates.emplace_back(gcTemp);
 		}
-	}		
+	}
 }
 void CDPClient::OnIsRequest( CAr & ar )
 {
@@ -6283,7 +6285,8 @@ void CDPClient::OnGuildCombatState( CAr & ar )
 			pWndWorld->m_dwGuildCombatTime = 0xffffffff;
 
 			// 길드원들 왼쪽 리스트 상태...
-			pWndWorld->m_mapGC_GuildStatus.clear();
+			pWndWorld->m_gc_defenders.clear();
+			pWndWorld->m_gc_warstates.clear();
 		}
 	}
 }

@@ -553,7 +553,6 @@ m_buffs( NULL )
 	memset( m_szGuildCombatStr, 0, sizeof(char) * 64 );	
 	m_pSelectRenderObj= NULL;
 	m_IsMailTexRender = FALSE;
-	m_mapGC_GuildStatus.clear();
 	m_bCtrlInfo = FALSE;
 	m_bCtrlPushed = FALSE;
 	m_bRenderFPS  = FALSE;
@@ -1421,7 +1420,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 					}
 				}
 
-				if( GetGCStatusDefender( GuildRate.m_uidPlayer ) == GuildRate.m_uidPlayer )
+				if( IsGCStatusDefender( GuildRate.m_uidPlayer ) )
 				{
 					p2DRender->TextOut( cPoint.x - 6, cPoint.y, "D", dwFontColor, 0xFF000000 );
 				}
@@ -3328,66 +3327,28 @@ void CWndWorld::AddPlayerPrecedence( int nRate, u_long uiPlayer)
 	m_mmapGuildCombat_PlayerPrecedence.emplace( nRate, uiPlayer );
 }
 
-void CWndWorld::AddGCStatus( u_long uidDefender, u_long uidPlayer, BOOL bWar )
-{
-	const auto it = m_mapGC_GuildStatus.find( uidDefender );
-	
-	__GCWARSTATE gcTemp;
-
-	if( it != m_mapGC_GuildStatus.end() )
-	{
-		gcTemp.m_uidPlayer = uidPlayer;
-		gcTemp.m_bWar	   = bWar;
-		it->second.push_back( gcTemp );
-	}
-	else
-	{
-		std::vector<__GCWARSTATE> vecTemp;
-		gcTemp.m_uidPlayer = uidPlayer;
-		gcTemp.m_bWar	   = bWar;
-		vecTemp.push_back( gcTemp );		
-		m_mapGC_GuildStatus.emplace(uidDefender, vecTemp);
-	}
-}
-
-u_long CWndWorld::GetGCStatusDefender( u_long uidDefender )
-{
-	auto it = m_mapGC_GuildStatus.find( uidDefender );
-	
-	if( it != m_mapGC_GuildStatus.end() )
-	{
-		return it->first;
-	}
-
-	return -1;
+bool CWndWorld::IsGCStatusDefender( u_long uidDefender ) const {
+	return m_gc_defenders.contains( uidDefender );
 }
 
 int CWndWorld::IsGCStatusPlayerWar( u_long uidPlayer )
 {
 	// 아무것도 없을시..-2 리턴
-	if( m_mapGC_GuildStatus.size() == 0 )
+	if(m_gc_warstates.empty() )
 		return -2;
 
-	__GCWARSTATE gcTemp;
-	auto i	= m_mapGC_GuildStatus.begin();
-
-	while( i != m_mapGC_GuildStatus.end() )
-	{
-		for( int j=0; j < (int)( i->second.size() ); j++ )
-		{
-			gcTemp = i->second[j];
-
-			if( gcTemp.m_uidPlayer == uidPlayer )
-			{
-				// 1이면 전쟁중, 0이면 대기자
-				return gcTemp.m_bWar;
-			}
+	const auto it = std::find_if(
+		m_gc_warstates.begin(), m_gc_warstates.end(),
+		[uidPlayer](const __GCWARSTATE & warState) {
+			return warState.m_uidPlayer == uidPlayer;
 		}
+	);
 
-		++i;
+	if (it == m_gc_warstates.end()) {
+		return -1;
 	}
-	// 일반유저다...	
-	return -1;
+
+	return it->m_bWar;
 }
 
 BOOL CWndWorld::Initialize( CWndBase* pWndParent, DWORD dwWndId )

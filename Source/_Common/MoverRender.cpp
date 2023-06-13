@@ -1494,14 +1494,13 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 		dwColor = 0xFFFFFFFF;
 		if( pGuild->IsMaster(m_idPlayer))
 			dwColor = 0xFFFFFF99;
-		else
-		if( bOtherColor )
+		else if( bOtherColor )
 			dwColor = dwNewColor;
 
 		// 길드컴뱃이 열린상태이면서 디펜더는 분홍색으로 출력
 		if( g_GuildCombatMng.m_nGCState >= CGuildCombat::MAINTENANCE_STATE )
 		{
-			if( pWndWorld && pWndWorld->GetGCStatusDefender(m_idPlayer) != -1 )
+			if( pWndWorld && pWndWorld->IsGCStatusDefender(m_idPlayer) )
 			{
 				dwColor = 0xFFFEA8FF;
 			}		

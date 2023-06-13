@@ -291,15 +291,16 @@ public:
 	std::multimap< int, u_long >		m_mmapGuildCombat_PlayerPrecedence;
 	GuildWarInfo m_guildCombat;
 
-	std::map< u_long, std::vector<__GCWARSTATE> >  m_mapGC_GuildStatus;
+	std::set<u_long> m_gc_defenders;
+	std::vector<__GCWARSTATE> m_gc_warstates;
+
 	CWndBase* m_pWndBuffStatus;
 
 public:
 	void InitEyeFlash();
 	void AddGuildPrecedence( int, CString );
 	void AddPlayerPrecedence( int, u_long );
-	void AddGCStatus( u_long uidDefender, u_long uidPlayer, BOOL bWar );
-	u_long GetGCStatusDefender( u_long uidDefender );
+	bool IsGCStatusDefender( u_long uidDefender ) const;
 	int  IsGCStatusPlayerWar( u_long uidPlayer );
 	void ClearGuildPrecedence()   { m_mmapGuildCombat_GuildPrecedence.clear(); }
 	void ClearPlayerPrecedence()  { m_mmapGuildCombat_PlayerPrecedence.clear(); }
