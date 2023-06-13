@@ -106,30 +106,28 @@ struct BUFFICONRECT_INFO
 };
 
 // 버튼형식의 도움말( 클릭시 지정된 창 실행 )
-#define MAX_ADVBUTTON	10
 
-typedef struct BUTTON_INFO
-{
-	CWndButton*		m_pwndButton;
-	DWORD			m_dwRunWindow;
-} BUTTON_INFO, *PBUTTON_INFO;
+class CAdvMgr final {
+public:
+	struct BUTTON_INFO {
+		std::unique_ptr<CWndButton> m_pwndButton;
+		DWORD			m_dwRunWindow;
+	};
 
-class CAdvMgr
-{
-	int						m_nIndex;
-	CWndBase*				m_pParentWnd;
-	std::vector<BUTTON_INFO>		m_vecButton;
+private:
+	static constexpr size_t MAX_ADVBUTTON = 10;
+
+	int        m_nIndex;
+	CWndBase * m_pParentWnd;
+	std::vector<BUTTON_INFO> m_vecButton;
 	
 public:
 	CAdvMgr();
-	~CAdvMgr();
 
-	void RemoveButton();
 	void Init( CWndBase* pParentWnd );
 	void AddAdvButton( DWORD dwid );	
-	BOOL RunButton( DWORD dwID );
-	void SortButton();
-	BUTTON_INFO* FindRunWindowButton( DWORD dwID );
+	bool RunButton( DWORD dwID );
+	void MoveButtons();
 };
 
 typedef struct __GUILDRATE

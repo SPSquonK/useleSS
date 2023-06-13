@@ -8066,8 +8066,6 @@ HRESULT CWndWorld::InvalidateDeviceObjects()
 }
 HRESULT CWndWorld::DeleteDeviceObjects()
 {
-//	m_AdvMgr.RemoveButton();
-
 	CWndBase::DeleteDeviceObjects();
 	
 	m_meshArrow.DeleteDeviceObjects();
@@ -9457,129 +9455,79 @@ void CWndWorld::InviteCompany( OBJID objId )
 	}
 }
 
-CAdvMgr::CAdvMgr()
-{
+CAdvMgr::CAdvMgr() {
 	m_nIndex = 0;
 	m_pParentWnd = NULL;
-	m_vecButton.clear();
 	m_vecButton.reserve(MAX_ADVBUTTON);
 }
-CAdvMgr::~CAdvMgr()
-{
-}
-void CAdvMgr::Init( CWndBase* pParentWnd )
-{
+
+void CAdvMgr::Init(CWndBase * pParentWnd) {
 	m_pParentWnd = pParentWnd;
 }
-void CAdvMgr::RemoveButton()
-{
-	m_nIndex = 0;
-	
-	auto i = m_vecButton.begin();
-	for( ; i != m_vecButton.end(); ++i )
-	{
-		BUTTON_INFO* vecButton	= &(*i);
-		
-		if( vecButton->m_pwndButton )
-		{
-			vecButton->m_pwndButton->Destroy();
-			vecButton->m_pwndButton = NULL;
-			m_vecButton.erase( i );
-		}
-	}	
-}
-// µµøÚ∏ª πˆ∆∞¿ª √ﬂ∞°«—¥Ÿ.
-void CAdvMgr::AddAdvButton( DWORD dwid )
-{	
-	if( m_pParentWnd == NULL )
-		return;
 
-	if( m_vecButton.size() >= MAX_ADVBUTTON )
-	{
-		Error( "CAdvMgr::AddAdvButtonø°º≠ MAX_ADVBUTTON∫∏¥Ÿ ≈≠ : %d", m_nIndex );
+// µµøÚ∏ª πˆ∆∞¿ª √ﬂ∞°«—¥Ÿ.
+void CAdvMgr::AddAdvButton(const DWORD dwid) {
+	if (!m_pParentWnd) return;
+
+	// πˆ∆∞¿Ã Ω««‡«“ √¢¿Ã ¿ÃπÃ ∂Áøˆ¡Æ ¿÷¿∏∏È πˆ∆∞√ﬂ∞°∏¶ æ»«—¥Ÿ.
+	if (g_WndMng.GetWndBase(dwid)) return;
+
+	// ±‚¡∏ ∞∞¿∫ πˆ∆∞±‚¥…¿« πˆ∆∞¿Ã ¡∏¿Á«œ∏È ±◊≥… ∏Æ≈œ
+	const bool alreadyHasButton = std::any_of(
+		m_vecButton.begin(), m_vecButton.end(),
+		[dwid](const BUTTON_INFO & vecButton) {
+			return vecButton.m_dwRunWindow == dwid;
+		});
+	if (alreadyHasButton) return;
+
+	if (m_vecButton.size() >= MAX_ADVBUTTON) {
+		Error("CAdvMgr::AddAdvButton reached≠ MAX_ADVBUTTON : %d", m_nIndex);
 		return;
 	}
 
-	// ±‚¡∏ ∞∞¿∫ πˆ∆∞±‚¥…¿« πˆ∆∞¿Ã ¡∏¿Á«œ∏È ±◊≥… ∏Æ≈œ
-	BUTTON_INFO* pButton;
-	pButton = FindRunWindowButton( dwid );
+	BUTTON_INFO & button = m_vecButton.emplace_back();
 
-	if( pButton )
-		return;
+	button.m_pwndButton = std::make_unique<CWndButton>();
+	button.m_pwndButton->Create("", 0, CRect(CPoint(0, 0), CSize(25, 25)), m_pParentWnd, m_nIndex + 2000);
+	button.m_pwndButton->SetTexture(m_pParentWnd->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtAdvPlus.bmp")), TRUE);
 
-	// πˆ∆∞¿Ã Ω««‡«“ √¢¿Ã ¿ÃπÃ ∂Áøˆ¡Æ ¿÷¿∏∏È πˆ∆∞√ﬂ∞°∏¶ æ»«—¥Ÿ.
-	if( g_WndMng.GetWndBase(dwid) )
-		return;
-
-	int x = 10;
-	int y = ((m_nIndex+1)*40);
-
-	y += 90;
-
-	CWndBase* pWndBase = NULL;
-	pWndBase = new CWndButton;
-	((CWndButton*)pWndBase)->Create( "", 0, CRect( x, y, x+25, y+25 ), m_pParentWnd, m_nIndex+2000 ); 
-	((CWndButton*)pWndBase)->SetTexture( m_pParentWnd->m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "ButtAdvPlus.bmp" ) ), TRUE );
-
-	BUTTON_INFO button;
-	button.m_pwndButton  = (CWndButton*)pWndBase;
 	button.m_dwRunWindow = dwid;
-	m_vecButton.push_back(button);
 	m_nIndex++;		
 
 	// πˆ∆∞¿ª √ﬂ∞°«—»ƒ º“∆√¿ª «—¥Ÿ...
-	SortButton();	
+	MoveButtons();
 }
 
 // «ÿ¥Áπˆ∆∞¿ª ¥≠∑∂¿ª∞ÊøÏ ø¨∞·µ» √¢¿ª »≠∏Èø° ∂ÁøÓ»ƒ πˆ∆∞¿∫ ªË¡¶µ»¥Ÿ.
-BOOL CAdvMgr::RunButton( DWORD dwID )
+bool CAdvMgr::RunButton( DWORD dwID )
 {
 	const auto it = std::ranges::find_if(m_vecButton,
 		[&](const BUTTON_INFO & vecButton) {
-			return vecButton.m_pwndButton && vecButton.m_pwndButton->m_nIdWnd == dwID;
+			return vecButton.m_pwndButton->m_nIdWnd == dwID;
 		});
 
-	if (it == m_vecButton.end()) return FALSE;
+	if (it == m_vecButton.end()) return false;
+
+	const DWORD windowId = it->m_dwRunWindow;
 
 	it->m_pwndButton->DeleteDeviceObjects();
 	it->m_pwndButton->Destroy();
-	it->m_pwndButton = NULL;
-
-	g_WndMng.OpenApplet(it->m_dwRunWindow);
-			
 	m_vecButton.erase(it);
-			
-	SortButton();
-	return TRUE;
-}
 
-// πˆ∆∞¿« Ω««‡«“ √¢¿ª ∞Àªˆ«—¥Ÿ.
-BUTTON_INFO* CAdvMgr::FindRunWindowButton( DWORD dwID )
-{
-	auto i = m_vecButton.begin();
-	for( ; i != m_vecButton.end(); ++i )
-	{
-		BUTTON_INFO* vecButton	= &(*i);
-		
-		if( vecButton->m_pwndButton  && vecButton->m_dwRunWindow == dwID )
-		{
-			return vecButton;
-		}
-	}
-	
-	return NULL;
+	g_WndMng.OpenApplet(windowId);
+
+	MoveButtons();
+	return true;
 }
 
 // πˆ∆∞ ¿ßƒ°∏¶ º“∆√«—¥Ÿ...±‚¡ÿ¿∫ »≠∏È æ∆∑°∑Œ ∫Œ≈Õ ¿ß∑Œ ¡§∑ƒ
-void CAdvMgr::SortButton()
-{
-	for( int i=0; i<(int)( m_vecButton.size() ); i++ )
-	{
-		if( m_vecButton[i].m_pwndButton )
-		{
-			m_vecButton[i].m_pwndButton->Move( 10, ( ((i+1)*40) + 90 ) );
-		}
-	}	
+void CAdvMgr::MoveButtons() {
+	int y = 40 + 90;
+
+	for (const BUTTON_INFO & buttonInfo : m_vecButton) {
+		buttonInfo.m_pwndButton->Move(10, y);
+		y += 40;
+	}
 }
 
 #define PARTSMESH_HEAD( nSex )  ( nSex == SEX_MALE ? _T( "Part_maleHead%02d.o3d" ) : _T( "Part_femaleHead%02d.o3d" ) )
