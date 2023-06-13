@@ -92,18 +92,6 @@ struct BUFFSKILL {
 	CTexture * m_pTexture = nullptr;
 };
 
-typedef	struct	_SET_NAVIGATOR
-{
-	DWORD dwWorldId;
-	D3DXVECTOR3 vPos;
-	_SET_NAVIGATOR()
-	{
-		dwWorldId	= 0;
-	}
-}
-SET_NAVIGATOR;
-
-
 struct BUFFICON_INFO
 {
 	CPoint	pt;			// renderÀ§Ä¡ 
@@ -324,7 +312,6 @@ public:
 	CD3DFontAPI* m_pFontAPITime;
 
 	CTexturePack	m_texMsgIcon;
-	SET_NAVIGATOR	m_stnv;
 	CTexturePack	m_texAttrIcon;
 	CTexturePack	m_texPlayerDataIcon;
 

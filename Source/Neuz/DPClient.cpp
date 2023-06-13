@@ -11798,26 +11798,6 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 				}
 				break;
 			}
-		case FUNCTYPE_SETNAVIGATOR:
-			{
-				ar >> rsf.dwVal1;
-				ar >> rsf.vPos;
-				if( g_WndMng.m_pWndWorld )
-				{
-					g_WndMng.m_pWndWorld->m_stnv.dwWorldId	= rsf.dwVal1;
-					g_WndMng.m_pWndWorld->m_stnv.vPos	= rsf.vPos;
-				}
-				break;
-			}
-		case FUNCTYPE_REMOVENAVIGATOR:
-			{
-				if( g_WndMng.m_pWndWorld )
-				{
-					g_WndMng.m_pWndWorld->m_stnv.dwWorldId	= 0;
-//					g_WndMng.m_pWndWorld->m_stnv.vPos	= D3DXVECTOR3( 0, 0, 0 );
-				}
-				break;
-			}
 		case FUNCTYPE_QUERYSETPLAYERNAME:
 			{
 				if( NULL == g_WndMng.m_pWndChangeName )

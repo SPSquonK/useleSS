@@ -5063,12 +5063,6 @@ void CUser::AddRunScriptFunc( const RunScriptFunc & runScriptFunc )
 				m_Snapshot.ar << runScriptFunc.dwVal1;
 				break;
 			}
-		case FUNCTYPE_SETNAVIGATOR:
-			{
-				m_Snapshot.ar << runScriptFunc.dwVal1;
-				m_Snapshot.ar << runScriptFunc.vPos;
-				break;
-			}
 		case FUNCTYPE_NEWQUEST:
 		case FUNCTYPE_CURRQUEST:
 			{
