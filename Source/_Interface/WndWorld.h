@@ -23,10 +23,8 @@ typedef struct tagCAPTION
 
 	CTexture m_texture;
 	CSize m_size;
-	FLOAT m_fXScale;
-	FLOAT m_fYScale;
+	FLOAT m_fScale;
 	FLOAT m_fAddScale;
-	int m_nAlpha;
 
 } CAPTION,* LPCAPTION;
 
@@ -36,6 +34,7 @@ public:
 	BOOL m_bEnd;
 	CTimer m_timer;
 	int m_nCount;
+	int m_nAlpha;
 	CPtrArray m_aCaption;
 	CCaption();
 	~CCaption();

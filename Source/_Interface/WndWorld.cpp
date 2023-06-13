@@ -88,27 +88,23 @@ void CCaption::Process()
 	{
 		if( m_timer.IsTimeOut() )
 		{
-			for( int i = 0; i < m_aCaption.GetSize(); i++ )
-			{
-				LPCAPTION lpCaption = ( LPCAPTION ) m_aCaption.GetAt( i );
-				lpCaption->m_nAlpha -= 3;
-				if( lpCaption->m_nAlpha < 0 )
-					lpCaption->m_nAlpha = 0;
-			}		
+			m_nAlpha -= 3;
+			if (m_nAlpha < 0) {
+				m_nAlpha = 0;
+			}
 		}
+		return;
 	}
-	else
+	
 	for( int i = 0; i < m_nCount; i++ )
 	{
 		LPCAPTION lpCaption = ( LPCAPTION ) m_aCaption.GetAt( i );
 		lpCaption->m_fAddScale += 0.002f;
-		lpCaption->m_fXScale += lpCaption->m_fAddScale;
-		lpCaption->m_fYScale += lpCaption->m_fAddScale;
-		if( lpCaption->m_fXScale > 1.0f ) 
-			lpCaption->m_fXScale = 1.0f; 
-		if( lpCaption->m_fYScale > 1.0f ) 
-			lpCaption->m_fYScale = 1.0f;
-		if( lpCaption->m_fXScale > 0.1f ) 
+		lpCaption->m_fScale += lpCaption->m_fAddScale;
+		if( lpCaption->m_fScale > 1.0f ) 
+			lpCaption->m_fScale = 1.0f; 
+
+		if( lpCaption->m_fScale > 0.1f ) 
 		{ 
 			if( i == m_nCount - 1 ) 
 			{ 
@@ -116,7 +112,7 @@ void CCaption::Process()
 				if( m_nCount > m_aCaption.GetSize() ) 
 				{
 					m_nCount = m_aCaption.GetSize();
-					if( lpCaption->m_fYScale >= 1.0f ) 
+					if( lpCaption->m_fScale >= 1.0f ) 
 					{
 						m_bEnd = TRUE;
 						m_timer.Set( SEC( 5 ) );
@@ -147,46 +143,42 @@ HRESULT CCaption::InvalidateDeviceObjects()
 }
 void CCaption::Render( CPoint ptBegin, C2DRender* p2DRender )
 {
-	//CD3DFont* pFontOld = p2DRender->GetFont();
-	int nCount = m_nCount > m_aCaption.GetSize() ? m_aCaption.GetSize() : m_nCount;
+	const int nCount = std::min(m_nCount, m_aCaption.GetSize());
 
 	for( int i = 0; i < nCount; i++ )
 	{
 		LPCAPTION lpCaption = ( LPCAPTION ) m_aCaption.GetAt( i );
-		//p2DRender->SetFont( lpCaption->m_pFont );
-		CRect rect = p2DRender->m_clipRect;//GetWndRect();
+
+		const CRect rect = p2DRender->m_clipRect;//GetWndRect();
 		CPoint point = CPoint( rect.Width() / 2, 0 );
 
 
-		CSize size = lpCaption->m_size;
+		const CSize size = lpCaption->m_size;
 
-		FLOAT fXScale = ( 7.0f - lpCaption->m_fXScale * 6.0f ); // 최대 7배 사이즈 
-		FLOAT fYScale = ( 7.0f - lpCaption->m_fYScale * 6.0f ); // 최대 7배 사이즈 
-		point.x	= (LONG)( point.x - ( ( size.cx / 2 ) * fXScale ) );
-		//point.y -= ( size.cy / 2 ) * fYScale;
+		const FLOAT fScale = ( 7.0f - lpCaption->m_fScale * 6.0f ); // 최대 7배 사이즈 
+		point.x	= (LONG)( point.x - ( ( size.cx / 2 ) * fScale ) );
 		point += ptBegin;
 
-//		CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 
-		if( lpCaption->m_nAlpha )
+		if( m_nAlpha != 0 )
 		{
 			if( ::GetLanguage() != LANG_JAP )
 			{
 				if( g_osVersion <= WINDOWS_ME )
-					CWndBase::m_Theme.m_pFontCaption->DrawText( (FLOAT)( point.x ), (FLOAT)( point.y ), fXScale, fYScale, D3DCOLOR_ARGB(  (int)(lpCaption->m_fXScale * 255) - ( 255 - lpCaption->m_nAlpha), 250, 250, 255 ), lpCaption->m_szCaption );
+					CWndBase::m_Theme.m_pFontCaption->DrawText( (FLOAT)( point.x ), (FLOAT)( point.y ), fScale, fScale, D3DCOLOR_ARGB(  (int)(lpCaption->m_fScale * 255) - ( 255 - m_nAlpha), 250, 250, 255 ), lpCaption->m_szCaption );
 				else
 				{
 					if( lpCaption->m_texture.m_pTexture )
-						p2DRender->RenderTexture( CPoint( point.x, point.y ), &lpCaption->m_texture, (int)(lpCaption->m_fXScale * 255) - ( 255 - lpCaption->m_nAlpha), fXScale, fYScale  );
+						p2DRender->RenderTexture( point, &lpCaption->m_texture, (int)(lpCaption->m_fScale * 255) - ( 255 - m_nAlpha), fScale, fScale  );
 					else
 					{
-						lpCaption->m_pFont->DrawText( (FLOAT)( point.x ), (FLOAT)( point.y ), fXScale, fYScale, D3DCOLOR_ARGB(  (int)(lpCaption->m_fXScale * 255) - ( 255 - lpCaption->m_nAlpha), 250, 250, 255 ), lpCaption->m_szCaption );
+						lpCaption->m_pFont->DrawText( (FLOAT)( point.x ), (FLOAT)( point.y ), fScale, fScale, D3DCOLOR_ARGB(  (int)(lpCaption->m_fScale * 255) - ( 255 - m_nAlpha), 250, 250, 255 ), lpCaption->m_szCaption );
 					}
 				}
 			}
 			else
 			{
-				CWndBase::m_Theme.m_pFontCaption->DrawText( (FLOAT)( point.x ), (FLOAT)( point.y ), fXScale, fYScale, D3DCOLOR_ARGB(  (int)(lpCaption->m_fXScale * 255) - ( 255 - lpCaption->m_nAlpha), 250, 250, 255 ), lpCaption->m_szCaption );			
+				CWndBase::m_Theme.m_pFontCaption->DrawText( (FLOAT)( point.x ), (FLOAT)( point.y ), fScale, fScale, D3DCOLOR_ARGB(  (int)(lpCaption->m_fScale * 255) - ( 255 - m_nAlpha), 250, 250, 255 ), lpCaption->m_szCaption );			
 			}
 		}
 		ptBegin.y += size.cy;
@@ -209,13 +201,13 @@ void CCaption::AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLo
 	else
 		CWndBase::m_Theme.m_pFontCaption->GetTextExtent( lpszCaption, &size );	
 
+	m_nAlpha = 255;
+
 	LPCAPTION lpCaption = new CAPTION;
 	strcpy( lpCaption->m_szCaption, lpszCaption );
 	lpCaption->m_pFont = pFont;
-	lpCaption->m_fXScale = 0.0f;
-	lpCaption->m_fYScale = 0.0f;
+	lpCaption->m_fScale = 0.0f;
 	lpCaption->m_fAddScale = 0.0f;
-	lpCaption->m_nAlpha = 255;
 	lpCaption->m_size = size;
 
 	m_aCaption.Add( lpCaption );
