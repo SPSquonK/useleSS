@@ -14,31 +14,30 @@
 extern vector<CString> g_vecHelpInsKey;
 #endif //__HELP_BUG_FIX
 
+#include <boost/container/stable_vector.hpp>
 #include "buff.h"
 
-typedef struct tagCAPTION
+
+class CCaption final
 {
-	TCHAR m_szCaption[ 512 ];
-	CD3DFontAPI* m_pFont;
+private:
+	struct CAPTION {
+		TCHAR m_szCaption[512];
+		CD3DFontAPI * m_pFont;
 
-	CTexture m_texture;
-	CSize m_size;
-	FLOAT m_fScale;
-	FLOAT m_fAddScale;
+		CTexture m_texture;
+		CSize m_size;
+		FLOAT m_fScale;
+		FLOAT m_fAddScale;
+	};
 
-} CAPTION,* LPCAPTION;
-
-class CCaption
-{
-public:
-	BOOL m_bEnd;
+	bool m_bEnd = false;
 	CTimer m_timer;
-	int m_nCount;
-	int m_nAlpha;
-	CPtrArray m_aCaption;
-	CCaption();
-	~CCaption();
+	size_t m_nCount = 0;
+	int m_nAlpha = 255;
+	boost::container::stable_vector<CAPTION> m_aCaption;
 
+public:
 	void RemoveAll();
 	void Process();
 
