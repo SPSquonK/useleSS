@@ -232,7 +232,6 @@ public:
 
 	CAdvMgr*	GetAdvMgr() { return &m_AdvMgr; }
 	
-	BOOL	m_IsMailTexRender;
 	BOOL	m_bCtrlInfo;
 	BOOL	m_bCtrlPushed;
 	BOOL	m_bRenderFPS;
@@ -446,7 +445,6 @@ public:
 	void	RenderEventIcon( C2DRender* p2DRender, BUFFICON_INFO* pInfo, CPoint ptMouse );
 
 	void PutPetTooltipInfo( CItemElem* pItemElem, CEditString* pEdit );
-	void DrawGuildCombat1to1Info(C2DRender *p2DRender);
 	void DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender);
 	void DrawGuildCombat1ot1GuildInfo(C2DRender *p2DRender);
 	BOOL m_bGuildCombat1to1Wait;
