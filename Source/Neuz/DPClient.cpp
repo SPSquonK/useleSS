@@ -5796,9 +5796,11 @@ void WndWorld::GuildCombatPrecedence::OnGuildPrecedence(CAr & ar) {
 		ar >> strGuildName;
 		ar >> nGuildPoint;
 
-		guilds.emplace(nGuildPoint, guildId);
+		guilds.emplace_back(ParticipantWithPoint{ guildId, nGuildPoint });
 		idToGuildName.emplace(guildId, strGuildName);
 	}
+
+	Sort(guilds);
 }
 
 // 개인 순위
@@ -5811,9 +5813,11 @@ void WndWorld::GuildCombatPrecedence::OnPlayerPrecedence(CAr & ar) {
 		for (int j = 0; j < nPlayerSize; ++j) {
 			const auto [uidPlayer, nPoint] = ar.Extract<u_long, int>();
 
-			players.emplace(nPoint, uidPlayer);
+			players.emplace_back(ParticipantWithPoint{ uidPlayer, nPoint });
 		}
 	}
+
+	Sort(players);
 }
 
 void CDPClient::OnGCJoinWarWindow( CAr & ar )

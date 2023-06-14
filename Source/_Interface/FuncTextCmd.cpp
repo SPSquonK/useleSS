@@ -4373,18 +4373,22 @@ BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 	pWndWorld->m_GCprecedence.guilds.clear();
 	pWndWorld->m_GCprecedence.idToGuildName.clear();
 
+	using ParticipantWithPoint = WndWorld::GuildCombatPrecedence::ParticipantWithPoint;
+
 	for (const auto & [guildId, points] : guildToPoints) {
 		CGuild * guild = g_GuildMng.GetGuild(guildId);
-		pWndWorld->m_GCprecedence.guilds.emplace(points, guildId);
+		pWndWorld->m_GCprecedence.guilds.emplace_back(
+			ParticipantWithPoint{ guildId, points }
+		);
 		pWndWorld->m_GCprecedence.idToGuildName.emplace(guildId, guild->m_szGuild);
 	}
 
 	pWndWorld->m_GCprecedence.players.clear();
 	for (const auto & [playerId, points] : playersToPoints) {
-		pWndWorld->m_GCprecedence.players.emplace(points, playerId);
+		pWndWorld->m_GCprecedence.players.emplace_back(
+			ParticipantWithPoint{ playerId, points }
+		);
 	}
-
-
 
 	g_DPlay.OnGCLog(receive);
 	// g_DPlay.SendPacket<PACKETTYPE_SQUONK_ARBITRARY_PACKET>(v);

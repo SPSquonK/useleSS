@@ -9442,7 +9442,7 @@ void GuildCombatPrecedence::Clear() {
 	guilds.clear();
 }
 
-void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect) {
+void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect) const {
 	int		nGap  = 16;
 	int		nRate = 0;
 	CString strFormat;
@@ -9462,13 +9462,9 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 	int     nOldPoint = 0xffffffff;
 
 	p2DRender->TextOut( cPoint.x+10, cPoint.y, prj.GetText(TID_GAME_GUILDCOMBAT_RATE), 0xFFEBAD18, 0xFF000000 );
-	cPoint.y += ( nGap + (nGap / 2) );		
-	for( auto i = guilds.rbegin(); i != guilds.rend(); ++i )
-	{
-		const int nPoint  = i->first;
-		const u_long guildId = i->second;
+	cPoint.y += ( nGap + (nGap / 2) );
 
-			
+	for (const auto & [guildId, nPoint] : guilds) {
 		if( nOldPoint != nPoint )
 			nRate++;
 
@@ -9534,14 +9530,10 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 	int  nPlayerPoint  = 0;
 	static constexpr int nMaxRender = 10;
 	int nMaxIndex = 0;
-	u_long uiPlayer;
 	p2DRender->TextOut( cPoint.x+10, cPoint.y, prj.GetText(TID_GAME_GUILDCOMBAT_PERSON_RATE), 0xFFEBAD18, 0xFF000000 );
 	cPoint.y += ( nGap + (nGap / 2) );
-	for( auto j = players.rbegin(); j != players.rend(); ++j )
-	{ 
-		const int nPoint			= j->first;
-		uiPlayer		= j->second;	
 
+	for (const auto & [uiPlayer, nPoint] : players) {
 			
 		if( nOldPoint != nPoint )
 			nRate++;
@@ -9644,6 +9636,15 @@ LPCTSTR GuildCombatPrecedence::GetGuildName(u_long guildId) const {
 	const auto it = idToGuildName.find(guildId);
 	if (it == idToGuildName.end()) return "???";
 	return it->second.c_str();
+}
+
+void GuildCombatPrecedence::Sort(std::vector<ParticipantWithPoint> & participants) {
+	std::stable_sort(
+		participants.begin(), participants.end(),
+		[](const ParticipantWithPoint & lhs, const ParticipantWithPoint & rhs) {
+			return lhs.points > rhs.points;
+		}
+	);
 }
 
 }

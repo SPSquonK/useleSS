@@ -153,17 +153,26 @@ namespace WndWorld {
 	};
 
 	struct GuildCombatPrecedence {
+		// The guilds and players vector are always sorted
+		// by points DESC.
+
+		struct ParticipantWithPoint {
+			u_long id;
+			int points;
+		};
+
 		std::map<u_long, std::string> idToGuildName;
-		std::multimap<int, u_long> guilds;
-		std::multimap<int, u_long> players;
+		std::vector<ParticipantWithPoint> guilds;
+		std::vector<ParticipantWithPoint> players;
 
 		void Clear();
 		void OnGuildPrecedence(CAr & ar);
 		void OnPlayerPrecedence(CAr & ar);
 
-		void Render(C2DRender * p2DRender, CRect clientRect);
+		void Render(C2DRender * p2DRender, CRect clientRect) const;
 
 		[[nodiscard]] LPCTSTR GetGuildName(u_long guildId) const;
+		static void Sort(std::vector<ParticipantWithPoint> & participants);
 	};
 
 }
