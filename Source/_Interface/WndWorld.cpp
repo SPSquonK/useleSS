@@ -552,7 +552,6 @@ m_buffs( NULL )
 	memset( &m_QuestTime, 0, sizeof(m_QuestTime) );
 	memset( m_szGuildCombatStr, 0, sizeof(char) * 64 );	
 	m_pSelectRenderObj= NULL;
-	m_IsMailTexRender = FALSE;
 	m_bCtrlInfo = FALSE;
 	m_bCtrlPushed = FALSE;
 	m_bRenderFPS  = FALSE;
@@ -1077,15 +1076,11 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 
 	if( g_pPlayer && g_pPlayer->GetWorld() && g_GuildCombat1to1Mng.IsPossibleMover(g_pPlayer) )
 	{
-//		if(g_GuildCombat1to1Mng.m_nState == CGuildCombat1to1Mng::GC1TO1_ENTRANCE || g_GuildCombat1to1Mng.m_nState == CGuildCombat1to1Mng::GC1TO1_WAR)
-		{
-			DrawGuildCombat1to1Info(p2DRender);
-			DrawGuildCombat1to1PlayerInfo(p2DRender);
-			DrawGuildCombat1ot1GuildInfo(p2DRender);
-		}
+		DrawGuildCombat1to1PlayerInfo(p2DRender);
+		DrawGuildCombat1ot1GuildInfo(p2DRender);
 	}
 
-	DWORD dwSecretTime = CSecretRoomMng::GetInstance()->m_dwRemainTime;
+	const DWORD dwSecretTime = CSecretRoomMng::GetInstance()->m_dwRemainTime;
 
 	if( dwSecretTime != 0 )
 	{
@@ -1100,7 +1095,6 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 
 		if( ct.GetHours() <=0 && ct.GetMinutes() <=0 && ct.GetSeconds() <=0 )
 		{
-			dwSecretTime = 0;
 			CSecretRoomMng::GetInstance()->m_dwRemainTime = 0;
 		}
 
@@ -1208,31 +1202,16 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		}
 	}
 
-#ifdef __CLIENT
-#ifdef _DEBUG
-	if( m_IsMailTexRender )
-	{
-		p2DRender->TextOut( 10, 300, "Mail Receive!!!", 0xFF26F4F6, 0xFF000000 );		
-	}	
-#endif //_DEBUG
-#endif //__CLIENT
-
 	return TRUE;
 }
 
-bool prKCountAsce(__SRGUILDINFO guild1, __SRGUILDINFO guild2)
-{
-	bool rtn_val = false;
+static bool prKCountAsce(const __SRGUILDINFO & guild1, const __SRGUILDINFO & guild2) {
+	if (guild1.nWarState > guild2.nWarState)
+		return true;
+	if (guild1.nWarState < guild2.nWarState)
+		return false;
 
-	if(guild1.nWarState > guild2.nWarState)
-		rtn_val = true;
-	else if(guild1.nWarState == guild2.nWarState)
-	{
-		if(guild1.nKillCount > guild2.nKillCount)
-			rtn_val = true;
-	}
-	
-	return rtn_val;
+	return guild1.nKillCount > guild2.nKillCount;
 }
 
 void CWndWorld::DrawSecretRoomGuildInfo(C2DRender *p2DRender, BOOL bIsMyGuild, int nRank, __SRGUILDINFO stGuildInfo, CPoint ptRank, CPoint ptLogo, 
@@ -1610,16 +1589,8 @@ void CWndWorld::DrawSecretRoomInfo(C2DRender *p2DRender)
 #endif //__CLIENT
 }
 
-
-void CWndWorld::DrawGuildCombat1to1Info(C2DRender *p2DRender)
-{
-#ifdef __CLIENT
-#endif //__CLIENT
-}
-
 void CWndWorld::DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender)
 {
-#ifdef __CLIENT
 	if( g_pPlayer && g_pPlayer->GetGuild() )
 	{
 		CPoint cPoint;
@@ -1732,12 +1703,10 @@ void CWndWorld::DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender)
 		}
 
 	}
-#endif //__CLIENT
 }
 
 void CWndWorld::DrawGuildCombat1ot1GuildInfo(C2DRender *p2DRender)
 {
-#ifdef __CLIENT
 	// Draw Background
 	CRect crBoard;
 	CPoint cPoint = CPoint(GetClientRect().Width() - 150, 200);
@@ -1769,7 +1738,6 @@ void CWndWorld::DrawGuildCombat1ot1GuildInfo(C2DRender *p2DRender)
 			p2DRender->TextOut( cPoint.x+120, cPoint.y+60 ,strFormat, 0xFFF5CCB0, 0xFF000000 );
 		}
 	}
-#endif //__CLIENT
 }
 
 void CWndWorld::RenderArrow()

@@ -29,6 +29,7 @@ int GetStrCut( const CHAR* pSrc, CHAR* pDest, int nCount )
 	}
 	
 	memcpy( pDest, pSrc, sizeof(char)*nOffset);
+	pDest[nOffset + 1] = '\0';
 	
 	return 1;
 }	
