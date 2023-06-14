@@ -4952,6 +4952,7 @@ void CUserMng::AddGCGuildPrecedence( CUser* pSendUser )
 
 	for (const CGuildCombat::__GuildCombatMember * pGCMember : g_GuildCombatMng.m_vecGuildCombatMem) {
 		CGuild* pGuild = g_GuildMng.GetGuild( pGCMember->uGuildId );
+		arBlock << pGCMember->uGuildId;
 		if (pGuild) {
 			arBlock.WriteString(pGuild->m_szGuild);
 		} else {

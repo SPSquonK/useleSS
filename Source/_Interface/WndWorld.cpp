@@ -9466,7 +9466,8 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 	for( auto i = guilds.rbegin(); i != guilds.rend(); ++i )
 	{
 		const int nPoint  = i->first;
-		LPCTSTR str		= i->second.c_str();
+		const u_long guildId = i->second;
+
 			
 		if( nOldPoint != nPoint )
 			nRate++;
@@ -9474,7 +9475,7 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 
 		if (!g_pPlayer->GetGuild()) {
 			dwFontColor = 0xFFFFFF99;
-		} else if (stricmp(str, g_pPlayer->GetGuild()->m_szGuild) == 0) {
+		} else if (g_pPlayer->GetGuild()->m_idGuild == guildId) {
 			dwFontColor = 0xFF9ED3FF;
 		} else {
 			dwFontColor = 0xFFFFFF99;
@@ -9482,6 +9483,7 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 
 			memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
 
+			LPCSTR str = GetGuildName(guildId);
 			GetStrCut( str, szBuf, 5 );
 				
 			if( 5 <= GetStrLen(str) )
@@ -9636,6 +9638,12 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 		strFormat.Format( "%d", nPlayerPoint );
 		p2DRender->TextOut( cPoint.x+110, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
 	}
+}
+
+LPCTSTR GuildCombatPrecedence::GetGuildName(u_long guildId) const {
+	const auto it = idToGuildName.find(guildId);
+	if (it == idToGuildName.end()) return "???";
+	return it->second.c_str();
 }
 
 }

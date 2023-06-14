@@ -5784,16 +5784,20 @@ void WndWorld::GuildCombatInfo::OnGuildStatus(CAr & ar) {
 // 길드 순위
 void WndWorld::GuildCombatPrecedence::OnGuildPrecedence(CAr & ar) {
 	guilds.clear();
+	idToGuildName.clear();
 
 	int nSize; ar >> nSize;
 
+	u_long guildId;
 	int nGuildPoint;
 	char strGuildName[128];
 	for (int i = 0; i < nSize; ++i) {
+		ar >> guildId;
 		ar >> strGuildName;
 		ar >> nGuildPoint;
 
-		guilds.emplace(nGuildPoint, strGuildName);
+		guilds.emplace(nGuildPoint, guildId);
+		idToGuildName.emplace(guildId, strGuildName);
 	}
 }
 
@@ -5976,11 +5980,11 @@ void CDPClient::OnGCLog( CAr & ar )
 	int nRate = 0;
 	int nOldPoint = 0xffffffff;
 
-	for (const auto & [nPoint, str] : pWndWorld->m_GCprecedence.guilds | std::views::reverse) {
+	for (const auto & [nPoint, guildId] : pWndWorld->m_GCprecedence.guilds | std::views::reverse) {
 		if (nOldPoint != nPoint)
 			nRate++;
 
-		const auto name = MakeName(str.c_str());
+		const auto name = MakeName(pWndWorld->m_GCprecedence.GetGuildName(guildId));
 
 		if (nOldPoint != nPoint) {
 			if (nRate == 1)

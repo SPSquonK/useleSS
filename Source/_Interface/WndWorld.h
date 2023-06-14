@@ -153,14 +153,17 @@ namespace WndWorld {
 	};
 
 	struct GuildCombatPrecedence {
-		std::multimap<int, std::string> guilds;
-		std::multimap<int, u_long > players;
+		std::map<u_long, std::string> idToGuildName;
+		std::multimap<int, u_long> guilds;
+		std::multimap<int, u_long> players;
 
 		void Clear();
 		void OnGuildPrecedence(CAr & ar);
 		void OnPlayerPrecedence(CAr & ar);
 
 		void Render(C2DRender * p2DRender, CRect clientRect);
+
+		[[nodiscard]] LPCTSTR GetGuildName(u_long guildId) const;
 	};
 
 }

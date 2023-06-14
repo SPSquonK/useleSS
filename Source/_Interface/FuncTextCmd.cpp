@@ -4371,10 +4371,12 @@ BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 	if (!pWndWorld) return FALSE;
 
 	pWndWorld->m_GCprecedence.guilds.clear();
+	pWndWorld->m_GCprecedence.idToGuildName.clear();
 
 	for (const auto & [guildId, points] : guildToPoints) {
 		CGuild * guild = g_GuildMng.GetGuild(guildId);
-		pWndWorld->m_GCprecedence.guilds.emplace(points, guild->m_szGuild);
+		pWndWorld->m_GCprecedence.guilds.emplace(points, guildId);
+		pWndWorld->m_GCprecedence.idToGuildName.emplace(guildId, guild->m_szGuild);
 	}
 
 	pWndWorld->m_GCprecedence.players.clear();
