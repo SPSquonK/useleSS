@@ -1126,7 +1126,6 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 	}
 	
 	{
-		char szMsgGuild[128] = { 0 };			
 		char szMsg[128] = {0,};
 		int nX = 20;
 		int nY = (m_rectWindow.Height()/2) - 80;
@@ -1162,20 +1161,9 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 
 				nY += (cSize.cy+10);
 
-				char szBuf[MAX_NAME] = {0,};
-
-				GetStrCut( GuildCombatJoin.szJoinGuildName, szBuf, 8 );
+				char szMsgGuild[MAX_NAME] = {0,};
+				ComputeShortenName(szMsgGuild, GuildCombatJoin.szJoinGuildName, 8);
 				
-				if( 8 <= GetStrLen(GuildCombatJoin.szJoinGuildName) )
-				{
-					strcat( szBuf, "..." );
-				}
-				else
-				{
-					strcpy( szBuf, GuildCombatJoin.szJoinGuildName );
-				}
-				
-				sprintf( szMsgGuild, "%s", szBuf );
 				sprintf( szMsg, "%.2d/%.2d", GuildCombatJoin.nJoinSize, GuildCombatJoin.nJoinSize + GuildCombatJoin.nOutSize );
 
 				crect = CRect(nX-10, nY-5, nX+160, nY+18);
@@ -9317,13 +9305,7 @@ void GuildCombatInfo::RenderMyGuildStatus(C2DRender * p2DRender) {
 
 		LPCTSTR str	= CPlayerDataCenter::GetInstance()->GetPlayerString( GuildRate.m_uidPlayer );
 		
-		if (5 <= GetStrLen(str)) {
-			memset(szBuf, 0, sizeof(szBuf));
-			GetStrCut(str, szBuf, 5);
-			strcat(szBuf, "...");
-		} else {
-			strcpy(szBuf, str);
-		}		
+		ComputeShortenName(szBuf, str, 5);
 
 		DWORD dwFontColor;
 		if (GuildRate.m_uidPlayer == g_pPlayer->m_idPlayer) {
@@ -9452,16 +9434,7 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 			memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
 
 			LPCSTR str = GetGuildName(guildId);
-			GetStrCut( str, szBuf, 5 );
-				
-			if( 5 <= GetStrLen(str) )
-			{
-				strcat( szBuf, "..." );
-			}
-			else
-			{
-				strcpy( szBuf, str );
-			}			
+			ComputeShortenName(szBuf, str, 5);
 
 			if( nOldPoint != nPoint )
 			{
@@ -9538,18 +9511,7 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 
 		{
 			LPCTSTR str	= CPlayerDataCenter::GetInstance()->GetPlayerString( uiPlayer );
-			memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
-				
-			GetStrCut( str, szBuf, 5 );
-				
-			if( 5 <= GetStrLen(str) )
-			{
-				strcat( szBuf, "..." );
-			}
-			else
-			{
-				strcpy( szBuf, str );
-			}			
+			ComputeShortenName(szBuf, str, 5);
 
 			if( uiPlayer == g_pPlayer->m_idPlayer )
 			{
@@ -9586,18 +9548,7 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 		cPoint.y += nGap;
 
 		LPCTSTR str = g_pPlayer->GetName();
-		memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
-			
-		GetStrCut( str, szBuf, 5 );
-			
-		if( 5 <= GetStrLen(str) )
-		{
-			strcat( szBuf, "..." );
-		}
-		else
-		{
-			strcpy( szBuf, str );
-		}						
+		ComputeShortenName(szBuf, str, 5);
 
 		dwFontColor = 0xFF9ED3FF;
 		strFormat.Format( "%2d", nPlayerRate );

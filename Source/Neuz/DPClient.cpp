@@ -5963,14 +5963,7 @@ void CDPClient::OnGCLog( CAr & ar )
 
 	static constexpr auto MakeName = [](const char * name) -> StaticString<MAX_NAME> {
 		StaticString<MAX_NAME> retval;
-		GetStrCut(name, retval.GetBuffer(), 10);
-
-		if (10 <= GetStrLen(name)) {
-			strcat(szBuf, "...");
-		} else {
-			retval = name;
-		}
-
+		ComputeShortenName(retval.GetBuffer(), name, 10);
 		return retval;
 	};
 
