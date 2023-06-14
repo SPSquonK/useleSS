@@ -6700,16 +6700,7 @@ void CWndGuildWarState::InsertGuild( const char szGuild[], const char szName[], 
 	if( nNum == 0 )
 		return;
 
-	GetStrCut( szGuild, m_aList[m_nMax].szGuild, 8 );
-
-	if( GetStrLen( szGuild ) >= 8 )
-	{
-		_tcscat( m_aList[m_nMax].szGuild, "..." );
-	}
-	else
-	{
-		_tcscpy( m_aList[m_nMax].szGuild, szGuild );
-	}
+	ComputeShortenName(m_aList[m_nMax].szGuild, szGuild, 8);
 
 	_tcscpy( m_aList[m_nMax].szName, szName );
 	m_aList[m_nMax].nNum = nNum;
@@ -6898,16 +6889,7 @@ void CWndGuildCombatRanking::InsertGuild( const char szGuild[], int nWinCount )
 
 	GUILDNAME p;
 	memset( &p, 0, sizeof(GUILDNAME) );
-	GetStrCut( szGuild, p.szGuild, 8 );
-	
-	if( GetStrLen( szGuild ) >= 8 )
-	{
-		_tcscat( p.szGuild, "..." );
-	}
-	else
-	{
-		_tcscpy( p.szGuild, szGuild );
-	}
+	ComputeShortenName(p.szGuild, szGuild, 8);
 	
 	m_multimapRanking.emplace(nWinCount, p);
 

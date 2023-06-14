@@ -1486,7 +1486,6 @@ void CDPCacheSrvr::OnGuildNickName( CAr & ar, DPID dpidCache, DPID dpidUser, u_l
 
 	if( pGuild->IsMaster( pMaster->uKey ) )
 	{
-//		int nLength = GetStrLen( strNickName );
 		int nLen	= lstrlen( strNickName );
 
 		if( nLen < 2 || nLen > 12 )

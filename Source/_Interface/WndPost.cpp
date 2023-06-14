@@ -598,11 +598,7 @@ void CWndPostRead::SetValue( int nMailIndex )
 	else
 		lstrcpy( lpszPlayer, lpszPlayerString );
 
-	memset( szCutTitle, 0, sizeof(szCutTitle) );
-	GetStrCut( lpszPlayer, szCutTitle, 16 );
-	
-	if( GetStrLen( lpszPlayer ) > 16 )
-		_tcscat( szCutTitle, "..." );
+	ComputeShortenName(szCutTitle, lpszPlayer, 17);
 
 	CWndEdit * pWndEdit1 = (CWndEdit *)GetDlgItem(WIDC_EDIT1);
 	if( lstrlen( lpszPlayer ) > 0 )
@@ -610,26 +606,13 @@ void CWndPostRead::SetValue( int nMailIndex )
 	else
 		pWndEdit1->SetString("Unknown");
 	
-	memset( szCutTitle, 0, sizeof(szCutTitle) );
-	GetStrCut( pMail->m_szTitle, szCutTitle, 13 );
-	
-	if( GetStrLen( pMail->m_szTitle ) >= 13 )
-	{
-		_tcscat( szCutTitle, "..." );
-	}
+	ComputeShortenName(szCutTitle, pMail->m_szTitle, 13);
 
 	CWndEdit * pWndEdit2 = (CWndEdit *)GetDlgItem(WIDC_EDIT2);
 	CWndText * pWndText = (CWndText *)GetDlgItem(WIDC_TEXT1);
-	if( lstrlen( lpszPlayer ) > 0 )
-	{
-		pWndEdit2->SetString(szCutTitle);
-		pWndText->SetString(pMail->m_szText);
-	}
-	else
-	{
-		pWndEdit2->SetString( "" );
-		pWndText->SetString( "" );
-	}
+	pWndEdit2->SetString(szCutTitle);
+	pWndText->SetString(pMail->m_szText);
+
 
 	g_DPlay.SendQueryReadMail( pMail->m_nMail );
 
@@ -1009,11 +992,7 @@ void CWndPostReceive::OnDraw( C2DRender* p2DRender )
 		else
 			lstrcpy( lpszPlayer, lpszPlayerString );
 		
-		memset( szCutTitle, 0, sizeof(szCutTitle) );
-		GetStrCut( lpszPlayer, szCutTitle, 16 );
-		
-		if( GetStrLen( lpszPlayer ) > 16 )
-			_tcscat( szCutTitle, "..." );
+		ComputeShortenName(szCutTitle, lpszPlayer, 17);
 
 		if( lstrlen( lpszPlayer ) > 0 )
 		{
@@ -1045,16 +1024,9 @@ void CWndPostReceive::OnDraw( C2DRender* p2DRender )
 			p2DRender->TextOut( sx + 190,  sy+3, szDay,  D3DCOLOR_XRGB( (int)v2Result.x, (int)v2Result.y, 0 ) );			
 		else
 			p2DRender->TextOut( sx + 193,  sy+3, szDay,  D3DCOLOR_XRGB( (int)v2Result.x, (int)v2Result.y, 0 ) );			
+
+		ComputeShortenName(szCutTitle, mailbox[i]->m_szTitle, 13);
 		
-		memset( szCutTitle, 0, sizeof(szCutTitle) );
-		GetStrCut( mailbox[i]->m_szTitle, szCutTitle, 13 );
-		
-		if( GetStrLen( mailbox[i]->m_szTitle ) >= 13 )
-		{
-			_tcscat( szCutTitle, "..." );
-		}
-		
-//		if( GetFocusWnd() == this )
 		{
 			CRect  rect;
 			rect.SetRect( sx+4, sy - 4, sx+240, sy + 36 ); 	
@@ -1069,10 +1041,7 @@ void CWndPostReceive::OnDraw( C2DRender* p2DRender )
 			}		
 		}
 		
-		if( lstrlen( lpszPlayer ) > 0 )
-			p2DRender->TextOut( sx + 60,  sy+18, szCutTitle,  D3DCOLOR_XRGB( 0, 0, 190 ) );
-		else
-			p2DRender->TextOut( sx + 60,  sy+18, "",  D3DCOLOR_XRGB( 0, 0, 190 ) );
+		p2DRender->TextOut( sx + 60,  sy+18, szCutTitle,  D3DCOLOR_XRGB( 0, 0, 190 ) );
 
 		sy += 40;
 	}	
