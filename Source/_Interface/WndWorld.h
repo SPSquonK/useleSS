@@ -15,6 +15,7 @@ extern vector<CString> g_vecHelpInsKey;
 #endif //__HELP_BUG_FIX
 
 #include <boost/container/stable_vector.hpp>
+#include "eveschool.h"
 #include "buff.h"
 
 
@@ -168,11 +169,15 @@ namespace WndWorld {
 		void Clear();
 		void OnGuildPrecedence(CAr & ar);
 		void OnPlayerPrecedence(CAr & ar);
+		void Update(const CGuildCombat::__GCGETPOINT & getPoint);
 
 		void Render(C2DRender * p2DRender, CRect clientRect) const;
 
 		[[nodiscard]] LPCTSTR GetGuildName(u_long guildId) const;
-		static void Sort(std::vector<ParticipantWithPoint> & participants);
+		static void Sort(
+			std::vector<ParticipantWithPoint>::iterator & participantsBegin,
+			std::vector<ParticipantWithPoint>::iterator & participantsEnd
+		);
 	};
 
 }

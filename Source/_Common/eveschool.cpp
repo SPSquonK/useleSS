@@ -1940,8 +1940,6 @@ void CGuildCombat::GetPoint( CUser* pAttacker, CUser* pDefender )
 			.bDefender = bDefender,
 			.bLastLife = bLastLife
 		});
-	g_UserMng.AddGCGuildPrecedence();
-	g_UserMng.AddGCPlayerPrecedence();
 }
 
 void CGuildCombat::SerializeGCWarPlayerList(CAr & ar) {

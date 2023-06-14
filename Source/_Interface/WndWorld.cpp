@@ -9437,6 +9437,30 @@ void GuildCombatInfo::RenderMyGuildStatus(C2DRender * p2DRender) {
 	}
 }
 
+void GuildCombatPrecedence::Update(const CGuildCombat::__GCGETPOINT & getPoint) {
+	static constexpr auto Update_ = [](
+		std::vector<ParticipantWithPoint> & participants,
+		u_long attackerId, int earnedPoints
+	) {
+		auto it = std::find_if(
+			participants.begin(), participants.end(),
+			[attackerId](const ParticipantWithPoint & p) { return p.id == attackerId; }
+		);
+
+		if (it != participants.end()) {
+			it->points += earnedPoints;
+		} else {
+			participants.emplace_back(ParticipantWithPoint{ attackerId, earnedPoints });
+			it = participants.end() - 1;
+		}
+
+		Sort(participants.begin(), it + 1);
+	};
+
+	Update_(guilds, getPoint.uidGuildAttack, getPoint.nPoint);
+	Update_(players, getPoint.uidPlayerAttack, getPoint.nPoint);
+}
+
 void GuildCombatPrecedence::Clear() {
 	players.clear();
 	guilds.clear();
@@ -9638,9 +9662,12 @@ LPCTSTR GuildCombatPrecedence::GetGuildName(u_long guildId) const {
 	return it->second.c_str();
 }
 
-void GuildCombatPrecedence::Sort(std::vector<ParticipantWithPoint> & participants) {
+void GuildCombatPrecedence::Sort(
+	std::vector<ParticipantWithPoint>::iterator & participantsBegin,
+	std::vector<ParticipantWithPoint>::iterator & participantsEnd
+) {
 	std::stable_sort(
-		participants.begin(), participants.end(),
+		participantsBegin, participantsEnd,
 		[](const ParticipantWithPoint & lhs, const ParticipantWithPoint & rhs) {
 			return lhs.points > rhs.points;
 		}

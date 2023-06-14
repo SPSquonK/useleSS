@@ -5800,7 +5800,7 @@ void WndWorld::GuildCombatPrecedence::OnGuildPrecedence(CAr & ar) {
 		idToGuildName.emplace(guildId, strGuildName);
 	}
 
-	Sort(guilds);
+	Sort(guilds.begin(), guilds.end());
 }
 
 // 개인 순위
@@ -5817,7 +5817,7 @@ void WndWorld::GuildCombatPrecedence::OnPlayerPrecedence(CAr & ar) {
 		}
 	}
 
-	Sort(players);
+	Sort(players.begin(), players.end());
 }
 
 void CDPClient::OnGCJoinWarWindow( CAr & ar )
