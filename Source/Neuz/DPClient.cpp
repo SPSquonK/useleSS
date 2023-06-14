@@ -5555,10 +5555,14 @@ void CDPClient::OnGuildCombat( CAr & ar )
 		}
 		break;
 	case GC_GUILDPRECEDENCE:
-		OnGCGuildPrecedence( ar );
+		if (CWndWorld * pWndWorld = g_WndMng.GetWndBase<CWndWorld>(APP_WORLD)) {
+			pWndWorld->m_GCprecedence.OnGuildPrecedence(ar);
+		}
 		break;
 	case GC_PLAYERPRECEDENCE:
-		OnGCPlayerPrecedence( ar );
+		if (CWndWorld * pWndWorld = g_WndMng.GetWndBase<CWndWorld>(APP_WORLD)) {
+			pWndWorld->m_GCprecedence.OnPlayerPrecedence(ar);
+		}
 		break;
 	case GC_SELECTWARPOS:
 		OnGCJoinWarWindow( ar );
@@ -5778,68 +5782,34 @@ void WndWorld::GuildCombatInfo::OnGuildStatus(CAr & ar) {
 }
 
 // 길드 순위
-void CDPClient::OnGCGuildPrecedence( CAr & ar )
-{
-	int nSize;
-	char strGuildName[128];
+void WndWorld::GuildCombatPrecedence::OnGuildPrecedence(CAr & ar) {
+	guilds.clear();
+
+	int nSize; ar >> nSize;
+
 	int nGuildPoint;
-	
-	ar >> nSize;
+	char strGuildName[128];
+	for (int i = 0; i < nSize; ++i) {
+		ar >> strGuildName;
+		ar >> nGuildPoint;
 
-	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-	if( pWndWorld )
-		pWndWorld->ClearGuildPrecedence();
-	
-	for( int i = 0 ; i < nSize ; ++i )
-	{
-		BOOL bRecive;
-		ar >> bRecive;
-		if( bRecive )
-		{
-			ar.ReadString( strGuildName, 128 );
-			ar >> nGuildPoint;
-			if( pWndWorld )
-			{
-				pWndWorld->AddGuildPrecedence( nGuildPoint, strGuildName );
-			}
-		}
+		guilds.emplace(nGuildPoint, strGuildName);
 	}
-
-	// 순위는 무작위 쇼트 해야함
-	// 길드 이름 strGuildName
-	// 길드 포인트 nGuildPoint
 }
+
 // 개인 순위
-void CDPClient::OnGCPlayerPrecedence( CAr & ar )
-{
-	int nGuildSize, nPlayerSize;
-	u_long uidPlayer;
-	int nPoint;
+void WndWorld::GuildCombatPrecedence::OnPlayerPrecedence(CAr & ar) {
+	players.clear();
 
-	ar >> nGuildSize;
-	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
+	int nGuildSize; ar >> nGuildSize;
+	for (int i = 0; i < nGuildSize; ++i) {
+		int nPlayerSize; ar >> nPlayerSize;
+		for (int j = 0; j < nPlayerSize; ++j) {
+			const auto [uidPlayer, nPoint] = ar.Extract<u_long, int>();
 
-	if( pWndWorld )
-		pWndWorld->ClearPlayerPrecedence();
-
-	for( int i = 0 ; i < nGuildSize ; ++i )
-	{
-		ar >> nPlayerSize;
-		for( int j = 0 ; j < nPlayerSize ; ++j )
-		{
-			ar >> uidPlayer;
-			ar >> nPoint;
-			if( pWndWorld )
-			{
-				pWndWorld->AddPlayerPrecedence( nPoint, uidPlayer );
-			}
+			players.emplace(nPoint, uidPlayer);
 		}
 	}
-
-	// 순위는 무작위 쇼트 해야함
-	// 캐릭 아이디 uidPlayer
-	// 캐릭 포인트 nPoint
-	
 }
 
 void CDPClient::OnGCJoinWarWindow( CAr & ar )
@@ -6006,11 +5976,11 @@ void CDPClient::OnGCLog( CAr & ar )
 	int nRate = 0;
 	int nOldPoint = 0xffffffff;
 
-	for (const auto & [nPoint, str] : pWndWorld->m_mmapGuildCombat_GuildPrecedence | std::views::reverse) {
+	for (const auto & [nPoint, str] : pWndWorld->m_GCprecedence.guilds | std::views::reverse) {
 		if (nOldPoint != nPoint)
 			nRate++;
 
-		const auto name = MakeName(str.GetString());
+		const auto name = MakeName(str.c_str());
 
 		if (nOldPoint != nPoint) {
 			if (nRate == 1)
@@ -6030,19 +6000,20 @@ void CDPClient::OnGCLog( CAr & ar )
 	nRate = 0;
 	nOldPoint = 0xffffffff;
 
-	for (const auto & [nPoint, uiPlayer] : pWndWorld->m_mmapGuildCombat_PlayerPrecedence | std::views::reverse) {
+	for (const auto & [nPoint, uiPlayer] : pWndWorld->m_GCprecedence.players | std::views::reverse) {
 		if (nOldPoint != nPoint)
 			nRate++;
 
 		const auto name = MakeName(CPlayerDataCenter::GetInstance()->GetPlayerString(uiPlayer));
 
 		if (nOldPoint != nPoint) {
-			if (uiPlayer == g_GuildCombatMng.m_uBestPlayer)
-				strTemp.Format("%2d   %s\t(%d) MVP", nRate, name.GetRawStr(), nPoint);
-			else
-				strTemp.Format("%2d   %s\t(%d)", nRate, name.GetRawStr(), nPoint);
+			strTemp.Format("%2d   %s\t(%d)", nRate, name.GetRawStr(), nPoint);
 		} else {
 			strTemp.Format("%s   %s\t(%d)", "  ", name.GetRawStr(), nPoint);
+		}
+
+		if (uiPlayer == g_GuildCombatMng.m_uBestPlayer) {
+			strTemp += " MVP";
 		}
 
 		g_WndMng.n_pWndGuildCombatResult->InsertPersonRate(strTemp);

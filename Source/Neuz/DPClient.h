@@ -630,8 +630,6 @@ public:
 	void	OnGuildCombatState( CAr & ar );
 	void	OnGCUserState( CAr & ar );
 	void	OnGCGuildStatus( CAr & ar );
-	void	OnGCGuildPrecedence( CAr & ar );
-	void	OnGCPlayerPrecedence( CAr & ar );
 	void	OnGCJoinWarWindow( CAr & ar );
 	void	OnGCGetPenyaGuild( CAr & ar );
 	void	OnGCGetPenyaPlayer( CAr & ar );

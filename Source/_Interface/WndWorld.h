@@ -152,6 +152,17 @@ namespace WndWorld {
 		void RenderMyGuildStatus(C2DRender * p2DRender);
 	};
 
+	struct GuildCombatPrecedence {
+		std::multimap<int, std::string> guilds;
+		std::multimap<int, u_long > players;
+
+		void Clear();
+		void OnGuildPrecedence(CAr & ar);
+		void OnPlayerPrecedence(CAr & ar);
+
+		void Render(C2DRender * p2DRender, CRect clientRect);
+	};
+
 }
 
 struct __PGUEST_TIME_TEXT {
@@ -291,18 +302,13 @@ public:
 
 	CTexture		m_TexGuildWinner;
 	CTexture		m_TexGuildBest;
-	std::multimap< int, CString >	m_mmapGuildCombat_GuildPrecedence;
-	std::multimap< int, u_long >		m_mmapGuildCombat_PlayerPrecedence;
-	WndWorld::GuildCombatInfo m_infoGC;
+	WndWorld::GuildCombatPrecedence m_GCprecedence;
+	WndWorld::GuildCombatInfo       m_infoGC;
 
 	CWndBase* m_pWndBuffStatus;
 
 public:
 	void InitEyeFlash();
-	void AddGuildPrecedence( int, CString );
-	void AddPlayerPrecedence( int, u_long );
-	void ClearGuildPrecedence()   { m_mmapGuildCombat_GuildPrecedence.clear(); }
-	void ClearPlayerPrecedence()  { m_mmapGuildCombat_PlayerPrecedence.clear(); }
 	void SetViewMap(BOOL bViewMap){ m_bViewMap = bViewMap; }
 	BOOL IsViewMap()			  { return m_bViewMap; }
 	BOOL GetBuffIconRect( DWORD dwID, const CPoint& point );

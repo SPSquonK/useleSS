@@ -4329,9 +4329,9 @@ BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 		u_long pDef = usablePlayers[uniform_dist(e1) % usablePlayers.size()];
 		CGuild * gDef = usableGuilds[uniform_dist(e1) % usableGuilds.size()];
 
-		BOOL master = (uniform_dist(e1) % 15 == 5) ? TRUE : FALSE;
-		BOOL defender = (uniform_dist(e1) % 15 == 8) ? TRUE : FALSE;
-		BOOL bLastLife = (uniform_dist(e1) % 15 == 4) ? TRUE : FALSE;
+		const BOOL master    = uniform_dist(e1) % 15 == 5;
+		const BOOL defender  = uniform_dist(e1) % 15 == 8;
+		const BOOL bLastLife = uniform_dist(e1) % 15 == 4;
 
 		int points = 2
 			+ (master ? 1 : 0)
@@ -4370,16 +4370,16 @@ BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 	CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
 	if (!pWndWorld) return FALSE;
 
-	pWndWorld->m_mmapGuildCombat_GuildPrecedence.clear();
+	pWndWorld->m_GCprecedence.guilds.clear();
 
 	for (const auto & [guildId, points] : guildToPoints) {
 		CGuild * guild = g_GuildMng.GetGuild(guildId);
-		pWndWorld->m_mmapGuildCombat_GuildPrecedence.emplace(points, guild->m_szGuild);
+		pWndWorld->m_GCprecedence.guilds.emplace(points, guild->m_szGuild);
 	}
 
-	pWndWorld->m_mmapGuildCombat_PlayerPrecedence.clear();
+	pWndWorld->m_GCprecedence.players.clear();
 	for (const auto & [playerId, points] : playersToPoints) {
-		pWndWorld->m_mmapGuildCombat_PlayerPrecedence.emplace(points, playerId);
+		pWndWorld->m_GCprecedence.players.emplace(points, playerId);
 	}
 
 

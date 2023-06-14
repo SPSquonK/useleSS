@@ -1120,218 +1120,16 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 			DrawSecretRoomInfo(p2DRender);
 	}
 
-	if( g_pPlayer && g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
-	{
-		int		nGap  = 16;
-		int		nRate = 0;
-		CString strFormat;
-		CPoint  cPoint = CPoint(GetClientRect().Width() - 150, 200);
-		char szBuf[MAX_NAME] = {0,};		
-		
-		// 길드순위 출력
-		CRect crBoard;
 
-		crBoard.left = cPoint.x - 10;
-		crBoard.top  = cPoint.y - 10;
-		crBoard.right = cPoint.x + 140;
-		crBoard.bottom = crBoard.top + ((m_mmapGuildCombat_GuildPrecedence.size()+3) * 16);
-		p2DRender->RenderFillRect( crBoard, D3DCOLOR_ARGB( 30, 0, 0, 0 ) );
-
-		DWORD dwFontColor = 0xFF9ED3FF;
-		int     nPoint;
-		int     nOldPoint = 0xffffffff;
-		CString str;		
-		p2DRender->TextOut( cPoint.x+10, cPoint.y, prj.GetText(TID_GAME_GUILDCOMBAT_RATE), 0xFFEBAD18, 0xFF000000 );
-		cPoint.y += ( nGap + (nGap / 2) );		
-		for( auto i = m_mmapGuildCombat_GuildPrecedence.rbegin(); i != m_mmapGuildCombat_GuildPrecedence.rend(); ++i )
-		{
-			nPoint  = i->first;
-			str		= i->second;
-			
-			if( nOldPoint != nPoint )
-				nRate++;
-
-//			if( nPoint > 0 )
-			{
-				if( g_pPlayer->GetGuild() )
-				{
-					if( stricmp( str, g_pPlayer->GetGuild()->m_szGuild ) == 0 )
-						dwFontColor = 0xFF9ED3FF;
-					else
-						dwFontColor = 0xFFFFFF99;
-				}else
-				{
-					dwFontColor = 0xFFFFFF99;
-				}
-				
-
-				memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
-
-				GetStrCut( str, szBuf, 5 );
-				
-				if( 5 <= GetStrLen(str) )
-				{
-					strcat( szBuf, "..." );
-				}
-				else
-				{
-					strcpy( szBuf, str );
-				}			
-
-				if( nOldPoint != nPoint )
-				{
-					strFormat.Format( "%2d", nRate );
-					p2DRender->TextOut( cPoint.x, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
-				}
-				else
-				{					
-					strFormat = "  ";
-					p2DRender->TextOut( cPoint.x, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
-				}
-
-				strFormat.Format( "%s", szBuf );
-				p2DRender->TextOut( cPoint.x+25, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
-				
-				strFormat.Format( "%d", nPoint );
-				p2DRender->TextOut( cPoint.x+110, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
-			
-			}
-
-			cPoint.y += nGap;
-			nOldPoint = nPoint;
+	if (g_pPlayer) {
+		if (g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->GetID() == WI_WORLD_GUILDWAR) {
+			m_GCprecedence.Render(p2DRender, GetClientRect());
 		}
 
-		// 개인순위 출력
-		dwFontColor = 0xFFFFFF99;
-		nOldPoint = 0xffffffff;
-		nRate = 0;
-		cPoint.y += 50;
-
-		crBoard.left = cPoint.x - 10;
-		crBoard.top  = cPoint.y - 10;
-		crBoard.right = cPoint.x + 140;
-		crBoard.bottom = crBoard.top + ((m_mmapGuildCombat_PlayerPrecedence.size()+3) * 16);
-		p2DRender->RenderFillRect( crBoard, D3DCOLOR_ARGB( 30, 0, 0, 0 ) );
-		
-		BOOL bPlayerRender = FALSE;
-		int  nPlayerRate   = 0;
-		int  nPlayerPoint  = 0;
-		const int nMaxRender = 10;
-		int nMaxIndex = 0;
-		u_long uiPlayer;
-		p2DRender->TextOut( cPoint.x+10, cPoint.y, prj.GetText(TID_GAME_GUILDCOMBAT_PERSON_RATE), 0xFFEBAD18, 0xFF000000 );
-		cPoint.y += ( nGap + (nGap / 2) );
-		for( auto j = m_mmapGuildCombat_PlayerPrecedence.rbegin(); j != m_mmapGuildCombat_PlayerPrecedence.rend(); ++j )
-		{ 
-			nPoint			= j->first;
-			uiPlayer		= j->second;	
-
-			
-			if( nOldPoint != nPoint )
-				nRate++;
-
-			nMaxIndex++;		
-			
-			if( nMaxIndex > nMaxRender )
-			{
-				if( uiPlayer == g_pPlayer->m_idPlayer )
-				{
-					nPlayerPoint  = nPoint;
-					nPlayerRate   = nRate;
-					bPlayerRender = FALSE;
-					break;
-				}
-				else
-				{
-					continue;
-				}
-			}
-			else	
-			if( uiPlayer == g_pPlayer->m_idPlayer )
-			{
-				bPlayerRender = TRUE;
-			}				
-
-//			if( nPoint > 0 )
-			{
-				str	= CPlayerDataCenter::GetInstance()->GetPlayerString( uiPlayer );
-				memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
-				
-				GetStrCut( str, szBuf, 5 );
-				
-				if( 5 <= GetStrLen(str) )
-				{
-					strcat( szBuf, "..." );
-				}
-				else
-				{
-					strcpy( szBuf, str );
-				}			
-
-				if( uiPlayer == g_pPlayer->m_idPlayer )
-				{
-					dwFontColor = 0xFF9ED3FF;
-				}
-				else
-				{
-					dwFontColor = 0xFFFFFF99;
-				}
-				
-				if( nOldPoint != nPoint )
-				{
-					strFormat.Format( "%2d", nRate );
-					p2DRender->TextOut( cPoint.x, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
-				}
-				else
-				{					
-					strFormat = "  ";
-					p2DRender->TextOut( cPoint.x, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
-				}
-				
-				strFormat.Format( "%s", szBuf );
-				p2DRender->TextOut( cPoint.x+25, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
-				
-				strFormat.Format( "%d", nPoint );
-				p2DRender->TextOut( cPoint.x+110, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
-			}
-
-			cPoint.y += nGap;
-			nOldPoint = nPoint;			
-		}
-
-		if( m_mmapGuildCombat_PlayerPrecedence.size() && bPlayerRender == FALSE )
-		{
-			cPoint.y += nGap;
-
-			str = g_pPlayer->GetName();
-			memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
-			
-			GetStrCut( str, szBuf, 5 );
-			
-			if( 5 <= GetStrLen(str) )
-			{
-				strcat( szBuf, "..." );
-			}
-			else
-			{
-				strcpy( szBuf, str );
-			}						
-
-			dwFontColor = 0xFF9ED3FF;
-			strFormat.Format( "%2d", nPlayerRate );
-			p2DRender->TextOut( cPoint.x, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
-			strFormat.Format( "%s", szBuf );
-			p2DRender->TextOut( cPoint.x+25, cPoint.y,strFormat, dwFontColor, 0xFF000000 );			
-			strFormat.Format( "%d", nPlayerPoint );
-			p2DRender->TextOut( cPoint.x+110, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
+		if (g_pPlayer->GetGuild()) {
+			m_infoGC.RenderMyGuildStatus(p2DRender);
 		}
 	}
-		
-	// 길드원들 리스트 & 부활 정보
-	if (g_pPlayer && g_pPlayer->GetGuild()) {
-		m_infoGC.RenderMyGuildStatus(p2DRender);
-	}
-
 	
 	{
 		char szMsgGuild[128] = { 0 };			
@@ -3153,8 +2951,7 @@ void CWndWorld::OnInitialUpdate()
 	}
 
 	m_AdvMgr.Init( this );
-	m_mmapGuildCombat_GuildPrecedence.clear();
-	m_mmapGuildCombat_PlayerPrecedence.clear();
+	m_GCprecedence.Clear();
 	m_infoGC.ClearGuildStatus();
 	// 일단 노가다다...추후 비스트 고쳐서 해야함...-_-
 	m_bViewMap = FALSE;	
@@ -3168,16 +2965,6 @@ void CWndWorld::OnInitialUpdate()
 	g_Neuz.m_camera.m_fCurRotx = -g_pPlayer->GetAngle();
 #endif //__Y_CAMERA_SLOW_8
 
-}
-
-void CWndWorld::AddGuildPrecedence( int nRate, CString str)
-{
-	m_mmapGuildCombat_GuildPrecedence.emplace( nRate, str );
-}
-
-void CWndWorld::AddPlayerPrecedence( int nRate, u_long uiPlayer)
-{
-	m_mmapGuildCombat_PlayerPrecedence.emplace( nRate, uiPlayer );
 }
 
 BOOL CWndWorld::Initialize( CWndBase* pWndParent, DWORD dwWndId )
@@ -9647,6 +9434,207 @@ void GuildCombatInfo::RenderMyGuildStatus(C2DRender * p2DRender) {
 		p2DRender->TextOut( (g_Option.m_nResWidth / 2 ) - nCenter, ((g_Option.m_nResHeight / 2 )-148)+nY, strFormat, 0xFFFFFF00, 0xFF000000 );
 
 		g_Neuz.m_2DRender.SetFont( pOldFont );		
+	}
+}
+
+void GuildCombatPrecedence::Clear() {
+	players.clear();
+	guilds.clear();
+}
+
+void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect) {
+	int		nGap  = 16;
+	int		nRate = 0;
+	CString strFormat;
+	CPoint  cPoint = CPoint(clientRect.Width() - 150, 200);
+	char szBuf[MAX_NAME] = {0,};		
+		
+	// 길드순위 출력
+	CRect crBoard;
+
+	crBoard.left = cPoint.x - 10;
+	crBoard.top  = cPoint.y - 10;
+	crBoard.right = cPoint.x + 140;
+	crBoard.bottom = crBoard.top + ((guilds.size()+3) * 16);
+	p2DRender->RenderFillRect( crBoard, D3DCOLOR_ARGB( 30, 0, 0, 0 ) );
+
+	DWORD dwFontColor = 0xFF9ED3FF;
+	int     nOldPoint = 0xffffffff;
+
+	p2DRender->TextOut( cPoint.x+10, cPoint.y, prj.GetText(TID_GAME_GUILDCOMBAT_RATE), 0xFFEBAD18, 0xFF000000 );
+	cPoint.y += ( nGap + (nGap / 2) );		
+	for( auto i = guilds.rbegin(); i != guilds.rend(); ++i )
+	{
+		const int nPoint  = i->first;
+		LPCTSTR str		= i->second.c_str();
+			
+		if( nOldPoint != nPoint )
+			nRate++;
+
+
+		if (!g_pPlayer->GetGuild()) {
+			dwFontColor = 0xFFFFFF99;
+		} else if (stricmp(str, g_pPlayer->GetGuild()->m_szGuild) == 0) {
+			dwFontColor = 0xFF9ED3FF;
+		} else {
+			dwFontColor = 0xFFFFFF99;
+		}				
+
+			memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
+
+			GetStrCut( str, szBuf, 5 );
+				
+			if( 5 <= GetStrLen(str) )
+			{
+				strcat( szBuf, "..." );
+			}
+			else
+			{
+				strcpy( szBuf, str );
+			}			
+
+			if( nOldPoint != nPoint )
+			{
+				strFormat.Format( "%2d", nRate );
+				p2DRender->TextOut( cPoint.x, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
+			}
+			else
+			{					
+				strFormat = "  ";
+				p2DRender->TextOut( cPoint.x, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
+			}
+
+			p2DRender->TextOut( cPoint.x+25, cPoint.y, szBuf, dwFontColor, 0xFF000000 );
+				
+			strFormat.Format( "%d", nPoint );
+			p2DRender->TextOut( cPoint.x+110, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
+			
+			
+
+		cPoint.y += nGap;
+		nOldPoint = nPoint;
+	}
+
+	// 개인순위 출력
+	dwFontColor = 0xFFFFFF99;
+	nOldPoint = 0xffffffff;
+	nRate = 0;
+	cPoint.y += 50;
+
+	crBoard.left = cPoint.x - 10;
+	crBoard.top  = cPoint.y - 10;
+	crBoard.right = cPoint.x + 140;
+	crBoard.bottom = crBoard.top + ((players.size()+3) * 16);
+	p2DRender->RenderFillRect( crBoard, D3DCOLOR_ARGB( 30, 0, 0, 0 ) );
+		
+	BOOL bPlayerRender = FALSE;
+	int  nPlayerRate   = 0;
+	int  nPlayerPoint  = 0;
+	static constexpr int nMaxRender = 10;
+	int nMaxIndex = 0;
+	u_long uiPlayer;
+	p2DRender->TextOut( cPoint.x+10, cPoint.y, prj.GetText(TID_GAME_GUILDCOMBAT_PERSON_RATE), 0xFFEBAD18, 0xFF000000 );
+	cPoint.y += ( nGap + (nGap / 2) );
+	for( auto j = players.rbegin(); j != players.rend(); ++j )
+	{ 
+		const int nPoint			= j->first;
+		uiPlayer		= j->second;	
+
+			
+		if( nOldPoint != nPoint )
+			nRate++;
+
+		nMaxIndex++;		
+			
+		if( nMaxIndex > nMaxRender )
+		{
+			if( uiPlayer == g_pPlayer->m_idPlayer )
+			{
+				nPlayerPoint  = nPoint;
+				nPlayerRate   = nRate;
+				bPlayerRender = FALSE;
+				break;
+			}
+			else
+			{
+				continue;
+			}
+		}
+		else	
+		if( uiPlayer == g_pPlayer->m_idPlayer )
+		{
+			bPlayerRender = TRUE;
+		}				
+
+		{
+			LPCTSTR str	= CPlayerDataCenter::GetInstance()->GetPlayerString( uiPlayer );
+			memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
+				
+			GetStrCut( str, szBuf, 5 );
+				
+			if( 5 <= GetStrLen(str) )
+			{
+				strcat( szBuf, "..." );
+			}
+			else
+			{
+				strcpy( szBuf, str );
+			}			
+
+			if( uiPlayer == g_pPlayer->m_idPlayer )
+			{
+				dwFontColor = 0xFF9ED3FF;
+			}
+			else
+			{
+				dwFontColor = 0xFFFFFF99;
+			}
+				
+			if( nOldPoint != nPoint )
+			{
+				strFormat.Format( "%2d", nRate );
+				p2DRender->TextOut( cPoint.x, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
+			}
+			else
+			{					
+				strFormat = "  ";
+				p2DRender->TextOut( cPoint.x, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
+			}
+				
+			p2DRender->TextOut( cPoint.x+25, cPoint.y, szBuf, dwFontColor, 0xFF000000 );
+				
+			strFormat.Format( "%d", nPoint );
+			p2DRender->TextOut( cPoint.x+110, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
+		}
+
+		cPoint.y += nGap;
+		nOldPoint = nPoint;			
+	}
+
+	if( !players.empty() && bPlayerRender == FALSE )
+	{
+		cPoint.y += nGap;
+
+		LPCTSTR str = g_pPlayer->GetName();
+		memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
+			
+		GetStrCut( str, szBuf, 5 );
+			
+		if( 5 <= GetStrLen(str) )
+		{
+			strcat( szBuf, "..." );
+		}
+		else
+		{
+			strcpy( szBuf, str );
+		}						
+
+		dwFontColor = 0xFF9ED3FF;
+		strFormat.Format( "%2d", nPlayerRate );
+		p2DRender->TextOut( cPoint.x, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
+		p2DRender->TextOut( cPoint.x+25, cPoint.y, szBuf, dwFontColor, 0xFF000000 );
+		strFormat.Format( "%d", nPlayerPoint );
+		p2DRender->TextOut( cPoint.x+110, cPoint.y,strFormat, dwFontColor, 0xFF000000 );
 	}
 }
 

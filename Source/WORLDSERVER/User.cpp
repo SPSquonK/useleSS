@@ -4948,39 +4948,31 @@ void CUserMng::AddGCGuildPrecedence( CUser* pSendUser )
 	arBlock << NULL_ID << SNAPSHOTTYPE_GUILDCOMBAT;
 	arBlock << GC_GUILDPRECEDENCE;
 
-	arBlock << (int)g_GuildCombatMng.m_vecGuildCombatMem.size();
+	auto itSize = arBlock.PushBack<int>(0);
+
 	for (const CGuildCombat::__GuildCombatMember * pGCMember : g_GuildCombatMng.m_vecGuildCombatMem) {
-		if( !pGCMember->vecGCSelectMember.empty() )
-		{			
-			arBlock << (BOOL)TRUE; // bSend;
-			CGuild* pGuild = g_GuildMng.GetGuild( pGCMember->uGuildId );
-			if( pGuild )
-				arBlock.WriteString( pGuild->m_szGuild );
-			else
-				arBlock.WriteString( "Not Guild" );
-			arBlock << pGCMember->nGuildPoint;
+		CGuild* pGuild = g_GuildMng.GetGuild( pGCMember->uGuildId );
+		if (pGuild) {
+			arBlock.WriteString(pGuild->m_szGuild);
+		} else {
+			arBlock.WriteString("Not Guild");
 		}
-		else
-		{
-			arBlock << (BOOL)FALSE; // bSend;
-		}
+		arBlock << pGCMember->nGuildPoint;
+		++*itSize;
 	}
 
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
-	if( pSendUser == NULL )
-	{
-		for( auto it = m_users.begin(); it != m_users.end(); ++it )
-		{
-			CUser* pUser = it->second;
-			if( pUser->IsValid() == FALSE )
-				continue;
-			if( pUser->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
-				pUser->AddBlock( lpBlock, uBlockSize );
+
+	if (pSendUser) {
+		pSendUser->AddBlock(lpBlock, uBlockSize);
+	} else {
+		for (const auto & [_, pUser] : m_users) {
+			if (pUser->IsValid()) {
+				if (pUser->GetWorld()->GetID() == WI_WORLD_GUILDWAR) {
+					pUser->AddBlock(lpBlock, uBlockSize);
+				}
+			}
 		}
-	}
-	else
-	{
-		pSendUser->AddBlock( lpBlock, uBlockSize );
 	}
 }
 void CUserMng::AddGCPlayerPrecedence( CUser* pSendUser )
@@ -5002,24 +4994,17 @@ void CUserMng::AddGCPlayerPrecedence( CUser* pSendUser )
 	}
 
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
-	
-	if( pSendUser == NULL )
-	{
-		for(auto it = m_users.begin(); it != m_users.end(); ++it )
-		{
-			CUser* pUser = it->second;
-			if( pUser->IsValid() == FALSE )
-				continue;
-			
-			if( pUser->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
-			{
-				pUser->AddBlock( lpBlock, uBlockSize );
+
+	if (pSendUser) {
+		pSendUser->AddBlock(lpBlock, uBlockSize);
+	} else {
+		for (const auto & [_, pUser] : m_users) {
+			if (pUser->IsValid()) {
+				if (pUser->GetWorld()->GetID() == WI_WORLD_GUILDWAR) {
+					pUser->AddBlock(lpBlock, uBlockSize);
+				}
 			}
 		}
-	}
-	else
-	{
-		pSendUser->AddBlock( lpBlock, uBlockSize );
 	}
 }
 
