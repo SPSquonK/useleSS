@@ -1,5 +1,4 @@
-#ifndef __CFileIO_H
-#define __CFileIO_H
+#pragma once
 
 #include <TCHAR.H>
 #include <stdio.h>
@@ -110,26 +109,6 @@ public:
 		static void FreeResource();
 	};
 #else
-	// 클라이언트가 아니면 
-	#define CResFile CFileIO
-#endif
-
-
-class CFileFinder
-{
-	POSITION m_pos;
-	long m_lHandle;
-	CHAR m_szFilespec[ MAX_PATH ];
-	BOOL m_bResFile;
-public:
-	CFileFinder();
-	~CFileFinder();
-	BOOL WildCmp( LPCTSTR lpszWild, LPCTSTR lpszString );
-
-	BOOL FindFirst( LPCTSTR lpFilespec, struct _finddata_t *fileinfo );
-	BOOL FindNext( struct _finddata_t *fileinfo );
-	void FindClose();
-};
-
-
+// 클라이언트가 아니면 
+using CResFile = CFileIO;
 #endif
