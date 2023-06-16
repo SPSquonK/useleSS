@@ -5796,11 +5796,9 @@ void WndWorld::GuildCombatPrecedence::OnGuildPrecedence(CAr & ar) {
 		ar >> strGuildName;
 		ar >> nGuildPoint;
 
-		guilds.emplace_back(ParticipantWithPoint{ guildId, nGuildPoint });
+		guilds.emplace(nGuildPoint, guildId);
 		idToGuildName.emplace(guildId, strGuildName);
 	}
-
-	Sort(guilds.begin(), guilds.end());
 }
 
 // 개인 순위
@@ -5813,11 +5811,9 @@ void WndWorld::GuildCombatPrecedence::OnPlayerPrecedence(CAr & ar) {
 		for (int j = 0; j < nPlayerSize; ++j) {
 			const auto [uidPlayer, nPoint] = ar.Extract<u_long, int>();
 
-			players.emplace_back(ParticipantWithPoint{ uidPlayer, nPoint });
+			players.emplace(nPoint, uidPlayer);
 		}
 	}
-
-	Sort(players.begin(), players.end());
 }
 
 void CDPClient::OnGCJoinWarWindow( CAr & ar )
@@ -5967,7 +5963,14 @@ void CDPClient::OnGCLog( CAr & ar )
 
 	static constexpr auto MakeName = [](const char * name) -> StaticString<MAX_NAME> {
 		StaticString<MAX_NAME> retval;
-		ComputeShortenName(retval.GetBuffer(), name, 10);
+		GetStrCut(name, retval.GetBuffer(), 10);
+
+		if (10 <= GetStrLen(name)) {
+			strcat(szBuf, "...");
+		} else {
+			retval = name;
+		}
+
 		return retval;
 	};
 

@@ -15,7 +15,6 @@ extern vector<CString> g_vecHelpInsKey;
 #endif //__HELP_BUG_FIX
 
 #include <boost/container/stable_vector.hpp>
-#include "eveschool.h"
 #include "buff.h"
 
 
@@ -154,30 +153,17 @@ namespace WndWorld {
 	};
 
 	struct GuildCombatPrecedence {
-		// The guilds and players vector are always sorted
-		// by points DESC.
-
-		struct ParticipantWithPoint {
-			u_long id;
-			int points;
-		};
-
 		std::map<u_long, std::string> idToGuildName;
-		std::vector<ParticipantWithPoint> guilds;
-		std::vector<ParticipantWithPoint> players;
+		std::multimap<int, u_long> guilds;
+		std::multimap<int, u_long> players;
 
 		void Clear();
 		void OnGuildPrecedence(CAr & ar);
 		void OnPlayerPrecedence(CAr & ar);
-		void Update(const CGuildCombat::__GCGETPOINT & getPoint);
 
-		void Render(C2DRender * p2DRender, CRect clientRect) const;
+		void Render(C2DRender * p2DRender, CRect clientRect);
 
 		[[nodiscard]] LPCTSTR GetGuildName(u_long guildId) const;
-		static void Sort(
-			std::vector<ParticipantWithPoint>::iterator & participantsBegin,
-			std::vector<ParticipantWithPoint>::iterator & participantsEnd
-		);
 	};
 
 }
@@ -232,6 +218,7 @@ public:
 
 	CAdvMgr*	GetAdvMgr() { return &m_AdvMgr; }
 	
+	BOOL	m_IsMailTexRender;
 	BOOL	m_bCtrlInfo;
 	BOOL	m_bCtrlPushed;
 	BOOL	m_bRenderFPS;
@@ -445,6 +432,7 @@ public:
 	void	RenderEventIcon( C2DRender* p2DRender, BUFFICON_INFO* pInfo, CPoint ptMouse );
 
 	void PutPetTooltipInfo( CItemElem* pItemElem, CEditString* pEdit );
+	void DrawGuildCombat1to1Info(C2DRender *p2DRender);
 	void DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender);
 	void DrawGuildCombat1ot1GuildInfo(C2DRender *p2DRender);
 	BOOL m_bGuildCombat1to1Wait;

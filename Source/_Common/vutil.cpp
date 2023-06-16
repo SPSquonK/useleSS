@@ -15,31 +15,6 @@ int GetCharLen( const CHAR* pStr )
 	return (int) (pNext - pStr );
 }
 
-void ComputeShortenName(CHAR * pDest, const CHAR * pSrc, size_t nCount) {
-	size_t nOffset = 0;
-
-	while (nCount > 0) {
-		if (pSrc[nOffset] == '\0') break;
-
-		const int nLen = GetCharLen(&pSrc[nOffset]);
-		nOffset += nLen;
-		--nCount;
-	}
-
-	std::memcpy(pDest, pSrc, nOffset);
-	pDest[nOffset] = '\0';
-
-	if (pSrc[nOffset] == '\0') {
-		// No more characters
-	} else if (pSrc[nOffset + GetCharLen(&pSrc[nOffset])] == '\0') {
-		// Only one character: just write it instead of 3 dots
-		std::strcat(pDest, &pSrc[nOffset]);
-	} else {
-		// Add ...
-		std::strcat(pDest, "...");
-	}
-}
-
 // 외국어포함 문장의 길이를 잘라준다.
 int GetStrCut( const CHAR* pSrc, CHAR* pDest, int nCount )
 {
@@ -54,7 +29,6 @@ int GetStrCut( const CHAR* pSrc, CHAR* pDest, int nCount )
 	}
 	
 	memcpy( pDest, pSrc, sizeof(char)*nOffset);
-	pDest[nOffset + 1] = '\0';
 	
 	return 1;
 }	
@@ -68,6 +42,7 @@ int GetStrLen( const CHAR* pSrc )
 	
 	while( pSrc[ nOffset ] != NULL )
 	{
+		nLen = GetCharLen( &pSrc[ nOffset ]  );
 		nOffset += nLen;
 		nCount++;
 	}

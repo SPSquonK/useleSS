@@ -4740,13 +4740,15 @@ void CUserMng::AddGCLogRealTimeWorld( CGuildCombat::__GCGETPOINT GCGetPoint )
 {
 	LPCSTR szAttacker	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerAttack );
 	LPCSTR szDefender	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCGetPoint.uidPlayerDefence );
+	if( szAttacker == NULL || szDefender == NULL )
+		return;
 
 	CAr arBlock;
 	arBlock << NULL_ID << SNAPSHOTTYPE_GUILDCOMBAT;
 	arBlock << GC_LOG_REALTIME;
 	arBlock << GCGetPoint;
-	arBlock.WriteString( szAttacker ? szAttacker : "" );
-	arBlock.WriteString( szDefender ? szDefender : "" );
+	arBlock.WriteString( szAttacker );
+	arBlock.WriteString( szDefender );
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 	
 	for(auto it = m_users.begin(); it != m_users.end(); ++it )

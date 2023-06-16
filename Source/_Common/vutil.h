@@ -26,11 +26,8 @@ BOOL IsHangul( WORD word );
 BOOL IsNative( LPCTSTR lpszStr );
 
 // 모든언어의 문자관련
-[[deprecated("Use ComputeShortenName instead of GetStrCut + GetStrLen")]]
 int GetStrCut( const CHAR* pSrc, CHAR* pDest, int nCount );
-int GetStrLen(const CHAR * pSrc);
-
-void ComputeShortenName(CHAR * pDest, const CHAR * pSrc, size_t nCount);
+int GetStrLen( const CHAR* pSrc );
 
 
 #define IMGBIT_8   0  

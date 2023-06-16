@@ -552,6 +552,7 @@ m_buffs( NULL )
 	memset( &m_QuestTime, 0, sizeof(m_QuestTime) );
 	memset( m_szGuildCombatStr, 0, sizeof(char) * 64 );	
 	m_pSelectRenderObj= NULL;
+	m_IsMailTexRender = FALSE;
 	m_bCtrlInfo = FALSE;
 	m_bCtrlPushed = FALSE;
 	m_bRenderFPS  = FALSE;
@@ -1076,11 +1077,15 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 
 	if( g_pPlayer && g_pPlayer->GetWorld() && g_GuildCombat1to1Mng.IsPossibleMover(g_pPlayer) )
 	{
-		DrawGuildCombat1to1PlayerInfo(p2DRender);
-		DrawGuildCombat1ot1GuildInfo(p2DRender);
+//		if(g_GuildCombat1to1Mng.m_nState == CGuildCombat1to1Mng::GC1TO1_ENTRANCE || g_GuildCombat1to1Mng.m_nState == CGuildCombat1to1Mng::GC1TO1_WAR)
+		{
+			DrawGuildCombat1to1Info(p2DRender);
+			DrawGuildCombat1to1PlayerInfo(p2DRender);
+			DrawGuildCombat1ot1GuildInfo(p2DRender);
+		}
 	}
 
-	const DWORD dwSecretTime = CSecretRoomMng::GetInstance()->m_dwRemainTime;
+	DWORD dwSecretTime = CSecretRoomMng::GetInstance()->m_dwRemainTime;
 
 	if( dwSecretTime != 0 )
 	{
@@ -1095,6 +1100,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 
 		if( ct.GetHours() <=0 && ct.GetMinutes() <=0 && ct.GetSeconds() <=0 )
 		{
+			dwSecretTime = 0;
 			CSecretRoomMng::GetInstance()->m_dwRemainTime = 0;
 		}
 
@@ -1126,6 +1132,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 	}
 	
 	{
+		char szMsgGuild[128] = { 0 };			
 		char szMsg[128] = {0,};
 		int nX = 20;
 		int nY = (m_rectWindow.Height()/2) - 80;
@@ -1161,9 +1168,20 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 
 				nY += (cSize.cy+10);
 
-				char szMsgGuild[MAX_NAME] = {0,};
-				ComputeShortenName(szMsgGuild, GuildCombatJoin.szJoinGuildName, 8);
+				char szBuf[MAX_NAME] = {0,};
+
+				GetStrCut( GuildCombatJoin.szJoinGuildName, szBuf, 8 );
 				
+				if( 8 <= GetStrLen(GuildCombatJoin.szJoinGuildName) )
+				{
+					strcat( szBuf, "..." );
+				}
+				else
+				{
+					strcpy( szBuf, GuildCombatJoin.szJoinGuildName );
+				}
+				
+				sprintf( szMsgGuild, "%s", szBuf );
 				sprintf( szMsg, "%.2d/%.2d", GuildCombatJoin.nJoinSize, GuildCombatJoin.nJoinSize + GuildCombatJoin.nOutSize );
 
 				crect = CRect(nX-10, nY-5, nX+160, nY+18);
@@ -1190,16 +1208,31 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		}
 	}
 
+#ifdef __CLIENT
+#ifdef _DEBUG
+	if( m_IsMailTexRender )
+	{
+		p2DRender->TextOut( 10, 300, "Mail Receive!!!", 0xFF26F4F6, 0xFF000000 );		
+	}	
+#endif //_DEBUG
+#endif //__CLIENT
+
 	return TRUE;
 }
 
-static bool prKCountAsce(const __SRGUILDINFO & guild1, const __SRGUILDINFO & guild2) {
-	if (guild1.nWarState > guild2.nWarState)
-		return true;
-	if (guild1.nWarState < guild2.nWarState)
-		return false;
+bool prKCountAsce(__SRGUILDINFO guild1, __SRGUILDINFO guild2)
+{
+	bool rtn_val = false;
 
-	return guild1.nKillCount > guild2.nKillCount;
+	if(guild1.nWarState > guild2.nWarState)
+		rtn_val = true;
+	else if(guild1.nWarState == guild2.nWarState)
+	{
+		if(guild1.nKillCount > guild2.nKillCount)
+			rtn_val = true;
+	}
+	
+	return rtn_val;
 }
 
 void CWndWorld::DrawSecretRoomGuildInfo(C2DRender *p2DRender, BOOL bIsMyGuild, int nRank, __SRGUILDINFO stGuildInfo, CPoint ptRank, CPoint ptLogo, 
@@ -1577,8 +1610,16 @@ void CWndWorld::DrawSecretRoomInfo(C2DRender *p2DRender)
 #endif //__CLIENT
 }
 
+
+void CWndWorld::DrawGuildCombat1to1Info(C2DRender *p2DRender)
+{
+#ifdef __CLIENT
+#endif //__CLIENT
+}
+
 void CWndWorld::DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender)
 {
+#ifdef __CLIENT
 	if( g_pPlayer && g_pPlayer->GetGuild() )
 	{
 		CPoint cPoint;
@@ -1691,10 +1732,12 @@ void CWndWorld::DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender)
 		}
 
 	}
+#endif //__CLIENT
 }
 
 void CWndWorld::DrawGuildCombat1ot1GuildInfo(C2DRender *p2DRender)
 {
+#ifdef __CLIENT
 	// Draw Background
 	CRect crBoard;
 	CPoint cPoint = CPoint(GetClientRect().Width() - 150, 200);
@@ -1726,6 +1769,7 @@ void CWndWorld::DrawGuildCombat1ot1GuildInfo(C2DRender *p2DRender)
 			p2DRender->TextOut( cPoint.x+120, cPoint.y+60 ,strFormat, 0xFFF5CCB0, 0xFF000000 );
 		}
 	}
+#endif //__CLIENT
 }
 
 void CWndWorld::RenderArrow()
@@ -9305,7 +9349,13 @@ void GuildCombatInfo::RenderMyGuildStatus(C2DRender * p2DRender) {
 
 		LPCTSTR str	= CPlayerDataCenter::GetInstance()->GetPlayerString( GuildRate.m_uidPlayer );
 		
-		ComputeShortenName(szBuf, str, 5);
+		if (5 <= GetStrLen(str)) {
+			memset(szBuf, 0, sizeof(szBuf));
+			GetStrCut(str, szBuf, 5);
+			strcat(szBuf, "...");
+		} else {
+			strcpy(szBuf, str);
+		}		
 
 		DWORD dwFontColor;
 		if (GuildRate.m_uidPlayer == g_pPlayer->m_idPlayer) {
@@ -9387,36 +9437,12 @@ void GuildCombatInfo::RenderMyGuildStatus(C2DRender * p2DRender) {
 	}
 }
 
-void GuildCombatPrecedence::Update(const CGuildCombat::__GCGETPOINT & getPoint) {
-	static constexpr auto Update_ = [](
-		std::vector<ParticipantWithPoint> & participants,
-		u_long attackerId, int earnedPoints
-	) {
-		auto it = std::find_if(
-			participants.begin(), participants.end(),
-			[attackerId](const ParticipantWithPoint & p) { return p.id == attackerId; }
-		);
-
-		if (it != participants.end()) {
-			it->points += earnedPoints;
-		} else {
-			participants.emplace_back(ParticipantWithPoint{ attackerId, earnedPoints });
-			it = participants.end() - 1;
-		}
-
-		Sort(participants.begin(), it + 1);
-	};
-
-	Update_(guilds, getPoint.uidGuildAttack, getPoint.nPoint);
-	Update_(players, getPoint.uidPlayerAttack, getPoint.nPoint);
-}
-
 void GuildCombatPrecedence::Clear() {
 	players.clear();
 	guilds.clear();
 }
 
-void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect) const {
+void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect) {
 	int		nGap  = 16;
 	int		nRate = 0;
 	CString strFormat;
@@ -9436,9 +9462,13 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 	int     nOldPoint = 0xffffffff;
 
 	p2DRender->TextOut( cPoint.x+10, cPoint.y, prj.GetText(TID_GAME_GUILDCOMBAT_RATE), 0xFFEBAD18, 0xFF000000 );
-	cPoint.y += ( nGap + (nGap / 2) );
+	cPoint.y += ( nGap + (nGap / 2) );		
+	for( auto i = guilds.rbegin(); i != guilds.rend(); ++i )
+	{
+		const int nPoint  = i->first;
+		const u_long guildId = i->second;
 
-	for (const auto & [guildId, nPoint] : guilds) {
+			
 		if( nOldPoint != nPoint )
 			nRate++;
 
@@ -9454,7 +9484,16 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 			memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
 
 			LPCSTR str = GetGuildName(guildId);
-			ComputeShortenName(szBuf, str, 5);
+			GetStrCut( str, szBuf, 5 );
+				
+			if( 5 <= GetStrLen(str) )
+			{
+				strcat( szBuf, "..." );
+			}
+			else
+			{
+				strcpy( szBuf, str );
+			}			
 
 			if( nOldPoint != nPoint )
 			{
@@ -9495,10 +9534,14 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 	int  nPlayerPoint  = 0;
 	static constexpr int nMaxRender = 10;
 	int nMaxIndex = 0;
+	u_long uiPlayer;
 	p2DRender->TextOut( cPoint.x+10, cPoint.y, prj.GetText(TID_GAME_GUILDCOMBAT_PERSON_RATE), 0xFFEBAD18, 0xFF000000 );
 	cPoint.y += ( nGap + (nGap / 2) );
+	for( auto j = players.rbegin(); j != players.rend(); ++j )
+	{ 
+		const int nPoint			= j->first;
+		uiPlayer		= j->second;	
 
-	for (const auto & [uiPlayer, nPoint] : players) {
 			
 		if( nOldPoint != nPoint )
 			nRate++;
@@ -9527,7 +9570,18 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 
 		{
 			LPCTSTR str	= CPlayerDataCenter::GetInstance()->GetPlayerString( uiPlayer );
-			ComputeShortenName(szBuf, str, 5);
+			memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
+				
+			GetStrCut( str, szBuf, 5 );
+				
+			if( 5 <= GetStrLen(str) )
+			{
+				strcat( szBuf, "..." );
+			}
+			else
+			{
+				strcpy( szBuf, str );
+			}			
 
 			if( uiPlayer == g_pPlayer->m_idPlayer )
 			{
@@ -9564,7 +9618,18 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 		cPoint.y += nGap;
 
 		LPCTSTR str = g_pPlayer->GetName();
-		ComputeShortenName(szBuf, str, 5);
+		memset( szBuf, 0, sizeof(CHAR)*MAX_NAME );
+			
+		GetStrCut( str, szBuf, 5 );
+			
+		if( 5 <= GetStrLen(str) )
+		{
+			strcat( szBuf, "..." );
+		}
+		else
+		{
+			strcpy( szBuf, str );
+		}						
 
 		dwFontColor = 0xFF9ED3FF;
 		strFormat.Format( "%2d", nPlayerRate );
@@ -9579,18 +9644,6 @@ LPCTSTR GuildCombatPrecedence::GetGuildName(u_long guildId) const {
 	const auto it = idToGuildName.find(guildId);
 	if (it == idToGuildName.end()) return "???";
 	return it->second.c_str();
-}
-
-void GuildCombatPrecedence::Sort(
-	std::vector<ParticipantWithPoint>::iterator & participantsBegin,
-	std::vector<ParticipantWithPoint>::iterator & participantsEnd
-) {
-	std::stable_sort(
-		participantsBegin, participantsEnd,
-		[](const ParticipantWithPoint & lhs, const ParticipantWithPoint & rhs) {
-			return lhs.points > rhs.points;
-		}
-	);
 }
 
 }
