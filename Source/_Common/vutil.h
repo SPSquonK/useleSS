@@ -11,8 +11,6 @@
 #include <D3DX9Math.h>
 
 BOOL IsFontInstalled( LPCTSTR pszFace );
-void RepairString( TCHAR* lpStr );
-void RepairString( CString& string );
 void SetStrNull( TCHAR* lpStr, int nNullLength );
 void SetStrNull( CString& string, int nNullLength );
 //size_t WCharToMBChar( char *mbstr, const wchar_t *wcstr, size_t count )
