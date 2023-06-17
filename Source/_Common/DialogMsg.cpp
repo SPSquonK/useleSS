@@ -134,88 +134,59 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 
 		++itTextArray;
 
+		CObj * pObj = lpCustomText->m_pObj;
+		if (!pObj->IsCull()) continue;
+
+		// 월드 좌표를 스크린 좌표로 프로젝션 한다.
+		D3DXVECTOR3 vOut, vPos = pObj->GetPos(), vPosHeight;
+		D3DVIEWPORT9 vp;
+		const BOUND_BOX* pBB;
+
+		if( pObj->m_pModel )
+			pBB	= pObj->m_pModel->GetBBVector();
+		else
+			return;
+
+		pd3dDevice->GetViewport( &vp );
+
+		D3DXMATRIX matTrans;
+		D3DXMATRIX matWorld;
+		D3DXMatrixIdentity(&matWorld);
+		D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
+
+		matWorld = matWorld * pObj->GetMatrixScale() * pObj->GetMatrixRotation() * matTrans;
+
+		vPosHeight = pBB->m_vPos[0];
+		vPosHeight.x = 0;
+		vPosHeight.z = 0;
+
+		D3DXVec3Project( &vOut, &vPosHeight, &vp, &pObj->GetWorld()->m_matProj,
+			&pObj->GetWorld()->m_pCamera->m_matView, &matWorld);
+
 		TEXTUREVERTEX * pVertices = vertex;
+
 		
-		CObj* pObj = lpCustomText->m_pObj;
 		if( lpCustomText->m_pTexture )
 		{
-				if( pObj->IsCull() == FALSE )
-				{
-					// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-					D3DXVECTOR3 vOut, vPos = pObj->GetPos(), vPosHeight;
-					D3DVIEWPORT9 vp;
-					const BOUND_BOX* pBB;
+			CPoint point;
+			point.x = (LONG)(vOut.x - 32 / 2);
+			point.y = (LONG)(vOut.y - 32);
 					
-					if( pObj->m_pModel )
-						pBB	= pObj->m_pModel->GetBBVector();
-					else
-						return;
-
-					pd3dDevice->GetViewport( &vp );
-
-					D3DXMATRIX matTrans;
-					D3DXMATRIX matWorld;
-					D3DXMatrixIdentity(&matWorld);
-					D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
-					
-					const auto matrixScale = pObj->GetMatrixScale();
-					D3DXMatrixMultiply( &matWorld, &matWorld, &matrixScale );
-					const auto matrixRotation = pObj->GetMatrixRotation();
-					D3DXMatrixMultiply( &matWorld, &matWorld, &matrixRotation );
-					D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
-
-					vPosHeight = pBB->m_vPos[0];
-					vPosHeight.x = 0;
-					vPosHeight.z = 0;
-					
-					D3DXVec3Project( &vOut, &vPosHeight, &vp, &pObj->GetWorld()->m_matProj,
-						&pObj->GetWorld()->m_pCamera->m_matView, &matWorld);
-
-					CPoint point;
-					point.x = (LONG)( vOut.x - 32 / 2 );
-					point.y = (LONG)( vOut.y - 32 );
-					
-					MakeEven( point.x );			
+			MakeEven(point.x);
 	
-					p2DRender->RenderTexture( point, lpCustomText->m_pTexture );
-				}
+			p2DRender->RenderTexture(point, lpCustomText->m_pTexture);
 		}
 		else
 		{
 			LPCTSTR lpStr = lpCustomText->m_string;
-			lpCustomText->m_pFont->GetTextExtent( (TCHAR*)lpStr, &size );
-			if( pObj->IsCull() == FALSE )
-			{
-				int nAlpha = 200;
-				if( !lpCustomText->m_bInfinite && lpCustomText->m_timer.GetLeftTime() > 4000 )
-					nAlpha = (int)( 200 - ( ( lpCustomText->m_timer.GetLeftTime() - 4000 )* 200 / 1000 ) );
-	
-				// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-				D3DXVECTOR3 vOut, vPos = pObj->GetPos(), vPosHeight;
-				D3DVIEWPORT9 vp;
-				const BOUND_BOX* pBB;
-				
-				if( pObj->m_pModel )
-					pBB	= pObj->m_pModel->GetBBVector();
-				else
-					return;
+			CSize size = lpCustomText->m_pFont->GetTextExtent( lpStr );
 
-				pd3dDevice->GetViewport( &vp );
-
-				D3DXMATRIX matTrans;
-				D3DXMATRIX matWorld;
-				D3DXMatrixIdentity(&matWorld);
-				D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
-
-				matWorld = matWorld * pObj->GetMatrixScale() * pObj->GetMatrixRotation() * matTrans;
-
-				vPosHeight = pBB->m_vPos[0];
-				vPosHeight.x = 0;
-				vPosHeight.z = 0;
-				
-				D3DXVec3Project( &vOut, &vPosHeight, &vp, &pObj->GetWorld()->m_matProj,
-					&pObj->GetWorld()->m_pCamera->m_matView, &matWorld);
 			
+			int nAlpha = 200;
+			if( !lpCustomText->m_bInfinite && lpCustomText->m_timer.GetLeftTime() > 4000 )
+				nAlpha = (int)( 200 - ( ( lpCustomText->m_timer.GetLeftTime() - 4000 )* 200 / 1000 ) );
+	
+				
 				CRect rect = lpCustomText->m_rect;
 				vOut.x -= rect.Width() / 2;
 				vOut.y -= rect.Height();
@@ -350,7 +321,7 @@ g_ShoutChat:
 				
 				lpCustomText->m_string.SetAlpha( nAlpha );
 				p2DRender->TextOut_EditString( (int)( x ), (int)( y ), lpCustomText->m_string, 0, 0, 0 );
-			}
+			
 		}
 		
 	}
