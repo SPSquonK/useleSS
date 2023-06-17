@@ -62,10 +62,10 @@ public:
 
 	CTexturePack m_texEmoticon;
 	void AddTexture( CObj* pObj, CTexture* pTexture );
-	void AddEmoticon( CObj* pObj, int nEmoticonIdx );
+	void AddEmoticon(CObj * pObj, int nEmoticonIdx);
 
-	CPtrArray m_textArray;
-	
+	struct TextDeleter { void operator()(CUSTOMTEXT * customText) const; };
+	std::vector<std::unique_ptr<CUSTOMTEXT, TextDeleter>> m_textArray;
 	boost::container::stable_vector<CUSTOMTEXT> m_VendortextArray;
 	
 	CTexture*		   m_pTex[3];
@@ -80,7 +80,6 @@ public:
 	void AddMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD = 0xffffffff, int nKind = 0, DWORD dwPStyle = 0x00000001 );
 	void AddVendorMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD RGB = 0xffffffff );
 	void RemoveDeleteObjMsg();
-	void RemoveMessage( CObj* pObj );
 
     // Initializing and destroying device-dependent objects
     HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );

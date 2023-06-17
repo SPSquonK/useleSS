@@ -58,56 +58,35 @@ HRESULT CDialogMsg::InvalidateDeviceObjects()
 {
 	return S_OK;
 }
-void CDialogMsg::ClearAllMessage()
-{
-	for(int i = 0; i < m_textArray.GetSize(); i++)
-	{
-		LPCUSTOMTEXT lpCustomText = (LPCUSTOMTEXT)m_textArray.GetAt(i);
-		// 퀘스트 이모티콘을 다시 보이게 한다.
-		if( lpCustomText->m_pObj->GetType() == OT_MOVER )
-			((CMover*)lpCustomText->m_pObj)->m_bShowQuestEmoticon = TRUE;
-	}
-	m_textArray.RemoveAll();
 
+void CDialogMsg::TextDeleter::operator()(CUSTOMTEXT * customText) const {
+	if (customText->m_pObj->GetType() == OT_MOVER)
+		((CMover *)customText->m_pObj)->m_bShowQuestEmoticon = TRUE;
+
+	delete customText;
+}
+
+void CDialogMsg::ClearAllMessage() {
+	m_textArray.clear();
 	m_VendortextArray.clear();
 }
 
-void CDialogMsg::ClearMessage( CObj* pObj )
-{
-	for(int i = 0; i < m_textArray.GetSize(); i++)
-	{
-		LPCUSTOMTEXT pText	= (LPCUSTOMTEXT)m_textArray.GetAt( i );
-		if( pText->m_pObj == pObj )
-		{
-			// 퀘스트 이모티콘을 다시 보이게 한다.
-			if( pObj->GetType() == OT_MOVER )
-				((CMover*)pObj)->m_bShowQuestEmoticon = TRUE;
-			safe_delete( pText );
-			m_textArray.RemoveAt( i );
-			i--;
-		}
-	}
-
+void CDialogMsg::ClearMessage(CObj * pObj) {
+	const auto itEraseText = std::remove_if(
+		m_textArray.begin(), m_textArray.end(),
+		[pObj](auto & pText) { return pText->m_pObj == pObj; }
+	);
+	m_textArray.erase(itEraseText, m_textArray.end());
 
 	RemoveVendorMessage(pObj);
 }
 
-void CDialogMsg::RemoveDeleteObjMsg()
-{
-	for( int i = 0; i < m_textArray.GetSize(); i++ )
-	{
-		LPCUSTOMTEXT lpCustomText 
-			= (LPCUSTOMTEXT) m_textArray.GetAt( i );
-		if( !IsValidObj( lpCustomText->m_pObj ) )
-		{
-			// 퀘스트 이모티콘을 다시 보이게 한다.
-			if( lpCustomText->m_pObj->GetType() == OT_MOVER )
-				((CMover*)lpCustomText->m_pObj)->m_bShowQuestEmoticon = TRUE;
-			safe_delete( lpCustomText );
-			m_textArray.RemoveAt( i );
-			i --;
-		}
-	}
+void CDialogMsg::RemoveDeleteObjMsg() {
+	const auto itEraseText = std::remove_if(
+		m_textArray.begin(), m_textArray.end(),
+		[](auto & pText) { return !IsValidObj(pText->m_pObj); }
+	);
+	m_textArray.erase(itEraseText, m_textArray.end());
 
 	const auto itEraseVendor = std::remove_if(
 		m_VendortextArray.begin(), m_VendortextArray.end(),
@@ -121,7 +100,6 @@ void CDialogMsg::RemoveDeleteObjMsg()
 void CDialogMsg::Render( C2DRender* p2DRender )
 {
 	CSize size;	
-	LPCUSTOMTEXT lpCustomText;
 	
 	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 	
@@ -142,25 +120,25 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 	TEXTUREVERTEX vertex[ 4 * 18 ];
 	CPoint point;
 	int nIndex;
+	
+	
+	auto itTextArray = m_textArray.begin();
+	while (itTextArray != m_textArray.end()) {
+		auto & lpCustomText = *itTextArray;
 		
-	for( int i = 0; i < m_textArray.GetSize(); i++ )
-	{
-		lpCustomText = (LPCUSTOMTEXT) m_textArray.GetAt( i );
-		TEXTUREVERTEX* pVertices = vertex; 
 		if( !lpCustomText->m_bInfinite && lpCustomText->m_timer.TimeOut() )
 		{
-			// 퀘스트 이모티콘을 다시 보이게 한다.
-			if( lpCustomText->m_pObj->GetType() == OT_MOVER )
-				((CMover*)lpCustomText->m_pObj)->m_bShowQuestEmoticon = TRUE;
-			safe_delete( lpCustomText );
-			m_textArray.RemoveAt( i );
-			i --;
+			itTextArray = m_textArray.erase(itTextArray);
+			continue;
 		}
-		else
+
+		++itTextArray;
+
+		TEXTUREVERTEX * pVertices = vertex;
+		
+		CObj* pObj = lpCustomText->m_pObj;
+		if( lpCustomText->m_pTexture )
 		{
-			CObj* pObj = lpCustomText->m_pObj;
-			if( lpCustomText->m_pTexture )
-			{
 				if( pObj->IsCull() == FALSE )
 				{
 					// 월드 좌표를 스크린 좌표로 프로젝션 한다.
@@ -201,9 +179,9 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 	
 					p2DRender->RenderTexture( point, lpCustomText->m_pTexture );
 				}
-			}
-			else
-			{
+		}
+		else
+		{
 			LPCTSTR lpStr = lpCustomText->m_string;
 			lpCustomText->m_pFont->GetTextExtent( (TCHAR*)lpStr, &size );
 			if( pObj->IsCull() == FALSE )
@@ -373,8 +351,8 @@ g_ShoutChat:
 				lpCustomText->m_string.SetAlpha( nAlpha );
 				p2DRender->TextOut_EditString( (int)( x ), (int)( y ), lpCustomText->m_string, 0, 0, 0 );
 			}
-			}
 		}
+		
 	}
 	
 	for (CUSTOMTEXT & lpCustomText : m_VendortextArray) {
@@ -475,45 +453,33 @@ const char * CDialogMsg::GetTextDialogShout(const size_t length) {
 
 #define		MAX_CLIENTMSG_LEN		100
 
-void CDialogMsg::RemoveMessage( CObj* pObj )
-{
-	for( int i = 0; i < m_textArray.GetSize(); i++ )
-	{
-		LPCUSTOMTEXT lpCustomText = (LPCUSTOMTEXT) m_textArray.GetAt( i );
-		if( lpCustomText->m_pObj == pObj )
-		{
-			safe_delete( lpCustomText );
-			m_textArray.RemoveAt( i );
-			return;
-		}
-	}
+void CDialogMsg::AddEmoticonUser(CObj * pObj, int nEmoticonIdx) {
+	if (nEmoticonIdx < 0) return;
+	if (nEmoticonIdx >= (int)(m_texEmoticonUser.GetNumber())) return;
+	AddTexture(pObj, m_texEmoticonUser.GetAt(nEmoticonIdx));
 }
 
-void CDialogMsg::AddEmoticonUser( CObj* pObj, int nEmoticonIdx )
-{
-	if( nEmoticonIdx < (int)( m_texEmoticonUser.GetNumber() ) )
-		AddTexture( pObj, m_texEmoticonUser.GetAt( nEmoticonIdx ) );
-}
-
-void CDialogMsg::AddEmoticon( CObj* pObj, int nEmoticonIdx )
-{
+void CDialogMsg::AddEmoticon(CObj * pObj, int nEmoticonIdx) {
 	if (nEmoticonIdx < 0) return;
 	if (nEmoticonIdx >= m_texEmoticon.GetNumber()) return;
-	CTexture * const tex = m_texEmoticon.GetAt(nEmoticonIdx);
-	AddTexture( pObj, tex );
+	AddTexture(pObj, m_texEmoticon.GetAt(nEmoticonIdx));
 }
+
 void CDialogMsg::AddTexture( CObj* pObj, CTexture* pTexture )
 {
-	for( int i = 0; i < m_textArray.GetSize(); i++ )
-	{
-		LPCUSTOMTEXT lpCustomText = (LPCUSTOMTEXT) m_textArray.GetAt( i );
-		if( lpCustomText->m_pObj == pObj )
-		{
-			safe_delete( lpCustomText );
-			m_textArray.RemoveAt( i );
-			break;
-		}
+	const auto it = std::find_if(
+		m_textArray.begin(), m_textArray.end(),
+		[pObj](auto & lpCustomText) { return lpCustomText->m_pObj == pObj; }
+	);
+
+	if (it != m_textArray.end()) {
+		// Deleting and releasing to avoid calling the custom destructor
+		// that would set the emote to false, like in the official server.
+		// TODO: investigate if it is an intended behaviour or an oversight
+		delete it->release();
+		m_textArray.erase(it);
 	}
+
 	LPCUSTOMTEXT lpCustomText = new CUSTOMTEXT;
 	lpCustomText->m_dwRGB = 0;
 	lpCustomText->m_pFont = CWndBase::m_Theme.m_pFontText;
@@ -521,7 +487,7 @@ void CDialogMsg::AddTexture( CObj* pObj, CTexture* pTexture )
 	lpCustomText->m_timer.Set( 5000 );
 	lpCustomText->m_bInfinite	= FALSE;
 	lpCustomText->m_pTexture = pTexture;
-	m_textArray.Add( lpCustomText );
+	m_textArray.emplace_back( lpCustomText );
 }
 
 void CDialogMsg::AddMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD RGB, int nKind, DWORD dwPStyle )
@@ -555,17 +521,13 @@ void CDialogMsg::AddMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD RGB, int nKi
 			AddEmoticon( pObj, nEmoticonIdx );
 			return;
 		}
+
+		const auto it = std::find_if(
+			m_textArray.begin(), m_textArray.end(),
+			[pObj](auto & lpCustomText) { return lpCustomText->m_pObj == pObj; }
+			);
+		if (it != m_textArray.end()) m_textArray.erase(it);
 		
-		for( int i = 0; i < m_textArray.GetSize(); i++ )
-		{
-			LPCUSTOMTEXT lpCustomText = (LPCUSTOMTEXT) m_textArray.GetAt( i );
-			if( lpCustomText->m_pObj == pObj )
-			{
-				safe_delete( lpCustomText );
-				m_textArray.RemoveAt( i );
-				break;
-			}
-		}
 	}
 	LPCUSTOMTEXT lpCustomText = new CUSTOMTEXT;
 	lpCustomText->m_dwRGB = RGB;
@@ -611,7 +573,7 @@ void CDialogMsg::AddMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD RGB, int nKi
 	cy = ( ( cy / 16 ) * 16 ) + ( ( cy % 16 ) ? 16 : 0 );
 
 	lpCustomText->m_rect = CRect( 0, 0, cx, cy );
-	m_textArray.Add( lpCustomText );
+	m_textArray.emplace_back( lpCustomText );
 }
 
 void CDialogMsg::ClearVendorObjMsg()
