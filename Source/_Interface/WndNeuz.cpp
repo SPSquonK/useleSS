@@ -488,13 +488,7 @@ CWndBase* CWndNeuz::CreateControl( HWND hWnd, LPWNDCTRL lpWndCtrl )
 		pWndBase->m_bTile = (lpWndCtrl->bTile != FALSE);
 		break;
 	case WTYPE_LISTCTRL:
-		pWndBase = new CWndListCtrl;
-		((CWndListCtrl*)pWndBase)->Create( dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId );
-		
-		if( lpWndCtrl->strTexture.IsEmpty() == FALSE )
-			((CWndStatic*)pWndBase)->m_strTexture = lpWndCtrl->strTexture;
-		pWndBase->m_bTile = (lpWndCtrl->bTile != FALSE);
-		break;
+		throw std::exception("WTYPE_LISTCTRL / CWndListCtrl is not supported anymore");
 	case WTYPE_COMBOBOX:
 		pWndBase = new CWndComboBox;
 		((CWndComboBox*)pWndBase)->Create( dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId );
