@@ -283,24 +283,21 @@ private:
 	VTIE	m_vTransformItemElements;
 };
 
-typedef	std::map<int, CTransformItemComponent*>	MPTIC;
 // Manage all conversions
-class CTransformItemProperty
-{
+class CTransformItemProperty final {
 public:
-	CTransformItemProperty();
-	virtual	~CTransformItemProperty();
 	static	CTransformItemProperty*	Instance( void );
-	void	AddComponent( CTransformItemComponent* pComponent );
-	u_int	GetStuffSize( int nTransform );
-	CItemElem*	GetItem( int nTransform );
-	BOOL	LoadScript( const char* szFile );
-	CItemElem*	CreateItemGeneric( CScript& s );
-	CItemElem*	CreateItemPet( CScript& s );
+	
+	u_int	GetStuffSize(int nTransform);
+	CItemElem * GetItem(int nTransform);
+	BOOL	LoadScript(const char * szFile);
 private:
-	CTransformItemComponent* GetComponent( int nTransform );
+	CItemElem * CreateItemGeneric(CScript & s);
+	CItemElem * CreateItemPet(CScript & s);
+
+	CTransformItemComponent * GetComponent(int nTransform);
 private:
-	MPTIC	m_mapComponents;
+	std::map<int, std::unique_ptr<CTransformItemComponent>>	m_mapComponents;
 };
 
 #endif	// __WORLDSERVER

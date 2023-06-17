@@ -799,17 +799,6 @@ CItemElem* CTransformItemComponent::GetItem( void )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-CTransformItemProperty::CTransformItemProperty()
-{
-}
-
-CTransformItemProperty::~CTransformItemProperty()
-{
-	for( MPTIC::iterator i = m_mapComponents.begin(); i != m_mapComponents.end(); ++i )
-		safe_delete( i->second );
-	m_mapComponents.clear();
-}
-
 CTransformItemProperty*	CTransformItemProperty::Instance( void )
 {
 	static	CTransformItemProperty	sTransformItemProperty;
@@ -825,8 +814,12 @@ BOOL CTransformItemProperty::LoadScript( const char* szFile )
 	int nTransform	= s.GetNumber();		// subject or FINISHED
 	while( s.tok != FINISHED )
 	{
-		CTransformItemComponent* pComponent		= new CTransformItemComponent( nTransform );
-		AddComponent( pComponent );
+		CTransformItemComponent * pComponent
+			= m_mapComponents.emplace(
+				nTransform,
+				std::make_unique<CTransformItemComponent>(nTransform)
+		).first->second.get();
+		
 		s.GetToken();	// {
 		s.GetToken();	// subject or '}'
 		while( *s.token != '}' )
@@ -851,7 +844,6 @@ BOOL CTransformItemProperty::LoadScript( const char* szFile )
 					pComponent->AddElement( TransformItemElement( pItem, nProb ) );
 					nProb	= s.GetNumber();
 				}
-				AddComponent( pComponent );
 			}
 			s.GetToken();
 		}
@@ -906,17 +898,9 @@ CItemElem* CTransformItemProperty::CreateItemPet( CScript & s )
 	return pItem;
 }
 
-void CTransformItemProperty::AddComponent( CTransformItemComponent* pComponent )
-{
-	bool bResult	= m_mapComponents.insert( MPTIC::value_type( pComponent->GetTransform(), pComponent ) ).second;
-}
-
-CTransformItemComponent* CTransformItemProperty::GetComponent( int nTransform )
-{
-	MPTIC::iterator i	= m_mapComponents.find( nTransform );
-	if( i != m_mapComponents.end() )
-		return i->second;
-	return NULL;
+CTransformItemComponent * CTransformItemProperty::GetComponent(int nTransform) {
+	const auto i = m_mapComponents.find(nTransform);
+	return i != m_mapComponents.end() ? i->second.get() : nullptr;
 }
 
 u_int CTransformItemProperty::GetStuffSize( int nTransform )
