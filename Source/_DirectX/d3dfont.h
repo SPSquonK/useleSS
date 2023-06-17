@@ -10,6 +10,7 @@
 #include <tchar.h>
 #include <D3D9.h>
 #include <d3dx9core.h>
+#include <vector>
 
 // Font creation flags
 #define D3DFONT_BOLD        0x0001
@@ -168,7 +169,7 @@ class CD3DFont //: public CD3DFontAPI
 	void MakeOutLine( int nWidth, WORD* pDst16 );	
 	LPDIRECT3DTEXTURE9 CreateTexture();
 public:
-	CPtrArray m_apTexture;
+	std::vector<LPDIRECT3DTEXTURE9> m_apTexture;
     
 	DWORD  m_dwColor;
 	DWORD  m_dwBgColor;
