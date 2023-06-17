@@ -220,19 +220,9 @@ private:
 
 // Manage all conversions
 class CTransformItemProperty final {
-	public:
-	
-	class ITransformer {
-	public:
-		virtual	~ITransformer()	= default;
-		[[nodiscard]] virtual bool IsValidItem(CItemElem * itemElem) const = 0;
-	};
-
-	// egg conversion class
-	class CTransformerEgg : public ITransformer {
-	public:
-		[[nodiscard]] bool IsValidItem(CItemElem * itemElem) const override;
-	};
+public:
+	using ITransformer = std::function<bool(CItemElem *)>;
+	static bool CTransformerEgg(CItemElem * itemElem);
 
 	// Conversion Result Item Element
 	// Using a deformed circular pattern
@@ -250,16 +240,27 @@ class CTransformItemProperty final {
 		CTransformItemComponent( int nTransform );
 
 		void AddElement(std::unique_ptr<CItemElem> item, std::uint32_t prob);
-		void	SetStuffSize(u_int nStuffSize) { m_nStuffSize = nStuffSize; }
+		void SetStuffSize(u_int nStuffSize) { m_nStuffSize = nStuffSize; }
+
+		void Transform(CUser * pUser, const CTransformStuff & stuff) const;
 
 		[[nodiscard]] u_int	GetStuffSize() const { return m_nStuffSize; }
 		[[nodiscard]] int GetTransform() const { return m_nTransform; }
 		[[nodiscard]] CItemElem * GetItem() const;
 	private:
+		// Convert user's item
+		[[nodiscard]] bool IsValidStuff(CUser * pUser, const CTransformStuff & stuff) const;
+
+		// Creates a conversion result item for the user
+		void CreateItem(CUser * pUser) const;
+
+	private:
 		int m_nTransform;
 		u_int	m_nStuffSize = 0;
 		std::uint32_t m_nTotalProb = 0;
 		std::vector<TransformItemElement>	m_vTransformItemElements;
+
+		ITransformer m_transformer;
 	};
 
 public:
@@ -267,7 +268,7 @@ public:
 	static CTransformItemProperty * Instance();
 	
 	u_int	GetStuffSize(int nTransform) const;
-	CItemElem * GetItem(int nTransform) const;
+//	CItemElem * GetItem(int nTransform) const;
 	BOOL	LoadScript(const char * szFile);
 
 	void Transform(CUser *pUser, const CTransformStuff & stuff) const;
@@ -276,18 +277,9 @@ private:
 	std::unique_ptr<CItemElem> CreateItemPet(CScript & s);
 
 	const CTransformItemComponent * GetComponent(int nTransform) const;
-	
-	// Convert user's item
-	[[nodiscard]] bool IsValidStuff(CUser * pUser, const CTransformStuff & stuff, const ITransformer & transfomer) const;
-
-	// Creates a conversion result item for the user
-	void CreateItem(CUser * pUser, int nTransform) const;
-
 
 private:
 	std::map<int, std::unique_ptr<CTransformItemComponent>>	m_mapComponents;
-
-	CTransformerEgg transformer0Egg;
 };
 
 #endif	// __WORLDSERVER

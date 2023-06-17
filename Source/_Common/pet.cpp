@@ -647,17 +647,20 @@ CAr & operator>>(CAr & ar, CTransformStuff & self) {
 void CTransformItemProperty::Transform(
 	CUser * pUser, const CTransformStuff & stuff
 ) const {
-	const ITransformer * pTransformer = nullptr;
-	const int nTransformer = stuff.GetTransform();
-	if (nTransformer == 0) {
-		pTransformer = &transformer0Egg;
+	const auto pTransformItem = m_mapComponents.find(stuff.GetTransform());
+
+	if (pTransformItem == m_mapComponents.end()) return;
+
+	pTransformItem->second->Transform(pUser, stuff);
+}
+
+void CTransformItemProperty::CTransformItemComponent::Transform(
+	CUser * pUser, const CTransformStuff & stuff
+) const {
+	if (IsValidStuff(pUser, stuff)) {
+		stuff.RemoveItem(pUser);
+		CreateItem(pUser);
 	}
-
-	if (!pTransformer) return;
-	if (!IsValidStuff(pUser, stuff, *pTransformer)) return;
-
-	stuff.RemoveItem(pUser);
-	CreateItem(pUser, nTransformer);
 }
 
 void CTransformStuff::RemoveItem(CUser * pUser) const {
@@ -670,8 +673,8 @@ void CTransformStuff::RemoveItem(CUser * pUser) const {
 	}
 }
 
-void CTransformItemProperty::CreateItem( CUser* pUser, int nTransform) const {
-	CItemElem* pItem = GetItem(nTransform);
+void CTransformItemProperty::CTransformItemComponent::CreateItem(CUser * pUser) const {
+	CItemElem* pItem = GetItem();
 	if (pItem) {
 		pUser->CreateOrSendItem(*pItem, TID_GAME_TRANSFORM_S00);
 		pUser->AddDefinedText( TID_GAME_TRANSFORM_S00 );
@@ -681,15 +684,14 @@ void CTransformItemProperty::CreateItem( CUser* pUser, int nTransform) const {
 	}
 }
 
-bool CTransformItemProperty::IsValidStuff(
+bool CTransformItemProperty::CTransformItemComponent::IsValidStuff(
 	CUser* pUser,
-	const CTransformStuff & stuff,
-	const ITransformer & transformer
+	const CTransformStuff & stuff
 ) const {
 	const auto components = stuff.GetSpan();
 
 	// 사용자가 보내온 재료와 실제 필요한 재료 개수가 다르면 부적합 재료
-	if (components.size() != GetStuffSize(stuff.GetTransform())) {
+	if (components.size() != GetStuffSize()) {
 		return false;
 	}
 
@@ -702,7 +704,7 @@ bool CTransformItemProperty::IsValidStuff(
 		if (!pItem) return false;
 		if (pUser->IsUsing(pItem)) return false;
 		if (pUser->m_Inventory.IsEquip(pComponent.nItem)) return false;
-		if (!transformer.IsValidItem(pItem)) return false;
+		if (!m_transformer(pItem)) return false;
 
 		if (seenSlots.contains(pComponent.nItem)) return false;
 		seenSlots.emplace(pComponent.nItem);
@@ -711,13 +713,21 @@ bool CTransformItemProperty::IsValidStuff(
 	return true;
 }
 
-bool CTransformItemProperty::CTransformerEgg::IsValidItem(CItemElem * pItem) const {
-	return pItem->IsEgg();
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 CTransformItemProperty::CTransformItemComponent::CTransformItemComponent(const int nTransform)
-	: m_nTransform(nTransform) {}
+	: m_nTransform(nTransform) {
+	
+	if (nTransform == 0) {
+		m_transformer = CTransformerEgg;
+	} else {
+		Error(__FUNCTION__"(%d) called but no handler exists for this transformer", nTransform);
+		m_transformer = [](const CItemElem *) { return false; };
+	}
+}
+
+bool CTransformItemProperty::CTransformerEgg(CItemElem * pItem) {
+	return pItem->IsEgg();
+}
 
 void CTransformItemProperty::CTransformItemComponent::AddElement(std::unique_ptr<CItemElem> item, std::uint32_t prob) {
 	m_nTotalProb += prob;
@@ -856,13 +866,6 @@ u_int CTransformItemProperty::GetStuffSize( int nTransform ) const
 	return 0;
 }
 
-CItemElem* CTransformItemProperty::GetItem( int nTransform ) const
-{
-	const CTransformItemComponent* pComponent	= GetComponent( nTransform );
-	if( pComponent )
-		return pComponent->GetItem();
-	return NULL;
-}
 
 #endif	// __WORLDSERVER
 
