@@ -1288,61 +1288,46 @@ LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 					// ÅÜ ½ºÅé Ã³¸® 
 					if(wParam == VK_TAB)
 					{
-						CWndBase* pWndTemp = m_pWndFocus;//->m_pWndFocusChild;// ? this : m_pParentWnd;
-						CWndBase* pWndBase;
-						int nCurIdx = -1;
-						int i = NULL;
-						for( ; i < pWndTemp->m_wndArray.GetSize() && nCurIdx == -1; i++ )
-						{
-							if(((CWndBase*)pWndTemp->m_wndArray.GetAt(i))->IsFocusChild())
-								nCurIdx = i;
-						}
-						if(nCurIdx != -1)
-						{
-							if(GetAsyncKeyState(VK_SHIFT) & 0x8000)
-							{
-								i = nCurIdx - 1;
-								if( i < 0 ) 
-									i = pWndTemp->m_wndArray.GetSize() - 1;
-								pWndBase = (CWndBase*)pWndTemp->m_wndArray.GetAt(i);
-								while(pWndBase != pWndTemp->GetFocusChild())
-								{
-									pWndBase = (CWndBase*)pWndTemp->m_wndArray.GetAt(i--);
-									if(i < 0) i = pWndTemp->m_wndArray.GetSize() - 1;
-									if(pWndBase->m_bTabStop)
-									{
-										pWndBase->PostMessage(WM_SETFOCUS);
-										//pWndBase->SetFocus();
-										//PLAYSND( pWndBase->m_strSndEffect, NULL );
-										break;
-									}
+						constexpr auto FindCurrentFocus = [](CWndBase * pWndFocus) -> std::optional<size_t> {
+							int i = 0;
+							while (i < pWndFocus->m_wndArray.GetSize()) {
+								CWndBase * pWnd = (CWndBase *)pWndFocus->m_wndArray[i];
+								if (pWnd->IsFocusChild()) {
+									return i;
 								}
 							}
-							else
-							{
-								i = nCurIdx + 1;
-								if( i >= pWndTemp->m_wndArray.GetSize() ) i = 0;
-								pWndBase = (CWndBase*)pWndTemp->m_wndArray.GetAt(i);
-								while( pWndBase != pWndTemp->GetFocusChild() )
-								{
-									pWndBase = (CWndBase*)pWndTemp->m_wndArray.GetAt(i++);
-									if(i >= pWndTemp->m_wndArray.GetSize()) i = 0;
-									if(pWndBase->m_bTabStop)
-									{
-										pWndBase->PostMessage(WM_SETFOCUS);
-										//pWndBase->SetFocus();
-										//PLAYSND( pWndBase->m_strSndEffect, NULL );
-										break;
-									}
+							return std::nullopt;
+						};
+
+						constexpr auto GetNextFocus = [](CWndBase * pWnd, size_t i, bool goAhead) -> size_t {
+							const auto Advance = [&]() -> size_t {
+								if (goAhead) {
+									if (i + 1 == pWnd->m_wndArray.GetSize()) return 0;
+									else return i + 1;
+								} else {
+									if (i == 0) return pWnd->m_wndArray.GetSize() - 1;
+									else return i - 1;
 								}
+							};
+
+							const size_t originalI = i;
+
+							while (true) {
+								i = Advance();
+								CWndBase * candidate = (CWndBase *) pWnd->m_wndArray[i];
+								if (i == originalI || candidate->m_bTabStop) return i;
 							}
+						};
+
+						const auto optCurIdx = FindCurrentFocus(m_pWndFocus);
+												
+						if (optCurIdx) {
+							const size_t newFocusI = GetNextFocus(
+								m_pWndFocus, *optCurIdx,
+								!(GetAsyncKeyState(VK_SHIFT) & 0x8000)
+							);
+							((CWndBase *) m_pWndFocus->m_wndArray[newFocusI])->PostMessage(WM_SETFOCUS);
 						}
-					}
-					else
-					if(wParam == VK_ESCAPE)
-					{
-//						if(!IsWndRoot() && IsWndStyle(WBS_MANAGER) == FALSE)
-//							;//PostMessage(WM_CLOSE);
 					}
 				}
 			}
