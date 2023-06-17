@@ -9369,8 +9369,8 @@ BOOL CDPSrvr::DoUseItemTarget_ItemLevelDown( CUser* pUser, CItemElem* pMaterial,
 	return FALSE;
 }
 
-void CDPSrvr::OnTransformItem( CAr & ar, CUser & pUser )
-{	// 알변환
+void CDPSrvr::OnTransformItem(CAr & ar, CUser & pUser) {
+	// 알변환
 	CTransformStuff stuff;
 	ar >> stuff; // 재료를 수신
 

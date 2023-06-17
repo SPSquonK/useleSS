@@ -181,30 +181,28 @@ public:
 };
 #endif	// __CLIENT
 
-
-// Individual item elements required for conversion
-struct TransformStuffComponent {
-	static constexpr bool Archivable = true;
-	int		nItem;
-	short	nNum;
-
-	TransformStuffComponent(int nItem = 0, short nNum = 0)
-		: nItem(nItem), nNum(nNum) {
-	}
-};
-
 // Set of items required for conversion
 class CTransformStuff final {
 public:
+	// Individual item elements required for conversion
+	struct Component {
+		static constexpr bool Archivable = true;
+		int		nItem;
+		short	nNum;
+
+		Component(int nItem = 0, short nNum = 0)
+			: nItem(nItem), nNum(nNum) {
+		}
+	};
+
 	explicit CTransformStuff(int nTransform = 0);
 
 	void	AddComponent( int nItem, short nNum );		// Add required item element
 	friend CAr & operator<<(CAr & ar, const CTransformStuff & self);
 	friend CAr & operator>>(CAr & ar, CTransformStuff & self);
 	
-	[[nodiscard]] int GetTransform() const  { return m_nTransform; }	// Return the conversion type
-	[[nodiscard]] std::span<      TransformStuffComponent> GetSpan()        { return m_vComponents; }
-	[[nodiscard]] std::span<const TransformStuffComponent> GetSpan() const { return m_vComponents; }
+	[[nodiscard]] int GetTransform() const { return m_nTransform; }	// Return the conversion type
+	[[nodiscard]] std::span<const Component> GetSpan() const { return m_vComponents; }
 
 #ifdef __WORLDSERVER
 	// Remove conversion material from user
@@ -213,7 +211,7 @@ public:
 
 private:
 	int	m_nTransform;	// conversion type
-	std::vector<TransformStuffComponent> m_vComponents;	// set of necessary items
+	std::vector<Component> m_vComponents;	// set of necessary items
 };
 
 #ifdef __WORLDSERVER
@@ -221,33 +219,34 @@ private:
 // Manage all conversions
 class CTransformItemProperty final {
 public:
-	using ITransformer = std::function<bool(CItemElem *)>;
-	static bool CTransformerEgg(CItemElem * itemElem);
+	using UsedItemChecker = std::function<bool(CItemElem *)>;
 
 	// Conversion Result Item Element
 	// Using a deformed circular pattern
-	struct TransformItemElement {
+	struct ProducedItem {
 		std::unique_ptr<CItemElem> pItem;
 		std::uint32_t nProb;
 	};
 
 	// It is an element that signifies one concrete transformation.
-	class CTransformItemComponent final {
+	class Transformer final {
 	private:
 		static constexpr DWORD eMaxProb = 1000000;
 
 	public:
-		CTransformItemComponent( int nTransform );
+		explicit Transformer( int nTransform );
 
-		void AddElement(std::unique_ptr<CItemElem> item, std::uint32_t prob);
-		void SetStuffSize(u_int nStuffSize) { m_nStuffSize = nStuffSize; }
-
+		void LoadScript(CScript & s);
+		
 		void Transform(CUser * pUser, const CTransformStuff & stuff) const;
-
 		[[nodiscard]] u_int	GetStuffSize() const { return m_nStuffSize; }
 		[[nodiscard]] int GetTransform() const { return m_nTransform; }
 		[[nodiscard]] CItemElem * GetItem() const;
 	private:
+		void AddElement(std::unique_ptr<CItemElem> item, std::uint32_t prob);
+		static std::unique_ptr<CItemElem> CreateItemGeneric(CScript & s);
+		static std::unique_ptr<CItemElem> CreateItemPet(CScript & s);
+
 		// Convert user's item
 		[[nodiscard]] bool IsValidStuff(CUser * pUser, const CTransformStuff & stuff) const;
 
@@ -258,28 +257,20 @@ public:
 		int m_nTransform;
 		u_int	m_nStuffSize = 0;
 		std::uint32_t m_nTotalProb = 0;
-		std::vector<TransformItemElement>	m_vTransformItemElements;
-
-		ITransformer m_transformer;
+		std::vector<ProducedItem>	m_vTransformItemElements;
+		UsedItemChecker m_transformer;
 	};
 
 public:
-
 	static CTransformItemProperty * Instance();
 	
-	u_int	GetStuffSize(int nTransform) const;
-//	CItemElem * GetItem(int nTransform) const;
-	BOOL	LoadScript(const char * szFile);
+	bool  LoadScript(const char * szFile);
 
-	void Transform(CUser *pUser, const CTransformStuff & stuff) const;
-private:
-	std::unique_ptr<CItemElem> CreateItemGeneric(CScript & s);
-	std::unique_ptr<CItemElem> CreateItemPet(CScript & s);
-
-	const CTransformItemComponent * GetComponent(int nTransform) const;
+	void  Transform(CUser * pUser, const CTransformStuff & stuff) const;
+	[[nodiscard]] u_int GetStuffSize(int nTransform) const;
 
 private:
-	std::map<int, std::unique_ptr<CTransformItemComponent>>	m_mapComponents;
+	std::map<int, Transformer> m_mapComponents;
 };
 
 #endif	// __WORLDSERVER
