@@ -357,8 +357,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\Item.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Common\ItemPet.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\modelobject.cpp">
     </ClCompile>
     <ClCompile Include="..\_common\mover.cpp">

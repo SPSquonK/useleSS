@@ -441,9 +441,6 @@
     <ClCompile Include="..\_Common\Item.cpp">
       <Filter>Neuz Common Files\Common Files\Object</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\ItemPet.cpp">
-      <Filter>Neuz Common Files\Common Files\Object</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\modelobject.cpp">
       <Filter>Neuz Common Files\Common Files\Object</Filter>
     </ClCompile>
