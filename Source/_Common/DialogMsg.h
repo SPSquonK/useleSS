@@ -15,6 +15,8 @@
 #ifdef __CLIENT
 #include "timer.h"
 
+#include <boost/container/stable_vector.hpp>
+
 typedef struct tagCUSTOMTEXT
 {
 	CEditString m_string;
@@ -64,7 +66,7 @@ public:
 
 	CPtrArray m_textArray;
 	
-	CPtrArray m_VendortextArray;
+	boost::container::stable_vector<CUSTOMTEXT> m_VendortextArray;
 	
 	CTexture*		   m_pTex[3];
 	
