@@ -661,39 +661,22 @@ void CWndPetStatus::OnMouseWndSurface(CPoint point)
 			ClientToScreen( &point2 );
 			ClientToScreen( &testRect );
 
-			DWORD dwDstParam;
-			int nParam;
-			DWORD dwTooltip;
 			CString strTemp;
 			CEditString strEdit;
 			
-			PPETAVAILPARAM pAvailParam = CPetProperty::GetInstance()->GetAvailParam( m_pPetElem->m_pPet->GetKind() );
-			dwDstParam	= pAvailParam->dwDstParam;
-			nParam = pAvailParam->m_anParam[m_pPetElem->m_pPet->GetAvailLevel(i) - 1];
-			
-			switch(dwDstParam) 
-			{
-				case DST_STR:
-					dwTooltip = TID_TOOLTIP_STR;
-					break;
-				case DST_DEX:
-					dwTooltip = TID_TOOLTIP_DEX;
-					break;
-				case DST_INT:
-					dwTooltip = TID_TOOLTIP_INT;
-					break;
-				case DST_STA:
-					dwTooltip = TID_TOOLTIP_STA;
-					break;
-				case DST_ATKPOWER:
-					dwTooltip = TID_TOOLTIP_ATKPOWER_VALUE;
-					break;
-				case DST_ADJDEF:
-					dwTooltip = TID_TOOLTIP_DEFENCE;
-					break;
-				case DST_HP_MAX:
-					dwTooltip = TID_TOOLTIP_DST_HP_MAX;
-					break;
+			const CPetProperty::PETAVAILPARAM * pAvailParam = CPetProperty::GetInstance()->GetAvailParam(m_pPetElem->m_pPet->GetKind());
+			const DWORD dwDstParam	= pAvailParam->dwDstParam;
+			const int nParam = pAvailParam->m_anParam[m_pPetElem->m_pPet->GetAvailLevel(i) - 1];
+
+			DWORD dwTooltip;
+			switch (dwDstParam)  {
+				case DST_STR:      dwTooltip = TID_TOOLTIP_STR;            break;
+				case DST_DEX:      dwTooltip = TID_TOOLTIP_DEX;            break;
+				case DST_INT:      dwTooltip = TID_TOOLTIP_INT;            break;
+				case DST_STA:      dwTooltip = TID_TOOLTIP_STA;            break;
+				case DST_ATKPOWER: dwTooltip = TID_TOOLTIP_ATKPOWER_VALUE; break;
+				case DST_ADJDEF:   dwTooltip = TID_TOOLTIP_DEFENCE;        break;
+				case DST_HP_MAX:   dwTooltip = TID_TOOLTIP_DST_HP_MAX;     break;
 			}
 			strTemp.Format( "%s +%d", prj.GetText(dwTooltip), nParam );
 			strEdit.AddString( strTemp, D3DCOLOR_XRGB(255, 0, 0) );

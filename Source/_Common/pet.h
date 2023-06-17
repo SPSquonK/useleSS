@@ -19,44 +19,35 @@ enum	PETLEVEL	{	PL_EGG,	PL_D,	PL_C,	PL_B,	PL_A,	PL_S,	PL_MAX,	};
 #define	MAX_PET_AVAIL_LEVEL	9
 #define	MAX_ADD_LIFE	5
 
-typedef	struct	_FEEDENERGY
-{
-	DWORD	dwCostMin;
-	DWORD	dwCostMax;
-	WORD	wEnergyMin;
-	WORD	wEnergyMax;
-}	FEEDENERGY,	*PFEEDENERGY;
-
-typedef struct	_PETPENALTY
-{
-	FLOAT	fExp;
-	WORD	wEnergy;
-	_PETPENALTY()
-	{
-		fExp	= 0.0f;
-		wEnergy	= 0;
-	}
-}	PETPENALTY, *PPETPENALTY;
-
 #define	MAX_PET_SHAPE	3
-typedef	struct	_PETAVAILPARAM
-{
-	DWORD	dwDstParam;		// 능력치 상승 파라미터
-	DWORD	m_anParam[MAX_PET_AVAIL_LEVEL];		// 능력치 상승 값
-	DWORD	m_dwItemId;	// 펫 아이템
-	DWORD	m_adwIndex[MAX_PET_SHAPE];	// 펫 객체 모양
-	DWORD	m_dwProbability;	// 부화 확률
-}	PETAVAILPARAM, *PPETAVAILPARAM;
 
-class CPetProperty
-{
+class CPetProperty final {
 public:
-	CPetProperty();
-	virtual	~CPetProperty();
+	struct FEEDENERGY {
+		DWORD	dwCostMin;
+		DWORD	dwCostMax;
+		WORD	wEnergyMin;
+		WORD	wEnergyMax;
+	};
 
-	PPETAVAILPARAM	GetAvailParam( BYTE nKind );	// 치유 속성 추가
+	struct PETPENALTY {
+		FLOAT	fExp = 0.0f;
+		WORD	wEnergy = 0;
+	};
+
+	struct PETAVAILPARAM {
+		DWORD	dwDstParam;		// 능력치 상승 파라미터
+		DWORD	m_anParam[MAX_PET_AVAIL_LEVEL];		// 능력치 상승 값
+		DWORD	m_dwItemId;	// 펫 아이템
+		DWORD	m_adwIndex[MAX_PET_SHAPE];	// 펫 객체 모양
+		DWORD	m_dwProbability;	// 부화 확률
+	};
+
+	CPetProperty();
+
+	[[nodiscard]] const PETAVAILPARAM * GetAvailParam(BYTE nKind) const;	// 치유 속성 추가
 	BYTE	GetLevelupAvailLevel( BYTE wLevel );		// 레벨 업 시 상승되는 능력치 레벨(임의)
-	WORD	GetFeedEnergy( DWORD dwCost, int nIndex = 0 );		// 가격에 따른 먹이 생성(임의)
+	[[nodiscard]] WORD GetFeedEnergy(DWORD dwCost, int nIndex = 0) const;		// 가격에 따른 먹이 생성(임의)
 	DWORD	GetIncrementExp( BYTE nLevel );	// 분당 습득 경험치
 	WORD	GetMaxEnergy( BYTE nLevel );
 	WORD	GetAddLife( void );		// 수명 회복액에 의한 생명 추가
@@ -70,7 +61,7 @@ public:
 	static	CPetProperty*	GetInstance( void );
 	BOOL	LoadScript( LPCTSTR szFile );
 	BYTE	Hatch( void );
-	PPETPENALTY		GetPenalty( BYTE nLevel );
+	[[nodiscard]] const PETPENALTY * GetPenalty(BYTE nLevel) const;
 
 #ifdef __CLIENT
 	[[nodiscard]] static DWORD GetTIdOfLevel(PETLEVEL petLevel);
@@ -86,7 +77,7 @@ private:
 	WORD	m_awMaxEnergy[PL_MAX];
 	std::vector<WORD>	m_awAddLifeProbability;
 
-	PETPENALTY	m_aPenalty[PL_MAX];
+	std::array<PETPENALTY, PL_MAX> m_aPenalty;
 };
 
 #define	MAX_PET_LIFE	99
@@ -120,7 +111,7 @@ public:
 //	Attributions
 	void	SetAvailLevel( BYTE nLevel, BYTE nAvailLevel );
 
-	DWORD	GetIndex( void );
+	[[nodiscard]] DWORD GetIndex() const;
 	BYTE	GetAvailLevel( BYTE nLevel );
 
 	[[nodiscard]] SINGLE_DST GetAvailDestParam() const;

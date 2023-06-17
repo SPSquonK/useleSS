@@ -13,8 +13,7 @@
 
 #include "xutil.h"
 
-
-const	int		nDefaultLife	= 1;
+static constexpr int nDefaultLife = 1;
 
 CPetProperty::CPetProperty()
 {
@@ -23,28 +22,22 @@ CPetProperty::CPetProperty()
 	memset( (void*)m_adwLevelupAvailLevelProbability, 0, sizeof(DWORD) * PL_MAX * MAX_PET_AVAIL_LEVEL );
 	memset( (void*)m_adwIncrementExp, 0, sizeof(DWORD) * PL_MAX );
 	memset( (void*)m_awMaxEnergy, 0, sizeof(WORD) * PL_MAX );
-	memset( (void*)m_aPenalty, 0, sizeof(PETPENALTY) * PL_MAX );
 }
 
-CPetProperty::~CPetProperty()
-{
-	m_aFeedEnergy[0].clear();
-	m_aFeedEnergy[1].clear();
-	m_awAddLifeProbability.clear();
+const CPetProperty::PETPENALTY * CPetProperty::GetPenalty(BYTE nLevel) const {
+	if (nLevel < PL_MAX) {
+		return &m_aPenalty[nLevel];
+	} else {
+		return nullptr;
+	}
 }
 
-PPETPENALTY CPetProperty::GetPenalty( BYTE nLevel )
-{
-	if( nLevel >= PL_MAX )
-		return NULL;
-	return &m_aPenalty[nLevel];
-}
-
-PPETAVAILPARAM	CPetProperty::GetAvailParam( BYTE nKind )
-{
-	if( nKind >= PK_TIGER && nKind < PK_MAX )
+const CPetProperty::PETAVAILPARAM * CPetProperty::GetAvailParam(BYTE nKind) const {
+	if (nKind >= PK_TIGER && nKind < PK_MAX) {
 		return &m_aPetAvailParam[nKind];
-	return NULL;
+	} else {
+		return nullptr;
+	}
 }
 
 BYTE	CPetProperty::GetLevelupAvailLevel( BYTE wLevel )
@@ -60,17 +53,16 @@ BYTE	CPetProperty::GetLevelupAvailLevel( BYTE wLevel )
 	return 0;
 }
 
-WORD	CPetProperty::GetFeedEnergy( DWORD dwCost, int nIndex )
-{
-	if( nIndex < 0 || nIndex > 1 )
+WORD CPetProperty::GetFeedEnergy(DWORD dwCost, int nIndex) const {
+	if (nIndex < 0 || nIndex > 1)
 		return 0;
 
-	auto * pArr	= &m_aFeedEnergy[nIndex];
-	for( auto i = pArr->begin(); i != pArr->end(); ++i )
-	{
-		if( dwCost >= i->dwCostMin && dwCost <= i->dwCostMax )
-			return (WORD)xRandom( i->wEnergyMin, i->wEnergyMax + 1 );	// wEnergyMin ~ wEnergyMax
+	for (const FEEDENERGY & feedEnergy : m_aFeedEnergy[nIndex]) {
+		if (dwCost >= feedEnergy.dwCostMin && dwCost <= feedEnergy.dwCostMax) {
+			return (WORD)xRandom(feedEnergy.wEnergyMin, feedEnergy.wEnergyMax + 1);	// wEnergyMin ~ wEnergyMax
+		}
 	}
+
 	return 0;
 }
 
@@ -244,47 +236,6 @@ BOOL CPetProperty::LoadScript( LPCTSTR szFile )
 		s.GetToken();
 	}
 
-/*
-#ifdef _DEBUG
-	TRACE( "GetAvailParam\n" );
-	for( int i = 0; i < PK_MAX; i++ )
-	{
-		PPETAVAILPARAM pPetAvailParam	= GetAvailParam( i );
-		TRACE( "dwDstParam=%d, nBase=%d, nParam=%d\n", pPetAvailParam->dwDstParam, pPetAvailParam->nBase, pPetAvailParam->nParam );
-	}
-	TRACE( "GetLevelupAvailLevel\n" );
-	// 0은 모두 0이어야 한다.
-	for( i = PL_EGG; i < PL_MAX; i++ )
-	{
-		for( int j = 0; j < 100; j++ )
-		{
-			BYTE nAvailLevel	= GetLevelupAvailLevel( i );
-			TRACE( "PetLevel=%d, AvailLevel=%d\n", i, nAvailLevel );
-		}
-	}
-
-	TRACE( "\nGetFeedEnergy\n" );
-	for( i = 1; i <= 100; i++ )
-	{
-		DWORD dwCost	= i * 120;
-		WORD wEnergy	= GetFeedEnergy( dwCost );
-		TRACE( "dwCost=%d, wEnergy=%d\n", dwCost, wEnergy );
-	}
-	TRACE( "\nGetIncrementExp\n" );
-	for( i = PL_D; i < PL_MAX; i++ )
-		TRACE( "nLevel=%d, IncrementExp=%d\n", i, GetIncrementExp( (PETLEVEL)i ) );
-
-	TRACE( "\nGetMaxEnergy\n" );
-	for( i = PL_D; i < PL_MAX; i++ )
-		TRACE( "nLevel=%d, MaxEnergy=%d\n", i, GetMaxEnergy( (PETLEVEL)i ) );
-
-	TRACE( "\nGetAddLife\n" );
-	for( i = 0; i < 100; i++ )
-	{
-		TRACE( "AddLife=%d\n", GetAddLife() );
-	}
-#endif	// _DEBUG
-*/
 	return TRUE;
 }
 
@@ -340,7 +291,7 @@ void CPet::SetEnergy( WORD wEnergy )
 	m_wEnergy	= wEnergy;		// trans서버에서는 pet.inc를 읽지 않는다.
 #else	// __DBSERVER
 	WORD wMaxEnergy		= GetMaxEnergy();
-	m_wEnergy	= wEnergy > wMaxEnergy? wMaxEnergy: wEnergy;
+	m_wEnergy	= std::max(wEnergy, wMaxEnergy);
 #endif	// __DBSERVER
 }
 
@@ -367,12 +318,8 @@ BYTE CPet::GetAvailLevel( BYTE nLevel )
 	return 0;
 }
 
-#ifdef _DEBUG
-#include "defineattribute.h"
-#endif	// _DEBUG
-
 SINGLE_DST CPet::GetAvailDestParam() const {
-	PETAVAILPARAM * pAvailParam	= CPetProperty::GetInstance()->GetAvailParam( m_nKind );
+	const CPetProperty::PETAVAILPARAM * pAvailParam = CPetProperty::GetInstance()->GetAvailParam(m_nKind);
 	if (!pAvailParam) return { 0, 0 };
 
 	int dst = static_cast<int>(pAvailParam->dwDstParam);
@@ -383,17 +330,18 @@ SINGLE_DST CPet::GetAvailDestParam() const {
 	return SINGLE_DST{ dst, nParam };
 }
 
-DWORD CPet::GetIndex( void )
-{
-	PPETAVAILPARAM pPetAvailParam	= CPetProperty::GetInstance()->GetAvailParam( m_nKind );
+DWORD CPet::GetIndex() const {
 	if( m_nLevel == PL_EGG )
 		return MI_PET_EGG;
-	else if( m_nLevel > PL_EGG && m_nLevel < PL_B )
+
+	const CPetProperty::PETAVAILPARAM * pPetAvailParam = CPetProperty::GetInstance()->GetAvailParam(m_nKind);
+	if (m_nLevel > PL_EGG && m_nLevel < PL_B) {
 		return pPetAvailParam->m_adwIndex[0];
-	else if( m_nLevel < PL_S )
+	} else if (m_nLevel < PL_S) {
 		return pPetAvailParam->m_adwIndex[1];
-	else
+	} else {
 		return pPetAvailParam->m_adwIndex[2];
+	}
 }
 
 void CPet::InitEgg( void )

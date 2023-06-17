@@ -8769,7 +8769,7 @@ void CMover::PetRelease( void )
 		return;
 	CPetProperty* pProperty	= CPetProperty::GetInstance();
 	CPet* pPet	= pItemElem->m_pPet;
-	PPETPENALTY pPenalty	= pProperty->GetPenalty( pPet->GetLevel() );
+	const CPetProperty::PETPENALTY * pPenalty = pProperty->GetPenalty(pPet->GetLevel());
 	if( pPenalty )
 	{
 		if( pPenalty->fExp > 0.0f )
