@@ -600,19 +600,10 @@ BOOL CAIEgg::StateRage( const AIMSG & msg )
 
 // 알변환 일반적인 아이템 변환에 이용할 수 있도록 확장을 고려하여 만들었으나 아직 구체적이지 않다.
 // 비슷한 변환이 추가될 때, 나머지 작업을 하자
-CTransformStuff::CTransformStuff()
-:
-m_nTransform( 0 )
-{
-}
 
 CTransformStuff::CTransformStuff( int nTransform )
 :
 m_nTransform( nTransform )
-{
-}
-
-CTransformStuff::~CTransformStuff()
 {
 }
 
@@ -641,20 +632,17 @@ CAr & operator>>(CAr & ar, CTransformStuff & self) {
 	if (nSize != CTransformItemProperty::Instance()->GetStuffSize(self.m_nTransform))
 		return ar;
 #endif	// __WORLDSERVER
+
+	self.m_vComponents.clear();
 	for (std::uint32_t i = 0; i < nSize; i++) {
-		TransformStuffComponent component;
+		TransformStuffComponent & component = self.m_vComponents.emplace_back();
 		ar >> component;
-		self.AddComponent(component.nItem, component.nNum);
 	}
 
 	return ar;
 }
 
 #ifdef __WORLDSERVER
-// 변환 객체
-ITransformer::~ITransformer()
-{
-}
 
 ITransformer* ITransformer::Transformer( int nTransformer )
 {
@@ -668,20 +656,16 @@ void ITransformer::Transform( CUser* pUser, CTransformStuff& stuff )
 {
 	if( !IsValidStuff( pUser, stuff ) )
 		return;
-	RemoveItem( pUser, stuff );
+	stuff.RemoveItem(pUser);
 	CreateItem( pUser, stuff );
 }
 
-void ITransformer::RemoveItem( CUser* pUser, CTransformStuff & stuff )
-{
-	for( DWORD i = 0; i < stuff.GetSize(); i++ )
-	{
-		TransformStuffComponent* pComponent	= stuff.GetComponent( i );
-		CItemElem * pItem = pUser->GetItemId(pComponent->nItem);
-		if( pItem )
-		{
-			g_DPSrvr.PutItemLog( pUser, "X", "transform-removestuff", pItem, pComponent->nNum );
-			pUser->RemoveItem( pComponent->nItem, pComponent->nNum );
+void CTransformStuff::RemoveItem(CUser * pUser) const {
+	for (const TransformStuffComponent & pComponent : m_vComponents) {
+		CItemElem * pItem = pUser->GetItemId(pComponent.nItem);
+		if (pItem) {
+			g_DPSrvr.PutItemLog(pUser, "X", "transform-removestuff", pItem, pComponent.nNum);
+			pUser->RemoveItem(pComponent.nItem, pComponent.nNum);
 		}
 	}
 }
@@ -698,30 +682,30 @@ void ITransformer::CreateItem( CUser* pUser, CTransformStuff &stuff )
 		pUser->AddDefinedText( TID_GAME_TRANSFORM_S01 );
 }
 
-BOOL ITransformer::IsValidStuff( CUser* pUser, CTransformStuff & stuff )
-{
+bool ITransformer::IsValidStuff( CUser* pUser, const CTransformStuff & stuff ) const {
+	const auto components = stuff.GetSpan();
+
 	// 사용자가 보내온 재료와 실제 필요한 재료 개수가 다르면 부적합 재료
-	if( stuff.GetSize() != CTransformItemProperty::Instance()->GetStuffSize( stuff.GetTransform() ) )
+	if (components.size() != CTransformItemProperty::Instance()->GetStuffSize(stuff.GetTransform())) {
 		return FALSE;
+	}
+
+	std::set<int> seenSlots;
 
 	// 사용자가 보내온 재료를 사용자가 가지고 있고
 	// 사용가능한 상태인지를 검사한다
-	for( DWORD i = 0; i < stuff.GetSize(); i++ )
-	{
-		TransformStuffComponent* pComponent		= stuff.GetComponent( i );
-		CItemElem * pItem = pUser->GetItemId(pComponent->nItem);
-		if( !pItem || pUser->IsUsing( pItem ) )
-			return FALSE;
+	for (const TransformStuffComponent & pComponent : components) {
+		CItemElem * pItem = pUser->GetItemId(pComponent.nItem);
+		if (!pItem) return FALSE;
+		if (pUser->IsUsing(pItem)) return FALSE;
+		if (pUser->m_Inventory.IsEquip(pComponent.nItem)) return FALSE;
+		if (!IsValidItemForThisTransformation(pItem)) return FALSE;
+
+		if (seenSlots.contains(pComponent.nItem)) return FALSE;
+		seenSlots.emplace(pComponent.nItem);
 	}
+
 	return TRUE;
-}
-
-CTransformerEgg::CTransformerEgg()
-{
-}
-
-CTransformerEgg::~CTransformerEgg()
-{
 }
 
 CTransformerEgg*	CTransformerEgg::Instance( void )
@@ -730,26 +714,8 @@ CTransformerEgg*	CTransformerEgg::Instance( void )
 	return &sTransformerEgg;
 }
 
-BOOL CTransformerEgg::IsValidStuff( CUser* pUser, CTransformStuff & stuff )
-{
-	// 기본 재료 조건을 만족하지 않으면 부적합 재료
-	if( !ITransformer::IsValidStuff( pUser, stuff ) )
-		return FALSE;
-
-	std::set<int> setItems;
-	for( DWORD i = 0; i < stuff.GetSize(); i++ )
-	{
-		TransformStuffComponent* pComponent		= stuff.GetComponent( i );
-		// 중복된 재료를 가지고 있다면 조작된 것이다
-		if( setItems.insert( pComponent->nItem ).second == false )
-			return FALSE;
-		CItemElem * pItem = pUser->GetItemId(pComponent->nItem);
-		ASSERT( pItem );
-		// 알이 아니면 부적합 재료
-		if( !pItem->IsEgg() )
-			return FALSE;
-	}
-	return TRUE;
+bool CTransformerEgg::IsValidItemForThisTransformation(CItemElem * pItem) const {
+	return pItem->IsEgg();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

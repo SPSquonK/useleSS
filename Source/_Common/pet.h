@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <span>
 #include "defineitem.h"
 #include "SingleDst.h"
 
@@ -182,73 +183,70 @@ public:
 
 
 // Individual item elements required for conversion
-typedef	struct	_TransformStuffComponent
-{
+struct TransformStuffComponent {
 	static constexpr bool Archivable = true;
 	int		nItem;
 	short	nNum;
-	_TransformStuffComponent()
-	{
-		nItem	= 0;
-		nNum	= 0;
+
+	TransformStuffComponent(int nItem = 0, short nNum = 0)
+		: nItem(nItem), nNum(nNum) {
 	}
-	_TransformStuffComponent( int nItem, short nNum )
-	{
-		this->nItem	= nItem;
-		this->nNum	= nNum;
-	}
-}	TransformStuffComponent, *PTransformStuffComponent;
-typedef	std::vector<TransformStuffComponent>	VTSC;
+};
 
 // Set of items required for conversion
-class CTransformStuff final
-{
+class CTransformStuff final {
 public:
-	CTransformStuff();
-	CTransformStuff( int nTransform );
-	virtual	~CTransformStuff();
+	explicit CTransformStuff(int nTransform = 0);
+
 	void	AddComponent( int nItem, short nNum );		// Add required item element
 	friend CAr & operator<<(CAr & ar, const CTransformStuff & self);
 	friend CAr & operator>>(CAr & ar, CTransformStuff & self);
-	int		GetTransform( void )		{	return m_nTransform;	}	// return the conversion type
-	size_t	GetSize( void )		{	return m_vComponents.size();		}
-	TransformStuffComponent*	GetComponent( int i )	{	return &m_vComponents[i];	}
+	
+	[[nodiscard]] int GetTransform() const  { return m_nTransform; }	// Return the conversion type
+	[[nodiscard]] std::span<      TransformStuffComponent> GetSpan()        { return m_vComponents; }
+	[[nodiscard]] std::span<const TransformStuffComponent> GetSpan() const { return m_vComponents; }
+
+#ifdef __WORLDSERVER
+	// Remove conversion material from user
+	void RemoveItem(CUser * pUser) const;
+#endif
+
 private:
 	int	m_nTransform;	// conversion type
-	VTSC	m_vComponents;	// set of necessary items
+	std::vector<TransformStuffComponent> m_vComponents;	// set of necessary items
 };
 
 #ifdef __WORLDSERVER
 class ITransformer
 {
-protected:
-	ITransformer()	{}
 public:
-	virtual	~ITransformer()	= 0;
-	static	ITransformer*	Transformer( int nTransform );
-	virtual	BOOL	IsValidStuff( CUser* pUser, CTransformStuff & stuff );
+	virtual	~ITransformer()	= default;
+	static ITransformer * Transformer(int nTransform);
+	
 	// Convert user's item
-	void	Transform( CUser* pUser, CTransformStuff& stuff );
-	// Remove conversion material from user
-	void	RemoveItem( CUser* pUser, CTransformStuff& stuff );
+	void Transform(CUser * pUser, CTransformStuff & stuff);
+
+protected:
+	virtual bool IsValidItemForThisTransformation(CItemElem * itemElem) const = 0;
+
+private:
+	[[nodiscard]] bool IsValidStuff(CUser * pUser, const CTransformStuff & stuff) const;
+
 	// Creates a conversion result item for the user
 	void	CreateItem( CUser* pUser, CTransformStuff& stuff );
 };
 
 // egg conversion class
-class CTransformerEgg
-	: public ITransformer
-{
+class CTransformerEgg : public ITransformer {
 public:
-	CTransformerEgg();
-	virtual	~CTransformerEgg();
-	virtual	BOOL	IsValidStuff( CUser* pUser, CTransformStuff & stuff );
-	static	CTransformerEgg*	Instance( void );
+	static CTransformerEgg * Instance();
+
+protected:
+	bool IsValidItemForThisTransformation(CItemElem * itemElem) const override;
 };
 
 // It is an element that signifies one concrete transformation.
-class CTransformItemComponent
-{
+class CTransformItemComponent final {
 private:
 	static constexpr DWORD eMaxProb = 1000000;
 
