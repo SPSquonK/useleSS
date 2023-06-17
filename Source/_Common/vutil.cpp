@@ -41,22 +41,18 @@ void ComputeShortenName(CHAR * pDest, const CHAR * pSrc, size_t nCount) {
 }
 
 // 외국어포함 문장의 길이를 잘라준다.
-int GetStrCut( const CHAR* pSrc, CHAR* pDest, int nCount )
-{
+int GetStrCut( const CHAR* pSrc, CHAR* pDest, int nCount ) {
 	int nOffset = 0;
-	int nLen;
 	
-	while( nCount )
-	{
-		nLen = GetCharLen( &pSrc[ nOffset ]  );
+	while (nCount) {
+		const int nLen = GetCharLen(&pSrc[nOffset]);
 		nOffset += nLen;
 		nCount--;
 	}
 	
 	memcpy( pDest, pSrc, sizeof(char)*nOffset);
-	pDest[nOffset + 1] = '\0';
-	
-	return 1;
+	pDest[nOffset] = '\0';
+	return nOffset;
 }	
 
 // 외국어포함 문자 갯수를 알아냄
@@ -64,10 +60,10 @@ int GetStrLen( const CHAR* pSrc )
 {
 	int nCount = 0;
 	int nOffset = 0;
-	int nLen;
 	
-	while( pSrc[ nOffset ] != NULL )
+	while( pSrc[ nOffset ] != '\0')
 	{
+		const int nLen = GetCharLen(&pSrc[nOffset]);
 		nOffset += nLen;
 		nCount++;
 	}
