@@ -1,18 +1,13 @@
-#ifndef __PET_H__
-#define	__PET_H__
+#pragma once
 
 #include <array>
+#include "defineitem.h"
 #include "SingleDst.h"
 
 #ifdef __CLIENT
 #include "..\_AIInterface\AIInterface.h"
 #endif	// __CLIENT
 
-#include "defineitem.h"
-// 그냥 클라이언트에서 따로 따로 움직여도 상관 없지 않을까?
-// 이렇게 될 경우, (전송과 처리가 가벼워지는 장점이 있다.)
-	// 서버는 펫 자료 객체만,
-	// 클라이언트는 CPet의 데이터를 가지고 있는 CMover 객체를 생성하면 된다.
 
 enum	PETLEVEL	{	PL_EGG,	PL_D,	PL_C,	PL_B,	PL_A,	PL_S,	PL_MAX,	};
 
@@ -39,21 +34,21 @@ public:
 	};
 
 	struct PETAVAILPARAM {
-		DWORD	dwDstParam;		// 능력치 상승 파라미터
-		DWORD	m_anParam[MAX_PET_AVAIL_LEVEL];		// 능력치 상승 값
-		DWORD	m_dwItemId;	// 펫 아이템
-		DWORD	m_adwIndex[MAX_PET_SHAPE];	// 펫 객체 모양
-		DWORD	m_dwProbability;	// 부화 확률
+		DWORD	dwDstParam;
+		DWORD	m_anParam[MAX_PET_AVAIL_LEVEL];	
+		DWORD	m_dwItemId;	// Pet item ID
+		DWORD	m_adwIndex[MAX_PET_SHAPE];	// Pet object index
+		DWORD	m_dwProbability;	// Hatching probability
 	};
 
 	CPetProperty();
 
-	[[nodiscard]] const PETAVAILPARAM * GetAvailParam(BYTE nKind) const;	// 치유 속성 추가
-	BYTE	GetLevelupAvailLevel( BYTE wLevel );		// 레벨 업 시 상승되는 능력치 레벨(임의)
-	[[nodiscard]] WORD GetFeedEnergy(DWORD dwCost, int nIndex = 0) const;		// 가격에 따른 먹이 생성(임의)
-	DWORD	GetIncrementExp( BYTE nLevel );	// 분당 습득 경험치
+	[[nodiscard]] const PETAVAILPARAM * GetAvailParam(BYTE nKind) const;
+	BYTE	GetLevelupAvailLevel( BYTE wLevel );		// Returns a random ability level for the given pet level
+	[[nodiscard]] WORD GetFeedEnergy(DWORD dwCost, int nIndex = 0) const;		// Generate random food number according to price
+	DWORD	GetIncrementExp( BYTE nLevel );	// Experience gained per minute
 	WORD	GetMaxEnergy( BYTE nLevel );
-	WORD	GetAddLife( void );		// 수명 회복액에 의한 생명 추가
+	WORD	GetAddLife();		// Add life by life recovery liquid
 
 	static	CPetProperty*	GetInstance( void );
 	BOOL	LoadScript( LPCTSTR szFile );
@@ -79,7 +74,7 @@ private:
 
 	PETAVAILPARAM	m_aPetAvailParam[PK_MAX];
 	std::array<LevelInfo, PL_MAX> m_levelInfos;
-	std::vector<FEEDENERGY>	m_aFeedEnergy[2];	// 먹이 만들기 시 전리 가격에 따른 먹이 량 
+	std::vector<FEEDENERGY>	m_aFeedEnergy[2];	// Amount of food according to loot price when making food
 	std::vector<WORD>	m_awAddLifeProbability;
 };
 
@@ -102,7 +97,7 @@ private:
 #define	PETLOGTYPE_LIFE	8
 
 #define	MAX_PET_NAME_FMT	33	// 16 * 2 + 1
-#define	MAX_PET_NAME	17	// 한글 8자
+#define	MAX_PET_NAME	17 // 8 korean characters
 
 class CPet final {
 private:
@@ -146,12 +141,12 @@ public:
 		}
 
 private:
-	BYTE	m_nKind = 0;	// 종류 : 0~6
-	BYTE	m_nLevel = PL_EGG;	// 레벨 : e		// e = 0, d = 1, c = 2, b = 3, a = 4, s = 5
-	DWORD	m_dwExp = 0;	// 경험치 : 0
-	WORD	m_wEnergy = 0;		// 기력 : 0
-	WORD	m_wLife = 0;	// 생명 :  0 ~ 99	// 디폴트 : 1	// 생명이 0인 상태에서 사망 시 객체 제거
-	std::array<BYTE, PL_MAX> m_anAvailLevel = { 0, 0, 0, 0, 0, 0 };	// 능력치
+	BYTE	m_nKind = 0;	// 0~6
+	BYTE	m_nLevel = PL_EGG;	// Pet level : e		// e = 0, d = 1, c = 2, b = 3, a = 4, s = 5
+	DWORD	m_dwExp = 0;
+	WORD	m_wEnergy = 0;
+	WORD	m_wLife = 0;	// Life: 0 ~ 99 // Default: 1 // Remove object when death with 0 life
+	std::array<BYTE, PL_MAX> m_anAvailLevel = { 0, 0, 0, 0, 0, 0 };	// Stats
 	char	m_szName[MAX_PET_NAME] = "";
 };
 
@@ -160,8 +155,8 @@ private:
 class CAIEgg: public CAIInterface
 {
 private:
-	OBJID m_idOwner;	// 주인님
-	int		m_nState;	// 현재 상태.
+	OBJID m_idOwner;
+	int		m_nState;
 	void MoveToDst(	OBJID idTarget );
 	void MoveToDst(	D3DXVECTOR3 vDst );
 	BOOL  MoveProcessIdle( const AIMSG & msg );
@@ -186,7 +181,7 @@ public:
 #endif	// __CLIENT
 
 
-// 변환 시 필요한 개별 아이템 요소
+// Individual item elements required for conversion
 typedef	struct	_TransformStuffComponent
 {
 	static constexpr bool Archivable = true;
@@ -205,22 +200,22 @@ typedef	struct	_TransformStuffComponent
 }	TransformStuffComponent, *PTransformStuffComponent;
 typedef	std::vector<TransformStuffComponent>	VTSC;
 
-// 변환 시 필요한 아이템 집합
+// Set of items required for conversion
 class CTransformStuff final
 {
 public:
 	CTransformStuff();
 	CTransformStuff( int nTransform );
 	virtual	~CTransformStuff();
-	void	AddComponent( int nItem, short nNum );		// 필요 아이템 요소 추가
+	void	AddComponent( int nItem, short nNum );		// Add required item element
 	friend CAr & operator<<(CAr & ar, const CTransformStuff & self);
 	friend CAr & operator>>(CAr & ar, CTransformStuff & self);
-	int		GetTransform( void )		{	return m_nTransform;	}	// 변환 종류를 반환
+	int		GetTransform( void )		{	return m_nTransform;	}	// return the conversion type
 	size_t	GetSize( void )		{	return m_vComponents.size();		}
 	TransformStuffComponent*	GetComponent( int i )	{	return &m_vComponents[i];	}
 private:
-	int	m_nTransform;	// 변환 종류
-	VTSC	m_vComponents;	// 필요 아이템 집합
+	int	m_nTransform;	// conversion type
+	VTSC	m_vComponents;	// set of necessary items
 };
 
 #ifdef __WORLDSERVER
@@ -232,15 +227,15 @@ public:
 	virtual	~ITransformer()	= 0;
 	static	ITransformer*	Transformer( int nTransform );
 	virtual	BOOL	IsValidStuff( CUser* pUser, CTransformStuff & stuff );
-	// 사용자의 아이템을 변환한다
+	// Convert user's item
 	void	Transform( CUser* pUser, CTransformStuff& stuff );
-	// 사용자로부터 변환 재료를 제거한다
+	// Remove conversion material from user
 	void	RemoveItem( CUser* pUser, CTransformStuff& stuff );
-	// 사용자에게 변환 결과 아이템을 만들어준다
+	// Creates a conversion result item for the user
 	void	CreateItem( CUser* pUser, CTransformStuff& stuff );
 };
 
-// 알변환 클래스
+// egg conversion class
 class CTransformerEgg
 	: public ITransformer
 {
@@ -251,22 +246,22 @@ public:
 	static	CTransformerEgg*	Instance( void );
 };
 
-// 변환 결과 아이템 요소
-// 변형된 원형 패턴 사용
-typedef	struct _TransformItemElement
+// Conversion Result Item Element
+// Using a deformed circular pattern
+struct TransformItemElement
 {
-	CItemElem*	pItem;	// 변환 결과 아이템
-	int		nProb;	// 확률
-	_TransformItemElement( CItemElem* pItem, int nProb )
+	CItemElem*	pItem;	// conversion result item
+	int		nProb;	// percentage
+	TransformItemElement( CItemElem* pItem, int nProb )
 	{
 		this->pItem	= pItem;
 		this->nProb	= nProb;
 	}
-}	TransformItemElement;
+};
 
 typedef	std::vector<TransformItemElement>	VTIE;
 
-// 하나의 구체적인 변환을 의미하는 요소이다
+// It is an element that signifies one concrete transformation.
 class CTransformItemComponent
 {
 private:
@@ -289,7 +284,7 @@ private:
 };
 
 typedef	std::map<int, CTransformItemComponent*>	MPTIC;
-// 모든 변환을 관리한다
+// Manage all conversions
 class CTransformItemProperty
 {
 public:
@@ -310,5 +305,3 @@ private:
 
 #endif	// __WORLDSERVER
 
-
-#endif	// __PET_H__
