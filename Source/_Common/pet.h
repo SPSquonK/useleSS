@@ -21,6 +21,9 @@ enum	PETLEVEL	{	PL_EGG,	PL_D,	PL_C,	PL_B,	PL_A,	PL_S,	PL_MAX,	};
 
 #define	MAX_PET_SHAPE	3
 
+class CProject;
+class CScript;
+
 class CPetProperty final {
 public:
 	struct FEEDENERGY {
@@ -52,14 +55,9 @@ public:
 	WORD	GetMaxEnergy( BYTE nLevel );
 	WORD	GetAddLife( void );		// 수명 회복액에 의한 생명 추가
 
-#ifdef __JEFF_11_3
-	LPDWORD		GetLevelupAvailLevelProbabilityPtr( void )	{	return &m_adwLevelupAvailLevelProbability[0][0];	}
-	LPBYTE	GetLevelupAvailLevelMaxPtr( void )		{	return m_anLevelupAvailLevelMax;	}
-	std::vector<WORD>*	GetAddLifeProbabilityPtr( void )	{	return &m_awAddLifeProbability;		}
-#endif	// __JEFF_11_3
-
 	static	CPetProperty*	GetInstance( void );
 	BOOL	LoadScript( LPCTSTR szFile );
+	void LoadLevelupAvail(CScript & script);
 	BYTE	Hatch( void );
 	[[nodiscard]] const PETPENALTY * GetPenalty(BYTE nLevel) const;
 
@@ -68,16 +66,21 @@ public:
 	[[nodiscard]] static DWORD GetTIdOfDst(const SINGLE_DST & dst, bool shortenHpMax = false);
 #endif
 
-private:
-	PETAVAILPARAM	m_aPetAvailParam[PK_MAX];
-	BYTE	m_anLevelupAvailLevelMax[PL_MAX];
-	DWORD	m_adwLevelupAvailLevelProbability[PL_MAX][MAX_PET_AVAIL_LEVEL];	// 확률
-	std::vector<FEEDENERGY>	m_aFeedEnergy[2];	// 먹이 만들기 시 전리 가격에 따른 먹이 량 
-	DWORD	m_adwIncrementExp[PL_MAX];		// 분당 습득 경험치
-	WORD	m_awMaxEnergy[PL_MAX];
-	std::vector<WORD>	m_awAddLifeProbability;
+	friend CProject;
 
-	std::array<PETPENALTY, PL_MAX> m_aPenalty;
+private:
+	struct LevelInfo {
+		std::array<DWORD, MAX_PET_AVAIL_LEVEL> availProb {0, };
+		BYTE availMax      = 0;
+		DWORD incrementExp = 0;
+		WORD maxEnergy     = 0;
+		PETPENALTY penalty;
+	};
+
+	PETAVAILPARAM	m_aPetAvailParam[PK_MAX];
+	std::array<LevelInfo, PL_MAX> m_levelInfos;
+	std::vector<FEEDENERGY>	m_aFeedEnergy[2];	// 먹이 만들기 시 전리 가격에 따른 먹이 량 
+	std::vector<WORD>	m_awAddLifeProbability;
 };
 
 #define	MAX_PET_LIFE	99

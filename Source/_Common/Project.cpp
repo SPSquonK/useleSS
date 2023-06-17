@@ -4241,36 +4241,14 @@ BOOL	CProject::LoadServerScript( const char* sFile )
 		}
 		else if( s.Token == _T( "Pet_LevelupAvail" ) )
 		{
-			CPetProperty* pProperty		= CPetProperty::GetInstance();
-			LPDWORD ptr1	= pProperty->GetLevelupAvailLevelProbabilityPtr();
-			LPBYTE ptr2		= pProperty->GetLevelupAvailLevelMaxPtr();
-			// 	10000	0	0	0	0	0	0	0	0
-			int	nLevel	= (int)PL_D;
-			s.GetToken();	// {{
-			DWORD	dwProbability	= s.GetNumber();
-			while( *s.token != '}' )
-			{
-//				ptr1[nLevel][0]	= dwProbability;
-				ptr1[nLevel*MAX_PET_AVAIL_LEVEL]	= dwProbability;
-				for( int i = 1; i < MAX_PET_AVAIL_LEVEL; i++ )
-				{
-//					ptr1[nLevel][i]	= s.GetNumber();
-					ptr1[nLevel*MAX_PET_AVAIL_LEVEL+i]	= s.GetNumber();
-//					if( ptr1[nLevel][i] > 0 )
-					if( ptr1[nLevel*MAX_PET_AVAIL_LEVEL+i] > 0 )
-						ptr2[nLevel]	= i;
-				}
-				nLevel++;
-				dwProbability	= s.GetNumber();
-			}
+			CPetProperty::GetInstance()->LoadLevelupAvail(s);
 		}
 		else if( s.Token == _T( "Pet_AddLifeProbability" ) )
 		{
 			CPetProperty* pProperty		= CPetProperty::GetInstance();
-			std::vector<WORD>* ptr	= pProperty->GetAddLifeProbabilityPtr();
 			// ���� ȸ���� Ȯ��	// �߰� �� ��� ���� 100�� �ǵ��� Ȯ��
 			// 	50	// +1
-			*ptr = s.GetNumbers<WORD>('}');
+			pProperty->m_awAddLifeProbability = s.GetNumbers<WORD>('}');
 		}
 		s.GetToken();
 	}

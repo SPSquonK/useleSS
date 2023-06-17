@@ -18,15 +18,11 @@ static constexpr int nDefaultLife = 1;
 CPetProperty::CPetProperty()
 {
 	memset( (void*)m_aPetAvailParam, 0, sizeof(PETAVAILPARAM) * PK_MAX );
-	memset( (void*)m_anLevelupAvailLevelMax, 0, sizeof(BYTE) * PL_MAX );
-	memset( (void*)m_adwLevelupAvailLevelProbability, 0, sizeof(DWORD) * PL_MAX * MAX_PET_AVAIL_LEVEL );
-	memset( (void*)m_adwIncrementExp, 0, sizeof(DWORD) * PL_MAX );
-	memset( (void*)m_awMaxEnergy, 0, sizeof(WORD) * PL_MAX );
 }
 
 const CPetProperty::PETPENALTY * CPetProperty::GetPenalty(BYTE nLevel) const {
 	if (nLevel < PL_MAX) {
-		return &m_aPenalty[nLevel];
+		return &m_levelInfos[nLevel].penalty;
 	} else {
 		return nullptr;
 	}
@@ -40,15 +36,20 @@ const CPetProperty::PETAVAILPARAM * CPetProperty::GetAvailParam(BYTE nKind) cons
 	}
 }
 
-BYTE	CPetProperty::GetLevelupAvailLevel( BYTE wLevel )
-{
+BYTE	CPetProperty::GetLevelupAvailLevel( BYTE wLevel ) {
+	if (wLevel >= PL_MAX) {
+		return 0;
+	}
+
+	const LevelInfo & info = m_levelInfos[wLevel];
+
 	DWORD dwTotal	= 0;
 	DWORD dwRandom	= xRandom( 1, 10001 );	// 1 ~ 10000
-	for( int i = 0; i <= m_anLevelupAvailLevelMax[wLevel]; i++ )
-	{
-		dwTotal		+= m_adwLevelupAvailLevelProbability[wLevel][i];
-		if(  dwTotal >= dwRandom )
+	for (int i = 0; i <= info.availMax; i++) {
+		dwTotal += info.availProb[i];
+		if (dwTotal >= dwRandom) {
 			return i + 1;
+		}
 	}
 	return 0;
 }
@@ -82,14 +83,14 @@ BYTE	CPetProperty::Hatch( void )
 DWORD	CPetProperty::GetIncrementExp( BYTE nLevel )
 {
 	if( nLevel >= PL_D && nLevel <= PL_A )
-		return m_adwIncrementExp[nLevel-1];
+		return m_levelInfos[nLevel-1].incrementExp;
 	return 0;
 }
 
 WORD CPetProperty::GetMaxEnergy( BYTE nLevel )
 {
 	if( nLevel >= PL_D && nLevel <= PL_S )
-		return m_awMaxEnergy[nLevel-1];
+		return m_levelInfos[nLevel-1].maxEnergy;
 	return 1;	// 0 나누기 방지
 }
 
@@ -143,22 +144,7 @@ BOOL CPetProperty::LoadScript( LPCTSTR szFile )
 		}
 		else if( s.Token == _T( "LevelupAvail" ) )
 		{
-			// 	10000	0	0	0	0	0	0	0	0
-			int	nLevel	= (int)PL_D;
-			s.GetToken();	// {{
-			DWORD	dwProbability	= s.GetNumber();
-			while( *s.token != '}' )
-			{
-				m_adwLevelupAvailLevelProbability[nLevel][0]	= dwProbability;
-				for( int i = 1; i < MAX_PET_AVAIL_LEVEL; i++ )
-				{
-					m_adwLevelupAvailLevelProbability[nLevel][i]	= s.GetNumber();
-					if( m_adwLevelupAvailLevelProbability[nLevel][i] > 0 )
-						m_anLevelupAvailLevelMax[nLevel]	= i;
-				}
-				nLevel++;
-				dwProbability	= s.GetNumber();
-			}
+			LoadLevelupAvail(s);
 		}
 		else if( s.Token == _T( "FeedEnergy" ) )
 		{
@@ -188,7 +174,7 @@ BOOL CPetProperty::LoadScript( LPCTSTR szFile )
 			while( *s.token != '}' )
 			{
 				ASSERT( nLevel < PL_S );
-				m_adwIncrementExp[nLevel++]	= dwIncrementExp;
+				m_levelInfos[nLevel++].incrementExp	= dwIncrementExp;
 				dwIncrementExp	= s.GetNumber();
 			}
 		}
@@ -201,7 +187,7 @@ BOOL CPetProperty::LoadScript( LPCTSTR szFile )
 			while( *s.token != '}' )
 			{
 				ASSERT( nLevel <= PL_S );
-				m_awMaxEnergy[nLevel++]	= (WORD)( dwMaxEnergy );
+				m_levelInfos[nLevel++].maxEnergy = (WORD)( dwMaxEnergy );
 				dwMaxEnergy		= s.GetNumber();
 			}
 		}
@@ -227,8 +213,8 @@ BOOL CPetProperty::LoadScript( LPCTSTR szFile )
 			int nLevel	= PL_D;
 			while( *s.token != '}' )
 			{
-				m_aPenalty[nLevel].fExp		= fExp;
-				m_aPenalty[nLevel].wEnergy	= (WORD)s.GetNumber();
+				m_levelInfos[nLevel].penalty.fExp		= fExp;
+				m_levelInfos[nLevel].penalty.wEnergy	= (WORD)s.GetNumber();
 				nLevel++;
 				fExp	= s.GetFloat();
 			}
@@ -237,6 +223,25 @@ BOOL CPetProperty::LoadScript( LPCTSTR szFile )
 	}
 
 	return TRUE;
+}
+
+void CPetProperty::LoadLevelupAvail(CScript & s) {
+	// 	10000	0	0	0	0	0	0	0	0
+	int	nLevel	= (int)PL_D;
+	s.GetToken();	// {{
+	DWORD	dwProbability	= s.GetNumber();
+	while( *s.token != '}' )
+	{
+		m_levelInfos[nLevel].availProb[0]	= dwProbability;
+		for( int i = 1; i < MAX_PET_AVAIL_LEVEL; i++ )
+		{
+			m_levelInfos[nLevel].availProb[i]	= s.GetNumber();
+			if( m_levelInfos[nLevel].availProb[i] > 0 )
+				m_levelInfos[nLevel].availMax = i;
+		}
+		nLevel++;
+		dwProbability	= s.GetNumber();
+	}
 }
 
 #ifdef __CLIENT
