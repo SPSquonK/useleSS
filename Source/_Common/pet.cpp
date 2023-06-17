@@ -753,49 +753,29 @@ BOOL CTransformerEgg::IsValidStuff( CUser* pUser, CTransformStuff & stuff )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-CTransformItemComponent::CTransformItemComponent( int nTransform )
-:
-m_nTransform( nTransform ),
-m_nTotalProb( 0 )
-{
+CTransformItemComponent::CTransformItemComponent(const int nTransform)
+	: m_nTransform(nTransform) {}
+
+void CTransformItemComponent::AddElement(std::unique_ptr<CItemElem> item, std::uint32_t prob) {
+	m_nTotalProb += prob;
+
+	m_vTransformItemElements.emplace_back(
+		TransformItemElement{
+			.pItem = std::move(item),
+			.nProb = m_nTotalProb
+		}
+	);
 }
 
-CTransformItemComponent::~CTransformItemComponent()
-{
-	Clear();
-}
-
-void CTransformItemComponent::Clear( void )
-{
-	for( VTIE::iterator i  = m_vTransformItemElements.begin(); i != m_vTransformItemElements.end(); ++i )
-		safe_delete( ( *i ).pItem );
-	m_vTransformItemElements.clear();
-}
-
-void CTransformItemComponent::AddElement( TransformItemElement element )
-{
-	AdjustmentProbability( element );
-	m_vTransformItemElements.push_back( element );
-}
-
-void CTransformItemComponent::AdjustmentProbability( TransformItemElement & element )
-{
-	m_nTotalProb	+= element.nProb;
-	element.nProb	= m_nTotalProb;
-}
-
-CItemElem* CTransformItemComponent::GetItem( void )
-{
-	int nProb	= xRandom( 0, eMaxProb );
-	for( VTIE::iterator i  = m_vTransformItemElements.begin(); i != m_vTransformItemElements.end(); ++i )
-	{
-		if( nProb < ( *i ).nProb )
-		{
-			( *i ).pItem->SetSerialNumber( xRand() );
-			return ( *i ).pItem;
+CItemElem * CTransformItemComponent::GetItem() {
+	DWORD nProb = xRandom(0, eMaxProb);
+	for (TransformItemElement & transformElement : m_vTransformItemElements) {
+		if (nProb < transformElement.nProb) {
+			transformElement.pItem->SetSerialNumber();
+			return transformElement.pItem.get();
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -834,14 +814,17 @@ BOOL CTransformItemProperty::LoadScript( const char* szFile )
 				int nProb	= s.GetNumber();
 				while( *s.token != '}' )
 				{
-					int nType	= s.GetNumber();
-					CItemElem* pItem;
+					const int nType = s.GetNumber();
+					std::unique_ptr<CItemElem> pItem;
 					if( nType == TI_GENERIC )
 						pItem	= CreateItemGeneric( s );
 					else if( nType == TI_PET )
 						pItem	= CreateItemPet( s );
 					assert( pItem );
-					pComponent->AddElement( TransformItemElement( pItem, nProb ) );
+					if (pItem) {
+						pItem->SetSerialNumber(0);
+					}
+					pComponent->AddElement( std::move(pItem), nProb );
 					nProb	= s.GetNumber();
 				}
 			}
@@ -852,22 +835,21 @@ BOOL CTransformItemProperty::LoadScript( const char* szFile )
 	return TRUE;
 }
 
-CItemElem* CTransformItemProperty::CreateItemGeneric( CScript & s )
+std::unique_ptr<CItemElem> CTransformItemProperty::CreateItemGeneric( CScript & s )
 {
-	CItemElem* pItem	= new CItemElem;
+	std::unique_ptr<CItemElem> pItem = std::make_unique<CItemElem>();
 	pItem->m_dwItemId	= s.GetNumber();
-	if( !pItem->GetProp() )
-	{
-		safe_delete( pItem );
-		return NULL;
+	if (!pItem->GetProp()) {
+		Error(__FUNCTION__"(): Item %lu has no props", pItem->m_dwItemId);
+		return nullptr;
 	}
 	pItem->m_nItemNum	= s.GetNumber();
 	return pItem;
 }
 
-CItemElem* CTransformItemProperty::CreateItemPet( CScript & s )
+std::unique_ptr<CItemElem> CTransformItemProperty::CreateItemPet( CScript & s )
 {
-	CItemElem* pItem	= new CItemElem;
+	std::unique_ptr<CItemElem> pItem = std::make_unique<CItemElem>();
 	pItem->m_nItemNum	= 1;
 	CPet* pPet	= pItem->m_pPet	= new CPet;
 	pPet->SetKind( s.GetNumber() );
@@ -883,8 +865,8 @@ CItemElem* CTransformItemProperty::CreateItemPet( CScript & s )
 		anAvail[i]	= atoi( sAvail );
 		if( anAvail[i] < 1 || anAvail[i] > 9 )
 		{
-			safe_delete( pItem );
-			return NULL;
+			Error(__FUNCTION__"(): Bad avail %d", anAvail[i]);
+			return nullptr;
 		}
 	}
 	for( int i = PL_D; i <= pPet->GetLevel(); i++ )

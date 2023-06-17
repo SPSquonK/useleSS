@@ -246,54 +246,46 @@ public:
 	static	CTransformerEgg*	Instance( void );
 };
 
-// Conversion Result Item Element
-// Using a deformed circular pattern
-struct TransformItemElement
-{
-	CItemElem*	pItem;	// conversion result item
-	int		nProb;	// percentage
-	TransformItemElement( CItemElem* pItem, int nProb )
-	{
-		this->pItem	= pItem;
-		this->nProb	= nProb;
-	}
-};
-
-typedef	std::vector<TransformItemElement>	VTIE;
-
 // It is an element that signifies one concrete transformation.
 class CTransformItemComponent
 {
 private:
-	enum	{	eMaxProb	= 1000000	};
+	static constexpr DWORD eMaxProb = 1000000;
+
+	// Conversion Result Item Element
+	// Using a deformed circular pattern
+	struct TransformItemElement {
+		std::unique_ptr<CItemElem> pItem;
+		std::uint32_t nProb;
+	};
+
 public:
 	CTransformItemComponent( int nTransform );
-	virtual	~CTransformItemComponent();
-	void	Clear( void );
-	void	AddElement( TransformItemElement element );
-	void	AdjustmentProbability( TransformItemElement & element );
-	CItemElem*	GetItem( void );
-	void	SetStuffSize( u_int nStuffSize )	{	m_nStuffSize	= nStuffSize;	}
-	u_int	GetStuffSize( void )	{	return m_nStuffSize;	}
-	int		GetTransform( void )	{	return m_nTransform;	}
+
+	void AddElement(std::unique_ptr<CItemElem> item, std::uint32_t prob);
+	void	SetStuffSize(u_int nStuffSize) { m_nStuffSize = nStuffSize; }
+
+	[[nodiscard]] u_int	GetStuffSize() const { return m_nStuffSize; }
+	[[nodiscard]] int GetTransform() const { return m_nTransform; }
+	[[nodiscard]] CItemElem * GetItem();
 private:
-	const	int		m_nTransform;
-	u_int	m_nStuffSize;
-	int		m_nTotalProb;
-	VTIE	m_vTransformItemElements;
+	int m_nTransform;
+	u_int	m_nStuffSize = 0;
+	std::uint32_t m_nTotalProb = 0;
+	std::vector<TransformItemElement>	m_vTransformItemElements;
 };
 
 // Manage all conversions
 class CTransformItemProperty final {
 public:
-	static	CTransformItemProperty*	Instance( void );
+	static CTransformItemProperty * Instance();
 	
 	u_int	GetStuffSize(int nTransform);
 	CItemElem * GetItem(int nTransform);
 	BOOL	LoadScript(const char * szFile);
 private:
-	CItemElem * CreateItemGeneric(CScript & s);
-	CItemElem * CreateItemPet(CScript & s);
+	std::unique_ptr<CItemElem> CreateItemGeneric(CScript & s);
+	std::unique_ptr<CItemElem> CreateItemPet(CScript & s);
 
 	CTransformItemComponent * GetComponent(int nTransform);
 private:
