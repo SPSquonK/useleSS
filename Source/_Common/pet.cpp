@@ -644,20 +644,20 @@ CAr & operator>>(CAr & ar, CTransformStuff & self) {
 
 #ifdef __WORLDSERVER
 
-ITransformer* ITransformer::Transformer( int nTransformer )
-{
-	if( nTransformer == 0 )
-		return CTransformerEgg::Instance();
-	assert( 0 );
-	return NULL;
-}
+void CTransformItemProperty::Transform(
+	CUser * pUser, const CTransformStuff & stuff
+) const {
+	const ITransformer * pTransformer = nullptr;
+	const int nTransformer = stuff.GetTransform();
+	if (nTransformer == 0) {
+		pTransformer = &transformer0Egg;
+	}
 
-void ITransformer::Transform( CUser* pUser, CTransformStuff& stuff )
-{
-	if( !IsValidStuff( pUser, stuff ) )
-		return;
+	if (!pTransformer) return;
+	if (!IsValidStuff(pUser, stuff, *pTransformer)) return;
+
 	stuff.RemoveItem(pUser);
-	CreateItem( pUser, stuff );
+	CreateItem(pUser, nTransformer);
 }
 
 void CTransformStuff::RemoveItem(CUser * pUser) const {
@@ -670,24 +670,27 @@ void CTransformStuff::RemoveItem(CUser * pUser) const {
 	}
 }
 
-void ITransformer::CreateItem( CUser* pUser, CTransformStuff &stuff )
-{
-	CItemElem* pItem	= CTransformItemProperty::Instance()->GetItem( stuff.GetTransform() );
-	if( pItem && pUser->CreateItem( pItem ) )
-	{
+void CTransformItemProperty::CreateItem( CUser* pUser, int nTransform) const {
+	CItemElem* pItem = GetItem(nTransform);
+	if (pItem) {
+		pUser->CreateOrSendItem(*pItem, TID_GAME_TRANSFORM_S00);
 		pUser->AddDefinedText( TID_GAME_TRANSFORM_S00 );
 		g_DPSrvr.PutCreateItemLog( pUser, pItem, "X", "transform" );
+	} else {
+		pUser->AddDefinedText(TID_GAME_TRANSFORM_S01);
 	}
-	else
-		pUser->AddDefinedText( TID_GAME_TRANSFORM_S01 );
 }
 
-bool ITransformer::IsValidStuff( CUser* pUser, const CTransformStuff & stuff ) const {
+bool CTransformItemProperty::IsValidStuff(
+	CUser* pUser,
+	const CTransformStuff & stuff,
+	const ITransformer & transformer
+) const {
 	const auto components = stuff.GetSpan();
 
 	// 사용자가 보내온 재료와 실제 필요한 재료 개수가 다르면 부적합 재료
-	if (components.size() != CTransformItemProperty::Instance()->GetStuffSize(stuff.GetTransform())) {
-		return FALSE;
+	if (components.size() != GetStuffSize(stuff.GetTransform())) {
+		return false;
 	}
 
 	std::set<int> seenSlots;
@@ -696,33 +699,27 @@ bool ITransformer::IsValidStuff( CUser* pUser, const CTransformStuff & stuff ) c
 	// 사용가능한 상태인지를 검사한다
 	for (const TransformStuffComponent & pComponent : components) {
 		CItemElem * pItem = pUser->GetItemId(pComponent.nItem);
-		if (!pItem) return FALSE;
-		if (pUser->IsUsing(pItem)) return FALSE;
-		if (pUser->m_Inventory.IsEquip(pComponent.nItem)) return FALSE;
-		if (!IsValidItemForThisTransformation(pItem)) return FALSE;
+		if (!pItem) return false;
+		if (pUser->IsUsing(pItem)) return false;
+		if (pUser->m_Inventory.IsEquip(pComponent.nItem)) return false;
+		if (!transformer.IsValidItem(pItem)) return false;
 
-		if (seenSlots.contains(pComponent.nItem)) return FALSE;
+		if (seenSlots.contains(pComponent.nItem)) return false;
 		seenSlots.emplace(pComponent.nItem);
 	}
 
-	return TRUE;
+	return true;
 }
 
-CTransformerEgg*	CTransformerEgg::Instance( void )
-{
-	static CTransformerEgg sTransformerEgg;
-	return &sTransformerEgg;
-}
-
-bool CTransformerEgg::IsValidItemForThisTransformation(CItemElem * pItem) const {
+bool CTransformItemProperty::CTransformerEgg::IsValidItem(CItemElem * pItem) const {
 	return pItem->IsEgg();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-CTransformItemComponent::CTransformItemComponent(const int nTransform)
+CTransformItemProperty::CTransformItemComponent::CTransformItemComponent(const int nTransform)
 	: m_nTransform(nTransform) {}
 
-void CTransformItemComponent::AddElement(std::unique_ptr<CItemElem> item, std::uint32_t prob) {
+void CTransformItemProperty::CTransformItemComponent::AddElement(std::unique_ptr<CItemElem> item, std::uint32_t prob) {
 	m_nTotalProb += prob;
 
 	m_vTransformItemElements.emplace_back(
@@ -733,9 +730,9 @@ void CTransformItemComponent::AddElement(std::unique_ptr<CItemElem> item, std::u
 	);
 }
 
-CItemElem * CTransformItemComponent::GetItem() {
+CItemElem * CTransformItemProperty::CTransformItemComponent::GetItem() const {
 	DWORD nProb = xRandom(0, eMaxProb);
-	for (TransformItemElement & transformElement : m_vTransformItemElements) {
+	for (const TransformItemElement & transformElement : m_vTransformItemElements) {
 		if (nProb < transformElement.nProb) {
 			transformElement.pItem->SetSerialNumber();
 			return transformElement.pItem.get();
@@ -846,22 +843,22 @@ std::unique_ptr<CItemElem> CTransformItemProperty::CreateItemPet( CScript & s )
 	return pItem;
 }
 
-CTransformItemComponent * CTransformItemProperty::GetComponent(int nTransform) {
+const CTransformItemProperty::CTransformItemComponent * CTransformItemProperty::GetComponent(int nTransform) const {
 	const auto i = m_mapComponents.find(nTransform);
 	return i != m_mapComponents.end() ? i->second.get() : nullptr;
 }
 
-u_int CTransformItemProperty::GetStuffSize( int nTransform )
+u_int CTransformItemProperty::GetStuffSize( int nTransform ) const
 {
-	CTransformItemComponent* pComponent	= GetComponent( nTransform );
+	const CTransformItemComponent* pComponent	= GetComponent( nTransform );
 	if( pComponent )
 		return pComponent->GetStuffSize();
 	return 0;
 }
 
-CItemElem* CTransformItemProperty::GetItem( int nTransform )
+CItemElem* CTransformItemProperty::GetItem( int nTransform ) const
 {
-	CTransformItemComponent* pComponent	= GetComponent( nTransform );
+	const CTransformItemComponent* pComponent	= GetComponent( nTransform );
 	if( pComponent )
 		return pComponent->GetItem();
 	return NULL;

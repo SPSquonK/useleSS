@@ -9374,10 +9374,7 @@ void CDPSrvr::OnTransformItem( CAr & ar, CUser & pUser )
 	CTransformStuff stuff;
 	ar >> stuff; // 재료를 수신
 
-	// 변환 번호로부터 변환 함수를 결정한다.
-	ITransformer* pTransformer	= ITransformer::Transformer( stuff.GetTransform() );
-	if (!pTransformer) return;
-	pTransformer->Transform( &pUser, stuff );	// 변환
+	CTransformItemProperty::Instance()->Transform(&pUser, stuff);
 }
 
 void CDPSrvr::OnTutorialState( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
