@@ -5,9 +5,7 @@
 #include "User.h"
 #endif
 
-
-
-#define		FRIC_AIR	0.011f		// 비행중 마찰계수
+static constexpr float FRIC_AIR = 0.011f;		// 비행중 마찰계수
 
 CShip::CShip()
 {
@@ -30,8 +28,8 @@ void CShip::Init( void )
 	m_fAccAng = 0;
 	m_nCount = 0;
 	m_fDeltaAng = 0;
-	memset( m_LinkCtrl, 0, sizeof(m_LinkCtrl) );
-	
+	m_LinkCtrl.clear();	
+	m_LinkCtrl.reserve(8);
 }
 
 void CShip::Destroy( void )
@@ -39,75 +37,35 @@ void CShip::Destroy( void )
 	Init();
 }
 
-OBJID *CShip::FindCtrl( OBJID idCtrl )
-{
-	int		i;
-	OBJID *pList = m_LinkCtrl;
-	OBJID *pNode;
-	
-	for( i = 0; i < MAX_LINKCTRL; i ++ )
-	{
-		pNode = pList++;
-		if( *pNode == 0 ) continue;		// 빈 노드는 검사할필요 없음.
-		if( *pNode == idCtrl )
-			return pNode;
-	}
-
-	return NULL;
-}
-
-void CShip::AddCtrl( OBJID idCtrl )	
-{	
-	int		i;
-	OBJID *pList = m_LinkCtrl;
-	OBJID *pNode;
-	BOOL	bSuccess = FALSE;
-	
-	for( i = 0; i < MAX_LINKCTRL; i ++ )
-	{
-		pNode = pList++;
-		if( *pNode ) continue;		// 빈노드가 아니라면 다른 노드를 찾음.
-		*pNode = idCtrl;			// 빈 노드에 채움.
-		bSuccess = TRUE;
-		break;
-	}
-
-	if( bSuccess == FALSE )
-		Error( "CShip::AddCtrl : Add실패." );
+void CShip::AddCtrl(OBJID idCtrl) {
+	const auto it = std::find(m_LinkCtrl.begin(), m_LinkCtrl.end(), idCtrl);
+	if (it != m_LinkCtrl.end()) return;
+	m_LinkCtrl.emplace_back(idCtrl);
 }
 
 // idCtrl을 찾아서 지움.
-void CShip::RemoveCtrl( OBJID idCtrl )
-{
-	int		i;
-	OBJID *pList = m_LinkCtrl;
-	OBJID *pNode;
-	
-	for( i = 0; i < MAX_LINKCTRL; i ++ )
-	{
-		pNode = pList++;
-		if( *pNode == 0 ) continue;
-		if( *pNode == idCtrl )
-			*pNode = 0;			// 노드를 지움.
-		return;
+void CShip::RemoveCtrl(OBJID idCtrl) {
+	const auto it = std::find(m_LinkCtrl.begin(), m_LinkCtrl.end(), idCtrl);
+	if (it != m_LinkCtrl.end()) {
+		m_LinkCtrl.erase(it);
 	}
 }
 
 
+#ifdef __CLIENT
 void CShip::Control( void )
 {
-#ifdef __CLIENT
 	static BOOL	s_bAcced = 0;
 	static BOOL	s_bLefted = 0;
 	static BOOL	s_bRighted = 0;
 	static BOOL s_bBoarded = 0;
 	
-	BOOL bAcc = g_bKeyTable[ VK_SPACE ];
-	BOOL bLeft = g_bKeyTable[g_Neuz.Key.chLeft];
-	BOOL bDown = g_bKeyTable[ g_Neuz.Key.chUp ];
-	BOOL bRight = g_bKeyTable[ 'D' ];
-	BOOL bUp = g_bKeyTable[ 'S' ];
-	BOOL bBoard = g_bKeyTable[ 'B' ];
+	const BOOL bAcc = g_bKeyTable[ VK_SPACE ];
+	const BOOL bLeft = g_bKeyTable[g_Neuz.Key.chLeft];
+	const BOOL bDown = g_bKeyTable[ g_Neuz.Key.chUp ];
+	const BOOL bRight = g_bKeyTable[ 'D' ];
+	const BOOL bUp = g_bKeyTable[ 'S' ];
+	const BOOL bBoard = g_bKeyTable[ 'B' ];
 	
 	if( bAcc && !s_bAcced )		// 가속/정지 토글.
 	{
@@ -118,27 +76,19 @@ void CShip::Control( void )
 	}
 	s_bAcced = bAcc;
 
-	if( bLeft )
-	{
+	if( bLeft ) {
 		SendActMsg( OBJMSG_LTURN );		// 왼쪽으로 턴
-	} else
-	if( bRight )
-	{
+	} else if( bRight ) {
 		SendActMsg( OBJMSG_RTURN );		// 오른쪽으로 턴.
-	} else
-	{
+	} else {
 		SendActMsg( OBJMSG_STOP_TURN );	// 좌/우키가 안눌려져있다면 회전 정지.
 	}
 
-	if( bUp )
-	{
+	if( bUp ) {
 		SendActMsg( OBJMSG_LOOKUP );
-	} else
-	if( bDown )
-	{
+	} else if( bDown ) {
 		SendActMsg( OBJMSG_LOOKDOWN );
-	} else
-	{
+	} else {
 		SendActMsg( OBJMSG_STOP_LOOK );	// 위/아래 키가 안눌려져있다면 상승/하강 정지.
 	}
 
@@ -147,20 +97,17 @@ void CShip::Control( void )
 		g_pShip = NULL;
 		SetMover( NULL );
 	}
-	s_bBoarded = bBoard;
 
-	
-#endif // CLIENT
+	s_bBoarded = bBoard;
 }
+#endif // CLIENT
 
 void CShip::Process()
 {
 	D3DXMatrixInverse( GetInvTM(), NULL, &m_matWorld );		// 좌표변환이 이뤄지기전 매트릭스로 역행렬을 구해놔야 한다.
 	
 	D3DXVECTOR3	vPos = GetPos();
-	D3DXVECTOR3 vDeltaAccu;
-
-	vDeltaAccu = D3DXVECTOR3(0, 0, 0);		// 누적 벡터는 항상 초기화 해줘야 한다.
+	D3DXVECTOR3 vDeltaAccu = D3DXVECTOR3(0, 0, 0);		// 누적 벡터는 항상 초기화 해줘야 한다.
 
 #ifdef __X15
 	int		i;
@@ -174,7 +121,7 @@ void CShip::Process()
 		vDeltaAccu += m_vDeltaUnit;		// 서버 15프레임에서만 사용되는 것으로 4번을 누적함.
 	}
 #ifdef __CLIENT
-	FLOAT fLenSq = D3DXVec3Length( &m_vDelta );		// 1/60 sec 속도
+	const FLOAT fLenSq = D3DXVec3Length( &m_vDelta );		// 1/60 sec 속도
 	extern int g_nFlySpeed;
 	if( m_pMover->IsActiveMover() )
 	{
@@ -192,9 +139,6 @@ void CShip::Process()
 	// IA오브젝트는 다른 오브젝트를 태우고 다녀야 하므로
 	// 실시간으로 매트릭스가 갱신되어야 한다.
 	UpdateLocalMatrix();		
-
-
-	
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -248,21 +192,19 @@ void CShipLoop::Process()
 #ifdef __WORLDSERVER
 	if( (m_nCount & 127) == 0 )
 	{
-		OBJID idCtrl = NULL_ID;
-
 		g_UserMng.AddSetPosAngle( this, GetPos(), GetAngle() );		// 먼저 this(Ship)의 위치를 sync시킴.
 		// 링크되어 있는 모든 ctrl의 위치를 다시 sync시킴.
-		for( i = 0; i < MAX_LINKCTRL; i ++ )		
-		{
-			if( m_LinkCtrl[i] == 0 )	continue;
-			idCtrl = m_LinkCtrl[i];
-			CCtrl *pCtrl = prj.GetCtrl( idCtrl );
-			if( IsValidObj( pCtrl ) )
-			{
-				if( pCtrl->GetIAObjLink() == this )
-					g_UserMng.AddSetPosAngle( pCtrl, pCtrl->GetPos(), pCtrl->GetAngle() );		// this(Ship)의 위치를 sync시킴.
-				else
-					RemoveCtrl( pCtrl->GetId() );
+		
+		auto itCtrl = m_LinkCtrl.begin();
+		while (itCtrl != m_LinkCtrl.end()) {
+			CCtrl *pCtrl = prj.GetCtrl( *itCtrl );
+			if (!IsValidObj(pCtrl)) {
+				itCtrl = m_LinkCtrl.erase(itCtrl);
+			} else if (pCtrl->GetIAObjLink() == this) {
+				g_UserMng.AddSetPosAngle(pCtrl, pCtrl->GetPos(), pCtrl->GetAngle());		// this(Ship)의 위치를 sync시킴.
+				++itCtrl;
+			} else {
+				itCtrl = m_LinkCtrl.erase(itCtrl);
 			}
 		}
 	}

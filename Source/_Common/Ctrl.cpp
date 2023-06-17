@@ -78,11 +78,10 @@ BOOL CCtrl::Read( CFileIO* pFile )
 // pIA가 NULL이면 링크해제.
 void CCtrl::SetIAObjLink( CShip *pIA )
 {
-	if( pIA != NULL )	// IA에 링크시켜야 할때...
+	if( pIA )	// IA에 링크시켜야 할때...
 	{
 		if( m_pIAObjLink != pIA )				// 기존에 링크랑 다른링크가 될때만...
-			if( pIA->FindCtrl( GetId() ) == NULL )			// pIA에 이미 this가 등록되었는지 보고...
-				pIA->AddCtrl( GetId() );			// IA오브젝트에 this를 등록시킴.
+			pIA->AddCtrl( GetId() );			// IA오브젝트에 this를 등록시킴.
 	} else
 	{
 		if( m_pIAObjLink )
