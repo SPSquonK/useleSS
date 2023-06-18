@@ -301,6 +301,12 @@ public:
 
 #endif	// !__WORLDSERVER
 
+#ifdef __CLIENT
+	[[nodiscard]] D3DXVECTOR3 ProjectWorldCoordToScreenCoord(
+		LPDIRECT3DDEVICE9 pd3dDevice
+	);
+#endif
+
 private:		
 	void			CalcLinkLevel();
 	void			SetFlag( BOOL bUpdate, DWORD dwValue );

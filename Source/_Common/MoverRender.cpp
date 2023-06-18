@@ -891,31 +891,38 @@ void CMover::RenderPartsEffect( LPDIRECT3DDEVICE9 pd3dDevice )
 
 #ifdef __CLIENT
 
-// nValue ( 1,2,3,4 )
-void CMover::RenderGauge( LPDIRECT3DDEVICE9 pd3dDevice, int nValue )
-{
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
+D3DXVECTOR3 CObj::ProjectWorldCoordToScreenCoord(
+	LPDIRECT3DDEVICE9 pd3dDevice
+) {
 	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-    D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
+	D3DVIEWPORT9 vp;
+	const BOUND_BOX * pBB = m_pModel->GetBBVector();
 
-    pd3dDevice->GetViewport( &vp );
+	pd3dDevice->GetViewport(&vp);
 	vp.X = 0;
 	vp.Y = 0;
 
 	D3DXMATRIX matTrans;
 	D3DXMATRIX matWorld;
 	D3DXMatrixIdentity(&matWorld);
-	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
+	pd3dDevice->SetTransform(D3DTS_WORLD, &matWorld);
+	D3DXMatrixTranslation(&matTrans, vPos.x, vPos.y, vPos.z);
 	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-	
+
 	vPosHeight = pBB->m_vPos[0];
 	vPosHeight.x = 0;
 	vPosHeight.z = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
+
+	D3DXVec3Project(&vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
 		&GetWorld()->m_pCamera->m_matView, &matWorld);
+
+	return vOut;
+}
+
+// nValue ( 1,2,3,4 )
+void CMover::RenderGauge( LPDIRECT3DDEVICE9 pd3dDevice, int nValue )
+{
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(pd3dDevice);
 
 	vOut.y -= 40;
 
@@ -1733,33 +1740,9 @@ void CMover::RenderCltGauge(LPDIRECT3DDEVICE9 pd3dDevice)
 
 	if( g_Option.m_nOtherPlayerName == FALSE && !IsActiveMover() && IsPlayer() )
 		return;
+	MoverProp * pMoverProp = GetProp();
 
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos, vPosHeight;
-	D3DVIEWPORT9 vp;
-
-	MoverProp* pMoverProp = GetProp();
-	vPos = GetPos();
-
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
-	
-	pd3dDevice->GetViewport( &vp );
-	vp.X = 0;
-	vp.Y = 0;
-	
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-	
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x  = 0;
-	vPosHeight.z  = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(pd3dDevice);
 	
 	vOut.y -= 48;
 	int nGaugeWidth = 80;
@@ -1851,28 +1834,8 @@ void CMover::RenderCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 		return;
 	
 	pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-	D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
-	
-	pd3dDevice->GetViewport( &vp );
-	vp.X = 0;
-	vp.Y = 0;
-	
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-	
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
+
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(pd3dDevice);
 	
 	vOut.y -= 48;
 	int nGaugeWidth = 80;
@@ -1912,28 +1875,8 @@ void CMover::RenderCtrlCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 		return;
 	
 	pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-	D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
-	
-	pd3dDevice->GetViewport( &vp );
-	vp.X = 0;
-	vp.Y = 0;
-	
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-	
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
+
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(pd3dDevice);
 	
 	vOut.y -= 48;
 	int nGaugeWidth = 80;
@@ -1983,28 +1926,8 @@ void CMover::RenderSkillCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 
 	
 	pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-	D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
 	
-	pd3dDevice->GetViewport( &vp );
-	vp.X = 0;
-	vp.Y = 0;
-	
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-	
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(pd3dDevice);
 	
 	vOut.y -= 48;
 	int nGaugeWidth = 80;
