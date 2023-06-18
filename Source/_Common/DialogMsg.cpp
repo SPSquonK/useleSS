@@ -135,7 +135,7 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 		++itTextArray;
 
 		CObj * pObj = lpCustomText->m_pObj;
-		if (!pObj->IsCull()) continue;
+		if (pObj->IsCull()) continue;
 
 		// 월드 좌표를 스크린 좌표로 프로젝션 한다.
 		D3DXVECTOR3 vOut, vPos = pObj->GetPos(), vPosHeight;
