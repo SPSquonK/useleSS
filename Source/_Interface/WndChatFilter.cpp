@@ -26,15 +26,7 @@
   CtrlId : WIDC_STATIC1 - 채팅 채널
   CtrlId : WIDC_STATIC2 - 매시지 필터
 ****************************************************/
-CWndChatFilter::CWndChatFilter() 
-{ 
-} 
-CWndChatFilter::~CWndChatFilter() 
-{ 
-} 
-void CWndChatFilter::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
+
 void CWndChatFilter::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -91,30 +83,7 @@ BOOL CWndChatFilter::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_CHAT_FILTER, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
 } 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndChatFilter::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndChatFilter::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndChatFilter::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndChatFilter::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndChatFilter::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndChatFilter::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	CWndButton* pWndCheck1 = (CWndButton*)GetDlgItem( WIDC_CHECK1 );
