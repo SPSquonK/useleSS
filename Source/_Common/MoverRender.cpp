@@ -721,10 +721,8 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 			FLOAT fDot = D3DXVec3Dot( &vCamera, &vObj );
 			if( fDot > cosf(D3DXToRadian(15.0f)) )
 			{
-				CWndWorld *pWndWorld = (CWndWorld *)g_WndMng.m_pWndWorld;
-				if( pWndWorld )
-				{
-					pWndWorld->AddFlyTarget( GetId() );
+				if (g_WndMng.m_pWndWorld) {
+					g_WndMng.m_pWndWorld->m_flyTarget.Add(GetId());
 				}
 			}
 		}

@@ -747,18 +747,14 @@ int		CWndWorld::ControlFlying( DWORD dwMessage, CPoint point )
 		// 타겟선택 키
 		if( g_bKeyTable[VK_TAB] && !s_bSelectKeyed )
 		{
-			if( m_aFlyTarget.GetSize() > 0 )		// 선택된 타겟있을때.
-			{
-				if( m_nSelect >= m_aFlyTarget.GetSize() )
-					m_nSelect = 0;
-				OBJID idSelect = m_aFlyTarget.GetAt( m_nSelect++ );
-				CMover *pSelectMover = prj.GetMover( idSelect );
-				if( IsValidObj(pSelectMover) )
-				{
-					CWorld *pWorld = pMover->GetWorld();
-					if( pWorld )
-					{
-						pWorld->SetObjFocus( pSelectMover );			// 이놈을 타겟으로 설정함.
+			std::optional<OBJID> pIdSelect = m_flyTarget.GetNext();
+
+			if (pIdSelect) {
+				CMover * pSelectMover = prj.GetMover(*pIdSelect);
+				if (IsValidObj(pSelectMover)) {
+					CWorld * pWorld = pMover->GetWorld();
+					if (pWorld) {
+						pWorld->SetObjFocus(pSelectMover);			// 이놈을 타겟으로 설정함.
 						pMover->m_idTracking = pSelectMover->GetId();	// 탭으로 타겟을 바꾸면 자동추적타겟도 그놈으로 바뀐다.
 					}
 				}
@@ -918,6 +914,13 @@ int		CWndWorld::ControlFlying( DWORD dwMessage, CPoint point )
 	}
 	
 	return nMsg;
+}
+
+std::optional<OBJID> WndWorld::FlyTargets::GetNext() {
+	if (targets.empty()) return std::nullopt;
+
+	if (current >= targets.size()) current = 0;
+	return targets[current++];
 }
 
 //

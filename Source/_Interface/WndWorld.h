@@ -166,6 +166,19 @@ namespace WndWorld {
 		[[nodiscard]] LPCTSTR GetGuildName(u_long guildId) const;
 	};
 
+	class FlyTargets {
+	private:
+		size_t current = 0;
+		std::vector<OBJID> targets;
+
+	public:
+		void Clear() { targets.clear(); }
+		void Add(OBJID idMover) { targets.emplace_back(idMover); }
+
+		[[nodiscard]] std::optional<OBJID> GetNext();
+		[[nodiscard]] std::span<const OBJID> GetAll() const { return targets; }
+	};
+
 }
 
 struct __PGUEST_TIME_TEXT {
@@ -297,7 +310,7 @@ public:
 
 	void RenderArrow_Text( LPDIRECT3DDEVICE9 pDevice, const D3DXVECTOR3& vDest, const D3DXMATRIX& mat );	//gmpbigsun : refactoring
 	
-	CDWordArray		m_aFlyTarget;
+	WndWorld::FlyTargets m_flyTarget;
 
 	DWORD	m_dwNextSkill;		// 치고있는중에 스킬치기 예약.
 	std::vector <BUFFICONRECT_INFO> m_rcCheck;
@@ -394,17 +407,6 @@ public:
 	CObj* PickObj( POINT point, BOOL bOnlyNPC = FALSE );
 	CObj* SelectObj( POINT point );
 	CObj* HighlightObj( POINT point );
-
-	int		m_nSelect;		// 현재 선택된 타겟 인덱스.
-	void	ClearFlyTarget( void )
-	{
-		m_aFlyTarget.RemoveAll();
-	}
-
-	void	AddFlyTarget( OBJID idMover )
-	{
-		m_aFlyTarget.Add( idMover );
-	}
 	
 	OBJID	m_objidTracking;
 

@@ -513,8 +513,6 @@ m_buffs( NULL )
 	
 	m_vTelePos = D3DXVECTOR3( 0.0f, 0.0f ,0.0f );
 
-	m_nSelect = 0;
-	ClearFlyTarget();
 	m_fRollAng = 0;
 	m_pFontAPICaption = NULL;
 	m_pFontAPITitle = NULL;
@@ -994,20 +992,12 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 	// LIGHT / FOG가 꺼진상태에서 드로우 되어야 한다,.
 	// 비행중 사경반경이내에 들어오는 플레이어들은 사각테두리가 쳐진다.
 	{
-		int	i, nSize = m_aFlyTarget.GetSize();
-		CRect rect;
-		CMover *pMover;
-		OBJID idMover;
-		
-		for( i = 0; i < nSize; i ++ )
-		{
-			idMover = m_aFlyTarget.GetAt(i);
-			pMover = prj.GetMover( idMover );
-			if( IsValidObj(pMover) )
-			{
-				GetBoundRect( pMover, &rect );		// 화면상에서의 바운드 렉트를 구함.
-				g_Neuz.m_2DRender.RenderRect( rect, D3DCOLOR_ARGB(0xff, 255, 32, 32) );
-			}
+		for (const OBJID objid : m_flyTarget.GetAll()) {
+			CMover * pMover = prj.GetMover(objid);
+			if (!IsValidObj(pMover)) continue;
+			
+			GetBoundRect( pMover, &rect );		// 화면상에서의 바운드 렉트를 구함.
+			g_Neuz.m_2DRender.RenderRect( rect, D3DCOLOR_ARGB(0xff, 255, 32, 32) );
 		}
 	}
 

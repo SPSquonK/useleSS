@@ -688,8 +688,7 @@ HRESULT CNeuzApp::Render()
 	
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 	
-	if( pWndWorld )
-		pWndWorld ->ClearFlyTarget();		// 비행때 공격가능한 타겟들 리스트 지워줌.	
+	if (pWndWorld) pWndWorld->m_flyTarget.Clear();		// 비행때 공격가능한 타겟들 리스트 지워줌.	
 
 	//pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 90, 146, 222 ), 1.0f, 0 ) ;
 	//m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 255, 255, 255 ), 1.0f, 0 ) ;
