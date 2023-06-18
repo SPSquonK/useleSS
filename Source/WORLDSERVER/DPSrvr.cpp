@@ -3470,7 +3470,7 @@ void CDPSrvr::OnSfxHit( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u
 	OBJID idAttacker;
 	int	nDmgCnt;	// 일반적으론 0, 지속데미지의 경우 첫빵이후는 1이상이 넘어온다. 이경우는 데미지의 10%만 준다.
 	float fDmgAngle, fDmgPower;
-	PSfxHit pSfxHit		= NULL;
+	
 	CMover* pAttacker	= NULL;
 
 	ar >> idSfxHit >> nMagicPower >> dwSkill >> idAttacker >> nDmgCnt >> fDmgAngle >> fDmgPower;		
@@ -3484,25 +3484,11 @@ void CDPSrvr::OnSfxHit( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u
 	if( IsValidObj( pAttacker ) == FALSE ) 
 		return;
 
-	pSfxHit	= pAttacker->m_sfxHitArray.GetSfxHit( idSfxHit );
+	const CSfxHitArray::SfxHit * pSfxHit = pAttacker->m_sfxHitArray.GetSfxHit( idSfxHit );
 	if( pSfxHit == NULL ) 
 		return;
 
 	CMover* pTarget	= prj.GetMover( pSfxHit->objid );
-
-	/*
-	// 康	// 06-10-23
-	if( dwSkill == SI_MAG_FIRE_HOTAIR )	
-	{
-		if( IsValidObj( pTarget ) && pTarget->IsLive() )
-		{
-			SFXHIT_INFO si	=
-				{ pTarget->GetId(), nMagicPower, dwSkill, nDmgCnt, fDmgAngle, fDmgPower, pSfxHit->dwAtkFlags	};
-			AttackBySFX( pAttacker, si );
-		}
-		return;
-	}
-	*/
 
 	pAttacker->RemoveSFX( pSfxHit->objid, idSfxHit, ( IsInvalidObj( pTarget ) || pTarget->IsDie() ), dwSkill );
 	pAttacker->m_sfxHitArray.RemoveSfxHit( idSfxHit, TRUE );	// 무조건 제거
@@ -3542,7 +3528,6 @@ void CDPSrvr::OnSfxClear( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf,
 
 	if( IsValidObj( pMover ) )
 	{
-		PSfxHit pSfxHit	= pMover->m_sfxHitArray.GetSfxHit( idSfxHit );
 		pMover->m_sfxHitArray.RemoveSfxHit( idSfxHit, TRUE );
 	}
 }
