@@ -579,29 +579,14 @@ void CCommonCtrl::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 void CCommonCtrl::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor )
 {
 #ifndef __WORLDSERVER
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-    D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
-    pd3dDevice->GetViewport( &vp );
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matScale );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
-	
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(
+		pd3dDevice, std::nullopt,
+		PWCTSC_DoNotResetWorldTransform | PWCTSC_UntouchedViewport
+	);
+
 	vOut.x -= pFont->GetTextExtent( GetProp()->szName ).cx / 2;
 	pFont->DrawText( vOut.x + 1, vOut.y + 1, 0xff000000, GetProp()->szName );
 	pFont->DrawText( vOut.x, vOut.y, dwColor, GetProp()->szName );
-	return;
 #endif	// __WORLDSERVER
 }
 /*

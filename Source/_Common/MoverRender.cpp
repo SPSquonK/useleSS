@@ -892,26 +892,36 @@ void CMover::RenderPartsEffect( LPDIRECT3DDEVICE9 pd3dDevice )
 #ifdef __CLIENT
 
 D3DXVECTOR3 CObj::ProjectWorldCoordToScreenCoord(
-	LPDIRECT3DDEVICE9 pd3dDevice
+	LPDIRECT3DDEVICE9 pd3dDevice,
+	std::optional<D3DXVECTOR3> pPos,
+	DWORD flags
 ) {
-	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
+	D3DXVECTOR3 vPos = pPos.value_or(GetPos());
+	D3DXVECTOR3 vOut, vPosHeight;
 	D3DVIEWPORT9 vp;
 	const BOUND_BOX * pBB = m_pModel->GetBBVector();
 
 	pd3dDevice->GetViewport(&vp);
-	vp.X = 0;
-	vp.Y = 0;
+
+	if (!(flags & PWCTSC_UntouchedViewport)) {
+		vp.X = 0;
+		vp.Y = 0;
+	}
 
 	D3DXMATRIX matTrans;
 	D3DXMATRIX matWorld;
 	D3DXMatrixIdentity(&matWorld);
-	pd3dDevice->SetTransform(D3DTS_WORLD, &matWorld);
+	if (!(flags & PWCTSC_DoNotResetWorldTransform)) {
+		pd3dDevice->SetTransform(D3DTS_WORLD, &matWorld);
+	}
 	D3DXMatrixTranslation(&matTrans, vPos.x, vPos.y, vPos.z);
 	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
 
 	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
+	if (!(flags & PWCTSC_UntouchedBBox)) {
+		vPosHeight.x = 0;
+		vPosHeight.z = 0;
+	}
 
 	D3DXVec3Project(&vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
 		&GetWorld()->m_pCamera->m_matView, &matWorld);
@@ -1074,25 +1084,11 @@ void CMover::RenderQuestEmoticon( LPDIRECT3DDEVICE9 pd3dDevice )
 
 	if( lpCharacter == NULL ) return;
 
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-    D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(
+		pd3dDevice, std::nullopt,
+		PWCTSC_DoNotResetWorldTransform | PWCTSC_UntouchedViewport
+	);
 
-    pd3dDevice->GetViewport( &vp );
-
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z );
-	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
-
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
 	//vOutFLOAT fHeight = ( vOut[0].y - vOut[4].y ) - 10f;
 	CPoint point;
 	point.x = (LONG)( vOut.x );
@@ -1128,32 +1124,10 @@ void CMover::RenderChrState(LPDIRECT3DDEVICE9 pd3dDevice)
 	{
 		if( IsCull() == FALSE )
 		{
-			// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-			D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-			D3DVIEWPORT9 vp;
-			const BOUND_BOX* pBB;
-			
-			if( m_pModel )
-				pBB	= m_pModel->GetBBVector();
-			else
-				return;
-			
-			pd3dDevice->GetViewport( &vp );
-
-			D3DXMATRIX matTrans;
-			D3DXMATRIX matWorld;
-			D3DXMatrixIdentity(&matWorld);
-			D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
-			
-			matWorld = matWorld * GetMatrixScale() * GetMatrixRotation();
-			D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
-			
-			vPosHeight = pBB->m_vPos[0];
-			vPosHeight.x = 0;
-			vPosHeight.z = 0;
-			
-			D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-				&GetWorld()->m_pCamera->m_matView, &matWorld);
+			D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(
+				pd3dDevice, std::nullopt,
+				PWCTSC_DoNotResetWorldTransform | PWCTSC_UntouchedViewport
+			);
 			
 			CPoint point;
 			point.x = (LONG)( vOut.x - 32 / 2 );

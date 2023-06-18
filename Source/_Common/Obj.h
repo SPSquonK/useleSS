@@ -302,8 +302,14 @@ public:
 #endif	// !__WORLDSERVER
 
 #ifdef __CLIENT
+	static constexpr DWORD PWCTSC_DoNotResetWorldTransform = 0x01;
+	static constexpr DWORD PWCTSC_UntouchedBBox            = 0x02;
+	static constexpr DWORD PWCTSC_UntouchedViewport        = 0x04;
+
 	[[nodiscard]] D3DXVECTOR3 ProjectWorldCoordToScreenCoord(
-		LPDIRECT3DDEVICE9 pd3dDevice
+		LPDIRECT3DDEVICE9 pd3dDevice,
+		std::optional<D3DXVECTOR3> pPos = std::nullopt,
+		DWORD flags = 0
 	);
 #endif
 
