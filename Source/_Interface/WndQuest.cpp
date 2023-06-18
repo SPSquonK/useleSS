@@ -404,18 +404,6 @@ CWndQuestTreeCtrl* CWndQuest::GetQuestTreeSelf( const DWORD dwQuestID )
 	}
 }
 
-void CWndQuest::AddOpenTree(CWordArray & raOpenTree, const TreeElems & rPtrArray) {
-	for (const TREEELEM & lpTreeElem : rPtrArray) {
-		if (!lpTreeElem.m_ptrArray.empty()) {
-			if (lpTreeElem.m_bOpen) {
-				raOpenTree.Add((WORD)(lpTreeElem.m_dwData));
-			}
-
-			AddOpenTree(raOpenTree, lpTreeElem.m_ptrArray);
-		}
-	}
-}
-
 void CWndQuest::OpenTreeArray(TreeElems & rPtrArray, BOOL bOpen) {
 	for (TREEELEM & lpTreeElem : rPtrArray) {
 		if (lpTreeElem.m_ptrArray.empty()) continue;

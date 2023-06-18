@@ -47,7 +47,6 @@ public:
 
 private:
 	CWndQuestTreeCtrl* GetQuestTreeSelf( const DWORD dwQuestID );
-	void AddOpenTree( CWordArray& raOpenTree, const TreeElems & rPtrArray );
 	void OpenTreeArray( TreeElems & rPtrArray, BOOL bOpen = TRUE );
 	void InsertQuestItem( const DWORD dwQuestID, CDWordArray& raOldHeadQuestID, const BOOL bCompleteQuest, const int nNewQuestId = -1 );
 	DWORD FindOldHeadQuest( const CDWordArray& raOldHeadQuestID, const DWORD dwNowHeadQuestID ) const;
