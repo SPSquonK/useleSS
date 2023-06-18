@@ -4321,9 +4321,7 @@ int CMover::DoDie( CCtrl *pAttackCtrl, DWORD dwMsg )
 			CUser * thisPlayer = static_cast<CUser *>(this);
 			CUser * attackerPlayer = static_cast<CUser *>(pAttacker);
 
-			if (GetWorld()->GetID() == WI_WORLD_GUILDWAR) {
-				GetWorld()->OnDie(thisPlayer, attackerPlayer);
-			}
+			GetWorld()->OnDie(thisPlayer, attackerPlayer);
 		}
 	}
 

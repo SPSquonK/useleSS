@@ -1747,15 +1747,22 @@ void CWorld::OnDie(CUser * pDie, CUser * pAttacker ) {
 }
 
 void CWorld::_OnDie() {
-	for (const auto & onDie : m_OnDie) {
-		g_GuildCombatMng.OutWar(onDie.pDie, NULL);
-		g_GuildCombatMng.GetPoint(onDie.pAttacker, onDie.pDie);
-		
-		const int nIndex = g_GuildCombat1to1Mng.GetTenderGuildIndexByUser(onDie.pDie);
-		if (nIndex != NULL_ID) {
+	if (GetID() == WI_WORLD_GUILDWAR) {
+		for (const auto & onDie : m_OnDie) {
+			g_GuildCombatMng.OutWar(onDie.pDie, NULL);
+			g_GuildCombatMng.GetPoint(onDie.pAttacker, onDie.pDie);
+		}
+	}
+
+	if (GetID() >= WI_WORLD_GUILDWAR1TO1_0 && GetID() <= WI_WORLD_GUILDWAR1TO1_L) {
+		for (const auto & onDie : m_OnDie) {
+			const int nIndex = g_GuildCombat1to1Mng.GetTenderGuildIndexByUser(onDie.pDie);
+			if (nIndex == NULL_ID) continue;
+			
 			const int nStageId = g_GuildCombat1to1Mng.m_vecTenderGuild[nIndex].nStageId;
-			if (nStageId != NULL_ID)
-				g_GuildCombat1to1Mng.m_vecGuilCombat1to1[nStageId].SetLost(onDie.pDie);
+			if (nStageId == NULL_ID) continue;
+			
+			g_GuildCombat1to1Mng.m_vecGuilCombat1to1[nStageId].SetLost(onDie.pDie);
 		}
 	}
 
