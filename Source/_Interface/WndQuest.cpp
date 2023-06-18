@@ -67,15 +67,13 @@ void CWndQuest::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
 		}
 		else
 		{
-			int nNum;
-			WORD nQuest;
 			ar >> m_idSelQuest;
-			ar >> nNum;
-			for( int i = 0; i < nNum; i++ )
-			{
-				ar >> nQuest;
-				m_aOpenTree.Add( nQuest );
+
+			std::uint32_t nNum; ar >> nNum;
+			for (std::uint32_t i = 0; i < nNum; ++i) {
+				ar >> m_aOpenTree.emplace_back();
 			}
+
 			TreeOpen();
 			RemoveQuest();
 		}
@@ -84,9 +82,10 @@ void CWndQuest::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
 	{
 		dwVersion = 1;
 		ar << m_idSelQuest;
-		ar << m_aOpenTree.GetSize();
-		for( int i = 0; i < m_aOpenTree.GetSize(); i++ )
-			ar << m_aOpenTree.GetAt( i );
+		ar << static_cast<std::uint32_t>(m_aOpenTree.size());
+		for (const WORD questId : m_aOpenTree) {
+			ar << questId;
+		}
 	}
 }
 void CWndQuest::TreeOpen() 
@@ -189,23 +188,17 @@ void CWndQuest::RemoveQuest( void )
 	else
 		pWndRemove->EnableWindow( FALSE );
 }
-void CWndQuest::ControlOpenTree( const LPTREEELEM lpTreeElem )
-{
-	if( lpTreeElem->m_bOpen == TRUE )
-		m_aOpenTree.Add( (WORD)( lpTreeElem->m_dwData ) );
-	else
-	{
-		for( int i = 0; i < m_aOpenTree.GetSize(); ++i )
-		{
-			DWORD dwOpenTreeID = ( DWORD )m_aOpenTree.GetAt( i );
-			if( lpTreeElem->m_dwData == dwOpenTreeID )
-			{
-				m_aOpenTree.RemoveAt( i );
-				break;
-			}
-		}
+
+void CWndQuest::ControlOpenTree(const LPTREEELEM lpTreeElem) {
+	const DWORD questId = lpTreeElem->m_dwData;
+	if (lpTreeElem->m_bOpen == TRUE) {
+		m_aOpenTree.emplace_back(questId);
+	} else {
+		const auto it = std::find(m_aOpenTree.begin(), m_aOpenTree.end(), questId);
+		if (it != m_aOpenTree.end()) m_aOpenTree.erase(it);
 	}
 }
+
 void CWndQuest::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -268,10 +261,6 @@ BOOL CWndQuest::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( APP_QUEST_EX_LIST, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-BOOL CWndQuest::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
 void CWndQuest::SetWndRect( CRect rectWnd, BOOL bOnSize )
 {
 	CWndNeuz::SetWndRect( rectWnd, bOnSize );
@@ -285,17 +274,6 @@ void CWndQuest::SetWndRect( CRect rectWnd, BOOL bOnSize )
 		pWndQuestDetail->Move( nRevisedLeft, rectWnd.top );
 	}
 }
-void CWndQuest::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndQuest::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndQuest::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-
 BOOL CWndQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( message != WNM_SELCHANGE && message != WNM_DBLCLK && message != WNM_SELCANCEL && message != WNM_CLICKED )
@@ -440,17 +418,14 @@ void CWndQuest::AddOpenTree(CWordArray & raOpenTree, const TreeElems & rPtrArray
 
 void CWndQuest::OpenTreeArray(TreeElems & rPtrArray, BOOL bOpen) {
 	for (TREEELEM & lpTreeElem : rPtrArray) {
-		if (!lpTreeElem.m_ptrArray.empty()) {
-			for (int i = 0; i < m_aOpenTree.GetSize(); ++i) {
-				DWORD dwOpenTree = (DWORD)m_aOpenTree.GetAt(i);
-				if (lpTreeElem.m_dwData == dwOpenTree) {
-					lpTreeElem.m_bOpen = bOpen;
-					break;
-				}
-			}
-
-			OpenTreeArray(lpTreeElem.m_ptrArray, bOpen);
+		if (lpTreeElem.m_ptrArray.empty()) continue;
+			
+		const WORD myQuestId = static_cast<WORD>(lpTreeElem.m_dwData);
+		if (std::ranges::contains(m_aOpenTree, myQuestId)) {
+			lpTreeElem.m_bOpen = bOpen;
 		}
+
+		OpenTreeArray(lpTreeElem.m_ptrArray, bOpen);
 	}
 }
 
@@ -505,7 +480,7 @@ void CWndQuest::InsertQuestItem( const DWORD dwQuestID, CDWordArray& raOldHeadQu
 				if( nNewQuestId != -1 && prj.m_aPropQuest.GetAt( nNewQuestId )->m_nHeadQuest == QuestId(dwQuestID) )
 				{
 					pFolderTreeElem->m_bOpen = TRUE;
-					m_aOpenTree.Add( (WORD)( dwQuestID ) );
+					m_aOpenTree.emplace_back( static_cast<WORD>( dwQuestID ) );
 				}
 			}
 			raOldHeadQuestID.Add( dwQuestID );

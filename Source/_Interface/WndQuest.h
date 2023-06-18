@@ -31,7 +31,7 @@ public:
 	enum { MAX_CHECK_NUMBER = 5 };
 
 	int m_idSelQuest;
-	CWordArray m_aOpenTree;
+	std::vector<WORD> m_aOpenTree;
 	void Update( int nNewQuestId = -1 );
 	void RemoveQuest( void );
 	void ControlOpenTree( const LPTREEELEM lpTreeElem );
@@ -43,11 +43,7 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE );
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 
 private:
 	CWndQuestTreeCtrl* GetQuestTreeSelf( const DWORD dwQuestID );
