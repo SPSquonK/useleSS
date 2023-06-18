@@ -363,6 +363,8 @@ public:
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 
+	[[nodiscard]] static bool IsValidName(const char * szGuild);
+
 #ifdef __WORLDSERVER
 public:
 	template<WORD SnapshotId, typename... Ts>

@@ -937,6 +937,11 @@ void CDPCoreSrvr::OnCreateGuild( CAr & ar, DPID, DPID, DPID, u_long )
 	if( !pPlayer )	// Player X
 		return;
 
+	if (szGuild[0] != '\0' && !CGuild::IsValidName(szGuild)) {
+		g_DPCacheSrvr.SendDefinedText(TID_GAME_COMOVERNAME, pPlayer->dpidCache, pPlayer->dpidUser, "");
+		return;
+	}
+
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );
 
 	CGuild* pGuild	= g_GuildMng.GetGuild( pPlayer->m_idGuild );

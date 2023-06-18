@@ -1090,5 +1090,28 @@ void CGuildMng::Process( void )
 }
 #endif	// __WORLDSERVER
 
+
+bool CGuild::IsValidName(const char * szGuild) {
+	constexpr auto IsValidChar = [](char c) {
+		return (c >= 'A' && c <= 'Z')
+			|| (c >= 'a' && c <= 'z')
+			|| (c >= '0' && c <= '9')
+			|| c == '-'
+			|| c == '_';
+	};
+
+	size_t nbChars = 0;
+
+	while (szGuild[nbChars] != '\0') {
+		if (!IsValidChar(szGuild[nbChars])) return false;
+
+		++nbChars;
+	}
+
+	return nbChars >= 2 && nbChars <= 16;
+}
+
 CGuildMng	g_GuildMng;
+
+
 
