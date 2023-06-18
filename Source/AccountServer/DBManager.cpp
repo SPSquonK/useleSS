@@ -185,7 +185,6 @@ void CDbManager::AccountOn( CQuery & qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlu
 	DBQryAccount( lpDbOverlappedPlus->szQuery, "A1", lpDbOverlappedPlus->szAccount );
 	if( FALSE == qry.Exec( lpDbOverlappedPlus->szQuery ) )
 		WriteLog( "%s, %d\r\n\t%s", __FILE__, __LINE__, lpDbOverlappedPlus->szQuery );
-	m_pDbIOData->Free( lpDbOverlappedPlus );
 }
 
 
@@ -201,7 +200,6 @@ void CDbManager::AccountOff( CQuery & qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPl
 	DBQryAccount( lpDbOverlappedPlus->szQuery, "A2", lpDbOverlappedPlus->szAccount );
 	if( FALSE == qry.Exec( lpDbOverlappedPlus->szQuery ) )
 		WriteLog( "%s, %d\r\n\t%s", __FILE__, __LINE__, lpDbOverlappedPlus->szQuery );
-	m_pDbIOData->Free( lpDbOverlappedPlus );
 }
 
 void CDbManager::LogSMItem( CQuery & qryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
@@ -240,10 +238,8 @@ void CDbManager::LogSMItem( CQuery & qryLog, LPDB_OVERLAPPED_PLUS lpDbOverlapped
 	if( FALSE == qryLog.Exec( lpDbOverlappedPlus->szQuery ) )
 	{
 		WriteLog( "%s, %d\r\n\t%s", __FILE__, __LINE__, lpDbOverlappedPlus->szQuery );
-		m_pDbIOData->Free( lpDbOverlappedPlus );
 		return;
 	}
-	m_pDbIOData->Free( lpDbOverlappedPlus );
 }
 
 /*
@@ -256,7 +252,6 @@ void CDbManager::QueryReloadProject( CQuery& query, LPDB_OVERLAPPED_PLUS pOV )
 	if( FALSE == query.Exec( szQuery ) )
 	{
 		Error( " DB Qry : Load_ReloadAccount 구문 실패 : LOGIN_RELOAD_STR" );
-		m_pDbIOData->Free( pOV );
 		return;
 	}
 
@@ -269,7 +264,6 @@ void CDbManager::QueryReloadProject( CQuery& query, LPDB_OVERLAPPED_PLUS pOV )
 		m_OutAccount_List.insert( szAccount );
 		bOutAccount = TRUE;
 	}
-	m_pDbIOData->Free( pOV );
 
 	if( bOutAccount )
 		g_dpDbSrvr.SendReloadAccount();
@@ -346,8 +340,9 @@ u_int __stdcall DbWorkerThread( LPVOID lpvDbManager )
 				pDbManager->AccountOff( qryLogin, lpDbOverlappedPlus );
 				break;
 			case LOG_SM_ITEM:
-				if( pDbManager->m_bLogItem )
-					pDbManager->LogSMItem( qryLog, lpDbOverlappedPlus );
+				if (pDbManager->m_bLogItem) {
+					pDbManager->LogSMItem(qryLog, lpDbOverlappedPlus);
+				}
 				break;
 
 /*
@@ -360,6 +355,8 @@ u_int __stdcall DbWorkerThread( LPVOID lpvDbManager )
 			default:
 				break;
 		}
+
+		pDbManager->m_pDbIOData->Free(lpDbOverlappedPlus);
 	}
 	return( 0 );
 }
