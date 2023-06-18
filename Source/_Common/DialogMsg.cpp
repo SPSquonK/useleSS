@@ -137,31 +137,11 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 		CObj * pObj = lpCustomText->m_pObj;
 		if (pObj->IsCull()) continue;
 
-		// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-		D3DXVECTOR3 vOut, vPos = pObj->GetPos(), vPosHeight;
-		D3DVIEWPORT9 vp;
-		const BOUND_BOX* pBB;
 
-		if( pObj->m_pModel )
-			pBB	= pObj->m_pModel->GetBBVector();
-		else
-			return;
-
-		pd3dDevice->GetViewport( &vp );
-
-		D3DXMATRIX matTrans;
-		D3DXMATRIX matWorld;
-		D3DXMatrixIdentity(&matWorld);
-		D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
-
-		matWorld = matWorld * pObj->GetMatrixScale() * pObj->GetMatrixRotation() * matTrans;
-
-		vPosHeight = pBB->m_vPos[0];
-		vPosHeight.x = 0;
-		vPosHeight.z = 0;
-
-		D3DXVec3Project( &vOut, &vPosHeight, &vp, &pObj->GetWorld()->m_matProj,
-			&pObj->GetWorld()->m_pCamera->m_matView, &matWorld);
+		D3DXVECTOR3 vOut = pObj->ProjectWorldCoordToScreenCoord(
+			pd3dDevice, std::nullopt,
+			CObj::PWCTSC_DoNotResetWorldTransform | CObj::PWCTSC_UntouchedViewport
+		);
 
 		TEXTUREVERTEX * pVertices = vertex;
 
@@ -337,31 +317,12 @@ g_ShoutChat:
 		const int nAlpha = 200;
 
 		// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-		D3DXVECTOR3 vOut, vPos = pObj->GetPos(), vPosHeight;
-		D3DVIEWPORT9 vp;
-		const BOUND_BOX* pBB;
-			
-		if( pObj->m_pModel )
-			pBB	= pObj->m_pModel->GetBBVector();
-		else
-			return;
 
-		pd3dDevice->GetViewport( &vp );
+		D3DXVECTOR3 vOut = pObj->ProjectWorldCoordToScreenCoord(
+			pd3dDevice, std::nullopt,
+			CObj::PWCTSC_DoNotResetWorldTransform | CObj::PWCTSC_UntouchedViewport
+		);
 
-		D3DXMATRIX matTrans;
-		D3DXMATRIX matWorld;
-		D3DXMatrixIdentity(&matWorld);
-		D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
-
-		matWorld = matWorld * pObj->GetMatrixScale() * pObj->GetMatrixRotation() * matTrans;
-
-		vPosHeight = pBB->m_vPos[0];
-		vPosHeight.x = 0;
-		vPosHeight.z = 0;
-			
-		D3DXVec3Project( &vOut, &vPosHeight, &vp, &pObj->GetWorld()->m_matProj,
-			&pObj->GetWorld()->m_pCamera->m_matView, &matWorld);
-		
 		CRect rect = lpCustomText.m_rect;
 		vOut.x -= rect.Width() / 2;
 		vOut.y -= rect.Height();

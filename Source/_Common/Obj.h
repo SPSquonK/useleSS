@@ -303,7 +303,6 @@ public:
 
 #ifdef __CLIENT
 	static constexpr DWORD PWCTSC_DoNotResetWorldTransform = 0x01;
-	static constexpr DWORD PWCTSC_UntouchedBBox            = 0x02;
 	static constexpr DWORD PWCTSC_UntouchedViewport        = 0x04;
 
 	[[nodiscard]] D3DXVECTOR3 ProjectWorldCoordToScreenCoord(
