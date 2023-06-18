@@ -185,7 +185,7 @@ void CWndBase::AddWnd( CWndBase* pWndBase )
 	// 두개가 같다면 루트 윈도다.
 	if(pWndBase != this)
 	{
-		m_wndArray.Add(pWndBase);
+		m_wndArray.emplace_back(pWndBase);
 	}
 	if(!(pWndBase->m_dwStyle & WBS_CHILD))
 	{
@@ -247,21 +247,18 @@ void CWndBase::RemoveWnd(CWndBase* pWndBase)
 		if(pWndBaseTemp) 
 			pWndBaseTemp->SetFocus();
 	}
-	for( int i = 0; i < m_wndArray.GetSize(); i++)
+
 	{
-		CWndBase * pWndInArray = (CWndBase *)m_wndArray[i];
-		if(pWndInArray == pWndBase)
-		{
-			pWndInArray->OnKillFocus(NULL);
-			m_wndArray.RemoveAt(i); i--;
-			break;
+		const auto itInArray = std::find(m_wndArray.begin(), m_wndArray.end(), pWndBase);
+		if (itInArray != m_wndArray.end()) {
+			pWndBase->OnKillFocus(nullptr);
+			m_wndArray.erase(itInArray);
 		}
 	}
-	if(pWndBase == m_pWndFocusChild)
-	{
-		const int nSize = m_wndArray.GetSize();
-		if (nSize > 0) {
-			CWndBase * pWndBaseTemp = (CWndBase *)m_wndArray[nSize - 1];
+
+	if(pWndBase == m_pWndFocusChild) {
+		if (!m_wndArray.empty()) {
+			CWndBase * pWndBaseTemp = m_wndArray.back();
 			if (pWndBaseTemp) {
 				pWndBaseTemp->SetFocus();
 			}
@@ -432,11 +429,10 @@ void CWndBase::PaintFrame(C2DRender* p2DRender)
 }
 void CWndBase::PaintChild(C2DRender* p2DRender)
 {
-	CRectClip rectOld = p2DRender->m_clipRect;
+	const CRectClip rectOld = p2DRender->m_clipRect;
 
-	for(int i = 0; i < m_wndArray.GetSize(); i++)
-	{
-		CWndBase* pWnd = (CWndBase*)m_wndArray[ i ];
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase* pWnd = m_wndArray[ i ];
 		if( pWnd->IsVisible() && pWnd->IsWndStyle( WBS_CHILD ) )
 		{
 			if( pWnd->IsWndStyle( WBS_DOCKING ) )
@@ -477,8 +473,8 @@ BOOL CWndBase::Process()
 		RemoveDestroyWnd();
 	}
 
-	for (int i = 0; i < m_wndArray.GetSize(); ++i) {
-		CWndBase * pWndChild = (CWndBase *)m_wndArray[i];
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase * pWndChild = m_wndArray[i];
 		if (!pWndChild->Process()) {
 			break;
 		}
@@ -491,8 +487,10 @@ BOOL CWndBase::Process()
 }
 HRESULT CWndBase::InitDeviceObjects()
 {
-	for(int i = 0; i < m_wndArray.GetSize(); i++) 
-		((CWndBase*)m_wndArray.GetAt(i))->InitDeviceObjects();
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase * pWndBase = m_wndArray[i];
+		pWndBase->InitDeviceObjects();
+	}
 	return S_OK;
 }
 void CWndBase::RenderWnd()
@@ -525,8 +523,10 @@ void CWndBase::RenderWnd()
 }
 void CWndBase::MakeVertexBuffer()
 {
-	for(int i = 0; i < m_wndArray.GetSize(); i++) 
-		((CWndBase*)m_wndArray.GetAt(i))->MakeVertexBuffer();
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase * pWndBase = m_wndArray[i];
+		pWndBase->MakeVertexBuffer();
+	}
 	
 	if( m_pTexture == NULL || m_pVB == NULL )
 		return;
@@ -555,8 +555,10 @@ void CWndBase::MakeVertexBuffer()
 }
 HRESULT CWndBase::RestoreDeviceObjects()
 {
-	for(int i = 0; i < m_wndArray.GetSize(); i++) 
-		((CWndBase*)m_wndArray.GetAt(i))->RestoreDeviceObjects();
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase * pWndBase = m_wndArray[i];
+		pWndBase->RestoreDeviceObjects();
+	}
 	if( m_pVB == NULL )
 	{
 		m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX ) * 4, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_DEFAULT, &m_pVB, NULL );
@@ -567,8 +569,10 @@ HRESULT CWndBase::RestoreDeviceObjects()
 }
 HRESULT CWndBase::InvalidateDeviceObjects()
 {
-	for(int i = 0; i < m_wndArray.GetSize(); i++) 
-		((CWndBase*)m_wndArray.GetAt(i))->InvalidateDeviceObjects();
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase * pWndBase = m_wndArray[i];
+		pWndBase->InvalidateDeviceObjects();
+	}
 	SAFE_RELEASE( m_pVB );
 		
 	return S_OK;
@@ -580,46 +584,15 @@ HRESULT CWndBase::DeleteDeviceObjects()
 		m_backgroundTextureMng.clear();
 	}
 
-	for(int i = 0; i < m_wndArray.GetSize(); i++) 
-		((CWndBase*)m_wndArray.GetAt(i))->DeleteDeviceObjects();
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase * pWndBase = m_wndArray[i];
+		pWndBase->DeleteDeviceObjects();
+	}
 	SAFE_RELEASE( m_pVB );
 
 	return S_OK;
 }
-/*
-CRect CWndBase::GetRealClientRect()
-{
-	CWndBase* pWndCur = this;
-	CRect rect = pWndCur->m_rectWindow;
-	// 해당 윈도가 차일드 윈도(콘트롵타입)일 경우에만 패어런트 
-	// 윈도 좌표의 영향을 받으므로 페어런트 윈도 좌표를 더해주어야한다.
-	if(IsWndStyle(WBS_CHILD))
-	{
-		while(pWndCur != m_pWndRoot) 
-		{
-			pWndCur = pWndCur->m_pParentWnd;
-			rect += pWndCur->m_rectClient.TopLeft();
-		}
-	}
-	return rect;
-}
-CRect CWndBase::GetRealWindowRect()
-{
-	CWndBase* pWndCur = this;
-	CRect rect = pWndCur->m_rectWindow;
-	// 해당 윈도가 차일드 윈도(콘트롵타입)일 경우에만 패어런트 
-	// 윈도 좌표의 영향을 받으므로 페어런트 윈도 좌표를 더해주어야한다.
-	if(IsWndStyle(WBS_CHILD))
-	{
-		while(pWndCur != m_pWndRoot) 
-		{
-			pWndCur = pWndCur->m_pParentWnd;
-			rect += pWndCur->m_rectClient.TopLeft();
-		}
-	}
-	return rect;
-}
-*/
+
 CRect CWndBase::GetScreenRect()
 {
 	CWndBase* pWndCur = this;
@@ -645,9 +618,9 @@ void CWndBase::PostMessage(UINT message,WPARAM wParam,LPARAM lParam) {
 }
 void CWndBase::SetChildFocus( CWndBase* pWndBase, POINT point )
 {
-	for( int i = 0; i < pWndBase->m_wndArray.GetSize(); i++ )
+	for( size_t i = 0; i < pWndBase->m_wndArray.size(); i++ )
 	{
-		CWndBase* pWndCur = (CWndBase*)pWndBase->m_wndArray.GetAt( i );
+		CWndBase* pWndCur = pWndBase->m_wndArray[i];
 		if( pWndCur->IsWndStyle( WBS_CHILD ) && pWndCur->IsVisible() && pWndCur->IsWindowEnabled() )
 		{
 			if( pWndCur->GetScreenRect().PtInRect( point ) )
@@ -659,10 +632,10 @@ void CWndBase::SetChildFocus( CWndBase* pWndBase, POINT point )
 CWndBase* CWndBase::GetChildFocus( POINT point )
 {
 	CWndBase* pWndSelect = this;
-	CWndBase* pWndTemp = nullptr;
-	for( int i = 0; i < m_wndArray.GetSize(); i++ )
+
+	for( size_t i = 0; i < m_wndArray.size(); i++ )
 	{
-		CWndBase* pWndCur = (CWndBase*)m_wndArray.GetAt( i );
+		CWndBase* pWndCur = m_wndArray[i];
 		if( pWndCur->IsWndStyle( WBS_CHILD ) && pWndCur->IsVisible() && pWndCur->IsWindowEnabled() )
 		{
 			CPoint ptWindow = point;
@@ -671,7 +644,7 @@ CWndBase* CWndBase::GetChildFocus( POINT point )
 			if( pWndCur->IsPickupSpace( ptWindow ) )
 				pWndSelect = pWndCur;
 
-			pWndTemp = pWndCur->GetChildFocus( point );
+			CWndBase * pWndTemp = pWndCur->GetChildFocus( point );
 			if( pWndTemp != pWndCur )
 				pWndSelect = pWndTemp;
 		}
@@ -856,9 +829,9 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 			 //실제로 뒤에있는 탭 콘트롤에 걸리게 된다.라고 파악된다..-_-;
 			BOOL bMouseInChildWindow = FALSE;
 			CWndBase* pWndMouseInChildWindow = NULL;
-			for(int i = m_wndArray.GetSize() - 1; i >= 0; i--)
+			for(int i = static_cast<int>(m_wndArray.size() - 1); i >= 0; i--)
 			{
-				CWndBase* pWndBase = (CWndBase*)m_wndArray.GetAt( i );
+				CWndBase* pWndBase = m_wndArray[i];
 				pWndBase->WindowProc( message, wParam, lParam );
 				if( pWndMouseInChildWindow == NULL && pWndBase->GetWindowRect( TRUE ).PtInRect( GetMousePoint() ) )
 					pWndMouseInChildWindow = pWndBase;
@@ -1014,6 +987,24 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 
 	return TRUE;
 } 
+
+
+template<typename T>
+std::vector<T>::iterator AdvanceInRing(
+	typename std::vector<T>::iterator begin,
+	typename std::vector<T>::iterator end,
+	typename std::vector<T>::iterator i,
+	bool goAhead
+) {
+	if (goAhead) {
+		if (i + 1 == end) return begin;
+		else return i + 1;
+	} else {
+		if (i == begin) return end - 1;
+		else return i - 1;
+	}
+};
+
 LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 {
 	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(), point);
@@ -1206,9 +1197,7 @@ LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 				CWndBase* pWndDefault = this;
 				if(wParam == VK_RETURN)
 				{
-					for(int i = 0; i < m_pWndFocus->m_wndArray.GetSize() ; i++)
-					{	
-						CWndBase * pWndI = (CWndBase *)m_pWndFocus->m_wndArray.GetAt(i);
+					for (CWndBase * pWndI : m_pWndFocus->m_wndArray) {
 						if(pWndI->IsDefault() )
 						{ 
 							pWndDefault = pWndI;
@@ -1245,9 +1234,7 @@ LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 				UINT idWnd = pWndDefault->m_nIdWnd;
 				if( wParam == VK_RETURN )
 				{
-					for(int i = 0; i < m_pWndFocus->m_wndArray.GetSize() ; i++)
-					{	
-						CWndBase * pWndI = (CWndBase *)m_pWndFocus->m_wndArray.GetAt(i);
+					for (CWndBase * pWndI : m_pWndFocus->m_wndArray) {
 						if(pWndI->IsDefault() )
 						{ 
 							wParam = VK_SPACE; 
@@ -1288,45 +1275,24 @@ LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 					// 텝 스톱 처리 
 					if(wParam == VK_TAB)
 					{
-						constexpr auto FindCurrentFocus = [](CWndBase * pWndFocus) -> std::optional<size_t> {
-							int i = 0;
-							while (i < pWndFocus->m_wndArray.GetSize()) {
-								CWndBase * pWnd = (CWndBase *)pWndFocus->m_wndArray[i];
-								if (pWnd->IsFocusChild()) {
-									return i;
-								}
-							}
-							return std::nullopt;
-						};
+						const auto itCurFocus = std::find_if(
+							m_pWndFocus->m_wndArray.begin(), m_pWndFocus->m_wndArray.end(),
+							[](CWndBase * pWnd) { return pWnd->IsFocusChild(); }
+						);
 
-						constexpr auto GetNextFocus = [](CWndBase * pWnd, size_t i, bool goAhead) -> size_t {
-							const auto Advance = [&]() -> size_t {
-								if (goAhead) {
-									if (i + 1 == pWnd->m_wndArray.GetSize()) return 0;
-									else return i + 1;
-								} else {
-									if (i == 0) return pWnd->m_wndArray.GetSize() - 1;
-									else return i - 1;
-								}
-							};
+						if (itCurFocus != m_pWndFocus->m_wndArray.end()) {
+							auto itNewFocus = itCurFocus;
 
-							const size_t originalI = i;
+							do {
+								itNewFocus = AdvanceInRing<CWndBase *>(
+									m_pWndFocus->m_wndArray.begin(),
+									m_pWndFocus->m_wndArray.end(),
+									itNewFocus,
+									!(GetAsyncKeyState(VK_SHIFT) & 0x8000)
+								);
+							} while (itNewFocus != itCurFocus && !(*itNewFocus)->m_bTabStop);
 
-							while (true) {
-								i = Advance();
-								CWndBase * candidate = (CWndBase *) pWnd->m_wndArray[i];
-								if (i == originalI || candidate->m_bTabStop) return i;
-							}
-						};
-
-						const auto optCurIdx = FindCurrentFocus(m_pWndFocus);
-												
-						if (optCurIdx) {
-							const size_t newFocusI = GetNextFocus(
-								m_pWndFocus, *optCurIdx,
-								!(GetAsyncKeyState(VK_SHIFT) & 0x8000)
-							);
-							((CWndBase *) m_pWndFocus->m_wndArray[newFocusI])->PostMessage(WM_SETFOCUS);
+							(*itNewFocus)->PostMessage(WM_SETFOCUS);
 						}
 					}
 				}
@@ -1452,23 +1418,23 @@ void CWndBase::RemoveDestroyWnd() {
 
 	m_wndRemove.clear();
 }
-void CWndBase::DestroyAllWnd()
-{
-	for(int i = 0; i < m_wndArray.GetSize(); i++)
-	{
-		CWndBase* pWndBase = (CWndBase*)m_wndArray[i];
+void CWndBase::DestroyAllWnd() {
+	size_t i = 0;
+	while (i < m_wndArray.size()) {
+		CWndBase * pWndBase = m_wndArray[i];
 
-		if(pWndBase && !pWndBase->IsWndStyle(WBS_CHILD))
-		{
+		if (pWndBase && !pWndBase->IsWndStyle(WBS_CHILD)) {
 			pWndBase->DestroyAllWnd();
-			safe_delete( pWndBase );
-			i--;
+			safe_delete(pWndBase);
+		} else {
+			++i;
 		}
 	}
-	m_wndArray.RemoveAll();
+	m_wndArray.clear();
 }
+
 BOOL CWndBase::IsDestroy() const {
-	return std::ranges::find(m_wndRemove, this) != m_wndRemove.end();
+	return std::ranges::contains(m_wndRemove, this);
 }
 
 void CWndBase::Destroy(BOOL bAutoFree)
@@ -1777,16 +1743,13 @@ CWndBase* CWndBase::GetWndBase()
 	return NULL;
 }
 
-CWndBase* CWndBase::GetChildWnd( UINT nID )
-{
-	for(int i = 0; i < m_wndArray.GetSize(); i++)
-	{
-		CWndBase* pWnd = (CWndBase*)m_wndArray[i];
-		if( nID == pWnd->GetWndId() )
-			return pWnd;
-	}
-	return NULL;
+CWndBase * CWndBase::GetChildWnd(UINT nID) {
+	const auto it = std::find_if(m_wndArray.begin(), m_wndArray.end(),
+		[nID](const CWndBase * pWnd) { return pWnd->GetWndId() == nID; }
+	);
+	return it != m_wndArray.end() ? *it : nullptr;
 }
+
 CWndBase* CWndBase::GetFrameWnd()
 {
 	CWndBase* pWndCur = this;
@@ -2279,9 +2242,9 @@ void CWndBase::AdjustWndBase( D3DFORMAT d3dFormat ) //= D3DFMT_A4R4G4B4 )
 	{
 		LPWORD pDest = (LPWORD)lockedRect.pBits;
 		AdditionalSkinTexture( pDest, size1, d3dFormat );
-		for( int i = 0; i < m_wndArray.GetSize(); i++ )
+		for( size_t i = 0; i < m_wndArray.size(); i++ )
 		{
-			CWndBase* pWndBase = (CWndBase*)m_wndArray[i];
+			CWndBase* pWndBase = m_wndArray[i];
 			if( pWndBase->IsDestroy() == FALSE && pWndBase->IsVisible() )
 				pWndBase->AdditionalSkinTexture( pDest, size1, d3dFormat );
 		}

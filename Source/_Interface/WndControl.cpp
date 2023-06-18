@@ -489,14 +489,14 @@ void CWndButton::OnLButtonUp(UINT nFlags, CPoint point)
 }
 
 void CWndButton::ParentUncheckGroup() {
-	CPtrArray * pWndArray = &m_pParentWnd->m_wndArray;
+	std::vector<CWndBase *> & pWndArray = m_pParentWnd->m_wndArray;
 
 	// 1: Search the start of the group of this
-	std::optional<int> startGroup;
+	std::optional<size_t> startGroup;
 	bool foundThis = false;
 
-	for (int i = 0; i != pWndArray->GetSize(); ++i) {
-		CWndBase * pWnd = (CWndBase *) pWndArray->GetAt(i);
+	for (size_t i = 0; i != pWndArray.size(); ++i) {
+		const CWndBase * pWnd = pWndArray[i];
 
 		if (pWnd->IsGroup() && pWnd->IsWndStyle(WBS_RADIO)) {
 			startGroup = i;
@@ -521,8 +521,8 @@ void CWndButton::ParentUncheckGroup() {
 	}
 
 	// 2: Uncheck all members of groupe except this
-	for (int i = startGroup.value(); i != pWndArray->GetSize(); ++i) {
-		CWndBase * pWnd = (CWndBase *)pWndArray->GetAt(i);
+	for (size_t i = startGroup.value(); i != pWndArray.size(); ++i) {
+		CWndBase * pWnd = pWndArray[i];
 
 		// M.C. Hammer - U Can't Touch This
 		if (pWnd == this) continue;
@@ -3003,17 +3003,17 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
 		else
 			PaintTexture( pDest, lpImage[ 1 ], point, sizeSurface, d3dFormat );
 	}
- 	for( int i = 0; i < m_wndArray.GetSize(); i++ )
+ 	for( int i = 0; i < m_wndArray.size(); i++ )
 	{
-		CWndBase* pWndBase = (CWndBase*)m_wndArray[i];
+		CWndBase* pWndBase = m_wndArray[i];
 		CRect rectOld = m_rectWindow;
 		m_rectWindow.OffsetRect( rect.TopLeft() );
 		if( pWndBase->IsDestroy() == FALSE && pWndBase->IsVisible() )
 		{
  			pWndBase->AdditionalSkinTexture( pDest, sizeSurface, d3dFormat );
-			for( int i = 0; i < pWndBase->m_wndArray.GetSize(); i++ )
+			for( size_t i = 0; i < pWndBase->m_wndArray.size(); i++ )
 			{
-				CWndBase* pWndChild = (CWndBase*)pWndBase->m_wndArray[i];
+				CWndBase* pWndChild = pWndBase->m_wndArray[i];
 				CRect rectOldChild = pWndChild->m_rectWindow;
 				pWndChild->m_rectWindow.OffsetRect( rect.TopLeft() );
 				if( pWndChild->IsDestroy() == FALSE && pWndChild->IsVisible() )

@@ -92,7 +92,7 @@ static CResManager m_resMng;
 	CD3DApplication* m_pApp;
 	CTheme*   m_pTheme;
 	CWndBase* m_pParentWnd;
-	CPtrArray m_wndArray;
+	std::vector<CWndBase *> m_wndArray;
 	UINT      m_nIdWnd;
 	bool      m_bVisible;
 	CSize     m_sizeTile;
@@ -234,10 +234,10 @@ public:
 
 
 	BOOL IsFocusWnd() { return m_pWndFocus == this; }
-	BOOL IsFocusChild() { return m_pParentWnd ? m_pParentWnd->m_pWndFocusChild == this : FALSE; }
+	[[nodiscard]] bool IsFocusChild() const { return m_pParentWnd && m_pParentWnd->m_pWndFocusChild == this; }
 	[[nodiscard]] CPoint GetMousePoint() const noexcept { return m_ptMouse; } 
 	void SetGroup(BOOL bGroup) { m_bGroup = bGroup; }
-	BOOL IsGroup() { return m_bGroup; }
+	[[nodiscard]] BOOL IsGroup() const { return m_bGroup; }
 	void SetFont(CD3DFont* pFont) { m_pFont = pFont; }
 	CD3DFont* GetFont() { return m_pFont; }
 	void SetAutoFree(BOOL bFree) { m_bAutoFree = (bFree != FALSE ); }
