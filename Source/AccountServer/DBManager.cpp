@@ -37,11 +37,9 @@ void CDbManager::CreateDbWorkers( void )
 
 	m_hDbCompletionPort		= CreateIoCompletionPort( INVALID_HANDLE_VALUE, NULL, 0, 0 );
 	ASSERT( m_hDbCompletionPort );
-	for( int i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++ )
-	{
-		HANDLE hThread	= chBEGINTHREADEX( NULL, 0, DbWorkerThread, (LPVOID)this, 0, NULL );
-		ASSERT( hThread );
-		m_hDbWorkerThreadTerminate[i]	= hThread;
+	
+	for (std::thread & thread : m_hDbWorkerThreadTerminate) {
+		thread = std::thread(DbWorkerThread, this);
 
 		if( WaitForSingleObject( s_hHandle, SEC( 3 ) ) == WAIT_TIMEOUT )
 			OutputDebugString( "ACCOUNTSERVER.EXE\t// TIMEOUT\t// ODBC" );
@@ -50,19 +48,16 @@ void CDbManager::CreateDbWorkers( void )
 	CloseHandle( s_hHandle );
 }
 
-void CDbManager::CloseDbWorkers( void )
-{
-	for( int i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++ )
-		PostQueuedCompletionStatus( m_hDbCompletionPort, 0, NULL, NULL );
-	
-	WaitForMultipleObjects( DEFAULT_DB_WORKER_THREAD_NUM, m_hDbWorkerThreadTerminate, TRUE, INFINITE );
-	
-	CLOSE_HANDLE( m_hDbCompletionPort );
-	
-	for( int i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++ ) {
-		CLOSE_HANDLE( m_hDbWorkerThreadTerminate[i] );
+void CDbManager::CloseDbWorkers() {
+	for (size_t i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++) {
+		PostQueuedCompletionStatus(m_hDbCompletionPort, 0, NULL, NULL);
 	}
 	
+	for (size_t i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++) {
+		m_hDbWorkerThreadTerminate[i].join();
+	}
+
+	CLOSE_HANDLE( m_hDbCompletionPort );
 	SAFE_DELETE( m_pDbIOData );
 }
 
@@ -275,10 +270,8 @@ void CDbManager::QueryReloadProject( CQuery& query, LPDB_OVERLAPPED_PLUS pOV )
 // DbWorkerThread
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-u_int __stdcall DbWorkerThread( LPVOID lpvDbManager )
+u_int DbWorkerThread(CDbManager * pDbManager)
 {
-	CDbManager* pDbManager	= (CDbManager*)lpvDbManager;
-
 	CQuery qryLogin;
 	CQuery qryLog;
 	BOOL bLongConnect = FALSE;

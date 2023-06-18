@@ -5,6 +5,7 @@
 #include "mempool.h"
 #include <dplay.h>
 #include "account.h"
+#include <thread>
 
 #include <map>
 #include <set>
@@ -97,8 +98,8 @@ typedef	struct tagDB_OVERLAPPED_PLUS
 class CDbManager
 {
 protected:
-	enum	{	DEFAULT_DB_WORKER_THREAD_NUM	= 8	};
-	HANDLE							m_hDbWorkerThreadTerminate[DEFAULT_DB_WORKER_THREAD_NUM];
+	static constexpr size_t DEFAULT_DB_WORKER_THREAD_NUM = 8;
+	std::array<std::thread, DEFAULT_DB_WORKER_THREAD_NUM> m_hDbWorkerThreadTerminate;
 
 public:
 	CMemPool<DB_OVERLAPPED_PLUS>*	m_pDbIOData;
@@ -134,7 +135,7 @@ public:
 
 extern CDbManager g_DbManager;
 
-u_int	__stdcall	DbWorkerThread( LPVOID lpDbManager );	// DbWorkerThread
+u_int	DbWorkerThread(CDbManager * lpDbManager);	// DbWorkerThread
 
 extern CQuery::Credentials dbLogin;
 extern CQuery::Credentials dbLog;
