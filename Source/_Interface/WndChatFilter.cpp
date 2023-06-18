@@ -27,17 +27,6 @@
   CtrlId : WIDC_STATIC2 - 매시지 필터
 ****************************************************/
 
-int CWndChatFilter::GetChannelForChatsty(int chatsty) {
-	switch (chatsty) {
-		default:
-		case CHATSTY_GENERAL: return 0;
-		case CHATSTY_WHISPER: return 1;
-		case CHATSTY_SHOUT:   return 2;
-		case CHATSTY_PARTY:   return 3;
-		case CHATSTY_GUILD:   return 4;
-	}
-}
-
 std::array<std::pair<UINT, DWORD>, 5> CWndChatFilter::WIDToChatsty = {
 	std::pair<UINT, DWORD>{ WIDC_CHECK1, CHATSTY_GENERAL },
 	std::pair<UINT, DWORD>{ WIDC_CHECK2, CHATSTY_WHISPER },
@@ -64,7 +53,7 @@ void CWndChatFilter::OnInitialUpdate()
 } 
 
 void CWndChatFilter::SetButtonStatus() {
-	const int nChannel = GetChannelForChatsty(CWndChat::m_nChatChannel);
+	const int nChannel = CWndChat::GetChannelForChatsty(CWndChat::m_nChatChannel);
 	const DWORD dwChatFilter = g_Option.m_dwChatFilter[ nChannel ];
 
 	for (const auto & [widgetId, chatsty] : WIDToChatsty) {
@@ -85,7 +74,7 @@ BOOL CWndChatFilter::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 	);
 
 	if (chatstyIt != WIDToChatsty.end()) {
-		const int nChannel = GetChannelForChatsty(CWndChat::m_nChatChannel);
+		const int nChannel = CWndChat::GetChannelForChatsty(CWndChat::m_nChatChannel);
 		CWndButton * pWndCheck = GetDlgItem<CWndButton>(chatstyIt->first);
 
 		if (pWndCheck->GetCheck()) {

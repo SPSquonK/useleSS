@@ -9,8 +9,6 @@ class CWndChatFilter;
 class CWndEditChat : public CWndEdit
 {
 public:
-	CWndEditChat();
-	~CWndEditChat();
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 	virtual void OnSetFocus(CWndBase* pOldWnd);
 	virtual void OnKillFocus(CWndBase* pNewWnd);
@@ -20,19 +18,16 @@ class CWndMacroChat : public CWndButton
 public:
 	CTexture* m_pTexMacro;
 	CTexture m_texMacroChat;
-	CWndMacroChat();
-	~CWndMacroChat();
+
 	virtual void OnDraw( C2DRender* p2DRender );
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 	virtual	void OnInitialUpdate();
 };
-class CWndTextChat : public CWndText
-{
+
+class CWndTextChat : public CWndText {
 public:
-	CWndTextChat();
-	~CWndTextChat();
-	virtual BOOL IsPickupSpace(CPoint point); 
+	BOOL IsPickupSpace(CPoint point) override;
 };
 
 class CWndChatLog : public CWndNeuz
@@ -41,29 +36,18 @@ class CWndChatLog : public CWndNeuz
 	CWndTextChat m_wndText;
 
 public:
-	CWndChatLog();   
-	virtual ~CWndChatLog(); 
+
 	void  PutString( LPCTSTR lpszString, DWORD dwColor = 0xffffffff, DWORD dwPStyle = 0x00000001 ); //CObj* pObj );
-//	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
 	// message
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnLButtonUp(UINT nFlags, CPoint point);
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
-//	virtual BOOL OnEraseBkgnd(C2DRender* p2DRender);
 	virtual void OnDestroy();
-	virtual void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
-	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
-	virtual void OnSetFocus(CWndBase* pOldWnd);
 	virtual void OnKillFocus(CWndBase* pNewWnd);
-	virtual void AdditionalSkinTexture( LPWORD pDest, CSize size, D3DFORMAT d3dFormat );
-	virtual void OnRButtonUp(UINT nFlags, CPoint point);
+
 	virtual void OnRButtonDown(UINT nFlags, CPoint point);
-	virtual void OnMouseMove(UINT nFlags, CPoint point);
 	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE);
 	virtual BOOL Process ();	
 };
@@ -101,7 +85,6 @@ public:
 	CWndChat();   
 	virtual ~CWndChat(); 
 	void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
-	void  Parsing( CString string );
 	void  PutString( LPCTSTR lpszString, DWORD dwColor = 0xffffffff, DWORD dwPStyle = 0x00000001 ); //CObj* pObj );
 //	virtual CItem* GetFocusItem() { return NULL; }
 	virtual void OnDraw(C2DRender* p2DRender);
@@ -111,14 +94,11 @@ public:
 	void SetChannel();
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE);
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual void OnSize(UINT nType, int cx, int cy);
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
 	virtual BOOL OnEraseBkgnd(C2DRender* p2DRender);
 	virtual void OnDestroy();
-	virtual void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
-	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
 	virtual void OnSetFocus(CWndBase* pOldWnd);
 	virtual void OnKillFocus(CWndBase* pNewWnd);
@@ -127,6 +107,8 @@ public:
 	virtual void OnRButtonDown(UINT nFlags, CPoint point);
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 	virtual BOOL Process ();	
+
+	[[nodiscard]] static int GetChannelForChatsty(int chatsty);
 };
 
 #endif

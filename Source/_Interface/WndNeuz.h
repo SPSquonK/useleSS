@@ -76,7 +76,6 @@ public:
 	void PaintTexture( LPVOID pDestData, LPIMAGE pImage, CPoint pt, CSize sizeSurface ) { ::PaintTexture( pDestData, pImage, pt, sizeSurface, m_d3dFormat ); }
 	void SetFullMax( BOOL bFullMax ) { m_bFullMax = bFullMax; }
 	BOOL IsFullMax() { return m_bFullMax; }
-//	virtual CItem* GetFocusItem() { return NULL; }
 	virtual	void PaintFrame( C2DRender* p2DRender );
 	virtual	void OnInitialUpdate();
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL,DWORD dwStyle = 0 );

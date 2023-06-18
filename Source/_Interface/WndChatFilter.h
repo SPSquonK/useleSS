@@ -12,6 +12,5 @@ public:
 private:
 	void SetButtonStatus();
 
-	[[nodiscard]] static int GetChannelForChatsty(int chatsty);
 	static std::array<std::pair<UINT, DWORD>, 5> WIDToChatsty;
 };

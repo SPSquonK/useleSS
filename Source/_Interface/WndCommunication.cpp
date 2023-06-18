@@ -3,22 +3,13 @@
 #include "AppDefine.h"
 #include "WndCommand.h"
 #include "party.h"
-
 #include "WndManager.h"
-
 #include "WndChatFilter.h"
-
 #include "DPClient.h"
 
 
 #define		MAX_HISTORY_STRING		20
 
-CWndEditChat::CWndEditChat()
-{
-}
-CWndEditChat::~CWndEditChat()
-{
-}
 void CWndEditChat::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	CWndChat* pWndChat = (CWndChat*) m_pParentWnd;
@@ -44,7 +35,7 @@ void CWndEditChat::OnSetFocus(CWndBase* pOldWnd)
 				if(  pWndChat->m_strCharName.IsEmpty() )
 					string.Format( "/w " );
 				else
-					string.Format( "/w %s ", pWndChat->m_strCharName );
+					string.Format( "/w %s ", pWndChat->m_strCharName.GetString() );
 				SetString( string );
 			}
 			else
@@ -65,9 +56,9 @@ void CWndEditChat::OnSetFocus(CWndBase* pOldWnd)
 		}
 	}
 
-
 	CWndEdit::OnSetFocus( pOldWnd );
 }
+
 void CWndEditChat::OnKillFocus(CWndBase* pNewWnd)
 {
 	CWndChat* pWndChat = (CWndChat*) m_pParentWnd;
@@ -83,12 +74,6 @@ void CWndEditChat::OnKillFocus(CWndBase* pNewWnd)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndMacroChat::CWndMacroChat()
-{
-}
-CWndMacroChat::~CWndMacroChat()
-{
-}
 void CWndMacroChat::OnDraw( C2DRender* p2DRender )
 {
 	CWndChat* pWndChat = (CWndChat*)g_WndMng.GetApplet( APP_COMMUNICATION_CHAT );
@@ -107,8 +92,6 @@ void CWndMacroChat::OnLButtonDown(UINT nFlags, CPoint point)
 		m_GlobalShortcut.m_pFromWnd = this;
 		m_GlobalShortcut.m_pTexture = m_pTexMacro; //.m_pFromWnd   = this;
 		m_GlobalShortcut.m_dwData = 0;
-		//CWndEdit* pWndEdit = (CWndEdit*)pWndChat->GetDlgItem( WIDC_EDIT );
-		//strcpy( m_GlobalShortcut.m_szString, pWndEdit->m_string );
 
 		CString strFormat;
 		strFormat = pWndEdit->m_string;
@@ -131,20 +114,14 @@ void CWndMacroChat::OnMouseMove(UINT nFlags, CPoint point)
 }
 void CWndMacroChat::OnInitialUpdate()
 {
-	//m_ptexMacroe.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_ICON, "icon_MacroChat.dds" ), 0xffff00ff );
-	m_pTexMacro = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_ICON, "icon_MacroChat.dds" ), 0xffff00ff );//, bMyLoader );
+	m_pTexMacro = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_ICON, "icon_MacroChat.dds" ), 0xffff00ff );
 	m_texMacroChat.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "wndButtMacroChat.bmp" ), 0xffff00ff );
 }
-CWndTextChat::CWndTextChat()
-{
-}
-CWndTextChat::~CWndTextChat()
-{
-}
-BOOL CWndTextChat::IsPickupSpace( CPoint point )
-{
+
+BOOL CWndTextChat::IsPickupSpace(CPoint) {
 	return FALSE;
 }
+
 int CWndChat::m_nChatChannel = CHATSTY_GENERAL;
 
 CWndChat::CWndChat()
@@ -171,12 +148,7 @@ void CWndChat::OnDraw(C2DRender* p2DRender)
 {
 	if( g_pPlayer == NULL )
 		return;
-	//if( timer.IsTimeOut() )
-	//{
-	//	timer.Set( SEC( 10 ) );
-	//	if( szMessage[ nMsgCnt ][0] )
-	//		PutString( szMessage[ nMsgCnt ++ ] );
-	//}
+
 	if( g_Option.m_nInstantHelp )
 	{
 		CString string;
@@ -324,66 +296,7 @@ void CWndChat::OnInitialUpdate()
 			s.GetToken();
 		}
 	}
-	//m_strArray.
 
-/*
-	CRect rect = GetClientRect();
-	rect.top = rect.bottom - 20;
-	rect.right = 70;
-	rect.left += 5;
-	rect.DeflateRect( 1, 1 );
-	m_wndBeginning.Create( g_Neuz.GetSafeHwnd(), WBS_NODRAWFRAME, rect, this, 1000);
-
-	rect = GetClientRect();
-	rect.top = rect.bottom - 20;
-	rect.left = 75;
-	rect.right -= 134;
-	rect.DeflateRect( 1, 1 );
-	//rect.left = rect.Width() * 20 / 100;
-	//m_wndEdit.AddWndStyle( WBS_NODRAWFRAME );
-	m_wndEdit.Create( g_Neuz.GetSafeHwnd(), WBS_NODRAWFRAME, rect, this, 1001 );
-*/
-//	m_texEdit.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndChat2.bmp" ), 0xffff00ff, TRUE );
-/*
-	rect = GetClientRect();
-	rect.top = rect.bottom - 20;
-	rect.left = rect.right - 134;
-	rect.right = r mnnnnft + 15;
-	rect.DeflateRect( 1, 1 );
-	m_wndShout.Create( " ", 0, rect, this, 1010 );
-
-	rect = GetClientRect();
-	rect.top = rect.bottom - 20;
-	rect.left = rect.right - 117;
-	rect.right = rect.left + 15;
-	rect.DeflateRect( 1, 1 );
-	m_wndParty.Create( " ", 0, rect, this, 1011 );
-*/
-
-/*
-	m_wndText.AddWndStyle( WBS_VSCROLL );
-	m_wndText.AddWndStyle( WBS_NOFRAME );
-	m_wndText.AddWndStyle( WBS_NODRAWFRAME );
-	m_wndText.Create( 0, rect, this, 1003 ); 
-	m_wndText.SetFont( g_Neuz.m_Theme.m_pFontChat );
-	m_wndText.m_string.Reset( m_pFont, &rect);
-*/
-/*
-	rect = GetClientRect();
-	rect.left = rect.right - 100;
-	//rect.bottom -= 80;
-	rect.DeflateRect( 1, 1 );
-	m_wndReceiver.AddWndStyle( WBS_VSCROLL );
-	m_wndReceiver.AddWndStyle( WBS_NOFRAME );
-	m_wndReceiver.Create( EBS_AUTOVSCROLL, rect, this, 1002 );
-	m_wndReceiver.AddString( "Vampyre\n" );
-	m_wndReceiver.AddString( "Xuzhu\n" );
-	m_wndReceiver.AddString( "Zodiacus\n" );
-	m_wndReceiver.AddString( "Jeff\n" );
-	m_wndReceiver.m_string.Reset( m_pFont, &rect);
-*/
-
-	//CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT );
 	SetChannel();
 	CWndButton* pWndRadio1 = (CWndButton*)GetDlgItem( WIDC_RADIO1 );
 	CWndButton* pWndRadio2 = (CWndButton*)GetDlgItem( WIDC_RADIO2 );
@@ -397,18 +310,7 @@ void CWndChat::OnInitialUpdate()
 	if( m_nChatChannel == CHATSTY_GUILD   ) pWndRadio5->SetCheck( TRUE );
 
 	pWndText->m_nLineSpace = 2;
-	//pWndText->m_string.Reset( m_pFont, &pWndText->GetClientRect() );
-	
-	//pWndText->
-	/*
-	CRect rect = GetClientRect();
-	rect.bottom -= 20;
-	rect.right -= 0;//100;
-	rect.DeflateRect( 1, 1);
-	m_wndText.SetWndRect( rect );
-*/
-	//LPBYTE m_wndChatEdit[3];
-	//CSize sizeWndChatEdit[3];
+
 	LoadTGA( MakePath( DIR_THEME, "WndChatEdit00_1.tga" ), &m_wndChatEdit[0] );
 	LoadTGA( MakePath( DIR_THEME, "WndChatEdit01.tga" ), &m_wndChatEdit[1] );
 #ifdef __LANG_IME_0327
@@ -422,12 +324,7 @@ void CWndChat::OnInitialUpdate()
 		Error( "CWndChat::OnInitialUpdate() m_wndChatEdit[2].lpData = NULL" );
 		return;
 	}
-/*
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rectWindow = GetWindowRect();
-	CPoint point( 154, rectRoot.bottom - rectWindow.Height() );
-	Move( point );
-*/
+
 	CWndButton* pWndLock = (CWndButton*)GetDlgItem( WIDC_CHECK1 );
 	pWndLock->SetCheck( m_bChatLock );
 	CWndButton* pWndMoveLock = (CWndButton*)GetDlgItem( WIDC_MOVELOCK );
@@ -507,15 +404,7 @@ void CWndChat::SetChannel()
 {
 	m_wndText.SetString( "" );
 
-	int nChannel = 0;
-	switch( CWndChat::m_nChatChannel )
-	{
-		case CHATSTY_GENERAL: nChannel = 0; break;
-		case CHATSTY_WHISPER: nChannel = 1; break;
-		case CHATSTY_SHOUT  : nChannel = 2; break;
-		case CHATSTY_PARTY  : nChannel = 3; break;
-		case CHATSTY_GUILD  : nChannel = 4; break;
-	}
+	int nChannel = GetChannelForChatsty(CWndChat::m_nChatChannel);
 	DWORD dwChatFilter = g_Option.m_dwChatFilterEtc | g_Option.m_dwChatFilter[ nChannel ];
 
 	for (const WndMgr::StoredChatMessage & chatMessage : g_WndMng.m_aChat) {
@@ -533,8 +422,6 @@ void CWndChat::OnSetFocus(CWndBase* pOldWnd)
 }
 void CWndChat::OnKillFocus(CWndBase* pNewWnd)
 {
-	//if( m_pWndCommand && pNewWnd != m_pWndCommand )
-	//	m_pWndCommand->Destroy();
 }
 BOOL CWndChat::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 {
@@ -542,7 +429,6 @@ BOOL CWndChat::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	CRect rect( 154, rectWindow.Height() - 100, 154 + rectWindow.Width() - 300, rectWindow.Height() );
 	SetTitle( GETTEXT( TID_APP_COMMUNICATION_CHAT ) );
 	return CWndNeuz::InitDialog( dwWndId, pWndParent, WBS_KEY| WBS_THICKFRAME, CPoint( 792, 130 ) );
-	//return CWndNeuz::Create( 0|WBS_MOVE|/*WBS_DOCKABLE|*/WBS_SOUND|WBS_CAPTION|WBS_THICKFRAME|WBS_MAXIMIZEBOX, rect, &g_WndMng, dwWndId);
 }
 
 /*
@@ -552,12 +438,6 @@ BOOL CWndChat::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	"to"     TY_SERVER 0
 */
 
-void CWndChat::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
-{
-}
-void CWndChat::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
-{
-}
 void CWndChat::OnDestroyChildWnd( CWndBase* pWndChild )
 {
 	if( m_pWndCommand == pWndChild )
@@ -923,14 +803,6 @@ BOOL CWndChat::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-BOOL CWndChat::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand(nID,dwMessage,pWndBase);
-}
-void CWndChat::Parsing( CString string )
-{
-	// TODO: remove this function
-}
 void CWndChat::PutString( LPCTSTR lpszString, DWORD dwColor, DWORD dwPStyle )
 {
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT );
@@ -982,7 +854,6 @@ void CWndChat::OnSize(UINT nType, int cx, int cy)
 
 	CRect rectEdit;
 	CRect rect = GetClientRect();
-	//rect.left = 60;
 	rect.top = 0;
 	rect.left = 0;
 	rect.right -= 0;
@@ -1071,18 +942,10 @@ void CWndChat::OnLButtonUp(UINT nFlags, CPoint point)
 	if(IsWndRoot())
 		return;
 
-	//if(IsWndStyle(WBS_CAPTION) && m_bPickup)
-	{//
-	//	m_wndTitleBar.m_wndMinimize.SetVisible(TRUE);
-		//m_wndTitleBar.m_wndMaximize.SetVisible(TRUE);
-	}
 	if( g_WndMng.m_pWndWorld )
 	{
-		CRect rect = GetWindowRect( TRUE );
-		CPoint p;
-		p.x = point.x + rect.left;
-		p.y = point.y + rect.top;
-//		g_WndMng.m_pWndWorld->m_bLButtonDown = TRUE;
+		const CRect rect = GetWindowRect( TRUE );
+		const CPoint p = point + rect.TopLeft();
 		g_WndMng.m_pWndWorld->OnLButtonUp( nFlags, p );
 	}
 }
@@ -1094,10 +957,8 @@ void CWndChat::OnLButtonDown(UINT nFlags, CPoint point)
 
 	if( g_WndMng.m_pWndWorld )
 	{
-		CRect rect = GetWindowRect( TRUE );
-		CPoint p;
-		p.x = point.x + rect.left;
-		p.y = point.y + rect.top;
+		const CRect rect = GetWindowRect( TRUE );
+		const CPoint p = point + rect.TopLeft();
 		g_WndMng.m_pWndWorld->m_bLButtonDown = TRUE;
 		g_WndMng.m_pWndWorld->OnLButtonDown( nFlags, p );
 	}
@@ -1207,11 +1068,8 @@ void CWndChat::OnRButtonUp(UINT nFlags, CPoint point)
 {
 	if( g_WndMng.m_pWndWorld )
 	{
-		CRect rect = GetWindowRect( TRUE );
-		CPoint p;
-		p.x = point.x + rect.left;
-		p.y = point.y + rect.top;
-//		g_WndMng.m_pWndWorld->m_bRButtonDown = TRUE;
+		const CRect rect = GetWindowRect( TRUE );
+		const CPoint p = point + rect.TopLeft();
 		g_WndMng.m_pWndWorld->OnRButtonUp( nFlags, p );
 	}
 }
@@ -1220,11 +1078,8 @@ void CWndChat::OnMouseMove(UINT nFlags, CPoint point)
 {
 	if( g_WndMng.m_pWndWorld )
 	{
-		CRect rect = GetWindowRect( TRUE );
-		CPoint p;
-		p.x = point.x + rect.left;
-		p.y = point.y + rect.top;
-//		g_WndMng.m_pWndWorld->m_bRButtonDown = TRUE;
+		const CRect rect = GetWindowRect( TRUE );
+		const CPoint p = point + rect.TopLeft();
 		g_WndMng.m_pWndWorld->OnMouseMove( nFlags, p );
 	}
 }
@@ -1235,8 +1090,6 @@ BOOL CWndChat::OnEraseBkgnd(C2DRender* p2DRender)
 {
 	return TRUE;
 }
-//void CWndNeuz::PaintTexture( LPBYTE pDest, LPBYTE pSrc, CPoint pt,
-// CSize sizeTexture, CSize sizeSurface )
 
 void CWndChat::AdditionalSkinTexture( LPWORD pDest, CSize size, D3DFORMAT d3dFormat )
 {
@@ -1251,26 +1104,27 @@ void CWndChat::AdditionalSkinTexture( LPWORD pDest, CSize size, D3DFORMAT d3dFor
 	{
 		if( i == nWidth - 2 )
 			PaintTexture( pDest, &m_wndChatEdit[2], point, size );
-		else
-		if( i < nWidth - 2 )
+		else if( i < nWidth - 2 )
 			PaintTexture( pDest, &m_wndChatEdit[1], point, size );
 		point.x += m_wndChatEdit[1].size.cx;
 	}
 }
 
 
+int CWndChat::GetChannelForChatsty(int chatsty) {
+	switch (chatsty) {
+		default:
+		case CHATSTY_GENERAL: return 0;
+		case CHATSTY_WHISPER: return 1;
+		case CHATSTY_SHOUT:   return 2;
+		case CHATSTY_PARTY:   return 3;
+		case CHATSTY_GUILD:   return 4;
+	}
+}
 
-CWndChatLog::CWndChatLog()
-{
-}
-CWndChatLog::~CWndChatLog()
-{
-}
-/*
-void CWndChatLog::OnDraw(C2DRender* p2DRender)
-{
-}
-*/
+
+///////////////////////////////////////////////////////////////////////////////
+
 void CWndChatLog::OnInitialUpdate()
 {
 	CWndNeuz::OnInitialUpdate();
@@ -1286,26 +1140,21 @@ void CWndChatLog::OnInitialUpdate()
 
 	pWndText->m_nLineSpace = 2;
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
-	CRect rect = GetWindowRect();
-	int nWidth  = rect.Width(); 
-	int nHeight = rect.Height(); 
-	int x = 0;//rectRoot.left + (rectRoot.Width()  / 2) - (nWidth  / 2);
-	int y = rectRoot.bottom - nHeight;	
-	CPoint point( x, y );
+	const CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	const CRect rect = GetWindowRect();
+	const int nHeight = rect.Height(); 
+	const int y = rectRoot.bottom - nHeight;	
+	CPoint point( 0, y );
 	Move( point );
 	
 	m_wndMenuPlace.CreateMenu( this );	
 	m_wndMenuPlace.AddButton(0, prj.GetText(TID_GAME_GUIDE_HIDE));
 }
 
-BOOL CWndChatLog::Process ()
-{	
+BOOL CWndChatLog::Process() {
 	return TRUE;
 }
-void CWndChatLog::OnSetFocus(CWndBase* pOldWnd)
-{
-}
+
 void CWndChatLog::OnKillFocus(CWndBase* pNewWnd)
 {
 }
@@ -1315,18 +1164,8 @@ BOOL CWndChatLog::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	CRect rect( 154, rectWindow.Height() - 100, 154 + rectWindow.Width() - 300, rectWindow.Height() );
 	SetTitle( GETTEXT( TID_APP_COMMUNICATION_CHAT ) );
 	return CWndNeuz::InitDialog( dwWndId, pWndParent, WBS_THICKFRAME, CPoint( 792, 130 ) );
-//	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
 }
 
-void CWndChatLog::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
-{
-}
-void CWndChatLog::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
-{
-}
-void CWndChatLog::OnDestroyChildWnd( CWndBase* pWndChild )
-{
-}
 BOOL CWndChatLog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	CWndBase* pWndBase = (CWndBase*) pLResult;
@@ -1357,10 +1196,6 @@ BOOL CWndChatLog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-BOOL CWndChatLog::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
-{
-	return CWndNeuz::OnCommand(nID,dwMessage,pWndBase);
-}
 void CWndChatLog::PutString( LPCTSTR lpszString, DWORD dwColor, DWORD dwPStyle )
 {
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT );
@@ -1385,22 +1220,17 @@ void CWndChatLog::OnDestroy()
 }
 void CWndChatLog::OnSize(UINT nType, int cx, int cy)
 {
-	CRect rectEdit;
 	CRect rect = GetClientRect();
-	//rect.left = 60;
 	rect.top = 0;
 	rect.left = 0;
-	rect.right -= 0;
-	rect.bottom -= 0;
 
 	m_wndText.SetWndRect( rect );
 	m_wndText.m_wndScrollBar.SetMaxScrollPos();
 	
 	CWndNeuz::OnSize(nType,cx,cy);
 }
-void CWndChatLog::OnLButtonUp(UINT nFlags, CPoint point)
-{
-}
+
+
 void CWndChatLog::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	if( g_WndMng.m_pWndWorld )
@@ -1422,28 +1252,11 @@ void CWndChatLog::OnRButtonDown(UINT nFlags, CPoint point)
 	rect.top  += point.y;
 	rect.left += point.x;
 	
-	m_wndMenuPlace.Move( CPoint( rect.left, rect.top ) );
+	m_wndMenuPlace.Move( rect.TopLeft() );
 	
 	m_wndMenuPlace.SetVisible( !m_wndMenuPlace.IsVisible() );
 	m_wndMenuPlace.SetFocus();	
 }	
-void CWndChatLog::OnRButtonUp(UINT nFlags, CPoint point)
-{
-}
-void CWndChatLog::OnMouseMove(UINT nFlags, CPoint point)
-{
-}
-/*
-BOOL CWndChatLog::OnEraseBkgnd(C2DRender* p2DRender)
-{
-	return TRUE;
-}
-*/
-
-void CWndChatLog::AdditionalSkinTexture( LPWORD pDest, CSize size, D3DFORMAT d3dFormat )
-{
-	CWndNeuz::AdditionalSkinTexture( pDest, size, d3dFormat );
-}
 
 void CWndChatLog::SetWndRect( CRect rectWnd, BOOL bOnSize )
 {
@@ -1457,22 +1270,3 @@ void CWndChatLog::SetWndRect( CRect rectWnd, BOOL bOnSize )
 		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
 	MakeVertexBuffer();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
