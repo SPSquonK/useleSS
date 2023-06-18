@@ -206,6 +206,8 @@ void CWndQuestQuickInfo::OnInitialUpdate( void )
 //-----------------------------------------------------------------------------
 BOOL CWndQuestQuickInfo::Process( void )
 {
+	if (!g_pPlayer) return TRUE;
+
 	CRect rtQuickInfoApplet = GetWindowRect();
 	static const int REVISION_RECT_LEFT = 4; // Rect가 실제 윈도우보다 4픽셀 정도 오른쪽으로 치우쳐져 있는 것을 보정
 	static const int REVISION_RECT_UP = 22; // Rect가 실제 윈도우보다 22픽셀 정도 내려가 있는 것을 보정
