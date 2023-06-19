@@ -6,6 +6,7 @@
 #include "dpclient.h"
 #include "definequest.h"
 #include "WorldMap.h"
+#include "sqktd/util.hpp"
 #ifdef __IMPROVE_MAP_SYSTEM
 #include "WndMapEx.h"
 #endif // __IMPROVE_MAP_SYSTEM
@@ -83,7 +84,7 @@ void CWndQuest::SerializeRegInfo( CAr& ar, DWORD& dwVersion )
 		dwVersion = 1;
 		ar << m_idSelQuest;
 		ar << static_cast<std::uint32_t>(m_aOpenTree.size());
-		for (const WORD questId : m_aOpenTree) {
+		for (const QuestId questId : m_aOpenTree) {
 			ar << questId;
 		}
 	}
@@ -106,23 +107,13 @@ void CWndQuest::Update( int nNewQuestId )
 		pTreeCtrl->DeleteAllItems();
 	}
 
-	CWndQuestTreeCtrl * pTreeCtrl = ( CWndQuestTreeCtrl* )pWndTabCtrl->GetSelectedTab();
-	assert( pTreeCtrl );
 
-	LPQUEST lpQuest = NULL;
-
-	CString strQuest;
-
-	//pTreeCtrl->GetText( pTreeCtrl->GetCurSel(), strQuest );
-
-	//pTreeCtrl->m_dwColor = 0xff000000;
-
-	CDWordArray aOldHeadData;
+	std::set<QuestId> aOldHeadData;
 	if( CTreeInformationManager::m_eQuestListGroup != CTreeInformationManager::COMPLETE_QUEST_LIST )
 	{
 		if (g_pPlayer->m_quests) {
 			for (const QUEST & quest : g_pPlayer->m_quests->current) {
-				InsertQuestItem(quest.m_wId.get(), aOldHeadData, FALSE);
+				InsertQuestItem(quest.m_wId, aOldHeadData, FALSE);
 			}
 		}
 	}
@@ -130,7 +121,7 @@ void CWndQuest::Update( int nNewQuestId )
 	{
 		if (g_pPlayer->m_quests) {
 			for (const QuestId wQuest : g_pPlayer->m_quests->completed) {
-				InsertQuestItem(wQuest.get(), aOldHeadData, TRUE, nNewQuestId);
+				InsertQuestItem(wQuest, aOldHeadData, TRUE, nNewQuestId);
 			}
 		}
 	}
@@ -190,7 +181,7 @@ void CWndQuest::RemoveQuest( void )
 }
 
 void CWndQuest::ControlOpenTree(const LPTREEELEM lpTreeElem) {
-	const DWORD questId = lpTreeElem->m_dwData;
+	const QuestId questId = QuestId(static_cast<WORD>(lpTreeElem->m_dwData));
 	if (lpTreeElem->m_bOpen == TRUE) {
 		m_aOpenTree.emplace_back(questId);
 	} else {
@@ -376,9 +367,9 @@ BOOL CWndQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 } 
 
-CWndQuestTreeCtrl* CWndQuest::GetQuestTreeSelf( const DWORD dwQuestID )
+CWndQuestTreeCtrl* CWndQuest::GetQuestTreeSelf( QuestId dwQuestID )
 {
-	DWORD dwRootHeadQuestID = GetRootHeadQuest( dwQuestID );
+	DWORD dwRootHeadQuestID = GetRootHeadQuest(dwQuestID).get();
 	switch( dwRootHeadQuestID )
 	{
 	case QUEST_KIND_SCENARIO: // 시나리오 퀘스트
@@ -408,7 +399,7 @@ void CWndQuest::OpenTreeArray(TreeElems & rPtrArray, BOOL bOpen) {
 	for (TREEELEM & lpTreeElem : rPtrArray) {
 		if (lpTreeElem.m_ptrArray.empty()) continue;
 			
-		const WORD myQuestId = static_cast<WORD>(lpTreeElem.m_dwData);
+		const QuestId myQuestId = QuestId(static_cast<WORD>(lpTreeElem.m_dwData));
 		if (std::ranges::contains(m_aOpenTree, myQuestId)) {
 			lpTreeElem.m_bOpen = bOpen;
 		}
@@ -417,79 +408,70 @@ void CWndQuest::OpenTreeArray(TreeElems & rPtrArray, BOOL bOpen) {
 	}
 }
 
-void CWndQuest::InsertQuestItem( const DWORD dwQuestID, CDWordArray& raOldHeadQuestID, const BOOL bCompleteQuest, const int nNewQuestId )
+void CWndQuest::InsertQuestItem( const QuestId dwQuestID, std::set<QuestId> & raOldHeadQuestID, const BOOL bCompleteQuest, const int nNewQuestId )
 {
 	static CWndQuestTreeCtrl* pQuestTreeCtrl = NULL;
 
-	QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( dwQuestID );
- 	if( pQuestProp == NULL )
+	const QuestProp * pQuestProp = dwQuestID.GetProp();
+	if (!pQuestProp) return;
+		
+	if (pQuestProp->m_nHeadQuest == QuestIdNone) {
+		pQuestTreeCtrl = GetQuestTreeSelf(dwQuestID);
+		raOldHeadQuestID.emplace(dwQuestID);
 		return;
-	if( pQuestProp->m_nHeadQuest != QuestIdNone )
-	{
-		DWORD dwNowHeadQuestID = pQuestProp->m_nHeadQuest.get();
-		CString strQuestTitle = pQuestProp->m_szTitle;
-		if( dwNowHeadQuestID > 0 )
-		{
-			DWORD dwOldHeadQuestID = FindOldHeadQuest( raOldHeadQuestID, dwNowHeadQuestID );
-			if( dwOldHeadQuestID == 0 )
-				InsertQuestItem( dwNowHeadQuestID, raOldHeadQuestID, bCompleteQuest );
-			else
-				pQuestTreeCtrl = GetQuestTreeSelf( dwOldHeadQuestID );
-			assert( pQuestTreeCtrl );
-			LPTREEELEM lpTreeElem = NULL;
-			if( dwNowHeadQuestID != QUEST_KIND_SCENARIO && 
-				dwNowHeadQuestID != QUEST_KIND_NORMAL && 
-				dwNowHeadQuestID != QUEST_KIND_REQUEST && 
-				dwNowHeadQuestID != QUEST_KIND_EVENT )
-				lpTreeElem = pQuestTreeCtrl->FindTreeElem( dwNowHeadQuestID );
+	}
 
-			CString strFullQuestTitle = _T( "" );
+	QuestId dwNowHeadQuest = pQuestProp->m_nHeadQuest;
+		
+	if (!raOldHeadQuestID.contains(dwNowHeadQuest)) {
+		InsertQuestItem(dwNowHeadQuest, raOldHeadQuestID, bCompleteQuest);
+	} else {
+		pQuestTreeCtrl = GetQuestTreeSelf(dwNowHeadQuest);
+	}
 
-			const auto questState = g_pPlayer->GetQuestState(QuestId(dwQuestID));
-			if(questState.has_value()) {
-				CString strState = _T( "" );
-				if( g_Option.m_bOperator || g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
-					strState.Format( "(%d, %ul)", static_cast<int>(questState.value()), dwQuestID);
-				strFullQuestTitle = strQuestTitle + strState;
+	assert( pQuestTreeCtrl );
+
+	TREEELEM * lpTreeElem = nullptr;
+
+	if (!sqktd::is_among(dwNowHeadQuest.get(),
+		QUEST_KIND_SCENARIO, QUEST_KIND_NORMAL, QUEST_KIND_REQUEST, QUEST_KIND_EVENT
+	)) {
+		lpTreeElem = pQuestTreeCtrl->FindTreeElem(dwNowHeadQuest.get());
+	}
+
+
+	CString strFullQuestTitle = _T( "" );
+
+	CString strQuestTitle = pQuestProp->m_szTitle;
+
+	const auto questState = g_pPlayer->GetQuestState(dwQuestID);
+	if(questState.has_value()) {
+		CString strState = _T( "" );
+		if( g_Option.m_bOperator || g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) )
+			strState.Format( "(%d, %ul)", static_cast<int>(questState.value()), dwQuestID.get());
+
+		strFullQuestTitle = strQuestTitle + strState;
 				
-				if (bCompleteQuest) {
-					TREEELEM * elem = pQuestTreeCtrl->InsertItem(lpTreeElem, strFullQuestTitle, dwQuestID, TRUE);
-					elem->m_dwColor = 0xffc0c0c0;
-				} else {
-					if (g_QuestTreeInfoManager.GetTreeInformation(dwQuestID) == NULL)
-						g_QuestTreeInfoManager.InsertTreeInformation(dwQuestID, TRUE);
-					pQuestTreeCtrl->InsertItem(lpTreeElem, strFullQuestTitle, dwQuestID, FALSE, IsCheckedQuestID(dwQuestID));
-				}
-			}
-			else
-			{
-				strFullQuestTitle = strQuestTitle;
-				LPTREEELEM pFolderTreeElem = pQuestTreeCtrl->InsertItem( lpTreeElem, strFullQuestTitle, dwQuestID );
-				if( nNewQuestId != -1 && prj.m_aPropQuest.GetAt( nNewQuestId )->m_nHeadQuest == QuestId(dwQuestID) )
-				{
-					pFolderTreeElem->m_bOpen = TRUE;
-					m_aOpenTree.emplace_back( static_cast<WORD>( dwQuestID ) );
-				}
-			}
-			raOldHeadQuestID.Add( dwQuestID );
+		if (bCompleteQuest) {
+			TREEELEM * elem = pQuestTreeCtrl->InsertItem(lpTreeElem, strFullQuestTitle, dwQuestID.get(), TRUE);
+			elem->m_dwColor = 0xffc0c0c0;
+		} else {
+			if (g_QuestTreeInfoManager.GetTreeInformation(dwQuestID.get()) == NULL)
+				g_QuestTreeInfoManager.InsertTreeInformation(dwQuestID.get(), TRUE);
+			pQuestTreeCtrl->InsertItem(lpTreeElem, strFullQuestTitle, dwQuestID.get(), FALSE, IsCheckedQuestID(dwQuestID.get()));
 		}
 	}
 	else
 	{
-		pQuestTreeCtrl = GetQuestTreeSelf( dwQuestID );
-		raOldHeadQuestID.Add( dwQuestID );
+		strFullQuestTitle = strQuestTitle;
+		LPTREEELEM pFolderTreeElem = pQuestTreeCtrl->InsertItem( lpTreeElem, strFullQuestTitle, dwQuestID.get());
+		if( nNewQuestId != -1 && prj.m_aPropQuest.GetAt( nNewQuestId )->m_nHeadQuest == dwQuestID )
+		{
+			pFolderTreeElem->m_bOpen = TRUE;
+			m_aOpenTree.emplace_back(dwQuestID);
+		}
 	}
-}
-
-DWORD CWndQuest::FindOldHeadQuest( const CDWordArray& raOldHeadQuestID, const DWORD dwNowHeadQuestID ) const
-{
-	for( int i = 0; i < raOldHeadQuestID.GetSize(); ++i )
-	{
-		DWORD dwOldHeadQuestID = raOldHeadQuestID.GetAt( i );
-		if( dwNowHeadQuestID == dwOldHeadQuestID )
-			return dwOldHeadQuestID;
-	}
-	return 0;
+	raOldHeadQuestID.emplace( dwQuestID );
 }
 
 BOOL CWndQuest::IsCheckedQuestID(DWORD dwQuestID) {
@@ -1312,10 +1294,13 @@ DWORD MakeTextColor( DWORD dwStartColor, DWORD dwEndColor, int nCurrentNumber, i
 	return D3DCOLOR_ARGB( 255, dwCompleteRed, dwCompleteGreen, dwCompleteBlue );
 }
 //-----------------------------------------------------------------------------
-DWORD GetRootHeadQuest( DWORD dwHeadQuest )
-{
-	QuestProp* pHeadQuestProp = prj.m_aPropQuest.GetAt( dwHeadQuest );
-	return ( pHeadQuestProp->m_nHeadQuest != QuestIdNone ) ? GetRootHeadQuest( pHeadQuestProp->m_nHeadQuest.get() ) : dwHeadQuest;
+QuestId GetRootHeadQuest(const QuestId dwHeadQuest) {
+	const QuestProp * const pHeadQuestProp = dwHeadQuest.GetProp();
+	if (!pHeadQuestProp || pHeadQuestProp->m_nHeadQuest == QuestIdNone) {
+		return dwHeadQuest;
+	} else {
+		return GetRootHeadQuest(pHeadQuestProp->m_nHeadQuest);
+	}
 }
 //-----------------------------------------------------------------------------
 DWORD SetQuestDestinationInformation( DWORD dwQuestID, DWORD dwGoalIndex )

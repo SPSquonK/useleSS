@@ -31,7 +31,7 @@ public:
 	enum { MAX_CHECK_NUMBER = 5 };
 
 	int m_idSelQuest;
-	std::vector<WORD> m_aOpenTree;
+	std::vector<QuestId> m_aOpenTree;
 	void Update( int nNewQuestId = -1 );
 	void RemoveQuest( void );
 	void ControlOpenTree( const LPTREEELEM lpTreeElem );
@@ -46,10 +46,9 @@ public:
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE );
 
 private:
-	CWndQuestTreeCtrl* GetQuestTreeSelf( const DWORD dwQuestID );
+	CWndQuestTreeCtrl* GetQuestTreeSelf( QuestId dwQuestID );
 	void OpenTreeArray( TreeElems & rPtrArray, BOOL bOpen = TRUE );
-	void InsertQuestItem( const DWORD dwQuestID, CDWordArray& raOldHeadQuestID, const BOOL bCompleteQuest, const int nNewQuestId = -1 );
-	DWORD FindOldHeadQuest( const CDWordArray& raOldHeadQuestID, const DWORD dwNowHeadQuestID ) const;
+	void InsertQuestItem(QuestId dwQuestID, std::set<QuestId> & raOldHeadQuestID, BOOL bCompleteQuest, int nNewQuestId = -1 );
 	BOOL IsCheckedQuestID( DWORD dwQuestID );
 
 private:
@@ -96,7 +95,7 @@ void MakeQuestConditionItems( QuestId dwQuestID,
 							  DWORD dwSelectColor = D3DCOLOR_ARGB( 255, 0, 0, 255 ) );
 const CString MakeString( const CString& string, BOOL bCond );
 DWORD MakeTextColor( DWORD dwStartColor = D3DCOLOR_ARGB( 255, 0, 0, 0 ), DWORD dwEndColor = D3DCOLOR_ARGB( 255, 0, 0, 0 ), int nCurrentNumber = 0, int nCompleteNumber = 0 );
-DWORD GetRootHeadQuest( DWORD dwHeadQuest );
+QuestId GetRootHeadQuest( QuestId dwHeadQuest );
 DWORD SetQuestDestinationInformation( DWORD dwQuestID, DWORD dwGoalIndex );
 void ProcessQuestDestinationWorldMap( DWORD dwGoalTextID );
 
