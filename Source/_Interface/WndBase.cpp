@@ -1572,69 +1572,6 @@ CWndBase* CWndBase::FindFullWnd() {
 
 	return it != m_wndOrder.end() ? *it : nullptr;
 }
-void CWndBase::ClipStrArray(C2DRender* p2DRender,CRect rect,int nLineHeight,CStringArray* pStringArray,CStringArray* pNewStringArray)
-{
-	int nSize = pStringArray->GetSize();
-	CString string;
-	for(int i = 0; i < nSize; i++)
-	{
-		string = pStringArray->GetAt(i);
-		int nWidth  = rect.Width();// - 20;
-		int nHeight = rect.Height();
-		CSize sizeString;
-		p2DRender->m_pFont->GetTextExtent(string,&sizeString);
-		//sizeString.cy = 13;
-		//sizeString.cx = string.GetLength() * 6;
-		int nLength = string.GetLength();
-		CString strTemp;
-		int c = 0;
-		char chr;
-		BOOL bNextLine = FALSE;
-		BOOL bHangul   = FALSE;
-		nLineHeight += sizeString.cy;
-//		sizeString.cy += nLineHeight;
-		do
-		{
-			if(bNextLine) 
-			{
-				while((string[c] == ' ' || string[c] == '\n') && c < nLength) 
-					chr = string[c++];
-			}
-			strTemp = "";
-			if(nLength)
-			{
-				do 
-				{
-					chr = string[c++];
-					// 스페이스를 발견하면? (영어식 출력을 위해)
-//					if(chr == ' ');
-					// 엔터코드면 스킵 
-					if(chr != '\r')
-						strTemp += chr;
-					// 한글 코드면 계속
-					if(chr & 0x80 && bHangul == FALSE) 
-						bHangul = TRUE;
-					else
-					{
-						bHangul = FALSE;
-						CSize sizeTemp;
-						p2DRender->m_pFont->GetTextExtent( strTemp, &sizeTemp );
-						if( sizeTemp.cx + 24 > nWidth ) 
-							break;
-						//if((strTemp.GetLength()*6) > nWidth) 
-							//break; 
-					}
-				} while(c < nLength && chr != '\0' && chr != '\r');
-			}
-			bNextLine = TRUE;
-			pNewStringArray->Add(strTemp);
-			sizeString.cy += nLineHeight;
-			if(sizeString.cy > nHeight)
-				return;
-		} 
-		while(chr != '\0' && c < nLength);
-	}
-}
 void CWndBase::GetLogFont(C2DRender* p2DRender,LOGFONT* pLogFont)
 {
 	//CFont* pFont = p2DRender->GetCurrentFont();

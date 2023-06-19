@@ -53,10 +53,7 @@ BOOL CWndCredit::Process()
 		else
 			m_timerScreenShot.Set( SEC( 5 ) );
 		
-		m_nTexCount++;
-		if( m_nTexCount >= MAX_SCREENSHOT )
-			m_nTexCount = 0;
-		//LoadScreenShot();
+		m_nTexCount = (m_nTexCount + 1) % MAX_SCREENSHOT;
 	}
 
 	if( ::GetLanguage() == LANG_JAP )
@@ -127,57 +124,16 @@ BOOL CWndCredit::Process()
 		}
 	}
 	CRect rect = GetClientRect();
-	switch( m_nStyle )
+	if ( m_nStyle  == 0)
 	{
-	case 0:
-		{
 			if( m_ptWord.y < rect.bottom )
 				m_ptWord.y++;
 			else
 			{
-				m_strWord = "asdadds";//m_strArray.GetAt( m_nParam1++ );
+				m_strWord = "asdadds";
 				m_ptWord.y = 0;
 				m_ptWord.x += 30;
-
 			}
-			break;
-		}
-	case 1:
-		{
-			break;
-		}
-	case 2:
-		{
-			break;
-		}
-	case 3:
-		{
-			break;
-		}
-	case 4:
-		{
-			break;
-		}
-	case 5:
-		{
-			break;
-		}
-	case 6:
-		{
-			break;
-		}
-	case 7:
-		{
-			break;
-		}
-	case 8:
-		{
-			break;
-		}
-	case 9:
-		{
-		break;
-		}
 	}
 	return 1;
 }
@@ -248,21 +204,18 @@ HRESULT CWndCredit::DeleteDeviceObjects()
 }
 void CWndCredit::OnDraw( C2DRender* p2DRender ) 
 { 
-//	p2DRender->RenderTexture( CPoint( 4, 3 ), &m_texScreenShot );
 	p2DRender->RenderTexture( CPoint( 2,  2 ), &m_aTexScreenShot[ m_nTexCount ] );
 	
 	CRect rect = GetClientRect();
 	CD3DFont* pOldFold = p2DRender->GetFont();
 	p2DRender->SetFont( m_pFont );
-	for( int i = 0; i < m_strArray.GetSize(); i++ )
-	{
-		CString string = m_strArray.GetAt( i ) ;
-		CSize size = m_pFont->GetTextExtent( string );
-		int nCenter = ( rect.Width() / 2 ) - ( size.cx / 2 );
+	int i = 0;
+	for (const CString & string : m_strArray) {
+		const CSize size = m_pFont->GetTextExtent( string );
+		const int nCenter = ( rect.Width() / 2 ) - ( size.cx / 2 );
 		p2DRender->TextOut( nCenter + 0, m_nLine + i * 20, string, 0xffffffff );
-//		p2DRender->TextOut( nCenter + 1, m_nLine + i * 16, string, 0xffffffff );
+		++i;
 	}
-//	p2DRender->TextOut( m_ptWord.x, m_ptWord.y, m_strWord, 0xffffffff );
 	
 	p2DRender->SetFont( pOldFold );
 } 
@@ -290,20 +243,18 @@ void CWndCredit::OnInitialUpdate()
 #ifdef __FOR_PROLOGUE_UPDATE
 		if( ::GetLanguage() != LANG_KOR )
 			strfile = MakePath( DIR_THEME, _T( "Openning.inc" ) );
-#else //__FOR_PROLOGUE_UPDATE		
 #endif //__FOR_PROLOGUE_UPDATE
 			strfile = "credit.txt";
 		
-		if( file.Open( strfile.GetBuffer(0), "rb" ) )
+		if( file.Open( strfile.GetString(), "rb" ) )
 		{
 			int nLength = file.GetLength();
 			TCHAR* pChar = new TCHAR[ nLength + 1];
 			file.Read( pChar, nLength );
 			pChar[ nLength ] = 0;
 			TCHAR* prog = pChar;
-			m_strArray.RemoveAll();
-		//	while( ( *prog > 0 && *prog <= 0x20 ) && *prog ) 
-		//		prog++;
+			m_strArray.clear();
+
 			while( *prog != '\0' )
 			{
 				TCHAR szString[ 256 ];
@@ -324,10 +275,11 @@ void CWndCredit::OnInitialUpdate()
 				}
 				*temp = '\0';
 
-				m_strArray.Add( szString );
+				m_strArray.emplace_back( szString );
 
 			}
-			safe_delete( pChar );
+
+			delete[] pChar;
 		}
 	}
 	m_timerScreenShot.Set( SEC( 10 ) );
@@ -345,9 +297,6 @@ void CWndCredit::OnInitialUpdate()
 		}
 	}
 		
-	//LoadScreenShot();
-
-	//m_pFont->RestoreDeviceObjects();//>InvalidateDeviceObjects();
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 
@@ -365,42 +314,14 @@ void CWndCredit::OnInitialUpdate()
 		m_bPlayVoice = FALSE;
 	}
 } 
-void CWndCredit::LoadScreenShot()
-{
-	//CString string;
-	//string.Format( "shotCredit%02d.dds", xRandom( 18 ) );
-	//m_texScreenShot.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, string ), 0xffff00ff );
-}
+
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndCredit::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_CREDIT, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndCredit::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndCredit::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndCredit::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndCredit::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndCredit::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+}
+
 BOOL CWndCredit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WTBID_CLOSE )
@@ -435,9 +356,7 @@ CWndAbout::CWndAbout()
 { 
 	m_pFont = NULL;
 } 
-CWndAbout::~CWndAbout() 
-{ 
-} 
+
 void CWndAbout::OnDraw( C2DRender* p2DRender ) 
 { 
 	CD3DFont* pOldFold = p2DRender->GetFont();
@@ -448,15 +367,12 @@ void CWndAbout::OnDraw( C2DRender* p2DRender )
 
 void CWndAbout::OnInitialUpdate() 
 { 
-	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( GetWndId() );
-
-	CString strName = "WndAboutFlyff.tga";//lpWndApplet->strTexture;
-
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 	
-	if( lpWndApplet )
+	if(m_resMng.GetAt(GetWndId()))
 	{
+		const char * strName = "WndAboutFlyff.tga";
 		SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, strName ), TRUE );
 	}
 	
@@ -470,24 +386,7 @@ BOOL CWndAbout::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_ABOUT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-BOOL CWndAbout::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndAbout::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndAbout::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndAbout::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndAbout::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+
 void CWndAbout::OnDestroy()
 {
 	InvalidateDeviceObjects();

@@ -274,9 +274,6 @@ public:
 	LPWNDCTRL GetWndCtrl( DWORD dwWndId ) { return m_resMng.GetAtControl( m_nIdWnd, dwWndId ); }
 	LPWNDAPPLET GetWndApplet() { return m_resMng.GetAt( m_nIdWnd ); }
 
-static void ClipStrArray(C2DRender* p2DRender,CRect rect,int nLineSpace,
-						 CStringArray* pStringArray,CStringArray* pNewStringArray);
-
 virtual void AlighWindow( CRect rcOld, CRect rcNew );
  
 	BOOL IsDestroy() const;
