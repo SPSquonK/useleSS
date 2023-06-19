@@ -684,9 +684,6 @@ private:
 	std::map<std::string, DWORD>			m_mapII;
 	std::map<std::string, DWORD>			m_mapMVI;
 	std::map<std::string, DWORD>			m_mapCtrl;
-#ifdef __CLIENT
-	CDWordArray					m_aStateQuest; // 스테이트 사용 여부를 체크할 배열 
-#endif
 
 #if defined( __CLIENT )
 	std::map< int, CString >			m_mapQuestDestination;		// 퀘스트 목적지 설명

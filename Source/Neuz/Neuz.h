@@ -82,7 +82,6 @@ public:
 	CTexturePack			m_TexturePackPVP;
 	int						m_nPVPCount;
 	DWORD					m_dwPVPTime;
-	CStringArray			m_strArray;
 	TCHAR					m_lpCertifierAddr[64];				// ¼­¹ö IP Address
 	TCHAR					m_lpCacheAddr[16];
 	u_short					m_uCachePort;						// 15400, 5400

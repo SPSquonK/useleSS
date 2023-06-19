@@ -311,23 +311,20 @@ HRESULT CNeuzApp::RestoreDeviceObjects()
 	if( g_Option.m_nShadow < 2 && m_d3dCaps.MaxSimultaneousTextures <= 2 )		// 실시간그림자를 세팅하고 하드웨어가 딸리면
 	{
 		g_Option.m_nShadow = 2;		// 실시간 그림자 기능을 끈다.
-		MessageBox( GetSafeHwnd(), m_strArray.GetAt(13), m_strArray.GetAt(11), MB_OK );
-		//MessageBox( GetSafeHwnd(), "이 그래픽카드에선 그림자 기능을 사용할 수 없습니다. 그림자 기능을 낮음으로 바꿉니다.", "안내", MB_OK );
+		MessageBox( GetSafeHwnd(), "Shadows are not available on this graphics card. Change the shadow function to low.", "Guide", MB_OK );
 	}
 	UINT nMem = m_pd3dDevice->GetAvailableTextureMem();
 	if( g_Option.m_nTextureQuality == 0 && nMem <= (1024 * 1024 * 64) )
 	{
 		g_Option.m_nTextureQuality = 1;		// 64메가 이하의 텍스쳐메모리에선 텍스쳐품질을 낮춘다.
-		//MessageBox( GetSafeHwnd(), m_strArray.GetAt(15), m_strArray.GetAt(14), MB_OK );
-		//MessageBox( GetSafeHwnd(), "사용가능한 텍스쳐 메모리가 부족해서 텍스쳐 품질을 낮춥니다.", "경고", MB_OK );
+		//MessageBox( GetSafeHwnd(), "Lower texture quality due to insufficient texture memory available.", "Warning", MB_OK );
 	}
 	if( g_Option.m_nShadow < 2 )
 	{
 		if( nMem <= (1024 * 1024 * 64) )
 		{
 			g_Option.m_nShadow = 2;		// 64메가 이하의 텍스쳐메모리에선 그림자기능을 사용하지 못한다.
-			//MessageBox( GetSafeHwnd(), m_strArray.GetAt(16), m_strArray.GetAt(14), MB_OK );
-			//MessageBox( GetSafeHwnd(), "사용가능한 텍스쳐 메모리가 부족해서 그림자 기능을 해제합니다.", "경고", MB_OK  );
+			//MessageBox( GetSafeHwnd(), "Disable shadows because there is not enough texture memory available.", "Warning", MB_OK  );
 		} else
 		{
 //			CreateShadowMap( m_pd3dDevice, m_d3dpp.BackBufferFormat );
@@ -1483,12 +1480,10 @@ HRESULT CNeuzApp::InitDeviceObjects()
 		g_dwUsablePS_Level = 2;
 #endif //__YENV
 
-	if( m_d3dCaps.TextureCaps & D3DPTEXTURECAPS_SQUAREONLY )	// 정사각형의 텍스쳐만 지원하는 카드나 드라이버라면 실해못한다.
+	if( m_d3dCaps.TextureCaps & D3DPTEXTURECAPS_SQUAREONLY )
 	{
-		MessageBox( GetSafeHwnd(), m_strArray.GetAt(12), m_strArray.GetAt(11), MB_OK );
-		//ADDERRORMSG( m_strArray.GetAt(12) );
-		int *p = NULL;
-		*p = 1;
+		MessageBox( GetSafeHwnd(), "This game does not work on computer that only supports square texture", "Guide", MB_OK);
+		throw std::exception("m_d3dCaps.TextureCaps & D3DPTEXTURECAPS_SQUAREONLY is true");
 	}
 
 	m_pd3dDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
