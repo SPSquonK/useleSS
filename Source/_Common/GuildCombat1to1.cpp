@@ -1534,20 +1534,7 @@ void	CGuildCombat1to1Mng::SetMemberLineUp( CUser* pUser, std::vector<u_long>& ve
 
 	// 길드마스터 또는 킹핀급만 가능
 	CGuild* pGuild = pUser->GetGuild();
-	if( pGuild )
-	{
-		CGuildMember* pGuildMember = pGuild->GetMember( pUser->m_idPlayer );
-		if( pGuildMember )
-		{
-			if( pGuildMember->m_nMemberLv != GUD_MASTER && pGuildMember->m_nMemberLv != GUD_KINGPIN )
-			{
-				pUser->AddDefinedText( TID_GAME_GUILDCOMBAT1TO1_NOLINEUPAUTH );
-				return;
-			}
-		}
-	}
-			
-	BOOL bMasterOrKingpin = FALSE;
+
 	// 최소 참가 레벨 검사
 	for( int i=0; i<(int)( vecMemberId.size() ); i++ )
 	{
@@ -1557,18 +1544,6 @@ void	CGuildCombat1to1Mng::SetMemberLineUp( CUser* pUser, std::vector<u_long>& ve
 			pUser->AddDefinedText( TID_GAME_GUILDCOMBAT1TO1_LIMIT_LEVEL_NOTICE );
 			return;
 		}
-		if( IsValidObj( pUserTemp ) && !bMasterOrKingpin )
-		{
-			CGuildMember* pGuildMember = pGuild->GetMember( pUserTemp->m_idPlayer );
-			if( pGuildMember )
-				if( pGuildMember->m_nMemberLv == GUD_MASTER || pGuildMember->m_nMemberLv == GUD_KINGPIN )
-					bMasterOrKingpin = TRUE;	
-		}
-	}
-	if( !bMasterOrKingpin )
-	{
-		pUser->AddDefinedText( TID_GAME_GUILDCOMBAT1TO1_HAVENOT_MASTER );
-		return;
 	}
 			
 	m_vecTenderGuild[nIndex].vecMemberId.clear();

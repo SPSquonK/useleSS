@@ -1,54 +1,51 @@
-
-#ifndef __WNDGUILDCOMBAT1TO1__H
-#define __WNDGUILDCOMBAT1TO1__H
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////
 // 1:1 GuildCombat Class
 //////////////////////////////////////////////////////////////////////////
 
-class CWndGuildCombat1to1Selection : public CWndNeuz
+class CWndGuildCombat1to1Selection final : public CWndNeuz
 {
-protected:	
-	std::multimap<int, CGuildMember*>	m_mapSelectPlayer;   // 정렬된 길드원 리스트
+public:
+	struct Player {
+		u_long playerId;
+		CString str;
+	};
 
-	std::vector<u_long>					m_vecGuildList   ;   // 길드원 리스트
-	std::vector<u_long>					m_vecSelectPlayer;   // 참가자 리스트
+	struct UnselectedPlayerDisplayer {
+		void Render(
+			C2DRender * const p2DRender, CRect rect,
+			Player & displayed,
+			DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
+	};
 
-//	u_long							m_uidDefender;
-//	CTexture						m_TexDefender;
-//	int								m_nDefenderIndex;
-	
-//	int								nMaxJoinMember;
-//	int								nMaxWarMember;
-	
+	struct SelectedPlayerDisplayer {
+		void Render(
+			C2DRender * const p2DRender, CRect rect,
+			Player & displayed,
+			DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
+	};
+
+	using CWndListGuild  = CWndTListBox<Player, UnselectedPlayerDisplayer>;
+	using CWndListSelect = CWndTListBox<Player, SelectedPlayerDisplayer>;
+
 public: 
-	void Reset();
-	CWndGuildCombat1to1Selection();
-	virtual ~CWndGuildCombat1to1Selection();
-	
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
-	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
-	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
-	void			EnableFinish( BOOL bFlag );		
+	void SetSelection(std::span<const u_long> playerIds);
+	void ResetSelection();
 
-//	void			SetDefender( u_long uiPlayer );
-	void			UpDateGuildListBox();
+	BOOL	Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL	OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void	OnDraw(C2DRender * p2DRender) override;
+	void	OnInitialUpdate() override;
 
-	void			AddCombatPlayer( u_long uiPlayer );
-	void			AddGuildPlayer( u_long uiPlayer );
-
-	void			RemoveCombatPlayer( int nIndex ) ;
-	void			RemoveGuildPlayer( int nIndex ) ;
-
-	u_long			FindCombatPlayer( u_long uiPlayer );
-	u_long			FindGuildPlayer( u_long uiPlayer );
-
-//	void			SetMemberSize( int nMaxJoin,  int nMaxWar );
+private:
+	void OnClickToGuild();
+	void OnClickToSelect();
+	void OnClickMoveUp();
+	void OnClickMoveDown();
+	void OnClickFinish();
 }; 
 
 class CWndGuildCombat1to1Offer : public CWndNeuz
@@ -103,4 +100,3 @@ public:
 	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
-#endif //__WNDGUILDCOMBAT1TO1__H

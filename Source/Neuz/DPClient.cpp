@@ -13828,24 +13828,21 @@ void CDPClient::OnGC1to1WarResult( CAr & ar )
 
 void CDPClient::OnGC1to1MemberLineUpOpenWnd( CAr & ar )
 {
-	u_long nTemp;
-	int nSize;
-	
 	ar >> g_GuildCombat1to1Mng.m_nMinJoinPlayerLevel;
 	ar >> g_GuildCombat1to1Mng.m_nMinJoinPlayer;
 	ar >> g_GuildCombat1to1Mng.m_nMaxJoinPlayer;
-	ar >> nSize;
 
 	SAFE_DELETE(g_WndMng.m_pWndGuildCombat1to1Selection);
 	g_WndMng.m_pWndGuildCombat1to1Selection = new CWndGuildCombat1to1Selection;
-	if( g_WndMng.m_pWndGuildCombat1to1Selection )
-		g_WndMng.m_pWndGuildCombat1to1Selection->Initialize( NULL );	
+	g_WndMng.m_pWndGuildCombat1to1Selection->Initialize( NULL );	
 
-	for( int i=0; i<nSize; i++ )
-	{
-		ar >> nTemp;
-		g_WndMng.m_pWndGuildCombat1to1Selection->AddCombatPlayer( nTemp );
+	std::vector<u_long> selection;
+
+	int nSize; ar >> nSize;
+	for (int i = 0; i < nSize; i++) {
+		ar >> selection.emplace_back();
 	}
+	g_WndMng.m_pWndGuildCombat1to1Selection->SetSelection(selection);
 }
 
 
