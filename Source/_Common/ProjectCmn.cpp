@@ -458,7 +458,7 @@ BOOL CProject::LoadText( LPCTSTR lpszFileName )
 
 	while (true) {
 		const DWORD dwId = scanner.GetNumber();
-		if (scanner.tok != FINISHED) break;
+		if (scanner.tok == FINISHED) break;
 
 		const DWORD dwColor = scanner.GetNumber(); // color
 		scanner.GetToken();
