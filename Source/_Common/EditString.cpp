@@ -5,7 +5,6 @@
 
 void CEditString::InitWordAlignment()
 {
-	m_bWordAlign = TRUE;
 }
 
 CEditString::CEditString() : CString( )
@@ -31,7 +30,6 @@ CEditString::CEditString( const CString& stringSrc ) : CString( stringSrc )
 
 CEditString::CEditString( const CEditString& stringSrc ) : CString( stringSrc )
 {
-	m_bWordAlign = stringSrc.m_bWordAlign;
 	m_pFont = stringSrc.m_pFont;
 	Init( stringSrc.m_nWidth, stringSrc.m_sizeFont );
 	m_adwColor.Append( stringSrc.m_adwColor );
@@ -670,19 +668,6 @@ void CEditString::Align( CD3DFont* pFont, int nBeginLine )
 
 	BOOL bWordAlign		= FALSE;
 	// GetLanguage()를 constructor에서 호출 할 수 없기에 여기서 한다.
-	int nLang	= ::GetLanguage();
-	switch( nLang )
-	{
-		case LANG_ENG:
-		case LANG_GER:
-		case LANG_SPA:
-		case LANG_POR:
-		case LANG_FRE:
-		case LANG_VTN:
-		case LANG_RUS:
-			bWordAlign	= m_bWordAlign;
-			break;
-	}
 
 	do
 	{
@@ -834,7 +819,6 @@ DWORD CEditString::OffsetToLine(DWORD dwOffset)
 
 const CEditString& CEditString::operator=( const CEditString& stringSrc )
 {
-	m_bWordAlign = stringSrc.m_bWordAlign;
 	m_pFont = stringSrc.m_pFont;
 	Init( stringSrc.m_nWidth, stringSrc.m_sizeFont );
 	SetEditString( stringSrc ); return *this;

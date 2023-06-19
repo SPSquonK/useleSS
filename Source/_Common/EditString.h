@@ -18,7 +18,6 @@ protected:
 	void InitWordAlignment();
 
 public:
-	BOOL m_bWordAlign;
 	CD3DFont* m_pFont;
 	int m_nWidth;
 	SIZE m_sizeFont;

@@ -1205,9 +1205,6 @@ CWndEdit::CWndEdit()
 	m_bImeNativeMode = FALSE;
 	m_bKeepComposition = FALSE;
 
-
-	m_string.m_bWordAlign = FALSE;
-	m_stringBack.m_bWordAlign = FALSE;
 	m_dwMaxStringNumber = 0xffffffff;
 }
 
