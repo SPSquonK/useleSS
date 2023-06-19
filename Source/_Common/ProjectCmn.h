@@ -60,11 +60,10 @@ const int	MAX_PROPMOVER =		2000;		// MoverProp배열의 최대갯수
 
 #include "defineitemkind.h"
 
-struct tagColorText
-{
+struct tagColorText {
 	DWORD dwColor;
-	TCHAR * lpszData;
-}; 
+	CString lpszData;
+};
 
 struct ObjProp
 {

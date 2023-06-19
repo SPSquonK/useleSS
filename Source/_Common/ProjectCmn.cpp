@@ -452,50 +452,32 @@ BOOL CProject::LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apOb
 
 BOOL CProject::LoadText( LPCTSTR lpszFileName )
 {
-	tagColorText colorText;
-
 	CScript scanner;
 	if( scanner.Load( lpszFileName ) == FALSE )
 		return FALSE;
 
-	CStringArray strArray;
-	CDWordArray  colorArray;
-	DWORD dwId = scanner.GetNumber();
+	while (true) {
+		const DWORD dwId = scanner.GetNumber();
+		if (scanner.tok != FINISHED) break;
 
-	do {
-		DWORD dwColor = scanner.GetNumber(); // color
+		const DWORD dwColor = scanner.GetNumber(); // color
 		scanner.GetToken();
-		if( *scanner.token  == '{' )
-		{
+		if (*scanner.token == '{') {
 
 			scanner.GetToken();
-			CString str	= scanner.token;
-			str.Replace( "\"", "" );
-//			if( str.IsEmpty() )
-//				str	= "Empty";
-			#ifdef _DEBUG
-			if( strArray.GetSize() > (int)( dwId ) )
-				if( strArray.GetAt( dwId ).IsEmpty() == FALSE )
-					Error( "CProject::LoadText : 같은 아이디 존재 %d - %s", dwId, str );						
-			#endif	// _DEBUG	
-			strArray.SetAtGrow( dwId, str );
-			colorArray.SetAtGrow( dwId, dwColor );
+			CString str = scanner.token;
+			str.Replace("\"", "");
+
+			if (!str.IsEmpty()) {
+				m_colorText.SetAtGrow(dwId,
+					tagColorText{ dwColor, str }
+				);
+			}
+
 			scanner.GetToken();	// }
 		}
-		dwId = scanner.GetNumber();	// next
-	} while( scanner.tok != FINISHED );
+	};
 
-	for( int i = 0; i < strArray.GetSize(); i++ )
-	{
-		if( strArray.GetAt( i ).IsEmpty() == FALSE )
-		{
-			m_colorText.SetAtGrow(i, colorText);
-
-			tagColorText * pColorText = m_colorText.GetAt( i );
-			pColorText->dwColor = colorArray.GetAt( i );
-			pColorText->lpszData = strdup( strArray.GetAt( i ) ) ;
-		}
-	}
 	m_colorText.Optimize();
 	return TRUE;
 }

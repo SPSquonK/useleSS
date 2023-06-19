@@ -140,7 +140,7 @@ public:
 	{ 
 		if( m_colorText.GetAt( dwIndex ) == NULL )
 			return "";
-		return m_colorText.GetAt( dwIndex )->lpszData; 
+		return m_colorText.GetAt( dwIndex )->lpszData.GetString(); 
 	}
 	DWORD GetTextColor( DWORD dwIndex ) 
 	{ 

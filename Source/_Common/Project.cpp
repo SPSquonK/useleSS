@@ -181,12 +181,6 @@ CProject::~CProject()
 
 	m_mapCharacter.RemoveAll();
 
-	for( i = 0; i < m_colorText.GetSize(); i++ )
-	{
-		tagColorText* lpText = m_colorText.GetAt(i);
-		if( lpText && lpText->lpszData )
-			free( lpText->lpszData ); 
-	}
 	for( i = 0; i < m_aPropQuest.GetSize(); i++ )
 	{
 		QuestProp* pQuestProp = (QuestProp*)m_aPropQuest.GetAt( i );

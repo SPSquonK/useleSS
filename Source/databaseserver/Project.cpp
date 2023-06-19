@@ -59,12 +59,6 @@ CProject::CProject()
 CProject::~CProject()
 {
 	SAFE_DELETE_ARRAY( m_pPropMover );
-
-	for (tagColorText & lpText : m_colorText) {
-		if (lpText.lpszData) {
-			free(lpText.lpszData);
-		}
-	}
 }
 
 BOOL CProject::OpenProject( LPCTSTR lpszFileName )

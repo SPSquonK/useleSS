@@ -1021,7 +1021,7 @@ inline LPCTSTR CProject::GetText( DWORD dwIndex )
 	VERIFY_RANGE( (int)( dwIndex ), 0, m_colorText.GetSize(), "GetText range_error", "error" );
 	if( m_colorText.GetAt( dwIndex ) == NULL )
 		return "";
-	return m_colorText.GetAt( dwIndex )->lpszData; 
+	return m_colorText.GetAt( dwIndex )->lpszData.GetString(); 
 }
 
 inline CMoverPlayer * CProject::GetUserByID(const u_long idPlayer) {
