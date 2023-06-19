@@ -11,8 +11,18 @@ This source is developed on Visual Studio 2022 with the C++latest option.
 
 - This repository **does not** provide a production ready of the source code. Many exploits are not (yet) fixed.
 - **/!\ Server developer /!\: Read the How to use section of this document**
-- If you encounter a bug, please use the Github issue system, or in the worst case send a mail.
 
+
+- **If you encounter a bug, please use the Github issue system, or in the worst case send a mail**
+  - **Do not ask on some random forums/places on the internet how to solve a bug related to this source:**
+  - **Instead, please, create an issue here so I can actually see it and fix it**
+  - Random people are probably either not competent or not interested in bug fixing the source code of someone else
+  - And I almost never visit forums (once a year for 2 minutes)/FlyFF dev communities (I'm not on any Discord)
+
+- **Do not reupload this source on these forums** without any modification:
+  - It creates more bug reports on places I do not visit which is bad in short, medium and long term
+  - It is pointless as it evolves quickly and is public
+  - If you are scared about the source disappearing, just click the fork button on Github
 
 ## Getting started
 
