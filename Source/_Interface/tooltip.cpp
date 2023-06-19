@@ -35,15 +35,10 @@ CToolTip::~CToolTip()
 {
 	Delete();
 }
-void CToolTip::Delete()
-{
-	int nloadTexture = 0;
-	for( int i = 0 ; i < MAX_TT ; ++i )
-	{
-		for( int j = 0 ; j < 9 ; ++ j )
-		{
+void CToolTip::Delete() {
+	for (int i = 0; i < MAX_TT; ++i) {
+		for (int j = 0; j < 9; ++j) {
 			m_apTextureToolTip[j].DeleteDeviceObjects();
-			++nloadTexture;
 		}
 	}
 }
@@ -51,19 +46,13 @@ void CToolTip::Delete()
 void CToolTip::InitTexture()
 {
 	CString szTextName;
-	CString szTextNamebuf;
-	szTextNamebuf = "WndTooltipTile";
 	
-	char szBuf[32];
 	int nloadTexture = 0;
 	for( int i = 0 ; i < MAX_TT ; ++i )
 	{
 		for( int j = 0 ; j < 9 ; ++ j )
 		{
-			szTextName = szTextNamebuf;
-			sprintf( szBuf, "%02d", ( i * 10 ) + j );
-			szTextName += szBuf;
-			szTextName += ".tga";
+			szTextName.Format("WndTooltipTile%02d.tga", (i * 10) + j);
 			m_apTextureToolTip[nloadTexture].LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, szTextName ), 0xffff00ff, TRUE );
 			++nloadTexture;
 		}
@@ -114,14 +103,13 @@ void CToolTip::PutToolTip( DWORD dwToolTipId, LPCTSTR lpszString, CRect rect, CP
 		return;
 	if(!rect.PtInRect(pt))
 		return;
-//if(m_bReadyToopTip == FALSE && dwToolTipId != m_dwToolTipId)
+
 	if( dwToolTipId != m_dwToolTipId || m_rect != rect )
 	{
 		m_nAlpha = 0;
 		m_rect = rect;
 		m_bReadyToopTip = TRUE;
 		m_dwToolTipId = dwToolTipId;
-		//m_timerToopTip.Set(100);
 		m_timerToopTip.Set(0);
 		if(m_bToolTip)
 			m_bToolTip = FALSE;
@@ -159,14 +147,13 @@ void CToolTip::PutToolTip( DWORD dwToolTipId, CEditString& string, CRect rect, C
 		return;
 	if(!rect.PtInRect(pt))
 		return;
-//if(m_bReadyToopTip == FALSE && dwToolTipId != m_dwToolTipId)
+
 	if( dwToolTipId != m_dwToolTipId)
 	{
 		m_nAlpha = 0;
 		m_rect = rect;
 		m_bReadyToopTip = TRUE;
 		m_dwToolTipId = dwToolTipId;
-		//m_timerToopTip.Set(100);
 		m_timerToopTip.Set(0);
 		if(m_bToolTip)
 			m_bToolTip = FALSE;
@@ -222,7 +209,7 @@ void CToolTip::PutToolTipEx( DWORD dwToolTipId, CEditString& string, CRect rect,
 		}
 		else if( nSubToolTipFlag == 1 || nSubToolTipFlag == 2 )
 		{
-			if( g_toolTip.GetReadyToolTipSwitch() == TRUE )
+			if( g_toolTip.GetReadyToolTipSwitch() )
 				m_bReadyToopTip = TRUE;
 		}
 	}
@@ -280,86 +267,12 @@ void CToolTip::Process(CPoint pt,C2DRender* p2DRender)
 	{
 		if(m_bToolTip == NULL)
 			m_ptToolTip = pt;
-		else
-			m_bToolTip = FALSE;
 
-		if(0) //m_ptToolTip != pt)
-		{
-			m_bReadyToopTip = FALSE;
-		}
-		else
-		{
-			m_bToolTip = TRUE;
-			/*
-			CD3DFont* pFont = p2DRender->m_pFont;
-			LPCTSTR string = m_strToolTip;
-			DWORD dwHeight = pFont->GetMaxHeight();//string);//lpszString,nCount GetStringPixel((CHanString)str);memDC.GetStringPixel((CHanString)string);
-			int nStrMax, nLength = strlen(string);
-			CSize sizeString;
-			if(nLength > 20)
-				nStrMax = 20;
-			else
-				nStrMax = nLength;
-			CStringArray strArray;
-			CString str;
-			char chr = ' ';
-			int c = 0;
-			CSize sizeLine;
-			int nMaxLen = 0;
-			do
-			{
-				chr = string[c];
-				str = "";
-				do 
-				{
-					chr = string[c++];
-					if(chr != '\r' && chr != '\0')
-						str += chr;
-				} 
-				while((c < nStrMax || chr != ' ') && chr != '\0' && chr != '\r');
-
-				nStrMax = c + 20;
-				strArray.Add(str);
-				sizeLine = pFont->GetTextExtent( str );
-				if(nMaxLen < sizeLine.cx)
-					nMaxLen = sizeLine.cx;
-			} 
-			while(chr != '\0');
-			int nWidth = nMaxLen + 6;
-			int nHeight = sizeString.cy * strArray.GetSize() + 6;
-
-			//m_bToolTip = new CDibBitmap;
-			//m_bToolTip->CreateDIBSection(&memDC,NULL,nWidth,nHeight,16);
-			//nWidth = m_bToolTip->GetWidth();
-			//memDC.SelectBitmap_(m_bToolTip);
-			//memDC.Clear(0xffff);
-			//memDC.SetTextColor(MKHIGHRGB(0x1a,0x1a,0x1a));
-			for(c = 0; c < strArray.GetSize(); c++)
-			{
-				//if(strArray[c][0] != '\r')
-					p2DRender->TextOut( 3, 3 + c * sizeString.cy, strArray[c] );
-			}
-			//memDC.SelectObject(pOldFont);
-			*/
-		}
+		m_bToolTip = TRUE;
 	}
 	if(m_rect.PtInRect(pt) == FALSE)
 		m_bPutToolTip = FALSE;
-	/*
-	else
-	{
-	//	m_rectRender.InflateRect( 1, 1 );
 
-		if( m_rectRender.left < m_rectRender.left )
-			m_rectRender.left = m_rectRender.left;
-		if( m_rectRender.right > m_rectRender.right )
-			m_rectRender.right = m_rectRender.right;
-		if( m_rectRender.top < m_rectRender.top )
-			m_rectRender.top = m_rectRender.top;
-		if( m_rectRender.bottom > m_rectRender.bottom )
-			m_rectRender.bottom = m_rectRender.bottom;
-	}
-	*/
 	m_nAlpha += 15;
 	if( m_nAlpha > 255 ) m_nAlpha = 255;
 }
@@ -379,9 +292,7 @@ void CToolTip::Paint(C2DRender* p2DRender)
 		else
 		if(nPostion == 1) // bottom
 		{
-//			pt = CPoint(m_rect.left, m_rect.bottom);
 			pt = CPoint(m_rect.left, m_rect.bottom + 20 );		// 2006/7/5 -xuzhu-
-			//rect.SetRect(pt.x,pt.y,pt.x+m_bToolTip->GetWidth(),pt.y+m_bToolTip->GetHeight());
 		}
 		else
 		if(nPostion == 2) // left
@@ -393,9 +304,8 @@ void CToolTip::Paint(C2DRender* p2DRender)
 		if(nPostion == 3) // right
 		{
 			pt = CPoint(m_rect.right,m_rect.top);
-			//pt.x += m_bToolTip->GetHeight() + 2;
 		}
-		//CRect rect(pt.x,pt.y,pt.x+m_bToolTip->GetWidth(),pt.y+m_bToolTip->GetHeight());
+
 		switch( m_nSubToolTipFlag )
 		{
 		case CWndMgr::TOOL_TIP_SWITCH_SUB1:
@@ -422,7 +332,7 @@ void CToolTip::Paint(C2DRender* p2DRender)
 		{
 		case CWndMgr::TOOL_TIP_SWITCH_MAIN:
 			{
-				static const int TOOL_TIP_MARGIN = 16;
+				static constexpr int TOOL_TIP_MARGIN = 16;
 				switch( m_nSubToolTipNumber )
 				{
 				case CWndMgr::TOOL_TIP_SWITCH_MAIN:
@@ -464,12 +374,6 @@ void CToolTip::Paint(C2DRender* p2DRender)
 
 		if(m_nSlot > 0)
 		{
-//			CItemElem* pItemElem = m_pUltimateItemBase;
-//			if( pItemElem->GetAbilityOption() < 10 )
-//				rect.SetRect( pt.x, pt.y, pt.x + m_rectRender.Width() + 16, pt.y + m_rectRender.Height() + (m_nSlot * 26) );
-//			else
-//				rect.SetRect( pt.x, pt.y, pt.x + m_rectRender.Width() + 10, pt.y + m_rectRender.Height() + (m_nSlot * 26) );
-
 			rect.SetRect( pt.x, pt.y - (36), pt.x + m_rectRender.Width(), pt.y + m_rectRender.Height() );
 			if(rect.top < p2DRender->m_clipRect.top)
 			{
@@ -690,8 +594,7 @@ void CToolTip::Paint(C2DRender* p2DRender)
 				//Jewel Render
 				if(m_nAddedJewel[i] != 0)
 				{
-					ItemProp* pItemProp;
-					pItemProp = prj.GetItemProp( m_nAddedJewel[i] );
+					const ItemProp* pItemProp = prj.GetItemProp( m_nAddedJewel[i] );
 					if(pItemProp != NULL)
 					{
 						pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
@@ -740,43 +643,13 @@ void CToolTip::InsertMonsterID( DWORD dwMonsterID )
 #endif // __IMPROVE_MAP_SYSTEM
 
 //-----------------------------------------------------------------------------
-const CPoint& CToolTip::GetPointToolTip( void ) const
-{
-	return m_ptToolTip;
-}
-//-----------------------------------------------------------------------------
-const CRect& CToolTip::GetRect( void ) const
-{
-	return m_rect;
-}
-//-----------------------------------------------------------------------------
 void CToolTip::SetRenderRect( const CRect& rectRender )
 {
 	m_rectRender = rectRender;
 }
 //-----------------------------------------------------------------------------
-const CRect& CToolTip::GetRenderRect( void ) const
-{
-	return m_rectRender;
-}
-//-----------------------------------------------------------------------------
-const CRect& CToolTip::GetRevisedRect( void ) const
-{
-	return m_nRevisedRect;
-}
-//-----------------------------------------------------------------------------
 void CToolTip::SetSubToolTipNumber( int nSubToolTipNumber )
 {
 	m_nSubToolTipNumber = nSubToolTipNumber;
-}
-//-----------------------------------------------------------------------------
-int CToolTip::GetSubToolTipNumber( void ) const
-{
-	return m_nSubToolTipNumber;
-}
-//-----------------------------------------------------------------------------
-BOOL CToolTip::GetReadyToolTipSwitch( void ) const
-{
-	return m_bReadyToopTip;
 }
 //-----------------------------------------------------------------------------

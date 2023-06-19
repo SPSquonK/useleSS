@@ -65,14 +65,14 @@ public:
 	void ResizeMapMonsterToolTip( void );
 	void InsertMonsterID( DWORD dwMonsterID );
 #endif // __IMPROVE_MAP_SYSTEM
-	const CPoint& GetPointToolTip( void ) const;
-	const CRect& GetRect( void ) const;
+	[[nodiscard]] CPoint GetPointToolTip() const { return m_ptToolTip; }
+	[[nodiscard]] const CRect & GetRect() const { return m_rect; }
 	void SetRenderRect( const CRect& rectRender );
-	const CRect& GetRenderRect( void ) const;
-	const CRect& GetRevisedRect( void ) const;
+	[[nodiscard]] const CRect & GetRenderRect()  const { return m_rectRender; }
+	[[nodiscard]] const CRect & GetRevisedRect() const { return m_nRevisedRect; }
 	void SetSubToolTipNumber( int nSubToolTipNumber );
-	int GetSubToolTipNumber( void ) const;
-	BOOL GetReadyToolTipSwitch( void ) const;
+	[[nodiscard]] int GetSubToolTipNumber() const { return m_nSubToolTipNumber; }
+	[[nodiscard]] bool GetReadyToolTipSwitch() const { return m_bReadyToopTip; }
 };
 /*
 #define TOOLTIP_COMBATMODE   1  // "전투/평화\n단축키[C]"
