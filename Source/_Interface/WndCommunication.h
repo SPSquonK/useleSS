@@ -64,7 +64,7 @@ class CWndChat : public CWndNeuz
 #ifdef __CSC_GAME_GRADE
 	CTimer m_timerAlertGGrade;
 #endif //__CSC_GAME_GRADE
-	int m_nInsMsgCnt;
+	size_t m_nInsMsgCnt;
 	int				m_nHistoryIndex;
 	std::vector<CString> m_strHistory;
 	CTimer m_timerInputTimeOut;
@@ -77,7 +77,7 @@ public:
 	CWndChatFilter* m_pWndChatFilter;
 	CString m_strCharName;
 	CWndTextChat m_wndText;
-	CStringArray m_strArray;
+	std::vector<CString> m_strArray;
 	CWndCommand* m_pWndCommand;
 
 	CWndEditChat m_wndEdit;

@@ -151,18 +151,17 @@ void CWndChat::OnDraw(C2DRender* p2DRender)
 
 	if( g_Option.m_nInstantHelp )
 	{
-		CString string;
-		if( m_strArray.GetSize() && m_timerInsMsg.TimeOut() )
+		if( !m_strArray.empty() && m_timerInsMsg.TimeOut() )
 		{
 			m_timerInsMsg.Reset();
-			//string = "[µµ¿ò¸»] ";
-			string  = prj.GetText(TID_SYS_HELP);
-			string += " ";
-			string += m_strArray.GetAt( m_nInsMsgCnt );
-			g_WndMng.PutString( string, NULL, 0xffffff00, CHATSTY_HELP );
-			m_nInsMsgCnt++;
-			if( m_nInsMsgCnt == m_strArray.GetSize() )
-				m_nInsMsgCnt = 0;
+			const std::string string = std::format("{} {}",
+				prj.GetText(TID_SYS_HELP),
+				m_strArray[m_nInsMsgCnt].GetString()
+			);
+
+			g_WndMng.PutString( string.c_str(), NULL, 0xffffff00, CHATSTY_HELP);
+			
+			m_nInsMsgCnt = (m_nInsMsgCnt + 1) % m_strArray.size();
 		}
 	}
 
@@ -292,7 +291,7 @@ void CWndChat::OnInitialUpdate()
 		s.GetToken();
 		while( s.tok != FINISHED )
 		{
-			m_strArray.Add( s.Token );
+			m_strArray.emplace_back( s.Token );
 			s.GetToken();
 		}
 	}

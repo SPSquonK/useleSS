@@ -519,16 +519,6 @@ int CScript::GetDefineNum(LPCTSTR lpId) {
 	return m_defines.Find(lpId).value_or(-1);
 }
 
-//
-// XX_로 시작하는 것을 찾아준다.
-//
-void CScript::GetFindIdToArray(LPCTSTR lpStrDef, CStringArray * pStrArray) {
-	for (const auto & pair : m_defines.GetOrBuild(lpStrDef)) {
-		pStrArray->Add(pair.second);
-	}
-}
-
-
 #if !defined(__REMOVE_SCIRPT_060712)
 void CScript::Write(LPSTR* cplProg,const char* str)
 {
