@@ -10,317 +10,77 @@
 
 #include "Tax.h"
 
+#include "PlayerLineup.h"
 
 
 //////////////////////////////////////////////////////////////////////////
 // 비밀의 방 참가자 구성
 //////////////////////////////////////////////////////////////////////////
 
-CWndSecretRoomSelection::CWndSecretRoomSelection() 
-{
-	m_vecGuildList.clear();
-	m_mapSelectPlayer.clear();
-	m_vecSelectPlayer.clear();
-}
+void CWndSecretRoomSelection::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 
-CWndSecretRoomSelection::~CWndSecretRoomSelection() 
-{
-}
+	ReplaceListBox<PlayerLineup, PlayerLineup::SimpleDisplayer  >(WIDC_LISTBOX1);
+	ReplaceListBox<PlayerLineup, PlayerLineup::NumberedDisplayer>(WIDC_LISTBOX2);
 
-void CWndSecretRoomSelection::AddCombatPlayer( u_long uiPlayer ) 
-{
-	CWndListBox* pWndList = (CWndListBox*)GetDlgItem( WIDC_LISTBOX2 );
-	m_vecSelectPlayer.push_back( uiPlayer );
-	
-	if(!g_pPlayer) return;
-
-	CGuild* pGuild = g_pPlayer->GetGuild();
-	
-	auto i = pGuild->m_mapPMember.find( uiPlayer );
-	CGuildMember* pMember = i->second;
-	if( !pMember )	return;
-				
-	CString str;
-
-	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-	str.Format( "No.%d  Lv%.2d	%.16s %.10s", pWndList->GetCount()+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
-
-	pWndList->AddString( str );
-
-	auto iter = m_vecGuildList.begin();
-
-	int index = -1;
-	int count = 0;
-
-	while(iter != m_vecGuildList.end())
-	{
-		if(*iter == uiPlayer)
-		{
-			index = count;
-			iter = m_vecGuildList.end();
-		}
-		else
-		{
-			count++;
-			iter++;
-		}
-	}
-
-	if(index > -1)
-		RemoveGuildPlayer(index);
-} 
-
-void CWndSecretRoomSelection::AddGuildPlayer( u_long uiPlayer ) 
-{
-	CWndListBox* pWndList = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
-	m_vecGuildList.push_back( uiPlayer );
-	
-	CGuild* pGuild = g_pPlayer->GetGuild();
-	
-	const auto i = pGuild->m_mapPMember.find( uiPlayer );
-	CGuildMember* pMember = i->second;
-				
-	CString str;
-	PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-	str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
-	pWndList->AddString( str );			
-} 
-
-void CWndSecretRoomSelection::RemoveGuildPlayer( int nIndex ) 
-{
-	CWndListBox* pWndList = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
-	
-	pWndList->DeleteString( nIndex );
-	m_vecGuildList.erase( m_vecGuildList.begin() + nIndex );	
-} 
-
-void CWndSecretRoomSelection::RemoveCombatPlayer( int nIndex ) 
-{
-	CWndListBox* pWndList = (CWndListBox*)GetDlgItem( WIDC_LISTBOX2 );
-	
-	pWndList->DeleteString( nIndex );
-	m_vecSelectPlayer.erase( m_vecSelectPlayer.begin() + nIndex );
-
-	//Align Text No.
-	int nListCount = pWndList->GetCount();
-	for(int i=nIndex; i<nListCount; i++)
-	{
-		CString temp;
-
-		CGuild* pGuild = g_pPlayer->GetGuild();
-		const auto iter = pGuild->m_mapPMember.find( m_vecSelectPlayer[i] );
-		CGuildMember* pMember = iter->second;
-		PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-		temp.Format( "No.%d  Lv%.2d	%.16s %.10s", i+1, pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
-		pWndList->SetString( i, temp );
-	}
-}
-
-void CWndSecretRoomSelection::UpDateGuildListBox() 
-{
-	CWndListBox* pWndList = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
-
-	if( pWndList )
-	{
-		pWndList->ResetContent();
-		
-		m_vecGuildList.clear();
-		m_mapSelectPlayer.clear();
-
-		CGuild* pGuild = g_pPlayer->GetGuild();
-		if( pGuild )
-		{
-			// 레벨별로 소팅
-			CGuildMember* pMember;
-			for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
-			{
-				pMember		= i->second;				
-				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-				if( pPlayerData->data.uLogin > 0 )
-					m_mapSelectPlayer.emplace(pPlayerData->data.nLevel, pMember);
-			}
-
-			// 리스트에 추가			
-			CString str;
-			for( auto j = m_mapSelectPlayer.begin(); j != m_mapSelectPlayer.end(); ++j )
-			{
-				pMember		= j->second;
-				PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer );
-				if( pPlayerData->data.uLogin > 0 )
-				{
-					str.Format( "Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[ pPlayerData->data.nJob ].szName );
-					pWndList->AddString( str );	
-					m_vecGuildList.push_back( pMember->m_idPlayer );
-				}
-			}
-		}
-	}
-}
-
-u_long CWndSecretRoomSelection::FindCombatPlayer(u_long uiPlayer)
-{
-	for( int i = 0; i < (int)( m_vecSelectPlayer.size() ); i++ )
-	{
-		if( m_vecSelectPlayer[i] == uiPlayer )
-			return m_vecSelectPlayer[i];
-	}
-	
-	return -1;
-}
-
-u_long CWndSecretRoomSelection::FindGuildPlayer(u_long uiPlayer)
-{
-	for( int i = 0; i < (int)( m_vecGuildList.size() ); i++ )
-	{
-		if( m_vecGuildList[i] == uiPlayer )
-			return m_vecGuildList[i];
-	}
-	
-	return -1;
-}
-
-void CWndSecretRoomSelection::OnDraw( C2DRender* p2DRender ) 
-{
-}
-
-void CWndSecretRoomSelection::EnableFinish( BOOL bFlag )
-{
-	CWndButton* pWndButton = (CWndButton*)GetDlgItem( WIDC_FINISH );
-
-	if( pWndButton )
-	{
-		pWndButton->EnableWindow( bFlag );	
-	}
-}
-
-void CWndSecretRoomSelection::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-
-	// 시간 지났는지를 판단
-//	if( g_GuildCombat1to1Mng.m_nState != CGuildCombat1to1Mng::GC1TO1_OPEN )
-//	{
-//		g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_CANNOT_MAKEUP) ); //지금은 명단작성을 할 수 없습니다.
-//		Destroy();
-//		return;
-//	}
-	
 	MoveParentCenter();
 
-	UpDateGuildListBox();
-} 
+	ResetLineup({});
+}
 
-BOOL CWndSecretRoomSelection::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	return CWndNeuz::InitDialog( APP_SECRETROOM_SELECTION, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-
-BOOL CWndSecretRoomSelection::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndSecretRoomSelection::OnSize( UINT nType, int cx, int cy )
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndSecretRoomSelection::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndSecretRoomSelection::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndSecretRoomSelection::Reset()
-{
-	UpDateGuildListBox();
-	CWndListBox* pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX2 );
-	pWndListBox->ResetContent();
-	m_vecSelectPlayer.clear();
-
-//	AddCombatPlayer(g_pPlayer->m_idPlayer);
+BOOL CWndSecretRoomSelection::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_SECRETROOM_SELECTION, pWndParent, 0, CPoint(0, 0));
 }
 
 BOOL CWndSecretRoomSelection::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_BUTTON1 ) // 출전자 등록
 	{
-		CWndListBox* pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX1 );
+		const PlayerLineup::RuleSet ruleSet{
+			.maxSelect = static_cast<size_t>(CSecretRoomMng::GetInstance()->m_nMaxGuildMemberNum),
+			.minimumLevel = static_cast<unsigned int>(CSecretRoomMng::GetInstance()->m_nMinGuildMemberNum)
+		};
 
-		int nCurSel = pWndListBox->GetCurSel();
-		if( nCurSel == -1 )
-			return FALSE;
+		const auto result = PlayerLineup::DoubleListManager(
+			GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::SimpleDisplayer  >>(WIDC_LISTBOX1),
+			GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::NumberedDisplayer>>(WIDC_LISTBOX2)
+		).ToSelect(ruleSet);
 
-		if( CSecretRoomMng::GetInstance()->m_nMaxGuildMemberNum < (int)( m_vecSelectPlayer.size() ) )
-		{
-			CString str;
-			str.Format( prj.GetText(TID_GAME_SECRETROOM_SELECTION_MAX), CSecretRoomMng::GetInstance()->m_nMaxGuildMemberNum );
-			g_WndMng.OpenMessageBox( str );
-			return FALSE;
-		}
-
-		CGuild *pGuild = g_pPlayer->GetGuild();
-
-		if( pGuild )
-		{
-			CGuildMember* pGuildMember = pGuild->GetMember( m_vecGuildList[nCurSel] );
-
-			if( pGuildMember )
+		switch (result) {
+			using enum PlayerLineup::SelectReturn;
+			case FullLineup:
 			{
-				if( CPlayerDataCenter::GetInstance()->GetPlayerData( pGuildMember->m_idPlayer )->data.nLevel < CSecretRoomMng::GetInstance()->m_nMinGuildMemberNum )
-				{
-					g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_SECRETROOM_LIMIT_LEVEL) ); //출전자 등록은 레벨 30이상이 되어야 합니다.
-					return FALSE;
-				}
-			}	
-			else
-			{
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_SECRETROOM_NOT_GUILD_MEMBER) );	//비밀의 방에 참가하는 길드의 맴버가 아닙니다.			
-				return FALSE;
+				CString str;
+				str.Format(prj.GetText(TID_GAME_SECRETROOM_SELECTION_MAX), CSecretRoomMng::GetInstance()->m_nMaxGuildMemberNum);
+				g_WndMng.OpenMessageBox(str);
+				break;
 			}
-		}
-
-		u_long uiPlayer;
-		uiPlayer = FindCombatPlayer( m_vecGuildList[nCurSel] );
-
-		if( uiPlayer != -1 )
-		{
-			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_SECRETROOM_ALREADY_ENTRY) ); //이미 등록되어 있습니다. 다시 등록해주세요.
-			return FALSE;
-		}
- 
-		AddCombatPlayer( m_vecGuildList[nCurSel] );		
-		//RemoveGuildPlayer( nCurSel );		
+			case NotAMember:
+				g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_SECRETROOM_NOT_GUILD_MEMBER));	//비밀의 방에 참가하는 길드의 맴버가 아닙니다.			
+				break;
+			case TooLowLevel:
+				g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_SECRETROOM_LIMIT_LEVEL)); //출전자 등록은 레벨 30이상이 되어야 합니다.
+				break;
+			case AlreadyInLineup:
+				g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_SECRETROOM_ALREADY_ENTRY)); //이미 등록되어 있습니다. 다시 등록해주세요.
+				break;
+		}		
 	}
 	else if( nID == WIDC_BUTTON2 ) // 출전자 취소
 	{
-		CWndListBox* pWndListBox = (CWndListBox*)GetDlgItem( WIDC_LISTBOX2 );
-		
-		int nCurSel = pWndListBox->GetCurSel();
-		if( nCurSel == -1 )
-			return FALSE;
-
-		u_long uiPlayer;
-		uiPlayer = FindGuildPlayer( m_vecSelectPlayer[nCurSel] );
-
-		CGuild *pGuild = g_pPlayer->GetGuild();
-		CGuildMember* pGuildMemberl = pGuild->GetMember( m_vecSelectPlayer[nCurSel] );
-
-		if(pGuildMemberl->m_nMemberLv == GUD_MASTER)
-			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_SECRETROOM_DONTREMOVE_GUILDMASTER) ); //길드 마스터는 목록에서 제외할 수 없습니다.
-		else
-		{
-			if( uiPlayer == -1 )
-			{
-				// 길드리스트에 없다면 추가 
-				AddGuildPlayer( m_vecSelectPlayer[nCurSel] );		
-				RemoveCombatPlayer( nCurSel );
-			}
-			else
-			{
-				RemoveCombatPlayer( nCurSel );		
+		auto * pWndLineup = GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::NumberedDisplayer>>(WIDC_LISTBOX2);
+		PlayerLineup * selected = pWndLineup->GetCurSelItem();
+		if (selected) {
+			CGuild * pGuild = g_pPlayer->GetGuild();
+			CGuildMember * pGuildMemberl = pGuild->GetMember(selected->playerId);
+			
+			if (pGuildMemberl->m_nMemberLv == GUD_MASTER) {
+				g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_SECRETROOM_DONTREMOVE_GUILDMASTER));
+			} else {
+				PlayerLineup::DoubleListManager(
+					GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::SimpleDisplayer  >>(WIDC_LISTBOX1),
+					pWndLineup
+				).ToGuild();
 			}
 		}
 	}
@@ -331,15 +91,10 @@ BOOL CWndSecretRoomSelection::OnChildNotify( UINT message, UINT nID, LRESULT* pL
 	}
 	else if( nID == WIDC_FINISH )
 	{
-		// 시간 지났는지를 판단
-//		if( g_GuildCombat1to1Mng.m_nState != CGuildCombat1to1Mng::GC1TO1_OPEN )
-//		{
-//			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_CANNOT_MAKEUP) ); //지금은 명단작성을 할 수 없습니다.
-//			Destroy();
-//			return FALSE;
-//		}
-		
-		if( CSecretRoomMng::GetInstance()->m_nMinGuildMemberNum > (int)( m_vecSelectPlayer.size() ) )
+		auto * pWndLineup = GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::NumberedDisplayer>>(WIDC_LISTBOX2);
+		size_t nbInLineup = pWndLineup->GetSize();
+
+		if( CSecretRoomMng::GetInstance()->m_nMinGuildMemberNum > (int)(nbInLineup) )
 		{
 			CString str;
 			str.Format( prj.GetText(TID_GAME_SECRETROOM_MIN_PLAYER), CSecretRoomMng::GetInstance()->m_nMinGuildMemberNum );
@@ -347,37 +102,29 @@ BOOL CWndSecretRoomSelection::OnChildNotify( UINT message, UINT nID, LRESULT* pL
 			return FALSE;
 		}
 
-		if( m_vecSelectPlayer.size() == 0 )
+		if(nbInLineup == 0 )
 		{
 			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_SECRETROOM_HAVENOT_PLAYER) ); //출전자가 없습니다. 출전자를 선택해주세요.
 			return FALSE;
 		}
 
-		CGuild *pGuild = g_pPlayer->GetGuild();
-		CGuildMember* pGuildMemberl;
-
-		if( pGuild )
+		if(CGuild * pGuild = g_pPlayer->GetGuild())
 		{
-			BOOL bSkip = FALSE;
+			bool hasGuildMaster = false;
 
-			// 출전자 맴버중에 마스터가 있는지 검사를한다.
-			for( int i=0; i<(int)( m_vecSelectPlayer.size() ); i++ )
-			{
-				pGuildMemberl = pGuild->GetMember( m_vecSelectPlayer[i] );
+			std::vector<u_long> lineup;
+			for (int i = 0; i < pWndLineup->GetSize(); ++i) {
+				const PlayerLineup & pl = (*pWndLineup)[i];
 
-				if( pGuildMemberl )
-				{
-					if( pGuildMemberl->m_nMemberLv == GUD_MASTER )
-					{
-						bSkip = TRUE;
-						break;
-					}
-				}
+				hasGuildMaster = hasGuildMaster
+					|| (pGuild->GetMember(pl.playerId)->m_nMemberLv == GUD_MASTER);
+
+				lineup.emplace_back(pl.playerId);
 			}
 
-			if( bSkip )
+			if(hasGuildMaster)
 			{
-				g_DPlay.SendSecretRoomLineUpMember( m_vecSelectPlayer );
+				g_DPlay.SendSecretRoomLineUpMember(lineup);
 				Destroy();
 			}
 			else
@@ -393,6 +140,14 @@ BOOL CWndSecretRoomSelection::OnChildNotify( UINT message, UINT nID, LRESULT* pL
 	}
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
+}
+
+
+void CWndSecretRoomSelection::ResetLineup(std::span<const u_long> lineup) {
+	PlayerLineup::DoubleListManager(
+		GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::SimpleDisplayer  >>(WIDC_LISTBOX1),
+		GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::NumberedDisplayer>>(WIDC_LISTBOX2)
+	).Reset(lineup);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -776,7 +531,7 @@ BOOL CWndSecretRoomSelectionResetConfirm::OnChildNotify( UINT message, UINT nID,
 				CWndSecretRoomSelection *pWndGuildSecretRoomSelection = (CWndSecretRoomSelection*)g_WndMng.GetWndBase( APP_SECRETROOM_SELECTION );
 
 				if( pWndGuildSecretRoomSelection )
-					pWndGuildSecretRoomSelection->Reset();
+					pWndGuildSecretRoomSelection->ResetLineup();
 
 				Destroy();
 			}

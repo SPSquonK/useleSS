@@ -14401,29 +14401,20 @@ void CDPClient::SendSecretRoomLineUpOpenWnd()
 
 void CDPClient::OnSecretRoomLineUpOpenWnd( CAr & ar )
 {
-	int nSize;
-
 	ar >> CSecretRoomMng::GetInstance()->m_nMinGuildMemberNum;
 	ar >> CSecretRoomMng::GetInstance()->m_nMaxGuildMemberNum;
-	ar >> nSize;
 
 	SAFE_DELETE(g_WndMng.m_pWndSecretRoomSelection);
 	g_WndMng.m_pWndSecretRoomSelection = new CWndSecretRoomSelection();
+	g_WndMng.m_pWndSecretRoomSelection->Initialize();
 
-	if(g_WndMng.m_pWndSecretRoomSelection)
-	{
-		g_WndMng.m_pWndSecretRoomSelection->Initialize();
-
-		for( int i=0; i<nSize; i++ )
-		{
-			DWORD dwIdPlayer;
-			ar >> dwIdPlayer;
-			g_WndMng.m_pWndSecretRoomSelection->AddCombatPlayer(dwIdPlayer);
-		}
-
-//		if(nSize == 0)
-//			g_WndMng.m_pWndSecretRoomSelection->SetMaster();
+	int nSize; ar >> nSize;
+	std::vector<u_long> lineup;
+	for (int i = 0; i < nSize; i++) {
+		ar >> lineup.emplace_back();
 	}
+
+	g_WndMng.m_pWndSecretRoomSelection->ResetLineup(lineup);
 }
 
 void CDPClient::SendSecretRoomEntrance()

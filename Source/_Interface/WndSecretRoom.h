@@ -1,46 +1,16 @@
-
-#ifndef __WNDGUILDSECRETROOM__H
-#define __WNDGUILDSECRETROOM__H
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////
 // Secret Room 
 //////////////////////////////////////////////////////////////////////////
 
-class CWndSecretRoomSelection : public CWndNeuz
-{
-protected:	
-	std::multimap<int, CGuildMember*>	m_mapSelectPlayer;   // 정렬된 길드원 리스트
-
-	std::vector<u_long>					m_vecGuildList   ;   // 길드원 리스트
-	std::vector<u_long>					m_vecSelectPlayer;   // 참가자 리스트
-	
+class CWndSecretRoomSelection : public CWndNeuz {
 public: 
-	void Reset();
-	CWndSecretRoomSelection();
-	virtual ~CWndSecretRoomSelection();
-	
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
-	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
-	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
-	void			EnableFinish( BOOL bFlag );		
+	BOOL	Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL	OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void	OnInitialUpdate() override;
 
-	void			UpDateGuildListBox();
-
-	void			AddCombatPlayer( u_long uiPlayer );
-	void			AddGuildPlayer( u_long uiPlayer );
-
-	void			RemoveCombatPlayer( int nIndex ) ;
-	void			RemoveGuildPlayer( int nIndex ) ;
-
-	u_long			FindCombatPlayer( u_long uiPlayer );
-	u_long			FindGuildPlayer( u_long uiPlayer );
-
-//	void			SetMaster();
+	void ResetLineup(std::span<const u_long> lineup = {});
 }; 
 
 class CWndSecretRoomOffer : public CWndNeuz
@@ -321,5 +291,3 @@ public:
 	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
 	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 };
-
-#endif //__WNDGUILDSECRETROOM__H
