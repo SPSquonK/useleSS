@@ -7,66 +7,41 @@
 #include "DPClient.h"
 #include "playerdata.h"
 
-
-//////////////////////////////////////////////////////////////////////////
-// 1:1 길드 컴뱃 참가자 구성
 //////////////////////////////////////////////////////////////////////////
 
-void CWndGuildCombat1to1Selection::UnselectedPlayerDisplayer::Render(
+void PlayerLineup::SimpleDisplayer::Render(
 	C2DRender * const p2DRender, CRect rect,
-	Player & displayed,
+	PlayerLineup & displayed,
 	DWORD color, const WndTListBox::DisplayArgs & misc
 ) const {
-	if (displayed.str.IsEmpty()) {
+	if (displayed.cachedText.IsEmpty()) {
 		PlayerData * pPlayerData = CPlayerDataCenter::GetInstance()->GetPlayerData(displayed.playerId);
-		displayed.str.Format("Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[pPlayerData->data.nJob].szName);
+		displayed.cachedText.Format("Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[pPlayerData->data.nJob].szName);
 	}
 
-	p2DRender->TextOut(rect.left, rect.top, displayed.str.GetString(), color);
+	p2DRender->TextOut(rect.left, rect.top, displayed.cachedText.GetString(), color);
 }
 
-void CWndGuildCombat1to1Selection::SelectedPlayerDisplayer ::Render(
+void PlayerLineup::NumberedDisplayer::Render(
 	C2DRender * const p2DRender, CRect rect,
-	Player & displayed,
+	PlayerLineup & displayed,
 	DWORD color, const WndTListBox::DisplayArgs & misc
 ) const {
-	if (displayed.str.IsEmpty()) {
+	if (displayed.cachedText.IsEmpty()) {
 		PlayerData * pPlayerData = CPlayerDataCenter::GetInstance()->GetPlayerData(displayed.playerId);
-		displayed.str.Format("No.%d  Lv%.2d	%.16s %.10s",
+		displayed.cachedText.Format("No.%d  Lv%.2d	%.16s %.10s",
 			misc.i + 1,
 			pPlayerData->data.nLevel, pPlayerData->szPlayer,
 			prj.jobs.info[pPlayerData->data.nJob].szName
 		);
 	}
 
-	p2DRender->TextOut(rect.left, rect.top, displayed.str.GetString(), color);
+	p2DRender->TextOut(rect.left, rect.top, displayed.cachedText.GetString(), color);
 }
 
-void CWndGuildCombat1to1Selection::SetSelection(std::span<const u_long> players) {
-	CWndListGuild  * pWndGuild  = GetDlgItem<CWndListGuild >(WIDC_LISTBOX1);
-	CWndListSelect * pWndSelect = GetDlgItem<CWndListSelect>(WIDC_LISTBOX2);
-
-	for (const u_long playerId : players) {
-		pWndSelect->Add(Player{ playerId });
-
-		const auto id = pWndGuild->Find(
-			[playerId](const Player & player) {
-				return player.playerId == playerId;
-			}
-		);
-
-		if (id != -1) pWndGuild->Erase(id);
-	}
-}
-
-
-void CWndGuildCombat1to1Selection::ResetSelection()
-{
-	CWndListGuild  * pWndGuild  = GetDlgItem<CWndListGuild >(WIDC_LISTBOX1);
-	CWndListSelect * pWndSelect = GetDlgItem<CWndListSelect>(WIDC_LISTBOX2);
-	
-	pWndSelect->ResetContent();
-	pWndGuild->ResetContent();
+void PlayerLineup::LineupManager::Reset(std::span<const u_long> lineup) {
+	pWndPool->ResetContent();
+	pWndLineup->ResetContent();
 
 	const CGuild * pGuild = g_pPlayer->GetGuild();
 	if (!pGuild) return;
@@ -75,13 +50,99 @@ void CWndGuildCombat1to1Selection::ResetSelection()
 		PlayerData * pPlayerData = CPlayerDataCenter::GetInstance()->GetPlayerData(pMember->m_idPlayer);
 		if (pPlayerData->data.uLogin == 0) continue;
 
-		pWndGuild->Add(Player{ pMember->m_idPlayer });
+		if (!std::ranges::contains(lineup, pMember->m_idPlayer)) {
+			pWndPool->Add(PlayerLineup{ pMember->m_idPlayer });
+		}
+	}
+
+	for (const u_long playerId : lineup) {
+		pWndLineup->Add(PlayerLineup{ playerId });
 	}
 }
 
-void CWndGuildCombat1to1Selection::OnDraw( C2DRender* p2DRender ) 
-{
+PlayerLineup::SelectReturn PlayerLineup::LineupManager::ToSelect(const LineupRuleSet & ruleSet) {
+	const auto [idSel, selPlayer] = pWndPool->GetSelection();
+	if (idSel == -1) return SelectReturn::NoSelection;
 
+	if (pWndLineup->GetSize() >= ruleSet.maxSelect.value_or(0)) {
+		return SelectReturn::FullLineup;
+	}
+
+	CGuild * pGuild = g_pPlayer->GetGuild();
+	if (!pGuild) return SelectReturn::NoGuild;
+
+	CGuildMember * pGuildMember = pGuild->GetMember(selPlayer->playerId);
+	if (!pGuildMember) {
+		return SelectReturn::NotAMember;
+	}
+
+	const PlayerData * pd = CPlayerDataCenter::GetInstance()->GetPlayerData(pGuildMember->m_idPlayer);
+	if (pd->data.nLevel < ruleSet.minimumLevel.value_or(0)) {
+		return SelectReturn::TooLowLevel;
+	}
+
+	const u_long toAdd = selPlayer->playerId;
+	pWndPool->Erase(idSel);
+
+	int inSelection = pWndLineup->Find([toAdd](const PlayerLineup & p) { return p.playerId == toAdd; });
+
+	if (inSelection != -1) {
+		return SelectReturn::AlreadyInLineup;
+	}
+
+	pWndLineup->Add(PlayerLineup{ toAdd });
+	return SelectReturn::Ok;
+}
+
+void PlayerLineup::LineupManager::ToGuild() {
+	const auto [idSel, selPlayer] = pWndLineup->GetSelection();
+	if (idSel == -1) return;
+
+	const u_long playerId = selPlayer->playerId;
+
+	pWndLineup->Erase(idSel);
+
+	int inGuild = pWndPool->Find([playerId](const PlayerLineup & p) { return p.playerId == playerId; });
+	if (inGuild == -1) {
+		pWndPool->Add(PlayerLineup{ playerId });
+	}
+}
+
+void PlayerLineup::LineupManager::MoveUp() {
+	const int sel = pWndLineup->GetCurSel();
+	if (sel == -1 || sel == 0) return;
+
+	const auto & [a, b] = pWndLineup->Swap(sel - 1, sel);
+	a->cachedText = "";
+	b->cachedText = "";
+}
+
+void PlayerLineup::LineupManager::MoveDown() {
+	const int sel = pWndLineup->GetCurSel();
+	if (sel == -1 || sel + 1 == static_cast<int>(pWndLineup->GetSize())) return;
+
+	const auto & [a, b] = pWndLineup->Swap(sel, sel + 1);
+	a->cachedText = "";
+	b->cachedText = "";
+}
+
+//////////////////////////////////////////////////////////////////////////
+// 1:1 길드 컴뱃 참가자 구성
+//////////////////////////////////////////////////////////////////////////
+
+
+void CWndGuildCombat1to1Selection::SetSelection(std::span<const u_long> players) {
+	PlayerLineup::LineupManager(
+		GetDlgItem<CWndListGuild >(WIDC_LISTBOX1),
+		GetDlgItem<CWndListSelect>(WIDC_LISTBOX2)
+	).Reset(players);
+}
+
+void CWndGuildCombat1to1Selection::ResetSelection() {
+	PlayerLineup::LineupManager(
+		GetDlgItem<CWndListGuild >(WIDC_LISTBOX1),
+		GetDlgItem<CWndListSelect>(WIDC_LISTBOX2)
+	).Reset();
 }
 
 void CWndGuildCombat1to1Selection::OnInitialUpdate() 
@@ -96,8 +157,8 @@ void CWndGuildCombat1to1Selection::OnInitialUpdate()
 		return;
 	}
 
-	ReplaceListBox<Player, UnselectedPlayerDisplayer>(WIDC_LISTBOX1);
-	ReplaceListBox<Player, SelectedPlayerDisplayer  >(WIDC_LISTBOX2);
+	ReplaceListBox<PlayerLineup, PlayerLineup::SimpleDisplayer  >(WIDC_LISTBOX1);
+	ReplaceListBox<PlayerLineup, PlayerLineup::NumberedDisplayer>(WIDC_LISTBOX2);
 	
 	MoveParentCenter();
 
@@ -111,12 +172,54 @@ BOOL CWndGuildCombat1to1Selection::Initialize( CWndBase* pWndParent, DWORD /*dwW
 
 BOOL CWndGuildCombat1to1Selection::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
+	const auto Manager = [&]() {
+		return PlayerLineup::LineupManager(
+			GetDlgItem<CWndListGuild >(WIDC_LISTBOX1),
+			GetDlgItem<CWndListSelect>(WIDC_LISTBOX2)
+		);
+	};
+
 	switch (nID) {
-		case WIDC_BUTTON1: OnClickToSelect(); return TRUE;
-		case WIDC_BUTTON2: OnClickToGuild();  return TRUE;
-		case WIDC_BUTTON3: OnClickMoveUp();   return TRUE;
-		case WIDC_BUTTON4: OnClickMoveDown(); return TRUE;
-		case WIDC_FINISH : OnClickFinish();   return TRUE;
+		case WIDC_BUTTON1:
+		{
+			const PlayerLineup::LineupRuleSet ruleSet {
+				.maxSelect = static_cast<size_t>(g_GuildCombat1to1Mng.m_nMaxJoinPlayer),
+				.minimumLevel = static_cast<unsigned int>(g_GuildCombat1to1Mng.m_nMinJoinPlayerLevel)
+			};
+
+			const PlayerLineup::SelectReturn answer = Manager().ToSelect(ruleSet);
+
+			switch (answer) {
+				using enum PlayerLineup::SelectReturn;
+				case NoSelection:
+					break;
+				case FullLineup: {
+					CString str;
+					str.Format(prj.GetText(TID_GAME_GUILDCOMBAT1TO1_SELECTION_MAX), g_GuildCombat1to1Mng.m_nMaxJoinPlayer);
+					g_WndMng.OpenMessageBox(str);
+					break;
+				}
+				case NoGuild:
+					break;
+				case NotAMember:
+					g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT1TO1_NOT_GUILD_MEMBER));
+					break;
+				case TooLowLevel:
+					g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT1TO1_LIMIT_LEVEL_NOTICE));
+					break;
+				case AlreadyInLineup:
+					g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT1TO1_ALREADY_ENTRY)); //이미 등록되어 있습니다. 다시 등록해주세요.
+					break;
+				case Ok:
+					break;
+			}
+			
+			return TRUE;
+		}
+		case WIDC_BUTTON2: Manager().ToGuild();  return TRUE;
+		case WIDC_BUTTON3: Manager().MoveUp();   return TRUE;
+		case WIDC_BUTTON4: Manager().MoveDown(); return TRUE;
+		case WIDC_FINISH : OnClickFinish();      return TRUE;
 		case WIDC_RESET: {
 			CGuildCombat1to1SelectionResetConfirm * pBox = new CGuildCombat1to1SelectionResetConfirm;
 			g_WndMng.OpenCustomBox("", pBox);
@@ -128,86 +231,6 @@ BOOL CWndGuildCombat1to1Selection::OnChildNotify( UINT message, UINT nID, LRESUL
 	}
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
-}
-
-void CWndGuildCombat1to1Selection::OnClickToSelect() {
-	CWndListGuild  * pWndGuild  = GetDlgItem<CWndListGuild >(WIDC_LISTBOX1);
-	CWndListSelect * pWndSelect = GetDlgItem<CWndListSelect>(WIDC_LISTBOX2);
-
-	const auto [idSel, selPlayer] = pWndGuild->GetSelection();
-	if (idSel == -1) return;
-
-	if (pWndGuild->GetSize() >= static_cast<size_t>(g_GuildCombat1to1Mng.m_nMaxJoinPlayer)) {
-		CString str;
-		str.Format(prj.GetText(TID_GAME_GUILDCOMBAT1TO1_SELECTION_MAX), g_GuildCombat1to1Mng.m_nMaxJoinPlayer);
-		g_WndMng.OpenMessageBox(str);
-		return;
-	}
-
-	CGuild * pGuild = g_pPlayer->GetGuild();
-	if (!pGuild) return;
-
-	CGuildMember * pGuildMember = pGuild->GetMember(selPlayer->playerId);
-	if (!pGuildMember) {
-		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT1TO1_NOT_GUILD_MEMBER));
-		return;
-	}
-
-	if (CPlayerDataCenter::GetInstance()->GetPlayerData(pGuildMember->m_idPlayer)->data.nLevel < g_GuildCombat1to1Mng.m_nMinJoinPlayerLevel) {
-		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT1TO1_LIMIT_LEVEL_NOTICE));
-		return;
-	}
-
-	const u_long toAdd = selPlayer->playerId;
-	pWndGuild->Erase(idSel);
-
-	int inSelection = pWndGuild->Find([toAdd](const Player & p) { return p.playerId == toAdd; });
-
-	if (inSelection != -1) {
-		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT1TO1_ALREADY_ENTRY)); //이미 등록되어 있습니다. 다시 등록해주세요.
-		return;
-	}
-
-	pWndSelect->Add(Player{ toAdd });
-}
-
-void CWndGuildCombat1to1Selection::OnClickToGuild() {
-	CWndListGuild  * pWndGuild  = GetDlgItem<CWndListGuild >(WIDC_LISTBOX1);
-	CWndListSelect * pWndSelect = GetDlgItem<CWndListSelect>(WIDC_LISTBOX2);
-
-	const auto [idSel, selPlayer] = pWndSelect->GetSelection();
-	if (idSel == -1) return;
-
-	const u_long playerId = selPlayer->playerId;
-
-	pWndSelect->Erase(idSel);
-
-	int inGuild = pWndGuild->Find([playerId](const Player & p) { return p.playerId == playerId; });
-	if (inGuild == -1) {
-		pWndGuild->Add(Player{ playerId });
-	}
-}
-
-void CWndGuildCombat1to1Selection::OnClickMoveUp() {
-	CWndListSelect * pWndSelect = GetDlgItem<CWndListSelect>(WIDC_LISTBOX2);
-
-	const int sel = pWndSelect->GetCurSel();
-	if (sel == -1 || sel == 0) return;
-
-	const auto & [a, b] = pWndSelect->Swap(sel - 1, sel);
-	a->str = "";
-	b->str = "";
-}
-
-void CWndGuildCombat1to1Selection::OnClickMoveDown() {
-	CWndListSelect * pWndSelect = GetDlgItem<CWndListSelect>(WIDC_LISTBOX2);
-
-	const int sel = pWndSelect->GetCurSel();
-	if (sel == -1 || sel + 1 == static_cast<int>(pWndSelect->GetSize())) return;
-
-	const auto & [a, b] = pWndSelect->Swap(sel, sel + 1);
-	a->str = "";
-	b->str = "";
 }
 
 void CWndGuildCombat1to1Selection::OnClickFinish() {

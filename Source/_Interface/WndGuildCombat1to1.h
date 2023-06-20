@@ -4,32 +4,62 @@
 // 1:1 GuildCombat Class
 //////////////////////////////////////////////////////////////////////////
 
+
+struct PlayerLineup {
+	u_long playerId;
+	CString cachedText;
+
+	struct SimpleDisplayer {
+		void Render(
+			C2DRender * const p2DRender, CRect rect,
+			PlayerLineup & displayed,
+			DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
+	};
+
+	struct NumberedDisplayer {
+		void Render(
+			C2DRender * const p2DRender, CRect rect,
+			PlayerLineup & displayed,
+			DWORD color, const WndTListBox::DisplayArgs & misc
+		) const;
+	};
+
+	enum class SelectReturn {
+		NoSelection, 
+		FullLineup, NoGuild, NotAMember, TooLowLevel,
+		AlreadyInLineup, Ok
+	};
+
+	struct LineupRuleSet {
+		std::optional<size_t> maxSelect;
+		std::optional<unsigned int> minimumLevel;
+	};
+
+	struct LineupManager {
+		using CWndPoolList   = CWndTListBox<PlayerLineup, SimpleDisplayer>;
+		using CWndLineupList = CWndTListBox<PlayerLineup, NumberedDisplayer>;
+
+		CWndPoolList * pWndPool;
+		CWndLineupList * pWndLineup;
+
+		LineupManager(CWndPoolList * pWndPool, CWndLineupList * pWndLineup)
+			: pWndPool(pWndPool), pWndLineup(pWndLineup) {}
+
+		void Reset(std::span<const u_long> lineup = {});
+		void ToGuild();
+		SelectReturn ToSelect(const LineupRuleSet & ruleSet);
+		void MoveUp();
+		void MoveDown();
+	};
+};
+
+
 class CWndGuildCombat1to1Selection final : public CWndNeuz
 {
 public:
-	struct Player {
-		u_long playerId;
-		CString str;
-	};
-
-	struct UnselectedPlayerDisplayer {
-		void Render(
-			C2DRender * const p2DRender, CRect rect,
-			Player & displayed,
-			DWORD color, const WndTListBox::DisplayArgs & misc
-		) const;
-	};
-
-	struct SelectedPlayerDisplayer {
-		void Render(
-			C2DRender * const p2DRender, CRect rect,
-			Player & displayed,
-			DWORD color, const WndTListBox::DisplayArgs & misc
-		) const;
-	};
-
-	using CWndListGuild  = CWndTListBox<Player, UnselectedPlayerDisplayer>;
-	using CWndListSelect = CWndTListBox<Player, SelectedPlayerDisplayer>;
+	using CWndListGuild  = CWndTListBox<PlayerLineup, PlayerLineup::SimpleDisplayer>;
+	using CWndListSelect = CWndTListBox<PlayerLineup, PlayerLineup::NumberedDisplayer>;
 
 public: 
 	void SetSelection(std::span<const u_long> playerIds);
@@ -37,14 +67,9 @@ public:
 
 	BOOL	Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
 	BOOL	OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
-	void	OnDraw(C2DRender * p2DRender) override;
 	void	OnInitialUpdate() override;
 
 private:
-	void OnClickToGuild();
-	void OnClickToSelect();
-	void OnClickMoveUp();
-	void OnClickMoveDown();
 	void OnClickFinish();
 }; 
 
