@@ -12,6 +12,7 @@
 #include "WndManager.h"
 #include <afxdisp.h>
 #include "defineNeuz.h"
+#include "PlayerLineup.h"
 
 #include "DPClient.h"
 #include "MsgHdr.h"
@@ -5740,8 +5741,9 @@ BOOL CGuildCombatSelectionClearMessageBox::OnChildNotify( UINT message, UINT nID
 		{
 			CWndGuildCombatSelection *pGuildCombatSelection = (CWndGuildCombatSelection*)g_WndMng.GetWndBase( APP_GUILDCOMBAT_SELECTION );
 
-			if( pGuildCombatSelection )
-				pGuildCombatSelection->Reset();
+			if (pGuildCombatSelection) {
+				pGuildCombatSelection->ReceiveLineup({}, 0);
+			}
 
 			Destroy();
 		}
@@ -5753,35 +5755,6 @@ BOOL CGuildCombatSelectionClearMessageBox::OnChildNotify( UINT message, UINT nID
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-GuildCombatPlayer::GuildCombatPlayer(u_long playerId)
-	: playerId(playerId) {
-	PlayerData * pPlayerData = CPlayerDataCenter::GetInstance()->GetPlayerData(playerId);
-	display.Format("Lv%.2d	%.16s %.10s", pPlayerData->data.nLevel, pPlayerData->szPlayer, prj.jobs.info[pPlayerData->data.nJob].szName);
-}
-
-void GuildCombatPlayer::Render(
-	C2DRender * p2DRender, CRect rect,
-	DWORD color, const WndTListBox::DisplayArgs & misc
-) const {
-	p2DRender->TextOut(rect.left, rect.top, display.GetString(), color);
-}
-
-// ���? �Ĺ� ������ ����
-CWndGuildCombatSelection::CWndGuildCombatSelection() {
-	m_uidDefender = -1;
-
-	nMaxJoinMember = 0;
-	nMaxWarMember = 0;
-}
-
-CWndTListBox<GuildCombatPlayer> & CWndGuildCombatSelection::SelectablePlayers() {
-	return *GetDlgItem<CWndTListBox<GuildCombatPlayer>>(WIDC_LISTBOX1);
-}
-
-CWndTListBox<GuildCombatPlayer> & CWndGuildCombatSelection::CombatPlayers() {
-	return *GetDlgItem<CWndTListBox<GuildCombatPlayer>>(WIDC_LISTBOX2);
-}
 
 void CWndGuildCombatSelection::SetDefender(const u_long uiPlayer) {
 	m_uidDefender = uiPlayer;
@@ -5798,34 +5771,11 @@ void CWndGuildCombatSelection::SetMemberSize(int nMaxJoin, int nMaxWar) {
 	pWndStatic->SetTitle(str);
 }
 
-void CWndGuildCombatSelection::UpDateGuildListBox() {
-	auto & selectableListbox = SelectablePlayers();
-	selectableListbox.ResetContent();
-
-	CGuild * pGuild = g_pPlayer->GetGuild();
-	if (!pGuild) return;
-
-	for (const u_long playerId : pGuild->m_mapPMember | std::views::keys) {
-		PlayerData * pPlayerData = CPlayerDataCenter::GetInstance()->GetPlayerData(playerId);
-		if (pPlayerData->data.uLogin <= 0) continue;
-
-		selectableListbox.Add(GuildCombatPlayer(playerId));
-	}
-}
-
-void CWndGuildCombatSelection::ReceiveLineup(const std::vector<u_long> & members, u_long defenderId) {
-	CWndTListBox<GuildCombatPlayer> & connectedPlayers = CombatPlayers();
-	CWndTListBox<GuildCombatPlayer> & connectedMmebers = SelectablePlayers();
-	connectedPlayers.ResetContent();
-
-	for (const u_long member : members) {
-		connectedPlayers.Add(GuildCombatPlayer(member));
-
-		const auto old = connectedMmebers.Find(GuildCombatPlayer::ById(member));
-		if (old != -1) {
-			connectedMmebers.Erase(old);
-		}
-	}
+void CWndGuildCombatSelection::ReceiveLineup(std::span<const u_long> members, u_long defenderId) {
+	PlayerLineup::DoubleGCListManager(
+		GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::SimpleDisplayer>>(WIDC_LISTBOX1),
+		GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::SimpleDisplayer>>(WIDC_LISTBOX2)
+	).Reset(members);
 
 	m_uidDefender = defenderId;
 }
@@ -5837,10 +5787,12 @@ void CWndGuildCombatSelection::OnDraw( C2DRender* p2DRender )  {
 		if (m_uidDefender <= 0) {
 			pWndStatic->SetVisible(FALSE);
 		} else {
-			auto & combatPlayers = CombatPlayers();
+			auto * combatPlayers = GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::SimpleDisplayer>>(WIDC_LISTBOX2);
 
-			const int position = combatPlayers.Find(
-				GuildCombatPlayer::ById(m_uidDefender)
+			const int position = combatPlayers->Find(
+				[&](const PlayerLineup & player) {
+					return player.playerId == m_uidDefender;
+				}
 			);
 			
 			if (position >= 0) {
@@ -5866,18 +5818,12 @@ void CWndGuildCombatSelection::OnDraw( C2DRender* p2DRender )  {
 	p2DRender->RenderFillRect( crect, D3DCOLOR_ARGB( 40, 220, 0, 0 ) );
 }
 
-void CWndGuildCombatSelection::EnableFinish(BOOL bFlag) {
-	if (CWndBase * pWndButton = GetDlgItem(WIDC_FINISH)) {
-		pWndButton->EnableWindow(bFlag);
-	}
-}
-
 void CWndGuildCombatSelection::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate();
 
-	ReplaceListBox<GuildCombatPlayer>(WIDC_LISTBOX1);
-	ReplaceListBox<GuildCombatPlayer>(WIDC_LISTBOX2);
+	ReplaceListBox<PlayerLineup, PlayerLineup::SimpleDisplayer>(WIDC_LISTBOX1);
+	ReplaceListBox<PlayerLineup, PlayerLineup::SimpleDisplayer>(WIDC_LISTBOX2);
 
 	// �ð� ���������� �Ǵ�
 	if (g_GuildCombatMng.m_nGCState != CGuildCombat::NOTENTER_COUNT_STATE) {
@@ -5887,27 +5833,35 @@ void CWndGuildCombatSelection::OnInitialUpdate()
 	}
 	
 	MoveParentCenter();
-	UpDateGuildListBox();
+	ReceiveLineup({}, 0);
 } 
 
 BOOL CWndGuildCombatSelection::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
 	return CWndNeuz::InitDialog(APP_GUILDCOMBAT_SELECTION, pWndParent, 0, CPoint(0, 0));
 }
 
-void CWndGuildCombatSelection::Reset() {
-	m_uidDefender = 0;
-	UpDateGuildListBox();
-	CombatPlayers().ResetContent();
-}
-
 BOOL CWndGuildCombatSelection::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) { 
 	static constexpr auto ToBOOL = [](bool b) -> BOOL { return b ? TRUE : FALSE; };
 
+	const auto Manager = [&]() {
+		return PlayerLineup::DoubleGCListManager(
+			GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::SimpleDisplayer>>(WIDC_LISTBOX1),
+			GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::SimpleDisplayer>>(WIDC_LISTBOX2)
+		);
+	};
+
 	switch (nID) {
-		case WIDC_BUTTON1: return ToBOOL(OnConnectedToCombat());
-		case WIDC_BUTTON2: return ToBOOL(OnCombatToConnected());
-		case WIDC_BUTTON3: return ToBOOL(OnMoveUp());
-		case WIDC_BUTTON4: return ToBOOL(OnMoveDown());
+		case WIDC_BUTTON1: OnConnectedToCombat(); return TRUE;
+		case WIDC_BUTTON2:
+		{
+			const auto removedId = Manager().ToGuild();
+			if (removedId && removedId.value() == m_uidDefender) {
+				m_uidDefender = -1;
+			}
+			return TRUE;
+		}
+		case WIDC_BUTTON3: Manager().MoveUp();    return TRUE;
+		case WIDC_BUTTON4: Manager().MoveDown();  return TRUE;
 		case WIDC_RESET: {
 			CGuildCombatSelectionClearMessageBox * pBox = new CGuildCombatSelectionClearMessageBox;
 			g_WndMng.OpenCustomBox("", pBox);
@@ -5923,94 +5877,36 @@ BOOL CWndGuildCombatSelection::OnChildNotify( UINT message, UINT nID, LRESULT* p
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 }
 
-bool CWndGuildCombatSelection::OnConnectedToCombat() {
-	CWndTListBox<GuildCombatPlayer> & connectedPlayers = SelectablePlayers();
-	const auto [nCurSel, selPlayer] = connectedPlayers.GetSelection();
-	if (nCurSel == -1) return false;
+void CWndGuildCombatSelection::OnConnectedToCombat() {
+	const PlayerLineup::RuleSet ruleSet {
+		.maxSelect = static_cast<size_t>(nMaxJoinMember),
+			.minimumLevel = 30
+	};
 
-	if (connectedPlayers.GetSize() > nMaxJoinMember) {
-		CString str;
-		str.Format(prj.GetText(TID_GAME_GUILDCOMBAT_SELECTION_MAX), nMaxJoinMember);
-		g_WndMng.OpenMessageBox(str);
-		return false;
-	}
+	const PlayerLineup::SelectReturn result = PlayerLineup::DoubleGCListManager(
+		GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::SimpleDisplayer>>(WIDC_LISTBOX1),
+		GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::SimpleDisplayer>>(WIDC_LISTBOX2)
+	).ToSelect(ruleSet);
 
-	CGuild * pGuild = g_pPlayer->GetGuild();
-
-	if (pGuild) {
-		CGuildMember * pGuildMember = pGuild->GetMember(selPlayer->playerId);
-
-		if (!pGuildMember) {
-			g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_NOT_GUILD_MEMBER));	//�������� �����ϴ� �����? �ɹ��� �ƴմϴ�.			
-			return false;
+	switch (result) {
+		using enum PlayerLineup::SelectReturn;
+		case FullLineup:
+		{
+			CString str;
+			str.Format(prj.GetText(TID_GAME_GUILDCOMBAT_SELECTION_MAX), nMaxJoinMember);
+			g_WndMng.OpenMessageBox(str);
+			break;
 		}
-
-		if (CPlayerDataCenter::GetInstance()->GetPlayerData(selPlayer->playerId)->data.nLevel < 30) {
-			g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_LIMIT_LEVEL_NOTICE)); //������ �����? ���� 30�̻��� �Ǿ��? �մϴ�.
-			return false;
-		}
+		case NotAMember:
+			g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_NOT_GUILD_MEMBER));
+			break;
+		case TooLowLevel:
+			g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_LIMIT_LEVEL_NOTICE));
+			break;
+		case AlreadyInLineup:
+			g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_ALREADY_ENTRY));
+			break;
 	}
-
-	CWndTListBox<GuildCombatPlayer> & combatPlayers = CombatPlayers();
-	const int combatPos = combatPlayers.Find(GuildCombatPlayer::ById(selPlayer->playerId));
-	if (combatPos != -1) {
-		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_ALREADY_ENTRY));
-		return false;
-	}
-
-	combatPlayers.Add(GuildCombatPlayer(selPlayer->playerId)); // Rebuild to update text
-	connectedPlayers.Erase(nCurSel);
-
-	return true;
-}
-
-bool CWndGuildCombatSelection::OnCombatToConnected() {
-	// Find selected player in combat players
-	CWndTListBox<GuildCombatPlayer> & combatPlayers = CombatPlayers();
-	const auto [nCurSel, selPlayer] = combatPlayers.GetSelection();
-	if (nCurSel == -1) return false;
-
-	// Add back in connected players
-	CWndTListBox<GuildCombatPlayer> & connectedPlayers = SelectablePlayers();
-	const int coPlayer = connectedPlayers.Find(
-		GuildCombatPlayer::ById(selPlayer->playerId)
-	);
-
-	if (coPlayer == -1) {
-		SelectablePlayers().Add(GuildCombatPlayer(selPlayer->playerId));
-	}
-
-	// Remove defender
-	if (m_uidDefender == selPlayer->playerId) {
-		m_uidDefender = -1;
-	}
-
-	// Remove from list
-	combatPlayers.Erase(nCurSel);
-	return true;
-}
-
-bool CWndGuildCombatSelection::OnMoveUp() {
-	CWndTListBox<GuildCombatPlayer> & combatPlayers = CombatPlayers();
-
-	const int nCurSel = combatPlayers.GetCurSel();
-	if (nCurSel == -1 || nCurSel == 0) return false;
-
-	std::swap(combatPlayers[nCurSel - 1], combatPlayers[nCurSel]);
-	combatPlayers.SetCurSel(nCurSel - 1);
-	return true;
-}
-
-bool CWndGuildCombatSelection::OnMoveDown() {
-	CWndTListBox<GuildCombatPlayer> & combatPlayers = CombatPlayers();
-
-	const int nCurSel = combatPlayers.GetCurSel();
-	if (nCurSel == -1 || std::cmp_equal(nCurSel + 1, combatPlayers.GetSize()))
-		return false;
-
-	std::swap(combatPlayers[nCurSel], combatPlayers[nCurSel + 1]);
-	combatPlayers.SetCurSel(nCurSel + 1);
-	return true;
 }
 
 bool CWndGuildCombatSelection::OnFinish() {
@@ -6029,8 +5925,8 @@ bool CWndGuildCombatSelection::OnFinish() {
 		return false;
 	}
 
-	CWndTListBox<GuildCombatPlayer> & combatPlayers = CombatPlayers();
-	if (combatPlayers.GetSize() == 0) {
+	auto * combatPlayers = GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::SimpleDisplayer>>(WIDC_LISTBOX2);
+	if (combatPlayers->GetSize() == 0) {
 		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_HAVENOT_PLAYER)); //�����ڰ� �����ϴ�. �����ڸ� �������ּ���.
 		return false;
 	}
@@ -6041,29 +5937,26 @@ bool CWndGuildCombatSelection::OnFinish() {
 	}
 
 	std::vector<u_long> selected;
-	for (size_t i = 0; i != combatPlayers.GetSize(); ++i) {
-		const u_long p = combatPlayers[static_cast<int>(i)].playerId;
+	for (size_t i = 0; i != combatPlayers->GetSize(); ++i) {
+		const u_long p = (*combatPlayers)[static_cast<int>(i)].playerId;
 		selected.emplace_back(p);
 	}
 
 	g_DPlay.SendGCSelectPlayer(selected, m_uidDefender);
 	Destroy();
 	return true;
-
-	// Message if no guild master or general -> we do not care
-	// g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDCOMBAT_HAVENOT_MASTER)); //������ ���ܿ� ��帶���ͳ�? ŷ���� �������� �ʽ��ϴ�.
-	// return FALSE;
 }
 
 bool CWndGuildCombatSelection::OnChooseDefender() {
-	CWndTListBox<GuildCombatPlayer> & combatPlayers = CombatPlayers();
+	auto * combatPlayers = GetDlgItem<CWndTListBox<PlayerLineup, PlayerLineup::SimpleDisplayer>>(WIDC_LISTBOX2);
 
-	const int nCurSel = combatPlayers.GetCurSel();
-	if (nCurSel == -1)
+	const PlayerLineup * nCurSelItem = combatPlayers->GetCurSelItem();
+	if (nCurSelItem) {
+		SetDefender(nCurSelItem->playerId);
+		return true;
+	} else {
 		return false;
-
-	SetDefender(combatPlayers[nCurSel].playerId);
-	return true;
+	}
 }
 
 //������ ���� ���? ���� ���?

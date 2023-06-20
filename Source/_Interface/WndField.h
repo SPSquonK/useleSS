@@ -691,29 +691,6 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-struct GuildCombatPlayer {
-	CString display;
-	u_long playerId;
-
-	explicit GuildCombatPlayer(u_long playerId);
-
-	void Render(
-		C2DRender * p2DRender, CRect rect,
-		DWORD color, const WndTListBox::DisplayArgs & misc
-	) const;
-
-	struct ById {
-		u_long playerId;
-
-		explicit ById(u_long playerId) : playerId(playerId) {}
-
-		[[nodiscard]] bool operator()(const GuildCombatPlayer & gcp) const {
-			return gcp.playerId == playerId;
-		}
-	};
-};
-
-
 class CWndGuildCombatSelection : public CWndNeuz {
 private:	
 	u_long   m_uidDefender = -1;
@@ -722,30 +699,19 @@ private:
 	CTexture m_TexDefender;
 	
 public: 
-	CWndGuildCombatSelection();
-	
 	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
 	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
 	void	OnDraw( C2DRender* p2DRender ) override;
 	void	OnInitialUpdate() override;
-	void			EnableFinish( BOOL bFlag );		
 
-	void Reset();
 	void			SetDefender( u_long uiPlayer );
-	void			UpDateGuildListBox();
 
 	void			SetMemberSize(int nMaxJoin, int nMaxWar);
 
-	void ReceiveLineup(const std::vector<u_long> & members, u_long defenderId);
+	void ReceiveLineup(std::span<const u_long> members, u_long defenderId);
 
 private:
-	CWndTListBox<GuildCombatPlayer> & SelectablePlayers();
-	CWndTListBox<GuildCombatPlayer> & CombatPlayers();
-
-	bool OnConnectedToCombat();
-	bool OnCombatToConnected();
-	bool OnMoveUp();
-	bool OnMoveDown();
+	void OnConnectedToCombat();
 	bool OnFinish();
 	bool OnChooseDefender();
 }; 
