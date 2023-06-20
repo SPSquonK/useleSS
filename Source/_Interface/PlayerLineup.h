@@ -35,20 +35,24 @@ struct PlayerLineup {
 		std::optional<unsigned int> minimumLevel;
 	};
 
-	struct DoubleListManager {
-		using CWndPoolList   = CWndTListBox<PlayerLineup, SimpleDisplayer>;
-		using CWndLineupList = CWndTListBox<PlayerLineup, NumberedDisplayer>;
+	template<typename PoolDisplayer, typename LineupDisplayer>
+	struct ListManager {
+		using CWndPoolList   = CWndTListBox<PlayerLineup, PoolDisplayer>;
+		using CWndLineupList = CWndTListBox<PlayerLineup, LineupDisplayer>;
 
 		CWndPoolList * pWndPool;
 		CWndLineupList * pWndLineup;
 
-		DoubleListManager(CWndPoolList * pWndPool, CWndLineupList * pWndLineup)
+		ListManager(CWndPoolList * pWndPool, CWndLineupList * pWndLineup)
 			: pWndPool(pWndPool), pWndLineup(pWndLineup) {}
 
 		void Reset(std::span<const u_long> lineup = {});
-		void ToGuild();
+		std::optional<u_long> ToGuild();
 		SelectReturn ToSelect(const RuleSet & ruleSet);
 		void MoveUp();
 		void MoveDown();
 	};
+
+	using DoubleListManager = ListManager<SimpleDisplayer, NumberedDisplayer>;
+	using DoubleGCListManager = ListManager<SimpleDisplayer, SimpleDisplayer>;
 };

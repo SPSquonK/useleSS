@@ -32,7 +32,9 @@ void PlayerLineup::NumberedDisplayer::Render(
 	p2DRender->TextOut(rect.left, rect.top, displayed.cachedText.GetString(), color);
 }
 
-void PlayerLineup::DoubleListManager::Reset(std::span<const u_long> lineup) {
+
+template<typename P, typename L>
+void PlayerLineup::ListManager<P, L>::Reset(std::span<const u_long> lineup) {
 	pWndPool->ResetContent();
 	pWndLineup->ResetContent();
 
@@ -53,7 +55,8 @@ void PlayerLineup::DoubleListManager::Reset(std::span<const u_long> lineup) {
 	}
 }
 
-PlayerLineup::SelectReturn PlayerLineup::DoubleListManager::ToSelect(const RuleSet & ruleSet) {
+template<typename P, typename L>
+PlayerLineup::SelectReturn PlayerLineup::ListManager<P, L>::ToSelect(const RuleSet & ruleSet) {
 	const auto [idSel, selPlayer] = pWndPool->GetSelection();
 	if (idSel == -1) return SelectReturn::NoSelection;
 
@@ -87,9 +90,10 @@ PlayerLineup::SelectReturn PlayerLineup::DoubleListManager::ToSelect(const RuleS
 	return SelectReturn::Ok;
 }
 
-void PlayerLineup::DoubleListManager::ToGuild() {
+template<typename P, typename L>
+std::optional<u_long> PlayerLineup::ListManager<P, L>::ToGuild() {
 	const auto [idSel, selPlayer] = pWndLineup->GetSelection();
-	if (idSel == -1) return;
+	if (idSel == -1) return std::nullopt;
 
 	const u_long playerId = selPlayer->playerId;
 
@@ -99,23 +103,33 @@ void PlayerLineup::DoubleListManager::ToGuild() {
 	if (inGuild == -1) {
 		pWndPool->Add(PlayerLineup{ playerId });
 	}
+
+	return playerId;
 }
 
-void PlayerLineup::DoubleListManager::MoveUp() {
+template<typename P, typename L>
+void PlayerLineup::ListManager<P, L>::MoveUp() {
 	const int sel = pWndLineup->GetCurSel();
 	if (sel == -1 || sel == 0) return;
 
 	const auto & [a, b] = pWndLineup->Swap(sel - 1, sel);
-	a->cachedText = "";
-	b->cachedText = "";
+	if constexpr (!std::same_as<L, SimpleDisplayer>) {
+		a->cachedText = "";
+		b->cachedText = "";
+	}
 }
 
-void PlayerLineup::DoubleListManager::MoveDown() {
+template<typename P, typename L>
+void PlayerLineup::ListManager<P, L>::MoveDown() {
 	const int sel = pWndLineup->GetCurSel();
 	if (sel == -1 || sel + 1 == static_cast<int>(pWndLineup->GetSize())) return;
 
 	const auto & [a, b] = pWndLineup->Swap(sel, sel + 1);
-	a->cachedText = "";
-	b->cachedText = "";
+	if constexpr (!std::same_as<L, SimpleDisplayer>) {
+		a->cachedText = "";
+		b->cachedText = "";
+	}
 }
 
+template struct PlayerLineup::DoubleListManager;
+template struct PlayerLineup::DoubleGCListManager;
