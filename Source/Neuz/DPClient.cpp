@@ -5627,30 +5627,30 @@ void CDPClient::OnGCInWindow( CAr& ar )
 	}
 	
 	SAFE_DELETE(g_WndMng.m_pWndGuildCombatOffer);
-	g_WndMng.m_pWndGuildCombatOffer = new CWndGuildCombat1to1Offer(0);
+	g_WndMng.m_pWndGuildCombatOffer = new CWndGuildCombat1to1Offer(
+		CWndGuildCombat1to1Offer::CombatType::GCGuild
+	);
 
-	if( g_WndMng.m_pWndGuildCombatOffer )
-	{
-		g_WndMng.m_pWndGuildCombatOffer->Initialize( NULL );				
+	g_WndMng.m_pWndGuildCombatOffer->Initialize( NULL );				
 
-		g_WndMng.m_pWndGuildCombatOffer->SetMinGold( dwMinPenya );
+	g_WndMng.m_pWndGuildCombatOffer->SetMinGold( dwMinPenya );
 		
-		if( dwRequestPenya == 0 )
-		{
-			g_WndMng.m_pWndGuildCombatOffer->SetReqGold(dwRequestPenya);
-			g_WndMng.m_pWndGuildCombatOffer->SetBackupGold( dwMinPenya );
-			g_WndMng.m_pWndGuildCombatOffer->SetGold( dwMinPenya );
-		}
-		else
-		{
-			g_WndMng.m_pWndGuildCombatOffer->SetReqGold(dwRequestPenya);
-			g_WndMng.m_pWndGuildCombatOffer->SetBackupGold( dwRequestPenya );
-			g_WndMng.m_pWndGuildCombatOffer->SetGold( dwRequestPenya );			
-		}
-
-
-		g_WndMng.m_pWndGuildCombatOffer->EnableAccept( TRUE );
+	if( dwRequestPenya == 0 )
+	{
+		g_WndMng.m_pWndGuildCombatOffer->SetReqGold(dwRequestPenya);
+		g_WndMng.m_pWndGuildCombatOffer->SetBackupGold( dwMinPenya );
+		g_WndMng.m_pWndGuildCombatOffer->SetGold( dwMinPenya );
 	}
+	else
+	{
+		g_WndMng.m_pWndGuildCombatOffer->SetReqGold(dwRequestPenya);
+		g_WndMng.m_pWndGuildCombatOffer->SetBackupGold( dwRequestPenya );
+		g_WndMng.m_pWndGuildCombatOffer->SetGold( dwRequestPenya );			
+	}
+
+
+	g_WndMng.m_pWndGuildCombatOffer->EnableAccept( TRUE );
+	
 }
 
 void CDPClient::OnGCRequestStatus( CAr& ar )
@@ -13645,23 +13645,22 @@ void CDPClient::OnGC1to1TenderOpenWnd( CAr & ar )
 	ar >> g_GuildCombat1to1Mng.m_nJoinPenya;
 	
 	SAFE_DELETE(g_WndMng.m_pWndGuildCombat1to1Offer);
-	g_WndMng.m_pWndGuildCombat1to1Offer = new CWndGuildCombat1to1Offer(1);
+	g_WndMng.m_pWndGuildCombat1to1Offer = new CWndGuildCombat1to1Offer(
+		CWndGuildCombat1to1Offer::CombatType::GC1to1
+	);
 
-	if(g_WndMng.m_pWndGuildCombat1to1Offer)
+	g_WndMng.m_pWndGuildCombat1to1Offer->Initialize(NULL);
+	if( nPenya == 0 ) //한번도 입찰한 금액이 없을 경우
 	{
-		g_WndMng.m_pWndGuildCombat1to1Offer->Initialize(NULL);
-		if( nPenya == 0 ) //한번도 입찰한 금액이 없을 경우
-		{
-			g_WndMng.m_pWndGuildCombat1to1Offer->SetReqGold( nPenya );
-			g_WndMng.m_pWndGuildCombat1to1Offer->SetBackupGold( g_GuildCombat1to1Mng.m_nJoinPenya );
-			g_WndMng.m_pWndGuildCombat1to1Offer->SetGold( g_GuildCombat1to1Mng.m_nJoinPenya );
-		}
-		else
-		{
-			g_WndMng.m_pWndGuildCombat1to1Offer->SetReqGold( nPenya );
-			g_WndMng.m_pWndGuildCombat1to1Offer->SetBackupGold( nPenya );
-			g_WndMng.m_pWndGuildCombat1to1Offer->SetGold( nPenya );			
-		}
+		g_WndMng.m_pWndGuildCombat1to1Offer->SetReqGold( nPenya );
+		g_WndMng.m_pWndGuildCombat1to1Offer->SetBackupGold( g_GuildCombat1to1Mng.m_nJoinPenya );
+		g_WndMng.m_pWndGuildCombat1to1Offer->SetGold( g_GuildCombat1to1Mng.m_nJoinPenya );
+	}
+	else
+	{
+		g_WndMng.m_pWndGuildCombat1to1Offer->SetReqGold( nPenya );
+		g_WndMng.m_pWndGuildCombat1to1Offer->SetBackupGold( nPenya );
+		g_WndMng.m_pWndGuildCombat1to1Offer->SetGold( nPenya );			
 	}
 }
 

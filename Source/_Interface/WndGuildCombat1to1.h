@@ -28,28 +28,23 @@ private:
 class CWndGuildCombat1to1Offer : public CWndNeuz
 {
 protected:
-	DWORD			m_dwReqGold;
-	DWORD			m_dwMinGold;
-	DWORD			m_dwBackupGold;
+	DWORD			m_dwReqGold = 0;
+	DWORD			m_dwMinGold = 0;
+	DWORD			m_dwBackupGold = 0;
 	
 public:
-	int				m_nCombatType; // 0 : 길드대전 , 1 : 1:1길드대전
+	enum class CombatType { GC1to1, GCGuild };
+	CombatType m_nCombatType;
 
 public: 
-	CWndGuildCombat1to1Offer(int nCombatType);
-	virtual ~CWndGuildCombat1to1Offer();
+	explicit CWndGuildCombat1to1Offer(CombatType nCombatType)
+		: m_nCombatType(nCombatType) {}
 	
 	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 	virtual void	PaintFrame( C2DRender* p2DRender );
 	void			SetGold( DWORD nCost );
-//	void			SetTotalGold( __int64 nCost );
 	void			SetMinGold( DWORD dwMinGold )		{ m_dwMinGold    = dwMinGold; }
 	void			SetReqGold( DWORD dwReqGold )		{ m_dwReqGold    = dwReqGold; }
 	void			SetBackupGold( DWORD dwBackupGold ) { m_dwBackupGold = dwBackupGold; }

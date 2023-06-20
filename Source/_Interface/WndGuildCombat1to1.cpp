@@ -146,18 +146,6 @@ void CWndGuildCombat1to1Selection::OnClickFinish() {
 // 1:1 길드 컴뱃 신청하기
 //////////////////////////////////////////////////////////////////////////
 
-CWndGuildCombat1to1Offer::CWndGuildCombat1to1Offer(int nCombatType) 
-{
-	m_dwMinGold    = 0;
-	m_dwBackupGold = 0;
-	m_dwReqGold    = 0;
-	m_nCombatType = nCombatType;
-}
-
-CWndGuildCombat1to1Offer::~CWndGuildCombat1to1Offer() 
-{
-}
-
 void CWndGuildCombat1to1Offer::PaintFrame( C2DRender* p2DRender )
 {
 	CRect rect = GetWindowRect();
@@ -165,35 +153,27 @@ void CWndGuildCombat1to1Offer::PaintFrame( C2DRender* p2DRender )
 	// 여기는 타이틀 바의 텍스트를 출력하는 곳 
 	if( IsWndStyle( WBS_CAPTION ) )	
 	{
-		int y = 4;
 		CD3DFont* pOldFont = p2DRender->GetFont();
 		p2DRender->SetFont( CWndBase::m_Theme.m_pFontWndTitle );
-		p2DRender->TextOut( 10, y, m_strTitle, m_dwColor );
+		p2DRender->TextOut( 10, 4, m_strTitle, m_dwColor );
+		p2DRender->SetFont(pOldFont);
 
-		char szNameLevel[128] = {0,};
-
-		if(m_nCombatType == 0)
-			sprintf( szNameLevel, "%s", prj.GetText(TID_GAME_GUILDCOMBAT_OFFER) );
-		else if(m_nCombatType == 1)
-			sprintf( szNameLevel, "%s", prj.GetText(TID_GAME_GUILDCOMBAT_1TO1_OFFER) );
+		LPCTSTR szNameLevel;
+		if (m_nCombatType == CombatType::GCGuild) {
+			szNameLevel = prj.GetText(TID_GAME_GUILDCOMBAT_OFFER);
+		} else if (m_nCombatType == CombatType::GC1to1) {
+			szNameLevel = prj.GetText(TID_GAME_GUILDCOMBAT_1TO1_OFFER);
+		} else {
+			szNameLevel = "???";
+		}
 
 		SetTitle( szNameLevel );
-		
-		p2DRender->SetFont( pOldFont );
 	}
 }
-		
-void CWndGuildCombat1to1Offer::OnDraw( C2DRender* p2DRender ) 
-{	
-}
 
-void CWndGuildCombat1to1Offer::EnableAccept( BOOL bFlag )
-{
-	CWndButton* pWndButton = (CWndButton*)GetDlgItem( WIDC_ACCEPT );
-
-	if( pWndButton )
-	{
-		pWndButton->EnableWindow( bFlag );	
+void CWndGuildCombat1to1Offer::EnableAccept(BOOL bFlag) {
+	if (CWndBase * pWndButton = GetDlgItem(WIDC_ACCEPT)) {
+		pWndButton->EnableWindow(bFlag);
 	}
 }
 
@@ -209,102 +189,61 @@ void CWndGuildCombat1to1Offer::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildCombat1to1Offer::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_1TO1_OFFER, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-
-BOOL CWndGuildCombat1to1Offer::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndGuildCombat1to1Offer::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndGuildCombat1to1Offer::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndGuildCombat1to1Offer::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndGuildCombat1to1Offer::SetGold( DWORD nCost )
-{
-	CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
-
-	if( pWndEdit )
-	{
-		CString str;
-		str.Format( "%d", nCost );
-		pWndEdit->SetString(str);
-	}				
+BOOL CWndGuildCombat1to1Offer::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_GUILDCOMBAT_1TO1_OFFER, pWndParent, 0, CPoint(0, 0));
 }
-/*
-void CWndGuildCombat1to1Offer::SetTotalGold( __int64 nCost )
-{
-	CWndStatic* pStatic	= (CWndStatic *)GetDlgItem( WIDC_STATIC6 );
-	pStatic->AddWndStyle(WSS_MONEY);
-	
-	if( pStatic )
-	{
+
+void CWndGuildCombat1to1Offer::SetGold(DWORD nCost) {
+	if (CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT1)) {
 		CString str;
-		str.Format( "%I64d", nCost );
-		pStatic->SetTitle(str);
+		str.Format("%d", nCost);
+		pWndEdit->SetString(str);
 	}
 }
-*/
+
 BOOL CWndGuildCombat1to1Offer::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_ACCEPT )
 	{
-		if( g_pPlayer )
-		{
-			CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
+		CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
 			
-			DWORD nCost;
-			CString str = pWndEdit->GetString();
-			nCost = atoi( str );
+		LPCTSTR str2 = pWndEdit->GetString();
+		DWORD nCost = atoi( str2 );
 
-			if( m_dwReqGold != 0 )
+		if( m_dwReqGold != 0 )
+		{
+			if( nCost <= m_dwBackupGold )
 			{
-				if( nCost <= m_dwBackupGold )
-				{
-					g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_CURRENT_REQUEST) ); //기존 페냐보다 더 많은 금액으로 신청을 하시기 바랍니다.
-					return FALSE;
-				}
-				
-			}
-			else
-			{
-				if( nCost < m_dwMinGold )
-				{
-					g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_LIMIT_MIN) ); //최소금액보다 더 많은 페냐로 신청하시기 바랍니다.
-					return FALSE;
-				}
-			}
-
-			CWndGuildCombat1to1OfferMessageBox* pMsg = new CWndGuildCombat1to1OfferMessageBox;
-			if( pMsg )
-			{
-				g_WndMng.OpenCustomBox( "", pMsg, this );
-				CString str;
-
-				if( m_dwReqGold == 0 )
-				{
-					str.Format( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_REQUEST), 0, nCost ); //기존에 신청된 %d페냐에서 추가로 %d페냐를 신청하겠습니까?
-				}
-				else
-				{
-					str.Format( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_REQUEST), m_dwBackupGold, nCost-m_dwBackupGold ); //기존에 신청된 %d페냐에서 추가로 %d페냐를 신청하겠습니까?
-				}
-
-				pMsg->SetValue( str, nCost );
+				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_CURRENT_REQUEST) ); //기존 페냐보다 더 많은 금액으로 신청을 하시기 바랍니다.
+				return FALSE;
 			}
 		}
+		else
+		{
+			if( nCost < m_dwMinGold )
+			{
+				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_LIMIT_MIN) ); //최소금액보다 더 많은 페냐로 신청하시기 바랍니다.
+				return FALSE;
+			}
+		}
+
+		CWndGuildCombat1to1OfferMessageBox* pMsg = new CWndGuildCombat1to1OfferMessageBox;
+
+		g_WndMng.OpenCustomBox( "", pMsg, this );
+		CString str;
+
+		if( m_dwReqGold == 0 )
+		{
+			str.Format( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_REQUEST), 0, nCost ); //기존에 신청된 %d페냐에서 추가로 %d페냐를 신청하겠습니까?
+		}
+		else
+		{
+			str.Format( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_REQUEST), m_dwBackupGold, nCost-m_dwBackupGold ); //기존에 신청된 %d페냐에서 추가로 %d페냐를 신청하겠습니까?
+		}
+
+		pMsg->SetValue( str, nCost );
+			
+		
 	}
 	else if( nID == WIDC_CLOSE )
 	{
@@ -371,12 +310,13 @@ BOOL CWndGuildCombat1to1OfferMessageBox::OnChildNotify( UINT message, UINT nID, 
 				CWndGuildCombat1to1Offer* pWndGuildCombat1to1Offer = (CWndGuildCombat1to1Offer*)g_WndMng.GetWndBase(APP_GUILDCOMBAT_1TO1_OFFER);
 				if(pWndGuildCombat1to1Offer)
 				{
-					if(pWndGuildCombat1to1Offer->m_nCombatType == 0)
+					using CombatType = CWndGuildCombat1to1Offer::CombatType;
+					if(pWndGuildCombat1to1Offer->m_nCombatType == CombatType::GCGuild)
 					{
 						g_DPlay.SendGuildCombatApp( m_nCost );
 						SAFE_DELETE(g_WndMng.m_pWndGuildCombatOffer);
 					}
-					else if(pWndGuildCombat1to1Offer->m_nCombatType == 1)
+					else if(pWndGuildCombat1to1Offer->m_nCombatType == CombatType::GC1to1)
 					{
 						g_DPlay.SendGC1to1Tender( m_nCost );
 						SAFE_DELETE(g_WndMng.m_pWndGuildCombat1to1Offer);
