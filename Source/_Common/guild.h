@@ -298,7 +298,6 @@ public:
 	bool SetLogo(DWORD dwLogo);
 	void	SetNotice( const char* szNotice );
 
-	void	MeritResultMsg( CONTRIBUTION_RESULT cbResult );
 	void	SetContribution( CONTRIBUTION_CHANGED_INFO & info );
 	BOOL	AddContribution( DWORD dwPxp, DWORD dwPenya, u_long idPlayer );
 	CONTRIBUTION_RESULT CanContribute( DWORD dwPxp, DWORD dwPenya, u_long idPlayer );

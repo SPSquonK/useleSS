@@ -19,102 +19,50 @@
   CtrlId : WIDC_BUTTON2 - Button
 ****************************************************/
 
-CWndGuildMerit::CWndGuildMerit() 
-{ 
-	m_nPenya = 0;
-	m_nItem = 0;
-} 
-CWndGuildMerit::~CWndGuildMerit() 
-{ 
-	m_nPenya = 0;
-	m_nItem = 0;
-} 
-void CWndGuildMerit::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 void CWndGuildMerit::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 	LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_LISTBOX1 );
-	
 	m_wndctrlMerit.Create( WLVS_ICON | WBS_NODRAWFRAME, lpWndCtrl->rect, this, 100 );
-	
 	
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 
 	TCHAR szNumber[ 64 ];
-	CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
-	
+	CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT1);
 	_itot( 0, szNumber, 10 );
 	pWndEdit->SetString( szNumber );
 	pWndEdit->SetFocus();
 } 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildMerit::Initialize( CWndBase* pWndParent, DWORD ) 
-{ 
-	return CWndNeuz::InitDialog( APP_GUILD_MERIT1, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-BOOL CWndGuildMerit::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildMerit::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildMerit::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildMerit::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 
-/*
-TID_GAME_GUILDNEEDGOLD 길드창고에 페냐가 부족하여 망토를 생성할 수 없습니다. 
-TID_GAME_GUILDMERITSTUFF 길드에 페냐와 경험치를 공헌했습니다. 
-TID_GAME_GUILDMERITMAXLEVEL 길드의 레벨이 상승하지 않는 단계이므로 공헌이 되지 않습니다. 
-TID_GAME_GUILDMERITLOWPXP PXP가 100% 되지 않아 공헌도가 올라지 않았습니다. 
-TID_GAME_GUILDMERITMAXGOLD 공헌할 수 있는 최대를 넘었습니다. 
-TID_GAME_GUILDMAXBANKGOLD 길드창고에 42억페냐가 넘는 금액이 있습니다. 
-TID_GAME_GUILDNOTENGGOLD 인벤토리에 가진 페냐가 부족하여 창고에 페냐를 넣지 못했습니다. 
-TID_GAME_GUILDMERITSYSERROR 시스템 영향으로 공헌이 되지않았습니다.  
-*/
-// 에러 메시지들.
-void CGuild::MeritResultMsg( CONTRIBUTION_RESULT cbResult )
-{
-	switch( cbResult )
-	{
-	case CONTRIBUTION_OK:	// 공헌 성공 - 이건 서버에서 검사해보고 됐을때 보내주자.
-		g_WndMng.PutString( prj.GetText( TID_GAME_GUILDMERITSTUFF ), NULL, prj.GetTextColor( TID_GAME_GUILDMERITSTUFF ) );
-		break;
-	case CONTRIBUTION_FAIL_MAXLEVEL:	// 길드가 이미 최고레벨에 올랐을때.
-		g_WndMng.PutString( prj.GetText( TID_GAME_GUILDMERITMAXLEVEL ), NULL, prj.GetTextColor( TID_GAME_GUILDMERITMAXLEVEL ) );
-		break;
-//	case CONTRIBUTION_FAIL_GUILD_OVERFLOW_PXP:	// 길드PXP가 한계치(42억)를 넘었을때.
-//		g_WndMng.PutString( prj.GetText( TID_GAME_GUILDMERITMAXLEVEL ), NULL, prj.GetTextColor( TID_GAME_GUILDMERITMAXLEVEL ) );
-//		break;
-	case CONTRIBUTION_FAIL_GUILD_OVERFLOW_PENYA:// 길드페냐가 한계치(42억)를 넘었을때.
-		g_WndMng.PutString( prj.GetText( TID_GAME_GUILDMAXBANKGOLD ), NULL, prj.GetTextColor( TID_GAME_GUILDMAXBANKGOLD ) );
-		break;
-	case CONTRIBUTION_FAIL_INVALID_CONDITION:	// 서버이상으로 공헌이 실패.
-		g_WndMng.PutString( prj.GetText( TID_GAME_GUILDMERITSYSERROR ), NULL, prj.GetTextColor( TID_GAME_GUILDMERITSYSERROR ) );
-		break;
-//	case CONTRIBUTION_FAIL_OVERFLOW_PXP:	// 개인PXP가 한계치(42억)를 넘었을때.
-//		g_WndMng.PutString( prj.GetText( TID_GAME_GUILDMERITMAXLEVEL ), NULL, prj.GetTextColor( TID_GAME_GUILDMERITMAXLEVEL ) );
-//		break;
-	case CONTRIBUTION_FAIL_OVERFLOW_PENYA:	// 개인페냐가 한계치(42억)를 넘었을때.
-		g_WndMng.PutString( prj.GetText( TID_GAME_GUILDMERITMAXGOLD ), NULL, prj.GetTextColor( TID_GAME_GUILDMERITMAXGOLD ) );
-		break;
+BOOL CWndGuildMerit::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_GUILD_MERIT1, pWndParent, 0, CPoint(0, 0));
+}
+
+void CWndGuildMerit::MeritResultMsg(CONTRIBUTION_RESULT cbResult) {
+	switch (cbResult) {
+		case CONTRIBUTION_OK:
+			g_WndMng.PutString(TID_GAME_GUILDMERITSTUFF);
+			break;
+		case CONTRIBUTION_FAIL_MAXLEVEL:
+			g_WndMng.PutString(TID_GAME_GUILDMERITMAXLEVEL);
+			break;
+		case CONTRIBUTION_FAIL_GUILD_OVERFLOW_PENYA:
+			g_WndMng.PutString(TID_GAME_GUILDMAXBANKGOLD);
+			break;
+		case CONTRIBUTION_FAIL_INVALID_CONDITION:
+			g_WndMng.PutString(TID_GAME_GUILDMERITSYSERROR);
+			break;
+		case CONTRIBUTION_FAIL_OVERFLOW_PENYA:
+			g_WndMng.PutString(TID_GAME_GUILDMERITMAXGOLD);
+			break;
 	}
 }
 
-
 BOOL CWndGuildMerit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
-	if ( message == EN_RETURN )
-	{
+	if (message == EN_RETURN) {
 		nID = WIDC_BUTTON1;
 	}
 
@@ -122,33 +70,22 @@ BOOL CWndGuildMerit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	{
 	case WIDC_CHECK2:	
 		{
-			CWndButton* pChk = (CWndButton*)GetDlgItem( WIDC_CHECK2 );
-			
-			m_nItem = pChk->GetCheck();
+			m_hasItemContribution = GetDlgItem<CWndButton>(WIDC_CHECK2)->GetCheck();
 
-			if( m_nItem )
-			{
-				if( g_pPlayer )
-				{
-					CItemElem* pItemElem = NULL;
+			if (m_hasItemContribution && g_pPlayer) {
+				CItemElem* pItemElem = NULL;
 					
-					for( int i=0; i<g_pPlayer->m_Inventory.GetMax() ; i++ )
-					{
-						pItemElem = g_pPlayer->m_Inventory.GetAtId(i);
+				for (int i = 0; i < g_pPlayer->m_Inventory.GetSize(); i++) {
+					CItemElem * pItemElem = g_pPlayer->m_Inventory.GetAtId(i);
 
-						if( pItemElem == NULL )
-							continue;
-						
-						if( pItemElem->GetProp()->dwItemKind3 == IK3_GEM )
-						{
-							pItemElem->SetExtra( pItemElem->m_nItemNum );
-							m_wndctrlMerit.AddItem(pItemElem);
-						}
+					if (!pItemElem) continue;
+
+					if (pItemElem->GetProp()->dwItemKind3 == IK3_GEM) {
+						pItemElem->SetExtra(pItemElem->m_nItemNum);
+						m_wndctrlMerit.AddItem(pItemElem);
 					}
 				}
-			}
-			else
-			{
+			} else {
 				m_wndctrlMerit.RestoreItem();
 				m_wndctrlMerit.ClearItem();
 			}
@@ -157,37 +94,30 @@ BOOL CWndGuildMerit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 	case WIDC_BUTTON1:		// OK
 		{
-			CWndEdit *pWndEdit = (CWndEdit *)GetDlgItem( WIDC_EDIT1 );
+			CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT1);
 			m_nPenya = atoi( pWndEdit->GetString() );		// 문자열을 숫자로 변환.
-			if( m_nPenya < 0 )
-				m_nPenya = 0;
-			CGuild* pGuild = g_pPlayer->GetGuild();
-			if( pGuild )
-			{
+			m_nPenya = std::max(0, m_nPenya);
+			
+			if (CGuild * pGuild = g_pPlayer->GetGuild()) {
 				// 페냐가 공헌가능한지 검사.
 				if( m_nPenya )
 				{
 					CONTRIBUTION_RESULT cbResult = pGuild->CanContribute( 0, (DWORD)m_nPenya, g_pPlayer->m_idPlayer );
 					if( cbResult == CONTRIBUTION_OK )	// 페냐 공헌가능.
 						g_DPlay.SendGuildContribution( 0, m_nPenya );
-					pGuild->MeritResultMsg( cbResult );	// 안내메시지.
+					MeritResultMsg( cbResult );	// 안내메시지.
 				}
 				
-				//*
 				// 공헌아이템
-				if( m_nItem )
+				if(m_hasItemContribution)
 				{
 					CONTRIBUTION_RESULT cbResult = pGuild->CanContribute( m_wndctrlMerit.GetTotalCount(), 0, g_pPlayer->m_idPlayer );
 					if( cbResult == CONTRIBUTION_OK )	// 아이템 공헌가능
 						g_DPlay.SendGuildContribution( 0, 0,  1);
 
-					pGuild->MeritResultMsg( cbResult );	// 안내메시지.
+					MeritResultMsg( cbResult );	// 안내메시지.
 				}
-				
-				/**/
-
-
-			} // pGuild
+			}
 			Destroy();
 		}
 		break;
@@ -201,6 +131,7 @@ BOOL CWndGuildMerit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
+///////////////////////////////////////////////////////////////////////////////
 
 CTextureMng	CWndGuildMeritCtrl::m_textureMng;
 CWndGuildMeritCtrl::CWndGuildMeritCtrl()
