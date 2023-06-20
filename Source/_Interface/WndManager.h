@@ -88,6 +88,8 @@ class CWndReSkillWarning;
 class CWndPost;
 class CWndTradeGold;
 
+class CWndGuildCombat1to1Offer; class CWndGuildCombat1to1Selection;
+
 #define REG_VERSION 1
 
 #include "WndRankCmn.h"

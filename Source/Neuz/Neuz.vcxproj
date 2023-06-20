@@ -102,6 +102,7 @@
     <ClCompile Include="..\_Common\ItemMorph.cpp" />
     <ClCompile Include="..\_Common\ProjectJob.cpp" />
     <ClCompile Include="..\_Common\SkillsOfMover.cpp" />
+    <ClCompile Include="..\_Interface\PlayerLineup.cpp" />
     <ClCompile Include="..\_Interface\UserTaskBar.cpp" />
     <ClCompile Include="..\_Interface\WndBuffStatus.cpp" />
     <ClCompile Include="..\_Interface\WndCharacter.cpp" />
@@ -671,6 +672,7 @@
     <ClInclude Include="..\_Common\SkillsOfMover.h" />
     <ClInclude Include="..\_Common\UpdateItem.h" />
     <ClInclude Include="..\_Common\Vector3Helper.h" />
+    <ClInclude Include="..\_Interface\PlayerLineup.h" />
     <ClInclude Include="..\_Interface\UserTaskBar.h" />
     <ClInclude Include="..\_Interface\WndBuffStatus.h" />
     <ClInclude Include="..\_Interface\WndCharacter.h" />

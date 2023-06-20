@@ -997,6 +997,9 @@
     <ClCompile Include="..\_Interface\WndPost.cpp">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Interface\PlayerLineup.cpp">
+      <Filter>Source Files\_Interface\Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">
@@ -1848,6 +1851,9 @@
     </ClInclude>
     <ClInclude Include="..\_Interface\WndPost.h">
       <Filter>Source Files\_Interface\WndApplet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Interface\PlayerLineup.h">
+      <Filter>Source Files\_Interface\Misc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

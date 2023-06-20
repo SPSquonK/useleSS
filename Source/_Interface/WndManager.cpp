@@ -33,6 +33,7 @@
 #include "post.h"
 #include "wndbagex.h"
 #include "sqktd/algorithm.h"
+#include "WndGuildCombat1to1.h"
 
 #include "couplehelper.h"
 #include "FuncTextCmd.h"
