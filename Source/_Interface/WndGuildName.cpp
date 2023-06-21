@@ -48,6 +48,43 @@ BOOL CWndGuildName::Initialize(CWndBase * pWndParent, DWORD) {
 	return CWndNeuz::InitDialog(APP_GUILDNAME, pWndParent, 0, CPoint(0, 0));
 }
 
+std::expected<CString, CWndGuildName::GuildNameError> CWndGuildName::CheckGuildName(LPCTSTR szName) {
+	CString strGuild = szName;
+	strGuild.TrimLeft();
+	strGuild.TrimRight();
+
+	const int nLength = strGuild.GetLength();
+	if (nLength < 3) return std::unexpected(GuildNameError::TooShort);
+	if (nLength > 16) return std::unexpected(GuildNameError::TooLong);
+
+	const CHAR c = strGuild.GetAt(0);
+	if (isdigit2(c) && !IsDBCSLeadByte(strGuild.GetAt(0))) {
+		g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0012)));
+		return std::unexpected(GuildNameError::DigitLead);
+	}
+
+	for (int i = 0; i < strGuild.GetLength(); i++) {
+		const CHAR c = strGuild.GetAt(i);
+		// 숫자나 알파벳이 아닐 경우는 의심하자.
+		if (IsDBCSLeadByte(c) && ::GetLanguage() == LANG_KOR) {
+			const CHAR c2 = strGuild.GetAt(++i);
+			const WORD word = ((c << 8) & 0xff00) | (c2 & 0x00ff);
+			if (IsHangul(word) == FALSE) {
+				return std::unexpected(GuildNameError::BadEUCKRSymbol);
+			}
+		} else if (!IsCyrillic(c) && (!isalnum(c) || iscntrl(c))) {
+			// 특수 문자도 아니다 (즉 콘트롤 또는 !@#$%^&**()... 문자임)
+			return std::unexpected(GuildNameError::BadSymbol);
+		}
+	}
+
+	if (prj.nameValider.IsNotAllowedName(szName)) {
+		return std::unexpected(GuildNameError::UnallowedName);
+	}
+
+	return strGuild;
+}
+
 BOOL CWndGuildName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_OK )
@@ -56,65 +93,39 @@ BOOL CWndGuildName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		LPCTSTR szName = pWndEdit->GetString();
 
 		// 이곳에다 szName을 서버로 보내는 코드를 넣으시오.
-		CString strGuild = szName;
-		strGuild.TrimLeft();
-		strGuild.TrimRight();
-		CHAR c = strGuild.GetAt( 0 );
-		
-		int nLength = strGuild.GetLength();
-#ifdef __RULE_0516
-		if( nLength < 6 || nLength > 24 )
-#else	// __RULE_0516
-		if( nLength < 3 || nLength > 32 )
-#endif	// __RULE_0516
-		{
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0011) ) );
-			return TRUE;
-		}
-		else
-		if( isdigit2( c ) && !IsDBCSLeadByte( strGuild.GetAt( 0 ) ) )
-		{
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0012) ) );
-			return TRUE;
-		}
-		else
-		for( int i = 0; i < strGuild.GetLength(); i++ )
-		{
-			c = strGuild.GetAt( i );
-			// 숫자나 알파벳이 아닐 경우는 의심하자.
-			if( IsDBCSLeadByte( c ) == TRUE ) 
-			{
-				CHAR c2 = strGuild.GetAt( ++i );
-				WORD word = ( ( c << 8 ) & 0xff00 ) | ( c2 & 0x00ff );
-				if( ::GetLanguage() == LANG_KOR )
-				{
-					if( IsHangul( word ) == FALSE ) 
-					{
-						g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0014) ) );
-						return TRUE;
-					}
-				}
-			}
+		const auto guildName = CheckGuildName(szName);
+
+		if (guildName.has_value()) {
+			if (m_nId == 0xff)
+				g_DPlay.SendGuildSetName(guildName->GetString());
 			else
-			if( !IsCyrillic( c ) && ( isalnum( c ) == FALSE || iscntrl( c ) )  )
-			{
-				// 특수 문자도 아니다 (즉 콘트롤 또는 !@#$%^&**()... 문자임)
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0013) ) );
-				return TRUE;
-			}
-		}
+				g_DPlay.SendQuerySetGuildName(guildName->GetString(), m_nId);
 
-		if (prj.nameValider.IsNotAllowedName(szName)) {
-			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0020)));
+			Destroy();
+		} else {
+			const GuildNameError error = guildName.error();
+
+			switch (error) {
+				case GuildNameError::TooShort:
+				case GuildNameError::TooLong:
+					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0011)));
+					break;
+				case GuildNameError::DigitLead:
+					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0012)));
+					break;
+				case GuildNameError::BadEUCKRSymbol:
+					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0014)));
+					break;
+				case GuildNameError::BadSymbol:
+					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0013)));
+					break;
+				case GuildNameError::UnallowedName:
+					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0020)));
+					break;
+			}
+
 			return TRUE;
 		}
-
-		if( m_nId == 0xff )
-			g_DPlay.SendGuildSetName( strGuild.GetString() );
-		else
-			g_DPlay.SendQuerySetGuildName( (LPCSTR)strGuild, m_nId );
-
-		Destroy();
 	}
 	else if( nID == WIDC_CANCEL || nID == WTBID_CLOSE )
 	{
