@@ -796,7 +796,6 @@ BOOL CSkyBox::CheckSun(LPDIRECT3DDEVICE9 pd3dDevice)
 {
 	D3DXMATRIX mat,matProj;
 	pd3dDevice->GetTransform( D3DTS_PROJECTION, &matProj );
-	D3DXVECTOR3 m_vIntersect;
 	D3DXVECTOR3 vSun( 0.0f,0.0f,300.0f);
 	D3DXVECTOR3 vPos(m_pWorld->m_pCamera->m_vPos);
 
@@ -805,10 +804,9 @@ BOOL CSkyBox::CheckSun(LPDIRECT3DDEVICE9 pd3dDevice)
 	vSun+=vPos;
 	D3DXMATRIX matView = D3DXR::LookAtLH010(vPos, vSun);
 
-	CRect rect(0,0,800,600);
+	const CRect rect(0,0,800,600);
+	const CPoint ptCursor(rect.CenterPoint());
 
-	CPoint ptCursor((rect.right-rect.left)/2,(rect.bottom-rect.top)/2);
-//return TRUE;
 	if( m_pWorld->IsPickTerrain( rect, ptCursor, &matProj, &matView ) )
 		return FALSE;
 	if( m_pWorld->PickObject_Fast( rect, ptCursor, &matProj, &matView, 0xffffffff, NULL, TRUE ) )

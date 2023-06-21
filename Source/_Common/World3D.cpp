@@ -2175,63 +2175,6 @@ BOOL CWorld::IsPickTerrain( RECT rect, POINT point, D3DXMATRIX* pmatProj, D3DXMA
 	return FALSE;
 }
 
-// 주어진 레이와 충돌하는 바닥을 체크.
-FLOAT CWorld::IntersectRayTerrain( const D3DXVECTOR3 &vPickRayOrig, const D3DXVECTOR3 &vPickRayDir )
-{
-	if( m_pCamera == NULL )
-		return FALSE;
-	D3DXVECTOR3 vector;
-	D3DXVECTOR3 vPickRayAdd ;
-	D3DXVECTOR3 vPickRayCur;
-	D3DXVECTOR3 vLength;
-	D3DXVECTOR3 v1, v2, v3, v4;
-	D3DXVECTOR3 _v1, _v2, _v3, _v4;
-	BOOL bTriangle1 = FALSE;
-	D3DXVECTOR3 vecIntersect;
-	FLOAT fDist;               // Ray-Intersection Parameter Distance
-	FLOAT fNearDist = m_fFarPlane;                    
-	FLOAT fFarPlaneSq = m_fFarPlane * m_fFarPlane;
-
-	vPickRayAdd = vPickRayDir;
-	vPickRayAdd.x *= (FLOAT)MPU * 2;
-	vPickRayAdd.z *= (FLOAT)MPU * 2;
-	vPickRayAdd.y *= (FLOAT)MPU * 2;
-	vPickRayCur = vPickRayOrig;
-//	vPickRayAdd = vPickRayDir;// * MPU;
-	do 
-	{
-		vPickRayCur += vPickRayAdd;
-		if( VecInWorld( vPickRayCur ) )
-		{
-			CLandscape* pLand = GetLandscape( vPickRayCur );
-			if( pLand  && pLand->isVisibile() )
-			{
-				int tempx = (int)( vPickRayCur.x );//( (int)vPickRayCur.x / MPU ) * MPU;//(pLand->m_nWorldX+x*PATCH_SIZE+px)*MPU;
-				int tempy = (int)( vPickRayCur.z );//( (int)vPickRayCur.z / MPU ) * MPU;//(pLand->m_nWorldY+y*PATCH_SIZE+py)*MPU;
-				v1=D3DXVECTOR3( (FLOAT)( tempx			), GetLandHeight( ( FLOAT ) tempx		  , ( FLOAT ) tempy		     ), (FLOAT)( tempy       ) );
-				v2=D3DXVECTOR3( (FLOAT)( tempx + m_iMPU ), GetLandHeight( ( FLOAT ) tempx + m_iMPU, ( FLOAT ) tempy		     ), (FLOAT)( tempy       ) );
-				v3=D3DXVECTOR3( (FLOAT)( tempx			), GetLandHeight( ( FLOAT ) tempx         , ( FLOAT ) tempy + m_iMPU ), (FLOAT)( tempy + m_iMPU ) );
-				v4=D3DXVECTOR3( (FLOAT)( tempx + m_iMPU ), GetLandHeight( ( FLOAT ) tempx + m_iMPU, ( FLOAT ) tempy + m_iMPU ), (FLOAT)( tempy + m_iMPU ) );
-				if( IntersectTriangle( v1, v2, v3, vPickRayOrig, vPickRayDir, &vecIntersect, &fDist ) ) 
-				{
-					if( fDist < fNearDist ) { fNearDist = fDist; bTriangle1 = TRUE; }
-				}
-				else
-					if( IntersectTriangle( v2, v4, v3, vPickRayOrig, vPickRayDir, &vecIntersect, &fDist ) ) 
-					{
-						if( fDist < fNearDist ) {	fNearDist = fDist; bTriangle1 = TRUE; }
-					}
-			}
-		}
-		vLength = vPickRayOrig - vPickRayCur;
-	} while( D3DXVec3LengthSq( &vLength ) < fFarPlaneSq );	// Sq버전으로 바꿈. -xuzhu-
-	if( bTriangle1 )
-		return fNearDist;
-	return 0;
-}
-
-
-
 //
 // 필드의 클릭한 지점을 얻기
 // [in] point는 클라이언트 화면의 좌표 
