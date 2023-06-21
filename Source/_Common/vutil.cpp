@@ -578,7 +578,7 @@ BOOL SaveBMP( LPCTSTR lpszFileName, LPBYTE lpData, SIZE size )
 	return FALSE; 
 }
 
-void GetPickRay(CRect rect,POINT ptCursor,const D3DXMATRIX* pmatProj,const D3DXMATRIX* pmatView,D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir)
+std::pair<D3DXVECTOR3, D3DXVECTOR3> GetPickRay(CRect rect,POINT ptCursor,const D3DXMATRIX* pmatProj,const D3DXMATRIX* pmatView)
 {
 	D3DXVECTOR3 v;
 	v.x =  ( ( ( 2.0f * ptCursor.x ) / rect.Width()  ) - 1 ) / pmatProj->_11;
@@ -590,12 +590,18 @@ void GetPickRay(CRect rect,POINT ptCursor,const D3DXMATRIX* pmatProj,const D3DXM
 	D3DXMatrixInverse( &m, NULL, pmatView );
 
 	// Transform the screen space pick ray into 3D space
-	pvPickRayDir->x  = v.x*m._11 + v.y*m._21 + v.z*m._31;
-	pvPickRayDir->y  = v.x*m._12 + v.y*m._22 + v.z*m._32;
-	pvPickRayDir->z  = v.x*m._13 + v.y*m._23 + v.z*m._33;
-	pvPickRayOrig->x = m._41;
-	pvPickRayOrig->y = m._42;
-	pvPickRayOrig->z = m._43;
+	std::pair<D3DXVECTOR3, D3DXVECTOR3> result;
+	D3DXVECTOR3 & pvPickRayDir = result.second;
+	D3DXVECTOR3 & pvPickRayOrig = result.first;
+
+	pvPickRayDir.x  = v.x*m._11 + v.y*m._21 + v.z*m._31;
+	pvPickRayDir.y  = v.x*m._12 + v.y*m._22 + v.z*m._32;
+	pvPickRayDir.z  = v.x*m._13 + v.y*m._23 + v.z*m._33;
+	pvPickRayOrig.x = m._41;
+	pvPickRayOrig.y = m._42;
+	pvPickRayOrig.z = m._43;
+
+	return result;
 }
 
 void GetRayEnd(D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir,D3DXVECTOR3* pvPickRayEnd)

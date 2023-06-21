@@ -84,7 +84,7 @@ BOOL LoadImage( LPCTSTR lpszFileName, LPIMAGE lppImage );//LPBYTE* lppData, SIZE
 BOOL LoadBMP( LPCTSTR lpszFileName, LPIMAGE lppImage );
 BOOL LoadTGA( LPCTSTR lpszFileName, LPIMAGE lppImage );
 BOOL SaveBMP( LPCTSTR lpszFileName, LPBYTE lpData, SIZE size );
-void GetPickRay( CRect rect,POINT ptCursor,const D3DXMATRIX* pmatProj,const D3DXMATRIX* pmatView,D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir );
+std::pair<D3DXVECTOR3, D3DXVECTOR3> GetPickRay(CRect rect, POINT ptCursor, const D3DXMATRIX * pmatProj, const D3DXMATRIX * pmatView);
 void GetRayEnd( D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir,D3DXVECTOR3* pvPickRayEnd );
 
 //-----------------------------------------------------------------------------

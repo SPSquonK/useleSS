@@ -1986,8 +1986,6 @@ BOOL CWorld::ClientPointToVector( D3DXVECTOR3 *pOut, RECT rect, POINT point, D3D
 {
 	if( m_pCamera == NULL )
 		return FALSE;
-	D3DXVECTOR3 vPickRayOrig;
-	D3DXVECTOR3 vPickRayDir ;
 	D3DXVECTOR3 vPickRayAdd ;
 	D3DXVECTOR3 vPickRayCur;
 	D3DXVECTOR3 vLength;
@@ -2001,7 +1999,7 @@ BOOL CWorld::ClientPointToVector( D3DXVECTOR3 *pOut, RECT rect, POINT point, D3D
 	D3DXVECTOR3 vPickObj = D3DXVECTOR3( 0, 0, 0 );	// 오브젝트에 피킹된좌표.
 
 
-	GetPickRay( rect, point, pmatProj, pmatView, &vPickRayOrig, &vPickRayDir );
+	auto [vPickRayOrig, vPickRayDir] = GetPickRay( rect, point, pmatProj, pmatView );
 
 	if( bObject )
 	{
@@ -2015,9 +2013,8 @@ BOOL CWorld::ClientPointToVector( D3DXVECTOR3 *pOut, RECT rect, POINT point, D3D
 	}
 	
 
-	vPickRayDir.x *= (FLOAT)m_iMPU * 2;
-	vPickRayDir.z *= (FLOAT)m_iMPU * 2;
-	vPickRayDir.y *= (FLOAT)m_iMPU * 2;
+	vPickRayDir *= (FLOAT)m_iMPU * 2;
+
 	vPickRayCur = vPickRayOrig;
 	vPickRayAdd = vPickRayDir;// * MPU;
 
@@ -2129,24 +2126,19 @@ BOOL CWorld::IsPickTerrain( RECT rect, POINT point, D3DXMATRIX* pmatProj, D3DXMA
 {
 	if( m_pCamera == NULL )
 		return FALSE;
-	D3DXVECTOR3 vector;
-	D3DXVECTOR3 vPickRayOrig;
-	D3DXVECTOR3 vPickRayDir ;
 	D3DXVECTOR3 vPickRayAdd ;
 	D3DXVECTOR3 vPickRayCur;
 	D3DXVECTOR3 vLength;
 	D3DXVECTOR3 v1, v2, v3, v4;
-	D3DXVECTOR3 _v1, _v2, _v3, _v4;
 	BOOL bTriangle1 = FALSE;
 	D3DXVECTOR3 vecIntersect;
 	FLOAT fDist;               // Ray-Intersection Parameter Distance
 	FLOAT fNearDist = m_fFarPlane;                    
 	FLOAT fFarPlaneSq = m_fFarPlane * m_fFarPlane;
 
-	GetPickRay( rect, point, pmatProj, pmatView, &vPickRayOrig, &vPickRayDir );
-	vPickRayDir.x *= (FLOAT)MPU * 2;
-	vPickRayDir.z *= (FLOAT)MPU * 2;
-	vPickRayDir.y *= (FLOAT)MPU * 2;
+	auto [vPickRayOrig, vPickRayDir] = GetPickRay( rect, point, pmatProj, pmatView );
+	vPickRayDir *= (FLOAT)MPU * 2;
+
 	vPickRayCur = vPickRayOrig;
 	vPickRayAdd = vPickRayDir;// * MPU;
 	do 
@@ -2250,14 +2242,12 @@ CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, const D3DXMATRIX* pma
 	if( m_pCamera == NULL )
 		return FALSE;
 
-	D3DXVECTOR3 vPickRayOrig;
-	D3DXVECTOR3 vPickRayDir ;
 	D3DXVECTOR3 vPickRayDir2;
 	D3DXVECTOR3 vIntersect  ;
 	FLOAT fDist;               // Ray-Intersection Parameter Distance
 	FLOAT fNearDist = m_fFarPlane;      
 
-	GetPickRay( rectClient, ptClient, pmatProj, pmatView, &vPickRayOrig, &vPickRayDir );
+	const auto [vPickRayOrig, vPickRayDir] = GetPickRay( rectClient, ptClient, pmatProj, pmatView );
 	vPickRayDir2 = vPickRayDir;
 	vPickRayDir2.y = 0.0f;
 	D3DXVec3Normalize( &vPickRayDir2, &vPickRayDir2 );
@@ -2304,25 +2294,12 @@ CObj* CWorld::PickObject_Fast( RECT rectClient, POINT ptClient, const D3DXMATRIX
 	if( m_pCamera == NULL )
 		return NULL;
 	
-	D3DXVECTOR3 vPickRayOrig;
-	D3DXVECTOR3 vPickRayDir ;
-	D3DXVECTOR3 vPickRayDir2;
-	D3DXVECTOR3 vPickRayAdd ;
-	D3DXVECTOR3 vPickRayCur ;
 	D3DXVECTOR3 vIntersect  ;
-	D3DXVECTOR3 vLength;
-	D3DXVECTOR3 v1, v2, v3, v4;
-	BOOL bTriangle1 = FALSE;
-	D3DXVECTOR3 vecIntersect;
 	FLOAT fDist;               // Ray-Intersection Parameter Distance
 	FLOAT fNearDist = m_fFarPlane;      
-	CObj* pSelectObj = NULL;
 	
-	GetPickRay( rectClient, ptClient, pmatProj, pmatView, &vPickRayOrig, &vPickRayDir );
-	vPickRayDir2 = vPickRayDir;
-	vPickRayDir2.y = 0.0f;
-	D3DXVec3Normalize( &vPickRayDir2, &vPickRayDir2 );
-	int nCount = 0;
+	const auto [vPickRayOrig, vPickRayDir] = GetPickRay( rectClient, ptClient, pmatProj, pmatView );
+
 	
 	boost::container::small_vector<CObj *, 5000> pNonCullObjs;
 
