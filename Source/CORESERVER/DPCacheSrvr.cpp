@@ -1227,50 +1227,32 @@ void CDPCacheSrvr::OnGuildAuthority(CAr & ar, DPID, DPID dpidUser, u_long) {
 
 void CDPCacheSrvr::OnGuildSetName( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
 {
-	u_long _uidPlayer, _uGuildId;
 	char szName[MAX_G_NAME];
-	
-	ar >> _uidPlayer >> _uGuildId;
-	ar.ReadString( szName, MAX_G_NAME );
+	ar >> szName;
 
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );	
 
 	CPlayer* pPlayer = g_PlayerMng.GetPlayerBySerial( dpidUser );	
-	if( pPlayer == NULL )
-		return;
+	if (!pPlayer) return;
 
 	CGuild* pGuild = g_GuildMng.GetGuild( pPlayer->m_idGuild );
-	if( pGuild && pGuild->IsMaster( pPlayer->uKey ) )
-	{
-		CString str1, str2;
-		str1 = pGuild->m_szGuild;
-		str2	= "";
-//		str2 = pPlayer->lpszPlayer;
-		if( str1 == str2 )
-		{
-			if( g_GuildMng.SetName( pGuild, szName ) )
-			{
-				g_dpCoreSrvr.SendGuildSetName( pPlayer->m_idGuild, pGuild->m_szGuild );
-				g_dpDatabaseClient.SendGuildSetName( pPlayer->m_idGuild, pGuild->m_szGuild );
-				SendGuildSetName( pPlayer->m_idGuild, pGuild->m_szGuild );
-			}
-			else
-			{
-				// duplicated
-				SendGuildError( pPlayer, 1 );
-			}
-		}
-		else
-		{
-			//
-		}
+	if (!pGuild || !pGuild->IsMaster(pPlayer->uKey)) {
+		SendDefinedText(TID_GAME_COMDELNOTKINGPIN, pPlayer->dpidCache, pPlayer->dpidUser, "");
+		return;
 	}
-	else
-	{
-		// is not master
-		SendDefinedText( TID_GAME_COMDELNOTKINGPIN, pPlayer->dpidCache, pPlayer->dpidUser, "" );
+
+	LPCTSTR str1 = pGuild->m_szGuild;
+	if (str1[0] != '\0') return;
+
+	if (!g_GuildMng.SetName(pGuild, szName)) {
+		SendGuildError(pPlayer, 1);
+		return;
 	}
+
+	g_dpCoreSrvr.SendGuildSetName( pPlayer->m_idGuild, pGuild->m_szGuild );
+	g_dpDatabaseClient.SendGuildSetName( pPlayer->m_idGuild, pGuild->m_szGuild );
+	SendGuildSetName( pPlayer->m_idGuild, pGuild->m_szGuild );
 }
 
 void CDPCacheSrvr::OnGuildPenya( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )

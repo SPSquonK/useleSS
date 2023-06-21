@@ -14,62 +14,40 @@
   CtrlId : WIDC_CANCEL - Button
 ****************************************************/
 
-CWndGuildName::CWndGuildName() 
-{ 
-	m_nId	= 0xff;
-} 
-CWndGuildName::~CWndGuildName() 
-{ 
-} 
+CWndGuildName::CWndGuildName() {
+	m_nId = 0xff;
+}
 
-void CWndGuildName::OnDraw( C2DRender* p2DRender ) 
-{ 
+void CWndGuildName::OnDraw(C2DRender * p2DRender) {
 #ifdef __S_SERVER_UNIFY
-	if( g_WndMng.m_bAllAction == FALSE )
-	{
-		MoveParentCenter();		
+	if (g_WndMng.m_bAllAction == FALSE) {
+		MoveParentCenter();
 	}
 #endif // __S_SERVER_UNIFY
-} 
+}
+
 void CWndGuildName::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 	CGuild* pGuild = g_pPlayer->GetGuild();
-	if( pGuild )
-	{
-		CWndEdit *pWndEdit = (CWndEdit *)GetDlgItem( WIDC_EDIT1 );
-		pWndEdit->SetString( pGuild->m_szGuild );		// 디폴트 이름을 에디트 박스에 입력함.
-	}
-	else
-	{
+	if (!pGuild) {
 		Destroy();
+		return;
 	}
+
+	CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT1);
+	pWndEdit->SetString( pGuild->m_szGuild );		// 디폴트 이름을 에디트 박스에 입력함.
+
 
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildName::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_GUILDNAME, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+BOOL CWndGuildName::Initialize(CWndBase * pWndParent, DWORD) {
+	return CWndNeuz::InitDialog(APP_GUILDNAME, pWndParent, 0, CPoint(0, 0));
+}
 
-BOOL CWndGuildName::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildName::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildName::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildName::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndGuildName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_OK )
@@ -91,14 +69,12 @@ BOOL CWndGuildName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 #endif	// __RULE_0516
 		{
 			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0011) ) );
-			//				g_WndMng.OpenMessageBox( _T( "명칭에 3글자 이상, 16글자 이하로 입력 입력하십시오." ) );
 			return TRUE;
 		}
 		else
 		if( isdigit2( c ) && !IsDBCSLeadByte( strGuild.GetAt( 0 ) ) )
 		{
 			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0012) ) );
-			//				g_WndMng.OpenMessageBox( _T( "명칭에 첫글자를 숫자로 사용할 수 없습니다." ) );
 			return TRUE;
 		}
 		else
@@ -134,7 +110,7 @@ BOOL CWndGuildName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		}
 
 		if( m_nId == 0xff )
-			g_DPlay.SendGuildSetName( (LPCSTR)strGuild );
+			g_DPlay.SendGuildSetName( strGuild.GetString() );
 		else
 			g_DPlay.SendQuerySetGuildName( (LPCSTR)strGuild, m_nId );
 
@@ -164,12 +140,7 @@ CWndGuildNickName::CWndGuildNickName()
 { 
 	m_idPlayer = 0;
 } 
-CWndGuildNickName::~CWndGuildNickName() 
-{ 
-} 
-void CWndGuildNickName::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
+
 void CWndGuildNickName::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate();
@@ -182,20 +153,6 @@ BOOL CWndGuildNickName::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	return CWndNeuz::InitDialog( APP_GUILD_NICKNAME, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-BOOL CWndGuildNickName::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildNickName::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildNickName::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildNickName::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndGuildNickName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
 	if( nID == WIDC_OK )

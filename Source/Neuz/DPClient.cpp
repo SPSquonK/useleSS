@@ -10758,12 +10758,10 @@ void CDPClient::SendGuilPenya( u_long, DWORD dwType, DWORD dwSendPenya )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendGuildSetName( LPCTSTR szName )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_SETNAME, DPID_UNKNOWN );
-	ar << g_pPlayer->m_idPlayer << g_pPlayer->m_idGuild;
-	ar.WriteString( szName );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendGuildSetName(LPCTSTR szName) {
+	BEFORESENDSOLE(ar, PACKETTYPE_GUILD_SETNAME, DPID_UNKNOWN);
+	ar.WriteString(szName);
+	SEND(ar, this, DPID_SERVERPLAYER);
 }
 
 void CDPClient::SendGuildRank( DWORD nVer )
