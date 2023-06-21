@@ -180,7 +180,7 @@ public:
 	virtual HRESULT InvalidateDeviceObjects() { return S_OK; }
 	virtual HRESULT DeleteDeviceObjects() { return S_OK; }
 
-	BOOL			IntersectBB( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist );
+	[[nodiscard]] bool IntersectBB(const D3DXVECTOR3 & vRayOrig, const D3DXVECTOR3 & vRayDir, const D3DXMATRIX & mWorld, D3DXVECTOR3 * pvIntersect, FLOAT * pfDist) const;
 
 	virtual bool	Intersect( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bColl = FALSE ) { return false; }
 	virtual D3DXVECTOR3 *IntersectRayTri( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bColl = FALSE ) { return NULL; }

@@ -94,7 +94,11 @@ void GetRayEnd( D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir,D3DXVECTOR3
 //       또한 삼각형과의 거리를 fDist에 돌려준다.
 //-----------------------------------------------------------------------------
 
-BOOL IntersectTriangle(D3DXVECTOR3& v0,D3DXVECTOR3& v1, D3DXVECTOR3& v2, const D3DXVECTOR3& orig,const D3DXVECTOR3& d, D3DXVECTOR3* pIntersect,FLOAT* pfDist );
+bool IntersectTriangle(
+	const D3DXVECTOR3 & v0, const D3DXVECTOR3 & v1, const D3DXVECTOR3 & v2,
+	const D3DXVECTOR3 & orig, const D3DXVECTOR3 & d,
+	D3DXVECTOR3 * pIntersect, FLOAT * pfDist
+);
 inline DWORD FtoDW( FLOAT f ) { return *((DWORD*)&f); }
 
 

@@ -615,17 +615,17 @@ void GetRayEnd(D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir,D3DXVECTOR3*
 }
 
 
-BOOL IntersectTriangle( D3DXVECTOR3& v0, D3DXVECTOR3& v1, D3DXVECTOR3& v2,
-			            const D3DXVECTOR3& orig, const D3DXVECTOR3& dir, 
-						D3DXVECTOR3* pIntersect, FLOAT* pfDist )
-{
-	FLOAT fU,fV;
-	if(D3DXIntersectTri( &v0, &v1, &v2, &orig, &dir, &fU, &fV, pfDist ) == TRUE )
-	{
+bool IntersectTriangle(
+	const D3DXVECTOR3 & v0, const D3DXVECTOR3 & v1, const D3DXVECTOR3 & v2,
+	const D3DXVECTOR3 & orig, const D3DXVECTOR3 & dir,
+	D3DXVECTOR3 * pIntersect, FLOAT * pfDist
+) {
+	FLOAT fU, fV;
+	if (D3DXIntersectTri(&v0, &v1, &v2, &orig, &dir, &fU, &fV, pfDist)) {
 		*pIntersect = orig + *pfDist * dir;
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 #endif	//defined (__WORLDSERVER) || defined (__CLIENT) 
