@@ -262,7 +262,7 @@ public:
 	[[nodiscard]] CWorld * GetWorld() const { return m_pWorld; }
 	void			SetWorld( CWorld* pWorld );
 	CModel*			GetModel()	{ return m_pModel; }
-	BOOL			Pick( D3DXVECTOR3* pPickRayOrg, D3DXVECTOR3* pPickRayDir, D3DXVECTOR3* pvIntersect, 
+	bool			Pick( const D3DXVECTOR3* pPickRayOrg, const D3DXVECTOR3* pPickRayDir, D3DXVECTOR3* pvIntersect, 
 		                  FLOAT* pfDist, BOOL bBoundBox = FALSE, BOOL bColl = FALSE );
 	BOOL			IsDynamicObj()			{ return m_dwType != OT_OBJ && m_dwType != OT_SFX; }
 

@@ -729,16 +729,16 @@ void CObj::Delete()
 }
 
 #ifdef __CLIENT
-BOOL CObj::Pick( D3DXVECTOR3* pvPickRayOrig, D3DXVECTOR3* pvPickRayDir, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bOnlyBoundBox, BOOL bColl )
+bool CObj::Pick( const D3DXVECTOR3* pvPickRayOrig, const D3DXVECTOR3* pvPickRayDir, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bOnlyBoundBox, BOOL bColl )
 {
 	if( m_pModel->IntersectBB( *pvPickRayOrig, *pvPickRayDir, GetMatrixWorld(), pvIntersect, pfDist ) == TRUE )	
 	{
 		if( bOnlyBoundBox == TRUE )
-			return TRUE;
-		if( m_pModel->Intersect( *pvPickRayOrig, *pvPickRayDir, GetMatrixWorld(), pvIntersect, pfDist, bColl ) == TRUE )
-			return TRUE;
+			return true;
+		if( m_pModel->Intersect( *pvPickRayOrig, *pvPickRayDir, GetMatrixWorld(), pvIntersect, pfDist, bColl ) )
+			return true;
 	}
-	return FALSE;
+	return false;
 }
 #endif
 

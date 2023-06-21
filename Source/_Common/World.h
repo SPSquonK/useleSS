@@ -535,8 +535,8 @@ public:
 	BOOL			ClientPointToVector( D3DXVECTOR3 *pOut, RECT rect, POINT point, D3DXMATRIX* pmatProj, D3DXMATRIX* pmatView, D3DXVECTOR3* pVector, BOOL bObject = FALSE );
 	BOOL			IsPickTerrain(RECT rect, POINT point, D3DXMATRIX* pmatProj, D3DXMATRIX* pmatView );
 	FLOAT			IntersectRayTerrain( const D3DXVECTOR3 &vPickRayOrig, const D3DXVECTOR3 &vPickRayDir );
-	CObj*			PickObject( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj, D3DXMATRIX* pmatView, DWORD dwObjectFilter = 0xffffffff, CObj* pExceptionObj = NULL, D3DXVECTOR3* pVector = NULL, BOOL bOnlyTopPick = FALSE, BOOL bOnlyNPC = FALSE  );
-	CObj*			PickObject_Fast( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj, D3DXMATRIX* pmatView, DWORD dwObjectFilter = 0xffffffff, CObj* pExceptionObj = NULL, BOOL bBoundBox = FALSE, BOOL bOnlyNPC = FALSE );
+	CObj*			PickObject( RECT rectClient, POINT ptClient, const D3DXMATRIX* pmatProj, const D3DXMATRIX* pmatView, DWORD dwObjectFilter = 0xffffffff, CObj* pExceptionObj = NULL, D3DXVECTOR3* pVector = NULL, BOOL bOnlyTopPick = FALSE, BOOL bOnlyNPC = FALSE  );
+	CObj*			PickObject_Fast( RECT rectClient, POINT ptClient, const D3DXMATRIX* pmatProj, const D3DXMATRIX* pmatView, DWORD dwObjectFilter = 0xffffffff, CObj* pExceptionObj = NULL, BOOL bBoundBox = FALSE, BOOL bOnlyNPC = FALSE );
 	BOOL			CheckBound( D3DXVECTOR3* vPos, D3DXVECTOR3* vDest, D3DXVECTOR3* vOut, FLOAT* fLength );
 		
 	void			RenderGrid();

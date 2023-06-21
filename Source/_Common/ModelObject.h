@@ -356,12 +356,8 @@ public:
 	void	FrameMove( D3DXVECTOR3 *pvSndPos = NULL, float fSpeed = 1.0f );
 
 	// collision detect
-	BOOL	Intersect( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bColl = FALSE  ) 
-	{ 
-		if( IntersectRayTri( vRayOrig, vRayDir, mWorld, pvIntersect, pfDist, bColl ) ) 
-			return TRUE; 
-		else 
-			return FALSE; 
+	bool Intersect(const D3DXVECTOR3 & vRayOrig, const D3DXVECTOR3 & vRayDir, const D3DXMATRIX & mWorld, D3DXVECTOR3 * pvIntersect, FLOAT * pfDist, BOOL bColl = FALSE) override {
+		return IntersectRayTri(vRayOrig, vRayDir, mWorld, pvIntersect, pfDist, bColl);
 	}
 
 	D3DXVECTOR3 *IntersectRayTri( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bColl = FALSE ) 

@@ -578,7 +578,7 @@ BOOL SaveBMP( LPCTSTR lpszFileName, LPBYTE lpData, SIZE size )
 	return FALSE; 
 }
 
-void GetPickRay(CRect rect,POINT ptCursor,D3DXMATRIX* pmatProj,D3DXMATRIX* pmatView,D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir)
+void GetPickRay(CRect rect,POINT ptCursor,const D3DXMATRIX* pmatProj,const D3DXMATRIX* pmatView,D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir)
 {
 	D3DXVECTOR3 v;
 	v.x =  ( ( ( 2.0f * ptCursor.x ) / rect.Width()  ) - 1 ) / pmatProj->_11;

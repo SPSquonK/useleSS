@@ -2245,7 +2245,7 @@ FLOAT CWorld::IntersectRayTerrain( const D3DXVECTOR3 &vPickRayOrig, const D3DXVE
 // [in] point는 클라이언트 화면의 좌표 
 // [out] pVector는 목표 좌표 
 //
-CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj, D3DXMATRIX* pmatView, DWORD dwObjectFilter, CObj* pExceptionObj, D3DXVECTOR3* pVector, BOOL bOnlyTopPick, BOOL bOnlyNPC )
+CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, const D3DXMATRIX* pmatProj, const D3DXMATRIX* pmatView, DWORD dwObjectFilter, CObj* pExceptionObj, D3DXVECTOR3* pVector, BOOL bOnlyTopPick, BOOL bOnlyNPC )
 {
 	if( m_pCamera == NULL )
 		return FALSE;
@@ -2253,16 +2253,9 @@ CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj,
 	D3DXVECTOR3 vPickRayOrig;
 	D3DXVECTOR3 vPickRayDir ;
 	D3DXVECTOR3 vPickRayDir2;
-	D3DXVECTOR3 vPickRayAdd ;
-	D3DXVECTOR3 vPickRayCur ;
 	D3DXVECTOR3 vIntersect  ;
-	D3DXVECTOR3 vLength;
-	D3DXVECTOR3 v1, v2, v3, v4;
-	BOOL bTriangle1 = FALSE;
-	D3DXVECTOR3 vecIntersect;
 	FLOAT fDist;               // Ray-Intersection Parameter Distance
 	FLOAT fNearDist = m_fFarPlane;      
-	CObj* pSelectObj = NULL;
 
 	GetPickRay( rectClient, ptClient, pmatProj, pmatView, &vPickRayOrig, &vPickRayDir );
 	vPickRayDir2 = vPickRayDir;
@@ -2272,26 +2265,23 @@ CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj,
 	boost::container::small_vector<CObj *, 5000> pNonCullObjs;
 
 	for (CObj * pObj : m_objCull) {
-		if( pObj )
-		{
-			if( bOnlyTopPick && pObj->GetModel()->m_pModelElem->m_bPick == FALSE )
-				continue;
-			if( pObj->IsCull() == FALSE ) 
-			{
-				if( pObj != pExceptionObj && ( ObjTypeToObjFilter( pObj->GetType() ) & dwObjectFilter ) ) 
-				{
-					if( bOnlyNPC && pObj->GetType() == OT_MOVER )	// bOnlyNPC옵션이 켜져있을때
-						if( ((CMover*)pObj)->IsPlayer() )	continue;	// 플레이어는 스킵.
+		if (!pObj) continue;
 
-					pNonCullObjs.emplace_back(pObj);
-				}
-			}
+		if( bOnlyTopPick && pObj->GetModel()->m_pModelElem->m_bPick == FALSE )
+			continue;
+		if (pObj->IsCull())  continue;
+
+		if( pObj != pExceptionObj && ( ObjTypeToObjFilter( pObj->GetType() ) & dwObjectFilter ) ) 
+		{
+			if( bOnlyNPC && pObj->GetType() == OT_MOVER )	// bOnlyNPC옵션이 켜져있을때
+				if( ((CMover*)pObj)->IsPlayer() )	continue;	// 플레이어는 스킵.
+
+			pNonCullObjs.emplace_back(pObj);
 		}
 	}
 
-	BOOL bPick = FALSE;
 	for (CObj * pObj : pNonCullObjs | std::views::reverse) {
-
+		bool bPick;
 		if( pObj->GetType() == OT_MOVER && ((CMover*)pObj)->IsDie() )	// 죽은사람은 바운딩박스로 검사하지 않음.(바운딩박스랑 맞지 않는다).
 			bPick = pObj->m_pModel->Intersect( vPickRayOrig, vPickRayDir, pObj->GetMatrixWorld(), &vIntersect, &fDist );
 		else
@@ -2307,9 +2297,9 @@ CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj,
 			}
 		}
 	}
-	return NULL;
+	return nullptr;
 }
-CObj* CWorld::PickObject_Fast( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj, D3DXMATRIX* pmatView, DWORD dwObjectFilter, CObj* pExceptionObj, BOOL bBoundBox, BOOL bOnlyNPC )
+CObj* CWorld::PickObject_Fast( RECT rectClient, POINT ptClient, const D3DXMATRIX* pmatProj, const D3DXMATRIX* pmatView, DWORD dwObjectFilter, CObj* pExceptionObj, BOOL bBoundBox, BOOL bOnlyNPC )
 {
 	if( m_pCamera == NULL )
 		return NULL;
