@@ -180,24 +180,9 @@ BOOL CWndGuildNickName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 			
 			int nLength = strNickName.GetLength();
 		
-			int nMaxLen = 0;
-			int nMinLen = 0;
-
 			// 한글은 별칭 3~12자 가능...
-#ifndef __RULE_0615
-			if( ::GetLanguage() == LANG_KOR )
-#endif	// __RULE_0615
-			{
-				nMinLen = 2;
-				nMaxLen = 12;
-			}
-#ifndef __RULE_0615
-			else
-			{
-				nMinLen = 3;
-				nMaxLen = 10;			
-			}
-#endif	// __RULE_0615
+			const int nMinLen = 2;
+			const int nMaxLen = 12;
 									
 			if( nLength < nMinLen || nLength > nMaxLen )
 			{

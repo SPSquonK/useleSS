@@ -45,7 +45,6 @@
 #define		__EXP_ANGELEXP_LOG				// 경험치, 엔젤 경험치 로그 관련 CHARACTER_TBL 컬럼 추가
 #define		__S_ADD_EXP						// EXP_S 아이템 생성
 
-#define		__RULE_0615						// 명명 규칙 정리
 #define		__S_ADD_RESTATE					// 상용화 아이템 생성( 리스테트 힘, 민첩, 체력, 지능 )
 
 //	#define		__REMOVE_ATTRIBUTE			// 속성제련 제거(10차로 변경)
@@ -209,8 +208,6 @@
 
 
 #if	  defined(__INTERNALSERVER)	// 내부 사무실 테스트서버 
-//	#define	__RULE_0615
-
 //	#define		__VERIFY_MEMPOOL
 	#define		__GUILDVOTE					// 길드 투표 
 	#define		__IAOBJ0622					// 상대 목표 좌표 전송	// 월드, 뉴즈

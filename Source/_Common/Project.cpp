@@ -403,9 +403,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	LoadFilter( GetLangFileName( ::GetLanguage(), FILE_FILTER ) );
 #endif	// __CLIENT
 
-#ifdef __RULE_0615
 	if (!nameValider.Load()) return FALSE;
-#endif	// __RULE_0615
 
 	CPetProperty::GetInstance()->LoadScript( "pet.inc" );
 	CCollectingProperty::GetInstance()->LoadScript( "collecting.inc" );
@@ -2646,7 +2644,6 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 				script.GetToken(); // ,
 				lpCharacter->m_vendor.m_venderSlot[ nSlot ] = GetLangScript( script );
 			}
-#ifdef __RULE_0615
 			// ������ �Ǹ� ������ ���
 			else if( script.Token == "AddVendorSlotLang" )
 			{
@@ -2681,7 +2678,6 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 					);
 				}
 			}
-#endif	// __RULE_0615
 			else
 			if( script.Token == "AddVenderItem" || script.Token == "AddVendorItem")
 			{

@@ -5203,13 +5203,12 @@ void CDPSrvr::OnQuerySetPlayerName( CAr & ar, DPID dpidCache, DPID dpidUser, LPB
 		if( pUser->GetWorld() && pUser->GetWorld()->GetID() == WI_WORLD_QUIZ )
 			return;
 #endif // __QUIZ
-#ifdef __RULE_0615
+
 		if (prj.nameValider.IsNotAllowedName(lpszPlayer)) {
 			pUser->AddDiagText(prj.GetText(TID_DIAG_0020));
 			return;
 		}
 		prj.nameValider.Formalize( lpszPlayer );
-#endif	// __RULE_0615
 
 #ifdef __S_SERVER_UNIFY
 		if( pUser->m_bAllAction )
@@ -6761,12 +6760,10 @@ void CDPSrvr::OnPVendorOpen( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 #endif //__Y_BEAUTY_SHOP_CHARGE
 */
 
-#ifdef __RULE_0615
 		if (prj.nameValider.IsNotAllowedVendorName(szPVendor)) {
 			pUser->AddDiagText(prj.GetText(TID_DIAG_0020));
 			return;
 		}
-#endif	// __RULE_0615
 
 		if( !( pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_FONTEDIT ) ) )
 			ParsingEffect(szPVendor, strlen(szPVendor) );

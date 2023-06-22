@@ -2267,15 +2267,10 @@ DWORD IsValidPlayerName( CString& strName )
 	if( strName.IsEmpty() )
 		return TID_DIAG_0031;			// "이름을 입력하십시오."
 
-#ifdef __RULE_0615
 	// "이름은 한글 2자 이상, 8자 이하로 입력하십시오."
 	// "이름은 영문 4자 이상, 16자 이하로 입력하십시오."
 	if( strName.GetLength() < 4 || strName.GetLength() > 16 )
 		return TID_DIAG_RULE_0;
-#else	// __RULE_0615
-	if( strName.GetLength() < 3 || strName.GetLength() > 16 )
-		return TID_DIAG_0011;			// "명칭에 3글자 이상, 16글자 이하로 입력 입력하십시오."
-#endif	// __RULE_0615
 
 	char c = strName[ 0 ];
 

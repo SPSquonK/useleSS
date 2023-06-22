@@ -122,13 +122,11 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 	arRead >> nSlot;
 	arRead.ReadString( lpDbOverlappedPlus->AccountInfo.szPlayer, MAX_PLAYER );
 
-#ifdef __RULE_0615
 	// 해킹이므로 무시
 	if (prj.nameValider.IsNotAllowedName(lpDbOverlappedPlus->AccountInfo.szPlayer)) {
 		return;
 	}
 	prj.nameValider.Formalize( lpDbOverlappedPlus->AccountInfo.szPlayer );
-#endif	// __RULE_0615
 
 	arRead >> nFace >> nCostume >> nSkinSet >> nHairMesh;
 	arRead >> dwHairColor;

@@ -178,7 +178,7 @@ struct PartySkillProp
 	}
 };
 
-enum 
+enum class _FILEWITHTEXT
 {	
 	FILE_FILTER	= 0, 
 	FILE_INVALID = 1, 
@@ -188,20 +188,17 @@ enum
 	FILE_GUILDCOMBAT_TEXT_3 = 5, 
 	FILE_GUILDCOMBAT_TEXT_4 = 6, 
 	FILE_GUILDCOMBAT_TEXT_5 = 7,
-	FILE_GUILDCOMBAT_TEXT_6 = 8
-#ifdef __RULE_0615
-	,FILE_ALLOWED_LETTER	= 9
-#endif	// __RULE_0615
-	,
+	FILE_GUILDCOMBAT_TEXT_6 = 8,
+	FILE_ALLOWED_LETTER	= 9,
 	FILE_GUILDCOMBAT_1TO1_TEXT_1 = 10,
 	FILE_GUILDCOMBAT_1TO1_TEXT_2 = 11,
 	FILE_GUILDCOMBAT_1TO1_TEXT_3 = 12,
 	FILE_GUILDCOMBAT_1TO1_TEXT_4 = 13,
-	FILE_GUILDCOMBAT_1TO1_TEXT_5 = 14
-#ifdef __VENDOR_1106
-	,FILE_ALLOWED_LETTER2	= 15
-#endif	// __VENDOR_1106
+	FILE_GUILDCOMBAT_1TO1_TEXT_5 = 14,
+	FILE_ALLOWED_LETTER2	= 15
 };
+
+using enum _FILEWITHTEXT;
 
 // Item Property Type
 enum IP_TYPE 
@@ -869,8 +866,6 @@ struct EXPCHARACTER {
 };
 
 
-#ifdef __RULE_0615
-
 class CNameValider {
 	// Note: CNameValider logic is incompatible with wide char encoding.
 	
@@ -896,7 +891,6 @@ private:
 	[[nodiscard]] bool IsInvalidName(LPCSTR name) const;
 	[[nodiscard]] static bool AllLettersAreIn(LPCSTR name, const std::array<bool, 256> & allowed);
 };
-#endif	// __RULE_0615
 
 class ProjectLoadError : public std::exception {
 	const char * m_errorMessage;

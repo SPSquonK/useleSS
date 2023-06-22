@@ -58,7 +58,7 @@ static_assert(false, "Project.h was included")
 // extern 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-extern CString GetLangFileName( int nLang, int nType );
+extern CString GetLangFileName( int nLang, _FILEWITHTEXT nType );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // struct
@@ -895,9 +895,7 @@ public:
 	CSfx*			GetSfx( OBJID objid );
 #endif	// __CLIENT
 
-#ifdef __RULE_0615
 	CNameValider nameValider;
-#endif	// __RULE_0615
 
 #ifdef __OUTPUT_INFO_0803
 	void			OutputStore( const char* lpStrKey, CMover* pMover  );

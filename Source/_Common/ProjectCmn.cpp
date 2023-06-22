@@ -3,26 +3,25 @@
 #include "langman.h"
 #include <algorithm>
 #include <ranges>
+#include <optional>
 
 #if !( defined(__DBSERVER) || defined(__VPW) ) 
 	#include "project.h"
 #endif	// __DBSERVER
 
-CString GetLangFileName( int nLang, int nType )
-{
-	const char* file[] =
-		{ "Filter", "InvalidName", "Notice", "GuildCombatTEXT_1", "GuildCombatTEXT_2", "GuildCombatTEXT_3", "GuildCombatTEXT_4", "GuildCombatTEXT_5", "GuildCombatTEXT_6" 
-#ifdef __RULE_0615
-			,"Letter"
-#endif	// __RULE_0615
-			,"GuildCombat1to1_TEXT1", "GuildCombat1to1_TEXT2", "GuildCombat1to1_TEXT3", "GuildCombat1to1_TEXT4", "GuildCombat1to1_TEXT5"
-#ifdef __VENDOR_1106
-			, "Letter1"
-#endif	// __VENDOR_1106
-		};
+CString GetLangFileName( int nLang, _FILEWITHTEXT nType ) {
+	static constexpr const char * file[] = {
+		"Filter",
+		"InvalidName",
+		"Notice",
+		"GuildCombatTEXT_1", "GuildCombatTEXT_2", "GuildCombatTEXT_3", "GuildCombatTEXT_4", "GuildCombatTEXT_5", "GuildCombatTEXT_6" ,
+		"Letter",
+		"GuildCombat1to1_TEXT1", "GuildCombat1to1_TEXT2", "GuildCombat1to1_TEXT3", "GuildCombat1to1_TEXT4", "GuildCombat1to1_TEXT5",
+		"Letter1"
+	};
 
-	CString fileName = file[nType];
-	fileName	= fileName + CLangMan::GetInstance()->GetLangData( nLang )->szFileName;
+	CString fileName = file[static_cast<size_t>(nType)];
+	fileName += CLangMan::GetInstance()->GetLangData(nLang)->szFileName;
 	return fileName;
 }
 
@@ -626,10 +625,6 @@ void CProject::LoadPreFiles()
 	CLangMan::GetInstance()->Load( "propLang.txt" );
 }
 
-
-#ifdef __RULE_0615
-#include <optional>
-
 bool CNameValider::Load() {
 	constexpr auto LoadInvalidNames = []() -> std::optional<std::set<std::string>> {
 		const CString strFilter = GetLangFileName(::GetLanguage(), FILE_INVALID);
@@ -742,7 +737,6 @@ void CNameValider::Formalize(LPSTR szName) {
 	_strlwr(szName + 1);                  // Lower after first letter
 	szName[0] = buffer[0];                // Copy back upper cased 1st letter
 }
-#endif	// __RULE_0615
 
 CAr & operator<<(CAr & ar, const SHORTCUT & self) {
 	ar << self.m_dwShortcut << self.m_dwId

@@ -121,9 +121,7 @@ public:
 	TCHAR	m_apszWorldName[MAX_WORLD][64];
 	std::map<std::string, std::vector<D3DXVECTOR3>> m_mapBeginPos;
 
-#ifdef __RULE_0615
 	CNameValider nameValider;
-#endif	// __RULE_0615
 
 public:
 	void	LoadDefines();

@@ -25,8 +25,6 @@
 #define		__S_RECOMMEND_EVE			// 추천 이벤트 Neuz, Trans, World
 #define		__EXP_ANGELEXP_LOG			// 경험치, 엔젤 경험치 로그 관련 CHARACTER_TBL 컬럼 추가
 
-#define		__RULE_0615					// 명명 규칙 정리
-
 #define		__PROP_0827					// 아이템 프로퍼티 적용 파라미터 확장
 
 //11th
@@ -103,7 +101,6 @@
 //	#define		__2ND_PASSWORD_SYSTEM		// 로그인 시 2차 비밀번호 입력
 
 #if	  defined(__INTERNALSERVER)	// 내부 사무실 테스트서버 
-//	#define	__RULE_0615
 
 	#define		__SKILL_0205
 	#define		__GUILDVOTE				// 길드 투표 

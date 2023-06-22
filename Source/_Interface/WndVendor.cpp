@@ -291,11 +291,7 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 			g_WndMng.WordChange( strVendor );
 			// name
-#ifdef __RULE_0615
 			if( strVendor.GetLength() < 6 || strVendor.GetLength() > 32 )
-#else	// __RULE_0615
-			if( strVendor.GetLength() < 6 || strVendor.GetLength() >= 38 )
-#endif	// __RULE_0615
 			{
 				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0011) ) );
 				return TRUE;

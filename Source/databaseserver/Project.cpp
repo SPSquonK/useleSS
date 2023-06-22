@@ -108,9 +108,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 
 	m_GuildCombat1to1.LoadScript();
 
-#ifdef __RULE_0615
 	if (!nameValider.Load()) return FALSE;
-#endif	// __RULE_0615
 	
 	CPetProperty::GetInstance()->LoadScript( "pet.inc" );
 

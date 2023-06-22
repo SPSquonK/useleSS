@@ -37,7 +37,6 @@
 #define		__EVE_MINIGAME				// Mini Game 4종 이벤트 추가 관련.
 #define		__S_ADD_EXP					// EXP_S 아이템 생성
 
-#define		__RULE_0615					// 명명 규칙 정리
 #define		__FILTER_0705				// 필터링 규칙 변경
 #define		__S_ADD_RESTATE				// 상용화 아이템 생성( 리스테트 힘, 민첩, 체력, 지능 )
 
@@ -236,7 +235,6 @@
 
 // 8.5차
 #if	  defined(__INTERNALSERVER)	// 내부 사무실 테스트서버 
-//	#define	__RULE_0615
 
 	#define		NO_GAMEGUARD
 	#undef		__TRANSFER_ERROR_TEXT
