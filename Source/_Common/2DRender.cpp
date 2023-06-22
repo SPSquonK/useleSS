@@ -82,7 +82,6 @@ C2DRender::C2DRender()
 	m_pVBRoundRect = NULL; 
 	m_pVBLine = NULL;
 	m_pVBPixel = NULL;
-	//m_pVBTexture = NULL;
 	m_pFont = NULL;
 	m_ptOrigin = 0;
 	m_clipRect.SetRect(0,0,800,600);
@@ -126,7 +125,6 @@ HRESULT C2DRender::DeleteDeviceObjects()
 	SAFE_RELEASE(m_pVBRoundRect);
 	SAFE_RELEASE(m_pVBLine     );
 	SAFE_RELEASE(m_pVBPixel    );
-	//SAFE_RELEASE(m_pVBTexture  );
 	SAFE_RELEASE(m_pVBFillTriangle);
 	SAFE_RELEASE(m_pVBTriangle );
 	return hr;

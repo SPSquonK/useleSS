@@ -1,5 +1,4 @@
-#ifndef __2DRENDER_H
-#define __2DRENDER_H
+#pragma once
 
 #include <exception>
 
@@ -26,38 +25,25 @@ public:
 	CRectClip(POINT topLeft,POINT bottomRight) : CRect(topLeft,bottomRight) { }
 
 	BOOL Clipping(CRect& rect) const;
-//BOOL Clipping(CRect& os,Rect& is);
 
-	//BOOL Clipping(CPtSz& os,CPtSz& is) const;
-
-	//BOOL PtSzLapRect(CPtSz ptSz) const;
-	//BOOL PtSzInRect (CPtSz ptSz) const;
 	BOOL RectLapRect(CRect rect) const;
 	BOOL RectInRect (CRect rect) const;
 };
 
-#define D2DTEXRENDERFLAG_90    1
-#define D2DTEXRENDERFLAG_180   2
-#define D2DTEXRENDERFLAG_HFLIP 3
-#define D2DTEXRENDERFLAG_VFLIP 4
-
 struct DRAWVERTEX
 {
-	D3DXVECTOR3 vec;//AT x, y, z;
+	D3DXVECTOR3 vec;
 	FLOAT rhw;
-	DWORD color; 
-//	FLOAT u, v;
+	DWORD color;
 };
 struct TEXTUREVERTEX
 {
-	D3DXVECTOR3 vec;//
-	//FLOAT x, y, z, 
+	D3DXVECTOR3 vec;
 	FLOAT rhw, u, v;
 };
 struct TEXTUREVERTEX2
 {
-	D3DXVECTOR3 vec;//
-	//FLOAT x, y, z, 
+	D3DXVECTOR3 vec;
 	FLOAT rhw;
 	DWORD color; 
 	FLOAT u, v;
@@ -66,17 +52,8 @@ struct TEXTUREVERTEX2
 #define D3DFVF_TEXTUREVERTEX (D3DFVF_XYZRHW|D3DFVF_TEX1)
 #define D3DFVF_TEXTUREVERTEX2 (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1)
 
-inline void SetDrawVertex( DRAWVERTEX* pVertices, FLOAT x, FLOAT y, DWORD dwColor )
-{
-	pVertices->vec = D3DXVECTOR3( x,y,0);
-	pVertices->rhw   = 1.0f;
-	pVertices->color = dwColor;
-}
 inline void SetTextureVertex( TEXTUREVERTEX* pVertices, FLOAT x, FLOAT y, FLOAT u, FLOAT v )
 {
-	//pVertices->x     = (FLOAT)x - 0.5f;
-	//pVertices->y     = (FLOAT)y - 0.5f;
-	//pVertices->z     = 0.0f;
 	pVertices->vec = D3DXVECTOR3( x - 0.5f, y - 0.5f, 0 );
 	pVertices->rhw   = 1.0f;
 	pVertices->u     = u;
@@ -84,9 +61,6 @@ inline void SetTextureVertex( TEXTUREVERTEX* pVertices, FLOAT x, FLOAT y, FLOAT 
 }
 inline void SetTextureVertex2( TEXTUREVERTEX2* pVertices, FLOAT x, FLOAT y, FLOAT u, FLOAT v, DWORD dwColor )
 {
-	//pVertices->x     = (FLOAT)x - 0.5f;
-	//pVertices->y     = (FLOAT)y - 0.5f;
-	//pVertices->z     = 0.0f;
 	pVertices->vec = D3DXVECTOR3( x - 0.5f, y - 0.5f, 0 );
 	pVertices->rhw   = 1.0f;
 	pVertices->u     = u;
@@ -107,7 +81,6 @@ class C2DRender
 	LPDIRECT3DVERTEXBUFFER9 m_pVBTriangle;
 	LPDIRECT3DVERTEXBUFFER9 m_pVBLine;
 	LPDIRECT3DVERTEXBUFFER9 m_pVBPixel;
-	//LPDIRECT3DVERTEXBUFFER9 m_pVBTexture;
 	
 public:
 	LPDIRECT3DDEVICE9 m_pd3dDevice; // The D3D rendering device
@@ -242,8 +215,6 @@ public:
 	void RenderScal2( C2DRender* p2DRender, CPoint pt, DWORD dwBlendFactorAlhpa = 255, FLOAT fscalX = 1.0, FLOAT fscalY = 1.0, D3DCOLOR color = 0 ) {
 		p2DRender->RenderTextureColor( pt, this, fscalX, fscalY, color ); 
 	}
-	
-	//CSize ComputeSize( CSize size );
 };
 class CTexturePack
 {
@@ -329,5 +300,3 @@ public:
 	void Render(); // 현재 생성된 데미지 표시들을 출력한다.
 };
 #endif
-#endif
-
