@@ -64,49 +64,10 @@ void CWndPartyChangeName::OnSendName() {
 
 	PartyName.TrimLeft();
 	PartyName.TrimRight();
-	LPCTSTR lpszString = PartyName;
 
-	if (PartyName.IsEmpty()) {
-		// "명칭에 3글자 이상, 16글자 이하로 입력 입력하십시오."
-		g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_RULE_0)));
-		return;
-	}
-
-	if (PartyName.GetLength() < 4 || PartyName.GetLength() > 16) {
-		g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_RULE_0)));
-		return;
-	}
-
-	CHAR c = PartyName[0];
-
-	if (IsDBCSLeadByte(c) == FALSE && isdigit2(c)) {
-		g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0012)));
-		return;
-	}
-
-	for (int i = 0; i < PartyName.GetLength(); i++) {
-		CHAR c = PartyName[i];
-		// 숫자나 알파벳이 아닐 경우는 의심하자.
-		if (IsDBCSLeadByte(c) == TRUE) {
-			CHAR c2 = PartyName[++i];
-			WORD word = ((c << 8) & 0xff00) | (c2 & 0x00ff);
-			if (::GetLanguage() == LANG_KOR) {
-				if (IsHangul(word) == FALSE) {
-					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0014)));
-					return;
-				}
-			}
-		} else if (::GetLanguage() != LANG_THA) {
-			if (!IsCyrillic(c) && (isalnum(c) == FALSE || iscntrl(c))) {
-				// 특수 문자도 아니다 (즉 콘트롤 또는 !@#$%^&**()... 문자임)
-				g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0013)));
-				return;
-			}
-		}
-	}
-
-	if (prj.nameValider.IsNotAllowedName(PartyName)) {
-		g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0020)));
+	const DWORD error = CheckPartyChangeName(PartyName);
+	if (error != 0) {
+		g_WndMng.OpenMessageBox(_T(prj.GetText(error)));
 		return;
 	}
 

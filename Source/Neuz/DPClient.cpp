@@ -70,10 +70,6 @@
 #include "post.h"
 #include "spevent.h"
 
-#ifdef __S_SERVER_UNIFY
-extern DWORD IsValidPlayerName( CString& strName );
-#endif // __S_SERVER_UNIFY
-
 #include "playerdata.h"
 
 #include "WndBagEx.h"

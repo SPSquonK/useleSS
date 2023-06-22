@@ -591,6 +591,9 @@
     <ClCompile Include="..\_Common\ProjectJob.cpp">
       <Filter>Source Files\Project</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\NameValidation.cpp">
+      <Filter>Neuz Common Files\Common Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WantedListSnapshot.h">
@@ -1144,6 +1147,9 @@
     </ClInclude>
     <ClInclude Include="..\_Common\ScriptDefines.h">
       <Filter>Neuz Common Files\Common Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\NameValidation.h">
+      <Filter>Neuz Common Files\Common Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

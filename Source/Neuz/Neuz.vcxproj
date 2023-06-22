@@ -100,6 +100,7 @@
     </ClCompile>
     <ClCompile Include="..\_Common\ItemContainer.cpp" />
     <ClCompile Include="..\_Common\ItemMorph.cpp" />
+    <ClCompile Include="..\_Common\NameValidation.cpp" />
     <ClCompile Include="..\_Common\ProjectJob.cpp" />
     <ClCompile Include="..\_Common\SkillsOfMover.cpp" />
     <ClCompile Include="..\_Interface\PlayerLineup.cpp" />
@@ -666,6 +667,7 @@
     <ClInclude Include="..\_Common\ItemContainer.h" />
     <ClInclude Include="..\_Common\ItemElem.h" />
     <ClInclude Include="..\_Common\ItemMorph.h" />
+    <ClInclude Include="..\_Common\NameValidation.h" />
     <ClInclude Include="..\_Common\ProjectJob.h" />
     <ClInclude Include="..\_Common\ScriptDefines.h" />
     <ClInclude Include="..\_Common\SingleDst.h" />

@@ -14,14 +14,6 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-
-	enum class GuildNameError {
-		TooShort, TooLong, DigitLead,
-		BadEUCKRSymbol, BadSymbol,
-		UnallowedName
-	};
-
-	static std::expected<CString, GuildNameError> CheckGuildName(LPCTSTR str);
 }; 
 
 

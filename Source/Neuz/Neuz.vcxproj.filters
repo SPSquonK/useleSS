@@ -1000,6 +1000,9 @@
     <ClCompile Include="..\_Interface\PlayerLineup.cpp">
       <Filter>Source Files\_Interface\Misc</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\NameValidation.cpp">
+      <Filter>Source Files\_Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">
@@ -1854,6 +1857,9 @@
     </ClInclude>
     <ClInclude Include="..\_Interface\PlayerLineup.h">
       <Filter>Source Files\_Interface\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\NameValidation.h">
+      <Filter>Source Files\_Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

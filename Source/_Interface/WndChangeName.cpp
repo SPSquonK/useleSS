@@ -72,8 +72,6 @@ void CWndChangeName::SetData( WORD wId, WORD wReset )
 	m_dwData	= MAKELONG( wId, wReset );
 }
 
-extern DWORD IsValidPlayerName( CString& strName );
-
 BOOL CWndChangeName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_OK )

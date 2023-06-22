@@ -48,43 +48,6 @@ BOOL CWndGuildName::Initialize(CWndBase * pWndParent, DWORD) {
 	return CWndNeuz::InitDialog(APP_GUILDNAME, pWndParent, 0, CPoint(0, 0));
 }
 
-std::expected<CString, CWndGuildName::GuildNameError> CWndGuildName::CheckGuildName(LPCTSTR szName) {
-	CString strGuild = szName;
-	strGuild.TrimLeft();
-	strGuild.TrimRight();
-
-	const int nLength = strGuild.GetLength();
-	if (nLength < 3) return std::unexpected(GuildNameError::TooShort);
-	if (nLength > 16) return std::unexpected(GuildNameError::TooLong);
-
-	const CHAR c = strGuild.GetAt(0);
-	if (isdigit2(c) && !IsDBCSLeadByte(strGuild.GetAt(0))) {
-		g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0012)));
-		return std::unexpected(GuildNameError::DigitLead);
-	}
-
-	for (int i = 0; i < strGuild.GetLength(); i++) {
-		const CHAR c = strGuild.GetAt(i);
-		// 숫자나 알파벳이 아닐 경우는 의심하자.
-		if (IsDBCSLeadByte(c) && ::GetLanguage() == LANG_KOR) {
-			const CHAR c2 = strGuild.GetAt(++i);
-			const WORD word = ((c << 8) & 0xff00) | (c2 & 0x00ff);
-			if (IsHangul(word) == FALSE) {
-				return std::unexpected(GuildNameError::BadEUCKRSymbol);
-			}
-		} else if (!IsCyrillic(c) && (!isalnum(c) || iscntrl(c))) {
-			// 특수 문자도 아니다 (즉 콘트롤 또는 !@#$%^&**()... 문자임)
-			return std::unexpected(GuildNameError::BadSymbol);
-		}
-	}
-
-	if (prj.nameValider.IsNotAllowedName(szName)) {
-		return std::unexpected(GuildNameError::UnallowedName);
-	}
-
-	return strGuild;
-}
-
 BOOL CWndGuildName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_OK )
@@ -176,61 +139,12 @@ BOOL CWndGuildNickName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 		LPCTSTR lpszString = strNickName;
 		if( strNickName.IsEmpty() == FALSE )
 		{
-			CHAR c = strNickName[ 0 ];
-			
-			int nLength = strNickName.GetLength();
-		
-			// 한글은 별칭 3~12자 가능...
-			const int nMinLen = 2;
-			const int nMaxLen = 12;
-									
-			if( nLength < nMinLen || nLength > nMaxLen )
-			{
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0011_01) ) );
-//				g_WndMng.OpenMessageBox( _T( "명칭에 3글자 이상, 16글자 이하로 입력 입력하십시오." ) );
+			const DWORD error = CheckGuildNickName(strNickName);
+			if (error != 0) {
+				g_WndMng.OpenMessageBox(_T(prj.GetText(error)));
 				return TRUE;
 			}
-			else
-			if( IsDBCSLeadByte( c ) == FALSE && isdigit2( c ) ) 
-			{
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0012) ) );
-//				g_WndMng.OpenMessageBox( _T( "명칭에 첫글자를 숫자로 사용할 수 없습니다." ) );
-				return TRUE;
-			}
-			else
-			{
-				for( int i = 0; i < strNickName.GetLength(); i++ )
-				{
-					c = strNickName[ i ];
-					// 숫자나 알파벳이 아닐 경우는 의심하자.
-					if( IsDBCSLeadByte( c ) == TRUE ) 
-					{
-						CHAR c2 = strNickName[ ++i ];
-						WORD word = ( ( c << 8 ) & 0xff00 ) | ( c2 & 0x00ff );
-						if( ::GetLanguage() == LANG_KOR )
-						{
-							if( IsHangul( word ) == FALSE ) 
-							{
-								g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0014) ) );
-								return TRUE;
-							}
-						}
-					}
-					else
-						if( !IsCyrillic( c ) && ( isalnum( c ) == FALSE || iscntrl( c ) )  )
-						{
-							// 특수 문자도 아니다 (즉 콘트롤 또는 !@#$%^&**()... 문자임)
-							g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0013) ) );
-							return TRUE;
-						}
-				}
 
-			}
-			
-			if (prj.nameValider.IsNotAllowedName(strNickName)) {
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0020) ) );
-				return TRUE;
-			}
 			CGuild* pGuild = g_pPlayer->GetGuild();
 			if( pGuild )
 			{
