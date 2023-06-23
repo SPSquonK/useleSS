@@ -45,3 +45,8 @@ std::expected<CString, GuildNameError> CheckGuildName(LPCTSTR str);
 DWORD CheckGuildNickName(CString & strNickName);
 
 DWORD CheckPartyChangeName(CString & PartyName);
+
+
+bool IsAcValid(const TCHAR * lpszAccount);
+bool IsPwdValid(const TCHAR * lpszPassword);
+

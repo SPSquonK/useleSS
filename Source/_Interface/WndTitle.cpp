@@ -14,6 +14,7 @@
 #include "WndManager.h"
 #include "Network.h"
 #include "Vector3Helper.h"
+#include "NameValidation.h"
 
 extern BYTE  nMaleHairColor[10][3];
 extern BYTE  nFeMaleHairColor[10][3];
@@ -440,7 +441,6 @@ BOOL CWndLogin::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				{
 					// Can't connect to server
 					g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0043) ) );
-//					g_WndMng.OpenMessageBox( _T( "접속할 수 없습니다. 네트워크 상태를 확인하십시오." ) );
 					CNetwork::GetInstance().OnEvent( CERT_CONNECT_FAIL );
 					break;
 				}
@@ -452,21 +452,15 @@ BOOL CWndLogin::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				CWndEdit* pAccount = (CWndEdit*) GetDlgItem( WIDC_ACCOUNT );
 				CWndEdit* pPassword = (CWndEdit*) GetDlgItem( WIDC_PASSWORD );
 
-				CString strAccount, strPassword;
-				strAccount	= pAccount->GetString();
-				strPassword	= pPassword->GetString();
-				
-				if( IsAcValid( pAccount->GetString() ) == FALSE )
+				if( !IsAcValid( pAccount->GetString() ) )
 				{
 					g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0005) ) );
-//					g_WndMng.OpenMessageBox( _T( "계정은 3~16자 영어, 숫자를 사용할 수 있고, 숫자로 시작할 수 없습니다." ) );
 					pButton->EnableWindow( TRUE );
 					return TRUE;
 				}
-				if( IsPwdValid( pPassword->GetString() ) == FALSE )
+				if( !IsPwdValid( pPassword->GetString() ) )
 				{
 					g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0030) ) );
-//					g_WndMng.OpenMessageBox( _T( "암호는 3~16자 영어, 숫자를 사용할 수 있습니다." ) );
 					pButton->EnableWindow( TRUE );
 					return TRUE;
 				}

@@ -341,3 +341,72 @@ DWORD CheckPartyChangeName(CString & PartyName) {
 	return 0;
 }
 
+
+
+bool IsAcValid( const TCHAR* lpszAccount )
+{
+	CString strAccount	= lpszAccount;
+	if( strAccount.IsEmpty() == FALSE )
+	{
+		CHAR c	= strAccount.GetAt( 0 );
+		if( strAccount.GetLength() < 3 || strAccount.GetLength() > 16 )
+		{
+			return FALSE;
+		}
+		else
+		{
+			for( int i = 0; i < strAccount.GetLength(); i++ )
+			{
+				c	= strAccount.GetAt( i );
+				if( IsDBCSLeadByte( c ) == TRUE )
+				{
+					CHAR c2	= strAccount.GetAt( ++i );
+					WORD word	= ( ( c << 8 ) & 0xff00 ) | ( c2 & 0x00ff );
+					if( IsHangul( word ) == FALSE ) 
+					{
+						return FALSE;
+					}
+					else if( isalnum( c ) == FALSE || iscntrl( c ) )
+					{
+						return FALSE;
+					}
+				}
+			}
+		}
+	}
+	return TRUE;
+}
+
+bool IsPwdValid( const TCHAR* lpszPassword )
+{
+	CString strPassword	= lpszPassword;
+	if( strPassword.IsEmpty() == FALSE )
+	{
+		CHAR c	= strPassword.GetAt( 0 );
+		if( strPassword.GetLength() < 3 || strPassword.GetLength() >= 16 )
+		{
+			return FALSE;
+		}
+		else
+		{
+			for( int i = 0; i < strPassword.GetLength(); i++ )
+			{
+				c	= strPassword.GetAt( i );
+				if( IsDBCSLeadByte( c ) == TRUE )
+				{
+					CHAR c2	= strPassword.GetAt( ++i );
+					WORD word	= ( ( c << 8 ) & 0xff00 ) | ( c2 & 0x00ff );
+					if( IsHangul( word ) == FALSE ) 
+					{
+						return FALSE;
+					}
+					else if( isalnum( c ) == FALSE || iscntrl( c ) )
+					{
+						return FALSE;
+					}
+				}
+			}
+		}
+	}
+	return TRUE;
+}
