@@ -410,3 +410,30 @@ bool IsPwdValid( const TCHAR* lpszPassword )
 	}
 	return TRUE;
 }
+
+
+
+CString strings::CStringMaxSize(const char * text, int length) {
+	CString str = text;
+	::strings::ReduceSize(str, length);
+	return str;
+}
+
+
+void strings::ReduceSize(CString & str, int length) {
+	if (str.GetLength() > length) {
+		int	nReduceCount = 0;
+
+		for (nReduceCount = 0; nReduceCount < length; ) {
+			if (IsDBCSLeadByte(str[nReduceCount]))
+				nReduceCount += 2;
+			else
+				nReduceCount++;
+		}
+
+		str = str.Left(nReduceCount);
+		str += "...";
+	}
+}
+
+

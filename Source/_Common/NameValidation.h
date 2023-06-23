@@ -50,3 +50,8 @@ DWORD CheckPartyChangeName(CString & PartyName);
 bool IsAcValid(const TCHAR * lpszAccount);
 bool IsPwdValid(const TCHAR * lpszPassword);
 
+
+namespace strings {
+	[[nodiscard]] CString CStringMaxSize(const char * text, int length);
+	void ReduceSize(CString & str, int length);
+}

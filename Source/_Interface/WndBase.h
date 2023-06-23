@@ -391,11 +391,6 @@ inline CWndClass * CWndBase::ConvertWndBaseToWndClass(CWndBase * pWindow, const 
 	}
 }
 
-namespace strings {
-	[[nodiscard]] CString CStringMaxSize(const char * text, int length);
-	void ReduceSize(CString & str, int length);
-}
-
 namespace Windows {
 	template <typename ... Ts>
 	bool IsOpen(UINT windowId, Ts ... ts) {
