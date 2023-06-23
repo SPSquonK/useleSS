@@ -86,70 +86,7 @@ public:
 	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
 	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 	void			SetString();
-}; 
-/*
-class CWndSecretRoomGuildMember : public CWndNeuz
-{
-public:
-	BOOL m_bSelect;
-	u_long m_uGuildMemberId;
-	CTexture m_texGauHPEmptyNormal;
-	CTexture m_texGauHPFillNormal;
-
-	LPDIRECT3DVERTEXBUFFER9 m_pVBHPGauge;
-public:
-	CWndSecretRoomGuildMember();
-	~CWndSecretRoomGuildMember();
-
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
-	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
-	virtual	void	OnInitialUpdate();
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
-	virtual HRESULT DeleteDeviceObjects();
-	virtual void	OnDestroy();
-	virtual void	OnMouseWndSurface( CPoint point );
-
-	void SetSelectColor(BOOL bSet) {m_bSelect = bSet;};
 };
-
-#define MAX_SECRETROOM_MEMBER 11
-
-typedef struct __SECRETROOM_GUILDMEMBER
-{
-	u_long m_uGuildMemberId;
-	CWndSecretRoomGuildMember* m_pWndGuildMember;
-} __SECRETROOM_GUILDMEMBER;
-
-class CWndSecretRoomGuildMemMng : public CWndNeuz
-{
-private:
-	CWndListBox* m_pWndListBox;
-	int m_nGuildMemCount;
-	CWndSecretRoomGuildMember* m_pWndSelectMember;
-	CWndSecretRoomGuildMember* m_pWndLastMember;
-	vector<__SECRETROOM_GUILDMEMBER> m_vecGuildMember;
-
-public:
-	CWndSecretRoomGuildMemMng();
-	~CWndSecretRoomGuildMemMng();
-
-	virtual	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
-	virtual	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void OnDraw( C2DRender* p2DRender );
-	virtual	void OnInitialUpdate();
-
-	void SetGuildMemCount(int nGuildMemCount) {m_nGuildMemCount = nGuildMemCount;};
-	void SetGuildMember(u_long uGuildMemberId);
-	void SetSelect(CWndSecretRoomGuildMember* pWndSelectMember);
-	BOOL IsSelect(CWndSecretRoomGuildMember* pWndMember);
-	void DestroyMemberWnd(u_long uMember);
-	CWndSecretRoomGuildMember* GetBeforeWnd();
-	void SetVisibleMng(BOOL bVisible);
-};
-*/
 
 #define MAX_SECRETROOM_MEMBER 11
 
