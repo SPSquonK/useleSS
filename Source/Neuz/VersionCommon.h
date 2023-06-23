@@ -37,7 +37,6 @@
 #define		__EVE_MINIGAME				// Mini Game 4종 이벤트 추가 관련.
 #define		__S_ADD_EXP					// EXP_S 아이템 생성
 
-#define		__FILTER_0705				// 필터링 규칙 변경
 #define		__S_ADD_RESTATE				// 상용화 아이템 생성( 리스테트 힘, 민첩, 체력, 지능 )
 
 #define		__PROP_0827					// 아이템 프로퍼티 적용 파라미터 확장

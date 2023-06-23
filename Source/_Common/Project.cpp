@@ -842,41 +842,37 @@ BOOL CProject::LoadFilter( LPCTSTR lpszFileName )
 	CScanner scanner;
 	if( scanner.Load( lpszFileName, FALSE ) == FALSE )
 		return FALSE;
-	FILTER filter;
+
 	scanner.GetToken();
 
 	while( scanner.tok != FINISHED )
 	{
-#ifdef __FILTER_0705
-		BOOL bAlpha		= TRUE;
+		bool bAlpha = true;
 		int nLen	= lstrlen( scanner.token );
 		for( int i = 0; i < nLen; i++ )
 		{
 			if( !iswalpha( scanner.token[i] ) )
 			{
-				bAlpha	= FALSE;
+				bAlpha = false;
 				break;
 			}
 		}
 		if( bAlpha )
 			scanner.Token.MakeLower();
-#endif	// __FILTER_0705
-		strcpy( filter.m_szSrc, scanner.Token );
+
+		TCHAR szSrc[64];
+		strcpy(szSrc, scanner.Token );
 		scanner.GetToken();
-		strcpy( filter.m_szDst, scanner.Token );
-#ifdef __FILTER_0705
-		if( bAlpha )
-			m_mapAlphaFilter.emplace( filter.m_szSrc, filter.m_szDst );
-		else
-			m_mapNonalphaFilter.emplace( filter.m_szSrc, filter.m_szDst );
-#else	// __FILTER_0705
-		m_aWordFilter.Add( &filter );
-#endif	// __FILTER_0705
+
+		if (bAlpha) {
+			m_mapAlphaFilter.emplace(szSrc, scanner.Token);
+		} else {
+			m_mapNonalphaFilter.emplace_back(szSrc, scanner.Token);
+		}
+
 		scanner.GetToken(); 
 	}
-#ifndef __FILTER_0705
-	m_aWordFilter.Optimize();
-#endif	// __FILTER_0705
+
 	return TRUE;
 }
 #endif

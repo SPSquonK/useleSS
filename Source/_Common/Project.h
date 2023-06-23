@@ -216,12 +216,6 @@ struct QuestProp
 	[[nodiscard]] static const QuestProp * Get(const QuestId questId);
 };
 
-struct FILTER {
-	TCHAR	m_szSrc[ 64 ];
-	TCHAR	m_szDst[ 64 ];
-};
-
-
 struct STRUCTURE {
 	TCHAR	szName[ 32 ];
 	TCHAR	szEName[ 32 ];
@@ -713,8 +707,8 @@ public:
 	CFixedArray< ItemProp >		m_aPropSkill;
 	CFixedArray< AddSkillProp > m_aPropAddSkill;
 	CFixedArray< tagColorText >	m_colorText;
-	std::map<std::string, std::string>	m_mapAlphaFilter;
-	std::map<std::string, std::string>	m_mapNonalphaFilter;
+	std::map<CString, CString>               m_mapAlphaFilter;
+	std::vector<std::pair<CString, CString>> m_mapNonalphaFilter;
 	CFixedArray< QuestProp >	m_aPropQuest ;
 	CFixedArray<GUILDQUESTPROP>	m_aPropGuildQuest;
 	CMapStringToPtr				m_mapCharacter;

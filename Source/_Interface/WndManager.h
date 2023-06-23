@@ -659,7 +659,7 @@ public:
 		PutString(text.GetString(), nullptr, prj.GetTextColor(textId));
 	}
 	void ParsingChat( CString string );
-	void WordChange( CString& rString );
+	static void WordChange( CString& rString );
 
 	BOOL	IsTitle()	{	return m_bTitle;	}
 

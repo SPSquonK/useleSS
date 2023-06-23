@@ -2169,71 +2169,57 @@ void CWndMgr::WordChange( CString& rString )
 
 	CScanner s;
 	s.SetProg( (LPVOID)(LPCSTR)rString );
-
 	s.GetToken();
-	BOOL bFirst	= ( *s.m_pProg == ' ' );
 
-	while( s.tok != FINISHED )
-	{
+	while (s.tok != FINISHED) {
+		const bool bFirst = (*s.m_pProg == ' ');
+
 		CString str		= s.Token;
-//		str.MakeLower();
 
 		CScanner s1;
 		s1.SetProg( (LPVOID)(LPCSTR)str );
 		s1.GetToken();
-		BOOL bSecond	= ( *s1.m_pProg == ' ' );
-		BOOL bTerminate	= ( *s1.m_pProg == '\0' );
 
-		while( s1.tok != FINISHED )
-		{
-			CString str1	= s1.Token;
+		while (s1.tok != FINISHED) {
+			const bool bSecond    = (*s1.m_pProg == ' ');
+			const bool bTerminate = (*s1.m_pProg == '\0');
+
+			CString str1 = s1.Token;
 			str1.MakeLower();
 
-			auto it	= prj.m_mapAlphaFilter.find( (LPSTR)(LPCSTR)str1 );
-			if( it != prj.m_mapAlphaFilter.end() )
-			{
-//				if( g_Option.m_nSlangWord == 1 ) 
-				{
-					TCHAR szWord[256]	= { 0,};
-					memset( szWord, '*', lstrlen( str1 ) );
-					strResult	+= szWord;
+			const auto it = prj.m_mapAlphaFilter.find(str1);
+			if (it != prj.m_mapAlphaFilter.end()) {
+				if (g_Option.m_nSlangWord == 1) {
+					TCHAR szWord[256] = { 0, };
+					memset(szWord, '*', lstrlen(str1));
+					strResult += szWord;
+				} else {
+					strResult += it->second;
 				}
-//				else
-//				{
-//					strResult	+= it->second.data();
-//				}
+			} else {
+				strResult += s1.Token;
 			}
-			else
-			{
-				strResult	+= s1.Token;
+
+			if ((bTerminate && bFirst) || (!bTerminate && bSecond)) {
+				strResult += ' ';
 			}
-			if( ( bTerminate && bFirst ) ||
-				( !bTerminate && bSecond ) )
-				strResult	+= ' ';
-//			strResult	+= ' ';
+
 			s1.GetToken();
-			bSecond	= ( *s1.m_pProg == ' ' );
-			bTerminate	= ( *s1.m_pProg == '\0' );
 		}
 		s.GetToken();
-		bFirst	= ( *s.m_pProg == ' ' );
 	}
 
-	for( auto it = prj.m_mapNonalphaFilter.begin(); it != prj.m_mapNonalphaFilter.end(); ++it )
-	{
-		CString str		= it->first.data();
-		if( g_Option.m_nSlangWord == 1 ) 
-		{
-			TCHAR	szWord[256]	= { 0,};
-			memset( szWord, '*', str.GetLength() );
-			strResult.Replace( str, szWord );
-		}
-		else
-		{
-			strResult.Replace( str, it->second.data() );
+	for (const auto & [str, replacement] : prj.m_mapNonalphaFilter) {
+		if (g_Option.m_nSlangWord == 1) {
+			TCHAR	szWord[256] = { 0, };
+			memset(szWord, '*', str.GetLength());
+			strResult.Replace(str, szWord);
+		} else {
+			strResult.Replace(str, replacement);
 		}
 	}
-	rString		= strResult;
+
+	rString = strResult;
 }
 // 챗에서 또는 매크로로 입력된 텍스트가 이 함수를 용도에 맞게 분류된다.
 void CWndMgr::ParsingChat( CString string )
