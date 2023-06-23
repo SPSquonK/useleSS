@@ -2250,8 +2250,7 @@ void CWndMgr::ParsingChat( CString string )
 
 	if( string.Find("#l") != -1 )
 	{
-		int mCut = 0;
-		mCut = string.Find('/');
+		int mCut = string.Find('/');
 
 		if( mCut != -1 )
 		{
@@ -2278,7 +2277,7 @@ void CWndMgr::ParsingChat( CString string )
 			int nOriginalSecond = static_cast< int >( BANNING_MILLISECOND - static_cast< int >( m_timerBanning.GetLeftTime() ) ) / 1000;
 			int nMinute = static_cast< int >( nOriginalSecond / 60 );
 			int nSecond = static_cast< int >( nOriginalSecond % 60 );
-			CString strMessage = _T( "" );
+			CString strMessage;
 			// 현재 채팅 금지 페널티를 받고 있습니다. (남은 시간: %d분 %d초)
 			strMessage.Format( prj.GetText( TID_GAME_ERROR_CHATTING_3 ), nMinute, nSecond );
 			pWndChat->PutString( strMessage, 0xffff0000 );
@@ -3261,8 +3260,7 @@ BOOL CWndMgr::IsDstRate(int nDstParam)
 void CWndMgr::FormalizeChatString( CString & str )
 {	// 康: 2008-07-18
 	// "을 이용하여 클라이언트 명령어 파싱을 무시하는 행위를 막기 위한 것
-	str.TrimLeft();
-	str.TrimRight();
+	str.Trim();
 
 	while( str.GetLength() > 0 && str.GetAt( 0 ) == '\"' )
 	{
@@ -3272,8 +3270,7 @@ void CWndMgr::FormalizeChatString( CString & str )
 		{
 			if( str.GetAt( str.GetLength() - 1 ) == '\"' )
 				str.Delete( str.GetLength() - 1 );
-			str.TrimLeft();
-			str.TrimRight();
+			str.Trim();
 		}
 	} 
 }

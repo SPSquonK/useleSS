@@ -125,8 +125,7 @@ DWORD IsValidPlayerNameTWN(CString & string);
 //        0 > : error
 DWORD IsValidPlayerName( CString& strName )
 {
-	strName.TrimLeft();
-	strName.TrimRight();
+	strName.Trim();
 
 	LPCTSTR lpszString = strName;
 	if( strName.IsEmpty() )
@@ -223,8 +222,7 @@ DWORD IsValidPlayerNameTWN( CString& string )
 
 std::expected<CString, GuildNameError> CheckGuildName(LPCTSTR szName) {
 	CString strGuild = szName;
-	strGuild.TrimLeft();
-	strGuild.TrimRight();
+	strGuild.Trim();
 
 	const int nLength = strGuild.GetLength();
 	if (nLength < 3) return std::unexpected(GuildNameError::TooShort);

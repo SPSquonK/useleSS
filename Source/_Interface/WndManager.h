@@ -750,7 +750,7 @@ public:
 
 protected:
 	void __HotKeyChange( DWORD dwId, char* pch );
-	void	FormalizeChatString( CString & str );
+	static void FormalizeChatString( CString & str );
 };
 
 extern std::vector<CWndBase *> m_wndOrder;

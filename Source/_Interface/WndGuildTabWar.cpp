@@ -338,7 +338,7 @@ BOOL CWndGuildWarDecl::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult)
 			if (g_pPlayer) {
 				CString strGuild = pWndEdit->GetString();
 				if (strGuild.GetLength() >= 3 && strGuild.GetLength() < MAX_G_NAME) {
-					strGuild.TrimLeft();	strGuild.TrimRight();
+					strGuild.Trim();
 					g_DPlay.SendDeclWar(g_pPlayer->m_idPlayer, strGuild.GetString());
 					Destroy();
 				}

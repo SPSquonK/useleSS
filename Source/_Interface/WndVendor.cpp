@@ -264,8 +264,7 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			if (!g_pPlayer->m_vtInfo.VendorIsVendor()) return TRUE;
 			CWndEdit* pWndEdit	= (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
 			CString strVendor	= pWndEdit->GetString();
-			strVendor.TrimLeft();
-			strVendor.TrimRight();
+			strVendor.Trim();
 
 			// 매물 액수 총합 + 현재 소지금이 2억1천이 넘으면 경고띄우고 리턴시킴.
 			int nGold = g_pPlayer->GetGold();

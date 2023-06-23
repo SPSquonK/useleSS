@@ -134,9 +134,8 @@ BOOL CWndGuildNickName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 		CWndEdit *pEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
 		CString strNickName = pEdit->GetString();
 		
-		strNickName.TrimLeft();
-		strNickName.TrimRight();
-		LPCTSTR lpszString = strNickName;
+		strNickName.Trim();
+		
 		if( strNickName.IsEmpty() == FALSE )
 		{
 			const DWORD error = CheckGuildNickName(strNickName);

@@ -805,8 +805,7 @@ BOOL TextCmd_QuerySetPlayerName(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 	CString strPlayer	= scanner.Token;
-	strPlayer.TrimLeft();
-	strPlayer.TrimRight();
+	strPlayer.Trim();
 	g_dpDBClient.SendQuerySetPlayerName( pUser->m_idPlayer, strPlayer, MAKELONG( 0xffff, 0 ) );
 	return TRUE;
 #endif	// __WORLDSERVER
@@ -817,8 +816,7 @@ BOOL TextCmd_QuerySetGuildName(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 	CString strGuild	= scanner.Token;
-	strGuild.TrimLeft();
-	strGuild.TrimRight();
+	strGuild.Trim();
 	CGuild* pGuild	= g_GuildMng.GetGuild( pUser->m_idGuild );
 	if( pGuild && pGuild->IsMaster( pUser->m_idPlayer ) )
 	{

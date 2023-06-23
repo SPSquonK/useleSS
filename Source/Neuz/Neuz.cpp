@@ -1103,15 +1103,13 @@ void CNeuzApp::SetAccountInfo( LPCTSTR lpszAccount, LPCTSTR lpszpw )
 #endif	// __TWN_LOGIN0816
 {
 	CString strAccount	= lpszAccount;
-	strAccount.TrimLeft();	
-	strAccount.TrimRight();		// TRIM
+	strAccount.Trim();	
 	_tcscpy( g_Neuz.m_szAccount, (LPCTSTR)strAccount );
 	_tcslwr( g_Neuz.m_szAccount );
 
 #ifdef __TWN_LOGIN0816
 	CString strSessionPwd	= lpszSessionPwd;
-	strSessionPwd.TrimLeft();	
-	strSessionPwd.TrimRight();
+	strSessionPwd.Trim();	
 	_tcscpy( g_Neuz.m_szSessionPwd, (LPCTSTR)strSessionPwd );
 #endif	// __TWN_LOGIN0816
 

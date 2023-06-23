@@ -62,8 +62,7 @@ void CWndPartyChangeName::OnSendName() {
 	CWndEdit * pEdit = GetDlgItem<CWndEdit>(WIDC_EDIT1);
 	CString PartyName = pEdit->GetString();
 
-	PartyName.TrimLeft();
-	PartyName.TrimRight();
+	PartyName.Trim();
 
 	const DWORD error = CheckPartyChangeName(PartyName);
 	if (error != 0) {
