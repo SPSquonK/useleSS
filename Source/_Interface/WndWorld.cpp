@@ -6691,9 +6691,8 @@ BOOL CWndWorld::Process()
 			}
 			m_wndMenuMover.SetVisible(FALSE);
 
-			CWndBase* pWndBase = g_WndMng.GetWndBase( APP_DIALOG_EX );
-			if( pWndBase ) 
-				pWndBase->Destroy();
+
+			Windows::DestroyIfOpened(APP_DIALOG_EX);
 
 			if( g_pPlayer->m_vtInfo.GetOther() )
 			{
@@ -6704,352 +6703,126 @@ BOOL CWndWorld::Process()
 				g_pPlayer->m_vtInfo.SetOther( NULL );
 			}
 			
-			pWndBase	= g_WndMng.GetWndBase( APP_INVENTORY );
+			CWndBase * pWndBase	= g_WndMng.GetWndBase( APP_INVENTORY );
 			if( pWndBase )
 			{
 				((CWndInventory*)pWndBase)->BaseMouseCursor();
-				if(g_WndMng.m_pWndSmeltSafetyConfirm != NULL)
+				
+				if (g_WndMng.m_pWndSmeltSafetyConfirm) {
 					SAFE_DELETE(g_WndMng.m_pWndSmeltSafetyConfirm)
+				}
 			}
 
 			pWndBase	= g_WndMng.GetWndVendorBase();
 			if( pWndBase )
 			{
 				pWndBase->Destroy();
-				pWndBase	= g_WndMng.GetWndBase( APP_INVENTORY );
-				if( pWndBase )
-					pWndBase->Destroy();
+
+				Windows::DestroyIfOpened(APP_INVENTORY);
 			}
 
-			pWndBase	= g_WndMng.GetWndBase( APP_SHOP_ );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-				pWndBase = g_WndMng.GetWndBase( APP_TRADE_GOLD );
-				if( pWndBase )	
-					pWndBase->Destroy();
-				pWndBase = g_WndMng.GetWndBase( APP_INVENTORY );
-				if( pWndBase ) 
-					pWndBase->Destroy();
+			if (Windows::DestroyIfOpened(APP_SHOP_)) {
+				Windows::DestroyIfOpened(APP_TRADE_GOLD, APP_INVENTORY);
 			}
-			pWndBase	= g_WndMng.GetWndBase( APP_BEAUTY_SHOP_SKIN );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-				
-				pWndBase	= g_WndMng.GetWndBase( APP_INVENTORY );
-				
-				if( pWndBase )
-					pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_BEAUTY_SHOP_EX );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-				
-				pWndBase	= g_WndMng.GetWndBase( APP_INVENTORY );
-				
-				if( pWndBase )
-					pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
 
-				pWndBase	= g_WndMng.GetWndBase( APP_INVENTORY );
-				
-				if( pWndBase )
-					pWndBase->Destroy();
-			}	
+			if (Windows::DestroyIfOpened(APP_BEAUTY_SHOP_SKIN)) {
+				Windows::DestroyIfOpened(APP_INVENTORY);
+			}
+
+			if (Windows::DestroyIfOpened(APP_BEAUTY_SHOP_EX)) {
+				Windows::DestroyIfOpened(APP_INVENTORY);
+			}
+
+			if (Windows::DestroyIfOpened(APP_SUMMON_ANGEL)) {
+				Windows::DestroyIfOpened(APP_INVENTORY);
+			}
 #ifdef __EVE_MINIGAME
-			if(g_WndMng.m_pWndKawiBawiBoGameConfirm != NULL)
-			{
+			if (g_WndMng.m_pWndKawiBawiBoGameConfirm) {
 				g_WndMng.m_pWndKawiBawiBoGameConfirm->Destroy();
 			}
-			pWndBase	= g_WndMng.GetWndBase( APP_MINIGAME_KAWIBAWIBO );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
+			
+			Windows::DestroyIfOpened(APP_MINIGAME_KAWIBAWIBO);
+			
+			
+			if (Windows::DestroyIfOpened(APP_MINIGAME_WORD)) {
+				Windows::DestroyIfOpened(APP_INVENTORY);
 			}
-			pWndBase	= g_WndMng.GetWndBase( APP_MINIGAME_WORD );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
 
-				pWndBase	= g_WndMng.GetWndBase( APP_INVENTORY );
-				
-				if( pWndBase )
-					pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_MINIGAME_DICE );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_MINIGAME_PUZZLE );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
+			Windows::DestroyIfOpened(APP_MINIGAME_DICE, APP_MINIGAME_PUZZLE);
+
 #endif //__EVE_MINIGAME
-			pWndBase	= g_WndMng.GetWndBase( APP_SMELT_MIXJEWEL );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
+			if (Windows::DestroyIfOpened(APP_SMELT_MIXJEWEL)) {
+				Windows::DestroyIfOpened(APP_INVENTORY);
+			}
 
-				pWndBase	= g_WndMng.GetWndBase( APP_INVENTORY );
-				
-				if( pWndBase )
-					pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_SMELT_JEWEL );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_SMELT_EXTRACTION);
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_SMELT_CHANGEWEAPON );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_PET_FOODMILL );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
-			pWndBase = g_WndMng.GetWndBase( APP_SMELT_REMOVE_PIERCING_EX );
-			if(pWndBase)
-			{
-				pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_SMELT_REMOVE_JEWEL );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_PET_TRANS_EGGS );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
+			Windows::DestroyIfOpened(
+				APP_SMELT_JEWEL, APP_SMELT_EXTRACTION, APP_SMELT_CHANGEWEAPON,
+				APP_PET_FOODMILL,
+				APP_SMELT_REMOVE_PIERCING_EX, APP_SMELT_REMOVE_JEWEL,
+				APP_PET_TRANS_EGGS,
 #ifdef __JEFF_11
-			pWndBase	= g_WndMng.GetWndBase( APP_PET_RES );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
+				APP_PET_RES,
 #endif
-			pWndBase	= g_WndMng.GetWndBase( APP_AWAKENING );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_LVREQDOWN );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_CANCEL_BLESSING );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_HERO_SKILLUP );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
+				APP_AWAKENING,
+				APP_LVREQDOWN,
+				APP_HERO_SKILLUP,
 #ifdef __TRADESYS
-			pWndBase	= g_WndMng.GetWndBase( APP_DIALOG_EVENT );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
+				APP_DIALOG_EVENT,
 #endif //__TRADESYS
-			pWndBase	= g_WndMng.GetWndBase( APP_HEAVEN_TOWER );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_REMOVE_ATTRIBUTE );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-			}
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
+				APP_HEAVEN_TOWER
+			);
 
-				pWndBase	= g_WndMng.GetWndBase( APP_INVENTORY );
-
-				if( pWndBase )
-					pWndBase->Destroy();
+			if (Windows::DestroyIfOpened(APP_REMOVE_ATTRIBUTE)) {
+				Windows::DestroyIfOpened(APP_INVENTORY);
 			}
+
 			pWndBase	= g_WndMng.GetWndBase( APP_COMMON_BANK );
 			if( pWndBase )
 			{
 				g_DPlay.SendCloseBankWnd();
 				pWndBase->Destroy();
-				pWndBase = g_WndMng.GetWndBase( APP_TRADE_GOLD );
-				if( pWndBase )	
-					pWndBase->Destroy();
-				pWndBase = g_WndMng.GetWndBase( APP_INVENTORY );
-				if( pWndBase )	
-					pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_REPAIR );
-			if( pWndBase )
-			{
-				pWndBase->Destroy();
-				pWndBase = g_WndMng.GetWndBase( APP_INVENTORY );
-				if( pWndBase )	pWndBase->Destroy();
-			}
-			pWndBase	= g_WndMng.GetWndBase( APP_BANK_PASSWORD );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_CONFIRM_BANK );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_DROP_CONFIRM );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_DROP_ITEM );
-			if( pWndBase )
-				pWndBase->Destroy();
 
-			pWndBase	= g_WndMng.GetWndBase( APP_GUILD_BANK );
-			if( pWndBase )
-			{
+				Windows::DestroyIfOpened(APP_TRADE_GOLD, APP_INVENTORY);
+			}
+			
+			if (Windows::DestroyIfOpened(APP_REPAIR)) {
+				Windows::DestroyIfOpened(APP_INVENTORY);
+			}
+
+			Windows::DestroyIfOpened(
+				APP_BANK_PASSWORD, APP_CONFIRM_BANK,
+				APP_DROP_CONFIRM, APP_DROP_ITEM
+			);
+			
+			if (CWndBase * pWndBase = g_WndMng.GetWndBase(APP_GUILD_BANK)) {
 				g_DPlay.SendCloseGuildBankWnd();
 				pWndBase->Destroy();
 			}
-			pWndBase	= g_WndMng.GetWndBase( APP_RANK_WAR );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RANK_INFO );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RANK_GUILD );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_PIERCING );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_TEST );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_COMMERCIAL_ELEM );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_REMOVE_ELEM );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_CHANGECLASS_1 );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_CHANGECLASS_2 );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_POST );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_POST_SEND );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_POST_RECEIVE );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_POST_READ );
-			if( pWndBase )
-				pWndBase->Destroy();
-			
-			pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_RANK_P );
-			if( pWndBase )
-				pWndBase->Destroy();			
-			pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_RANKING );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_GUILD_WAR_STATE );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_CLOSE_EXISTING_CONNECTION );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_SELECTION );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_1TO1_SELECTION );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_1TO1_OFFERSTATE );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_GUILDCOMBAT_1TO1_OFFER );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_SECRETROOM_SELECTION );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_SECRETROOM_OFFER );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_SECRETROOM_OFFERSTATE );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_SECRETROOM_TEXRATE_CHECK );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_SECRETROOM_BOARD );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RAINBOWRACE_OFFER );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RAINBOWRACE_INFO );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RAINBOWRACE_RULE );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RAINBOWRACE_RANKING );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RAINBOWRACE_PRIZE );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RR_MINIGAME_KAWIBAWIBO );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RR_MINIGAME_DICE );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RR_MINIGAME_ARITHMETIC );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RR_MINIGAME_STOPWATCH );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RR_MINIGAME_TYPING );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RR_MINIGAME_CARD );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_RR_MINIGAME_LADDER );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_CHANGE_ATTRIBUTE );
-			if( pWndBase )
-				pWndBase->Destroy();
-			pWndBase	= g_WndMng.GetWndBase( APP_SMELT_SAFETY );
-			if( pWndBase )
-				pWndBase->Destroy();
+
+			Windows::DestroyIfOpened(
+				APP_RANK_WAR, APP_RANK_INFO, APP_RANK_GUILD,
+				APP_PIERCING,
+				APP_TEST,
+				APP_COMMERCIAL_ELEM, APP_REMOVE_ELEM,
+				APP_CHANGECLASS_1, APP_CHANGECLASS_2,
+				APP_POST, APP_POST_SEND, APP_POST_RECEIVE, APP_POST_READ,
+				APP_GUILDCOMBAT_RANK_P, APP_GUILDCOMBAT_RANKING,
+				APP_GUILD_WAR_STATE,
+				APP_CLOSE_EXISTING_CONNECTION,
+				APP_GUILDCOMBAT_SELECTION,
+				APP_GUILDCOMBAT_1TO1_SELECTION, APP_GUILDCOMBAT_1TO1_OFFERSTATE,
+				APP_GUILDCOMBAT_1TO1_OFFER,
+				APP_SECRETROOM_SELECTION, APP_SECRETROOM_OFFER, APP_SECRETROOM_OFFERSTATE,
+				APP_SECRETROOM_TEXRATE_CHECK, APP_SECRETROOM_BOARD,
+				APP_RAINBOWRACE_OFFER, APP_RAINBOWRACE_INFO, APP_RAINBOWRACE_RULE,
+				APP_RAINBOWRACE_RANKING, APP_RAINBOWRACE_PRIZE,
+				APP_RR_MINIGAME_KAWIBAWIBO, APP_RR_MINIGAME_DICE,
+				APP_RR_MINIGAME_ARITHMETIC, APP_RR_MINIGAME_STOPWATCH, 
+				APP_RR_MINIGAME_TYPING, APP_RR_MINIGAME_CARD, 
+				APP_RR_MINIGAME_LADDER,
+				APP_CHANGE_ATTRIBUTE, APP_SMELT_SAFETY
+				);
+
 		}
 		g_SoundMng.SetListener( g_pPlayer->GetPos(), g_Neuz.m_camera.m_fCurRotx );
 		g_WorldMng()->SetCamera( &g_Neuz.m_camera );
