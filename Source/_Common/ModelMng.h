@@ -28,6 +28,14 @@ struct MODELELEM {
 	BYTE  m_bReserved : 1;
 	BYTE m_bRenderFlag : 1;
 
+	[[nodiscard]] const TCHAR * GetMotion(int i) const {
+		if (i < 0 || i >= m_nMax) {
+			Error("MODELELEM : out of range %d", i);
+			i = 0;
+		}
+		return m_apszMotion ? &m_apszMotion[i * 32] : nullptr;
+	}
+
 	[[nodiscard]] TCHAR * GetMotion(int i) {
 		if (i < 0 || i >= m_nMax) {
 			Error("MODELELEM : out of range %d", i);
@@ -35,6 +43,8 @@ struct MODELELEM {
 		}
 		return m_apszMotion ? &m_apszMotion[i * 32] : nullptr;
 	}
+
+	void MakeMotionName(TCHAR * pszMotionName, DWORD dwMotion) const;
 };
 
 class CModel;
@@ -76,10 +86,9 @@ public:
 
 	[[nodiscard]] MODELELEM * GetModelElem(DWORD dwType, DWORD dwIndex);
 	void MakeModelName( TCHAR* pszModelName, DWORD dwType, DWORD dwIndex );
-	void MakeMotionName( TCHAR* pszMotionName, DWORD dwType, DWORD dwIndex, DWORD dwMotion );
 	void MakePartsName( TCHAR* pszPartsName, LPCTSTR lpszRootName, DWORD dwIndex, int nSex = SEX_SEXLESS );
 
-	BOOL    LoadMotion( CModel* pModel, DWORD dwType, DWORD dwIndex, DWORD dwMotion );
+	BOOL    LoadMotion(CModelObject * pModel, DWORD dwType, DWORD dwIndex, DWORD dwMotion );
 	CModel * LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts = FALSE);
 
 	template<typename T>

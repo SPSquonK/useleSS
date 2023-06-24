@@ -97,44 +97,44 @@ void CModelMng::MakePartsName( TCHAR* pszPartsName, LPCTSTR lpszRootName, DWORD 
 	}
 	_tcscat( pszPartsName, _T( ".o3d" ) );
 }
-void CModelMng::MakeMotionName( TCHAR* pszMotionName, DWORD dwType, DWORD dwIndex, DWORD dwMotion )
-{
-	MODELELEM * lpModelElem = GetModelElem( dwType, dwIndex );
-	if( lpModelElem == NULL )
-		Error( "MakeMotionName GetModelElem dwType:%d dwIndex:%d, dwMotion:%d", dwType, dwIndex, dwMotion );
 
+void MODELELEM::MakeMotionName( TCHAR* pszMotionName, DWORD dwMotion ) const {
 	// Set to MTI_STAND (stop state) when out of range
-	if( (int)( dwMotion ) >= lpModelElem->m_nMax || dwMotion == NULL_ID )
-	{
+	if (static_cast<int>(dwMotion) >= m_nMax || dwMotion == NULL_ID) {
 		dwMotion = MTI_STAND;
 	}
 
-	_tcscpy( pszMotionName, g_szRoot[ dwType ] );
+	_tcscpy( pszMotionName, g_szRoot[ m_dwType ] );
 	_tcscat( pszMotionName, "_" );
 
-	LPCTSTR lpszMotion = lpModelElem->GetMotion( dwMotion ); 
+	LPCTSTR lpszMotion = GetMotion( dwMotion ); 
 	if( _tcschr( lpszMotion, '_' ) == NULL )
 	{
-		_tcscat( pszMotionName, lpModelElem->m_szName );
+		_tcscat( pszMotionName, m_szName );
 		_tcscat( pszMotionName, "_" );
 	}
 
 	// Forced setting to MTI_STAND (stop state) in case of blank
-	if( lpszMotion[0] == 0 )
+	if( lpszMotion[0] == '\0')
 	{
 		dwMotion = MTI_STAND;
-		lpszMotion = lpModelElem->GetMotion( dwMotion ); 
+		lpszMotion = GetMotion( dwMotion ); 
 	}
 
 	_tcscat( pszMotionName, lpszMotion );
 	_tcscat( pszMotionName, ".ani" );
 }
-BOOL CModelMng::LoadMotion( CModel* pModel, DWORD dwType, DWORD dwIndex, DWORD dwMotion )
+BOOL CModelMng::LoadMotion( CModelObject * pModel, DWORD dwType, DWORD dwIndex, DWORD dwMotion )
 {
 	if( dwType != OT_MOVER )
 		return FALSE;
 	TCHAR szMotionName[ MAX_PATH ];
-	MakeMotionName( szMotionName, dwType, dwIndex, dwMotion );
+
+	MODELELEM * lpModelElem = GetModelElem(dwType, dwIndex);
+	if (lpModelElem == NULL)
+		Error("MakeMotionName GetModelElem dwType:%d dwIndex:%d, dwMotion:%d", dwType, dwIndex, dwMotion);
+
+	lpModelElem->MakeMotionName( szMotionName, dwMotion );
 
 	((CModelObject*)pModel)->LoadMotion( szMotionName );		// Read bone animation
 	return TRUE;
