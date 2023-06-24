@@ -147,15 +147,15 @@ void  CMover::SetHairColor( FLOAT r, FLOAT g, FLOAT b )
 	{
 		if( GetSex() == SEX_MALE )
 		{
-			m_fHairColorR = (nMaleHairColor[m_dwHairMesh][0])/255.f;
-			m_fHairColorG = (nMaleHairColor[m_dwHairMesh][1])/255.f;
-			m_fHairColorB = (nMaleHairColor[m_dwHairMesh][2])/255.f;
+			m_fHairColorR = (nMaleHairColor[m_skin.hairMesh][0])/255.f;
+			m_fHairColorG = (nMaleHairColor[m_skin.hairMesh][1])/255.f;
+			m_fHairColorB = (nMaleHairColor[m_skin.hairMesh][2])/255.f;
 		}
 		else
 		{
-			m_fHairColorR = (nFeMaleHairColor[m_dwHairMesh][0])/255.f;
-			m_fHairColorG = (nFeMaleHairColor[m_dwHairMesh][1])/255.f;
-			m_fHairColorB = (nFeMaleHairColor[m_dwHairMesh][2])/255.f;
+			m_fHairColorR = (nFeMaleHairColor[m_skin.hairMesh][0])/255.f;
+			m_fHairColorG = (nFeMaleHairColor[m_skin.hairMesh][1])/255.f;
+			m_fHairColorB = (nFeMaleHairColor[m_skin.hairMesh][2])/255.f;
 		}
 	}
 	else
@@ -189,15 +189,15 @@ void CMover::SetHairColor( DWORD dwHairColor )
 	{
 		if( GetSex() == SEX_MALE )
 		{
-			m_fHairColorR = (nMaleHairColor[m_dwHairMesh][0])/255.f;
-			m_fHairColorG = (nMaleHairColor[m_dwHairMesh][1])/255.f;
-			m_fHairColorB = (nMaleHairColor[m_dwHairMesh][2])/255.f;
+			m_fHairColorR = (nMaleHairColor[m_skin.hairMesh][0])/255.f;
+			m_fHairColorG = (nMaleHairColor[m_skin.hairMesh][1])/255.f;
+			m_fHairColorB = (nMaleHairColor[m_skin.hairMesh][2])/255.f;
 		}
 		else
 		{
-			m_fHairColorR = (nFeMaleHairColor[m_dwHairMesh][0])/255.f;
-			m_fHairColorG = (nFeMaleHairColor[m_dwHairMesh][1])/255.f;
-			m_fHairColorB = (nFeMaleHairColor[m_dwHairMesh][2])/255.f;
+			m_fHairColorR = (nFeMaleHairColor[m_skin.hairMesh][0])/255.f;
+			m_fHairColorG = (nFeMaleHairColor[m_skin.hairMesh][1])/255.f;
+			m_fHairColorB = (nFeMaleHairColor[m_skin.hairMesh][2])/255.f;
 		}
 
 	}

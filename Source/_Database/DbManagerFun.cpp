@@ -376,10 +376,10 @@ void CDbManager::GetBaseCharacter( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_
 	pMover->m_nHitPoint		= (LONG)qry->GetInt( "m_nHitPoint" );
 	pMover->m_nManaPoint	= (LONG)qry->GetInt( "m_nManaPoint" );
 	pMover->m_nFatiguePoint		= (LONG)qry->GetInt( "m_nFatiguePoint" );
-	pMover->m_dwSkinSet		= (DWORD)qry->GetInt( "m_dwSkinSet" );
-	pMover->m_dwHairMesh	= (DWORD)qry->GetInt( "m_dwHairMesh" );
+	pMover->m_skin.skinSet  = static_cast<std::uint8_t>(qry->GetInt("m_dwSkinSet"));
+	pMover->m_skin.hairMesh = static_cast<std::uint8_t>(qry->GetInt("m_dwHairMesh"));
 	pMover->m_dwHairColor	= (DWORD)qry->GetInt( "m_dwHairColor" );
-	pMover->m_dwHeadMesh	= (DWORD)qry->GetInt( "m_dwHeadMesh" );
+	pMover->m_skin.headMesh = static_cast<std::uint8_t>(qry->GetInt("m_dwHeadMesh"));
 	pMover->SetSex( (BYTE)qry->GetInt( "m_dwSex" ) );
 	pMover->m_dwRideItemIdx		= (DWORD)qry->GetInt( "m_dwRideItemIdx" );
 	pMover->SetGold( qry->GetInt("m_dwGold") );

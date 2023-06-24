@@ -408,11 +408,9 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 		ar >> g_Neuz.m_apPlayer[slot]->m_idparty;
 		ar >> g_Neuz.m_apPlayer[slot]->m_idGuild;
 		ar >> g_Neuz.m_apPlayer[slot]->m_idWar;
-		ar >> g_Neuz.m_apPlayer[slot]->m_dwSkinSet;
-		ar >> g_Neuz.m_apPlayer[slot]->m_dwHairMesh;
+		ar >> g_Neuz.m_apPlayer[slot]->m_skin;
 		ar >> g_Neuz.m_apPlayer[slot]->m_dwHairColor;
 
-		ar >> g_Neuz.m_apPlayer[slot]->m_dwHeadMesh;
 		ar >> bySex;
 		g_Neuz.m_apPlayer[slot]->SetSex( bySex );
 		ar >> g_Neuz.m_apPlayer[slot]->m_nJob;

@@ -243,12 +243,12 @@ BOOL TextCmd_GameSetting(CScanner &, CPlayer_ * pUser) {
 BOOL TextCmd_ChangeFace(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 	DWORD dwFace = scanner.GetNumber();
-	if( dwFace < 0 || 4 < dwFace )
+	if( dwFace < 0 || dwFace >= MAX_HEAD )
 		return TRUE;
 	
 	if( (pUser->m_dwMode & NOTFRESH_MODE) || (pUser->m_dwMode & NOTFRESH_MODE2) )
 	{
-		pUser->m_dwHeadMesh = dwFace;
+		pUser->m_skin.headMesh = dwFace;
 		g_UserMng.AddChangeFace(*pUser, dwFace);
 		if( pUser->m_dwMode & NOTFRESH_MODE )
 		{
@@ -288,7 +288,7 @@ BOOL TextCmd_AroundKill(CScanner &, CPlayer_ * pUser) {
 
 	CWorld* pWorld	= pUser->GetWorld();
 	if( pWorld )
-		pUser->SendDamageAround( AF_MAGICSKILL, (CMover*)pUser, OBJTYPE_MONSTER, 1, 64.0f, 0.0, 1.0f );
+		pUser->SendDamageAround( AF_MAGICSKILL, pUser, OBJTYPE_MONSTER, 1, 64.0f, 0.0, 1.0f );
 #endif // __WORLDSERVER
 	return TRUE;
 }

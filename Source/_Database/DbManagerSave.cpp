@@ -108,10 +108,13 @@ void CDbManager::SavePlayer( CQuery *qry, CQuery* pQueryLog, CMover* pMover, cha
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vPos.y );
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vPos.z );
 	bOK[++j] = qry->BindParameter( ++i, pMover->m_szCharacterKey, 32 );
-	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwSkinSet );
-	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwHairMesh );
+	DWORD skinSet = pMover->m_skin.skinSet;
+	bOK[++j] = qry->BindParameter( ++i, &skinSet);
+	DWORD hairMesh = pMover->m_skin.hairMesh;
+	bOK[++j] = qry->BindParameter( ++i, &hairMesh);
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwHairColor );
-	bOK[++j] = qry->BindParameter( ++i, &pMover->m_dwHeadMesh );
+	DWORD headMesh = pMover->m_skin.headMesh;
+	bOK[++j] = qry->BindParameter( ++i, &headMesh);
 	bOK[++j] = qry->BindParameter( ++i, &nSex );
 	// 2
 	bOK[++j] = qry->BindParameter( ++i, &pMover->m_vScale.x );

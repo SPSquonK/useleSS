@@ -851,9 +851,9 @@ void CMover::InitCharacter( LPCHARACTER lpCharacter )
 			m_Inventory.DoEquip( pAddItem->m_dwObjIndex, itemElem.GetProp()->dwParts );
 		}
 
-		m_dwHairMesh = lpCharacter->m_dwHairMesh;
+		m_skin.hairMesh = static_cast<std::uint8_t>(lpCharacter->m_dwHairMesh);
 		m_dwHairColor = lpCharacter->m_dwHairColor;
-		m_dwHeadMesh = lpCharacter->m_dwHeadMesh;
+		m_skin.headMesh = static_cast<std::uint8_t>(lpCharacter->m_dwHeadMesh);
 
 		AllocShopInventory( lpCharacter );
 		LoadDialog();		// npcproperty->LoadDialog()
@@ -8268,14 +8268,14 @@ void CMover::ProcessEyeFlash()
 				{
 					if( IsDie() )
 					{
-						(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEyeFlash[m_bySex][m_dwHeadMesh];
+						(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEyeFlash[m_bySex][m_skin.headMesh];
 					}
 					else
 					{
 						if( m_tmEye[0].IsTimeOut() )
 						{
 							FLOAT fSec = 50;  // 깜박거리는 시간...
-							(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEyeFlash[m_bySex][m_dwHeadMesh];
+							(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEyeFlash[m_bySex][m_skin.headMesh];
 							m_tmEye[0].Set( fSec+1000 );
 							m_tmEye[1].Set( fSec );
 						}
@@ -8289,7 +8289,7 @@ void CMover::ProcessEyeFlash()
 							if( xRandom( 100 ) < 10 )
 								fSec = 500.0f;
 
-							(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEye[m_bySex][m_dwHeadMesh];
+							(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEye[m_bySex][m_skin.headMesh];
 							m_tmEye[1].Set( fSec+1000 );
 							m_tmEye[0].Set( fSec );
 						}	
@@ -8298,9 +8298,9 @@ void CMover::ProcessEyeFlash()
 				else
 				{
 					if( IsDie() )
-						(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEyeFlash[m_bySex][m_dwHeadMesh];
+						(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEyeFlash[m_bySex][m_skin.headMesh];
 					else
-						(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEye[m_bySex][m_dwHeadMesh];
+						(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEye[m_bySex][m_skin.headMesh];
 				}
 			}
 		}

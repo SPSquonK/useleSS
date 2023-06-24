@@ -122,10 +122,8 @@ CMover::CMover()
 	m_nDefenseResist = (BYTE)0xff;
 	memset( m_dwSMTime, 0, sizeof( DWORD ) * SM_MAX );
 	ClearEquipInfo();
-	m_dwSkinSet	= 0;//SKINSET_00;
-	m_dwHairMesh	= 0;//HAIRMESH_00;
+	m_skin = MoverSub::SkinMeshs();
 	m_dwHairColor	= 0xffffffff;
-	m_dwHeadMesh	= 0;
 	m_nTutorialState	= 0;
 	m_nFxp			= 0;
 //	m_nTxp			= 0;
@@ -603,10 +601,8 @@ void CMover::Copy( CMover * pMover, BOOL bAll )
 		m_nHitPoint	= pMover->m_nHitPoint;
 		m_nManaPoint	= pMover->m_nManaPoint;
 		m_nFatiguePoint	= pMover->m_nFatiguePoint;
-		m_dwSkinSet	= pMover->m_dwSkinSet;
-		m_dwHairMesh	= pMover->m_dwHairMesh;
+		m_skin = pMover->m_skin;
 		m_dwHairColor	= pMover->m_dwHairColor;
-		m_dwHeadMesh	= pMover->m_dwHeadMesh;
 		SetSex( pMover->GetSex() );
 		m_dwRideItemIdx	= pMover->m_dwRideItemIdx;
 		SetGold( pMover->GetGold() );

@@ -210,10 +210,8 @@ public:
 	LONG			m_nHitPoint;
 	LONG			m_nManaPoint;
 	LONG			m_nFatiguePoint;
-	DWORD			m_dwSkinSet;
-	DWORD			m_dwHairMesh;
+	MoverSub::SkinMeshs m_skin;
 	DWORD			m_dwHairColor;
-	DWORD			m_dwHeadMesh;
 
 private:
 	int		m_nTutorialState;

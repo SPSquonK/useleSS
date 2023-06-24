@@ -761,7 +761,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 			
 			if( pGmObj )
 			{
-				(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEye[m_bySex][m_dwHeadMesh];
+				(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEye[m_bySex][m_skin.headMesh];
 			}
 		}
 	}

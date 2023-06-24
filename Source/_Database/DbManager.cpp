@@ -425,9 +425,9 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 			mover.m_idGuild		= (DWORD)qry->GetInt( "m_idGuild" );
 			mover.m_idWar	= WarId(qry->GetInt( "m_idWar" ));
 
-			mover.m_dwSkinSet = (DWORD)qry->GetInt("m_dwSkinSet");
-			mover.m_dwHairMesh = (DWORD)qry->GetInt("m_dwHairMesh");
-			mover.m_dwHeadMesh = (DWORD)qry->GetInt("m_dwHeadMesh");
+			mover.m_skin.skinSet = (std::uint8_t)qry->GetInt("m_dwSkinSet");
+			mover.m_skin.hairMesh = (std::uint8_t)qry->GetInt("m_dwHairMesh");
+			mover.m_skin.headMesh = (std::uint8_t)qry->GetInt("m_dwHeadMesh");
 			mover.m_dwHairColor = (DWORD)qry->GetInt("m_dwHairColor");
 			mover.SetSex( (BYTE) qry->GetInt("m_dwSex") );
 			mover.m_nJob = (LONG)qry->GetInt("m_nJob");
@@ -495,10 +495,8 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 			arbuf << mover.m_idparty;
 			arbuf << mover.m_idGuild;
 			arbuf << mover.m_idWar;
-			arbuf << mover.m_dwSkinSet;
-			arbuf << mover.m_dwHairMesh;
+			arbuf << mover.m_skin;
 			arbuf << mover.m_dwHairColor;
-			arbuf << mover.m_dwHeadMesh;
 			arbuf << mover.GetSex();
 			arbuf << mover.m_nJob;
 			arbuf << mover.m_nLevel;

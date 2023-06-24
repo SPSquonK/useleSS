@@ -119,10 +119,8 @@ void CMover::Serialize( CAr & ar )
 		{
 			ar.WriteString( m_szName );
 			ar << GetSex();
-			ar << (u_char)m_dwSkinSet;
-			ar << (u_char)m_dwHairMesh;
+			ar << m_skin;
 			ar << m_dwHairColor;
-			ar << (u_char)m_dwHeadMesh;
 			ar << m_idPlayer;
 			ar << (u_char)m_nJob;
 			ar << (u_short)m_nStr;
@@ -291,7 +289,7 @@ void CMover::Serialize( CAr & ar )
 		}
 		else	// NPC
 		{
-			ar << (u_char)m_dwHairMesh << m_dwHairColor << (u_char)m_dwHeadMesh;
+			ar << m_skin << m_dwHairColor;
 			ar.WriteString( m_szCharacterKey );
 
 			u_char uSize	= 0;
@@ -365,9 +363,6 @@ void CMover::Serialize( CAr & ar )
 		ar >> m_dwMoverSfxId;
 		if( m_bPlayer )	// PLAYER
 		{
-			m_dwSkinSet		=
-			m_dwHairMesh	=
-			m_dwHeadMesh	=
 			m_idPlayer	=
 			m_nJob	=
 			m_nStr	=
@@ -382,10 +377,8 @@ void CMover::Serialize( CAr & ar )
 			ar.ReadString( m_szName, 32 );
 			ar >> bySex;
 			SetSex( bySex );
-			ar >> (u_char&)m_dwSkinSet;
-			ar >> (u_char&)m_dwHairMesh;
+			ar >> m_skin;
 			ar >> m_dwHairColor;
-			ar >> (u_char&)m_dwHeadMesh;
 #	if defined (__WORLDSERVER) || defined(__CLIENT)
 			SetHairColor( m_dwHairColor );
 #	endif	// __WORLDSERVER	//__CLIENT
@@ -593,7 +586,7 @@ void CMover::Serialize( CAr & ar )
 		}
 		else	// NPC
 		{
-			ar >> (u_char&)m_dwHairMesh >> m_dwHairColor >> (u_char&)m_dwHeadMesh;
+			ar >> m_skin >> m_dwHairColor ;
 			ar.ReadString( m_szCharacterKey, 32 );
 		#if defined (__WORLDSERVER) || defined(__CLIENT)
 			SetHairColor( m_dwHairColor );
