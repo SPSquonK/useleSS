@@ -7,11 +7,13 @@
 #include "sqktd/type_traits.hpp"
 
 struct MODELELEM {
+	static constexpr size_t MotionNameLength = 32;
+
 	DWORD m_dwType;
 	DWORD m_dwIndex;
 	TCHAR m_szName [48];
 	int		m_nMax;
-	TCHAR* m_apszMotion; // array of 32 * m_nMax TCHARs
+	TCHAR* m_apszMotion; // array of MotionNameLength * m_nMax TCHARs
 	DWORD m_dwModelType;
 	TCHAR m_szPart[48]; 
 	FLOAT m_fScale;
@@ -28,20 +30,12 @@ struct MODELELEM {
 	BYTE  m_bReserved : 1;
 	BYTE m_bRenderFlag : 1;
 
-	[[nodiscard]] const TCHAR * GetMotion(int i) const {
-		if (i < 0 || i >= m_nMax) {
-			Error("MODELELEM : out of range %d", i);
-			i = 0;
-		}
-		return m_apszMotion ? &m_apszMotion[i * 32] : nullptr;
-	}
-
 	[[nodiscard]] TCHAR * GetMotion(int i) {
 		if (i < 0 || i >= m_nMax) {
 			Error("MODELELEM : out of range %d", i);
 			i = 0;
 		}
-		return m_apszMotion ? &m_apszMotion[i * 32] : nullptr;
+		return m_apszMotion ? &m_apszMotion[i * MotionNameLength] : nullptr;
 	}
 
 	void MakeMotionName(TCHAR * pszMotionName, DWORD dwMotion) const;

@@ -107,7 +107,7 @@ void MODELELEM::MakeMotionName( TCHAR* pszMotionName, DWORD dwMotion ) const {
 	_tcscpy( pszMotionName, g_szRoot[ m_dwType ] );
 	_tcscat( pszMotionName, "_" );
 
-	LPCTSTR lpszMotion = GetMotion( dwMotion ); 
+	LPCTSTR lpszMotion = &m_apszMotion[dwMotion * MotionNameLength];
 	if( _tcschr( lpszMotion, '_' ) == NULL )
 	{
 		_tcscat( pszMotionName, m_szName );
@@ -118,7 +118,7 @@ void MODELELEM::MakeMotionName( TCHAR* pszMotionName, DWORD dwMotion ) const {
 	if( lpszMotion[0] == '\0')
 	{
 		dwMotion = MTI_STAND;
-		lpszMotion = GetMotion( dwMotion ); 
+		lpszMotion = &m_apszMotion[MTI_STAND * MotionNameLength];
 	}
 
 	_tcscat( pszMotionName, lpszMotion );
@@ -485,16 +485,16 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 				script.GoMark();
 				// Actual motion list setting
 				script.GetToken(); // motion name or }
-				modelElem.m_apszMotion = new TCHAR[ nMax * 32 ];
+				modelElem.m_apszMotion = new TCHAR[ nMax * MODELELEM::MotionNameLength];
 				modelElem.m_nMax = nMax;
-				ZeroMemory( modelElem.m_apszMotion, sizeof( TCHAR ) * nMax * 32 );
+				ZeroMemory( modelElem.m_apszMotion, sizeof( TCHAR ) * nMax * MODELELEM::MotionNameLength);
 				//TRACE( " %s %p\n", modelElem.m_szName, modelElem.m_apszMotion);
 				while( *script.token != '}' )
 				{
-					TCHAR szMotion[48];
+					TCHAR szMotion[MODELELEM::MotionNameLength];
 				#ifdef _DEBUG
 					if( sizeof(szMotion) <= strlen(script.token) + 1 )
-						Error( "%s string is too long. max = %zu", lpszFileName, strlen(script.token) );
+						Error( "%s string is too long. size = %zu / max = %zu", lpszFileName, strlen(script.token), MODELELEM::MotionNameLength);
 				#endif
 					_tcscpy( szMotion, script.token );
 					const UINT iMotion = script.GetNumber();
