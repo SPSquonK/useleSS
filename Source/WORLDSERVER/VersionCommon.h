@@ -15,7 +15,6 @@
 #define		__SLIDE_060502					// 땅으로 꺼지는 문제 수정 
 #define		__S8_SERVER_PORT				// 2006월 11월 7일 업데이트 - World, Cache, CoreServer
 #define		__EVENT_1101					// 출첵 이벤트
-#define		__NEWYEARDAY_EVENT_COUPON		// 설 이벤트 - 헤어샾, 성형 무료이용권 관련.
 // 해외 6차 수정 적용
 #define		__HACK_1130						// 미국 해킹 막기 - 강제 듀얼, 스크립트 실행
 #define		__QUEST_1208					// 스크립트 패킷 처리 제한

@@ -11398,16 +11398,12 @@ void CDPClient::SendSetHair( BYTE nHair, float r, float g, float b )//, int nCos
 		nB	= (BYTE)( b * 255.0f );
 
 		BEFORESENDSOLE( ar, PACKETTYPE_SET_HAIR, DPID_UNKNOWN );
-	#ifdef __NEWYEARDAY_EVENT_COUPON
 		BOOL bUseCoupon = FALSE;
 		if(g_WndMng.m_pWndBeautyShop != NULL)
 		{
 			bUseCoupon = g_WndMng.m_pWndBeautyShop->m_bUseCoupon;
 		}
 		ar << nHair << nR << nG << nB << bUseCoupon;
-	#else //__NEWYEARDAY_EVENT_COUPON
-		ar << nHair << nR << nG << nB;	// << nCost;
-	#endif //__NEWYEARDAY_EVENT_COUPON
 		SEND( ar, this, DPID_SERVERPLAYER );
 	}
 }

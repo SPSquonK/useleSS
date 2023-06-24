@@ -197,9 +197,7 @@ namespace WndMgr {
 		CWndBeautyShop * m_pWndBeautyShop = nullptr;
 		CWndFaceShop * m_pWndFaceShop = nullptr;
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 		CWndUseCouponConfirm * m_pWndUseCouponConfirm = nullptr;
-#endif //__NEWYEARDAY_EVENT_COUPON
 
 		CWndSummonAngel * m_pWndSummonAngel = nullptr;
 		CWndDialog * m_pWndDialog = nullptr;

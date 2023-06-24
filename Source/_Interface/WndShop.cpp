@@ -644,10 +644,8 @@ CWndBeautyShop::CWndBeautyShop()
 	m_ChoiceBar = -1;
 	m_pWndBeautyShopConfirm = NULL;
 	
-#ifdef __NEWYEARDAY_EVENT_COUPON
 	m_bUseCoupon = FALSE;
 	m_pWndUseCouponConfirm = NULL;
-#endif //__NEWYEARDAY_EVENT_COUPON
 } 
 
 CWndBeautyShop::~CWndBeautyShop() 
@@ -658,12 +656,9 @@ CWndBeautyShop::~CWndBeautyShop()
 	SAFE_DELETE(m_pApplyModel);
 	SAFE_DELETE(m_pHairModel);
 	SAFE_DELETE(m_pWndBeautyShopConfirm);
-#ifdef __NEWYEARDAY_EVENT_COUPON
 	SAFE_DELETE(m_pWndUseCouponConfirm);
-#endif //__NEWYEARDAY_EVENT_COUPON
 } 
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 void CWndBeautyShop::UseHairCoupon(BOOL isUse)
 {
 	m_bUseCoupon = isUse;
@@ -676,7 +671,6 @@ void CWndBeautyShop::UseHairCoupon(BOOL isUse)
 		SetTitle(title);	
 	}
 }
-#endif //__NEWYEARDAY_EVENT_COUPON
 
 HRESULT CWndBeautyShop::InvalidateDeviceObjects()
 {
@@ -912,11 +906,7 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 	BYTE nOrignalG = (BYTE)( g_pPlayer->m_fHairColorG * 255 );
 	BYTE nOrignalB = (BYTE)( g_pPlayer->m_fHairColorB * 255 );
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 	if( (nColorR != nOrignalR || nColorG != nOrignalG || nColorB != nOrignalB) && !m_bUseCoupon )
-#else //__NEWYEARDAY_EVENT_COUPON
-	if( nColorR != nOrignalR || nColorG != nOrignalG || nColorB != nOrignalB )
-#endif //__NEWYEARDAY_EVENT_COUPON
 		m_nHairColorCost = HAIRCOLOR_COST;
 	else
 		m_nHairColorCost = 0;
@@ -1336,11 +1326,7 @@ void CWndBeautyShop::OnLButtonDown( UINT nFlags, CPoint point )
 			m_dwSelectHairMesh = m_nHairNum[i];
 			CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, m_dwSelectHairMesh-1, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
 			//요금 계산..
-#ifdef __NEWYEARDAY_EVENT_COUPON
 			if( g_pPlayer->m_dwHairMesh != m_dwSelectHairMesh-1 && !m_bUseCoupon)
-#else //__NEWYEARDAY_EVENT_COUPON
-			if( g_pPlayer->m_dwHairMesh != m_dwSelectHairMesh-1 )
-#endif //__NEWYEARDAY_EVENT_COUPON
 			{
 				m_nHairCost = HAIR_COST;
 #ifdef __Y_BEAUTY_SHOP_CHARGE
@@ -1403,7 +1389,6 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				break;
 			case WIDC_OK:
 				{
-#ifdef __NEWYEARDAY_EVENT_COUPON
 					BOOL noChange = FALSE;
 					BYTE nColorR = (BYTE)( (m_fColor[0] * 255) );
 					BYTE nColorG = (BYTE)( (m_fColor[1] * 255) );
@@ -1415,7 +1400,6 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					
 					if((g_pPlayer->m_dwHairMesh == m_dwSelectHairMesh-1 ) && (nColorR == nOrignalR && nColorG == nOrignalG && nColorB == nOrignalB))
 						noChange = TRUE;
-#endif //__NEWYEARDAY_EVENT_COUPON
 		#ifdef __Y_BEAUTY_SHOP_CHARGE
 					if( ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK )
 					{
@@ -1437,7 +1421,6 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							
 							if( nCost < 0 )
 								nCost = 0;
-#ifdef __NEWYEARDAY_EVENT_COUPON
 							if(m_bUseCoupon && !noChange)
 							{
 								if(m_pWndUseCouponConfirm == NULL)
@@ -1447,7 +1430,6 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 									m_pWndUseCouponConfirm->Initialize(this);							
 								}
 							}			
-#endif //__NEWYEARDAY_EVENT_COUPON
 							if(nCost > 0)
 							{
 								if(m_pWndBeautyShopConfirm == NULL)
@@ -1459,11 +1441,7 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						}
 					}
 					int nCost = m_nHairCost + m_nHairColorCost;
-#ifdef __NEWYEARDAY_EVENT_COUPON
 					if(nCost <= 0 && (!m_bUseCoupon || noChange))
-#else //__NEWYEARDAY_EVENT_COUPON
-					if(nCost <= 0)
-#endif //__NEWYEARDAY_EVENT_COUPON
 						Destroy();
 				}
 				break;
@@ -1493,7 +1471,6 @@ void CWndBeautyShop::OnDestroy( void )
 	SAFE_DELETE(m_pWndBeautyShopConfirm);
 }
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 CWndUseCouponConfirm::CWndUseCouponConfirm() 
 {
 	m_bUseCoupon = FALSE;
@@ -1635,7 +1612,6 @@ void CWndUseCouponConfirm::SetInfo(DWORD targetWndId, int flag)
 	m_TargetWndId = targetWndId;
 	m_MainFlag = flag;
 }
-#endif //__NEWYEARDAY_EVENT_COUPON
 /*************************
 CWndBeautyShopConfirm Class
 *************************/
@@ -1786,10 +1762,8 @@ CWndFaceShop::CWndFaceShop()
 	m_dwNewFace = 6;
 	m_nCost = 0;
 	m_ChoiceBar = -1;
-#ifdef __NEWYEARDAY_EVENT_COUPON
 	m_bUseCoupon = FALSE;
 	m_pWndUseCouponConfirm = NULL;
-#endif //__NEWYEARDAY_EVENT_COUPON
 } 
 
 CWndFaceShop::~CWndFaceShop() 
@@ -1799,9 +1773,7 @@ CWndFaceShop::~CWndFaceShop()
 	SAFE_DELETE(m_pFriendshipFace);
 	SAFE_DELETE(m_pNewFace);
 	SAFE_DELETE(m_pWndBeautyShopConfirm);
-#ifdef __NEWYEARDAY_EVENT_COUPON
 	SAFE_DELETE(m_pWndUseCouponConfirm);
-#endif //__NEWYEARDAY_EVENT_COUPON
 } 
 
 void CWndFaceShop::OnDestroy()
@@ -1817,7 +1789,6 @@ void CWndFaceShop::OnDestroyChildWnd( CWndBase* pWndChild )
 {
 }
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 void CWndFaceShop::UseFaceCoupon(BOOL isUse)
 {
 	m_bUseCoupon = isUse;
@@ -1830,7 +1801,6 @@ void CWndFaceShop::UseFaceCoupon(BOOL isUse)
 		SetTitle(title);	
 	}		
 }
-#endif //__NEWYEARDAY_EVENT_COUPON
 
 void CWndFaceShop::OnDraw( C2DRender* p2DRender ) 
 { 
@@ -2215,11 +2185,7 @@ void CWndFaceShop::OnLButtonDown( UINT nFlags, CPoint point )
 			
 			CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, m_nSelectedFace-1, g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
 			//요금 계산..
-#ifdef __NEWYEARDAY_EVENT_COUPON
 			if( g_pPlayer->m_dwHeadMesh != m_nSelectedFace-1 && !m_bUseCoupon)
-#else //__NEWYEARDAY_EVENT_COUPON
-			if( g_pPlayer->m_dwHeadMesh != m_nSelectedFace-1 )
-#endif //__NEWYEARDAY_EVENT_COUPON
 				m_nCost = CHANGE_FACE_COST;
 			else
 				m_nCost = 0;
@@ -2280,21 +2246,16 @@ BOOL CWndFaceShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				break;
 			case WIDC_BTN_OK:
 				{
-#ifdef __NEWYEARDAY_EVENT_COUPON
 					BOOL noChange = FALSE;
 					if(g_pPlayer->m_dwHeadMesh == m_nSelectedFace-1)
 						noChange = TRUE;
 
 					if(m_nCost <= 0 && (!m_bUseCoupon || noChange))
-#else //__NEWYEARDAY_EVENT_COUPON
-					if(m_nCost <= 0)
-#endif //__NEWYEARDAY_EVENT_COUPON
 						Destroy();
 					else if( g_pPlayer )
 					{
 						if( m_nCost < 0 )
 							m_nCost = 0;
-#ifdef __NEWYEARDAY_EVENT_COUPON
 						if(m_bUseCoupon && !noChange)
 						{
 							if(m_pWndUseCouponConfirm == NULL)
@@ -2304,7 +2265,6 @@ BOOL CWndFaceShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 								m_pWndUseCouponConfirm->Initialize(this);							
 							}
 						}
-#endif //__NEWYEARDAY_EVENT_COUPON
 						if(m_nCost > 0)
 						{
 							if(m_pWndBeautyShopConfirm == NULL)

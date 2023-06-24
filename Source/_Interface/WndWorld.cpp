@@ -3627,7 +3627,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					break;					
 				}
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 				/*
 				//헤어 체인지 교환권을 소지하였을 경우.
 				if(g_pPlayer->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_HAIRCHANGE ))
@@ -3647,12 +3646,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.m_pWndBeautyShop = new CWndBeautyShop;
 					g_WndMng.m_pWndBeautyShop->Initialize( NULL, APP_BEAUTY_SHOP_EX );
 				}
-#else //__NEWYEARDAY_EVENT_COUPON
-				g_WndMng.CreateApplet( APP_INVENTORY );				
-				SAFE_DELETE( g_WndMng.m_pWndBeautyShop );				
-				g_WndMng.m_pWndBeautyShop = new CWndBeautyShop;
-				g_WndMng.m_pWndBeautyShop->Initialize( NULL, APP_BEAUTY_SHOP_EX );
-#endif //__NEWYEARDAY_EVENT_COUPON
 			}
 			break;
 		case MMI_BEAUTYSHOP_SKIN:
@@ -3702,7 +3695,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					break;					
 				}
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 				/*
 				//메이크업 무료 이용권을 소지하였을 경우.
 				if(g_pPlayer->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_FACEOFFFREE ))
@@ -3722,12 +3714,6 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.m_pWndFaceShop = new CWndFaceShop;
 					g_WndMng.m_pWndFaceShop->Initialize( NULL, APP_BEAUTY_SHOP_SKIN );
 				}
-#else //__NEWYEARDAY_EVENT_COUPON
-				g_WndMng.CreateApplet( APP_INVENTORY );				
-				SAFE_DELETE( g_WndMng.m_pWndFaceShop );
-				g_WndMng.m_pWndFaceShop = new CWndFaceShop;
-				g_WndMng.m_pWndFaceShop->Initialize( NULL, APP_BEAUTY_SHOP_SKIN );
-#endif //__NEWYEARDAY_EVENT_COUPON
 			}
 			break;
 		case MMI_SUMMON_ANGEL:

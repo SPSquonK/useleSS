@@ -4091,22 +4091,14 @@ void CDPSrvr::OnSetHair( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-#ifdef __NEWYEARDAY_EVENT_COUPON
 		BOOL bUseCoupon;
 		ar >> nHair >> nR >> nG >> nB >> bUseCoupon;
-#else //__NEWYEARDAY_EVENT_COUPON
-		ar >> nHair >> nR >> nG >> nB;// >> nCost;
-#endif //__NEWYEARDAY_EVENT_COUPON
 
 		int nCost;
 	
 		nCost	= CMover::GetHairCost( (CMover*)pUser, nR, nG, nB, nHair );
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 		if( pUser->GetGold() < nCost  && !bUseCoupon)
-#else //__NEWYEARDAY_EVENT_COUPON
-		if( pUser->GetGold() < nCost )
-#endif //__NEWYEARDAY_EVENT_COUPON
 		{
 			pUser->AddDefinedText( TID_GAME_LACKMONEY, "" );
 			return;
@@ -4118,7 +4110,6 @@ void CDPSrvr::OnSetHair( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 		g	= (float)nG / 255.0f;
 		b	= (float)nB / 255.0f;
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 		if(!bUseCoupon)
 			pUser->AddGold( -( nCost ) );
 		else
@@ -4132,9 +4123,6 @@ void CDPSrvr::OnSetHair( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, 
 			}
 			pUser->UpdateItem(*pItemElem, UI::Num::ConsumeOne);
 		}
-#else //__NEWYEARDAY_EVENT_COUPON
-		pUser->AddGold( -( nCost ) );
-#endif //__NEWYEARDAY_EVENT_COUPON
 
 		pUser->SetHairColor( r, g, b );
 		g_UserMng.AddSetHair( pUser, nHair, nR, nG, nB );

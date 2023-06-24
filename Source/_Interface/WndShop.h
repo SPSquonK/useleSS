@@ -83,9 +83,7 @@ private:
 }; 
 
 class CWndBeautyShopConfirm;
-#ifdef __NEWYEARDAY_EVENT_COUPON
 class CWndUseCouponConfirm;
-#endif //__NEWYEARDAY_EVENT_COUPON
 
 class CWndBeautyShop : public CWndNeuz 
 { 
@@ -114,10 +112,8 @@ public:
 	DWORD			 m_dwSelectHairMesh;
 	CWndBeautyShopConfirm* m_pWndBeautyShopConfirm;
 	
-#ifdef __NEWYEARDAY_EVENT_COUPON
 	BOOL m_bUseCoupon;
 	CWndUseCouponConfirm* m_pWndUseCouponConfirm;
-#endif //__NEWYEARDAY_EVENT_COUPON
 	
 public: 
 	CWndBeautyShop(); 
@@ -145,13 +141,10 @@ public:
 	void DrawHairKind(C2DRender* p2DRender, D3DXMATRIX matView);
 	void UpdateModels();
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 	void UseHairCoupon(BOOL isUse);
-#endif //__NEWYEARDAY_EVENT_COUPON
 }; 
 
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 class CWndUseCouponConfirm : public CWndNeuz 
 {	
 public:
@@ -175,7 +168,6 @@ public:
 
 	void SetInfo(DWORD targetWndId, int flag);
 }; 
-#endif //__NEWYEARDAY_EVENT_COUPON
 
 class CWndBeautyShopConfirm : public CWndNeuz 
 {
@@ -215,10 +207,8 @@ public:
 	
 	CWndBeautyShopConfirm* m_pWndBeautyShopConfirm;
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 	BOOL m_bUseCoupon;
 	CWndUseCouponConfirm* m_pWndUseCouponConfirm;	
-#endif //__NEWYEARDAY_EVENT_COUPON
 
 public:
 	CWndFaceShop(); 
@@ -235,7 +225,5 @@ public:
 	void DrawFaces(int ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX matView);
 	void UpdateModels();
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 	void UseFaceCoupon(BOOL isUse);
-#endif //__NEWYEARDAY_EVENT_COUPON
 };
