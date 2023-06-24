@@ -4027,7 +4027,8 @@ BOOL CMover::SetMotion( DWORD dwMotion, int nLoop, DWORD dwOption )
 			return FALSE;
 	}
 
-	prj.m_modelMng.LoadMotion( pModel, OT_MOVER, m_dwIndex, dwMotion );
+	pModel->LoadMotionId(dwMotion);
+
 	m_dwMotion = dwOrigMotion;		// +100 하지 않은 값을 저장하자.
 	m_dwMotionOption = dwOption;
 
@@ -4091,7 +4092,7 @@ BOOL CMover::SetMotion( DWORD dwMotion, int nLoop, DWORD dwOption )
 }
 BOOL CMover::InitMotion(DWORD dwMotion)
 {
-	prj.m_modelMng.LoadMotion( static_cast<CModelObject *>(m_pModel), OT_MOVER, m_dwIndex, dwMotion );
+	static_cast<CModelObject *>(m_pModel)->LoadMotionId(dwMotion);
 	m_dwMotion = dwMotion;
 	return TRUE;
 }

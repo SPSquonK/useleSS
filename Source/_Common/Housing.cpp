@@ -1016,6 +1016,7 @@ BOOL	CGuildDeployManager::LoadToDeploy(int nItemId, const HOUSING_ITEM& housingI
  	prj.m_modelMng.MakeModelName( szFileName, OT_CTRL, nItemId );
 	m_pClonedModel->LoadClonedElement( szFileName );
 	m_pTargetObj->m_pModel = m_pClonedModel;
+	m_pTargetObj->m_dwIndex = nItemId;
 
 	m_nBlendFactor = 80;
 	pWorld->AddObj(m_pTargetObj, FALSE);

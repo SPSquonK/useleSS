@@ -124,21 +124,7 @@ void MODELELEM::MakeMotionName( TCHAR* pszMotionName, DWORD dwMotion ) const {
 	_tcscat( pszMotionName, lpszMotion );
 	_tcscat( pszMotionName, ".ani" );
 }
-BOOL CModelMng::LoadMotion( CModelObject * pModel, DWORD dwType, DWORD dwIndex, DWORD dwMotion )
-{
-	if( dwType != OT_MOVER )
-		return FALSE;
-	TCHAR szMotionName[ MAX_PATH ];
 
-	MODELELEM * lpModelElem = GetModelElem(dwType, dwIndex);
-	if (lpModelElem == NULL)
-		Error("MakeMotionName GetModelElem dwType:%d dwIndex:%d, dwMotion:%d", dwType, dwIndex, dwMotion);
-
-	lpModelElem->MakeMotionName( szMotionName, dwMotion );
-
-	((CModelObject*)pModel)->LoadMotion( szMotionName );		// Read bone animation
-	return TRUE;
-}
 CModel * CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts )
 {
 	MODELELEM * lpModelElem = GetModelElem( nType, nIndex );

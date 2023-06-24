@@ -82,7 +82,6 @@ public:
 	void MakeModelName( TCHAR* pszModelName, DWORD dwType, DWORD dwIndex );
 	void MakePartsName( TCHAR* pszPartsName, LPCTSTR lpszRootName, DWORD dwIndex, int nSex = SEX_SEXLESS );
 
-	BOOL    LoadMotion(CModelObject * pModel, DWORD dwType, DWORD dwIndex, DWORD dwMotion );
 	CModel * LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts = FALSE);
 
 	template<typename T>

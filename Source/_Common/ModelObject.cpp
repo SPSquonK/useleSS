@@ -548,7 +548,7 @@ void CModelObject::LoadMotionId(DWORD dwMotion) {
 
 	TCHAR szMotionName[MAX_PATH];
 	lpModelElem->MakeMotionName(szMotionName, dwMotion);
-	LoadMotion(szMotionName);
+	LoadMotion(szMotionName); // Read bone animation
 }
 
 //
