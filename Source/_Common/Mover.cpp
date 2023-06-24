@@ -6977,17 +6977,14 @@ void CMover::OverCoatItemRenderCheck( CModelObject* pModel )
 	int nArryEquip1[5] = { PARTS_CAP, PARTS_UPPER_BODY, PARTS_HAND, PARTS_FOOT, PARTS_CLOAK };
 	int nArryEquip2[5] = { PARTS_HAT, PARTS_CLOTH, PARTS_GLOVE, PARTS_BOOTS, PARTS_CLOAK2 };
 	
-	O3D_ELEMENT *pElem = NULL;
-	O3D_ELEMENT *pElem2 = NULL;
-	
 	for( int j=0; j<5; j++ )
 	{
-		pElem = pModel->GetParts( nArryEquip1[j] );
+		O3D_ELEMENT * pElem = pModel->GetParts( nArryEquip1[j] );
 		
 		if( !pElem )
 			continue;
 
-		pElem2 = pModel->GetParts( nArryEquip2[j] );
+		O3D_ELEMENT * pElem2 = pModel->GetParts( nArryEquip2[j] );
 			
 		if( pElem2 )
 		{

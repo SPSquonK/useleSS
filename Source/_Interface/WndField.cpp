@@ -747,7 +747,6 @@ CWndInventory::CWndInventory()
 }
 CWndInventory::~CWndInventory()
 {
-	SAFE_DELETE( m_pModel );	
 	SAFE_DELETE( m_pWndConfirmBuy );
 
 	if( m_pSfxUpgrade )
@@ -760,7 +759,7 @@ CWndInventory::~CWndInventory()
 
 void CWndInventory::OnDestroy( void )
 {
-	SAFE_DELETE( m_pModel );
+	m_pModel = nullptr;
 	SAFE_DELETE( m_pWndConfirmBuy );	
 	Windows::DestroyIfOpened(APP_SUMMON_ANGEL);
 
@@ -835,7 +834,7 @@ void CWndInventory::OnMouseWndSurface( CPoint point )
 				ClientToScreen( &point2 );
 				ClientToScreen( &DrawRect );
 				
-				CString strText;
+				LPCTSTR strText = "";
 
 				switch( nTemp )
 				{
@@ -1096,7 +1095,7 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 		::SetTransformProj( matProj );
 	
 	if( g_pPlayer )
-		g_pPlayer->OverCoatItemRenderCheck(m_pModel);
+		g_pPlayer->OverCoatItemRenderCheck(m_pModel.get());
 		
 		// �����? �Ӹ�ī�� �������ϴ°��̳�?  // �κ��� �ִ� ���? 
 		CItemElem* pItemElem	= g_pPlayer->GetEquipItem( PARTS_CAP );
@@ -1171,10 +1170,8 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 
 void CWndInventory::UpDateModel()
 {
-	SAFE_DELETE( m_pModel );
-	
-	int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+	const int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
+	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
 	m_pModel->LoadMotionId(MTI_STAND);
 	UpdateParts();
 	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );	
@@ -1191,13 +1188,7 @@ void CWndInventory::OnInitialUpdate()
 
 	InitializeInvenRect(m_InvenRect, *this);
 
-	SAFE_DELETE( m_pModel );
-
-	int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-	m_pModel->LoadMotionId(MTI_STAND);
-	UpdateParts();
-	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );
+	UpDateModel();
 
 	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*) GetDlgItem( WIDC_INVENTORY );
 	m_wndItemCtrl.Create( WLVS_ICON, CRect( 0, 0, 250, 250 ), pTabCtrl, 11 );

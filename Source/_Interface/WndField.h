@@ -150,7 +150,7 @@ class CWndInventory : public CWndNeuz
 {
 	CPoint				m_OldPos;
 	FLOAT				m_fRot;
-	CModelObject*		m_pModel;
+	std::unique_ptr<CModelObject> m_pModel;
 	BOOL				m_bLButtonDownRot;
 	
 	std::array<CRect, MAX_HUMAN_PARTS> m_InvenRect;
@@ -166,7 +166,7 @@ public:
 	void UpDateModel();
 
 	void UpdateParts();
-	CModelObject* GetModel() { return m_pModel; }
+	CModelObject* GetModel() { return m_pModel.get(); }
 	void BaseMouseCursor();
 	void RunUpgrade( CItemElem * pItem );
 	void SetEnchantCursor();
