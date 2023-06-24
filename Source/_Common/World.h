@@ -320,7 +320,7 @@ public:
 	BOOL			IsVecInRange( D3DXVECTOR3 vPos, D3DXVECTOR3 vCenterPos, FLOAT fRadius );
 	void			SetObjFocus( CObj* pObj, BOOL bSend = TRUE );
 	CObj*			GetObjFocus() { return m_pObjFocus; }
-	CObj*			GetObjByName(const TCHAR* ObjName);
+	CObj*			GetObjByName(const char * ObjName);
 	void			ForceTexture(LPDIRECT3DTEXTURE9 pNewTex);
 	BOOL			ProcessObjCollision(D3DXVECTOR3 vPos, CObj* pTargetObj,CObj* pWallObj);
 	BOOL			TestOBBIntersect(BBOX* BoxA, BBOX* BoxB);

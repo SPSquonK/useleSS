@@ -743,10 +743,9 @@ BOOL	CDeployManager::LoadToDeploy(int nItemId, HOUSINGINFO housingInfo)
 		for(int i = 0; i < m_nNumTex; ++i)
 		{
 			LPDIRECT3DTEXTURE9 pTexture = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_pMtrlBlkTexture[0];
-			int nMrt = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_nMaxMtrlBlk;
-			LPDIRECT3DTEXTURE9	*pMtrlBlkTexture = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_pMtrlBlkTexture;
+
 			if(pTexture)
-			m_vecOriginal.push_back(pTexture);
+				m_vecOriginal.push_back(pTexture);
 		}
 		return TRUE;
 	}
@@ -975,9 +974,8 @@ BOOL	CGuildDeployManager::LoadToDeploy(int nItemId, const HOUSING_ITEM& housingI
 	if( !pWorld )
 		return FALSE;
 
-	//um...
-	std::string strHouseObjName = GetNameHouseObj( );
-	m_pWallObj = pWorld->GetObjByName( (TCHAR*)strHouseObjName.c_str() );
+	const char * strHouseObjName = GetNameHouseObj( );
+	m_pWallObj = pWorld->GetObjByName( strHouseObjName );
 
 	if( !m_pWallObj )
 	{
@@ -1002,6 +1000,11 @@ BOOL	CGuildDeployManager::LoadToDeploy(int nItemId, const HOUSING_ITEM& housingI
 	}
 
 // gmpbigun:  clone model!!
+// squonk: ok. But:
+// - Why is the cloning model relevant? Why should I pay attention to it?
+// - Why is the m_pClonedModel not deleted? It is in comment so you removed
+// it later. Is there a bug related to it?
+
 	MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem( OT_CTRL, nItemId );
  
 //	SAFE_DELETE( m_pClonedModel );
@@ -1014,31 +1017,22 @@ BOOL	CGuildDeployManager::LoadToDeploy(int nItemId, const HOUSING_ITEM& housingI
 	m_pClonedModel->LoadClonedElement( szFileName );
 	m_pTargetObj->m_pModel = m_pClonedModel;
 
-	if(m_pTargetObj)
-	{	
-		m_nBlendFactor = 80;
-		CWorld* pWorld	= g_WorldMng.Get();
-		pWorld->AddObj(m_pTargetObj, FALSE);
-		m_pTargetObj->SetWorld( pWorld);
-		m_pTargetObj->SetAngle(m_pItem->m_fAngle);
-		m_pTargetObj->ResetScale();
-		m_pTargetObj->UpdateBoundBox();
+	m_nBlendFactor = 80;
+	pWorld->AddObj(m_pTargetObj, FALSE);
+	m_pTargetObj->SetWorld( pWorld);
+	m_pTargetObj->SetAngle(m_pItem->m_fAngle);
+	m_pTargetObj->ResetScale();
+	m_pTargetObj->UpdateBoundBox();
 
-		m_nNumTex = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetMaxObject();
-		for(int i = 0; i < m_nNumTex; ++i)
-		{
-			LPDIRECT3DTEXTURE9 pTexture = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_pMtrlBlkTexture[0];
-			int nMrt = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_nMaxMtrlBlk;
-			LPDIRECT3DTEXTURE9	*pMtrlBlkTexture = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_pMtrlBlkTexture;
-			if(pTexture)
+	m_nNumTex = m_pClonedModel->GetObject3D()->GetMaxObject();
+	for(int i = 0; i < m_nNumTex; ++i)
+	{
+		LPDIRECT3DTEXTURE9 pTexture = m_pClonedModel->GetObject3D()->GetGMOBJECT(i)->m_pMtrlBlkTexture[0];
+		if(pTexture)
 			m_vecOriginal.push_back(pTexture);
-		}
-
-		return TRUE;
 	}
 
-	return FALSE;
-
+	return TRUE;
 }
 
 HOUSING_ITEM*	CGuildDeployManager::EndDeploy()
@@ -1234,19 +1228,14 @@ BOOL	CGuildDeployManager::ChangeTileTex(TCHAR* pTexName)
 	return FALSE;
 }
 
-std::string CGuildDeployManager::GetNameHouseObj( )
-{
-	std::string str;
+const char * CGuildDeployManager::GetNameHouseObj() {
+	const DWORD dwGHouseType = GuildHouse->GetType();
 
-	DWORD dwGHouseType = GuildHouse->GetType( );
-
-	switch( dwGHouseType )
-	{
-	case WI_GUILDHOUSE_SMALL: str = "obj_miniwall01.o3d";	break;
-	case WI_GUILDHOUSE_MIDDLE: str = "obj_miniwall02.o3d";	break;
+	switch (dwGHouseType) {
+		case WI_GUILDHOUSE_SMALL:  return "obj_miniwall01.o3d";
+		case WI_GUILDHOUSE_MIDDLE: return "obj_miniwall02.o3d";
+		default:                   return "";
 	}
-
-	return str;
 }
 
 std::string CGuildDeployManager::GetNameHouseWallTex( )
