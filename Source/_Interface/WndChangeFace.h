@@ -37,6 +37,9 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
+
+private:
+	void UpdateModelParts();
 }; 
 
 class CWndItemTransy : public CWndNeuz 

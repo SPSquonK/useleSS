@@ -128,13 +128,13 @@ void CMover::SetHair( int nHair )
 {
 	if( nHair >= 0 && nHair < MAX_HAIR )
 	{
-		m_dwHairMesh = nHair;
+		m_skin.hairMesh = nHair;
 		CModelObject* pModel = (CModelObject*)m_pModel;
 		TCHAR lpszTemp[ 64 ];
 		// Hair
-		_stprintf( lpszTemp, PARTSMESH_HAIR( GetSex() ), m_dwHairMesh + 1 );
+		_stprintf( lpszTemp, PARTSMESH_HAIR( GetSex() ), nHair + 1 );
 		pModel->LoadElement( lpszTemp, PARTS_HAIR );
-		_stprintf( lpszTemp, PARTSTEX_HAIR( GetSex() ), 0 /*nHairColor*/ + 1 );
+		_stprintf( lpszTemp, PARTSTEX_HAIR( GetSex() ), 0 + 1 );
 		pModel->ChangeTexture( PARTS_HAIR, TEX_PART_HAIR( GetSex() ), lpszTemp );
 	}
 }
@@ -211,31 +211,20 @@ void CMover::SetHead( int nHead )
 {
 	if( nHead < MAX_HEAD )
 	{
-		m_dwHeadMesh = nHead;
+		m_skin.headMesh = nHead;
 		CModelObject* pModel = (CModelObject*)m_pModel;
 		TCHAR lpszTemp[ 64 ];
 		// Hair
-		_stprintf( lpszTemp, PARTSMESH_HEAD( GetSex() ), m_dwHeadMesh + 1 );
+		_stprintf( lpszTemp, PARTSMESH_HEAD( GetSex() ), nHead + 1 );
 		pModel->LoadElement( lpszTemp, PARTS_HEAD );
 	}
 }
-void CMover::SetSkinSet( int nSkinSet )
-{
-	if( nSkinSet < 2 )
-	{
-		m_dwSkinSet = nSkinSet;
-#ifdef __CLIENT
-		UpdateParts();
-#endif
-	}
-}
-
 
 // 이 함수는 전체 의상을 새로 완성하도록 한다.
 // 보통 이 함수는 처음에 캐릭터를 생성할 때 한번 호출한다.
 void CMover::UpdateParts( BOOL bFakeParts )
 {
-	UpdateParts( GetSex(), m_dwSkinSet, m_dwFace, m_dwHairMesh, m_dwHeadMesh, 
+	UpdateParts( GetSex(), m_skin, 
 		m_aEquipInfo, (CModelObject*)m_pModel, bFakeParts ? NULL : &m_Inventory, GetProp()->bIfParts, this );
 	((CModelObject*)m_pModel)->RestoreDeviceObjects();
 	UpdateBoundBox();
@@ -262,7 +251,7 @@ ItemProp* GetInventoryProp(EQUIP_INFO * pEquipInfo, CItemContainer* pInventory, 
 	return pItemProp;
 }
 
-void CMover::UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, EQUIP_INFO * pEquipInfo, CModelObject* pModel, CItemContainer * pInventory, BOOL bIfParts, CMover* pMover )
+void CMover::UpdateParts( int nSex, const MoverSub::SkinMeshs skin, EQUIP_INFO * pEquipInfo, CModelObject* pModel, CItemContainer * pInventory, BOOL bIfParts, CMover* pMover )
 {
 	if( pModel == NULL )
 	{
@@ -277,10 +266,10 @@ void CMover::UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int 
 	if( bIfParts )
 	{
 		// Hair
-		_stprintf( lpszTemp, PARTSMESH_HAIR( nSex ), nHairMesh + 1 );
+		_stprintf( lpszTemp, PARTSMESH_HAIR( nSex ), static_cast<int>(skin.hairMesh + 1) );
 		pModel->LoadElement( lpszTemp, PARTS_HAIR );
 		// Head
-		_stprintf( lpszTemp, PARTSMESH_HEAD( nSex ), nHeadMesh + 1 );
+		_stprintf( lpszTemp, PARTSMESH_HEAD( nSex ), static_cast<int>(skin.headMesh + 1) );
 		pModel->LoadElement( lpszTemp, PARTS_HEAD );
 	}
 	// 먼저 익스크루시브 오브젝트를 TakeOff한다.
@@ -1215,7 +1204,7 @@ BOOL CMover::DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart )
 	equipInfo.dwId	= pItemElem->m_dwItemId;
 	equipInfo.nOption	= pItemElem->GetAttrOption();
 	equipInfo.byFlag	= pItemElem->m_byFlag;
-	BOOL bResult = DoEquip( GetSex(), m_dwSkinSet, pItemElem, nPart, equipInfo, &m_Inventory, m_aEquipInfo, (CModelObject*)m_pModel, bEquip, this );
+	BOOL bResult = DoEquip( GetSex(), m_skin.skinSet, pItemElem, nPart, equipInfo, &m_Inventory, m_aEquipInfo, (CModelObject*)m_pModel, bEquip, this );
 		
 	if( !bResult )	// 2004/04/27
 		return FALSE;
@@ -1314,9 +1303,9 @@ BOOL CMover::DoFakeEquip( const EQUIP_INFO & rEquipInfo, BOOL bEquip, int nPart,
 {
 	BOOL bResult;
 	if( pModel )
-		bResult	= CMover::DoEquip( GetSex(), m_dwSkinSet, NULL, nPart, rEquipInfo, NULL, m_aEquipInfo, (CModelObject*)pModel, bEquip, this );
+		bResult	= CMover::DoEquip( GetSex(), m_skin.skinSet, NULL, nPart, rEquipInfo, NULL, m_aEquipInfo, (CModelObject*)pModel, bEquip, this );
 	else
-		bResult = CMover::DoEquip( GetSex(), m_dwSkinSet, NULL, nPart, rEquipInfo, NULL, m_aEquipInfo, (CModelObject*)m_pModel, bEquip, this );
+		bResult = CMover::DoEquip( GetSex(), m_skin.skinSet, NULL, nPart, rEquipInfo, NULL, m_aEquipInfo, (CModelObject*)m_pModel, bEquip, this );
 
 	if( !bResult )	// 2004/04/27
 	{

@@ -432,7 +432,8 @@ public:
 	LONG			m_nDefenseMin, m_nDefenseMax;	/// 방어력 min, 방어력 max
 	int				m_nAdjHitRate, m_nAdjParry;		/// 수정치 
 	BYTE			m_bySex;						/// 성별 
-	DWORD			m_dwSkinSet, m_dwFace, m_dwHairMesh, m_dwHairColor, m_dwHeadMesh;	/// 외양 
+	MoverSub::SkinMeshs m_skin;
+	DWORD			m_dwHairColor;	/// 외양 
 	FLOAT			m_fHairColorR, m_fHairColorG, m_fHairColorB;						/// 머리색 
 	LONG			m_nJob;						/// 직업 
 	DWORD			m_dwAuthorization;			/// 유저 권한 (일반에서 최고 관리자까지 )
@@ -748,12 +749,9 @@ protected:
 	
 public:
 	static	int		GetHairCost( CMover* pMover, BYTE nR, BYTE nG, BYTE nB, BYTE nHair );
-	static void		UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, EQUIP_INFO * pEquipInfo, CModelObject* pModel, CItemContainer* pInventory, BOOL bIfParts = TRUE, CMover* pMover = NULL );
-	static void		UpdateParts(int nSex, MoverSub::SkinMeshs skin, EQUIP_INFO * pEquipInfo, CModelObject * pModel, CItemContainer * pInventory, BOOL bIfParts = TRUE, CMover * pMover = NULL) {
-		UpdateParts(nSex, skin.skinSet, skin.face, skin.hairMesh, skin.headMesh, pEquipInfo, pModel, pInventory, bIfParts, pMover);
-	}
-	static void		UpdateParts(int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, EQUIP_INFO * pEquipInfo, const std::unique_ptr<CModelObject> & pModel, CItemContainer * pInventory, BOOL bIfParts = TRUE, CMover * pMover = NULL) {
-		UpdateParts(nSex, nSkinSet, nFace, nHairMesh, nHeadMesh, pEquipInfo, pModel.get(), pInventory, bIfParts, pMover);
+	static void		UpdateParts(int nSex, MoverSub::SkinMeshs skin, EQUIP_INFO * pEquipInfo, CModelObject * pModel, CItemContainer * pInventory, BOOL bIfParts = TRUE, CMover * pMover = NULL);
+	static void		UpdateParts(int nSex, MoverSub::SkinMeshs skin, EQUIP_INFO * pEquipInfo, const std::unique_ptr<CModelObject> & pModel, CItemContainer * pInventory, BOOL bIfParts = TRUE, CMover * pMover = NULL) {
+		UpdateParts(nSex, skin, pEquipInfo, pModel.get(), pInventory, bIfParts, pMover);
 	}
 	static BOOL		DoEquip( int nSex, int nSkinSet, CItemElem* pItemElem, int nPart, const EQUIP_INFO & rEquipInfo, CItemContainer* pInventory, EQUIP_INFO * pEquipeInfo, CModelObject* pModel, BOOL bEquip, CMover *pMover );
 	static	float	GetItemEnduranceInfluence( int nEndurance );	
@@ -925,7 +923,6 @@ public:
 	void			SetHairColor( DWORD dwHairColor );
 	void			SetHairColor( FLOAT r, FLOAT g, FLOAT b );
 	void			SetHead( int nHead );
-	void			SetSkinSet( int nSkinSet );
 	void			SetName( const char* lpszName )		{	lstrcpy( m_szName, lpszName );	}
 	LPCTSTR			GetName( BOOL bNickname = FALSE );	// 객체의 이름 얻기
 	[[nodiscard]] BYTE GetSex() const { return m_bySex; }

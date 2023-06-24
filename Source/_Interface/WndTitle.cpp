@@ -1530,7 +1530,7 @@ void CWndSelectChar::UpdateCharacter()
 			);
 			m_pBipedMesh[i]->LoadMotionId(m_dwMotion[i]);
 
-			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, m_pBipedMesh[ i ].get(), NULL );
+			CMover::UpdateParts( pMover->GetSex(), pMover->m_skin, pMover->m_aEquipInfo, m_pBipedMesh[ i ].get(), NULL );
 		}
 	}
 }

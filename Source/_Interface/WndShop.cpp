@@ -993,7 +993,9 @@ void CWndBeautyShop::DrawHairKind(C2DRender* p2DRender, D3DXMATRIX matView)
 		lpHair = GetWndCtrl( custom[i] );
 
 		//Model Draw
-		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, HairNum, g_pPlayer->m_dwHeadMesh, g_pPlayer->m_aEquipInfo, m_pHairModel, NULL );
+		MoverSub::SkinMeshs skin = g_pPlayer->m_skin;
+		skin.hairMesh = HairNum;
+		CMover::UpdateParts( g_pPlayer->GetSex(), skin, g_pPlayer->m_aEquipInfo, m_pHairModel, NULL );
 		
 		viewport.X      = p2DRender->m_ptOrigin.x + lpHair->rect.left;
 		viewport.Y      = p2DRender->m_ptOrigin.y + lpHair->rect.top;
@@ -1050,9 +1052,12 @@ void CWndBeautyShop::DrawHairKind(C2DRender* p2DRender, D3DXMATRIX matView)
 void CWndBeautyShop::UpdateModels()
 {
 	if(m_pModel != NULL)
-		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
-	if(m_pApplyModel != NULL)	
-		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, m_dwSelectHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
+		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
+	if (m_pApplyModel != NULL) {
+		MoverSub::SkinMeshs skin = g_pPlayer->m_skin;
+		skin.hairMesh = m_dwSelectHairMesh;
+		CMover::UpdateParts(g_pPlayer->GetSex(), skin, g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory);
+	}
 }
 
 void CWndBeautyShop::OnInitialUpdate() 
@@ -1126,7 +1131,7 @@ BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 		return FALSE;
 
 	m_bLButtonClick = FALSE;
-	m_dwHairMesh = g_pPlayer->m_dwHairMesh;
+	m_dwHairMesh = g_pPlayer->m_skin.hairMesh;
 	m_dwSelectHairMesh = m_dwHairMesh;
 
 	
@@ -1135,19 +1140,19 @@ BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	SAFE_DELETE( m_pModel );
 	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
 	m_pModel->LoadMotionId(MTI_STAND2);
-	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
+	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
 	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );
 
 	SAFE_DELETE( m_pApplyModel );
 	m_pApplyModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
 	m_pApplyModel->LoadMotionId(MTI_STAND2);
-	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
+	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
 	m_pApplyModel->InitDeviceObjects( g_Neuz.GetDevice() );
 	
 	SAFE_DELETE(m_pHairModel);
 	m_pHairModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
 	m_pHairModel->LoadMotionId(MTI_STAND2);
-	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pHairModel, &g_pPlayer->m_Inventory );
+	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin,g_pPlayer->m_aEquipInfo, m_pHairModel, &g_pPlayer->m_Inventory );
 	m_pHairModel->InitDeviceObjects( g_Neuz.GetDevice() );
 
 	///
@@ -1313,9 +1318,12 @@ void CWndBeautyShop::OnLButtonDown( UINT nFlags, CPoint point )
 		{
 			//Hair 선택..
 			m_dwSelectHairMesh = m_nHairNum[i];
-			CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, m_dwSelectHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
+			MoverSub::SkinMeshs skin = g_pPlayer->m_skin;
+			skin.hairMesh = m_dwSelectHairMesh;
+
+			CMover::UpdateParts( g_pPlayer->GetSex(), skin, g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
 			//요금 계산..
-			if( g_pPlayer->m_dwHairMesh != m_dwSelectHairMesh && !m_bUseCoupon)
+			if( g_pPlayer->m_skin.hairMesh != m_dwSelectHairMesh && !m_bUseCoupon)
 			{
 				m_nHairCost = HAIR_COST;
 #ifdef __Y_BEAUTY_SHOP_CHARGE
@@ -1343,8 +1351,8 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				{
 					//m_pModel->DeleteDeviceObjects();
 
-					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
-					m_dwHairMesh = g_pPlayer->m_dwHairMesh;
+					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
+					m_dwHairMesh = g_pPlayer->m_skin.hairMesh;
 					
 					m_fColor[0] = g_pPlayer->m_fHairColorR;
 					m_fColor[1] = g_pPlayer->m_fHairColorG;
@@ -1376,7 +1384,6 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				break;
 			case WIDC_OK:
 				{
-					BOOL noChange = FALSE;
 					BYTE nColorR = (BYTE)( (m_fColor[0] * 255) );
 					BYTE nColorG = (BYTE)( (m_fColor[1] * 255) );
 					BYTE nColorB = (BYTE)( (m_fColor[2] * 255) );
@@ -1385,8 +1392,9 @@ BOOL CWndBeautyShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					BYTE nOrignalG = (BYTE)( g_pPlayer->m_fHairColorG * 255 );
 					BYTE nOrignalB = (BYTE)( g_pPlayer->m_fHairColorB * 255 );
 					
-					if((g_pPlayer->m_dwHairMesh == m_dwSelectHairMesh ) && (nColorR == nOrignalR && nColorG == nOrignalG && nColorB == nOrignalB))
-						noChange = TRUE;
+					const bool noChange = (g_pPlayer->m_skin.hairMesh == m_dwSelectHairMesh )
+						&& (nColorR == nOrignalR && nColorG == nOrignalG && nColorB == nOrignalB);
+						
 		#ifdef __Y_BEAUTY_SHOP_CHARGE
 					if( ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK )
 					{
@@ -1999,13 +2007,15 @@ void CWndFaceShop::DrawFaces(bool ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX m
 	FLOAT w = h * fAspect;
 	D3DXMatrixOrthoLH( &matProj, w, h, CWorld::m_fNearPlane - 0.01f, CWorld::m_fFarPlane );
 
+	MoverSub::SkinMeshs skin = g_pPlayer->m_skin;
 	for(int i=0; i<4; i++)
 	{
 		lpFace = GetWndCtrl(customs[i]);
 		faces[i] = FaceNum;
 
 		//Model Draw
-		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, FaceNum, g_pPlayer->m_aEquipInfo, m_pFaceModel, NULL );
+		skin.headMesh = FaceNum;
+		CMover::UpdateParts( g_pPlayer->GetSex(), skin, g_pPlayer->m_aEquipInfo, m_pFaceModel, NULL );
 		
 		viewport.X      = p2DRender->m_ptOrigin.x + lpFace->rect.left;
 		viewport.Y      = p2DRender->m_ptOrigin.y + lpFace->rect.top;
@@ -2057,9 +2067,12 @@ void CWndFaceShop::DrawFaces(bool ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX m
 void CWndFaceShop::UpdateModels()
 {
 	if(m_pMainModel != NULL)
-		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pMainModel, &g_pPlayer->m_Inventory );
-	if(m_pApplyModel != NULL)	
-		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, m_nSelectedFace, g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
+		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin,g_pPlayer->m_aEquipInfo, m_pMainModel, &g_pPlayer->m_Inventory );
+	if (m_pApplyModel != NULL) {
+		MoverSub::SkinMeshs skin = g_pPlayer->m_skin;
+		skin.headMesh = m_nSelectedFace;
+		CMover::UpdateParts(g_pPlayer->GetSex(), g_pPlayer->m_skin, g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory);
+	}
 }
 
 void CWndFaceShop::OnInitialUpdate() 
@@ -2093,7 +2106,7 @@ BOOL CWndFaceShop::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	const auto InitializeModel = [](const int nMover, std::unique_ptr<CModelObject> & pModel) {
 		pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE);
 		pModel->LoadMotionId(MTI_STAND2);
-		CMover::UpdateParts(g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh, g_pPlayer->m_aEquipInfo, pModel, &g_pPlayer->m_Inventory);
+		CMover::UpdateParts(g_pPlayer->GetSex(), g_pPlayer->m_skin, g_pPlayer->m_aEquipInfo, pModel, &g_pPlayer->m_Inventory);
 		pModel->InitDeviceObjects(g_Neuz.GetDevice());
 	};
 
@@ -2122,9 +2135,12 @@ void CWndFaceShop::OnLButtonDown( UINT nFlags, CPoint point )
 			else if(i>=4 && i<8)
 				m_nSelectedFace = m_nNewFaceNum[i-4];
 			
-			CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, m_nSelectedFace, g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
+			MoverSub::SkinMeshs skin = g_pPlayer->m_skin;
+			skin.headMesh = m_nSelectedFace;
+
+			CMover::UpdateParts( g_pPlayer->GetSex(), skin, g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
 			//요금 계산..
-			if( g_pPlayer->m_dwHeadMesh != m_nSelectedFace && !m_bUseCoupon)
+			if( g_pPlayer->m_skin.headMesh != m_nSelectedFace && !m_bUseCoupon)
 				m_nCost = CHANGE_FACE_COST;
 			else
 				m_nCost = 0;
@@ -2135,13 +2151,13 @@ void CWndFaceShop::OnLButtonDown( UINT nFlags, CPoint point )
 void CWndFaceShop::InitializeCurrentHead() {
 	m_dwNewFace = MAX_DEFAULT_HEAD;
 	m_dwFriendshipFace = 0;
-	if (g_pPlayer->m_dwHeadMesh >= 0 && g_pPlayer->m_dwHeadMesh < MAX_DEFAULT_HEAD) {
-		m_dwFriendshipFace = g_pPlayer->m_dwHeadMesh;
-	} else if (g_pPlayer->m_dwHeadMesh >= MAX_DEFAULT_HEAD && g_pPlayer->m_dwHeadMesh < MAX_HEAD) {
-		m_dwNewFace = g_pPlayer->m_dwHeadMesh;
-	}
+	m_nSelectedFace = g_pPlayer->m_skin.headMesh;
 
-	m_nSelectedFace = g_pPlayer->m_dwHeadMesh;
+	if (m_nSelectedFace >= 0 && m_nSelectedFace < MAX_DEFAULT_HEAD) {
+		m_dwFriendshipFace = m_nSelectedFace;
+	} else if (m_nSelectedFace >= MAX_DEFAULT_HEAD && m_nSelectedFace < MAX_HEAD) {
+		m_dwNewFace = m_nSelectedFace;
+	}
 }
 
 BOOL CWndFaceShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -2156,7 +2172,7 @@ BOOL CWndFaceShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			case WIDC_BTN_RESET: 
 				{
 					InitializeCurrentHead();
-					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, m_nSelectedFace,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
+					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin, g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
 					
 					m_nCost = 0;
 				}
@@ -2175,7 +2191,7 @@ BOOL CWndFaceShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				break;
 			case WIDC_BTN_OK:
 				{
-					const BOOL noChange = g_pPlayer->m_dwHeadMesh == m_nSelectedFace;
+					const BOOL noChange = g_pPlayer->m_skin.headMesh == m_nSelectedFace;
 
 					if(m_nCost <= 0 && (!m_bUseCoupon || noChange))
 						Destroy();

@@ -417,7 +417,7 @@ CWndQueryEquip::CWndQueryEquip(CMover & mover, std::unique_ptr<std::array<CItemE
 			g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE
 		);
 	m_pModel->LoadMotionId(MTI_STAND);
-	CMover::UpdateParts(mover.GetSex(), mover.m_dwSkinSet, mover.m_dwFace, mover.m_dwHairMesh, mover.m_dwHeadMesh, mover.m_aEquipInfo, m_pModel.get(), NULL);
+	CMover::UpdateParts(mover.GetSex(), mover.m_skin, mover.m_aEquipInfo, m_pModel.get(), NULL);
 	m_pModel->InitDeviceObjects(g_Neuz.GetDevice());
 
 	// Set Equip Info add
@@ -4057,7 +4057,7 @@ void CWndStatus::OnInitialUpdate()
 		int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
 		g_pBipedMesh = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
 		g_pBipedMesh->LoadMotionId(MTI_STAND);
-		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh, g_pPlayer->m_aEquipInfo, g_pBipedMesh, &g_pPlayer->m_Inventory );
+		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin, g_pPlayer->m_aEquipInfo, g_pBipedMesh, &g_pPlayer->m_Inventory );
 	}
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
 	CPoint point( rectRoot.left, rectRoot.top );
@@ -5354,7 +5354,7 @@ void CWndInventory::BaseMouseCursor()
 
 void CWndInventory::UpdateParts()
 {
-	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
+	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
 }
 
 ///////////////////////////////////////////////////////////////////////////

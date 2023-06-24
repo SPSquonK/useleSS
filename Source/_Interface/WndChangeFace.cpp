@@ -230,13 +230,20 @@ void CWndChangeSex::OnInitialUpdate()
 	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
 	m_pModel->LoadMotionId(MTI_STAND2);
 
-	CMover::UpdateParts( !g_pPlayer->GetSex(), 0, 0, g_pPlayer->m_dwHairMesh , m_nSelectFace,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
+	UpdateModelParts();
 	
 	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );
 	
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 } 
+
+void CWndChangeSex::UpdateModelParts() {
+	MoverSub::SkinMeshs skin = g_pPlayer->m_skin;
+	skin.headMesh = m_nSelectFace;
+	CMover::UpdateParts(!g_pPlayer->GetSex(), skin, g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory);
+}
+
 // 처음 이 함수를 부르면 윈도가 열린다.
 BOOL CWndChangeSex::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
@@ -271,15 +278,13 @@ BOOL CWndChangeSex::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	if( nID == WIDC_LEFT )
 	{
 		m_nSelectFace = m_nSelectFace == 0 ? MAX_DEFAULT_HEAD - 1 : m_nSelectFace - 1;
-
-		CMover::UpdateParts( !g_pPlayer->GetSex(), 0, 0, g_pPlayer->m_dwHairMesh, m_nSelectFace,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );		
+		UpdateModelParts();
 	}
 	else
 	if( nID == WIDC_RIGHT )
 	{
 		m_nSelectFace = (m_nSelectFace + 1) % MAX_DEFAULT_HEAD;
-
-		CMover::UpdateParts( !g_pPlayer->GetSex(), 0, 0, g_pPlayer->m_dwHairMesh, m_nSelectFace,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );		
+		UpdateModelParts();
 	}
 	
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 

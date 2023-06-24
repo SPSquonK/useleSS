@@ -116,9 +116,6 @@ BOOL CWndDebugInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 			break;
 		}
 			/*
-		case 1003: // skinset
-			g_pPlayer->SetSkinSet( _ttoi( m_wndEditExp.GetString() ) );
-			break;
 		case 1004: // hair
 			g_pPlayer->SetHair( _ttoi( m_wndEditExp.GetString() ) );
 			break;

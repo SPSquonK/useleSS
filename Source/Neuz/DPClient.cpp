@@ -2164,7 +2164,7 @@ void CDPClient::OnDoEquip( OBJID objid, CAr & ar )
 				pPlayer->DoEquip( pItemElem, fEquip, nPart );
 				if( g_pBipedMesh )
 				{
-					CMover::UpdateParts( pPlayer->GetSex(), pPlayer->m_dwSkinSet, pPlayer->m_dwFace, pPlayer->m_dwHairMesh, pPlayer->m_dwHeadMesh, pPlayer->m_aEquipInfo, g_pBipedMesh, &pPlayer->m_Inventory );
+					CMover::UpdateParts( pPlayer->GetSex(), pPlayer->m_skin, pPlayer->m_aEquipInfo, g_pBipedMesh, &pPlayer->m_Inventory );
 					CWndBeautyShop* pWndBeautyShop = (CWndBeautyShop*)g_WndMng.GetWndBase(APP_BEAUTY_SHOP_EX);
 					if( pWndBeautyShop )
 						pWndBeautyShop->UpdateModels();
@@ -2174,7 +2174,7 @@ void CDPClient::OnDoEquip( OBJID objid, CAr & ar )
 				}
 			if( g_WndMng.m_pWndBeautyShop && g_WndMng.m_pWndBeautyShop->m_pModel )
 			{
-				CMover::UpdateParts( pPlayer->GetSex(), pPlayer->m_dwSkinSet, pPlayer->m_dwFace, pPlayer->m_dwHairMesh, pPlayer->m_dwHeadMesh, pPlayer->m_aEquipInfo, g_WndMng.m_pWndBeautyShop->m_pModel, &pPlayer->m_Inventory );
+				CMover::UpdateParts( pPlayer->GetSex(), pPlayer->m_skin, pPlayer->m_aEquipInfo, g_WndMng.m_pWndBeautyShop->m_pModel, &pPlayer->m_Inventory );
 			}
 			
 			CWndInventory* pWndInventory	= (CWndInventory*)g_WndMng.GetWndBase( APP_INVENTORY );
@@ -5467,7 +5467,7 @@ void CDPClient::OnChangeFace( CAr & ar )
 	
 	if( IsValidObj( pMover ) )
 	{
-		pMover->m_dwHeadMesh = dwFace;
+		pMover->m_skin.headMesh = dwFace;
 		if( g_pPlayer == pMover )
 		{
 			CWndInventory* pWndInventory	= (CWndInventory*)g_WndMng.GetWndBase( APP_INVENTORY );
@@ -5476,12 +5476,12 @@ void CDPClient::OnChangeFace( CAr & ar )
 				pWndInventory->UpdateParts();
 			}
 			
-			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, (CModelObject*)pMover->m_pModel, &pMover->m_Inventory );		
-			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, g_pBipedMesh, &pMover->m_Inventory );		
+			CMover::UpdateParts( pMover->GetSex(), pMover->m_skin, pMover->m_aEquipInfo, (CModelObject*)pMover->m_pModel, &pMover->m_Inventory );		
+			CMover::UpdateParts( pMover->GetSex(), pMover->m_skin, pMover->m_aEquipInfo, g_pBipedMesh, &pMover->m_Inventory );
 		}
 		else
 		{
-			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, (CModelObject*)pMover->m_pModel, NULL );		
+			CMover::UpdateParts( pMover->GetSex(), pMover->m_skin, pMover->m_aEquipInfo, (CModelObject*)pMover->m_pModel, NULL );
 		}
 
 	}		
@@ -11430,7 +11430,7 @@ void CDPClient::OnSetHair( OBJID objid, CAr & ar )
 			if( g_pPlayer == pMover )
 			{
 				if( g_pBipedMesh )
-					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh, g_pPlayer->m_aEquipInfo, g_pBipedMesh, &g_pPlayer->m_Inventory );
+					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin, g_pPlayer->m_aEquipInfo, g_pBipedMesh, &g_pPlayer->m_Inventory );
 
 				CWndInventory* pWndInventory	= (CWndInventory*)g_WndMng.GetWndBase( APP_INVENTORY );
 				if(pWndInventory && pWndInventory->GetModel())
@@ -12130,7 +12130,7 @@ void CDPClient::OnSexChange( OBJID objid, CAr & ar )
 		pMover->UpdateParts( !pMover->IsActiveMover() );
 		if( pMover->IsActiveMover() && g_pBipedMesh )
 		{
-			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, g_pBipedMesh, &pMover->m_Inventory );
+			CMover::UpdateParts( pMover->GetSex(), pMover->m_skin, pMover->m_aEquipInfo, g_pBipedMesh, &pMover->m_Inventory );
 		}
 
 		if( pMover->IsActiveMover() )

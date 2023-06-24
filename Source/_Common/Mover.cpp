@@ -208,11 +208,8 @@ void CMover::Init()
 	m_nExp1				= 0;
 	m_nDeathExp			= 0;
 	m_nDeathLevel		= 0;
-	m_dwFace			= 0;
-	m_dwSkinSet			= 0;
-	m_dwHairMesh		= 0;
+	m_skin = MoverSub::SkinMeshs();
 	m_dwHairColor		= 0;
-	m_dwHeadMesh		= 0;
 	m_nTutorialState	= 0;
 	m_nFxp				= 0;
 	m_szCharacterKey[ 0 ] = 0;
@@ -541,7 +538,7 @@ int	CMover::GetHairCost( CMover* pMover, BYTE nR, BYTE nG, BYTE nB, BYTE nHair )
 	else
 		nHairColorCost = 0;
 
-	if( pMover->m_dwHairMesh+1 != nHair+1 )
+	if( pMover->m_skin.hairMesh != nHair )
 		nHairCost = HAIR_COST;
 	else
 		nHairCost = 0;
