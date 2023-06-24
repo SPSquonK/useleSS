@@ -753,7 +753,7 @@ public:
 		UpdateParts(nSex, skin.skinSet, skin.face, skin.hairMesh, skin.headMesh, pEquipInfo, pModel, pInventory, bIfParts, pMover);
 	}
 	static void		UpdateParts(int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, EQUIP_INFO * pEquipInfo, const std::unique_ptr<CModelObject> & pModel, CItemContainer * pInventory, BOOL bIfParts = TRUE, CMover * pMover = NULL) {
-		UpdateParts(nSex, nSkinSet, nFace, nHairMesh, nHeadMesh, pEquipInfo, pModel, pInventory, bIfParts, pMover);
+		UpdateParts(nSex, nSkinSet, nFace, nHairMesh, nHeadMesh, pEquipInfo, pModel.get(), pInventory, bIfParts, pMover);
 	}
 	static BOOL		DoEquip( int nSex, int nSkinSet, CItemElem* pItemElem, int nPart, const EQUIP_INFO & rEquipInfo, CItemContainer* pInventory, EQUIP_INFO * pEquipeInfo, CModelObject* pModel, BOOL bEquip, CMover *pMover );
 	static	float	GetItemEnduranceInfluence( int nEndurance );	
