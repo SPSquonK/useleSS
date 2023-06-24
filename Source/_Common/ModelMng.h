@@ -3,6 +3,8 @@
 #include "2DRender.h"
 #include <array>
 #include <functional>
+#include "sqktd/maybe_owned_ptr.hpp"
+#include "sqktd/type_traits.hpp"
 
 struct MODELELEM {
 	DWORD m_dwType;
@@ -36,8 +38,9 @@ struct MODELELEM {
 };
 
 class CModel;
-class CModelObject;
+class CModelObject; class CSfxModel;
 
+/*
 // A sqktd::maybe_owned_ptr that is not enforced by anything.
 struct ModelPointerWithOwnershipInfo {
 	CModel * pModel;
@@ -58,6 +61,7 @@ struct ModelPointerWithOwnershipInfo {
 	template<typename T>
 	T * DynamicCast() { return dynamic_cast<T *>(pModel); }
 };
+*/
 
 class CModelMng final {
 private:
@@ -76,8 +80,18 @@ public:
 	void MakePartsName( TCHAR* pszPartsName, LPCTSTR lpszRootName, DWORD dwIndex, int nSex = SEX_SEXLESS );
 
 	BOOL    LoadMotion( CModel* pModel, DWORD dwType, DWORD dwIndex, DWORD dwMotion );
-	ModelPointerWithOwnershipInfo LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts = FALSE);
-	ModelPointerWithOwnershipInfo LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts = FALSE );
+	CModel * LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts = FALSE);
+
+	template<typename T>
+	requires (sqktd::IsOneOf<T,
+#ifdef __CLIENT
+		std::unique_ptr<CSfxModel>,
+#endif
+		std::unique_ptr<CModelObject>,
+		/* not owned */ CModelObject * ,
+		sqktd::maybe_owned_ptr<CModelObject>
+	>)
+	T LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts = FALSE);
 
 	BOOL LoadScript( LPCTSTR lpszFileName );
 
@@ -91,5 +105,14 @@ public:
 	HRESULT RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
-};
 
+private:
+	enum class ModelType : std::uint8_t { Sfx, ModelObject, Nullptr };
+	struct ModelPtrInfo {
+		CModel * ptr;
+		ModelType type;
+		bool isOwned;
+	};
+
+	ModelPtrInfo LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, TCHAR * lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts);
+};

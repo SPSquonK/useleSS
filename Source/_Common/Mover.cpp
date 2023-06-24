@@ -3243,8 +3243,8 @@ void CMover::SetRide(DWORD itemIdx) {
 		return;
 	}
 
-	ModelPointerWithOwnershipInfo pModel = prj.m_modelMng.LoadModel(D3DDEVICE, OT_ITEM, itemIdx);
-	CModelObject * pModelObject = (CModelObject *)pModel;
+	auto pModelObject = prj.m_modelMng.LoadModel<sqktd::maybe_owned_ptr<CModelObject>>(D3DDEVICE, OT_ITEM, itemIdx);
+
 	if (pModelObject->m_pBone) {
 		CString strMotion = pModelObject->GetMotionFileName(_T("stand"));
 		assert(strMotion != _T(""));
@@ -3252,11 +3252,7 @@ void CMover::SetRide(DWORD itemIdx) {
 	}
 
 	m_dwRideItemIdx = itemIdx;
-	if (pModel.isOwnedByCaller) {
-		m_pRide = std::unique_ptr<CModelObject>(pModelObject);
-	} else {
-		m_pRide = pModelObject;
-	}
+	m_pRide = std::move(pModelObject);
 }
 
 #ifdef __CLIENT

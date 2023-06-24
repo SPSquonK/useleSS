@@ -139,21 +139,112 @@ BOOL CModelMng::LoadMotion( CModel* pModel, DWORD dwType, DWORD dwIndex, DWORD d
 	((CModelObject*)pModel)->LoadMotion( szMotionName );		// Read bone animation
 	return TRUE;
 }
-ModelPointerWithOwnershipInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts )
+CModel * CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts )
 {
 	MODELELEM * lpModelElem = GetModelElem( nType, nIndex );
-	if( lpModelElem == NULL ) 
-	{
-		Error( "CModelMng::loadModel mdlObj/mdlDyna - objtype=%d index=%d bpart=%d has no information.", nType, nIndex, bParts );
+	if (lpModelElem == NULL) {
+		Error("CModelMng::loadModel mdlObj/mdlDyna - objtype=%d index=%d bpart=%d has no information.", nType, nIndex, bParts);
 		return nullptr;
 	}
 
 	TCHAR szFileName[ MAX_PATH ];
 	MakeModelName( szFileName, nType, nIndex );
-	return LoadModel( pd3dDevice, szFileName, lpModelElem, nType, bParts ); 
+	return LoadModel( pd3dDevice, szFileName, lpModelElem, nType, bParts ).ptr; 
 }
 
-ModelPointerWithOwnershipInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts )
+
+// Handler for the case where the code expects a non object CModelObject but
+// the object is actually owned
+//
+// Here the chosen behaviour is as follows:
+// - If we are the server, produce an error
+// - If we are the client and a regular player, produce a error
+// - If we are the client and a game master, crash
+//
+// We want to crash only gamemasters to not inconvinience players
+static std::set<std::pair<int, int>> s_actuallyOwnedCModelObjects;
+void OnActuallyOwnedCModelObject(int nType, int nIndex) {
+	if (s_actuallyOwnedCModelObjects.contains(std::make_pair(nType, nIndex))) return;
+
+	Error("CModelMng::LoadModel(%d, %d) : expected a non owned Model but the model is actually owned", nType, nIndex);
+
+#ifdef __CLIENT
+	if (g_pPlayer && g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
+		throw std::exception("A CModelObject is actually owned. Check the Error file");
+	}
+#endif
+
+	s_actuallyOwnedCModelObjects.emplace(nType, nIndex);
+}
+
+
+template<typename T>
+requires (sqktd::IsOneOf<T,
+#ifdef __CLIENT
+	std::unique_ptr<CSfxModel>,
+#endif
+	std::unique_ptr<CModelObject>,
+	/* not owned */ CModelObject * ,
+	sqktd::maybe_owned_ptr<CModelObject>
+>)
+T CModelMng::LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts) {
+	MODELELEM * lpModelElem = GetModelElem(nType, nIndex);
+	if (lpModelElem == NULL) {
+		Error("CModelMng::loadModel mdlObj/mdlDyna - objtype=%d index=%d bpart=%d has no information.", nType, nIndex, bParts);
+		return nullptr;
+	}
+
+	TCHAR szFileName[MAX_PATH];
+	MakeModelName(szFileName, nType, nIndex);
+	ModelPtrInfo info = LoadModel(pd3dDevice, szFileName, lpModelElem, nType, bParts);
+
+	if (info.ptr == nullptr) return T(nullptr);
+
+#ifdef __CLIENT
+	if constexpr (std::same_as<T, std::unique_ptr<CSfxModel>>) {
+		if (info.isOwned && info.type == ModelType::Sfx) {
+			return std::unique_ptr<CSfxModel>(static_cast<CSfxModel *>(info.ptr));
+		}
+	}
+#endif
+	
+	if constexpr (std::same_as<T, std::unique_ptr<CModelObject>>) {
+		if (info.isOwned && info.type == ModelType::ModelObject) {
+			return std::unique_ptr<CModelObject>(static_cast<CModelObject *>(info.ptr));
+		}
+	} else if constexpr (std::same_as<T, CModelObject *>) {
+		if (info.type == ModelType::ModelObject) {
+			if (info.isOwned) {
+				OnActuallyOwnedCModelObject(nType, nIndex);
+			}
+
+			return static_cast<CModelObject *>(info.ptr);
+		}
+	} else if constexpr (std::same_as<T, sqktd::maybe_owned_ptr<CModelObject>>) {
+		if (info.type == ModelType::ModelObject) {
+			CModelObject * ptr = static_cast<CModelObject *>(info.ptr);
+			if (info.isOwned) {
+				return sqktd::maybe_owned_ptr<CModelObject>(ptr);
+			} else {
+				return std::unique_ptr<CModelObject>(ptr);
+			}
+		}
+	}
+
+	// TODO: if info.ptr is not null, should we do something? As it is likely a 
+	// programing error
+	if (info.isOwned && info.ptr) delete info.ptr;
+	return T(nullptr);
+}
+
+#ifdef __CLIENT
+template std::unique_ptr<CSfxModel>           CModelMng::LoadModel<std::unique_ptr<CSfxModel>          >(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts);
+#endif
+template std::unique_ptr<CModelObject>        CModelMng::LoadModel<std::unique_ptr<CModelObject>       >(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts);
+template CModelObject *                       CModelMng::LoadModel<CModelObject *                      >(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts);
+template sqktd::maybe_owned_ptr<CModelObject> CModelMng::LoadModel<sqktd::maybe_owned_ptr<CModelObject>>(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts);
+
+CModelMng::ModelPtrInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts )
 {
 	const int nModelType = lpModelElem->m_dwModelType;
 
@@ -167,9 +258,9 @@ ModelPointerWithOwnershipInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice
 			pModel->SetSfx(lpszFileName);
 			pModel->m_pModelElem = lpModelElem;
 			pModel->m_pModelElem->m_bUsed = TRUE;
-			return ModelPointerWithOwnershipInfo{ pModel, false };
+			return ModelPtrInfo{ pModel, ModelType::Sfx, true };
 #endif // not World
-			return nullptr;
+			return ModelPtrInfo{ nullptr, ModelType::Nullptr, false };
 		}
 
 		case MODELTYPE_MESH: {
@@ -183,9 +274,9 @@ ModelPointerWithOwnershipInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice
 				pModel->SetModelType( nModelType );
 				pModel->m_pModelElem = lpModelElem;
 
-				return ModelPointerWithOwnershipInfo(pModel, true);
+				return ModelPtrInfo{ pModel, ModelType::ModelObject, true };
 #else
-				return ModelPointerWithOwnershipInfo(mapItor->second.get(), false);
+				return ModelPtrInfo{ mapItor->second.get(), ModelType::ModelObject, false };
 #endif
 			}
 			CModelObject * pModel = new CModelObject;
@@ -202,10 +293,10 @@ ModelPointerWithOwnershipInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice
 			#endif			
 				m_mapFileToMesh.emplace(lpszFileName, pModel);
 				pModel->m_pModelElem->m_bUsed = TRUE;
-				return ModelPointerWithOwnershipInfo(pModel, false);
+				return ModelPtrInfo{ pModel, ModelType::ModelObject, false };
 			} else {
 				SAFE_DELETE(pModel);
-				return nullptr;
+				return ModelPtrInfo{ nullptr, ModelType::Nullptr, false };
 			}
 		}
 		case MODELTYPE_ANIMATED_MESH: {
@@ -240,10 +331,10 @@ ModelPointerWithOwnershipInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice
 				}
 			}
 
-			return ModelPointerWithOwnershipInfo(pModel, true);
+			return ModelPtrInfo{ pModel, ModelType::ModelObject, true };
 		}
 		default:
-			return nullptr;
+			return ModelPtrInfo{ nullptr, ModelType::Nullptr, false };
 	}
 }
 
