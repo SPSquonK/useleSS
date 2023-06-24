@@ -2177,47 +2177,23 @@ BOOL CWndFaceShop::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	
 	int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
 	
-	SAFE_DELETE( m_pMainModel );
-	m_pMainModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-	prj.m_modelMng.LoadMotion( m_pMainModel,  OT_MOVER, nMover, MTI_STAND2 );
-	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pMainModel, &g_pPlayer->m_Inventory );
-	m_pMainModel->InitDeviceObjects( g_Neuz.GetDevice() );
+	const auto InitializeModel = [](const int nMover, CModelObject *& pModel) {
+		SAFE_DELETE(pModel);
+		pModel = (CModelObject *)prj.m_modelMng.LoadModel(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE);
+		prj.m_modelMng.LoadMotion(pModel, OT_MOVER, nMover, MTI_STAND2);
+		CMover::UpdateParts(g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh, g_pPlayer->m_aEquipInfo, pModel, &g_pPlayer->m_Inventory);
+		pModel->InitDeviceObjects(g_Neuz.GetDevice());
+	};
 
-	SAFE_DELETE( m_pApplyModel );
-	m_pApplyModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-	prj.m_modelMng.LoadMotion( m_pApplyModel,  OT_MOVER, nMover, MTI_STAND2 );
-	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
-	m_pApplyModel->InitDeviceObjects( g_Neuz.GetDevice() );	
+	InitializeModel(nMover, m_pMainModel);
+	InitializeModel(nMover, m_pApplyModel);
+	InitializeModel(nMover, m_pFriendshipFace);
+	InitializeModel(nMover, m_pNewFace);
 
-	SAFE_DELETE(m_pFriendshipFace);
-	m_pFriendshipFace = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-	prj.m_modelMng.LoadMotion( m_pFriendshipFace,  OT_MOVER, nMover, MTI_STAND2 );
-	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pFriendshipFace, &g_pPlayer->m_Inventory );
-	m_pFriendshipFace->InitDeviceObjects( g_Neuz.GetDevice() );
-
-	SAFE_DELETE(m_pNewFace);
-	m_pNewFace = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-	prj.m_modelMng.LoadMotion( m_pNewFace,  OT_MOVER, nMover, MTI_STAND2 );
-	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pNewFace, &g_pPlayer->m_Inventory );
-	m_pNewFace->InitDeviceObjects( g_Neuz.GetDevice() );
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_BEAUTY_SHOP_SKIN, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-BOOL CWndFaceShop::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-}
- 
-void CWndFaceShop::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-}
- 
-void CWndFaceShop::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-}
- 
 void CWndFaceShop::OnLButtonDown( UINT nFlags, CPoint point ) 
 { 
 	int i;
