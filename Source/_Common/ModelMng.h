@@ -59,7 +59,7 @@ struct ModelPointerWithOwnershipInfo {
 };
 
 class CModelMng final {
-public:
+private:
 	std::map<std::string, CModelObject *> m_mapFileToMesh;
 	std::array<CFixedArray<MODELELEM>, MAX_OBJTYPE> m_aaModelElem;
 
@@ -79,6 +79,11 @@ public:
 	ModelPointerWithOwnershipInfo LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts = FALSE );
 
 	BOOL LoadScript( LPCTSTR lpszFileName );
+
+	// Return the fixed array of a type of model elems (used for tree patching depending on the season)
+	[[nodiscard]] CFixedArray<MODELELEM> & GetModelElems(size_t nType) { return m_aaModelElem[nType]; }
+
+	void DestroyUnusedModels();
 
 	// D3DX initialization related
 	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );

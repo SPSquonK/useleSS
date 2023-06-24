@@ -4514,7 +4514,7 @@ void CDPClient::OnEnvironmentSetting( CAr & ar ) {
 				});
 		};
 
-		CFixedArray<MODELELEM> & apModelElem = prj.m_modelMng.m_aaModelElem[OT_OBJ];
+		CFixedArray<MODELELEM> & apModelElem = prj.m_modelMng.GetModelElems(OT_OBJ);
 
 		for (MODELELEM & pModelElem : apModelElem) {
 

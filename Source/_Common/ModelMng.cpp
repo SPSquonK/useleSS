@@ -435,10 +435,8 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 			
 		#ifdef __WORLDSERVER
 			if( iType != OT_SFX )	// Sfx skip from server
-				apModelElem.SetAtGrow( iObject, modelElem );
-		#else
-			apModelElem.SetAtGrow( iObject, modelElem );
 		#endif
+				apModelElem.SetAtGrow(iObject, modelElem);
 
 		} // while( nBrace )
 
@@ -449,3 +447,21 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 	return TRUE;
 }
 
+
+void CModelMng::DestroyUnusedModels() {
+	// Destroy unused models.
+	// Only static things should come in here. Anything dynamic (using skinning)
+	// shouldn't be destroyed here.
+	auto itor = m_mapFileToMesh.begin();
+	while (itor != m_mapFileToMesh.end()) {
+		CModelObject * pModel = itor->second;
+		pModel->DeleteDeviceObjects();
+		if (pModel->m_pModelElem->m_bUsed == FALSE && pModel->m_pModelElem->m_dwType != OT_ITEM) {
+			SAFE_DELETE(pModel);
+			itor = prj.m_modelMng.m_mapFileToMesh.erase(itor);
+		} else {
+			pModel->m_pModelElem->m_bUsed = FALSE;
+			++itor;
+		}
+	}
+}
