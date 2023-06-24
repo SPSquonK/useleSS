@@ -8,7 +8,6 @@ namespace MoverSub {
 		static constexpr bool Archivable = true;
 
 		std::uint8_t skinSet  = 0;
-		std::uint8_t face     = 0;
 		std::uint8_t hairMesh = 0;
 		std::uint8_t headMesh = 0;
 	};
