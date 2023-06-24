@@ -190,16 +190,28 @@ public:
 class CWndFaceShop : public CWndNeuz
 {
 public:
-	CModelObject* m_pMainModel;
-	CModelObject* m_pApplyModel;
-	CModelObject* m_pFriendshipFace;
-	CModelObject* m_pNewFace;
+	template<DWORD MinInclusive, DWORD MaxExclusive>
+	static DWORD RingPlus(DWORD value) {
+		value += 1;
+		if (value == MaxExclusive) return MinInclusive;
+		return value;
+	}
+
+	template<DWORD MinInclusive, DWORD MaxExclusive>
+	static DWORD RingMinus(DWORD value) {
+		if (value == MinInclusive) return MaxExclusive - 1;
+		return value - 1;
+	}
+
+	std::unique_ptr<CModelObject> m_pMainModel;
+	std::unique_ptr<CModelObject> m_pApplyModel;
+	std::unique_ptr<CModelObject> m_pFriendshipFace;
 
 	DWORD m_dwFriendshipFace;
 	DWORD m_dwNewFace;
 	DWORD m_nSelectedFace;
-	DWORD m_nFriendshipFaceNum[4];
-	DWORD m_nNewFaceNum[4];
+	std::array<DWORD, 4> m_nFriendshipFaceNum;
+	std::array<DWORD, 4> m_nNewFaceNum;
 	int m_nCost;
 	int m_ChoiceBar;
 	
@@ -220,8 +232,12 @@ public:
 	virtual	void OnDestroy( void );
 	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
 		
-	void DrawFaces(int ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX matView);
+	
 	void UpdateModels();
 
 	void UseFaceCoupon(BOOL isUse);
+
+private:
+	void InitializeCurrentHead();
+	void DrawFaces(bool ChoiceFlag, C2DRender * p2DRender, D3DXMATRIX matView);
 };

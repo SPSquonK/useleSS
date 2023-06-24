@@ -1578,7 +1578,7 @@ BOOL CWndUseCouponConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 			else if(m_TargetWndId == APP_BEAUTY_SHOP_SKIN)
 			{
 				CWndFaceShop* pWndFaceShop = (CWndFaceShop*)this->GetParentWnd();
-				g_DPlay.SendChangeFace(pWndFaceShop->m_nSelectedFace - 1);
+				g_DPlay.SendChangeFace(pWndFaceShop->m_nSelectedFace);
 				pWndFaceShop->Destroy();
 			}
 		}	
@@ -1723,7 +1723,7 @@ BOOL CWndBeautyShopConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLRe
 			CWndFaceShop* pWndFaceShop = (CWndFaceShop*)this->GetParentWnd();
 			if( pWndFaceShop )
 			{
-				g_DPlay.SendChangeFace(pWndFaceShop->m_nSelectedFace - 1);
+				g_DPlay.SendChangeFace(pWndFaceShop->m_nSelectedFace);
 			}
 			pWndFaceShop->Destroy();
 		}
@@ -1739,14 +1739,10 @@ BOOL CWndBeautyShopConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLRe
 *************************/
 CWndFaceShop::CWndFaceShop()
 { 
-	m_pMainModel = NULL;
-	m_pApplyModel = NULL;
-	m_pFriendshipFace = NULL;
-	m_pNewFace = NULL;
 	m_pWndBeautyShopConfirm = NULL;
-	m_nSelectedFace = 1;
-	m_dwFriendshipFace = 1;
-	m_dwNewFace = 6;
+	m_nSelectedFace = 0;
+	m_dwFriendshipFace = 0;
+	m_dwNewFace = MAX_DEFAULT_HEAD;
 	m_nCost = 0;
 	m_ChoiceBar = -1;
 	m_bUseCoupon = FALSE;
@@ -1755,20 +1751,15 @@ CWndFaceShop::CWndFaceShop()
 
 CWndFaceShop::~CWndFaceShop() 
 { 
-	SAFE_DELETE(m_pMainModel);
-	SAFE_DELETE(m_pApplyModel);
-	SAFE_DELETE(m_pFriendshipFace);
-	SAFE_DELETE(m_pNewFace);
 	SAFE_DELETE(m_pWndBeautyShopConfirm);
 	SAFE_DELETE(m_pWndUseCouponConfirm);
 } 
 
 void CWndFaceShop::OnDestroy()
 {
-	SAFE_DELETE(m_pMainModel);
-	SAFE_DELETE(m_pApplyModel);
-	SAFE_DELETE(m_pFriendshipFace);
-	SAFE_DELETE(m_pNewFace);
+	m_pMainModel.reset();
+	m_pApplyModel.reset();
+	m_pFriendshipFace.reset();
 	SAFE_DELETE(m_pWndBeautyShopConfirm);
 }
 
@@ -1893,7 +1884,7 @@ void CWndFaceShop::OnDraw( C2DRender* p2DRender )
 		::SetTransformProj( matProj );
 	
 		if( g_pPlayer )
-			g_pPlayer->OverCoatItemRenderCheck(m_pMainModel);
+			g_pPlayer->OverCoatItemRenderCheck(m_pMainModel.get());
 		
 		m_pMainModel->Render( p2DRender->m_pd3dDevice, &matWorld );
 	}
@@ -1949,7 +1940,7 @@ void CWndFaceShop::OnDraw( C2DRender* p2DRender )
 		::SetTransformProj( matProj );
 
 		if( g_pPlayer )
-			g_pPlayer->OverCoatItemRenderCheck(m_pApplyModel);
+			g_pPlayer->OverCoatItemRenderCheck(m_pApplyModel.get());
 
 		m_pApplyModel->Render( p2DRender->m_pd3dDevice, &matWorld );
 	}
@@ -1964,11 +1955,11 @@ void CWndFaceShop::OnDraw( C2DRender* p2DRender )
 	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
 	
-	DrawFaces(0, p2DRender, matView);
-	DrawFaces(1, p2DRender, matView);
+	DrawFaces(false, p2DRender, matView);
+	DrawFaces(true , p2DRender, matView);
 } 
 
-void CWndFaceShop::DrawFaces(int ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX matView)
+void CWndFaceShop::DrawFaces(bool ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX matView)
 {
 	// 뷰포트 세팅 
 	D3DVIEWPORT9 viewport;
@@ -1979,26 +1970,20 @@ void CWndFaceShop::DrawFaces(int ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX ma
 	D3DXMATRIXA16 matTrans;
 	
 	//Face Kind
-	DWORD FaceNum;
 	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-	CModelObject* m_pFaceModel;
+	CModelObject * m_pFaceModel = m_pFriendshipFace.get();
+	if (!m_pFaceModel) return;
 
-	if(ChoiceFlag == 0)
-	{
-		m_pFaceModel = m_pFriendshipFace;
-		FaceNum = m_dwFriendshipFace;
-	}
-	else if(ChoiceFlag == 1)
-	{
-		m_pFaceModel = m_pNewFace;
-		FaceNum = m_dwNewFace;
-	}
+	static constexpr std::array<int, 4> custom_friend = {WIDC_CUSTOM1, WIDC_CUSTOM2, WIDC_CUSTOM3, WIDC_CUSTOM4};
+	static constexpr std::array<int, 4> custom_new    = {WIDC_CUSTOM7, WIDC_CUSTOM8, WIDC_CUSTOM9, WIDC_CUSTOM10};
 
-	int custom_friend[4] = {WIDC_CUSTOM1, WIDC_CUSTOM2, WIDC_CUSTOM3, WIDC_CUSTOM4};
-	int custom_new[4] = {WIDC_CUSTOM7, WIDC_CUSTOM8, WIDC_CUSTOM9, WIDC_CUSTOM10};
+	DWORD FaceNum = !ChoiceFlag ? m_dwFriendshipFace : m_dwNewFace;
+	const std::array<int, 4> & customs = !ChoiceFlag ? custom_friend : custom_new;
+	std::array<DWORD, 4> & faces = !ChoiceFlag ? m_nFriendshipFaceNum : m_nNewFaceNum;
 
-	if(m_pFaceModel == NULL)
-		return;
+	const auto Advance = !ChoiceFlag
+		? RingPlus<0, MAX_DEFAULT_HEAD>
+		: RingPlus<MAX_DEFAULT_HEAD, MAX_HEAD>;
 
 	LPWNDCTRL lpFace = GetWndCtrl( custom_friend[0] );
 	viewport.Width  = lpFace->rect.Width() - 2;
@@ -2016,21 +2001,11 @@ void CWndFaceShop::DrawFaces(int ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX ma
 
 	for(int i=0; i<4; i++)
 	{
-		if(ChoiceFlag == 0)
-		{
-			( FaceNum > MAX_DEFAULT_HEAD ) ? FaceNum = 1: FaceNum;
-			lpFace = GetWndCtrl( custom_friend[i] );
-			m_nFriendshipFaceNum[i] = FaceNum;
-		}
-		else if(ChoiceFlag == 1)
-		{
-			( FaceNum > MAX_HEAD ) ? FaceNum = 6: FaceNum;
-			lpFace = GetWndCtrl( custom_new[i] );
-			m_nNewFaceNum[i] = FaceNum;
-		}
+		lpFace = GetWndCtrl(customs[i]);
+		faces[i] = FaceNum;
 
 		//Model Draw
-		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, FaceNum-1,g_pPlayer->m_aEquipInfo, m_pFaceModel, NULL );
+		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, FaceNum, g_pPlayer->m_aEquipInfo, m_pFaceModel, NULL );
 		
 		viewport.X      = p2DRender->m_ptOrigin.x + lpFace->rect.left;
 		viewport.Y      = p2DRender->m_ptOrigin.y + lpFace->rect.top;
@@ -2071,25 +2046,11 @@ void CWndFaceShop::DrawFaces(int ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX ma
 		m_pFaceModel->Render( p2DRender->m_pd3dDevice, &matWorld );
 
 		//Select Draw
-		if(ChoiceFlag == 0)
-		{
-			if(m_nSelectedFace == m_nFriendshipFaceNum[i])
-			{
-				CRect rect;
-				rect = lpFace->rect;
-				p2DRender->RenderFillRect( rect, 0x60ffff00 );
-			}
+		if (m_nSelectedFace == FaceNum) {
+			p2DRender->RenderFillRect(lpFace->rect, 0x60ffff00);
 		}
-		else if(ChoiceFlag == 1)
-		{
-			if(m_nSelectedFace == m_nNewFaceNum[i])
-			{
-				CRect rect;
-				rect = lpFace->rect;
-				p2DRender->RenderFillRect( rect, 0x60ffff00 );
-			}
-		}
-		FaceNum++;
+
+		FaceNum = Advance(FaceNum);
 	}
 }
 
@@ -2098,7 +2059,7 @@ void CWndFaceShop::UpdateModels()
 	if(m_pMainModel != NULL)
 		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pMainModel, &g_pPlayer->m_Inventory );
 	if(m_pApplyModel != NULL)	
-		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, m_nSelectedFace-1, g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
+		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, m_nSelectedFace, g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
 }
 
 void CWndFaceShop::OnInitialUpdate() 
@@ -2125,18 +2086,12 @@ BOOL CWndFaceShop::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	if( g_pPlayer == NULL )
 		return FALSE;
 
-	if(g_pPlayer->m_dwHeadMesh >= 0 && g_pPlayer->m_dwHeadMesh < 6)
-		m_dwFriendshipFace = g_pPlayer->m_dwHeadMesh + 1;
-	else if(g_pPlayer->m_dwHeadMesh >= 6 && g_pPlayer->m_dwHeadMesh < 15)
-		m_dwNewFace = g_pPlayer->m_dwHeadMesh + 1;
-
-	m_nSelectedFace = g_pPlayer->m_dwHeadMesh + 1;	
+	InitializeCurrentHead();
 	
 	int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
 	
-	const auto InitializeModel = [](const int nMover, CModelObject *& pModel) {
-		SAFE_DELETE(pModel);
-		pModel = (CModelObject *)prj.m_modelMng.LoadModel(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE);
+	const auto InitializeModel = [](const int nMover, std::unique_ptr<CModelObject> & pModel) {
+		pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE);
 		pModel->LoadMotionId(MTI_STAND2);
 		CMover::UpdateParts(g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh, g_pPlayer->m_aEquipInfo, pModel, &g_pPlayer->m_Inventory);
 		pModel->InitDeviceObjects(g_Neuz.GetDevice());
@@ -2145,7 +2100,6 @@ BOOL CWndFaceShop::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	InitializeModel(nMover, m_pMainModel);
 	InitializeModel(nMover, m_pApplyModel);
 	InitializeModel(nMover, m_pFriendshipFace);
-	InitializeModel(nMover, m_pNewFace);
 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_BEAUTY_SHOP_SKIN, pWndParent, 0, CPoint( 0, 0 ) );
@@ -2153,14 +2107,12 @@ BOOL CWndFaceShop::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 
 void CWndFaceShop::OnLButtonDown( UINT nFlags, CPoint point ) 
 { 
-	int i;
 	int custom[8] = {WIDC_CUSTOM1, WIDC_CUSTOM2, WIDC_CUSTOM3, WIDC_CUSTOM4,
 					WIDC_CUSTOM7, WIDC_CUSTOM8, WIDC_CUSTOM9, WIDC_CUSTOM10};
-	LPWNDCTRL lpWndCtrl;
 	
-	for( i=0; i<8; i++ )
+	for(int i=0; i<8; i++ )
 	{
-		lpWndCtrl = GetWndCtrl( custom[i] );
+		LPWNDCTRL lpWndCtrl = GetWndCtrl( custom[i] );
 		CRect DrawRect = lpWndCtrl->rect;
 		if(DrawRect.PtInRect( point ))
 		{
@@ -2170,15 +2122,27 @@ void CWndFaceShop::OnLButtonDown( UINT nFlags, CPoint point )
 			else if(i>=4 && i<8)
 				m_nSelectedFace = m_nNewFaceNum[i-4];
 			
-			CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, m_nSelectedFace-1, g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
+			CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, m_nSelectedFace, g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
 			//요금 계산..
-			if( g_pPlayer->m_dwHeadMesh != m_nSelectedFace-1 && !m_bUseCoupon)
+			if( g_pPlayer->m_dwHeadMesh != m_nSelectedFace && !m_bUseCoupon)
 				m_nCost = CHANGE_FACE_COST;
 			else
 				m_nCost = 0;
 		}
 	}
 } 
+
+void CWndFaceShop::InitializeCurrentHead() {
+	m_dwNewFace = MAX_DEFAULT_HEAD;
+	m_dwFriendshipFace = 0;
+	if (g_pPlayer->m_dwHeadMesh >= 0 && g_pPlayer->m_dwHeadMesh < MAX_DEFAULT_HEAD) {
+		m_dwFriendshipFace = g_pPlayer->m_dwHeadMesh;
+	} else if (g_pPlayer->m_dwHeadMesh >= MAX_DEFAULT_HEAD && g_pPlayer->m_dwHeadMesh < MAX_HEAD) {
+		m_dwNewFace = g_pPlayer->m_dwHeadMesh;
+	}
+
+	m_nSelectedFace = g_pPlayer->m_dwHeadMesh;
+}
 
 BOOL CWndFaceShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -2191,51 +2155,27 @@ BOOL CWndFaceShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			case WIDC_BTN_RESET: 
 				{
-					if(g_pPlayer->m_dwHeadMesh >= 0 && g_pPlayer->m_dwHeadMesh < 6)
-					{
-						m_dwFriendshipFace = g_pPlayer->m_dwHeadMesh + 1;
-						m_dwNewFace = 6;
-					}
-					else if(g_pPlayer->m_dwHeadMesh >= 6 && g_pPlayer->m_dwHeadMesh < 16)
-					{
-						m_dwNewFace = g_pPlayer->m_dwHeadMesh + 1;
-						m_dwFriendshipFace = 1;
-					}
-					m_nSelectedFace = g_pPlayer->m_dwHeadMesh + 1;
-					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, m_nSelectedFace-1,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
+					InitializeCurrentHead();
+					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, m_nSelectedFace,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
 					
 					m_nCost = 0;
 				}
 				break;
 			case WIDC_FRIENDSHIPFACE_LEFT:
-				{
-					m_dwFriendshipFace--;
-					( m_dwFriendshipFace < 1 ) ? m_dwFriendshipFace = MAX_DEFAULT_HEAD: m_dwFriendshipFace;
-				}
+				m_dwFriendshipFace = RingMinus<0, MAX_DEFAULT_HEAD>(m_dwFriendshipFace);
 				break;
 			case WIDC_FRIENDSHIPFACE_RIGHT:
-				{
-					m_dwFriendshipFace++;
-					( m_dwFriendshipFace > MAX_DEFAULT_HEAD ) ? m_dwFriendshipFace = 1: m_dwFriendshipFace;
-				}
+				m_dwFriendshipFace = RingPlus<0, MAX_DEFAULT_HEAD>(m_dwFriendshipFace);
 				break;
 			case WIDC_NEWFACE_LEFT:
-				{
-					m_dwNewFace--;
-					( m_dwNewFace < 6 ) ? m_dwNewFace = MAX_HEAD: m_dwNewFace;
-				}
+				m_dwNewFace = RingMinus<MAX_DEFAULT_HEAD, MAX_HEAD>(m_dwNewFace);
 				break;
 			case WIDC_NEWFACE_RIGHT:
-				{
-					m_dwNewFace++;
-					( m_dwNewFace > MAX_HEAD ) ? m_dwNewFace = 6: m_dwNewFace;
-				}
+				m_dwNewFace = RingPlus<MAX_DEFAULT_HEAD, MAX_HEAD>(m_dwNewFace);
 				break;
 			case WIDC_BTN_OK:
 				{
-					BOOL noChange = FALSE;
-					if(g_pPlayer->m_dwHeadMesh == m_nSelectedFace-1)
-						noChange = TRUE;
+					const BOOL noChange = g_pPlayer->m_dwHeadMesh == m_nSelectedFace;
 
 					if(m_nCost <= 0 && (!m_bUseCoupon || noChange))
 						Destroy();
