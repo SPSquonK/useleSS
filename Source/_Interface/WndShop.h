@@ -93,6 +93,7 @@ public:
 	CModelObject*	 m_pModel;
 
 	DWORD			 m_dwHairMesh;
+	DWORD			 m_dwSelectHairMesh;
 	BOOL			 m_bLButtonClick;
 	CRect			 m_ColorRect[3];
 	FLOAT			 m_fColor[3];
@@ -109,7 +110,6 @@ public:
 	int				 m_ChoiceBar;
 	CModelObject*	 m_pHairModel;
 	DWORD			 m_nHairNum[4];
-	DWORD			 m_dwSelectHairMesh;
 	CWndBeautyShopConfirm* m_pWndBeautyShopConfirm;
 	
 	BOOL m_bUseCoupon;
@@ -129,8 +129,6 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
