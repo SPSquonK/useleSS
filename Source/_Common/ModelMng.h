@@ -2,6 +2,7 @@
 
 #include "2DRender.h"
 #include <array>
+#include <functional>
 
 struct MODELELEM {
 	DWORD m_dwType;
@@ -60,7 +61,7 @@ struct ModelPointerWithOwnershipInfo {
 
 class CModelMng final {
 private:
-	std::map<std::string, CModelObject *> m_mapFileToMesh;
+	std::map<std::string, std::unique_ptr<CModelObject>, std::less<>> m_mapFileToMesh;
 	std::array<CFixedArray<MODELELEM>, MAX_OBJTYPE> m_aaModelElem;
 
 public:

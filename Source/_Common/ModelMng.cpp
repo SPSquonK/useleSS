@@ -20,8 +20,6 @@ CModelMng::~CModelMng() {
 			SAFE_DELETE_ARRAY(pModelElem.m_apszMotion);
 		}
 	}
-
-	// TODO: Shoudln't the models stored in m_mapFileToMesh be also deleted?
 }
 
 MODELELEM * CModelMng::GetModelElem(const DWORD dwType, const DWORD dwIndex) {
@@ -187,7 +185,7 @@ ModelPointerWithOwnershipInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice
 
 				return ModelPointerWithOwnershipInfo(pModel, true);
 #else
-				return ModelPointerWithOwnershipInfo(mapItor->second, false);
+				return ModelPointerWithOwnershipInfo(mapItor->second.get(), false);
 #endif
 			}
 			CModelObject * pModel = new CModelObject;
@@ -254,7 +252,7 @@ HRESULT CModelMng::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
 }
 
 HRESULT CModelMng::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
-	for (CModelObject * pModel : m_mapFileToMesh | std::views::values) {
+	for (auto & pModel : m_mapFileToMesh | std::views::values) {
 		pModel->RestoreDeviceObjects();
 	}
 
@@ -262,7 +260,7 @@ HRESULT CModelMng::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
 }
 
 HRESULT CModelMng::InvalidateDeviceObjects() {
-	for (CModelObject * pModel : m_mapFileToMesh | std::views::values) {
+	for (auto & pModel : m_mapFileToMesh | std::views::values) {
 		pModel->InvalidateDeviceObjects();
 	}
 
@@ -270,9 +268,8 @@ HRESULT CModelMng::InvalidateDeviceObjects() {
 }
 
 HRESULT CModelMng::DeleteDeviceObjects() {
-	for (CModelObject *& pModel : m_mapFileToMesh | std::views::values) {
+	for (auto & pModel : m_mapFileToMesh | std::views::values) {
 		pModel->DeleteDeviceObjects();
-		SAFE_DELETE(pModel);
 	}
 	m_mapFileToMesh.clear();
 	return S_OK;
@@ -454,10 +451,9 @@ void CModelMng::DestroyUnusedModels() {
 	// shouldn't be destroyed here.
 	auto itor = m_mapFileToMesh.begin();
 	while (itor != m_mapFileToMesh.end()) {
-		CModelObject * pModel = itor->second;
+		std::unique_ptr<CModelObject> & pModel = itor->second;
 		pModel->DeleteDeviceObjects();
 		if (pModel->m_pModelElem->m_bUsed == FALSE && pModel->m_pModelElem->m_dwType != OT_ITEM) {
-			SAFE_DELETE(pModel);
 			itor = prj.m_modelMng.m_mapFileToMesh.erase(itor);
 		} else {
 			pModel->m_pModelElem->m_bUsed = FALSE;
