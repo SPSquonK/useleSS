@@ -1526,18 +1526,13 @@ void CWndSelectChar::UpdateCharacter()
 		if( pMover )
 		{
 			// 장착, 게이지에 나올 캐릭터 오브젝트 설정 
-			int nMover = (pMover->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-			m_pBipedMesh[ i ] = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-			if( i == m_nSelectCharacter )
-			{
-				prj.m_modelMng.LoadMotion( m_pBipedMesh[ i ],  OT_MOVER, nMover, MTI_STAND );
-				m_dwMotion[ i ] = MTI_STAND;
-			}
-			else
-			{
-				prj.m_modelMng.LoadMotion( m_pBipedMesh[ i ],  OT_MOVER, nMover, MTI_SITSTAND );
-				m_dwMotion[ i ] = MTI_SITSTAND;
-			}
+			const int nMover = (pMover->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
+			
+			m_dwMotion[i] = (i == m_nSelectCharacter ? MTI_STAND : MTI_SITSTAND);
+			
+			m_pBipedMesh[i] = (CModelObject *)prj.m_modelMng.LoadModel(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE);
+			m_pBipedMesh[i]->LoadMotionId(m_dwMotion[i]);
+
 			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, m_pBipedMesh[ i ], NULL/*&pMover->m_Inventory*/ );
 		}
 	}
@@ -1772,21 +1767,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 
 BOOL CWndSelectChar::SetMotion( CModelObject* pModel, DWORD dwIndex, DWORD dwMotion, int nLoop, DWORD dwOption )
 {
-	//CModelObject* pModel = (CModelObject*)pModel;
-	DWORD	dwOrigMotion = dwMotion;
-	/*
-static DWORD m_dwOrigMotion = MTI_STAND;
-	if( dwMotion == m_dwOrigMotion )	// 같은 모션을 하라고 했는데...
-	{
-		if( nLoop == ANILOOP_LOOP )		return FALSE;	// 루핑모드 이면 걍 리턴
-		if( pModel->m_bEndFrame == FALSE )		// 아직 애니메이션중일때는 
-			return FALSE;						// 취소.
-		if( pModel->m_bEndFrame && nLoop == ANILOOP_CONT )	// 애니메이션이 끝난상태고 지속모드면 마지막 프레임으로 지속
-			return FALSE;
-	}
-	*/
 	prj.m_modelMng.LoadMotion( pModel, OT_MOVER, dwIndex, dwMotion );
-	//m_dwOrigMotion = dwMotion;
 
 	pModel->m_bEndFrame = FALSE;
 	pModel->SetLoop( nLoop );
@@ -1808,7 +1789,6 @@ void CWndSelectChar::SelectCharacter( int i )
 			if( pModel )
 				SetMotion( pModel, nMover, MTI_GETUP, ANILOOP_1PLAY, 0 );
 			m_dwMotion[ i ] = MTI_GETUP;
-			//pModel->SetMotion( MTI_SIT, ANILOOP_1PLAY ); // idle2 액션 
 
 			if( ::GetLanguage() == LANG_JAP && g_Option.m_bVoice )
 			{
@@ -1847,8 +1827,6 @@ void CWndSelectChar::OnLButtonUp(UINT nFlags, CPoint point)
 		}
 	}
 }
-//pMover->SetMotion( MTI_STAND );
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -2193,10 +2171,8 @@ void CWndCreateChar::SetSex( int nSex )
 	SAFE_DELETE( m_pModel );
 	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
 
-	if( nSex == SEX_MALE )
-		prj.m_modelMng.LoadMotion( m_pModel,  OT_MOVER, nMover, MTI_STAND );
-	else
-		prj.m_modelMng.LoadMotion( m_pModel,  OT_MOVER, nMover, MTI_STAND2 ); // 포니테일 앞으로 
+	const DWORD dwMotion = nSex == SEX_MALE ? MTI_STAND : MTI_STAND2;
+	m_pModel->LoadMotionId(dwMotion);
 
 	memset( m_Player.m_aEquipInfo, 0, sizeof(EQUIP_INFO) * MAX_HUMAN_PARTS );
 	{

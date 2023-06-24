@@ -542,6 +542,14 @@ int		CModelObject::LoadBone( LPCTSTR szFileName )
 	return SUCCESS;
 }
 
+void CModelObject::LoadMotionId(DWORD dwMotion) {
+	const MODELELEM * lpModelElem = m_pModelElem;
+	if (m_pModelElem->m_dwType != OT_MOVER) return;
+
+	TCHAR szMotionName[MAX_PATH];
+	lpModelElem->MakeMotionName(szMotionName, dwMotion);
+	LoadMotion(szMotionName);
+}
 
 //
 //	LoadMotion

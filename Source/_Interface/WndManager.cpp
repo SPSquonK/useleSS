@@ -2089,8 +2089,6 @@ void CWndMgr::SetPlayer( CMover* pMover )
 		if( pWndBase = GetApplet( APP_GAUGE ) )
 		{
 			pWndBase->SetTitle( pMover->GetName() );
-			//( (CWndStatus*)pWndBase )->m_pModel	= prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, pMover->m_dwType, pMover->m_dwIndex, TRUE );
-			//prj.m_modelMng.LoadMotion( ( (CWndStatus*)pWndBase )->m_pModel, pMover->m_dwType, pMover->m_dwIndex, 0 );
 		}
 
 		CWndSkillTreeCommon::ReInitIfOpen();

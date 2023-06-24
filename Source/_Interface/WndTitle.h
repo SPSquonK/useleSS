@@ -104,8 +104,6 @@ public:
 	void Connected();
 	void OnDestroyChildWnd(CWndBase * pWndChild);
 
-	BOOL SetMotion(CModelObject * pModel, DWORD dwIndex, DWORD dwMotion, int nLoop, DWORD dwOption);
-
 	void SelectCharacter(int i);
 
 	BOOL Process() override;
@@ -121,6 +119,8 @@ public:
 	HRESULT DeleteDeviceObjects() override;
 	void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) override;
 
+private:
+	BOOL SetMotion(CModelObject * pModel, DWORD dwIndex, DWORD dwMotion, int nLoop, DWORD dwOption);
 };
 
 

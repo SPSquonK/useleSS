@@ -1144,13 +1144,13 @@ BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	
 	int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
 	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-	prj.m_modelMng.LoadMotion( m_pModel,  OT_MOVER, nMover, MTI_STAND2 );
+	m_pModel->LoadMotionId(MTI_STAND2);
 	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
 	
 	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );
 	SAFE_DELETE( m_pApplyModel );
 	m_pApplyModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-	prj.m_modelMng.LoadMotion( m_pApplyModel,  OT_MOVER, nMover, MTI_STAND2 );
+	m_pApplyModel->LoadMotionId(MTI_STAND2);
 	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
 	m_pApplyModel->InitDeviceObjects( g_Neuz.GetDevice() );
 
@@ -1163,7 +1163,7 @@ BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 
 	SAFE_DELETE(m_pHairModel);
 	m_pHairModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-	prj.m_modelMng.LoadMotion( m_pHairModel,  OT_MOVER, nMover, MTI_STAND2 );
+	m_pHairModel->LoadMotionId(MTI_STAND2);
 	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh,g_pPlayer->m_aEquipInfo, m_pHairModel, &g_pPlayer->m_Inventory );
 	m_pHairModel->InitDeviceObjects( g_Neuz.GetDevice() );
 
@@ -2180,7 +2180,7 @@ BOOL CWndFaceShop::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	const auto InitializeModel = [](const int nMover, CModelObject *& pModel) {
 		SAFE_DELETE(pModel);
 		pModel = (CModelObject *)prj.m_modelMng.LoadModel(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE);
-		prj.m_modelMng.LoadMotion(pModel, OT_MOVER, nMover, MTI_STAND2);
+		pModel->LoadMotionId(MTI_STAND2);
 		CMover::UpdateParts(g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh, g_pPlayer->m_aEquipInfo, pModel, &g_pPlayer->m_Inventory);
 		pModel->InitDeviceObjects(g_Neuz.GetDevice());
 	};

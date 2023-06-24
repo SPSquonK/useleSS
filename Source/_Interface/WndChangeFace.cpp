@@ -241,7 +241,7 @@ void CWndChangeSex::OnInitialUpdate()
 	// 성전환이니깐 반대로 하자~
 	int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_FEMALE:MI_MALE );
 	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-	prj.m_modelMng.LoadMotion( m_pModel,  OT_MOVER, nMover, MTI_STAND2 );
+	m_pModel->LoadMotionId(MTI_STAND2);
 
 	CMover::UpdateParts( !g_pPlayer->GetSex(), 0, 0, g_pPlayer->m_dwHairMesh , m_nSelectFace,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
 	

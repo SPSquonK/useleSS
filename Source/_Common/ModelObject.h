@@ -327,6 +327,8 @@ public:
 	HRESULT	CreateDeviceBuffer( O3D_ELEMENT *pElem );
 	int		LoadBone( LPCTSTR szFileName );
 	int		LoadMotion( LPCTSTR szFileName );
+	void	LoadMotion(int dwMotion) = delete;
+	void	LoadMotionId(DWORD dwMotion);
 	int		LoadElement( LPCTSTR szFileName, int nParts = 0 );
 	void	SetParent( int nParts, int nBoneIdx );
 	void	SetTextureMulti( LPCTSTR szBitmap, int nParts );
