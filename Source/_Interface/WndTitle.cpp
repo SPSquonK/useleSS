@@ -1078,7 +1078,6 @@ CWndSelectChar::CWndSelectChar()
 {
 	m_pWndDeleteChar = NULL;
 	m_pWnd2ndPassword = NULL;
-	ZeroMemory( m_pBipedMesh, sizeof( m_pBipedMesh ) );	
 	m_dwMotion[ 0 ] = MTI_SITSTAND;
 	m_dwMotion[ 1 ] = MTI_SITSTAND;
 	m_dwMotion[ 2 ] = MTI_SITSTAND;
@@ -1089,10 +1088,6 @@ CWndSelectChar::~CWndSelectChar()
 {
 	InvalidateDeviceObjects();
 	DeleteDeviceObjects();
-	for( int i = 0; i < MAX_CHARACTER_LIST; i++ )
-	{
-		SAFE_DELETE( m_pBipedMesh[ i ] );
-	}
 	SAFE_DELETE( m_pWndDeleteChar );
 	SAFE_DELETE( m_pWnd2ndPassword );
 }
@@ -1186,7 +1181,7 @@ BOOL CWndSelectChar::Process()
 	for( int i = 0; i < MAX_CHARACTER_LIST; i++ )
 	{
 		CRect rect = m_aRect[ i ];
-		CModelObject* pModel = (CModelObject*)m_pBipedMesh[ i ];
+		CModelObject* pModel = m_pBipedMesh[ i ].get();
 		CMover* pMover = g_Neuz.m_apPlayer[ i ];
 	
 		if( g_Neuz.m_apPlayer[i] != NULL && pModel )
@@ -1199,7 +1194,7 @@ BOOL CWndSelectChar::Process()
 				{
 					if( pModel->IsEndFrame() && pModel->m_nLoop == ANILOOP_1PLAY )
 					{
-						SetMotion( pModel, nMover, MTI_STAND, ANILOOP_LOOP, 0 );
+						SetMotion( pModel, MTI_STAND, ANILOOP_LOOP, 0 );
 						m_dwMotion[ i ] = MTI_STAND;
 					}
 				}
@@ -1211,13 +1206,13 @@ BOOL CWndSelectChar::Process()
 				{
 					if( pModel->IsEndFrame() && pModel->m_nLoop == ANILOOP_1PLAY )
 					{
-						SetMotion( pModel, nMover, MTI_SITSTAND, ANILOOP_LOOP, 0 );
+						SetMotion( pModel, MTI_SITSTAND, ANILOOP_LOOP, 0 );
 						m_dwMotion[ i ] = MTI_SITSTAND;
 					}
 					else
 					if( m_dwMotion[ i ] != MTI_SIT )
 					{
-						SetMotion( pModel, nMover, MTI_SIT, ANILOOP_1PLAY, 0 );
+						SetMotion( pModel, MTI_SIT, ANILOOP_1PLAY, 0 );
 						m_dwMotion[ i ] = MTI_SIT;
 					}
 				}
@@ -1297,7 +1292,7 @@ void CWndSelectChar::OnDraw( C2DRender* p2DRender )
 			else
 				p2DRender->TextOut( rect.left, rect.bottom + 10, g_Neuz.m_apPlayer[i]->GetName(), 0xff505050 );
 
-			CModelObject* pModel = (CModelObject*)m_pBipedMesh[ i ];
+			CModelObject* pModel = m_pBipedMesh[ i ].get();
 			LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 
 			pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
@@ -1514,7 +1509,7 @@ void CWndSelectChar::DeleteCharacter()
 		{
 			m_pBipedMesh[ i ]->InvalidateDeviceObjects();
 			m_pBipedMesh[ i ]->DeleteDeviceObjects();
-			SAFE_DELETE( m_pBipedMesh[ i ] );
+			m_pBipedMesh[ i ] = nullptr;
 		}
 	}
 }
@@ -1530,25 +1525,19 @@ void CWndSelectChar::UpdateCharacter()
 			
 			m_dwMotion[i] = (i == m_nSelectCharacter ? MTI_STAND : MTI_SITSTAND);
 			
-			m_pBipedMesh[i] = (CModelObject *)prj.m_modelMng.LoadModel(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE);
+			m_pBipedMesh[i] = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>(
+				g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE
+			);
 			m_pBipedMesh[i]->LoadMotionId(m_dwMotion[i]);
 
-			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, m_pBipedMesh[ i ], NULL/*&pMover->m_Inventory*/ );
+			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, m_pBipedMesh[ i ].get(), NULL );
 		}
 	}
 }
 void CWndSelectChar::OnInitialUpdate()
 {
 	CWndNeuz::OnInitialUpdate();
-
-	CRect rect = GetClientRect();
-
-	LPWNDCTRL lpText1 = GetWndCtrl( WIDC_CUSTOM1 );
-	LPWNDCTRL lpText2 = GetWndCtrl( WIDC_CUSTOM2 );
-	LPWNDCTRL lpText3 = GetWndCtrl( WIDC_CUSTOM3 );
-		
-	CWndButton* pWndButton = (CWndButton*)GetDlgItem( WIDC_DELETE );
-
+			
 	CWndButton* pWndAccept = (CWndButton*)GetDlgItem( WIDC_ACCEPT );
 	pWndAccept->SetDefault( TRUE );
 	CWndButton* pWndBack = (CWndButton*)GetDlgItem( WIDC_BACK );
@@ -1556,31 +1545,13 @@ void CWndSelectChar::OnInitialUpdate()
 	
 	m_bDisconnect = FALSE;
 
-	rect = CRect( 16, 16, 174, 254 );
+	CRect rect = CRect( 16, 16, 174, 254 );
 	for( int i = 0; i < MAX_CHARACTER_LIST; i++ )
 	{
 		m_aRect[ i ] = rect;
 		rect.OffsetRect( 170, 0 );
 	}
-	
-	//서버통합 관련 특정 기간 캐릭터 생성 금지. 2007/01/02 ~ 2007/01/11 에만 사용.
-#if defined( __MAINSERVER )
-/*	if(g_Option.m_nSer != 1)
-	{
-		CTime time = CTime::GetCurrentTime();
-		int year, month, day;
-		year = time.GetYear();
-		month = time.GetMonth();
-		day = time.GetDay();
-		if(year == 2007 && month == 1)
-		{
-			if(day > 1 && day < 12)
-				m_CreateApply = FALSE;
-		}
-	}
-*/
-#endif //( __MAINSERVER )
-	
+		
 	MoveParentCenter();
 }
 
@@ -1596,9 +1567,7 @@ void CWndSelectChar::Connected()
 	if( m_nSelectCharacter < 0 || m_nSelectCharacter >= 5 )
 	{
 		LPCTSTR szErr = Error( "CWndSelectChar::Connected : 범위초과 %d", m_nSelectCharacter );
-		//ADDERRORMSG( szErr );
-		int *p = NULL;
-		*p = 1;
+		throw std::exception(szErr);
 	}
 #ifdef __USE_IDPLAYER0519
 	#ifdef __GPAUTH_01
@@ -1765,9 +1734,9 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
 
-BOOL CWndSelectChar::SetMotion( CModelObject* pModel, DWORD dwIndex, DWORD dwMotion, int nLoop, DWORD dwOption )
+BOOL CWndSelectChar::SetMotion( CModelObject* pModel, DWORD dwMotion, int nLoop, DWORD dwOption )
 {
-	prj.m_modelMng.LoadMotion( pModel, OT_MOVER, dwIndex, dwMotion );
+	pModel->LoadMotionId(dwMotion);
 
 	pModel->m_bEndFrame = FALSE;
 	pModel->SetLoop( nLoop );
@@ -1785,9 +1754,9 @@ void CWndSelectChar::SelectCharacter( int i )
 		if( pMover )
 		{
 			int nMover = (pMover->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-			CModelObject* pModel = (CModelObject*)m_pBipedMesh[ m_nSelectCharacter ];
+			CModelObject* pModel = m_pBipedMesh[ m_nSelectCharacter ].get();
 			if( pModel )
-				SetMotion( pModel, nMover, MTI_GETUP, ANILOOP_1PLAY, 0 );
+				SetMotion( pModel, MTI_GETUP, ANILOOP_1PLAY, 0 );
 			m_dwMotion[ i ] = MTI_GETUP;
 
 			if( ::GetLanguage() == LANG_JAP && g_Option.m_bVoice )

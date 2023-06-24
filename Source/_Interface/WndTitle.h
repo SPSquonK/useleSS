@@ -89,7 +89,7 @@ public:
 	static int m_nSelectCharacter;
 	CRect m_aRect[MAX_CHARACTER_LIST];
 	DWORD m_dwMotion[MAX_CHARACTER_LIST];
-	CModelObject * m_pBipedMesh[MAX_CHARACTER_LIST];
+	std::unique_ptr<CModelObject> m_pBipedMesh[MAX_CHARACTER_LIST];
 	BOOL m_bDisconnect;
 
 private:
@@ -120,7 +120,7 @@ public:
 	void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) override;
 
 private:
-	BOOL SetMotion(CModelObject * pModel, DWORD dwIndex, DWORD dwMotion, int nLoop, DWORD dwOption);
+	BOOL SetMotion(CModelObject * pModel, DWORD dwMotion, int nLoop, DWORD dwOption);
 };
 
 
