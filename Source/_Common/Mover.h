@@ -144,21 +144,6 @@ enum TRADE_STATE
 // struct
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Player appearance struct
-typedef struct tagPLAYER
-{
-	EQUIP_INFO	m_aEquipInfo[MAX_HUMAN_PARTS];
-	char		m_byCostume;
-	char		m_bySkinSet;
-	char		m_byFace;
-	char		m_byHairMesh;
-	char		m_byHairColor;
-	char		m_byHeadMesh;
-	char		m_bySex;
-	char		m_byJob;
-	u_short		m_uSlot;
-} PLAYER,* LPPLAYER;
-
 /// Quest structure
 typedef struct tagQuest
 {
@@ -180,6 +165,19 @@ typedef struct tagQuest
 	QuestProp* GetProp() const { return prj.m_aPropQuest.GetAt( m_wId.get() ); }
 
 } QUEST,* LPQUEST;
+
+#include "MoverCommon.h" // Requires QUEST to be defined
+
+/// Player appearance struct
+struct PLAYER {
+	EQUIP_INFO	m_aEquipInfo[MAX_HUMAN_PARTS];
+	char		m_byCostume;
+	MoverSub::SkinMeshs m_skin;
+	char		m_byHairColor;
+	char		m_bySex;
+	char		m_byJob;
+	u_short		m_uSlot;
+};
 
 /// Structs used in synchronization
 typedef	struct tagCORR_ACTION
@@ -338,8 +336,6 @@ private:
 	char	m_szName[MAX_PET_NAME];
 };
 #endif	// __CLIENT
-
-#include "MoverCommon.h"
 
 /// 플레이어와 NPC
 class CMover : public CCtrl
@@ -753,6 +749,9 @@ protected:
 public:
 	static	int		GetHairCost( CMover* pMover, BYTE nR, BYTE nG, BYTE nB, BYTE nHair );
 	static void		UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, EQUIP_INFO * pEquipInfo, CModelObject* pModel, CItemContainer* pInventory, BOOL bIfParts = TRUE, CMover* pMover = NULL );
+	static void		UpdateParts(int nSex, MoverSub::SkinMeshs skin, EQUIP_INFO * pEquipInfo, CModelObject * pModel, CItemContainer * pInventory, BOOL bIfParts = TRUE, CMover * pMover = NULL) {
+		UpdateParts(nSex, skin.skinSet, skin.face, skin.hairMesh, skin.headMesh, pEquipInfo, pModel, pInventory, bIfParts, pMover);
+	}
 	static void		UpdateParts(int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, EQUIP_INFO * pEquipInfo, const std::unique_ptr<CModelObject> & pModel, CItemContainer * pInventory, BOOL bIfParts = TRUE, CMover * pMover = NULL) {
 		UpdateParts(nSex, nSkinSet, nFace, nHairMesh, nHeadMesh, pEquipInfo, pModel, pInventory, bIfParts, pMover);
 	}

@@ -4,6 +4,14 @@
 #include <boost/container/static_vector.hpp>
 
 namespace MoverSub {
+	struct SkinMeshs {
+		static constexpr bool Archivable = true;
+
+		std::uint8_t skinSet  = 0;
+		std::uint8_t face     = 0;
+		std::uint8_t hairMesh = 0;
+		std::uint8_t headMesh = 0;
+	};
 
 	struct Quests {
 		boost::container::static_vector<QUEST, MAX_QUEST> current;

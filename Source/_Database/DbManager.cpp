@@ -111,15 +111,11 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 	arRead.ReadString( lpDbOverlappedPlus->AccountInfo.szAccount, MAX_ACCOUNT );
 	arRead.ReadString( lpDbOverlappedPlus->AccountInfo.szPassword, MAX_PASSWORD );
 
-	BYTE nSlot, nFace, nCostume, nSkinSet, nHairMesh;
-	DWORD dwHairColor;
-	BYTE nSex, nJob, nHeadMesh;
-	int nBankPW = 0;
-
 	//	 CHARACTER_STR 'I1',@im_idPlayer,@iserverindex,@iaccount,@im_szName,@iplayerslot,@idwWorldID,@im_dwIndex,@im_vPos_x,@im_vPos_y,@im_vPos_z,
 	//	 @im_szCharacterKey,@im_dwSkinSet,@im_dwHairMesh,@im_dwHairColor,@im_dwHeadMesh,@im_dwSex
 	// 	 CHARACTER_STR 'I1','','01','beat','샛별공주',0,0,0,0,0,0,'',0,0,0,0,0
-	arRead >> nSlot;
+	
+	BYTE nSlot; arRead >> nSlot;
 	arRead.ReadString( lpDbOverlappedPlus->AccountInfo.szPlayer, MAX_PLAYER );
 
 	// 해킹이므로 무시
@@ -128,37 +124,38 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 	}
 	prj.nameValider.Formalize( lpDbOverlappedPlus->AccountInfo.szPlayer );
 
-	arRead >> nFace >> nCostume >> nSkinSet >> nHairMesh;
-	arRead >> dwHairColor;
-	arRead >> nSex >> nJob >> nHeadMesh;
-	arRead >> nBankPW;
-
-	DWORD dwAuthKey;
-	arRead >> dwAuthKey;
+	const auto [
+		skin, dwHairColor, nSex,
+		nBankPW,
+		dwAuthKey
+	] = arRead.Extract<
+		MoverSub::SkinMeshs, DWORD, BYTE,
+		int,
+		DWORD
+	>();
+	
 	DWORD dwIndex	= ( nSex == SEX_FEMALE ? MI_FEMALE : MI_MALE );
 	DWORD dwWorldID	= WI_WORLD_MADRIGAL;
 	if( !g_appInfo.dwSys )
 		dwWorldID	= WI_WORLD_EVENT01;
 
 	const auto startingPosOpt = prj.GetRandomBeginPos(dwWorldID);
-	if (!startingPosOpt) { ASSERT(0); }
-
 	D3DXVECTOR3 vPos = startingPosOpt.value();
 
-	if( nSex != SEX_FEMALE && nSex != SEX_MALE )
-	{
-		return;
-	}
+	if (skin.skinSet != 0) return;
+	if (skin.hairMesh >= MAX_BASE_HAIR) return;
+	if (skin.headMesh >= MAX_DEFAULT_HEAD) return;
 
-	if( nBankPW < 0 || nBankPW > 9999 )
-	{
-		Error( "nBankPW is Invalid! szPlayer : %s, nBankPW : %d", lpDbOverlappedPlus->AccountInfo.szPlayer, nBankPW );
+	if (nSex != SEX_FEMALE && nSex != SEX_MALE) return;
+
+	if (nBankPW < 0 || nBankPW > 9999) {
+		Error("nBankPW is Invalid! szPlayer : %s, nBankPW : %d", lpDbOverlappedPlus->AccountInfo.szPlayer, nBankPW);
 		return;
 	}
 
 	char szQuery[QUERY_SIZE]	= { 0,};
 	DBQryCharacter( szQuery, "I1", 0, g_appInfo.dwSys, lpDbOverlappedPlus->AccountInfo.szAccount, lpDbOverlappedPlus->AccountInfo.szPlayer, nSlot, dwWorldID,
-		dwIndex, vPos.x, vPos.y, vPos.z, "", nSkinSet, nHairMesh,	dwHairColor, nHeadMesh, nSex );
+		dwIndex, vPos.x, vPos.y, vPos.z, "", skin.skinSet, skin.hairMesh,	dwHairColor, skin.headMesh, nSex );
 
 	if( FALSE == qry->Exec( szQuery ) )
 	{
@@ -180,8 +177,6 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 		{
 			nidPlayer = qry->GetInt( "m_idPlayer" );	
 			PlayerData pd;
-//			pd.nJob	= 0;
-//			pd.dwState	= 0;
 			pd.data.nLevel	= 1;
 			pd.data.nSex	= nSex;
 			pd.data.nVer	= 1;

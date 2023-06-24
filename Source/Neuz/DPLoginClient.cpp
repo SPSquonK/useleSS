@@ -116,8 +116,8 @@ void CDPLoginClient::SendGetPlayerList( DWORD dwID, LPCSTR lpszAccount, LPCSTR l
 	ar << dwID;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-void CDPLoginClient::SendCreatePlayer(BYTE nSlot, LPCSTR lpszPlayer/*, LPDWORD adwEquipment*/, BYTE nFace, BYTE nCostume, BYTE nSkinSet, BYTE nHairMesh, DWORD dwHairColor, BYTE nSex, BYTE nJob, BYTE nHeadMesh, int nBankPW )
-{
+
+void CDPLoginClient::SendCreatePlayer(BYTE nSlot, LPCSTR lpszPlayer, const MoverSub::SkinMeshs & skin, BYTE nCostume, DWORD dwHairColor, BYTE nSex, BYTE nJob, int nBankPW ) {
 	BEFORESENDSOLE( ar, PACKETTYPE_CREATE_PLAYER, DPID_UNKNOWN );
 #ifdef __GPAUTH_01
 	ar.WriteString( g_Neuz.m_bGPotatoAuth?g_Neuz.m_szGPotatoNo: g_Neuz.m_szAccount );
@@ -130,14 +130,10 @@ void CDPLoginClient::SendCreatePlayer(BYTE nSlot, LPCSTR lpszPlayer/*, LPDWORD a
 	if( strlen( lpszPlayer ) > 16 )
 		Error( "CDPLoginClient::SendCreatePlayer에서 이상 캐릭터 명 E: %s", lpszPlayer );
 	ar.WriteString( lpszPlayer );
-	if( strlen( lpszPlayer ) > 16 )
-		Error( "CDPLoginClient::SendCreatePlayer에서 이상 캐릭터 명 F: %s", lpszPlayer );
 	
 	//	ar.Write( adwEquipment, sizeof(DWORD) * MAX_HUMAN_PARTS );
 
-	ar << nFace << nCostume << nSkinSet << nHairMesh;
-	ar << dwHairColor;
-	ar << nSex << nJob << nHeadMesh;
+	ar << skin << dwHairColor << nSex;
 	ar << nBankPW;
 	ar << g_Neuz.m_dwAuthKey;
 	SEND( ar, this, DPID_SERVERPLAYER );

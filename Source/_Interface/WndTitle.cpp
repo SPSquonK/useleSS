@@ -1804,10 +1804,8 @@ void CWndSelectChar::OnLButtonUp(UINT nFlags, CPoint point)
 CWndCreateChar::CWndCreateChar()
 {
 	m_pModel = NULL;
-	m_Player.m_bySkinSet = SKINSET_01;
-	m_Player.m_byHairMesh = HAIRMESH_01;
+	m_Player.m_skin = MoverSub::SkinMeshs();
 	m_Player.m_byHairColor = 0;
-	m_Player.m_byHeadMesh = 0;
 	m_Player.m_bySex = SEX_FEMALE;
 	m_Player.m_byCostume = 0;
 	SetPutRegInfo( FALSE );
@@ -1850,55 +1848,8 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 	CRect rect = GetClientRect();
 
 	CPoint pt( 20, 15 );
-/*
-	for( int i = 0; i < 5; i++)
-	{
-		p2DRender->RenderLine( pt, CPoint( pt.x + 200, pt. y ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-		p2DRender->RenderLine( CPoint( pt.x - 10, pt.y + 20 ), CPoint( pt.x + 200 - 10, pt. y + 20 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
 
-		p2DRender->RenderLine( pt, CPoint( pt.x - 10, pt.y + 20 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-		p2DRender->RenderLine( CPoint( pt.x + 200, pt. y ), CPoint( pt.x + 200 - 10, pt. y + 20 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-		p2DRender->RenderLine( CPoint( pt.x + 100, pt. y ), CPoint( pt.x + 100 - 10, pt. y + 20 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-
-
-		pt.y += 30;
-	}
-	*/
 	pt = CPoint( 260, 15 );
-
-//	p2DRender->RenderLine( pt, CPoint( pt.x + 300, pt. y ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-//	p2DRender->RenderLine( CPoint( pt.x - 10, pt.y + 220 ), CPoint( pt.x + 300 - 10, pt. y + 220 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-
-//	p2DRender->RenderLine( pt, CPoint( pt.x - 10, pt.y + 20 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-//	p2DRender->RenderLine( CPoint( pt.x + 300, pt. y ), CPoint( pt.x + 300 - 10, pt. y + 20 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-/*
-	rect = CRect( 30, 10, 115, 230 );
-	int y = 50;
-	p2DRender->TextOut( rect.left, rect.top + y, _T( "Name" ) ); y += 50;
-	p2DRender->TextOut( rect.left, rect.top + y, _T( "Job" ) ); y += 30;
-	p2DRender->TextOut( rect.left, rect.top + y, _T( "Gender" ) ); y += 30;
-	p2DRender->TextOut( rect.left, rect.top + y, _T( "Hair Style" ) ); y += 30; // 머리카락 모양 
-	p2DRender->TextOut( rect.left, rect.top + y, _T( "Hair Color" ) ); y += 30; // 피부색 및 얼굴 
-	p2DRender->TextOut( rect.left, rect.top + y, _T( "Face" ) ); y += 30; // 피부색 및 얼굴 
-	*/
-	//p2DRender->TextOut( rect.left, rect.top + y, _T( "Costume" ) ); y += 30; // 피부색 및 얼굴 
-	//p2DRender->TextOut( rect.left, rect.top +130, _T( "Skin Color" ) );
-	//DRender->TextOut( rect.left, rect.top +220, _T( "Underwear" ) );
-	//p2DRender->TextOut( rect.left, rect.top +130, _T( "Underwear" ) );
-	
-	//p2DRender->RenderRoundRect(CRect(4,     4,128*2+6,       96+6),D3DCOLOR_TEMP(255,150,150,250));
-/*
-	CRect rect = CRect( 4, 96 + 6 + 4, 128 * 2 + 6, 96 + 6 + 4 + 96 + 6 );
-	p2DRender->RenderRoundRect( rect, D3DCOLOR_TEMP( 255, 150, 150, 250 ) );
-	rect.DeflateRect( 1, 1 );
-	p2DRender->RenderFillRect( rect, D3DCOLOR_TEMP( 255, 200, 200, 240 ) );
-
-	CRect rect = CRect( 4, 96 + 6 + 4, 128 * 2 + 6, 96 + 6 + 4 + 96 + 6 );
-	p2DRender->RenderRoundRect( rect, D3DCOLOR_TEMP( 255, 150, 150, 250 ) );
-	rect.DeflateRect( 1, 1 );
-	p2DRender->RenderFillRect( rect, D3DCOLOR_TEMP( 255, 200, 200, 240 ) );
-*/
-	//p2DRender->TextOut(10,60,"aaaa",D3DCOLOR_TEMP(255,100,100,200));
 
 
 	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
@@ -1912,8 +1863,7 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );
-	//pd3dDevice->SetTextureStageState( 0, D3DTSS_MINFILTER, D3DTEXF_LINEAR );
-	//pd3dDevice->SetTextureStageState( 0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR );
+
 	pd3dDevice->SetSamplerState ( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR );
 	pd3dDevice->SetSamplerState ( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR );
 
@@ -1923,30 +1873,6 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 
 	rect = GetClientRect();
-
-//	p2DRender->RenderRect( CRect( 280, 15, 550, 320 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-/*
-	pd3dDevice->SetRenderState( D3DRS_FOGENABLE, TRUE );
-	//pd3dDevice->SetRenderState( D3DRS_FOGENABLE, bEnable );
-	if(1)
-	{
-		pd3dDevice->SetRenderState( D3DRS_FOGCOLOR,  0xffffffff ) ;//CWorld::m_dwBgColor );
-
-		//pd3dDevice->SetRenderState( D3DRS_FOGSTART,   FtoDW(m_fFogStartValue) );
-		//pd3dDevice->SetRenderState( D3DRS_FOGEND,     FtoDW(m_fFogEndValue) );
-		//pd3dDevice->SetRenderState( D3DRS_FOGDENSITY, FtoDW(m_fFogDensity) );
-		if( 1) //m_bUsingTableFog )
-		{
-			pd3dDevice->SetRenderState( D3DRS_FOGVERTEXMODE,  D3DFOG_NONE );
-//			pd3dDevice->SetRenderState( D3DRS_FOGTABLEMODE,   D3DFOG_NONE );
-//			pd3dDevice->SetRenderState( D3DRS_RANGEFOGENABLE, FALSE );
-			pd3dDevice->SetRenderState( D3DRS_FOGTABLEMODE,   D3DFOG_LINEAR );
-		}
-	}
-	pd3dDevice->SetRenderState( D3DRS_FOGVERTEXMODE,  D3DFOG_NONE );
-	pd3dDevice->SetRenderState( D3DRS_FOGTABLEMODE,   D3DFOG_NONE );
-	*/
-
 
 	// 뷰포트 세팅 
 	D3DVIEWPORT9 viewport;
@@ -1966,16 +1892,7 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 	point.y -= 15;
 
 	CRect rectViewport( 0, 0, viewport.Width, viewport.Height );
-/*
-	// 프로젝션 
-	D3DXMATRIX matProj;
-	D3DXMatrixIdentity( &matProj );
-	pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 
-	FLOAT fAspect = ((FLOAT)viewport.Width) / (FLOAT)viewport.Height;
-	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4.0f, fAspect, CWorld::m_fNearPlane - 0.01f, CWorld::m_fFarPlane );
-	pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
-*/
 	D3DXMATRIX matProj;
 	D3DXMatrixIdentity( &matProj );
 	FLOAT fAspect = ( (FLOAT) viewport.Width ) / (FLOAT) viewport.Height ;
@@ -1988,22 +1905,7 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 	// 카메라 
 	D3DXVECTOR3 vecLookAt( 0.0f, 0.0f, 3.0f );
 	D3DXVECTOR3 vecPos(  0.0f, 0.0f, -5.0f );
-/*
-	if( rectViewport.PtInRect( point ) )
-	{
-		// height : 100 = point.y = ?
-		int x = 100 * point.x / rectViewport.Width();
-		int y = 100 * point.y / rectViewport.Height(); 
 
-		x -= 50;
-		y -= 50;
-
-		//vecPos.x = x; vecLookAt.x = x;
-		vecPos.y = (FLOAT)-y / 60.0f; vecLookAt.y = (FLOAT)-y / 60.0f;
-		vecPos.z += (FLOAT)-y / 20.0f; vecLookAt.z += (FLOAT)-y / 20.0f;
-
-	}
-	*/
 	const D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
@@ -2053,15 +1955,15 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 	{
 		if( m_Player.m_bySex == SEX_MALE )
 		{
-			pElem->m_pObject3D->m_fAmbient[0] = (nMaleHairColor[m_Player.m_byHairMesh][0])/255.f;
-			pElem->m_pObject3D->m_fAmbient[1] = (nMaleHairColor[m_Player.m_byHairMesh][1])/255.f;
-			pElem->m_pObject3D->m_fAmbient[2] = (nMaleHairColor[m_Player.m_byHairMesh][2])/255.f;
+			pElem->m_pObject3D->m_fAmbient[0] = (nMaleHairColor[m_Player.m_skin.hairMesh][0])/255.f;
+			pElem->m_pObject3D->m_fAmbient[1] = (nMaleHairColor[m_Player.m_skin.hairMesh][1])/255.f;
+			pElem->m_pObject3D->m_fAmbient[2] = (nMaleHairColor[m_Player.m_skin.hairMesh][2])/255.f;
 		}
 		else
 		{
-			pElem->m_pObject3D->m_fAmbient[0] = (nFeMaleHairColor[m_Player.m_byHairMesh][0])/255.f;
-			pElem->m_pObject3D->m_fAmbient[1] = (nFeMaleHairColor[m_Player.m_byHairMesh][1])/255.f;
-			pElem->m_pObject3D->m_fAmbient[2] = (nFeMaleHairColor[m_Player.m_byHairMesh][2])/255.f;
+			pElem->m_pObject3D->m_fAmbient[0] = (nFeMaleHairColor[m_Player.m_skin.hairMesh][0])/255.f;
+			pElem->m_pObject3D->m_fAmbient[1] = (nFeMaleHairColor[m_Player.m_skin.hairMesh][1])/255.f;
+			pElem->m_pObject3D->m_fAmbient[2] = (nFeMaleHairColor[m_Player.m_skin.hairMesh][2])/255.f;
 		}
 	}
 	
@@ -2113,9 +2015,9 @@ void CWndCreateChar::OnInitialUpdate()
 	CWndEdit* pWndName = (CWndEdit*) GetDlgItem( WIDC_NAME );
 	pWndName->SetFocus();
 
-	m_Player.m_byHairMesh = (char)( xRandom( 0, MAX_BASE_HAIR ) );
-	m_Player.m_byHeadMesh = (char)( xRandom( 0, MAX_DEFAULT_HEAD ) );
-	CMover::UpdateParts( m_Player.m_bySex, m_Player.m_bySkinSet, m_Player.m_byFace, m_Player.m_byHairMesh, m_Player.m_byHeadMesh, m_Player.m_aEquipInfo, m_pModel, NULL );
+	m_Player.m_skin.hairMesh = (std::uint8_t)( xRandom( 0, MAX_BASE_HAIR ) );
+	m_Player.m_skin.headMesh = (std::uint8_t)( xRandom( 0, MAX_DEFAULT_HEAD ) );
+	CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 
 	CWndStatic* pWnd2ndPasswordText =  ( CWndStatic* )GetDlgItem( WIDC_STATIC_2ND_PASSWORD_TEXT );
 	assert( pWnd2ndPasswordText );
@@ -2154,7 +2056,7 @@ void CWndCreateChar::SetSex( int nSex )
 		m_Player.m_aEquipInfo[pItemProp->dwParts].dwId = dwEquip;
 	}
 
-	CMover::UpdateParts( m_Player.m_bySex, 0, m_Player.m_bySkinSet, m_Player.m_byHairMesh, m_Player.m_byHeadMesh, m_Player.m_aEquipInfo, m_pModel, NULL );
+	CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 }
 
 BOOL CWndCreateChar::Initialize( CWndBase* pWndParent, DWORD dwStyle )
@@ -2179,29 +2081,33 @@ BOOL CWndCreateChar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			SetSex( SEX_FEMALE );
 			break;
 		case WIDC_HAIRSTYLE_LEFT: // hair
-			m_Player.m_byHairMesh--;
-			if( m_Player.m_byHairMesh < 0 )
-				m_Player.m_byHairMesh = MAX_BASE_HAIR - 1;
-			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_bySkinSet, m_Player.m_byFace, m_Player.m_byHairMesh, m_Player.m_byHeadMesh, m_Player.m_aEquipInfo, m_pModel, NULL );
+			if (m_Player.m_skin.hairMesh == 0) {
+				m_Player.m_skin.hairMesh = MAX_BASE_HAIR - 1;
+			} else {
+				m_Player.m_skin.hairMesh--;
+			}
+			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 			break;
 		case WIDC_HAIRSTYLE_RIGHT: // hair
-			m_Player.m_byHairMesh++;
-			if( m_Player.m_byHairMesh >= MAX_BASE_HAIR )
-				m_Player.m_byHairMesh = 0;
-			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_bySkinSet, m_Player.m_byFace, m_Player.m_byHairMesh, m_Player.m_byHeadMesh, m_Player.m_aEquipInfo, m_pModel, NULL );
+			m_Player.m_skin.hairMesh++;
+			if( m_Player.m_skin.hairMesh >= MAX_BASE_HAIR )
+				m_Player.m_skin.hairMesh = 0;
+			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 			break;
 		case WIDC_FACE_LEFT: // head
-			m_Player.m_byHeadMesh--;
-			if( m_Player.m_byHeadMesh < 0 )
-				m_Player.m_byHeadMesh = MAX_DEFAULT_HEAD - 1;
-			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_bySkinSet, m_Player.m_byFace, m_Player.m_byHairMesh, m_Player.m_byHeadMesh, m_Player.m_aEquipInfo, m_pModel, NULL );
+			if (m_Player.m_skin.headMesh == 0) {
+				m_Player.m_skin.headMesh = MAX_DEFAULT_HEAD - 1;
+			} else {
+				m_Player.m_skin.headMesh--;
+			}
+			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 			break;
 		case WIDC_FACE_RIGHT: // head
-			m_Player.m_byHeadMesh++;
+			m_Player.m_skin.headMesh++;
 
-			if( m_Player.m_byHeadMesh >= MAX_DEFAULT_HEAD )
-				m_Player.m_byHeadMesh = 0;
-			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_bySkinSet, m_Player.m_byFace, m_Player.m_byHairMesh, m_Player.m_byHeadMesh, m_Player.m_aEquipInfo, m_pModel, NULL );
+			if( m_Player.m_skin.headMesh >= MAX_DEFAULT_HEAD )
+				m_Player.m_skin.headMesh = 0;
+			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 			break;
 
 		case WIDC_CANCEL: // Cancel 
@@ -2274,18 +2180,18 @@ BOOL CWndCreateChar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				
 				if( m_Player.m_bySex == SEX_MALE )
 				{
-					dwHairColor = D3DCOLOR_ARGB( 255, nMaleHairColor[m_Player.m_byHairMesh][0],
-													nMaleHairColor[m_Player.m_byHairMesh][1],
-													nMaleHairColor[m_Player.m_byHairMesh][2] );
+					dwHairColor = D3DCOLOR_ARGB( 255, nMaleHairColor[m_Player.m_skin.hairMesh][0],
+													nMaleHairColor[m_Player.m_skin.hairMesh][1],
+													nMaleHairColor[m_Player.m_skin.hairMesh][2] );
 				}
 				else
 				{
-					dwHairColor = D3DCOLOR_ARGB( 255, nFeMaleHairColor[m_Player.m_byHairMesh][0],
-													nFeMaleHairColor[m_Player.m_byHairMesh][1],
-													nFeMaleHairColor[m_Player.m_byHairMesh][2] );
+					dwHairColor = D3DCOLOR_ARGB( 255, nFeMaleHairColor[m_Player.m_skin.hairMesh][0],
+													nFeMaleHairColor[m_Player.m_skin.hairMesh][1],
+													nFeMaleHairColor[m_Player.m_skin.hairMesh][2] );
 				}
 
-				g_dpLoginClient.SendCreatePlayer( (BYTE)( m_Player.m_uSlot ), string, m_Player.m_byFace, m_Player.m_byCostume, m_Player.m_bySkinSet, m_Player.m_byHairMesh, dwHairColor, m_Player.m_bySex, m_Player.m_byJob, m_Player.m_byHeadMesh, atoi( pWnd2ndPassword->GetString() ) );
+				g_dpLoginClient.SendCreatePlayer( (BYTE)( m_Player.m_uSlot ), string, m_Player.m_skin, m_Player.m_byCostume, dwHairColor, m_Player.m_bySex, m_Player.m_byJob, atoi( pWnd2ndPassword->GetString() ) );
 			}
 			break;
 		case 10002: // Accept
