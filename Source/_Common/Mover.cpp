@@ -3236,6 +3236,29 @@ void CMover::Process()
 
 }
 
+void CMover::SetRide(DWORD itemIdx) {
+	if (itemIdx == 0) {
+		m_dwRideItemIdx = 0;
+		m_pRide = nullptr;
+		return;
+	}
+
+	ModelPointerWithOwnershipInfo pModel = prj.m_modelMng.LoadModel(D3DDEVICE, OT_ITEM, itemIdx);
+	CModelObject * pModelObject = (CModelObject *)pModel;
+	if (pModelObject->m_pBone) {
+		CString strMotion = pModelObject->GetMotionFileName(_T("stand"));
+		assert(strMotion != _T(""));
+		pModelObject->LoadMotion(strMotion);
+	}
+
+	m_dwRideItemIdx = itemIdx;
+	if (pModel.isOwnedByCaller) {
+		m_pRide = std::unique_ptr<CModelObject>(pModelObject);
+	} else {
+		m_pRide = pModelObject;
+	}
+}
+
 #ifdef __CLIENT
 
 void CMover::AngelMoveProcess()
@@ -8295,7 +8318,7 @@ void CMover::ProcessEyeFlash()
 
 void CMover::WingMotionSetting( const CModelObject* pModel )
 {
-	if( m_pRide == NULL && m_pRide->m_pBone == NULL )
+	if( !m_pRide || m_pRide->m_pBone == NULL )
 		return;
 
 	if( ( m_pActMover->GetState() & OBJSTA_STAND ) && ( D3DXVec3LengthSq( &m_pActMover->m_vDelta ) <= 0.000f ) && pModel->m_fFrameCurrent == 0.0f )

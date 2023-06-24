@@ -141,13 +141,13 @@ BOOL CModelMng::LoadMotion( CModel* pModel, DWORD dwType, DWORD dwIndex, DWORD d
 	((CModelObject*)pModel)->LoadMotion( szMotionName );		// Read bone animation
 	return TRUE;
 }
-CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts )
+ModelPointerWithOwnershipInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts )
 {
 	MODELELEM * lpModelElem = GetModelElem( nType, nIndex );
 	if( lpModelElem == NULL ) 
 	{
 		Error( "CModelMng::loadModel mdlObj/mdlDyna - objtype=%d index=%d bpart=%d has no information.", nType, nIndex, bParts );
-		return NULL;
+		return nullptr;
 	}
 
 	TCHAR szFileName[ MAX_PATH ];
@@ -155,7 +155,7 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nInde
 	return LoadModel( pd3dDevice, szFileName, lpModelElem, nType, bParts ); 
 }
 
-CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts )
+ModelPointerWithOwnershipInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts )
 {
 	const int nModelType = lpModelElem->m_dwModelType;
 
@@ -169,7 +169,7 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 			pModel->SetSfx(lpszFileName);
 			pModel->m_pModelElem = lpModelElem;
 			pModel->m_pModelElem->m_bUsed = TRUE;
-			return pModel;
+			return ModelPointerWithOwnershipInfo{ pModel, false };
 #endif // not World
 			return nullptr;
 		}
@@ -185,9 +185,9 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 				pModel->SetModelType( nModelType );
 				pModel->m_pModelElem = lpModelElem;
 
-				return pModel;
+				return ModelPointerWithOwnershipInfo(pModel, true);
 #else
-				return mapItor->second;
+				return ModelPointerWithOwnershipInfo(mapItor->second, false);
 #endif
 			}
 			CModelObject * pModel = new CModelObject;
@@ -204,7 +204,7 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 			#endif			
 				m_mapFileToMesh.emplace(lpszFileName, pModel);
 				pModel->m_pModelElem->m_bUsed = TRUE;
-				return pModel;
+				return ModelPointerWithOwnershipInfo(pModel, false);
 			} else {
 				SAFE_DELETE(pModel);
 				return nullptr;
@@ -242,7 +242,7 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 				}
 			}
 
-			return pModel;
+			return ModelPointerWithOwnershipInfo(pModel, true);
 		}
 		default:
 			return nullptr;

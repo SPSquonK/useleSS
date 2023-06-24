@@ -37,6 +37,27 @@ struct MODELELEM {
 class CModel;
 class CModelObject;
 
+// A sqktd::maybe_owned_ptr that is not enforced by anything.
+struct ModelPointerWithOwnershipInfo {
+	CModel * pModel;
+	bool isOwnedByCaller;
+
+	explicit(false) ModelPointerWithOwnershipInfo(decltype(nullptr))
+		: pModel(nullptr), isOwnedByCaller(false) {
+	}
+
+	ModelPointerWithOwnershipInfo(CModel * pModel, bool isOwned)
+		: pModel(pModel), isOwnedByCaller(isOwned) {}
+
+	operator CModel * () { return pModel; }
+
+	template<typename T>
+	operator T * () { return (T *)(pModel); }
+
+	template<typename T>
+	T * DynamicCast() { return dynamic_cast<T *>(pModel); }
+};
+
 class CModelMng final {
 public:
 	std::map<std::string, CModelObject *> m_mapFileToMesh;
@@ -54,8 +75,8 @@ public:
 	void MakePartsName( TCHAR* pszPartsName, LPCTSTR lpszRootName, DWORD dwIndex, int nSex = SEX_SEXLESS );
 
 	BOOL    LoadMotion( CModel* pModel, DWORD dwType, DWORD dwIndex, DWORD dwMotion );
-	CModel* LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts = FALSE );
-	CModel* LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts = FALSE );
+	ModelPointerWithOwnershipInfo LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts = FALSE);
+	ModelPointerWithOwnershipInfo LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts = FALSE );
 
 	BOOL LoadScript( LPCTSTR lpszFileName );
 

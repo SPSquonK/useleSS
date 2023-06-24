@@ -747,7 +747,7 @@ protected:
 	int				m_nCount;					/// 무버가 범용으로 쓰는 순차적 카운터. 생성자 외엔 0으로 초기화 하지 말것.
 	DWORD			m_dwGold;					/// 페냐 
 	DWORD			m_dwRideItemIdx;			/// 비행체의 아이템 인덱스
-	CModelObject*	m_pRide;					/// 비행체 객체 포인터 
+	sqktd::maybe_owned_ptr<CModelObject>	m_pRide;					/// 비행체 객체 포인터 
 	TCHAR			m_szName[MAX_NAME];			/// 이름 
 	
 public:
@@ -828,7 +828,7 @@ public:
 	BOOL			IsRegionAttr( DWORD dwAttribite ) { return ( m_dwRegionAttr & dwAttribite ) == dwAttribite ? TRUE : FALSE; }
 	const REGIONELEM * UpdateRegionAttr();
 	DWORD			GetRideItemIdx()	{ return m_dwRideItemIdx; }
-	void			SetRide( CModel *pModel, int nRideItemIdx = 0 ) { m_dwRideItemIdx = nRideItemIdx; m_pRide = (CModelObject*)pModel; 	};
+	void      SetRide(DWORD itemIdx);
 	void			ClearDuel();
 	void			ClearDuelParty();		
 	int				SendActMsg( OBJMSG dwMsg, int nParam1 = 0, int nParam2 = 0, int nParam3 = 0, int nParam4 = 0 ); 		

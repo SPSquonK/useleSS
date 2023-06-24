@@ -1026,15 +1026,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		}
 #endif
 
-		CModel* pModel = prj.m_modelMng.LoadModel( D3DDEVICE, OT_ITEM, (DWORD) nParam1 );
-		CModelObject* pModelObject = (CModelObject*)pModel;
-		if( pModelObject->m_pBone )
-		{
-			CString strMotion = pModelObject->GetMotionFileName( _T("stand") );
-			assert( strMotion != _T("") );
-			pModelObject->LoadMotion( strMotion );
-		}
-		m_pMover->SetRide( pModel, (DWORD) nParam1 );
+		m_pMover->SetRide(static_cast<DWORD>(nParam1));
 		break;
 	}
 	case OBJMSG_MOTION:		// 단순 모션 플레이

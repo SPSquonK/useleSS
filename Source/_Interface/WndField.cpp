@@ -413,9 +413,10 @@ CWndQueryEquip::CWndQueryEquip(CMover & mover, std::unique_ptr<std::array<CItemE
 	m_ObjID = mover.GetId();
 
 	const int nMover = (mover.GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-	m_pModel = std::unique_ptr<CModelObject>(dynamic_cast<CModelObject *>(
-		prj.m_modelMng.LoadModel(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE
-		)));
+	m_pModel = std::unique_ptr<CModelObject>(
+		prj.m_modelMng.LoadModel(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE)
+		.DynamicCast<CModelObject>()
+	);
 	prj.m_modelMng.LoadMotion(m_pModel.get(), OT_MOVER, nMover, MTI_STAND);
 	CMover::UpdateParts(mover.GetSex(), mover.m_dwSkinSet, mover.m_dwFace, mover.m_dwHairMesh, mover.m_dwHeadMesh, mover.m_aEquipInfo, m_pModel.get(), NULL);
 	m_pModel->InitDeviceObjects(g_Neuz.GetDevice());

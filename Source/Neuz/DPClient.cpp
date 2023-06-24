@@ -985,17 +985,8 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 						SendPlayerBehavior2();
 				}
 				CMover* pPlayer	= (CMover*)pObj;
-				if( pPlayer->m_pActMover->IsFly() ) 
-				{
-					CModel* pModel	= prj.m_modelMng.LoadModel( D3DDEVICE, OT_ITEM, pPlayer->GetRideItemIdx() );
-					CModelObject* pModelObject = (CModelObject*)pModel;
-					if( pModelObject->m_pBone )
-					{
-						CString strMotion = pModelObject->GetMotionFileName( _T("stand") );
-						assert( strMotion != _T("") );
-						pModelObject->LoadMotion( strMotion );
-					}
-					pPlayer->SetRide( pModel, pPlayer->GetRideItemIdx() );
+				if (pPlayer->m_pActMover->IsFly()) {
+					pPlayer->SetRide(pPlayer->GetRideItemIdx());
 				}
 				pPlayer->InitMotion( pPlayer->m_dwMotion );	
 			}
@@ -1082,15 +1073,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 			}
 			CMover* pPlayer	= (CMover*)pObj;
 			if( pPlayer->m_pActMover->IsFly() ) {
-				CModel* pModel	= prj.m_modelMng.LoadModel( D3DDEVICE, OT_ITEM, pPlayer->GetRideItemIdx() );
-				CModelObject* pModelObject = (CModelObject*)pModel;
-				if( pModelObject->m_pBone )
-				{
-					CString strMotion = pModelObject->GetMotionFileName( _T("stand") );
-					assert( strMotion != _T("") );
-					pModelObject->LoadMotion( strMotion );
-				}
-				pPlayer->SetRide( pModel, pPlayer->GetRideItemIdx() );
+				pPlayer->SetRide(pPlayer->GetRideItemIdx());
 				
 				ItemProp *pItemProp = prj.GetItemProp( pPlayer->GetRideItemIdx() );	// 빗자루 프로퍼티.
 				if( pItemProp )

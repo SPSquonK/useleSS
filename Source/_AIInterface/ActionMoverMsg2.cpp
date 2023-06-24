@@ -296,7 +296,7 @@ int		CActionMover::ProcessActMsg2(  CMover* pMover, OBJMSG dwMsg, int nParam1, i
 		if( m_pMover == g_pPlayer )
 			g_Neuz.m_camera.Lock();
 		#endif
-		m_pMover->SetRide( NULL );
+		m_pMover->SetRide(0);
 		break;
 	case OBJMSG_MODE_TURBO_ON:		// 터보모드 상태.
 		if( GetStateFlag() & OBJSTAF_TURBO )		return 0;		// 이미 실행중
