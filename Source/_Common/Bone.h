@@ -1,8 +1,8 @@
-#ifndef	__BONE_H__
-#define	__BONE_H__
+#pragma once
 
 #include <d3dx9.h>
 #include "file.h"
+#include <functional>
 
 #define		MAX_VS_BONE		28		// VS에서 최대사용가능한 뼈대레지스터의 개수.
 
@@ -192,23 +192,14 @@ public:
 
 
 // read only motion database
-class CMotionMng
-{
+class CMotionMng final {
+private:
+	std::map<std::string, std::unique_ptr<CMotion>, std::less<>> m_mapMotions;
+
 public:
-	std::map<std::string, CMotion*>	m_mapMotions;
-	
-	CMotionMng();
-	~CMotionMng();
-
-	void	Init( void );
-	void	Destroy( void );
-
-	CMotion	*LoadMotion( LPCTSTR strFileName );			// 동작을 메모리에 적재한다.  중복해서 올리지 않는다.
+	// Load the motion into memory, or return the already existing motion if
+	// already loaded.
+	CMotion * LoadMotion(LPCTSTR strFileName);
 };
 
 extern CMotionMng		g_MotionMng;
-
-
-
-
-#endif

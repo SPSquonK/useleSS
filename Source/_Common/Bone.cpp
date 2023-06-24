@@ -242,48 +242,22 @@ CBones *CBonesMng :: LoadBone( LPCTSTR szFileName )
 ////////////////////////////////////////////////////////////////////////////////////
 CMotionMng		g_MotionMng;
 
+CMotion * CMotionMng::LoadMotion(LPCTSTR szFileName) {
+	char sFile[MAX_PATH] = { 0, };
+	std::strcpy(sFile, szFileName);
+	strlwr(sFile);
 
-CMotionMng :: CMotionMng()
-{
-}
-
-CMotionMng :: ~CMotionMng()
-{
-	Destroy();
-}
-
-void	CMotionMng :: Init( void )
-{
-}
-
-void	CMotionMng :: Destroy( void )
-{
-	for( auto i = m_mapMotions.begin(); i != m_mapMotions.end(); ++i )
-		safe_delete( i->second );
-	m_mapMotions.clear();
-}
-
-//
-//
-//
-CMotion *CMotionMng :: LoadMotion( LPCTSTR szFileName )
-{
-	char sFile[MAX_PATH]	= { 0,};
-	strcpy( sFile, szFileName );
-	strlwr( sFile );
-
-	const auto i	= m_mapMotions.find( sFile );
-	if( i != m_mapMotions.end() )
-		return i->second;
-
-	// 로딩된게 아니었다면.  실제로 데이타 읽음.
-	CMotion* pMotion	= new CMotion;
-	if( pMotion->LoadMotion( szFileName ) == FAIL )
-	{
-		safe_delete( pMotion );
-		return NULL;
+	if (const auto i = m_mapMotions.find(sFile); i != m_mapMotions.end()) {
+		return i->second.get();
 	}
-	bool bResult	= m_mapMotions.emplace(sFile, pMotion).second;
+
+	CMotion * pMotion = new CMotion;
+	if (pMotion->LoadMotion(szFileName) == FAIL) {
+		safe_delete(pMotion);
+		return nullptr;
+	}
+
+	m_mapMotions.emplace(sFile, pMotion);
 	return pMotion;
 }
 
