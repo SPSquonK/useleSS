@@ -63,9 +63,6 @@
 
 #include "boost/pfr.hpp"
 
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-#include "DPCollectClient.h"
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 
 extern DWORD FULLSCREEN_WIDTH;
 extern DWORD FULLSCREEN_HEIGHT;
@@ -771,9 +768,6 @@ void CWndMgr::OpenTitle( BOOL bFirstTime )
 		g_WorldMng.DestroyCurrentWorld();
 		g_pPlayer = NULL;
 		g_dpCertified.DeleteDPObject();
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-		DPCollectClient->DeleteDPObject();
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 		g_dpLoginClient.DeleteDPObject();
 		g_DPlay.DeleteDPObject();
 		

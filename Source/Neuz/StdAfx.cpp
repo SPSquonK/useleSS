@@ -35,9 +35,6 @@ int		         g_nProcessCnt = 0;		// 프로세스마다 하나씩 카운트 되는 변수.
 DlgConsole g_Console;
 #endif
 
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-vector< CString > g_vecEncryptedValidCertifierIP;
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 
 CNeuzApp         g_Neuz;                // 맨 마지막에
 

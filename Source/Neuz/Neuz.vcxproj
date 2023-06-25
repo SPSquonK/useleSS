@@ -132,7 +132,6 @@
     </ClCompile>
     <ClCompile Include="DPClientGuildWar.cpp">
     </ClCompile>
-    <ClCompile Include="DPCollectClient.cpp" />
     <ClCompile Include="DPLoginClient.cpp">
     </ClCompile>
     <ClCompile Include="HelperWebBox.cpp" />
@@ -947,7 +946,6 @@
     <ClInclude Include="clord.h" />
     <ClInclude Include="Cloth.h" />
     <ClInclude Include="..\_Common\collecting.h" />
-    <ClInclude Include="DPCollectClient.h" />
     <ClInclude Include="..\_Common\langman.h" />
     <ClInclude Include="..\_Common\rtmessenger.h" />
     <ClInclude Include="..\_Interface\WndQuizEvent.h" />

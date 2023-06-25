@@ -1,11 +1,6 @@
 #include "StdAfx.h"
 #include "defineText.h"
 #include "AppDefine.h"
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-#include "DPCollectClient.h"
-#include "tools.h"
-extern char	g_szVersion[];
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 #include "DPCertified.h"
 #include "dpclient.h"
 #include "DPLoginClient.h"
@@ -314,32 +309,6 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 {
 	g_Neuz.m_dwTimeOutDis = 0xffffffff;
 
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-	TCHAR szEncryptedCertifierIP[ MAX_PATH ] = { 0, };
-	md5( szEncryptedCertifierIP, g_Neuz.m_lpCertifierAddr );
-
-	BOOL bCertifiedIP = FALSE;
-	for( vector< CString >::iterator Iterator = g_vecEncryptedValidCertifierIP.begin(); Iterator != g_vecEncryptedValidCertifierIP.end(); ++Iterator )
-	{
-		if( strcmp( szEncryptedCertifierIP, *Iterator ) == 0 )
-		{
-			bCertifiedIP = TRUE;
-			break;
-		}
-	}
-
-	if( bCertifiedIP == FALSE )
-	{
-#ifdef __CRC
-		if( DPCollectClient->ConnectToServer( "127.0.0.1", PN_COLLECTION, TRUE, CSock::crcWrite, 500 ) )	// "log.flyff.com"
-#else // __CRC
-		if( DPCollectClient->ConnectToServer( "127.0.0.1", PN_COLLECTION, TRUE ) )	// "log.flyff.com"
-#endif // __CRC
-		{
-			DPCollectClient->SendCollectionCertify( g_Neuz.m_lpCertifierAddr, g_szVersion, __VER, ::GetLanguage() );
-		}
-	}
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 
 	CWndBase* pWndBase = g_WndMng.GetWndBase( APP_SELECT_SERVER );
 	if( pWndBase )

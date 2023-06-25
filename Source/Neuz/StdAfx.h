@@ -208,9 +208,6 @@ extern CGuildCombat1to1Mng g_GuildCombat1to1Mng;
 extern DlgConsole g_Console;
 #endif
 
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-extern vector< CString > g_vecEncryptedValidCertifierIP;
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 
 
 

@@ -19,9 +19,6 @@
 extern BYTE  nMaleHairColor[10][3];
 extern BYTE  nFeMaleHairColor[10][3];
 
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-#include "DPCollectClient.h"
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 
 BOOL GetIePath( LPSTR lpPath )
 {	
@@ -1602,9 +1599,6 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 		case 10000: // close msg
 		case WIDC_BACK: // Back
 			{
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-				DPCollectClient->DeleteDPObject();
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 				g_dpLoginClient.DeleteDPObject();
 				Sleep( 1000 );	// юс╫ц.
 #			ifdef __CRC
@@ -1675,9 +1669,6 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				CWndButton* pWndAccept = (CWndButton*)GetDlgItem( WIDC_ACCEPT );
 				pWndAccept->EnableWindow( FALSE );
 			}
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-			DPCollectClient->DeleteDPObject();
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 			
 			if( g_Neuz.m_nCharacterBlock[m_nSelectCharacter] == 0 )
 			{

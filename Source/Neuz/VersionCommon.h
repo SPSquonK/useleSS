@@ -214,8 +214,6 @@
 
 	#define __ENCRYPT_PASSWORD	//	mulcom	BEGIN100218	패스워드 암호화
 
-//	#define		__CERTIFIER_COLLECTING_SYSTEM	// 인증 서버 수집 시스템
-
 	#define		__DELETE_CHAR_CHANGE_KEY_VALUE	// 버디버디 i_PIN 도입으로 인한 캐릭터삭제 키값 변경(국내, 주민번호 -> 2차비번)
 	#define		__BS_ADJUST_SYNC			// mover간 동기화 개선 
 

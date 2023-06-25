@@ -32,9 +32,6 @@
 
 #include "GuildHouse.h"
 
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-#include "DPCollectClient.h"
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 
 //////////////////////////////////////////////////////////////////////////////
 // global variable
@@ -533,9 +530,6 @@ HRESULT CNeuzApp::FinalCleanup()
 		SAFE_DELETE( m_apPlayer[i] );
 	}
 	g_dpCertified.DeleteDPObject();
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-	DPCollectClient->DeleteDPObject();
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 	g_dpLoginClient.DeleteDPObject();
 	g_DPlay.DeleteDPObject();
 	g_GuildWarMng.Clear();
@@ -979,9 +973,6 @@ HRESULT CNeuzApp::FrameMove()
 
 	g_dpLoginClient.ReceiveMessage();
 	g_dpCertified.ReceiveMessage();
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-	DPCollectClient->ReceiveMessage();
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 	CHECK2( "Receive" );
 
 	if( m_dwTempMessage )
