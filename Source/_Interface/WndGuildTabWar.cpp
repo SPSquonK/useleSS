@@ -318,8 +318,8 @@ void CWndGuildWarDecl::OnInitialUpdate() {
 	CWndEdit * pWndName = (CWndEdit *)GetDlgItem(WIDC_EDIT1);	// 상대길드명.
 	CWndEdit * pWndPenya = (CWndEdit *)GetDlgItem(WIDC_EDIT2);	// 전쟁자금.
 
-	pWndName->SetTabStop(TRUE);
-	pWndPenya->SetTabStop(TRUE);
+	pWndName->SetTabStop();
+	pWndPenya->SetTabStop();
 	pWndName->SetFocus();
 
 	// 윈도를 중앙으로 옮기는 부분.

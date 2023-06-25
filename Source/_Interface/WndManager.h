@@ -702,7 +702,6 @@ public:
 	virtual	~CWndMgr();
 
 	void	DestroyApplet();
-	void	AlighWindow( CRect rcOld, CRect rcNew );
 
 	//virtual CItem* GetFocusItem();
 	virtual	BOOL    Process();

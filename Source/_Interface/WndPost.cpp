@@ -242,10 +242,10 @@ void CWndPostSend::OnInitialUpdate()
 
 	// Tab Stop
 	CWndComboBox* pWndCombo = GetDlgItem<CWndComboBox>( WIDC_COMBOBOX1 );
-	pWndCombo->SetTabStop( TRUE );
+	pWndCombo->SetTabStop( );
 
-	GetDlgItem<CWndEdit>(WIDC_EDIT2)->SetTabStop( TRUE );
-	pNotice->SetTabStop( TRUE );
+	GetDlgItem<CWndEdit>(WIDC_EDIT2)->SetTabStop( );
+	pNotice->SetTabStop( );
 
 	// Fill the list of players
 	for (const u_long idPlayer : g_WndMng.m_RTMessenger | std::views::keys) {

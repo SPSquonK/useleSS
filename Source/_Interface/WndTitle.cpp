@@ -247,16 +247,16 @@ void CWndLogin::OnInitialUpdate()
 	}
 	
 	pAccount->EnableModeChange( FALSE );
-	pAccount->SetTabStop( TRUE );
+	pAccount->SetTabStop( );
 
 	pPassword->AddWndStyle( EBS_PASSWORD );
-	pPassword->SetTabStop( TRUE );
+	pPassword->SetTabStop( );
 	pPassword->EnableModeChange( FALSE );
 
 	CWndButton* pOk   = (CWndButton*)GetDlgItem( WIDC_OK );
 	CWndButton* pQuit = (CWndButton*)GetDlgItem( WIDC_QUIT );
 
-	pOk->SetDefault( TRUE );
+	pOk->SetDefault();
 
 	pAccount->SetString( g_Option.m_szAccount );
 	pSaveAccount->SetCheck( g_Option.m_bSaveAccount );
@@ -523,7 +523,7 @@ void CWndSelectServer::OnInitialUpdate()
 	CRect rect = GetClientRect();
 
 	CWndButton* pNext = (CWndButton*)GetDlgItem( WIDC_NEXT );
-	pNext->SetDefault( TRUE );
+	pNext->SetDefault();
 
 	CWndListBox* pWndList = (CWndListBox*)GetDlgItem( WIDC_CONTROL0 );
 	CRect ReRect = pWndList->GetWindowRect(TRUE);
@@ -1536,7 +1536,7 @@ void CWndSelectChar::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate();
 			
 	CWndButton* pWndAccept = (CWndButton*)GetDlgItem( WIDC_ACCEPT );
-	pWndAccept->SetDefault( TRUE );
+	pWndAccept->SetDefault();
 	CWndButton* pWndBack = (CWndButton*)GetDlgItem( WIDC_BACK );
 	pWndBack->SetFocus( );
 	
@@ -1997,7 +1997,7 @@ void CWndCreateChar::OnInitialUpdate()
 	pWndHairColorRight->EnableWindow( FALSE );
 
 	CWndButton* pWndOk = (CWndButton*)GetDlgItem( WIDC_OK );
-	pWndOk->SetDefault( TRUE );
+	pWndOk->SetDefault();
 
 	
 	SetSex( m_Player.m_bySex );

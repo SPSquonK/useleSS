@@ -146,7 +146,6 @@ void CWndNeuz::OnInitialUpdate()
 		m_wndTitleBar.Replace(); 
 	}
 //	m_wndButton.Create("OK",0,CRect(0,0,0+size.cx,0+size.cy),this,IDOK);//,m_pSprPack,9);
-//	m_wndClose.SetDefault(TRUE);
 
 	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( GetWndId() );
 	if( lpWndApplet )

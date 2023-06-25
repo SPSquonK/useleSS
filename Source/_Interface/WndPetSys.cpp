@@ -908,7 +908,7 @@ void CWndFoodConfirm::OnInitialUpdate()
 	// 여기에 코딩하세요
 	m_pEdit   = (CWndEdit  *)GetDlgItem( WIDC_EDIT1 );
 	CWndButton* pWndOk = (CWndButton *)GetDlgItem( WIDC_OK );	
-	pWndOk->SetDefault( TRUE );
+	pWndOk->SetDefault();
 	m_pEdit->SetFocus();
 
 	if(m_pItemElem == NULL)
@@ -2581,7 +2581,7 @@ void CWndConfirmVis::OnInitialUpdate()
 	CWndEdit* pEdit   = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
 	AddWndStyle( WBS_MODAL );
 	
-	pOk->SetDefault( TRUE );
+	pOk->SetDefault();
 
 	ItemProp* pProp = prj.GetItemProp( m_dwItemIndex );
 	assert( pProp );

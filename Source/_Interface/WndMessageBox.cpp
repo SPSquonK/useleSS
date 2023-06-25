@@ -87,7 +87,7 @@ static void SetupWindowsStyleDialog(
 			buttons[2].Create("CANCEL", 0, rect3_3, self, IDCANCEL);
 			break;
 	}
-	buttons[0].SetDefault(TRUE);
+	buttons[0].SetDefault();
 }
 
 

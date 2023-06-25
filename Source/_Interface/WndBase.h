@@ -206,7 +206,6 @@ static SHORTCUT       m_GlobalShortcut;
 	[[nodiscard]] static bool IsOpenModalWnd() { return m_pWndFocus && m_pWndFocus->IsWndStyle(WBS_MODAL); }
 	CWndBase* GetFocusChild() { return m_pWndFocusChild; }
 	[[nodiscard]] static CWndBase * GetFocusWnd() { return m_pWndFocus; }
-	void GetLogFont(C2DRender* p2DRender,LOGFONT* pLogFont);
 	int  GetFontHeight();
 	
 	[[nodiscard]] bool IsWndStyle(DWORD dwStyle) const { return m_dwStyle & dwStyle; }
@@ -232,28 +231,24 @@ public:
 
 	static CWndBase* GetWndBase();
 
-
-	BOOL IsFocusWnd() { return m_pWndFocus == this; }
+	[[nodiscard]] bool IsFocusWnd() const noexcept { return m_pWndFocus == this; }
 	[[nodiscard]] bool IsFocusChild() const { return m_pParentWnd && m_pParentWnd->m_pWndFocusChild == this; }
 	[[nodiscard]] CPoint GetMousePoint() const noexcept { return m_ptMouse; } 
 	void SetGroup(BOOL bGroup) { m_bGroup = bGroup; }
 	[[nodiscard]] BOOL IsGroup() const { return m_bGroup; }
 	void SetFont(CD3DFont* pFont) { m_pFont = pFont; }
 	CD3DFont* GetFont() { return m_pFont; }
-	void SetAutoFree(BOOL bFree) { m_bAutoFree = (bFree != FALSE ); }
-	BOOL IsAutoFree() { return m_bAutoFree; }
-	BOOL IsParentWnd(CWndBase* pParentWnd);
-	BOOL IsWindowEnabled() const { return m_bEnable; }
+	[[nodiscard]] bool IsAutoFree() const { return m_bAutoFree; }
+	[[nodiscard]] BOOL IsWindowEnabled() const { return m_bEnable; }
 	void EnableWindow(BOOL bEnable = TRUE) { m_bEnable = (bEnable != FALSE ); }
 	LRESULT SendMessage(UINT message,WPARAM wParam = 0, LPARAM lParam = 0);
 	void PostMessage(UINT message,WPARAM wParam = 0, LPARAM lParam = 0);
 	void  SetToolTip(LPCTSTR lpszToolTip,int nPos = 0) { m_strToolTip = lpszToolTip; m_nToolTipPos = nPos; }
-	void SetTabStop(BOOL bTabStop) { m_bTabStop = (bTabStop != FALSE); }
+	void SetTabStop(bool bTabStop = true) { m_bTabStop = bTabStop; }
 	virtual void SetFocus();
 	void KillFocus( CWndBase* pWndFocus, CWndBase* pWndNew );
-	void SetDefault(BOOL bDefault) { m_bDefault = (bDefault != FALSE); }
-	BOOL IsDefault() { return m_bDefault; }
-	BOOL IsFullWnd() { return m_bFullWnd; }
+	void SetDefault(bool bDefault = true) { m_bDefault = bDefault; }
+	[[nodiscard]] bool IsDefault() const noexcept { return m_bDefault; }
 	CWndBase* FindFullWnd();
 	void GradationRect( C2DRender* p2DRender, CRect rect, DWORD dwColor1t, DWORD dwColor1b, DWORD dwColor2b, int nMidPercent = 40 );
 	BOOL WindowToScreen( LPPOINT lpPoint );
@@ -269,29 +264,25 @@ public:
 	BOOL AdjustMinRect( CRect* pRect, int nWidth, int nHeight );
 	BOOL AdjustMaxRect( CRect* pRect, int nWidth, int nHeight );
 
-	void SetWndType( int nWndType) { m_byWndType = (BYTE)nWndType; }
-	DWORD GetWndType() { return (DWORD)m_byWndType; }
+	void SetWndType(const int nWndType) { m_byWndType = (BYTE)nWndType; }
+	[[nodiscard]] DWORD GetWndType() const { return (DWORD)m_byWndType; }
 	LPWNDCTRL GetWndCtrl( DWORD dwWndId ) { return m_resMng.GetAtControl( m_nIdWnd, dwWndId ); }
 	LPWNDAPPLET GetWndApplet() { return m_resMng.GetAt( m_nIdWnd ); }
-
-virtual void AlighWindow( CRect rcOld, CRect rcNew );
- 
-	BOOL IsDestroy() const;
+	 
+	[[nodiscard]] bool IsDestroy() const;
 	void Destroy(BOOL bAutoFree = FALSE); // 윈도를 파괴한다.
 	void PaintChild(C2DRender* p2DRender);
 	void Paint(C2DRender* p2DRender, BOOL bPaintChild = TRUE );
 	void SetWndSize( int cx, int cy );
 	virtual void OnMouseWndSurface( CPoint point );
-	virtual void PaintRoot( C2DRender* p2DRender );
+	void PaintRoot(C2DRender * p2DRender);
 	virtual	void PaintFrame( C2DRender* p2DRender );
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE);
-	virtual int  GetResizeDir(CPoint ptClient);
+	[[nodiscard]] int GetResizeDir(CPoint ptClient);
 	virtual BOOL IsPickupSpace(CPoint point); 
 	virtual	BOOL Process();
 	virtual	void OnDraw(C2DRender* p2DRender);
-	virtual	BOOL OnDrawIcon(CWndBase* pWndBase,C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
-	virtual	void OnUpdate();
 	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
 	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
 	// message
@@ -312,22 +303,15 @@ virtual void AlighWindow( CRect rcOld, CRect rcNew );
 	virtual void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual void OnSize(UINT nType, int cx, int cy);
-	virtual void OnPaint();
-	virtual void OnClose();
 	virtual void OnDestroy();
-	virtual void OnTimer(UINT nIDEvent);
-	virtual void OnMove(int x,int y);
 	virtual void OnSetFocus(CWndBase* pOldWnd);
 	virtual void OnKillFocus(CWndBase* pNewWnd);
 	virtual BOOL OnEraseBkgnd(C2DRender* p2DRender);
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point = 0 );
 
 public:
-	virtual BOOL OnSystemNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual BOOL OnParentNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual BOOL OnChildNotify( UINT nCode, UINT nID, LRESULT* pLResult );
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
-	///virtual LRESULT WndMsgProc( UINT message, WPARAM wParam, LPARAM lParam );
 
 	LRESULT WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam );
 #ifdef __V050823_JAPAN_ATOK
@@ -337,14 +321,11 @@ public:
 #endif
 	virtual LRESULT DefWindowProc(UINT message,WPARAM wParam,LPARAM lParam);
 
-	//virtual HRESULT OneTimeSceneInit();
 	virtual HRESULT InitDeviceObjects();
 	virtual HRESULT RestoreDeviceObjects();
 	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
-	//virtual HRESULT FinalCleanup() { return S_OK; }
-	//virtual HRESULT Render(); 
-	//virtual HRESULT FrameMove();
+
 	virtual void AfterSkinTexture( LPWORD pDest, CSize size, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4 );
 	virtual void AdditionalSkinTexture( LPWORD pDest, CSize size, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4 );
 	virtual void AdjustWndBase( D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4 );

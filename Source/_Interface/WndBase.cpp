@@ -65,36 +65,7 @@ BOOL CWndBase::SetForbidTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileN
 	if( m_pTexForbid ) return TRUE;
 	return FALSE;
 }
-void CWndBase::AlighWindow( CRect rcOld, CRect rcNew )
-{
-	for (size_t i = 0; i < m_wndOrder.size(); ++i) {
-		CWndBase* pWndBase = m_wndOrder[i];
 
-		const CRect rcWnd = pWndBase->GetWindowRect( TRUE );
-		CPoint point = rcWnd.TopLeft();
-		if( pWndBase != m_pWndRoot )
-		{
-			if( pWndBase->m_nWinSize == WSIZE_MAX )
-			{
-				pWndBase->SetWndRect( rcNew );
-			}
-			else
-			{
-				if( rcWnd.left   < rcNew.left   ) point.x = rcNew.left;
-				if( rcWnd.top    < rcNew.top    ) point.y = rcNew.top;
-				if( rcWnd.right  > rcNew.right  ) point.x = rcNew.right - rcWnd.Width();
-				if( rcWnd.bottom > rcNew.bottom ) point.y = rcNew.bottom - rcWnd.Height();
-
-				if( rcWnd.left   < rcNew.left   ) point.x = rcNew.left;
-				if( rcWnd.top    == rcOld.top    ) point.y = rcNew.top;
-				if( rcWnd.right  > rcNew.right  ) point.x = rcNew.right - rcWnd.Width();
-				if( rcWnd.bottom == rcOld.bottom ) point.y = rcNew.bottom - rcWnd.Height();
-
-				pWndBase->Move( point );
-			}
-		}
-	}
-}
 void CWndBase::SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName, BOOL bMyLoader )
 {
 	m_pTexture = m_textureMng.AddTexture( pd3dDevice, lpszFileName, 0xffff00ff, bMyLoader );
@@ -129,11 +100,11 @@ CWndBase::CWndBase()
 	m_pParentWnd   = NULL ;
 	m_ptMouse      = 0    ; 
 //	m_pFont        = NULL ;
-	m_bAutoFree    = FALSE;
+	m_bAutoFree    = false;
 	m_bEnable      = TRUE ;
 	m_pWndFocusChild = NULL;
-	m_bTabStop       = FALSE;
-	m_bDefault       = FALSE;
+	m_bTabStop       = false;
+	m_bDefault       = false;
 	m_bActive        = FALSE;
 	m_nToolTipPos    = 0;
 	m_nResizeDir     = 0;
@@ -308,10 +279,6 @@ BOOL CWndBase::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT n
 
 void CWndBase::OnDraw(C2DRender* p2DRender)
 {
-}
-BOOL CWndBase::OnDrawIcon(CWndBase* pWndBase,C2DRender* p2DRender)
-{
-	return FALSE; // icon을 그렸으면 TRUE로 돌려준다.
 }
 void CWndBase::PaintRoot( C2DRender* p2DRender )
 {
@@ -797,8 +764,6 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 			g_toolTip.PutToolTip((DWORD)this,m_strToolTip,m_rectCurrentClient,point,m_nToolTipPos);
 #endif
 		// 포커스 윈도이거나 || 패어런트가 포커스 윈도일 경우
-		//if(m_pWndFocus == this || IsWndRoot() || (IsParentWnd(m_pWndFocus) && m_pParentWnd->m_pWndFocusChild == this))// && (m_rectWindow.PtInRect(point) || m_bCapture))
-		//if( ( m_pWndFocus == this && m_pWndFocusChild == NULL ) || ( IsParentWnd( m_pWndFocus ) && m_pParentWnd->m_pWndFocusChild == this ) )
 		if( m_pCurFocus == this )
 		{
 
@@ -1189,7 +1154,6 @@ LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 		//	OnSize(m_nWinSize,0,0);
 			break;
 		case WM_MOVE:
-			OnMove(ptClient.x,ptClient.y);
 			break;
 		case WM_KEYDOWN:
 			if( m_pWndFocus->IsWndStyle( WBS_KEY ) )
@@ -1433,14 +1397,13 @@ void CWndBase::DestroyAllWnd() {
 	m_wndArray.clear();
 }
 
-BOOL CWndBase::IsDestroy() const {
+bool CWndBase::IsDestroy() const {
 	return std::ranges::contains(m_wndRemove, this);
 }
 
 void CWndBase::Destroy(BOOL bAutoFree)
 {
-	if(bAutoFree == TRUE)
-		m_bAutoFree = true;
+	if (bAutoFree) m_bAutoFree = true;
 	
 	if (IsDestroy()) return;
 	m_wndRemove.push_back(this);
@@ -1572,16 +1535,9 @@ CWndBase* CWndBase::FindFullWnd() {
 
 	return it != m_wndOrder.end() ? *it : nullptr;
 }
-void CWndBase::GetLogFont(C2DRender* p2DRender,LOGFONT* pLogFont)
-{
-	//CFont* pFont = p2DRender->GetCurrentFont();
-	//pFont->GetLogFont(pLogFont);
-}
+
 int CWndBase::GetFontHeight()
 {
-	//CSize size;
-	//m_pFont->GetTextExtent("가",&size);
-	//return abs(size.cy);
 	return m_pFont->GetMaxHeight();
 }
 int CWndBase::GetResizeDir(CPoint ptClient)
@@ -1599,7 +1555,7 @@ int CWndBase::GetResizeDir(CPoint ptClient)
 	if(rect.PtInRect(ptClient) == FALSE)
 		return 0;
 	rect.DeflateRect( 6, 6);
-	int nDir = 0;
+
 	if(ptClient.x < rect.left && ptClient.y < rect.top)
 		return 5;
 	if(ptClient.x > rect.right && ptClient.y < rect.top)
@@ -1617,7 +1573,7 @@ int CWndBase::GetResizeDir(CPoint ptClient)
 		return 3;
 	if(ptClient.x > rect.right)
 		return 4;
-	return nDir;
+	return 0;
 }
 
 BOOL CWndBase::IsPickupSpace(CPoint ptWindow)
@@ -1698,17 +1654,7 @@ CWndBase* CWndBase::GetFrameWnd()
 	}
 	return pWndCur;
 }
-BOOL CWndBase::IsParentWnd(CWndBase* pParentWnd) 
-{ 
-	CWndBase* pWndBase = this;
-	while(pWndBase != m_pWndRoot && pWndBase != NULL) 
-	{
-		pWndBase = pWndBase->m_pParentWnd;
-		if(pWndBase == pParentWnd) 
-			return TRUE;
-	}
-	return FALSE;
-}
+
 /*
 BOOL CWndBase::ScreenToClient(LPPOINT lpPoint)
 {
@@ -1724,23 +1670,12 @@ void CWndBase::OnInitialUpdate()
 	InitDeviceObjects();
 	RestoreDeviceObjects();
 }
-void CWndBase::OnUpdate()
-{
-
-}
 BOOL CWndBase::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 {
 
 	return TRUE;
 }
-BOOL CWndBase::OnSystemNotify(UINT message,UINT nID,LRESULT* pLResult)
-{
-	return TRUE;
-}
-BOOL CWndBase::OnParentNotify(UINT message,UINT nID,LRESULT* pLResult)
-{
-	return TRUE;
-}
+
 BOOL CWndBase::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 {
 	return TRUE;
@@ -1801,13 +1736,6 @@ void CWndBase::OnSize(UINT nType, int cx, int cy)
 	MakeVertexBuffer();
 }
 
-void CWndBase::OnPaint()
-{
-}
-void CWndBase::OnClose()
-{
-	Destroy();
-}
 void CWndBase::OnDestroy()
 {
 #ifdef __CLIENT
@@ -1821,12 +1749,6 @@ BOOL CWndBase::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 {
 	m_pApp->SetDeviceCursor( m_hDefaultCursor );
 	return TRUE;
-}
-void CWndBase::OnTimer(UINT nIDEvent)
-{
-}
-void CWndBase::OnMove(int x,int y)
-{
 }
 void CWndBase::GradationRect( C2DRender* p2DRender, CRect rect, DWORD dwColor1t, DWORD dwColor1b, DWORD dwColor2b, int nMidPercent )
 {
@@ -1894,12 +1816,7 @@ BOOL CWndBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	SetForbid( TRUE );
 	return FALSE;
 }
-/*
-LRESULT CWndBase::WndMsgProc(UINT message,WPARAM wParam,LPARAM lParam)
-{
-	return TRUE;
-}
-*/
+
 void CWndBase::OnMouseWndSurface( CPoint point )
 {
 }
@@ -2182,7 +2099,7 @@ void CWndBase::AdjustWndBase( D3DFORMAT d3dFormat ) //= D3DFMT_A4R4G4B4 )
 		for( size_t i = 0; i < m_wndArray.size(); i++ )
 		{
 			CWndBase* pWndBase = m_wndArray[i];
-			if( pWndBase->IsDestroy() == FALSE && pWndBase->IsVisible() )
+			if( !pWndBase->IsDestroy() && pWndBase->IsVisible() )
 				pWndBase->AdditionalSkinTexture( pDest, size1, d3dFormat );
 		}
 		AfterSkinTexture( pDest, size1 );

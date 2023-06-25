@@ -136,7 +136,7 @@ void CWndDropItem::OnInitialUpdate()
 
 	m_pEdit   = (CWndEdit  *)GetDlgItem( WIDC_EDIT1 );
 	CWndButton* pWndOk = (CWndButton *)GetDlgItem( WIDC_OK );	
-	pWndOk->SetDefault( TRUE );
+	pWndOk->SetDefault();
 	m_pEdit->SetFocus();
 
 	if( m_pItemElem->m_nItemNum == 1 )
@@ -206,7 +206,7 @@ void CWndDropConfirm::OnInitialUpdate()
 	// ���⿡ �ڵ��ϼ���
 
 	CWndButton* pWndOk = (CWndButton *)GetDlgItem( WIDC_YES );	
-	pWndOk->SetDefault( TRUE );
+	pWndOk->SetDefault();
 
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
@@ -2379,7 +2379,7 @@ void CWndTradeGold::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();
 
 	GetDlgItem(WIDC_EDIT)->SetFocus();
-	GetDlgItem(WIDC_OK)->SetDefault(TRUE);
+	GetDlgItem(WIDC_OK)->SetDefault();
 
 	MoveParentCenter();
 }
@@ -12250,7 +12250,7 @@ void CWndEquipBindConfirm::OnInitialUpdate( void )
 
 	CWndButton* pWndButton = ( CWndButton* )GetDlgItem( WIDC_EQUIP_BIND_YES );
 	assert( pWndButton );
-	pWndButton->SetDefault( TRUE );
+	pWndButton->SetDefault();
 
 	MoveParentCenter();
 }
@@ -12466,7 +12466,7 @@ void CWndCampusInvitationConfirm::OnInitialUpdate( void )
 	CWndButton* pCancel = ( CWndButton* )GetDlgItem( WIDC_BUTTON2 );
 	CWndEdit* pEdit = ( CWndEdit* )GetDlgItem( WIDC_EDIT1 );
 	AddWndStyle( WBS_MODAL );
-	pOk->SetDefault( TRUE );
+	pOk->SetDefault();
 
 	//����Ʈâ�� �� ���̴� ������ ���� ������ ENTER ���� �غ�
 	pEdit->Move( -100, -100 );
@@ -12532,7 +12532,7 @@ void CWndCampusSeveranceConfirm::OnInitialUpdate( void )
 	CWndButton* pCancel = ( CWndButton* )GetDlgItem( WIDC_BUTTON2 );
 	CWndEdit* pEdit = ( CWndEdit* )GetDlgItem( WIDC_EDIT1 );
 	AddWndStyle( WBS_MODAL );
-	pOk->SetDefault( TRUE );
+	pOk->SetDefault();
 
 	//����Ʈâ�� �� ���̴� ������ ���� ������ ENTER ���� �غ�
 	pEdit->Move( -100, -100 );

@@ -32,7 +32,7 @@ void CWndUserMarkNameChanger::OnInitialUpdate( void )
 	CWndButton* pWndButtonOK = ( CWndButton* )GetDlgItem( WIDC_BUTTON_OK );
 	if( pWndButtonOK )
 	{
-		pWndButtonOK->SetDefault( TRUE );
+		pWndButtonOK->SetDefault();
 	}
 
 	MoveParentCenter();

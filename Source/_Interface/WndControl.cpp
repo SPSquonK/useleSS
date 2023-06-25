@@ -3008,7 +3008,7 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
 		CWndBase* pWndBase = m_wndArray[i];
 		CRect rectOld = m_rectWindow;
 		m_rectWindow.OffsetRect( rect.TopLeft() );
-		if( pWndBase->IsDestroy() == FALSE && pWndBase->IsVisible() )
+		if( !pWndBase->IsDestroy() && pWndBase->IsVisible() )
 		{
  			pWndBase->AdditionalSkinTexture( pDest, sizeSurface, d3dFormat );
 			for( size_t i = 0; i < pWndBase->m_wndArray.size(); i++ )
@@ -3016,7 +3016,7 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
 				CWndBase* pWndChild = pWndBase->m_wndArray[i];
 				CRect rectOldChild = pWndChild->m_rectWindow;
 				pWndChild->m_rectWindow.OffsetRect( rect.TopLeft() );
-				if( pWndChild->IsDestroy() == FALSE && pWndChild->IsVisible() )
+				if( !pWndChild->IsDestroy() && pWndChild->IsVisible() )
 					pWndChild->AdditionalSkinTexture( pDest, sizeSurface, d3dFormat );
 				pWndChild->m_rectWindow = rectOldChild;
 			}

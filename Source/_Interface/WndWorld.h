@@ -475,7 +475,6 @@ public:
 	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual	BOOL Process();
 	virtual BOOL OnEraseBkgnd(C2DRender* p2DRender);
-	virtual LRESULT WndMsgProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point = 0 );
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE);
 	virtual void OnMouseWndSurface( CPoint point );

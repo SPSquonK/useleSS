@@ -35,7 +35,7 @@ void CWnd2ndPassword::OnInitialUpdate( void )
 
 	CWndButton* pWndButton = ( CWndButton* )GetDlgItem( WIDC_BUTTON_OK );
 	if( pWndButton )
-		pWndButton->SetDefault( TRUE );
+		pWndButton->SetDefault();
 
 	MoveParentCenter();
 }

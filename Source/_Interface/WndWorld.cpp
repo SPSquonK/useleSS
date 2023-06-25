@@ -5008,11 +5008,6 @@ void CWndWorld::OnSize( UINT nType, int cx, int cy )
 
 	CWndBase::OnSize( nType, cx, cy );
 }
-LRESULT CWndWorld::WndMsgProc(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	return 1;
-}
-
 BOOL CWndWorld::UseFocusObj( CCtrl* pFocusObj )
 {
 	if( g_pPlayer->m_pActMover->IsFly() )	return FALSE;	// 날고있는중이었으면 취소

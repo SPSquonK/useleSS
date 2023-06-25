@@ -1307,10 +1307,6 @@ BOOL CGuildDeployManager::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 
 			int nVirtKey = (int) wParam;    // virtual-key code
 
-		//	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetApplet( APP_WORLD );
-		//	if( pWndWorld && pWndWorld->IsFocusWnd() == FALSE )
-		//		pWndWorld->OnKeyUp( nVirtKey, 0, 0 );
-
 			if(g_bKeyTable[VK_NEXT])
 			{
 				m_fAngle += 45.0f;

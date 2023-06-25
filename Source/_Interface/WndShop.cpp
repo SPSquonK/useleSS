@@ -128,7 +128,7 @@ void CWndConfirmSell::OnInitialUpdate()
 	CWndBase* pEdit   = (CWndButton*)GetDlgItem( WIDC_EDITSELL );
 	CWndStatic* pStatic = (CWndStatic  *)GetDlgItem( WIDC_STATIC2 );
 	pStatic->AddWndStyle(WSS_MONEY);
-	pOk->SetDefault( TRUE );
+	pOk->SetDefault();
 	pEdit->SetFocus();
 	
 	

@@ -1275,7 +1275,7 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 				GuildHouse->m_dwSelectedObjID = NULL_ID;		//최우선순위이므로 걍 NULL_ID로 ..
 			}
 			CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetApplet( APP_WORLD );
-			if( pWndWorld && pWndWorld->IsFocusWnd() == FALSE )
+			if( pWndWorld && !pWndWorld->IsFocusWnd() )
 				pWndWorld->OnKeyDown( nVirtKey, 0, 0 );
 			
 			g_bKeyTable[ nVirtKey ] = TRUE;
@@ -1299,7 +1299,7 @@ LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 					g_bSlotSwitchAboutEquipItem[ i ] = FALSE;
 			}
 			CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetApplet( APP_WORLD );
-			if( pWndWorld && pWndWorld->IsFocusWnd() == FALSE )
+			if( pWndWorld && !pWndWorld->IsFocusWnd() )
 				pWndWorld->OnKeyUp( nVirtKey, 0, 0 );
 			if(g_bKeyTable[VK_NEXT])
 			{
