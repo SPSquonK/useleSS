@@ -190,6 +190,8 @@ public:
 class CWndFaceShop : public CWndNeuz
 {
 public:
+	static constexpr int MaxFriendlyFace = MAX_DEFAULT_HEAD;
+
 	template<DWORD MinInclusive, DWORD MaxExclusive>
 	static DWORD RingPlus(DWORD value) {
 		value += 1;

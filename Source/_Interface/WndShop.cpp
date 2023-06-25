@@ -1747,10 +1747,12 @@ BOOL CWndBeautyShopConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLRe
 *************************/
 CWndFaceShop::CWndFaceShop()
 { 
+	static_assert(0 < MaxFriendlyFace, "At least one default head should exist to display at least one head in the Friendly face line");
+	static_assert(MaxFriendlyFace < MAX_HEAD, "Default head should be less than max head to display the heads from default to max in the New Face line");
 	m_pWndBeautyShopConfirm = NULL;
 	m_nSelectedFace = 0;
 	m_dwFriendshipFace = 0;
-	m_dwNewFace = MAX_DEFAULT_HEAD;
+	m_dwNewFace = MaxFriendlyFace;
 	m_nCost = 0;
 	m_ChoiceBar = -1;
 	m_bUseCoupon = FALSE;
@@ -1990,8 +1992,8 @@ void CWndFaceShop::DrawFaces(bool ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX m
 	std::array<DWORD, 4> & faces = !ChoiceFlag ? m_nFriendshipFaceNum : m_nNewFaceNum;
 
 	const auto Advance = !ChoiceFlag
-		? RingPlus<0, MAX_DEFAULT_HEAD>
-		: RingPlus<MAX_DEFAULT_HEAD, MAX_HEAD>;
+		? RingPlus<0, MaxFriendlyFace>
+		: RingPlus<MaxFriendlyFace, MAX_HEAD>;
 
 	LPWNDCTRL lpFace = GetWndCtrl( custom_friend[0] );
 	viewport.Width  = lpFace->rect.Width() - 2;
@@ -2149,13 +2151,13 @@ void CWndFaceShop::OnLButtonDown( UINT nFlags, CPoint point )
 } 
 
 void CWndFaceShop::InitializeCurrentHead() {
-	m_dwNewFace = MAX_DEFAULT_HEAD;
+	m_dwNewFace = MaxFriendlyFace;
 	m_dwFriendshipFace = 0;
 	m_nSelectedFace = g_pPlayer->m_skin.headMesh;
 
-	if (m_nSelectedFace >= 0 && m_nSelectedFace < MAX_DEFAULT_HEAD) {
+	if (m_nSelectedFace >= 0 && m_nSelectedFace < MaxFriendlyFace) {
 		m_dwFriendshipFace = m_nSelectedFace;
-	} else if (m_nSelectedFace >= MAX_DEFAULT_HEAD && m_nSelectedFace < MAX_HEAD) {
+	} else if (m_nSelectedFace >= MaxFriendlyFace && m_nSelectedFace < MAX_HEAD) {
 		m_dwNewFace = m_nSelectedFace;
 	}
 }
@@ -2178,16 +2180,16 @@ BOOL CWndFaceShop::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				}
 				break;
 			case WIDC_FRIENDSHIPFACE_LEFT:
-				m_dwFriendshipFace = RingMinus<0, MAX_DEFAULT_HEAD>(m_dwFriendshipFace);
+				m_dwFriendshipFace = RingMinus<0, MaxFriendlyFace>(m_dwFriendshipFace);
 				break;
 			case WIDC_FRIENDSHIPFACE_RIGHT:
-				m_dwFriendshipFace = RingPlus<0, MAX_DEFAULT_HEAD>(m_dwFriendshipFace);
+				m_dwFriendshipFace = RingPlus<0, MaxFriendlyFace>(m_dwFriendshipFace);
 				break;
 			case WIDC_NEWFACE_LEFT:
-				m_dwNewFace = RingMinus<MAX_DEFAULT_HEAD, MAX_HEAD>(m_dwNewFace);
+				m_dwNewFace = RingMinus<MaxFriendlyFace, MAX_HEAD>(m_dwNewFace);
 				break;
 			case WIDC_NEWFACE_RIGHT:
-				m_dwNewFace = RingPlus<MAX_DEFAULT_HEAD, MAX_HEAD>(m_dwNewFace);
+				m_dwNewFace = RingPlus<MaxFriendlyFace, MAX_HEAD>(m_dwNewFace);
 				break;
 			case WIDC_BTN_OK:
 				{
