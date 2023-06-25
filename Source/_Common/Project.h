@@ -891,14 +891,7 @@ public:
 
 	CNameValider nameValider;
 
-#ifdef __OUTPUT_INFO_0803
-	void			OutputStore( const char* lpStrKey, CMover* pMover  );
-#endif	// __OUTPUT_INFO_0803
 	void			OutputDropItem( void );
-
-#ifdef __ADDSKILLPROP0811
-	void			OutputSkill( void );
-#endif	
 
 	void			AddMonsterProp( MONSTER_PROP MonsterProp );
 	void			RemoveMonsterProp( char* lpszMonsterName );

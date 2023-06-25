@@ -857,9 +857,6 @@ void CMover::InitCharacter( LPCHARACTER lpCharacter )
 
 		AllocShopInventory( lpCharacter );
 		LoadDialog();		// npcproperty->LoadDialog()
-	#ifdef __OUTPUT_INFO_0803
-		prj.OutputStore( lpCharacter->m_szKey, this );
-	#endif	// __OUTPUT_INFO_0803
 	}
 	m_nHitPoint = GetMaxHitPoint();
 }
