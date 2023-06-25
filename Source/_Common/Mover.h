@@ -842,7 +842,7 @@ public:
 	CItemElem*		GetLWeaponItem();					// 왼손에 장착한 무기 얻기.
 	CItemElem*		GetEquipItem( int nParts );			// 장착한 아이템 얻기 
 	[[nodiscard]] const CItemElem * GetEquipItem(int nParts) const;
-	ItemProp*		GetEquipItemProp( CItemContainer * pInventory, EQUIP_INFO * pEquipInfo, int nParts );
+	[[nodiscard]] static const ItemProp * GetEquipItemProp(const CItemContainer * pInventory, const EQUIP_INFO * pEquipInfo, int nParts);
 	[[nodiscard]] bool IsDualWeapon() const;
 	void			RedoEquip( BOOL fFakeParts, BOOL bDestParam = TRUE );	
 	void			UpdateParts( BOOL bFakeParts  = FALSE ); // normal or fake

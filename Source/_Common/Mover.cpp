@@ -2436,25 +2436,6 @@ const CItemElem * CMover::GetEquipItem(const int nParts) const {
 	return m_Inventory.GetEquip(nParts);
 }
 
-ItemProp* CMover::GetEquipItemProp( CItemContainer* pInventory, EQUIP_INFO * pEquipInfo, int nParts )
-{
-	ItemProp *pItemProp = NULL;
-#if 1	
-	if( pInventory == NULL  )
-	{
-		if( pEquipInfo[nParts].dwId != NULL_ID )
-			pItemProp = prj.GetItemProp( pEquipInfo[nParts].dwId );
-	} else
-	{
-		CItemElem *pItemElem = pInventory->GetEquip( nParts );		
-		if( pItemElem )
-			pItemProp = pItemElem->GetProp();
-	}
-	
-#endif
-	return pItemProp;
-}
-
 // 쌍칼모드 인가.
 // 양손에 쌍칼을 들고 있나.
 bool CMover::IsDualWeapon() const {

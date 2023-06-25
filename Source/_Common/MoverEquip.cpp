@@ -435,12 +435,11 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 					  CItemElem* pItemElem, int nPart, const EQUIP_INFO & rEquipInfo, CItemContainer * pInventory, 
 	EQUIP_INFO * pEquipInfo, CModelObject* pModel, BOOL bEquip, CMover *pMover )
 {
-	ItemProp* pItemProp = pItemElem ? pItemElem->GetProp() : prj.GetItemProp( rEquipInfo.dwId );
-	DWORD dwIndex = pItemElem ? pItemElem->m_dwObjIndex : 0;
+	const ItemProp* pItemProp = pItemElem ? pItemElem->GetProp() : prj.GetItemProp( rEquipInfo.dwId );
+	const DWORD dwIndex = pItemElem ? pItemElem->m_dwObjIndex : 0;
 	DWORD dwParts = pItemProp->dwParts;
-	BOOL bIfParts = pMover ? pMover->GetProp()->bIfParts : 0;
+	const BOOL bIfParts = pMover ? pMover->GetProp()->bIfParts : 0;
 	TCHAR lpszTemp[ 64 ];
-	BOOL bFake = (pInventory == NULL) ? TRUE : FALSE;
 	if( dwParts == NULL_ID )
 		return FALSE;
 
@@ -464,14 +463,14 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 		{
 			// 디폴트는 장착위치 오른손
 			// 왼손에 무기가 가야하는 상황을 검사
-			ItemProp *pProp = pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_RWEAPON );
+			const ItemProp *pProp = GetEquipItemProp( pInventory, pEquipInfo, PARTS_RWEAPON );
 			if (pMover->IsInteriorityJob(JOB_BLADE)) // 쌍칼속성
 			{
 				if( pItemProp->dwID != II_WEA_KNU_ISHOFIST )
 				{
 					if( pProp && pProp->dwHanded == HD_ONE )	// 오른손에 무기가 있냐? 그 무기가 원핸드냐
 					{
-						if( pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_SHIELD ) == NULL )	//왼손에 방패없냐?
+						if( GetEquipItemProp( pInventory, pEquipInfo, PARTS_SHIELD ) == NULL )	//왼손에 방패없냐?
 							dwParts = PARTS_LWEAPON;		// 장착위치를 왼손으로 바꿈
 					} 
 				}
@@ -490,7 +489,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 	} // 쌍칼 처리.
 	
 #ifndef __WORLDSERVER	// <<<< 월드에서 처리안하면 메모리 리크 나지 않나? -xuzhu-
-	((CModelObject*)pModel)->TakeOffParts( dwParts );	
+	pModel->TakeOffParts( dwParts );	
 #endif
 
 	if( pItemProp && pItemProp->dwItemKind3 == IK3_YOYO )	// 벗으려던 무기가 요요였으면
@@ -498,12 +497,9 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 
 	if( bEquip )	// 장착하려 할때만...
 	{
-		ItemProp *pHandItemProp	= NULL;
-		ItemProp *pLHandItemProp = NULL;
-
 		// 들고있는 무기 프로퍼티 꺼냄.
-		pHandItemProp = pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_RWEAPON );		// 오른손 무기 프로퍼티.
-		pLHandItemProp = pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_LWEAPON );		// 왼손 무기 프로퍼티.
+		const ItemProp * pHandItemProp = GetEquipItemProp( pInventory, pEquipInfo, PARTS_RWEAPON );		// 오른손 무기 프로퍼티.
+		const ItemProp * pLHandItemProp = GetEquipItemProp( pInventory, pEquipInfo, PARTS_LWEAPON );		// 왼손 무기 프로퍼티.
 		
 		// 조건검사.
 		if( pItemProp->dwItemKind3 == IK3_SHIELD )	// 방패류를 착용하려 했을때
@@ -728,49 +724,49 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 			// 변신 캐릭터는 장착 무기를 볼 수 없게 하자(파츠 장착만 못함. 수치 계산은 적용됨)
 			if( pMover == NULL || ( pMover && pMover->IsDisguise() == FALSE ) )
 			{
-				((CModelObject*)pModel)->LoadElement( szPartsName, dwParts );
+				pModel->LoadElement( szPartsName, dwParts );
 				switch( pItemProp->dwItemKind3 )
 				{
 				case IK3_KNUCKLEHAMMER:
-					((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRArmIdx() );
+					pModel->SetParent( PARTS_RWEAPON, pModel->GetRArmIdx() );
 					break;
 				case IK3_BOW:
-					((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetLHandIdx() );
+					pModel->SetParent( PARTS_RWEAPON, pModel->GetLHandIdx() );
 					break;
 				case IK3_YOYO:
-					((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRHandIdx() );
-					((CModelObject*)pModel)->LoadElement( szPartsName, PARTS_LWEAPON );
-					((CModelObject*)pModel)->SetParent( PARTS_LWEAPON, ((CModelObject*)pModel)->GetLHandIdx() );
+					pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );
+					pModel->LoadElement( szPartsName, PARTS_LWEAPON );
+					pModel->SetParent( PARTS_LWEAPON, pModel->GetLHandIdx() );
 					break;
 				default:
-					((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRHandIdx() );
+					pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );
 				}
 	//			if( pItemProp->dwItemKind3 == IK3_KNUCKLEHAMMER )
-	//				((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRArmIdx() );
+	//				pModel->SetParent( PARTS_RWEAPON, pModel->GetRArmIdx() );
 	//			else
-	//				((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRHandIdx() );
+	//				pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );
 			}
 			break;
 		case PARTS_LWEAPON: 
 			// 변신 캐릭터는 장착 무기를 볼 수 없게 하자(파츠 장착만 못함. 수치 계산은 적용됨)
 			if( pMover == NULL || ( pMover && pMover->IsDisguise() == FALSE ) )
 			{
-				((CModelObject*)pModel)->LoadElement( szPartsName, dwParts );
-				((CModelObject*)pModel)->SetParent( PARTS_LWEAPON, ((CModelObject*)pModel)->GetLHandIdx() );
+				pModel->LoadElement( szPartsName, dwParts );
+				pModel->SetParent( PARTS_LWEAPON, pModel->GetLHandIdx() );
 			}
 			break;
 		case PARTS_SHIELD: 
 			// 변신 캐릭터는 장착 무기를 볼 수 없게 하자(파츠 장착만 못함. 수치 계산은 적용됨)
 			if( pMover == NULL || ( pMover && pMover->IsDisguise() == FALSE ) )
 			{
-				((CModelObject*)pModel)->LoadElement( szPartsName, dwParts );
-				((CModelObject*)pModel)->SetParent( PARTS_SHIELD, ((CModelObject*)pModel)->GetLArmIdx() );
+				pModel->LoadElement( szPartsName, dwParts );
+				pModel->SetParent( PARTS_SHIELD, pModel->GetLArmIdx() );
 			}
 			break;
 		case PARTS_UPPER_BODY:
 			if( bIfParts )
 			{
-				((CModelObject*)pModel)->LoadElement( szPartsName, dwParts );
+				pModel->LoadElement( szPartsName, dwParts );
 				_stprintf( lpszTemp, PARTSTEX_UPPER( nSex ), nSkinSet + 1 );
 				pModel->ChangeTexture( PARTS_UPPER_BODY, TEX_PART_UPPER( nSex ), lpszTemp );
 			}
@@ -779,7 +775,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 			if( bIfParts )
 			{
 				{
-					((CModelObject*)pModel)->LoadElement( szPartsName, dwParts );
+					pModel->LoadElement( szPartsName, dwParts );
 					_stprintf( lpszTemp, PARTSTEX_LOWER( nSex ), nSkinSet + 1 );
 					pModel->ChangeTexture( PARTS_LOWER_BODY, TEX_PART_LOWER( nSex ), lpszTemp );
 				}
@@ -787,7 +783,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 			break;
 		default:
 			if( bIfParts )
-				((CModelObject*)pModel)->LoadElement( szPartsName, dwParts );
+				pModel->LoadElement( szPartsName, dwParts );
 			break;
 
 		}
@@ -817,14 +813,14 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 				case PARTS_LOWER_BODY:
 					{
 
-						ItemProp* pItemPropEquip = NULL;
+						const ItemProp* pItemPropEquip = NULL;
 						if( pItemProp->dwParts == PARTS_CLOTH )
 						{
-							pItemPropEquip = pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_UPPER_BODY );
+							pItemPropEquip = GetEquipItemProp( pInventory, pEquipInfo, PARTS_UPPER_BODY );
 						}
 						else
 						{
-							pItemPropEquip = pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_CLOTH );
+							pItemPropEquip = GetEquipItemProp( pInventory, pEquipInfo, PARTS_CLOTH );
 						}
 
 						if( pItemPropEquip == NULL )
@@ -935,8 +931,8 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 #endif // __WORLDSERVER
 
 				#ifdef __CLIENT
-					((CModelObject*)pModel)->MovePart( PARTS_RWEAPON, PARTS_LWEAPON );
-					((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRHandIdx() );
+					pModel->MovePart( PARTS_RWEAPON, PARTS_LWEAPON );
+					pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );
 				#endif //__CLIENT
 				}
 			}
@@ -951,8 +947,8 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 						pEquipInfo[PARTS_LWEAPON].nOption	= 0;
 						pEquipInfo[PARTS_LWEAPON].byFlag	= 0;
 					#ifdef __CLIENT
-						((CModelObject*)pModel)->MovePart( PARTS_RWEAPON, PARTS_LWEAPON );
-						((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRHandIdx() );
+						pModel->MovePart( PARTS_RWEAPON, PARTS_LWEAPON );
+						pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );
 					#endif	// __CLIENT
 					}
 				}
@@ -996,6 +992,20 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 #endif //__CLIENT
 
 	return TRUE;
+}
+
+const ItemProp * CMover::GetEquipItemProp(const CItemContainer * pInventory, const EQUIP_INFO * pEquipInfo, int nParts) {
+	if (!pInventory) {
+		if (pEquipInfo[nParts].dwId != NULL_ID) {
+			return prj.GetItemProp(pEquipInfo[nParts].dwId);
+		}
+	} else {
+		if (const CItemElem * pItemElem = pInventory->GetEquip(nParts)) {
+			return pItemElem->GetProp();
+		}
+	}
+
+	return nullptr;
 }
 
 
