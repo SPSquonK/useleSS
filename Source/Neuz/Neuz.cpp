@@ -1128,6 +1128,19 @@ static BOOL IsPushedKey( int nVirtKey )
 
 LRESULT CNeuzApp::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
+	if (msg == WM_SETTEXT || msg == 174) {
+		// Shortcutting the WM_SETTEXT to avoid sending messages to window,
+		// which may make CWndMgr free some windows even if we are currenly
+		// in a MsgProc call / processing the CWndBases.
+		// 
+		// 174 is a submessage sent by WM_SETTEXT that I could not find
+		// anywhere in any documentation. It seems to be the message that
+		// will make the default windows proc actually change the title of
+		// the window.
+
+		return DefWindowProc(hWnd, msg, wParam, lParam);
+	}
+
 	BOOL bHook = GuildDeploy()->MsgProc( hWnd, msg, wParam, lParam );
 	if( bHook )
 		return 0;
