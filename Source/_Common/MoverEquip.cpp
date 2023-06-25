@@ -231,26 +231,6 @@ void CMover::UpdateParts( BOOL bFakeParts )
 	UpdateParam();
 }
 
-ItemProp* GetInventoryProp(EQUIP_INFO * pEquipInfo, CItemContainer* pInventory, int nParts )
-{
-	CItemElem* pItemElem = NULL;
-	ItemProp* pItemProp = NULL;
-
-	if( pInventory == NULL ) // fake only
-	{
-		if( pEquipInfo[nParts].dwId != NULL_ID ) 
-			pItemProp = prj.GetItemProp( pEquipInfo[nParts].dwId );
-	}
-	else
-	{
-		pItemElem = pInventory->GetEquip( nParts );
-		if( pItemElem )
-			pItemProp = pItemElem->GetProp();
-	}
-
-	return pItemProp;
-}
-
 void CMover::UpdateParts( int nSex, const MoverSub::SkinMeshs skin, EQUIP_INFO * pEquipInfo, CModelObject* pModel, CItemContainer * pInventory, BOOL bIfParts, CMover* pMover )
 {
 	if( pModel == NULL )
@@ -279,11 +259,9 @@ void CMover::UpdateParts( int nSex, const MoverSub::SkinMeshs skin, EQUIP_INFO *
 	{
 		if( i == PARTS_HAIR || i == PARTS_HEAD  )//|| i == PARTS_CAP || i == PARTS_HAND || i == PARTS_FOOT )
 			continue;
-		DWORD dwParts = -1;
-		CItemElem* pItemElem = NULL;
-		ItemProp* pItemProp = NULL;
+
 		// ÇÁ·ÎÆÛÆ¼ ²¨³¿
-		pItemProp = GetInventoryProp( pEquipInfo, pInventory, i );
+		const ItemProp * pItemProp = GetEquipItemProp(pInventory, pEquipInfo, i);
 		if( pItemProp )
 		{
 			if( pInventory )
