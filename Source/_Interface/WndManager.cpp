@@ -34,6 +34,7 @@
 #include "wndbagex.h"
 #include "sqktd/algorithm.h"
 #include "WndGuildCombat1to1.h"
+#include "WndLvReqDown.h"
 
 #include "couplehelper.h"
 #include "FuncTextCmd.h"

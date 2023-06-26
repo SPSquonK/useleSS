@@ -24,6 +24,7 @@
 #include "party.h"
 #include "eveschool.h"
 #include "WndSummonFriend.h"
+#include "WndLvReqDown.h"
 
 #include "langman.h"
 

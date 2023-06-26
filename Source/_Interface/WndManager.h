@@ -14,7 +14,6 @@
 #include "WndCollecting.h"
 
 #include "WndAwakening.h"
-#include "WndLvReqDown.h"
 #include "WndBlessingCancel.h"
 
 #include "WndLord.h"
@@ -89,6 +88,7 @@ class CWndPost;
 class CWndTradeGold;
 
 class CWndGuildCombat1to1Offer; class CWndGuildCombat1to1Selection;
+class CWndLvReqDown;
 
 #define REG_VERSION 1
 
