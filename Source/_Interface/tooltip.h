@@ -1,6 +1,8 @@
 #ifndef _TOOLTIP_H_
 #define _TOOLTIP_H_
 
+#include <span>
+
 enum 
 {
 	FIRST_TT,
@@ -31,16 +33,12 @@ class CToolTip
 	CTexture*	m_pUltimateTexture;
 	CTexture*	m_pJewelBgTexture;
 
-#ifndef __IMPROVE_MAP_SYSTEM
-	int			m_nMonInfoCnt;
-	DWORD		m_pDwMonId[5];
-#endif // __IMPROVE_MAP_SYSTEM
 	int			m_nSubToolTipFlag;
 	CRect		m_nRevisedRect;
 	int			m_nSubToolTipNumber;
-#ifdef __IMPROVE_MAP_SYSTEM
-	vector< DWORD > m_vecMapMonsterID;
-#endif // __IMPROVE_MAP_SYSTEM
+
+	std::vector<DWORD> m_vecMapMonsterID;
+
 public:
 	CToolTip();
 	~CToolTip();
@@ -59,7 +57,7 @@ public:
 	void InitTexture();
 	void SetUltimateToolTip(const CItemElem & pItemBase);
 #ifndef __IMPROVE_MAP_SYSTEM
-	void SetWorldMapMonsterInfo(int nMonCnt, DWORD* pDwMonId);
+	void SetWorldMapMonsterInfo(std::span<const DWORD> pDwMonId);
 #endif // __IMPROVE_MAP_SYSTEM
 #ifdef __IMPROVE_MAP_SYSTEM
 	void ResizeMapMonsterToolTip( void );

@@ -255,13 +255,12 @@ void CWorldMap::Process()
 	m_nDrawMenu[5] = 15;
 	m_nDrawMenu[6] = 18;
 	m_nDrawMenu[7] = 21;
-
 	m_nDrawMenu[8] = 24;
 
 	
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetApplet( APP_WORLD );
-	if( pWndWorld )
-	{
+	if (!pWndWorld) return;
+	
 		CPoint point = pWndWorld->GetMousePoint();
 
 #ifndef __IMPROVE15_WORLDMAP
@@ -278,10 +277,11 @@ void CWorldMap::Process()
 
 		if(m_bShowMonsterInfo && this->IsRender())
 		{
-			BOOL bSel = FALSE;
+			m_nSelMon = -1;
+
 			for(int i=0; i<(int)( m_MonsterInfo.GetNumber() ); i++)
 			{
-				__MONSTER_INFO stMonsterInfo = m_MonsterInfo.m_vecMonsterInfo[i];
+				const CMonsterInfoPack::MonsterInfo & stMonsterInfo = m_MonsterInfo.m_vecMonsterInfo[i];
 				if(stMonsterInfo.m_rectPos.PtInRect(point))
 				{
 					CEditString strEdit;
@@ -308,33 +308,29 @@ void CWorldMap::Process()
 						}
 					}
 					strEdit.AddString("\n");
-					ItemProp* pItemProp = prj.GetItemProp( stMonsterInfo.m_dwDropItemId );
+					
 
 					strTemp.Format("%s : ", prj.GetText(TID_GAME_DROP_ITEM));
 					strEdit.AddString(strTemp);
 
-					if(pItemProp)
-					{
-						strTemp.Format("%s", pItemProp->szName);
-						strEdit.AddString(strTemp, D3DCOLOR_XRGB(46, 112, 169));
-					}
-					else
+					if (const ItemProp * pItemProp = prj.GetItemProp(stMonsterInfo.m_dwDropItemId)) {
+						strEdit.AddString(pItemProp->szName, D3DCOLOR_XRGB(46, 112, 169));
+					} else {
 						strEdit.AddString(prj.GetText(TID_GAME_DROP_NONE));
+					}
 					
 					g_toolTip.PutToolTip(10000, strEdit, stMonsterInfo.m_rectPos, point, 0);
 #ifndef __IMPROVE_MAP_SYSTEM
-					g_toolTip.SetWorldMapMonsterInfo(stMonsterInfo.m_nMonCnt, stMonsterInfo.m_dwMonsterId);
+					g_toolTip.SetWorldMapMonsterInfo(
+						std::span(stMonsterInfo.m_dwMonsterId, stMonsterInfo.m_nMonCnt)
+					);
 #endif // __IMPROVE_MAP_SYSTEM
 
 					m_nSelMon = i;
-					bSel = TRUE;
 				}
 			}
-
-			if(!bSel)
-				m_nSelMon = -1;
 		}
-	}
+	
 }
 void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 vPos, const TCHAR* szName )
 {
@@ -583,8 +579,7 @@ void CWorldMap::RenderWorldMap( C2DRender *p2DRender )
 
 			if( pTexture )
 			{
-				cp.x = m_cRect[i].left;
-				cp.y = m_cRect[i].top;
+				cp = m_cRect[i].TopLeft();
 				pTexture->RenderScal( p2DRender, cp, 255, m_fRate, m_fRate );
 			}
 		}
@@ -598,9 +593,7 @@ void CWorldMap::RenderWorldMap( C2DRender *p2DRender )
 
 				if( pTexture )
 				{
-					__MONSTER_INFO stMonsterInfo = m_MonsterInfo.m_vecMonsterInfo[i];
-					cp.x = stMonsterInfo.m_rectPos.left;
-					cp.y = stMonsterInfo.m_rectPos.top;
+					cp = m_MonsterInfo.m_vecMonsterInfo[i].m_rectPos.TopLeft();
 
 					if(m_nSelMon == i)
 						pTexture->RenderScal( p2DRender, cp, 255, m_fRate, m_fRate );
@@ -1115,15 +1108,6 @@ BOOL CWorldMap::WorldPosToMapPos( const D3DXVECTOR3& vPos, OUT CPoint& cPos )
 
 //=====================================================================================================================================================
 
-CMonsterInfoPack::CMonsterInfoPack()
-{
-	m_nMap = 0;
-}
-
-CMonsterInfoPack::~CMonsterInfoPack()
-{
-}
-
 BOOL CMonsterInfoPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName, int nMap )
 {
 	CScript scanner;
@@ -1232,7 +1216,7 @@ BOOL CMonsterInfoPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFile
 
 			for( int i=0; i<nFrame; i++)
 			{
-				__MONSTER_INFO stMonInfo;
+				MonsterInfo stMonInfo;
 				stMonInfo.m_nMonCnt = scanner.GetNumber();
 				for(int j=0; j<stMonInfo.m_nMonCnt; j++)
 					stMonInfo.m_dwMonsterId[j] = scanner.GetNumber();
@@ -1245,11 +1229,8 @@ BOOL CMonsterInfoPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFile
 				else
 				{
 					CWorldMap* pWorldMap = CWorldMap::GetInstance();
-					if(pWorldMap)
-					{
-						stMonInfo.m_rectPos.left = ((scanner.GetNumber() * pWorldMap->GetCpScreen().x) / 1280) + pWorldMap->GetCpOffset().x;
-						stMonInfo.m_rectPos.top = ((scanner.GetNumber() * pWorldMap->GetCpScreen().y) / 960) + pWorldMap->GetCpOffset().y;
-					}
+					stMonInfo.m_rectPos.left = ((scanner.GetNumber() * pWorldMap->GetCpScreen().x) / 1280) + pWorldMap->GetCpOffset().x;
+					stMonInfo.m_rectPos.top = ((scanner.GetNumber() * pWorldMap->GetCpScreen().y) / 960) + pWorldMap->GetCpOffset().y;
 				}
 				stMonInfo.m_rectPos.right = stMonInfo.m_rectPos.left + size.cx;
 				stMonInfo.m_rectPos.bottom = stMonInfo.m_rectPos.top + size.cy;

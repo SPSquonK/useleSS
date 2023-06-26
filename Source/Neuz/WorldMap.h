@@ -1,30 +1,18 @@
-// WorldMap.h: interface for the CWorldMap class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_WORLDMAP_H__D1974F1A_A118_43E5_91D0_588850AE6D13__INCLUDED_)
-#define AFX_WORLDMAP_H__D1974F1A_A118_43E5_91D0_588850AE6D13__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-
-typedef struct __MONSTER_INFO
-{
-	int		m_nMonCnt;
-	DWORD	m_dwMonsterId[5];
-	DWORD	m_dwDropItemId;
-	CRect	m_rectPos;
-} __MONSTER_INFO;
 
 class CMonsterInfoPack : public CTexturePack
 {
 public:
+	struct MonsterInfo {
+		int		m_nMonCnt;
+		DWORD	m_dwMonsterId[5];
+		DWORD	m_dwDropItemId;
+		CRect	m_rectPos;
+	};
+
 	int m_nMap;
-	std::vector<__MONSTER_INFO>	m_vecMonsterInfo;
+	std::vector<MonsterInfo>	m_vecMonsterInfo;
 public:
-	CMonsterInfoPack();
-	~CMonsterInfoPack();
 	BOOL LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, int nMap );
 };
 
@@ -133,5 +121,3 @@ public:
 	CPoint GetCpScreen() {return m_cpScreen;}
 	CPoint GetCpOffset() {return m_cOffset;}
 };
-
-#endif // !defined(AFX_WORLDMAP_H__D1974F1A_A118_43E5_91D0_588850AE6D13__INCLUDED_)

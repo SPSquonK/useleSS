@@ -22,14 +22,6 @@ m_nSubToolTipNumber( CWndMgr::TOOL_TIP_SWITCH_MAIN )
 	m_nSlot = 0;
 	m_pUltimateTexture = NULL;
 	m_pJewelBgTexture = NULL;
-#ifndef __IMPROVE_MAP_SYSTEM
-	m_nMonInfoCnt = 0;
-	for(int i=0; i<5; i++)
-		m_pDwMonId[i] = 0;
-#endif // __IMPROVE_MAP_SYSTEM
-#ifdef __IMPROVE_MAP_SYSTEM
-	m_vecMapMonsterID.clear();
-#endif // __IMPROVE_MAP_SYSTEM
 }
 CToolTip::~CToolTip()
 {
@@ -131,14 +123,8 @@ void CToolTip::PutToolTip( DWORD dwToolTipId, LPCTSTR lpszString, CRect rect, CP
 	m_bPutToolTip = TRUE;
 	m_nAdded = 0;
 	m_nSlot = 0;
-#ifndef __IMPROVE_MAP_SYSTEM
-	m_nMonInfoCnt = 0;
-	for(int i=0; i<5; i++)
-		m_pDwMonId[i] = 0;
-#endif // __IMPROVE_MAP_SYSTEM
-#ifdef __IMPROVE_MAP_SYSTEM
+
 	m_vecMapMonsterID.clear();
-#endif // __IMPROVE_MAP_SYSTEM
 }
 
 void CToolTip::PutToolTip( DWORD dwToolTipId, CEditString& string, CRect rect, CPoint pt, int nToolTipPos )
@@ -175,14 +161,8 @@ void CToolTip::PutToolTip( DWORD dwToolTipId, CEditString& string, CRect rect, C
 	m_bPutToolTip = TRUE;
 	m_nAdded = 0;
 	m_nSlot = 0;
-#ifndef __IMPROVE_MAP_SYSTEM
-	m_nMonInfoCnt = 0;
-	for(int i=0; i<5; i++)
-		m_pDwMonId[i] = 0;
-#endif // __IMPROVE_MAP_SYSTEM
-#ifdef __IMPROVE_MAP_SYSTEM
+
 	m_vecMapMonsterID.clear();
-#endif // __IMPROVE_MAP_SYSTEM
 }
 
 void CToolTip::PutToolTipEx( DWORD dwToolTipId, CEditString& string, CRect rect, CPoint pt, int nToolTipPos, int nSubToolTipFlag )
@@ -234,14 +214,8 @@ void CToolTip::PutToolTipEx( DWORD dwToolTipId, CEditString& string, CRect rect,
 	m_nAdded = 0;
 	m_nSlot = 0;
 	m_nSubToolTipFlag = nSubToolTipFlag;
-#ifndef __IMPROVE_MAP_SYSTEM
-	m_nMonInfoCnt = 0;
-	for(int i=0; i<5; i++)
-		m_pDwMonId[i] = 0;
-#endif // __IMPROVE_MAP_SYSTEM
-#ifdef __IMPROVE_MAP_SYSTEM
+
 	m_vecMapMonsterID.clear();
-#endif // __IMPROVE_MAP_SYSTEM
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -479,50 +453,41 @@ void CToolTip::Paint(C2DRender* p2DRender)
 		p2DRender->TextOut_EditString( rect.TopLeft().x + 3, rect.TopLeft().y + 3, m_strToolTip, 0, 0, 2 );//, D3DCOLOR_ARGB( m_nAlpha * 255 / 255, 0, 0, 0 ) );
 
 #ifndef __IMPROVE_MAP_SYSTEM
-		if(m_nMonInfoCnt > 0)
-		{
+		if (!m_vecMapMonsterID.empty()) {
 			int nMonElementYPos = 0;
 			int nStrLine = 0;
 
-			for(int i=0; i<m_nMonInfoCnt; i++)
-			{
-				if( (int)( m_strToolTip.GetLineCount() ) > i )
-				{
-					CString strTemp = m_strToolTip.GetLine(nStrLine);
-					
-					// Check Line.
-					CString strLv, strEnd;
-					strEnd = strTemp.GetAt( strTemp.GetLength() - 1 );
-					if( strTemp.Find( prj.GetText( TID_GAME_MONSTER_INFORMATION_LEVEL ) ) == 0 )
-					{
-						int nLine = 1;
-						if(strEnd != "\n")
-						{
-							nLine = 2;
-							nStrLine++;
-							strTemp = m_strToolTip.GetLine(nStrLine);
-						}
+			for (size_t i = 0; i < m_vecMapMonsterID.size(); ++i) {
+				if (i >= m_strToolTip.GetLineCount()) continue;
 
-						strTemp.TrimRight();
-						CSize size = CWndBase::m_Theme.m_pFontText->GetTextExtent(strTemp);
-						MoverProp* pMoverProp = prj.GetMoverProp(m_pDwMonId[i]);
-						
-						if(pMoverProp)
-						{
-							if( g_WndMng.m_pWndWorld && pMoverProp->eElementType )
-							{
-								if(i==0)
-									nMonElementYPos = PlusRect.top + 8 + (size.cy + 2) * (nLine - 1);
-								else
-									nMonElementYPos += (size.cy + 2) * nLine;
+				CString strTemp = m_strToolTip.GetLine(nStrLine);
+				if (strTemp.Find(prj.GetText(TID_GAME_MONSTER_INFORMATION_LEVEL)) != 0)
+					continue;
 
-								g_WndMng.m_pWndWorld->m_texAttrIcon.Render( p2DRender, CPoint(PlusRect.left + size.cx + 20, nMonElementYPos), pMoverProp->eElementType-1, 255, 1.0f, 1.0f );
-							}
-						}
+				// Check Line.
+				CString strEnd = strTemp.GetAt(strTemp.GetLength() - 1);
+				int nLine = 1;
+				if (strEnd != "\n") {
+					nLine = 2;
+					nStrLine++;
+					strTemp = m_strToolTip.GetLine(nStrLine);
+				}
 
-						nStrLine++;
+				strTemp.TrimRight();
+				CSize size = CWndBase::m_Theme.m_pFontText->GetTextExtent(strTemp);
+				
+				if (const MoverProp * pMoverProp = prj.GetMoverProp(m_vecMapMonsterID[i])) {
+					if (g_WndMng.m_pWndWorld && pMoverProp->eElementType) {
+						if (i == 0)
+							nMonElementYPos = PlusRect.top + 8 + (size.cy + 2) * (nLine - 1);
+						else
+							nMonElementYPos += (size.cy + 2) * nLine;
+
+						g_WndMng.m_pWndWorld->m_texAttrIcon.Render(p2DRender, CPoint(PlusRect.left + size.cx + 20, nMonElementYPos), pMoverProp->eElementType - 1, 255, 1.0f, 1.0f);
 					}
 				}
+
+				nStrLine++;
 			}
 		}
 #endif // __IMPROVE_MAP_SYSTEM
@@ -618,11 +583,9 @@ void CToolTip::SetUltimateToolTip(const CItemElem & pItemBase)
 }
 
 #ifndef __IMPROVE_MAP_SYSTEM
-void CToolTip::SetWorldMapMonsterInfo(int nMonCnt, DWORD* pDwMonId)
+void CToolTip::SetWorldMapMonsterInfo(std::span<const DWORD> pDwMonId)
 {
-	m_nMonInfoCnt = nMonCnt;
-	for(int i=0; i<nMonCnt; i++)
-		m_pDwMonId[i] = pDwMonId[i];
+	m_vecMapMonsterID = std::ranges::to<std::vector<DWORD>>(pDwMonId);
 
 	m_rectRender.right += 18;
 }
