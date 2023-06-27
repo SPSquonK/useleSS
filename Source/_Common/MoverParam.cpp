@@ -693,6 +693,7 @@ BOOL CMover::AddFxp( int nFxp )
 bool CMover::AddChangeJob(const int nJob) {
 	if (nJob < 0 || nJob >= MAX_JOB) return false;
 
+	m_nJob = nJob;
 	const DWORD jobType = GetJobType(nJob);
 
 	const MoverSkills previously = std::move(m_jobSkills);
