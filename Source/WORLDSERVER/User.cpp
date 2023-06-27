@@ -939,23 +939,8 @@ void CUser::AddSetFxp( int nFxp, int nFlightLv )
 	m_Snapshot.ar << (WORD)nFxp << (WORD)nFlightLv;
 }
 
-void CUser::AddSetGrowthLearningPoint( long nRemainGP )
-{
-	if( IsDelete() )	return;
-
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_SET_GROWTH_LEARNING_POINT;
-	m_Snapshot.ar << nRemainGP << (long)0;
-}
-
-void CUser::AddSetChangeJob( int nJob )
-{
-	if( IsDelete() )	return;
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_SET_JOB_SKILL;
-	m_Snapshot.ar << nJob << m_jobSkills;
+void CUser::AddSetGrowthLearningPoint(const long nRemainGP) {
+	SendSnapshotThisId<SNAPSHOTTYPE_SET_GROWTH_LEARNING_POINT, long>(nRemainGP);
 }
 
 void CUser::AddReturnSay( int ReturnFlag, const CHAR* lpszPlayer )
@@ -4068,18 +4053,16 @@ void	CUserMng::AddCreateSfxAllow( CMover *pMover, DWORD dwSfxObjArrow, DWORD dwS
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddNearSetChangeJob( CMover* pMover, int nJob)
-{
-	CAr ar;
-	ar << GETID( pMover ) << SNAPSHOTTYPE_SET_NEAR_JOB_SKILL;
-	ar << nJob << pMover->m_jobSkills;
+void CUserMng::AddNearSetChangeJob( CUser * pMover ) {
+	// Self
+	pMover->SendSnapshotThisId<SNAPSHOTTYPE_SET_JOB_SKILL>(
+		pMover->m_nJob, pMover->m_jobSkills
+	);
 
-	GETBLOCK( ar, lpBuf, nBufSize );
-	
-	FOR_VISIBILITYRANGE( pMover )
-		if( USERPTR != pMover )
-			USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+	// Other players
+	BroadcastAroundExcluding<SNAPSHOTTYPE_SET_NEAR_JOB_SKILL>(
+		pMover, pMover->m_nJob, pMover->m_jobSkills
+	);
 }
 
 void CUserMng::AddModifyMode( CUser* pUser )

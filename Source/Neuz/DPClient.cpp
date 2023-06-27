@@ -3012,16 +3012,12 @@ void CDPClient::OnRevivalLodelight( OBJID objid )
 	}
 }
 
-void CDPClient::OnSetGrowthLearningPoint( OBJID objid, CAr & ar )
-{
-	long nRemainGP, nRemainLP;
-	ar >> nRemainGP >> nRemainLP;
-	
-	// nRemainLP 사용하지 않는다.
-	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pMover ) )
-	{
-		pMover->m_nRemainGP	= nRemainGP;
+void CDPClient::OnSetGrowthLearningPoint(OBJID objid, CAr & ar) {
+	long nRemainGP; ar >> nRemainGP;
+
+	CMover * pMover = prj.GetMover(objid);
+	if (IsValidObj(pMover)) {
+		pMover->m_nRemainGP = nRemainGP;
 	}
 }
 
@@ -3029,9 +3025,7 @@ void CDPClient::OnSetChangeJob( OBJID objid, CAr & ar ) {
 	CMover* pMover = prj.GetMover( objid );
 	if (!IsValidObj(pMover)) return;
 
-	int nJob;
-	ar >> nJob >> pMover->m_jobSkills;
-	pMover->m_nJob = nJob;
+	ar >> pMover->m_nJob >> pMover->m_jobSkills;
 
 	CWndSkillTreeCommon::ReInitIfOpen();
 		
@@ -3055,9 +3049,7 @@ void CDPClient::OnSetNearChangeJob(OBJID objid, CAr & ar) {
 	CMover * pMover = prj.GetMover(objid);
 	if (!IsValidObj(pMover)) return;
 
-	int nJob;
-	ar >> nJob >> pMover->m_jobSkills;
-	pMover->m_nJob = nJob;
+	ar >> pMover->m_nJob >> pMover->m_jobSkills;
 
 	CreateSfx(g_Neuz.m_pd3dDevice, XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId());
 

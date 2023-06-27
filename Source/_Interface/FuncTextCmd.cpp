@@ -655,7 +655,7 @@ BOOL TextCmd_ChangeJob(CScanner & scanner, CPlayer_ * pUser) {
 	int nJob = JOB_VAGRANT;
 	
 	for (int i = 0; i < MAX_JOB; i++) {
-		if (strJob == prj.jobs.info[i].szName || strJob == prj.jobs.info[i].szName) {
+		if (strJob == prj.jobs.info[i].szName || strJob == prj.jobs.info[i].szEName) {
 			nJob = i;
 			break;
 		}
@@ -671,9 +671,8 @@ BOOL TextCmd_ChangeJob(CScanner & scanner, CPlayer_ * pUser) {
 	
 	if( pUser->AddChangeJob( nJob ) )
 	{
-		( (CUser*)pUser )->AddSetChangeJob( nJob );
-		g_UserMng.AddNearSetChangeJob(pUser, nJob);
-		g_dpDBClient.SendLogLevelUp( (CUser*)pUser, 4 );
+		g_UserMng.AddNearSetChangeJob(pUser);
+		g_dpDBClient.SendLogLevelUp( pUser, 4 );
 		g_dpDBClient.SendUpdatePlayerData( pUser );
 		return TRUE;
 	}

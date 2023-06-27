@@ -342,7 +342,6 @@ public:
 	void			AddGoldText( int nPlus );
 	void			AddExpBoxInfo( OBJID objid, DWORD dwSet, DWORD dwTime, u_long idPlayer );
 	void			AddSetQuest( LPQUEST lpQuest );
-	void			AddSetChangeJob( int nJob );
 	void			AddReturnSay( int ReturnFlag, const CHAR* lpszPlayer );
 	void			AddDoEquip( BYTE nId, DWORD dwItemId, BYTE fEquip );
 	void			AddCancelQuest(QuestId dwQuestCancelID );
@@ -786,7 +785,7 @@ public:
 	void			AddCreateSfxAllow( CMover *pMover, DWORD dwSfxObjArrow, DWORD dwSfxObjHit, D3DXVECTOR3 vPosDest, int idTarget );
 	void			AddCreateSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x = 0, float y = 0, float z = 0, BOOL bFlag = FALSE );
 	void			AddRemoveSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x = 0, float y = 0, float z = 0, BOOL bFlag = FALSE );
-	void			AddNearSetChangeJob(CMover * pMover, int nJob);
+	void			AddNearSetChangeJob(CUser * pMover);
 	void			AddModifyMode( CUser* pUser );
 	void			AddStateMode( CUser* pUser, BYTE nFlag );
 	void			AddSetFame( CMover* pMover, int nFame );

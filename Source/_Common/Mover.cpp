@@ -1401,8 +1401,7 @@ void CMover::InitLevel( int nJob, LONG nLevel ) {
 	else
 		SetFlightLv( 0 );
 		
-	( (CUser*)this )->AddSetChangeJob( nJob );
-	g_UserMng.AddNearSetChangeJob(this, nJob);
+	g_UserMng.AddNearSetChangeJob((CUser *) this);
 
 	g_dpDBClient.SendUpdatePlayerData( (CUser*)this );
 	SetHitPoint( GetMaxHitPoint() );
