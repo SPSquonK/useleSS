@@ -287,9 +287,9 @@ void CWorldMap::Process()
 					CEditString strEdit;
 					CString strTemp;
 
-					for(int j=0; j<stMonsterInfo.m_nMonCnt; j++)
+					for(size_t j=0; j < stMonsterInfo.m_dwMonsters.size(); j++)
 					{
-						MoverProp* pMoverProp = prj.GetMoverProp(stMonsterInfo.m_dwMonsterId[j]);
+						MoverProp* pMoverProp = prj.GetMoverProp(stMonsterInfo.m_dwMonsters[j]);
 					
 						if(pMoverProp)
 						{
@@ -299,7 +299,7 @@ void CWorldMap::Process()
 							strEdit.AddString(strTemp, D3DCOLOR_XRGB(130, 130, 200));
 							strTemp.Format("%s", pMoverProp->szName);
 
-							if(j+1 == stMonsterInfo.m_nMonCnt) //거대만 빨간색으로 표시
+							if(j+1 == stMonsterInfo.m_dwMonsters.size()) //거대만 빨간색으로 표시
 								strEdit.AddString(strTemp, D3DCOLOR_XRGB(255, 0, 0));
 							else
 								strEdit.AddString(strTemp);
@@ -321,9 +321,7 @@ void CWorldMap::Process()
 					
 					g_toolTip.PutToolTip(10000, strEdit, stMonsterInfo.m_rectPos, point, 0);
 #ifndef __IMPROVE_MAP_SYSTEM
-					g_toolTip.SetWorldMapMonsterInfo(
-						std::span(stMonsterInfo.m_dwMonsterId, stMonsterInfo.m_nMonCnt)
-					);
+					g_toolTip.SetWorldMapMonsterInfo(stMonsterInfo.m_dwMonsters);
 #endif // __IMPROVE_MAP_SYSTEM
 
 					m_nSelMon = i;
@@ -608,33 +606,19 @@ void CWorldMap::RenderWorldMap( C2DRender *p2DRender )
 		DWORD dwRainbowRaceTime = CRainbowRace::GetInstance()->m_dwRemainTime;
 		if(dwRainbowRaceTime > 0)
 		{
-			for( int i=0; i<(int)( m_RainbowNPC.GetNumber() ); i++)
-			{
-				__RAINBOW_NPC stRainbowNPC = m_RainbowNPC.m_vecRainbowNPC[i];
-				if(m_nMap == 0)
-				{
-					pTexture = m_RainbowNPC.GetAt(i);
-					if(pTexture)
-					{
-						cp.x = stRainbowNPC.m_rectTotalMapPos.left;
-						cp.y = stRainbowNPC.m_rectTotalMapPos.top;
+			for (DWORD i = 0; i < m_RainbowNPC.GetNumber(); ++i) {
+				const CRainbowNPCPack::RainbowNpc & stRainbowNPC = m_RainbowNPC.m_vecRainbowNPC[i];
 
-						pTexture->RenderScal( p2DRender, cp, 255, m_fRate, m_fRate );
-					}
+				if (m_nMap == 0) {
+					cp = stRainbowNPC.m_rectTotalMapPos.TopLeft();
+				} else if (stRainbowNPC.m_nMap == m_nMap) {
+					cp = stRainbowNPC.m_rectPos.TopLeft();
+				} else {
+					continue;
 				}
-				else
-				{
-					if(stRainbowNPC.m_nMap == m_nMap)
-					{
-						pTexture = m_RainbowNPC.GetAt(i);
-						if(pTexture)
-						{
-							cp.x = stRainbowNPC.m_rectPos.left;
-							cp.y = stRainbowNPC.m_rectPos.top;
-
-							pTexture->RenderScal( p2DRender, cp, 255, m_fRate, m_fRate );
-						}
-					}
+				
+				if (CTexture * pTexture = m_RainbowNPC.GetAt(i)) {
+					pTexture->RenderScal(p2DRender, cp, 255, m_fRate, m_fRate);
 				}
 			}
 		}
@@ -1214,35 +1198,33 @@ BOOL CMonsterInfoPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFile
 				}
 			}
 
-			for( int i=0; i<nFrame; i++)
-			{
-				MonsterInfo stMonInfo;
-				stMonInfo.m_nMonCnt = scanner.GetNumber();
-				for(int j=0; j<stMonInfo.m_nMonCnt; j++)
-					stMonInfo.m_dwMonsterId[j] = scanner.GetNumber();
-
-				if(g_Option.m_nResWidth == 1280 && g_Option.m_nResHeight == 960)
-				{
-					stMonInfo.m_rectPos.left = scanner.GetNumber();
-					stMonInfo.m_rectPos.top = scanner.GetNumber();
-				}
-				else
-				{
-					CWorldMap* pWorldMap = CWorldMap::GetInstance();
-					stMonInfo.m_rectPos.left = ((scanner.GetNumber() * pWorldMap->GetCpScreen().x) / 1280) + pWorldMap->GetCpOffset().x;
-					stMonInfo.m_rectPos.top = ((scanner.GetNumber() * pWorldMap->GetCpScreen().y) / 960) + pWorldMap->GetCpOffset().y;
-				}
-				stMonInfo.m_rectPos.right = stMonInfo.m_rectPos.left + size.cx;
-				stMonInfo.m_rectPos.bottom = stMonInfo.m_rectPos.top + size.cy;
-
-				stMonInfo.m_dwDropItemId = scanner.GetNumber();
-				
-				m_vecMonsterInfo.push_back(stMonInfo);
+			for (int i = 0; i < nFrame; i++) {
+				m_vecMonsterInfo.emplace_back(scanner, size);
 			}
 		}
 	} while(scanner.tok!=FINISHED);
 
 	return TRUE;
+}
+
+CMonsterInfoPack::MonsterInfo::MonsterInfo(CScript & scanner, const CSize size) {
+	const int nb = scanner.GetNumber();
+	for (int j = 0; j < nb; j++) {
+		m_dwMonsters.emplace_back(scanner.GetNumber());
+	}
+
+	if (g_Option.m_nResWidth == 1280 && g_Option.m_nResHeight == 960) {
+		m_rectPos.left = scanner.GetNumber();
+		m_rectPos.top = scanner.GetNumber();
+	} else {
+		CWorldMap * pWorldMap = CWorldMap::GetInstance();
+		m_rectPos.left = ((scanner.GetNumber() * pWorldMap->GetCpScreen().x) / 1280) + pWorldMap->GetCpOffset().x;
+		m_rectPos.top = ((scanner.GetNumber() * pWorldMap->GetCpScreen().y) / 960) + pWorldMap->GetCpOffset().y;
+	}
+	m_rectPos.right = m_rectPos.left + size.cx;
+	m_rectPos.bottom = m_rectPos.top + size.cy;
+
+	m_dwDropItemId = scanner.GetNumber();
 }
 
 
@@ -1352,7 +1334,7 @@ BOOL CRainbowNPCPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileN
 
 			for( int i=0; i<nFrame; i++)
 			{
-				__RAINBOW_NPC stRainbowNPC;
+				RainbowNpc stRainbowNPC;
 				stRainbowNPC.m_nMap = scanner.GetNumber();
 
 				if(g_Option.m_nResWidth == 1280 && g_Option.m_nResHeight == 960)
@@ -1380,11 +1362,8 @@ BOOL CRainbowNPCPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileN
 				else
 				{
 					CWorldMap* pWorldMap = CWorldMap::GetInstance();
-					if(pWorldMap)
-					{
-						stRainbowNPC.m_rectPos.left = ((scanner.GetNumber() * pWorldMap->GetCpScreen().x) / 1280) + pWorldMap->GetCpOffset().x;
-						stRainbowNPC.m_rectPos.top = ((scanner.GetNumber() * pWorldMap->GetCpScreen().y) / 960) + pWorldMap->GetCpOffset().y;
-					}
+					stRainbowNPC.m_rectPos.left = ((scanner.GetNumber() * pWorldMap->GetCpScreen().x) / 1280) + pWorldMap->GetCpOffset().x;
+					stRainbowNPC.m_rectPos.top = ((scanner.GetNumber() * pWorldMap->GetCpScreen().y) / 960) + pWorldMap->GetCpOffset().y;
 				}
 				stRainbowNPC.m_rectPos.right = stRainbowNPC.m_rectPos.left + size.cx;
 				stRainbowNPC.m_rectPos.bottom = stRainbowNPC.m_rectPos.top + size.cy;

@@ -1,13 +1,18 @@
 #pragma once
 
+#include <vector>
+
+class CScript;
+
 class CMonsterInfoPack : public CTexturePack
 {
 public:
 	struct MonsterInfo {
-		int		m_nMonCnt;
-		DWORD	m_dwMonsterId[5];
+		std::vector<DWORD> m_dwMonsters;
 		DWORD	m_dwDropItemId;
 		CRect	m_rectPos;
+
+		explicit MonsterInfo(CScript & scanner, CSize size);
 	};
 
 	int m_nMap;
@@ -16,17 +21,16 @@ public:
 	BOOL LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, int nMap );
 };
 
-typedef struct __RAINBOW_NPC
-{
-	int		m_nMap;
-	CRect	m_rectTotalMapPos;
-	CRect	m_rectPos;
-} __RAINBOW_NPC;
 
-class CRainbowNPCPack : public CTexturePack
-{
+class CRainbowNPCPack : public CTexturePack {
 public:
-	std::vector<__RAINBOW_NPC>	m_vecRainbowNPC;
+	struct RainbowNpc {
+		int		m_nMap;
+		CRect	m_rectTotalMapPos;
+		CRect	m_rectPos;
+	};
+
+	std::vector<RainbowNpc>	m_vecRainbowNPC;
 public:
 	BOOL LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName );
 };
