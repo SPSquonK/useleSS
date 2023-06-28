@@ -139,9 +139,6 @@ public:
 	void	SendConfirmPKPVP( u_long uidPlayer );
 	void	OnSetDuel( OBJID objid, CAr & ar );
 	void	OnPKRelation( OBJID objid, CAr & ar );
-	void	OnPKPink( OBJID objid, CAr & ar );
-	void	OnPKPropensity( OBJID objid, CAr& ar );
-	void	OnPKValue( OBJID objid, CAr& ar );
 
 	void	SendConfirmTrade( CMover* pTrader );
 	void	SendTrade( CMover* pTrader );

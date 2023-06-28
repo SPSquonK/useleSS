@@ -2029,15 +2029,10 @@ void CUser::AddSetDuel( CMover* pMover )
 	
 }
 
-void CUser::AddPKValue()
-{
-	if( IsDelete() )	return;
-
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_PK_RELATION;
-	m_Snapshot.ar << PK_PKVALUE;
-	m_Snapshot.ar << GetPKValue();
+void CUser::AddPKValue() {
+	SendSnapshotThisId<SNAPSHOTTYPE_PK_RELATION, Subsnapshot::PK, int>(
+		Subsnapshot::PK::PKVALUE, GetPKValue()
+	);
 }
 
 
@@ -4006,29 +4001,16 @@ void CUserMng::AddMotionArrive( CMover* pMover, OBJMSG objmsg )
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddPKPink( CMover* pMover, BYTE byPink )
-{
-	CAr ar;
-	ar << GETID( pMover ) << SNAPSHOTTYPE_PK_RELATION;
-	ar << PK_PINK;
-	ar << byPink;
-	
-	GETBLOCK( ar, lpBuf, nBufSize );
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddPKPink(CMover * pMover, BYTE byPink) {
+	BroadcastAround<SNAPSHOTTYPE_PK_RELATION, Subsnapshot::PK, BYTE>(
+		pMover, Subsnapshot::PK::PINK, byPink
+	);
 }
-void CUserMng::AddPKPropensity( CMover* pMover )
-{
-	CAr ar;
-	ar << GETID( pMover ) << SNAPSHOTTYPE_PK_RELATION;
-	ar << PK_PROPENSITY;
-	ar << pMover->GetPKPropensity();
 
-	GETBLOCK( ar, lpBuf, nBufSize );
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddPKPropensity(CMover * pMover) {
+	BroadcastAround<SNAPSHOTTYPE_PK_RELATION, Subsnapshot::PK, DWORD>(
+		pMover, Subsnapshot::PK::PROPENSITY, pMover->GetPKPropensity()
+	);
 }
 
 void CUserMng::AddWorldCreateSfxObj( DWORD dwSfxObj, float x, float y, float z, BOOL bFlag, DWORD dwWorldId )

@@ -1491,9 +1491,13 @@ const BYTE LOG_SKILLPOINT_GET_QUEST	= 0x00;		// 스킬포인트 얻기 - 퀘스트
 const BYTE LOG_SKILLPOINT_GET_HUNT	= 0x01;		// 스킬포인트 얻기 - 몬스터
 const BYTE LOG_SKILLPOINT_USE		= 0x10;		// 스킬포인트 쓰기 - 스킬레벨업
 
-const BYTE PK_PINK					= 0x00;		// 핑크상태 전송
-const BYTE PK_PROPENSITY			= 0x01;		// 카오성향 전송
-const BYTE PK_PKVALUE				= 0x02;		// 카오수치 전송
+namespace Subsnapshot {
+	enum class PK : std::uint8_t {
+		PINK = 0x00,		// 핑크상태 전송
+		PROPENSITY = 0x01,		// 카오성향 전송
+		PKVALUE = 0x02		// 카오수치 전송
+	};
+}
 
 //const BYTE ANGEL_WNDCREATE			= 0x00;		// 엔젤창
 const BYTE ANGEL_INFO				= 0x01;		// 엔젤 정보 주기(경험치, 레벨)

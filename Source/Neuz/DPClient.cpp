@@ -12558,47 +12558,35 @@ void CDPClient::OnSetDuel( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::OnPKRelation( OBJID objid, CAr& ar )
-{
-	BYTE byType;
-	ar >> byType;
-	switch( byType )
-	{
-	case PK_PINK:
-		OnPKPink( objid, ar );
-		break;
-	case PK_PROPENSITY:
-		OnPKPropensity( objid, ar );
-		break;
-	case PK_PKVALUE:
-		OnPKValue( objid, ar );
-		break;
-	}
-}
+void CDPClient::OnPKRelation(OBJID objid, CAr & ar) {
+	CMover * pMover = prj.GetMover(objid);
+	if (!IsValidObj(pMover)) return;
 
-void CDPClient::OnPKPink( OBJID objid, CAr& ar )
-{
-	BYTE byPink;
-	ar >> byPink;
-	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj(pMover) )
-		pMover->SetPKPink( (DWORD)byPink );
-}
-void CDPClient::OnPKPropensity( OBJID objid, CAr& ar )
-{
-	DWORD dwPKPropensity;
-	ar >> dwPKPropensity;
-	CMover* pMover = prj.GetMover( objid );
-	if( IsValidObj( pMover ) )
-		pMover->SetPKPropensity( dwPKPropensity );
-}
-void CDPClient::OnPKValue( OBJID objid, CAr& ar )
-{
-	int nPKValue;
-	ar >> nPKValue;
-	CMover* pMover = prj.GetMover( objid );
-	if( IsValidObj( pMover ) )
-		pMover->SetPKValue( nPKValue );
+	Subsnapshot::PK byType;
+	ar >> byType;
+	switch (byType) {
+		case Subsnapshot::PK::PINK:
+		{
+			BYTE byPink;
+			ar >> byPink;
+			pMover->SetPKPink(byPink);
+			break;
+		}
+		case Subsnapshot::PK::PROPENSITY:
+		{
+			DWORD dwPKPropensity;
+			ar >> dwPKPropensity;
+			pMover->SetPKPropensity(dwPKPropensity);
+			break;
+		}
+		case Subsnapshot::PK::PKVALUE:
+		{
+			int nPKValue;
+			ar >> nPKValue;
+			pMover->SetPKValue(nPKValue);
+			break;
+		}
+	}
 }
 
 void CDPClient::OnWantedInfo( CAr & ar )
