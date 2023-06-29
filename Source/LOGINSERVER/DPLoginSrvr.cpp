@@ -9,10 +9,10 @@ extern  char				g_szMSG_VER[];
 
 CDPLoginSrvr::CDPLoginSrvr()
 {
-	m_handlers.AddHandler( PACKETTYPE_PRE_JOIN, &CDPLoginSrvr::OnPreJoin );
-	m_handlers.AddHandler( PACKETTYPE_PING, &CDPLoginSrvr::OnPing );
-	m_handlers.AddHandler( PACKETTYPE_QUERYTICKCOUNT, &CDPLoginSrvr::OnQueryTickCount );
-	m_handlers.AddHandler( PACKETTYPE_GETPLAYERLIST, &CDPLoginSrvr::OnAddConnection );
+	m_handler.Add( PACKETTYPE_PRE_JOIN, &CDPLoginSrvr::OnPreJoin);
+	m_handler.Add( PACKETTYPE_PING, &CDPLoginSrvr::OnPing);
+	m_handler.Add( PACKETTYPE_QUERYTICKCOUNT, &CDPLoginSrvr::OnQueryTickCount);
+	m_handler.Add( PACKETTYPE_GETPLAYERLIST, &CDPLoginSrvr::OnAddConnection );
 }
 
 void CDPLoginSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
@@ -58,7 +58,7 @@ void CDPLoginSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 
 	DWORD dw; ar >> dw;
 	
-	if (m_handlers.Handle(*this, ar, dw, idFrom))
+	if (m_handler.Handle(this, ar, dw, idFrom))
 	{
 		if (ar.IsOverflow()) Error("Login-Neuz: Packet %08x overflowed", dw);
 	}

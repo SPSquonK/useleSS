@@ -21,10 +21,10 @@ CDPSrvr_AccToCert::CDPSrvr_AccToCert()
 	memset( m_sAddrPmttd, 0, sizeof(m_sAddrPmttd) );
 	m_nSizeofAddrPmttd	= 0;
 
-	OnMsg( PACKETTYPE_ADD_ACCOUNT, &CDPSrvr_AccToCert::OnAddAccount );
-	OnMsg( PACKETTYPE_REMOVE_ACCOUNT, &CDPSrvr_AccToCert::OnRemoveAccount );
-	OnMsg( PACKETTYPE_PING, &CDPSrvr_AccToCert::OnPing );
-	OnMsg( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPSrvr_AccToCert::OnCloseExistingConnection );
+	m_handlers.Add(PACKETTYPE_ADD_ACCOUNT, &CDPSrvr_AccToCert::OnAddAccount);
+	m_handlers.Add(PACKETTYPE_REMOVE_ACCOUNT, &CDPSrvr_AccToCert::OnRemoveAccount);
+	m_handlers.Add(PACKETTYPE_PING, &CDPSrvr_AccToCert::OnPing);
+	m_handlers.Add( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPSrvr_AccToCert::OnCloseExistingConnection );
 }
 
 void CDPSrvr_AccToCert::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
@@ -55,7 +55,7 @@ void CDPSrvr_AccToCert::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSi
 
 	CAr ar( lpBuffer, uBufSize );
 	DWORD dw; ar >> dw;
-	m_handlers.Handle(*this, ar, dw, idFrom, *(UNALIGNED LPDPID)lpMsg);
+	m_handlers.Handle(this, ar, dw, idFrom, *(UNALIGNED LPDPID)lpMsg);
 
 	if (ar.IsOverflow()) Error("Account-Certifier: Packet %08x overflowed", dw);
 }

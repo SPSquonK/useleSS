@@ -77,11 +77,6 @@ private:
 	bool IsBanned(LPCSTR lpszIP);
 
 private:
-
-	void OnMsg(DWORD packetId, decltype(m_handlers)::Handler handler) {
-		m_handlers.AddHandler(packetId, handler);
-	}
-
 	void	OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 );
 	void	OnRemoveAccount( CAr & ar, DPID dpid1, DPID dpid2 );
 	void	OnPing( CAr & ar, DPID dpid1, DPID dpid2 );

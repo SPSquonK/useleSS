@@ -236,15 +236,15 @@ private:
 	sqktd::flatter_map<DWORD, Handler> m_handlers;
 
 public:
-	void AddHandler(DWORD packetId, Handler handler) {
+	void Add(DWORD packetId, Handler handler) {
 		m_handlers.emplace(packetId, handler);
 	}
 
-	bool Handle(Self & self, CAr & ar, DWORD packetId, ExtraTypes ... extra) {
+	bool Handle(Self * self, CAr & ar, DWORD packetId, ExtraTypes ... extra) {
 		const auto handler = m_handlers.get_at(packetId);
 
 		if (handler) {
-			(self.*(*handler))(ar, extra ...);
+			((*self).*(*handler))(ar, extra...);
 			return true;
 		} else {
 			return false;

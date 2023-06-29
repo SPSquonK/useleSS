@@ -12,7 +12,7 @@ class CDPLoginSrvr : public CDPMng,
 	public DPMngFeatures::BroadcastPacketNone<CDPLoginSrvr>
 {
 private:
-	DPMngFeatures::PacketHandler<CDPLoginSrvr, DPID> m_handlers;
+	DPMngFeatures::PacketHandler<CDPLoginSrvr, DPID> m_handler;
 
 public:
 	void SendCacheAddr(DPID dpid);

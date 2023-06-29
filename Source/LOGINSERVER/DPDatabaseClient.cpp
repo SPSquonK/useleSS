@@ -10,11 +10,11 @@ extern	char	g_lpDBAddr[16];
 
 CDPDatabaseClient::CDPDatabaseClient()
 {
-	m_handlers.AddHandler( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPDatabaseClient::OnCloseExistingConnection );
-	m_handlers.AddHandler( PACKETTYPE_ONE_HOUR_NOTIFY, &CDPDatabaseClient::OnOneHourNotify );
-	m_handlers.AddHandler( PACKETTYPE_PLAYER_LIST, &CDPDatabaseClient::OnPlayerList );
-	m_handlers.AddHandler( PACKETTYPE_FAIL, &CDPDatabaseClient::OnFail );
-	m_handlers.AddHandler( PACKETTYPE_LOGIN_PROTECT_CERT, &CDPDatabaseClient::OnLoginProtect );
+	m_handlers.Add( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPDatabaseClient::OnCloseExistingConnection );
+	m_handlers.Add( PACKETTYPE_ONE_HOUR_NOTIFY, &CDPDatabaseClient::OnOneHourNotify );
+	m_handlers.Add( PACKETTYPE_PLAYER_LIST, &CDPDatabaseClient::OnPlayerList );
+	m_handlers.Add( PACKETTYPE_FAIL, &CDPDatabaseClient::OnFail );
+	m_handlers.Add( PACKETTYPE_LOGIN_PROTECT_CERT, &CDPDatabaseClient::OnLoginProtect );
 }
 
 void CDPDatabaseClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom ) {
@@ -31,7 +31,7 @@ void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSi
 	CAr ar( lpBuf, uBufSize );
 	DWORD dw; ar >> dw;
 	
-	if (m_handlers.Handle(*this, ar, dw, dpidUser, lpBuf, uBufSize)) {
+	if (m_handlers.Handle(this, ar, dw, dpidUser, lpBuf, uBufSize)) {
 		if (ar.IsOverflow()) Error("Login-Database: Packet %08x overflowed", dw);
 	} else {
 		g_dpLoginSrvr.Send( lpBuf, uBufSize, dpidUser );
