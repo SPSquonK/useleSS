@@ -14,9 +14,6 @@ CDPLoginSrvr::CDPLoginSrvr()
 	ON_MSG( PACKETTYPE_PING, &CDPLoginSrvr::OnPing );
 	ON_MSG( PACKETTYPE_QUERYTICKCOUNT, &CDPLoginSrvr::OnQueryTickCount );
 	ON_MSG( PACKETTYPE_GETPLAYERLIST, &CDPLoginSrvr::OnAddConnection );
-
-	memset( m_aCache, 0, sizeof(CACHESTRUCT) * MAX_CACHE_SIZE );
-	m_nSizeOfCache	= 0;
 }
 
 CDPLoginSrvr::~CDPLoginSrvr()
@@ -82,36 +79,10 @@ void CDPLoginSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	}
 }
 
-void CDPLoginSrvr::AddCahce( const char* lpCacheAddr )
-{
-	strcpy( m_aCache[m_nSizeOfCache++].lpAddr, lpCacheAddr );
-}
-
-int CDPLoginSrvr::CacheIn( void )
-{
-	int nIndexOfCache	= 0;
-	int nCount	= m_aCache[0].uCount;
-	for( int i = 1; i < m_nSizeOfCache; i++ )
-	{
-		if( (int)( m_aCache[i].uCount ) < nCount ) {
-			nIndexOfCache	= i;
-			nCount	= m_aCache[i].uCount;
-		}
-	}
-	m_aCache[nIndexOfCache].uCount++;
-	return nIndexOfCache;
-}
-
-void CDPLoginSrvr::CacheOut( int nIndexOfCache )
-{
-	m_aCache[nIndexOfCache].uCount--;
-}
-
-void CDPLoginSrvr::SendCacheAddr( int nIndexOfCache, DPID dpid )
-{
-	BEFORESEND( ar, PACKETTYPE_CACHE_ADDR );
-	ar.WriteString( m_aCache[nIndexOfCache].lpAddr );
-	SEND( ar, this, dpid );
+void CDPLoginSrvr::SendCacheAddr(DPID dpid) {
+	BEFORESEND(ar, PACKETTYPE_CACHE_ADDR);
+	ar.WriteString(g_lpAddr.cache);
+	SEND(ar, this, dpid);
 }
 
 void CDPLoginSrvr::SendError( LONG lError, DPID dpid )
@@ -165,8 +136,7 @@ void CDPLoginSrvr::OnAddConnection( CAr & ar, DPID dpid )
 	pUser->SetExtra( lpszAccount, dwAuthKey );
 	if(g_LoginUserMng.AddUser( lpszAccount, pUser ) )
 	{
-		pUser->m_nIndexOfCache	= g_dpLoginSrvr.CacheIn();
-		g_dpLoginSrvr.SendCacheAddr( pUser->m_nIndexOfCache, dpid ); 
+		g_dpLoginSrvr.SendCacheAddr( dpid ); 
 		g_dpDBClient.SendGetPlayerList( dpid, lpszAccount, lpszPassword, dwAuthKey, (u_long)dwID );
 		SendNumPadId( dpid );
 	}

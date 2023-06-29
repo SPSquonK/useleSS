@@ -133,12 +133,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	if( InitializeNetLib() == FALSE )
 		return FALSE;
-	if( !g_dpDBClient.ConnectToServer( g_lpDBAddr, PN_DBSRVR_0 ) )
+	if( !g_dpDBClient.ConnectToServer( g_lpAddr.db, PN_DBSRVR_0 ) )
 	{
 		return FALSE;
 	}
 
-	if( !g_dpCoreClient.ConnectToServer( g_lpCoreAddr, PN_CORESRVR + 2 ) )
+	if( !g_dpCoreClient.ConnectToServer( g_lpAddr.core, PN_CORESRVR + 2 ) )
 	{
 		return FALSE;
 	}
@@ -233,19 +233,17 @@ BOOL Script( LPCSTR lpszFileName )
 			else if( s.Token == "DB" )
 			{
 				s.GetToken();
-				strcpy( g_lpDBAddr, s.Token );
+				strcpy( g_lpAddr.db, s.Token );
 			}
 			else if( s.Token == "Core" )
 			{
 				s.GetToken();
-				strcpy( g_lpCoreAddr, s.Token );
+				strcpy( g_lpAddr.core, s.Token );
 			}
-			else if( s.Token == "AddCache" )
+			else if( s.Token == "Cache" )
 			{
-				s.GetToken();	// (
-				s.GetToken();	// ip
-				g_dpLoginSrvr.AddCahce( s.Token );
-				s.GetToken();	// )
+				s.GetToken();
+				strcpy(g_lpAddr.cache, s.Token);
 			}
 			else if( s.Token == "MSG_VER" )
 			{

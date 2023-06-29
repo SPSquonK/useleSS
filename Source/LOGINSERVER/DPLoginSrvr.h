@@ -8,25 +8,11 @@
 #undef theParameters
 #define theParameters	CAr & ar, DPID
 
-typedef	struct	tagCACHESTRUCT
-{
-	char	lpAddr[16];
-	u_long	uCount;
-}
-CACHESTRUCT, *LPCACHESTRUCT;
-#define	MAX_CACHE_SIZE	4
-
 class CDPLoginSrvr : public CDPMng,
 	public DPMngFeatures::BroadcastPacketNone<CDPLoginSrvr>
 {
-private:
-	CACHESTRUCT		m_aCache[MAX_CACHE_SIZE];
-	int		m_nSizeOfCache;
 public:
-	void	AddCahce( const char* lpCacheAddr );
-	int		CacheIn( void );	// cache addr
-	void	CacheOut( int nIndexOfCache );
-	void	SendCacheAddr( int nIndexOfCache, DPID dpid );
+	void SendCacheAddr(DPID dpid);
 
 public:
 //	Constructions
