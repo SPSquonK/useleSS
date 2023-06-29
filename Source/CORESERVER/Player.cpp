@@ -178,12 +178,9 @@ CPlayer* CPlayerMng::GetPlayerBySocket( DPID dpidSocket )
 	return NULL;
 }
 
-CPlayer* CPlayerMng::GetPlayer( u_long uKey )
-{
-	ULONG2PTR::iterator i	= m_ulong2.find( uKey );
-	if( i != m_ulong2.end() )
-		return i->second;
-	return NULL;
+CPlayer * CPlayerMng::GetPlayer(u_long uKey) {
+	const auto i = m_ulong2.find(uKey);
+	return i != m_ulong2.end() ? i->second : nullptr;
 }
 
 void CPlayerMng::PackName( CAr & ar )

@@ -47,21 +47,20 @@ public:
 #endif	// __VM_0820
 };
 
-
-typedef std::map< u_long, CPlayer* >		ULONG2PTR;
-
-class CPlayerMng
+class CPlayerMng final
 {
 public:
 	CMclCritSec				m_AddRemoveLock;
 	std::map< DWORD, CPlayer*>	m_players;			// serial value key
-	ULONG2PTR				m_ulong2;			// player id key
+	std::map< u_long, CPlayer * > m_ulong2;			// player id key
 	std::set<u_long>				m_set;				// set of operators
 	u_long					m_uCount;			
 
 public:
 	CPlayerMng();
-	virtual	~CPlayerMng();
+	CPlayerMng(const CPlayerMng &) = delete;
+	CPlayerMng & operator=(const CPlayerMng &) = delete;
+	~CPlayerMng();
 
 	void		Free( void );
 	BOOL		RemoveCache( DPID dpidCache );
