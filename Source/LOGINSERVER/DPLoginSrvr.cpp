@@ -9,18 +9,11 @@ extern  char				g_szMSG_VER[];
 
 CDPLoginSrvr::CDPLoginSrvr()
 {
-	BEGIN_MSG;
-	ON_MSG( PACKETTYPE_PRE_JOIN, &CDPLoginSrvr::OnPreJoin );
-	ON_MSG( PACKETTYPE_PING, &CDPLoginSrvr::OnPing );
-	ON_MSG( PACKETTYPE_QUERYTICKCOUNT, &CDPLoginSrvr::OnQueryTickCount );
-	ON_MSG( PACKETTYPE_GETPLAYERLIST, &CDPLoginSrvr::OnAddConnection );
+	m_handlers.AddHandler( PACKETTYPE_PRE_JOIN, &CDPLoginSrvr::OnPreJoin );
+	m_handlers.AddHandler( PACKETTYPE_PING, &CDPLoginSrvr::OnPing );
+	m_handlers.AddHandler( PACKETTYPE_QUERYTICKCOUNT, &CDPLoginSrvr::OnQueryTickCount );
+	m_handlers.AddHandler( PACKETTYPE_GETPLAYERLIST, &CDPLoginSrvr::OnAddConnection );
 }
-
-CDPLoginSrvr::~CDPLoginSrvr()
-{
-
-}
-
 
 void CDPLoginSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
@@ -63,12 +56,10 @@ void CDPLoginSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 		return;
 	}
 
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
+	DWORD dw; ar >> dw;
 	
-	if( pfn )
+	if (m_handlers.Handle(*this, ar, dw, idFrom))
 	{
-		( this->*( pfn ) )( ar, idFrom );
 		if (ar.IsOverflow()) Error("Login-Neuz: Packet %08x overflowed", dw);
 	}
 	else

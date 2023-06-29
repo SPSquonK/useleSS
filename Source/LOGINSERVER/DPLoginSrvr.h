@@ -11,13 +11,15 @@
 class CDPLoginSrvr : public CDPMng,
 	public DPMngFeatures::BroadcastPacketNone<CDPLoginSrvr>
 {
+private:
+	DPMngFeatures::PacketHandler<CDPLoginSrvr, DPID> m_handlers;
+
 public:
 	void SendCacheAddr(DPID dpid);
 
 public:
 //	Constructions
 	CDPLoginSrvr();
-	virtual	~CDPLoginSrvr();
 	
 //	Operations
 	virtual void	SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
@@ -26,7 +28,7 @@ public:
 	void	SendError( LONG lError, DPID dpid );
 	void	SendHdr( DWORD dwHdr, DPID dpid );
 
-	USES_PFNENTRIES;
+private:
 //	Handlers
 	void	OnAddConnection( CAr & ar, DPID dpid );
 	void	OnRemoveConnection( DPID dpid );
