@@ -1,5 +1,4 @@
-#ifndef __DPCORESRVR_H__
-#define __DPCORESRVR_H__
+#pragma once
 
 #include <algorithm>
 #include <boost/container/flat_map.hpp>
@@ -13,11 +12,6 @@
 
 #include "InstanceDungeonBase.h"
 #include "rtmessenger.h"
-
-#undef	theClass
-#define theClass	CDPCoreSrvr
-#undef	theParameters
-#define theParameters	CAr & ar, DPID, DPID, DPID, u_long
 	
 class CDPCoreSrvr : public CDPMng,
 	public DPMngFeatures::BroadcastPacketDual<CDPCoreSrvr>
@@ -30,12 +24,15 @@ public:
 	boost::container::flat_map<u_long, DPID> m_multiIdToDpid; // [1]
 	CMclCritSec		m_AccessLock;
 	CObjMap		m_objmap;
+	DPMngFeatures::PacketHandler<CDPCoreSrvr, DPID, DPID, DPID, u_long> m_handlers;
 
 	// [1] By design, m_multiIdToDpid will never change size / invalidate its
 	// iterators / etc after reading the ini file. This make it a structure that
-	// can be read and modified without locking. We consider this design good
-	// enough as worlds should not connect / disconnect all the time, but we
-	// still want some guarantees about the core not crashing if a world crashes.
+	// can be read and values can be modified without locking. We consider this
+	// design good enough as worlds should not connect / disconnect all the time,
+	// but we still want some guarantees about the core not crashing if a world
+	// crashes.
+	// (when a world crashes, the DPID is not removed but set to DPID_UNKNOWN)
 public:
 	// Constructions
 	CDPCoreSrvr();
@@ -78,7 +75,7 @@ public:
 	void	SendSetSnoop( u_long idPlayer, u_long idSnoop, BOOL bRelease );
 
 	// Handlers
-	USES_PFNENTRIES;
+private:
 	void	OnAddConnection( CAr & ar, DPID dpid, DPID, DPID, u_long );
 	void	OnRemoveConnection( DPID dpid );
 	void	OnRecharge( CAr & ar, DPID dpid, DPID, DPID, u_long );
@@ -223,5 +220,3 @@ inline DPID CDPCoreSrvr::GetWorldSrvrDPIDWeak(u_long uIdofMulti) const {
 	const auto it = m_multiIdToDpid.find(uIdofMulti);
 	return it != m_multiIdToDpid.end() ? it->second : DPID_UNKNOWN;
 }
-
-#endif	// __DPCORESRVR_H__

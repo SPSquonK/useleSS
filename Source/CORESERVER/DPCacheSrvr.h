@@ -1,6 +1,3 @@
-#ifndef __DPCACHESRVR_H__
-#define __DPCACHESRVR_H__
-
 #pragma once
 
 #include "DPMng.h"
@@ -10,11 +7,6 @@
 
 #include "playerdata.h"
 #include "rtmessenger.h"
-
-#undef	theClass
-#define theClass	CDPCacheSrvr
-#undef	theParameters
-#define theParameters	CAr & ar, DPID, DPID, u_long
 
 class CGuild;
 
@@ -30,6 +22,7 @@ private:
 	};
 
 	std::optional<ClientInfo> m_clientInfo = std::nullopt;
+	DPMngFeatures::PacketHandler<CDPCacheSrvr, DPID, DPID, u_long> m_handlers;
 
 public:
 //	Constructions
@@ -76,7 +69,8 @@ public:
 	void	SendQuizSystemMessage( int nDefinedTextId, BOOL bAll, int nChannel, int nTime );
 #endif // __QUIZ
 
-	USES_PFNENTRIES;
+
+private:
 //	Handlers
 	void	OnAddConnection( DPID dpid );
 	void	OnRemoveConnection( DPID dpid );
@@ -170,5 +164,3 @@ void CDPCacheSrvr::SendPacket(CPlayer * const player, const Ts & ... ts) {
 }
 
 extern CDPCacheSrvr g_DPCacheSrvr;
-
-#endif	// __DPCACHESRVR_H__

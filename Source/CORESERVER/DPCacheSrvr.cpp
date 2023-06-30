@@ -17,41 +17,40 @@
 
 CDPCacheSrvr::CDPCacheSrvr() 
 {
-	BEGIN_MSG;
-	ON_MSG( PACKETTYPE_JOIN, &CDPCacheSrvr::OnAddPlayer );
-	ON_MSG( PACKETTYPE_DESTROY_PLAYER, &CDPCacheSrvr::OnQueryRemovePlayer );
-	ON_MSG(PACKETTYPE_ADDPARTYMEMBER_NeuzCore, &CDPCacheSrvr::OnAddPartyMember );
-	ON_MSG(PACKETTYPE_REMOVEPARTYMEMBER_NeuzCore, &CDPCacheSrvr::OnRemovePartyMember );
-	ON_MSG( PACKETTYPE_CHANGETROUP, &CDPCacheSrvr::OnPartyChangeTroup );
-	ON_MSG( PACKETTYPE_CHANPARTYNAME, &CDPCacheSrvr::OnPartyChangeName );
-	ON_MSG( PACKETTYPE_PARTYCHANGEITEMMODE, &CDPCacheSrvr::OnPartyChangeItemMode );
-	ON_MSG( PACKETTYPE_PARTYCHANGEEXPMODE, &CDPCacheSrvr::OnPartyChangeExpMode );
-	ON_MSG(PACKETTYPE_NC_ADDFRIEND, &CDPCacheSrvr::OnAddFriend );
-	ON_MSG( PACKETTYPE_GETFRIENDSTATE, &CDPCacheSrvr::OnGetFriendState );
-	ON_MSG( PACKETTYPE_SETFRIENDSTATE, &CDPCacheSrvr::OnSetFrinedState );
-	ON_MSG( PACKETTYPE_FRIENDINTERCEPTSTATE, &CDPCacheSrvr::OnFriendInterceptState );
-	ON_MSG( PACKETTYPE_REMOVEFRIEND, &CDPCacheSrvr::OnRemoveFriend );
-	ON_MSG( PACKETTYPE_GUILD_SETNAME, &CDPCacheSrvr::OnGuildSetName );
-	ON_MSG( PACKETTYPE_GUILD_PENYA, &CDPCacheSrvr::OnGuildPenya );
-	ON_MSG( PACKETTYPE_GUILD_AUTHORITY, &CDPCacheSrvr::OnGuildAuthority );
-	ON_MSG( PACKETTYPE_DESTROY_GUILD, &CDPCacheSrvr::OnDestroyGuild );
-	ON_MSG( PACKETTYPE_ADD_GUILD_MEMBER, &CDPCacheSrvr::OnAddGuildMember );
-	ON_MSG( PACKETTYPE_REMOVE_GUILD_MEMBER, &CDPCacheSrvr::OnRemoveGuildMember );
-	ON_MSG( PACKETTYPE_GUILD_MEMBER_LEVEL, &CDPCacheSrvr::OnGuildMemberLv );
-	ON_MSG( PACKETTYPE_GUILD_CLASS, &CDPCacheSrvr::OnGuildClass );
-	ON_MSG( PACKETTYPE_GUILD_NICKNAME, &CDPCacheSrvr::OnGuildNickName );
-	ON_MSG( PACKETTYPE_DECL_GUILD_WAR, &CDPCacheSrvr::OnDeclWar );
-	ON_MSG( PACKETTYPE_ACPT_GUILD_WAR, &CDPCacheSrvr::OnAcptWar );
-	ON_MSG( PACKETTYPE_SURRENDER, &CDPCacheSrvr::OnSurrender );
-	ON_MSG( PACKETTYPE_QUERY_TRUCE, &CDPCacheSrvr::OnQueryTruce );
-	ON_MSG( PACKETTYPE_ACPT_TRUCE, &CDPCacheSrvr::OnAcptTruce );
-	ON_MSG( PACKETTYPE_NC_ADDVOTE, &CDPCacheSrvr::OnAddVote );
-	ON_MSG( PACKETTYPE_NC_REMOVEVOTE, &CDPCacheSrvr::OnRemoveVote );
-	ON_MSG( PACKETTYPE_NC_CLOSEVOTE, &CDPCacheSrvr::OnCloseVote );
-	ON_MSG( PACKETTYPE_NC_CASTVOTE, &CDPCacheSrvr::OnCastVote );
-	ON_MSG( PACKETTYPE_PARTYCHANGELEADER, &CDPCacheSrvr::OnPartyChangeLeader );
-	ON_MSG( PACKETTYPE_SENDTAG, &CDPCacheSrvr::OnSendTag );
-	ON_MSG( PACKETTYPE_CHG_MASTER, &CDPCacheSrvr::OnChgMaster );
+	m_handlers.Add( PACKETTYPE_JOIN, &CDPCacheSrvr::OnAddPlayer );
+	m_handlers.Add( PACKETTYPE_DESTROY_PLAYER, &CDPCacheSrvr::OnQueryRemovePlayer );
+	m_handlers.Add(PACKETTYPE_ADDPARTYMEMBER_NeuzCore, &CDPCacheSrvr::OnAddPartyMember );
+	m_handlers.Add(PACKETTYPE_REMOVEPARTYMEMBER_NeuzCore, &CDPCacheSrvr::OnRemovePartyMember );
+	m_handlers.Add( PACKETTYPE_CHANGETROUP, &CDPCacheSrvr::OnPartyChangeTroup );
+	m_handlers.Add( PACKETTYPE_CHANPARTYNAME, &CDPCacheSrvr::OnPartyChangeName );
+	m_handlers.Add( PACKETTYPE_PARTYCHANGEITEMMODE, &CDPCacheSrvr::OnPartyChangeItemMode );
+	m_handlers.Add( PACKETTYPE_PARTYCHANGEEXPMODE, &CDPCacheSrvr::OnPartyChangeExpMode );
+	m_handlers.Add(PACKETTYPE_NC_ADDFRIEND, &CDPCacheSrvr::OnAddFriend );
+	m_handlers.Add( PACKETTYPE_GETFRIENDSTATE, &CDPCacheSrvr::OnGetFriendState );
+	m_handlers.Add( PACKETTYPE_SETFRIENDSTATE, &CDPCacheSrvr::OnSetFrinedState );
+	m_handlers.Add( PACKETTYPE_FRIENDINTERCEPTSTATE, &CDPCacheSrvr::OnFriendInterceptState );
+	m_handlers.Add( PACKETTYPE_REMOVEFRIEND, &CDPCacheSrvr::OnRemoveFriend );
+	m_handlers.Add( PACKETTYPE_GUILD_SETNAME, &CDPCacheSrvr::OnGuildSetName );
+	m_handlers.Add( PACKETTYPE_GUILD_PENYA, &CDPCacheSrvr::OnGuildPenya );
+	m_handlers.Add( PACKETTYPE_GUILD_AUTHORITY, &CDPCacheSrvr::OnGuildAuthority );
+	m_handlers.Add( PACKETTYPE_DESTROY_GUILD, &CDPCacheSrvr::OnDestroyGuild );
+	m_handlers.Add( PACKETTYPE_ADD_GUILD_MEMBER, &CDPCacheSrvr::OnAddGuildMember );
+	m_handlers.Add( PACKETTYPE_REMOVE_GUILD_MEMBER, &CDPCacheSrvr::OnRemoveGuildMember );
+	m_handlers.Add( PACKETTYPE_GUILD_MEMBER_LEVEL, &CDPCacheSrvr::OnGuildMemberLv );
+	m_handlers.Add( PACKETTYPE_GUILD_CLASS, &CDPCacheSrvr::OnGuildClass );
+	m_handlers.Add( PACKETTYPE_GUILD_NICKNAME, &CDPCacheSrvr::OnGuildNickName );
+	m_handlers.Add( PACKETTYPE_DECL_GUILD_WAR, &CDPCacheSrvr::OnDeclWar );
+	m_handlers.Add( PACKETTYPE_ACPT_GUILD_WAR, &CDPCacheSrvr::OnAcptWar );
+	m_handlers.Add( PACKETTYPE_SURRENDER, &CDPCacheSrvr::OnSurrender );
+	m_handlers.Add( PACKETTYPE_QUERY_TRUCE, &CDPCacheSrvr::OnQueryTruce );
+	m_handlers.Add( PACKETTYPE_ACPT_TRUCE, &CDPCacheSrvr::OnAcptTruce );
+	m_handlers.Add( PACKETTYPE_NC_ADDVOTE, &CDPCacheSrvr::OnAddVote );
+	m_handlers.Add( PACKETTYPE_NC_REMOVEVOTE, &CDPCacheSrvr::OnRemoveVote );
+	m_handlers.Add( PACKETTYPE_NC_CLOSEVOTE, &CDPCacheSrvr::OnCloseVote );
+	m_handlers.Add( PACKETTYPE_NC_CASTVOTE, &CDPCacheSrvr::OnCastVote );
+	m_handlers.Add( PACKETTYPE_PARTYCHANGELEADER, &CDPCacheSrvr::OnPartyChangeLeader );
+	m_handlers.Add( PACKETTYPE_SENDTAG, &CDPCacheSrvr::OnSendTag );
+	m_handlers.Add( PACKETTYPE_CHG_MASTER, &CDPCacheSrvr::OnChgMaster );
 }
 
 void CDPCacheSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
@@ -76,11 +75,9 @@ void CDPCacheSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	CAr ar( (LPBYTE)lpMsg + sizeof(DPID), dwMsgSize - sizeof(DPID) );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
+	DWORD dw; ar >> dw;
 	
-	if( pfn ) {
-		( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg, dwMsgSize - sizeof(DPID) - sizeof(DWORD) );
+	if (m_handlers.Handle(this, ar, dw, idFrom, *(UNALIGNED LPDPID)lpMsg, dwMsgSize - sizeof(DPID) - sizeof(DWORD))) {
 		if (ar.IsOverflow()) Error("Core-Cache: Packet %08x overflowed", dw);
 	} else {
 		TRACE( "Handler not found(%08x)\n", lpMsg->dwType );

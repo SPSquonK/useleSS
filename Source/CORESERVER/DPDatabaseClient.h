@@ -5,15 +5,11 @@
 #include "misc.h"
 #include "guild.h"
 
-#undef	theClass
-#define theClass	CDPDatabaseClient
-#undef theParameters
-#define theParameters	CAr & ar
-
-
 class CDPDatabaseClient : public CDPMng,
 	public DPMngFeatures::SendPacketNone<CDPDatabaseClient>
 {
+private:
+	DPMngFeatures::PacketHandler<CDPDatabaseClient> m_handlers;
 public:
 //	Constructions
 	CDPDatabaseClient();
@@ -63,7 +59,7 @@ public:
 	void	SendServerEnable( u_long uKey, long lEnable );
 #endif	// __SERVERLIST0911
 
-	USES_PFNENTRIES;
+private:
 	void	OnPartyName( CAr & ar );
 	void	OnGlobalData( CAr & ar );
 	void	OnInsertTagResult( CAr & ar );

@@ -27,64 +27,63 @@ CDPCoreSrvr		g_dpCoreSrvr;
 		
 CDPCoreSrvr::CDPCoreSrvr()
 {
-	BEGIN_MSG;
-	ON_MSG( PACKETTYPE_MYREG, &CDPCoreSrvr::OnAddConnection )
-	ON_MSG( PACKETTYPE_RECHARGE_IDSTACK, &CDPCoreSrvr::OnRecharge )
-	ON_MSG( PACKETTYPE_JOIN, &CDPCoreSrvr::OnJoin )
-	ON_MSG( PACKETTYPE_WHISPER, &CDPCoreSrvr::OnWhisper );
-	ON_MSG( PACKETTYPE_SAY, &CDPCoreSrvr::OnSay );
-	ON_MSG( PACKETTYPE_MODIFYMODE, &CDPCoreSrvr::OnModifyMode );
-	ON_MSG( PACKETTYPE_SHOUT, &CDPCoreSrvr::OnShout );
-	ON_MSG( PACKETTYPE_GMSAY, &CDPCoreSrvr::OnGMSay );
-	ON_MSG( PACKETTYPE_PLAYMUSIC, &CDPCoreSrvr::OnPlayMusic );
-	ON_MSG( PACKETTYPE_PLAYSOUND, &CDPCoreSrvr::OnPlaySound );
-	ON_MSG( PACKETTYPE_KILLPLAYER, &CDPCoreSrvr::OnKillPlayer );
-	ON_MSG( PACKETTYPE_GETPLAYERADDR, &CDPCoreSrvr::OnGetPlayerAddr );
-	ON_MSG( PACKETTYPE_GETPLAYERCOUNT, &CDPCoreSrvr::OnGetPlayerCount );
-	ON_MSG( PACKETTYPE_GETCOREPLAYER, &CDPCoreSrvr::OnGetCorePlayer );
-	ON_MSG( PACKETTYPE_SYSTEM, &CDPCoreSrvr::OnSystem );	
-	ON_MSG( PACKETTYPE_CAPTION, &CDPCoreSrvr::OnCaption );	
-	ON_MSG( PACKETTYPE_ADDPARTYEXP, &CDPCoreSrvr::OnAddPartyExp );
-	ON_MSG( PACKETTYPE_REMOVEPARTYPOINT, &CDPCoreSrvr::OnRemovePartyPoint );
-	ON_MSG( PACKETTYPE_FALLRAIN, &CDPCoreSrvr::OnFallRain );
-	ON_MSG( PACKETTYPE_STOPRAIN, &CDPCoreSrvr::OnStopRain );
-	ON_MSG( PACKETTYPE_PARTYCHAT, &CDPCoreSrvr::OnPartyChat );
-	ON_MSG( PACKETTYPE_PARTYSKILLUSE, &CDPCoreSrvr::OnPartySkillUse );
-	ON_MSG( PACKETTYPE_PARTYLEVEL, &CDPCoreSrvr::OnPartyLevel );
+	m_handlers.Add( PACKETTYPE_MYREG, &CDPCoreSrvr::OnAddConnection )
+	m_handlers.Add( PACKETTYPE_RECHARGE_IDSTACK, &CDPCoreSrvr::OnRecharge )
+	m_handlers.Add( PACKETTYPE_JOIN, &CDPCoreSrvr::OnJoin )
+	m_handlers.Add( PACKETTYPE_WHISPER, &CDPCoreSrvr::OnWhisper );
+	m_handlers.Add( PACKETTYPE_SAY, &CDPCoreSrvr::OnSay );
+	m_handlers.Add( PACKETTYPE_MODIFYMODE, &CDPCoreSrvr::OnModifyMode );
+	m_handlers.Add( PACKETTYPE_SHOUT, &CDPCoreSrvr::OnShout );
+	m_handlers.Add( PACKETTYPE_GMSAY, &CDPCoreSrvr::OnGMSay );
+	m_handlers.Add( PACKETTYPE_PLAYMUSIC, &CDPCoreSrvr::OnPlayMusic );
+	m_handlers.Add( PACKETTYPE_PLAYSOUND, &CDPCoreSrvr::OnPlaySound );
+	m_handlers.Add( PACKETTYPE_KILLPLAYER, &CDPCoreSrvr::OnKillPlayer );
+	m_handlers.Add( PACKETTYPE_GETPLAYERADDR, &CDPCoreSrvr::OnGetPlayerAddr );
+	m_handlers.Add( PACKETTYPE_GETPLAYERCOUNT, &CDPCoreSrvr::OnGetPlayerCount );
+	m_handlers.Add( PACKETTYPE_GETCOREPLAYER, &CDPCoreSrvr::OnGetCorePlayer );
+	m_handlers.Add( PACKETTYPE_SYSTEM, &CDPCoreSrvr::OnSystem );	
+	m_handlers.Add( PACKETTYPE_CAPTION, &CDPCoreSrvr::OnCaption );	
+	m_handlers.Add( PACKETTYPE_ADDPARTYEXP, &CDPCoreSrvr::OnAddPartyExp );
+	m_handlers.Add( PACKETTYPE_REMOVEPARTYPOINT, &CDPCoreSrvr::OnRemovePartyPoint );
+	m_handlers.Add( PACKETTYPE_FALLRAIN, &CDPCoreSrvr::OnFallRain );
+	m_handlers.Add( PACKETTYPE_STOPRAIN, &CDPCoreSrvr::OnStopRain );
+	m_handlers.Add( PACKETTYPE_PARTYCHAT, &CDPCoreSrvr::OnPartyChat );
+	m_handlers.Add( PACKETTYPE_PARTYSKILLUSE, &CDPCoreSrvr::OnPartySkillUse );
+	m_handlers.Add( PACKETTYPE_PARTYLEVEL, &CDPCoreSrvr::OnPartyLevel );
 
-	ON_MSG( PACKETTYPE_LOADCONSTANT, &CDPCoreSrvr::OnLoadConstant );
-	ON_MSG( PACKETTYPE_GAMERATE, &CDPCoreSrvr::OnGameRate );
-	ON_MSG( PACKETTYPE_SETMONSTERRESPAWN, &CDPCoreSrvr::OnSetMonsterRespawn );
+	m_handlers.Add( PACKETTYPE_LOADCONSTANT, &CDPCoreSrvr::OnLoadConstant );
+	m_handlers.Add( PACKETTYPE_GAMERATE, &CDPCoreSrvr::OnGameRate );
+	m_handlers.Add( PACKETTYPE_SETMONSTERRESPAWN, &CDPCoreSrvr::OnSetMonsterRespawn );
 
-	ON_MSG( PACKETTYPE_CREATE_GUILD, &CDPCoreSrvr::OnCreateGuild );
-	ON_MSG( PACKETTYPE_GUILD_CHAT, &CDPCoreSrvr::OnGuildChat );
-	ON_MSG( PACKETTYPE_GUILD_MSG_CONTROL, &CDPCoreSrvr::OnGuildMsgControl );
+	m_handlers.Add( PACKETTYPE_CREATE_GUILD, &CDPCoreSrvr::OnCreateGuild );
+	m_handlers.Add( PACKETTYPE_GUILD_CHAT, &CDPCoreSrvr::OnGuildChat );
+	m_handlers.Add( PACKETTYPE_GUILD_MSG_CONTROL, &CDPCoreSrvr::OnGuildMsgControl );
 
-	ON_MSG( PACKETTYPE_ADDFRIENDNAMEREQEST, &CDPCoreSrvr::OnAddFriendNameReqest );
-	ON_MSG( PACKETTYPE_BLOCK, &CDPCoreSrvr::OnBlock );
-	ON_MSG( PACKETTYPE_WC_GUILDLOGO, &CDPCoreSrvr::OnGuildLogo );				// 로고 변경 
-	ON_MSG( PACKETTYPE_WC_GUILDCONTRIBUTION, &CDPCoreSrvr::OnGuildContribution );	// 공헌도 
-	ON_MSG( PACKETTYPE_WC_GUILDNOTICE, &CDPCoreSrvr::OnGuildNotice );			// 공지사항  
-	ON_MSG( PACKETTYPE_GUILD_DB_REALPENYA, &CDPCoreSrvr::OnGuildRealPenya );	// 월급을 주었다는것을 코어와 유저에게 알려줌
-	ON_MSG( PACKETTYPE_WAR_DEAD, &CDPCoreSrvr::OnWarDead );
-	ON_MSG( PACKETTYPE_WAR_MASTER_ABSENT, &CDPCoreSrvr::OnWarMasterAbsent );
-	ON_MSG( PACKETTYPE_WAR_TIMEOUT, &CDPCoreSrvr::OnWarTimeout );
-	ON_MSG( PACKETTYPE_WC_WANTED_GOLD, &CDPCoreSrvr::OnWCWantedGold );
-	ON_MSG( PACKETTYPE_WC_WANTED_REWARD, &CDPCoreSrvr::OnWCWantedReward );
-	ON_MSG( PACKETTYPE_SETPARTYDUEL, &CDPCoreSrvr::OnSetPartyDuel );
-	ON_MSG( PACKETTYPE_QUERYSETGUILDNAME, &CDPCoreSrvr::OnQuerySetGuildName );
-	ON_MSG( PACKETTYPE_SETSNOOP, &CDPCoreSrvr::OnSetSnoop );
-	ON_MSG( PACKETTYPE_SETSNOOPGUILD, &CDPCoreSrvr::OnSetSnoopGuild );
-	ON_MSG( PACKETTYPE_CHAT, &CDPCoreSrvr::OnChat );
-	ON_MSG( PACKETTYPE_PING, &CDPCoreSrvr::OnPing );
-	ON_MSG( PACKETTYPE_GUILDCOMBAT_STATE, &CDPCoreSrvr::OnGCState );
-	ON_MSG( PACKETTYPE_REMOVEPARTY_GUILDCOMBAT, &CDPCoreSrvr::OnGCRemoveParty );
-	ON_MSG( PACKETTYPE_ADDPARTY_GUILDCOMBAT, &CDPCoreSrvr::OnGCAddParty );
-	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_CREATE, &CDPCoreSrvr::OnInstanceDungeonCreate );
-	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_DESTROY, &CDPCoreSrvr::OnInstanceDungeonDestroy );
-	ON_MSG( PACKETTYPE_INSTANCEDUNGEON_SETCOOLTIME, &CDPCoreSrvr::OnInstanceDungeonSetCoolTimeInfo );
+	m_handlers.Add( PACKETTYPE_ADDFRIENDNAMEREQEST, &CDPCoreSrvr::OnAddFriendNameReqest );
+	m_handlers.Add( PACKETTYPE_BLOCK, &CDPCoreSrvr::OnBlock );
+	m_handlers.Add( PACKETTYPE_WC_GUILDLOGO, &CDPCoreSrvr::OnGuildLogo );				// 로고 변경 
+	m_handlers.Add( PACKETTYPE_WC_GUILDCONTRIBUTION, &CDPCoreSrvr::OnGuildContribution );	// 공헌도 
+	m_handlers.Add( PACKETTYPE_WC_GUILDNOTICE, &CDPCoreSrvr::OnGuildNotice );			// 공지사항  
+	m_handlers.Add( PACKETTYPE_GUILD_DB_REALPENYA, &CDPCoreSrvr::OnGuildRealPenya );	// 월급을 주었다는것을 코어와 유저에게 알려줌
+	m_handlers.Add( PACKETTYPE_WAR_DEAD, &CDPCoreSrvr::OnWarDead );
+	m_handlers.Add( PACKETTYPE_WAR_MASTER_ABSENT, &CDPCoreSrvr::OnWarMasterAbsent );
+	m_handlers.Add( PACKETTYPE_WAR_TIMEOUT, &CDPCoreSrvr::OnWarTimeout );
+	m_handlers.Add( PACKETTYPE_WC_WANTED_GOLD, &CDPCoreSrvr::OnWCWantedGold );
+	m_handlers.Add( PACKETTYPE_WC_WANTED_REWARD, &CDPCoreSrvr::OnWCWantedReward );
+	m_handlers.Add( PACKETTYPE_SETPARTYDUEL, &CDPCoreSrvr::OnSetPartyDuel );
+	m_handlers.Add( PACKETTYPE_QUERYSETGUILDNAME, &CDPCoreSrvr::OnQuerySetGuildName );
+	m_handlers.Add( PACKETTYPE_SETSNOOP, &CDPCoreSrvr::OnSetSnoop );
+	m_handlers.Add( PACKETTYPE_SETSNOOPGUILD, &CDPCoreSrvr::OnSetSnoopGuild );
+	m_handlers.Add( PACKETTYPE_CHAT, &CDPCoreSrvr::OnChat );
+	m_handlers.Add( PACKETTYPE_PING, &CDPCoreSrvr::OnPing );
+	m_handlers.Add( PACKETTYPE_GUILDCOMBAT_STATE, &CDPCoreSrvr::OnGCState );
+	m_handlers.Add( PACKETTYPE_REMOVEPARTY_GUILDCOMBAT, &CDPCoreSrvr::OnGCRemoveParty );
+	m_handlers.Add( PACKETTYPE_ADDPARTY_GUILDCOMBAT, &CDPCoreSrvr::OnGCAddParty );
+	m_handlers.Add( PACKETTYPE_INSTANCEDUNGEON_CREATE, &CDPCoreSrvr::OnInstanceDungeonCreate );
+	m_handlers.Add( PACKETTYPE_INSTANCEDUNGEON_DESTROY, &CDPCoreSrvr::OnInstanceDungeonDestroy );
+	m_handlers.Add( PACKETTYPE_INSTANCEDUNGEON_SETCOOLTIME, &CDPCoreSrvr::OnInstanceDungeonSetCoolTimeInfo );
 #ifdef __QUIZ
-	ON_MSG( PACKETTYPE_QUIZ_NOTICE, &CDPCoreSrvr::OnQuizSystemMessage );
+	m_handlers.Add( PACKETTYPE_QUIZ_NOTICE, &CDPCoreSrvr::OnQuizSystemMessage );
 #endif // __QUIZ
 	m_nGCState = 1;
 }
@@ -113,19 +112,13 @@ void CDPCoreSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPI
 
 void CDPCoreSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
-	static	DPID	dpid;
-	static	DWORD	dwWorldID;
-	static	D3DXVECTOR3		vPos;
-	static	BYTE	lptmp[8];
-	static	size_t	nSize	= sizeof(DPID);
+	static constexpr size_t nSize = sizeof(DPID);
 	
 	CAr ar( (LPBYTE)lpMsg + nSize + nSize, dwMsgSize - ( nSize + nSize ) );
-	GETTYPE( ar );	// dw
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
+	DWORD dw; ar >> dw;
 	
-	if( pfn ) 
+	if( m_handlers.Handle(this, ar, dw, idFrom, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + nSize), (dwMsgSize - nSize - nSize) ) )
 	{
-		( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)( (LPBYTE)lpMsg + nSize ), ( dwMsgSize - nSize - nSize ) );
 		if (ar.IsOverflow()) Error("Core-World: Packet %08x overflowed", dw);
 	}
 	else {
