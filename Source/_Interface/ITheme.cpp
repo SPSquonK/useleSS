@@ -521,8 +521,8 @@ void CTheme::RenderDesktop( C2DRender* p2DRender )
 	}
 	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
 	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
-	p2DRender->TextOut( 1 + xOffset, 1, "Version", 0xffffffff  );
-	p2DRender->TextOut( 50 + xOffset, 1, g_szVersion, 0xffffffff  );
+	p2DRender->TextOut( 1 + xOffset, 1, "Version", 0xfffffffe  );
+	p2DRender->TextOut( 50 + xOffset, 1, g_szVersion, 0xfffffffe  );
 #endif //__FLYFF_INITPAGE_EXT
 }
 
