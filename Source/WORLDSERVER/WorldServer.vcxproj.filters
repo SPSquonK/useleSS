@@ -617,9 +617,6 @@
     <ClInclude Include="..\_common\dialogmsg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dpaccountclient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DPCoreClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>

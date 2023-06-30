@@ -459,7 +459,6 @@
     <ClInclude Include="..\_Common\couple.h" />
     <ClInclude Include="couplehelper.h" />
     <ClInclude Include="..\_common\dialogmsg.h" />
-    <ClInclude Include="dpaccountclient.h" />
     <ClInclude Include="DPCoreClient.h" />
     <ClInclude Include="DPDatabaseClient.h" />
     <ClInclude Include="DPSrvr.h" />
