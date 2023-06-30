@@ -308,7 +308,6 @@ namespace WndMgr {
 CWndMgr::CWndMgr()
 {
 	m_bTitle = FALSE;
-	m_pWndActiveDesktop = NULL;
 	m_pWndTaskBar = NULL;
 	//m_pWndNotice = NULL;
 	////m_pWndTip = NULL;
@@ -451,7 +450,6 @@ void CWndMgr::Free()
 	SafeDeleteAll();
 	
 	SAFE_DELETE( m_pWndTaskBar );
-	SAFE_DELETE( m_pWndActiveDesktop );
 	
 	m_pWndWorld = NULL;
 
@@ -1678,38 +1676,16 @@ BOOL CWndMgr::OnEraseBkgnd( C2DRender* p2DRender )
 			pWndLogin->EnableWindow( TRUE );
 		}
 
-		if( m_pWndActiveDesktop )
-		{
-			m_pWndActiveDesktop->SetVisible( TRUE );
-		}
-		else
-		{
 			m_pTheme->RenderDesktop( &g_Neuz.m_2DRender );
-		}
+
 	}
 #else // __GAME_GRADE_SYSTEM
 	// 월드가 없거나 풀화면이 아닐 때
 	if( pWndWorld == NULL && m_bTitle ) //|| pWndWorld->m_nWinSize != WSIZE_MAX )
 	{
-		if( m_pWndActiveDesktop )
-			m_pWndActiveDesktop->SetVisible( TRUE );
-		//if( m_bTitle == FALSE )
-		else
 			m_pTheme->RenderDesktop( &g_Neuz.m_2DRender );
 	}
 #endif // __GAME_GRADE_SYSTEM
-	else
-	if( pWndWorld )
-	{
-		//DWORD dwColor = CWorld::GetDiffuseColor();
-		//m_pApp->m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, dwColor /*D3DCOLOR_ARGB( 255, 255, 255, 255 )*/, 1.0f, 0 ) ;
-
-		//if( pWndWorld->m_nWinSize != WSIZE_MAX )
-		m_pApp->m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 0, 0, 0 ), 1.0f, 0 ) ;
-		// 월드가 화면을 완전히 가리고 있을 때 
-		if( m_pWndActiveDesktop )
-			m_pWndActiveDesktop->SetVisible( FALSE );
-	}
 	else
 		m_pApp->m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 0, 0, 0 ), 1.0f, 0 ) ;
 	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );

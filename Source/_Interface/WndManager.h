@@ -579,7 +579,6 @@ public:
 public:
 	DWORD		   m_dwSkillTime[MAX_SKILL];
 	
-	CWndBase*      m_pWndActiveDesktop; // Dead field
 	CWndTradeConfirm * m_pWndTradeConfirm; // Memory leak? (Original pos: just after CWndConfirmTrade)
 
 	CWndBank*	   m_pWndBank; // also destroys tradegold
