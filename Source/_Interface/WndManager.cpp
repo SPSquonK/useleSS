@@ -977,9 +977,6 @@ HRESULT CWndMgr::InvalidateDeviceObjects()
 	
 #ifdef __YDEBUG
 	m_texture.InvalidateDeviceObjects();
-	m_texCommand.InvalidateDeviceObjects();
-	m_texIcon.InvalidateDeviceObjects();
-	m_texWnd.InvalidateDeviceObjects();
 #endif //__YDEBUG
 	return S_OK;
 }
@@ -990,9 +987,6 @@ HRESULT CWndMgr::DeleteDeviceObjects()
 	
 #ifdef __YDEBUG
 	m_texture.DeleteDeviceObjects();
-	m_texCommand.DeleteDeviceObjects();
-	m_texIcon.DeleteDeviceObjects();
-	m_texWnd.DeleteDeviceObjects();
 #endif //__YDEBUG
 	return S_OK;
 }
@@ -1007,9 +1001,6 @@ HRESULT CWndMgr::RestoreDeviceObjects()
 	
 #ifdef __YDEBUG
 	m_texture.RestoreDeviceObjects(m_pApp->m_pd3dDevice);
-	m_texCommand.RestoreDeviceObjects(m_pApp->m_pd3dDevice);
-	m_texIcon.RestoreDeviceObjects(m_pApp->m_pd3dDevice);
-	m_texWnd.RestoreDeviceObjects(m_pApp->m_pd3dDevice);
 #endif //__YDEBUG
 	
 	return 0;

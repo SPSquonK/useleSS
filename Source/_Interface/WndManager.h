@@ -621,9 +621,6 @@ public:
 
 	// 인터페이스 텍스춰
 	CTexturePack  m_texture;
-	CTexturePack  m_texCommand;
-	CTexturePack  m_texIcon;
-	CTexturePack  m_texWnd;
 
 	// 메지시 윈도
 
