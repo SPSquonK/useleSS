@@ -1,28 +1,16 @@
 # useleSS
 
-FlyFF v15 code with some refactor.
-
-The base code is from Blouflash V15
-https://www.elitepvpers.com/forum/flyff-pserver-guides-releases/4244222-visual-studio-2017-source-files.html 
-
-Some v22 resource compatibility have been added. See [Documentation/v15plus.md](Documentation/v15plus.md).
-
-This source is developed on Visual Studio 2022 with the C++latest option.
+FlyFF v15 source code with some refactor.
 
 - This repository **does not** provide a production ready of the source code. Many exploits are not (yet) fixed.
-- **/!\ Server developer /!\: Read the How to use section of this document**
+- **/!\\ Server developer /!\\: Read the How to use section of this document**
 
-
-- **If you encounter a bug, please use the Github issue system, or in the worst case send a mail**
-  - **Do not ask on some random forums/places on the internet how to solve a bug related to this source:**
-  - **Instead, please, create an issue here so I can actually see it and fix it**
-  - Random people are probably either not competent or not interested in bug fixing the source code of someone else
-  - And I almost never visit forums (once a year for 2 minutes)/FlyFF dev communities (I'm not on any Discord)
-
-- **Do not reupload this source on these forums** without any modification:
-  - It creates more bug reports on places I do not visit which is bad in short, medium and long term
-  - It is pointless as it evolves quickly and is public
-  - If you are scared about the source disappearing, just click the fork button on Github
+- **If you encounter a bug, please use the Github issue system, send a Discord PM or a mail**
+  - Do not ask on some forums/places on the internet how to solve a bug related to this source. Instead, please, create an issue here so I can actually see it and fix it
+  - **Do not reupload this source on these forums** without any modification:
+    - It creates more bug reports on places I do not visit which is bad in short, medium and long term
+    - It is pointless as it evolves quickly and is public
+    - If you are scared about the source disappearing, just click the fork button on Github
 
 ## Getting started
 
@@ -35,6 +23,15 @@ This source is developed on Visual Studio 2022 with the C++latest option.
     - ODBC source `useless_character` = table `USELESS_CHARACTER_01_DBF`
     - ODBC source `useless_log` = table `USELESS_LOGGING_01_DBF`
     - ODBC sources must be set to english language
+
+## Details
+
+The base code is from Blouflash V15
+https://www.elitepvpers.com/forum/flyff-pserver-guides-releases/4244222-visual-studio-2017-source-files.html 
+
+Some v22 resource compatibility have been added. See [Documentation/v15plus.md](Documentation/v15plus.md).
+
+This source is developed on Visual Studio 2022 with the C++latest option.
 
 ## Dependencies
 
@@ -51,18 +48,11 @@ We give here the list of dependencies with an example of a file that should exis
 
 ## About the code here
 
-You can use the modifications done here on your own project. But if you copy
-the code, you must cite me (SquonK) as the original author of the code somewhere
-in your project code.
-
 **This repository does not provide a production ready version of a FlyFF server.**
 
-In particular, specific code that is explicitly commented with a reference to
-the
-[SquonK Hidden Boss License](http://squonk.fr/SquonK-Hidden-Boss-License.txt)
-should keep their comments.
-
-
+You can use the modifications done here on your own projects. But if you copy
+the code, you must cite me (SquonK) as the original author of the code somewhere
+in your project code (aka my modifications are under the Boost Licence)
 
 The [Source/Libraries/boost/pfr/detail/core17_generated.hpp file](Source/Libraries/boost/pfr/detail/core17_generated.hpp) is licensed under the Boost License by its author. It is included in the project to break through the 100 limit.
 
