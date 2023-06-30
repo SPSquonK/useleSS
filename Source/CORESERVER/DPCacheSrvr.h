@@ -22,7 +22,7 @@ private:
 	};
 
 	std::optional<ClientInfo> m_clientInfo = std::nullopt;
-	DPMngFeatures::PacketHandler<CDPCacheSrvr, DPID, DPID, u_long> m_handlers;
+	DPMngFeatures::PacketHandler<CDPCacheSrvr, DPID, DPID> m_handlers;
 
 public:
 //	Constructions
@@ -75,34 +75,34 @@ private:
 	void	OnAddConnection( DPID dpid );
 	void	OnRemoveConnection( DPID dpid );
 
-	void	OnAddPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnQueryRemovePlayer( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
+	void	OnAddPlayer( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnQueryRemovePlayer( CAr & ar, DPID dpidCache, DPID dpidUser );
 
-	void	OnAddPartyMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnRemovePartyMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnPartyChangeTroup( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnPartyChangeName( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnPartyChangeItemMode( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnPartyChangeExpMode( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
+	void	OnAddPartyMember( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnRemovePartyMember( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnPartyChangeTroup( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnPartyChangeName( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnPartyChangeItemMode( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnPartyChangeExpMode( CAr & ar, DPID dpidCache, DPID dpidUser );
 
-	void	OnAddFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnGetFriendState( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnSetFrinedState( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnFriendInterceptState( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnRemoveFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
+	void	OnAddFriend( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnGetFriendState( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnSetFrinedState( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnFriendInterceptState( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnRemoveFriend( CAr & ar, DPID dpidCache, DPID dpidUser );
 public:
 	void	SendUpdateGuildRank();
-	void	OnDestroyGuild( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnAddGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnRemoveGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnGuildMemberLv( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnGuildAuthority( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnGuildPenya( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnGuildSetName( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
-	void	OnGuildRank( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
-	void	OnGuildClass( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
-	void	OnGuildNickName( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
-	void	OnChgMaster( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
+	void	OnDestroyGuild( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnAddGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnRemoveGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnGuildMemberLv( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnGuildAuthority( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnGuildPenya( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnGuildSetName( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnGuildRank( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnGuildClass( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnGuildNickName( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnChgMaster( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	SendAddGuildMember( const GUILD_MEMBER_INFO & info, const char* lpszPlayer, u_long idGuild, CPlayer* pPlayer );
 public:
 	void	SendRemoveGuildMember( u_long idPlayer, u_long idGuild, CPlayer* pPlayer );
@@ -126,23 +126,23 @@ private:
 	void	SendAcptWar(WarId idWar, u_long idDecl, u_long idAcpt );
 	void	SendSurrender(WarId idWar, CGuild* pDecl, CGuild* pAcpt, u_long idPlayer, const char* sPlayer, BOOL bDecl );	// 1
 	void	SendSurrender(WarId idWar, u_long idPlayer, const char* sPlayer, BOOL bDecl, CPlayer* pPlayer );	// 2
-	void	OnDeclWar( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnAcptWar( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnSurrender( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnQueryTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
-	void	OnAcptTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long );
+	void	OnDeclWar( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnAcptWar( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnSurrender( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnQueryTruce( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnAcptTruce( CAr & ar, DPID dpidCache, DPID dpidUser );
 public:
 	void	SendWarEnd(WarId idWar, int nWptDecl, int nWptAcpt, int nType );
 	void	SendWarDead(WarId idWar, const char* lpszPlayer, BOOL bDecl, CPlayer* pPlayer );
 	void	SendQueryTruce( CPlayer* pPlayer );
 
 private:
-	void	OnAddVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
-	void	OnRemoveVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
-	void	OnCloseVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
-	void	OnCastVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
-	void	OnPartyChangeLeader( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
-	void	OnSendTag( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize );
+	void	OnAddVote( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnRemoveVote( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnCloseVote( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnCastVote( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnPartyChangeLeader( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnSendTag( CAr & ar, DPID dpidCache, DPID dpidUser );
 
 public:
 	template<DWORD PacketId, typename ... Ts>

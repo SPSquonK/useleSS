@@ -27,9 +27,9 @@ CDPCoreSrvr		g_dpCoreSrvr;
 		
 CDPCoreSrvr::CDPCoreSrvr()
 {
-	m_handlers.Add( PACKETTYPE_MYREG, &CDPCoreSrvr::OnAddConnection )
-	m_handlers.Add( PACKETTYPE_RECHARGE_IDSTACK, &CDPCoreSrvr::OnRecharge )
-	m_handlers.Add( PACKETTYPE_JOIN, &CDPCoreSrvr::OnJoin )
+	m_handlers.Add( PACKETTYPE_MYREG, &CDPCoreSrvr::OnAddConnection );
+	m_handlers.Add( PACKETTYPE_RECHARGE_IDSTACK, &CDPCoreSrvr::OnRecharge );
+	m_handlers.Add( PACKETTYPE_JOIN, &CDPCoreSrvr::OnJoin );
 	m_handlers.Add( PACKETTYPE_WHISPER, &CDPCoreSrvr::OnWhisper );
 	m_handlers.Add( PACKETTYPE_SAY, &CDPCoreSrvr::OnSay );
 	m_handlers.Add( PACKETTYPE_MODIFYMODE, &CDPCoreSrvr::OnModifyMode );
