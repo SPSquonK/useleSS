@@ -4,17 +4,13 @@
 #include "DPMng.h"
 #include "MsgHdr.h"
 
-#undef	theClass
-#define	theClass	CDPLoginClient
-#undef theParameters
-#define theParameters	CAr & ar
-
 namespace MoverSub {
 	struct SkinMeshs;
 }
 
 class CDPLoginClient : public CDPMng,
-	public DPMngFeatures::SendPacketSole<CDPLoginClient>
+	public DPMngFeatures::SendPacketSole<CDPLoginClient>,
+	public DPMngFeatures::PacketHandler<CDPLoginClient>
 {
 private:
 	BOOL	m_fDestroy; 
@@ -47,8 +43,8 @@ public:
 	void	SendPreJoin( const TCHAR* lpszAccount, u_long idPlayer, const TCHAR* lpszPlayer, int nSlot, int nSecretNum = 0 );
 	void	OnPreJoin( CAr & ar );
 
+private:
 //	Handlers
-	USES_PFNENTRIES;
 	void	OnPlayerList( CAr & ar );
 	void	OnError( CAr & ar );
 	void	OnCacheAddr( CAr & ar );

@@ -3,10 +3,9 @@
 #include "DPMng.h"
 
 class CDPLoginSrvr : public CDPMng,
-	public DPMngFeatures::BroadcastPacketNone<CDPLoginSrvr>
+	public DPMngFeatures::BroadcastPacketNone<CDPLoginSrvr>,
+	public DPMngFeatures::PacketHandler<CDPLoginSrvr>
 {
-private:
-	DPMngFeatures::PacketHandler<CDPLoginSrvr> m_handlers;
 public:
 //	Constructions
 	CDPLoginSrvr();

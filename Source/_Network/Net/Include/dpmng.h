@@ -44,28 +44,6 @@ extern	void	TestNetLib( const char* lpAddr, u_short uPort );
 	LPBYTE lpBuf	= ar.GetBuffer( &nBufSize );	\
 	(pDPMng)->Send( (LPVOID)lpBuf, nBufSize, idTo );
 
-#define GETTYPE(ar)		\
-	DWORD dw;	\
-	ar >> dw;
-
-	#define	USES_PFNENTRIES	\
-		private:	\
-		std::map<DWORD, void (theClass::*)( theParameters )>	m_pfnEntries;	\
-		void ( theClass::*GetHandler( DWORD dwType ) )( theParameters )	\
-			{	\
-				const auto i = m_pfnEntries.find( dwType );	\
-				if( i != m_pfnEntries.end() )	\
-					return i->second;	\
-				return NULL;	\
-			}
-				
-	#define BEGIN_MSG	\
-		void ( theClass::*pfn )( theParameters );
-
-	#define	ON_MSG( dwKey, hndlr )	\
-		pfn		= hndlr;	\
-		m_pfnEntries.emplace(dwKey, pfn);
-
 
 class CDPMng
 {
@@ -227,8 +205,9 @@ public:
 	}
 };
 
+// Packet Handler Component: give it a list of handlers, and call them from the id.
 template<typename Self, typename ... ExtraTypes>
-class PacketHandler {
+class PacketHandlerComponent {
 public:
 	using Handler = void (Self :: *)(CAr &, ExtraTypes...);
 
@@ -249,6 +228,22 @@ public:
 		} else {
 			return false;
 		}
+	}
+};
+
+
+// CRTP PacketHandler with an ON_MSG method (for backward compatibility)
+template<typename Self, typename ... ExtraTypes>
+class PacketHandler {
+private:
+	PacketHandlerComponent<Self, ExtraTypes...> m_handlers;
+public:
+	void ON_MSG(DWORD packetId, typename PacketHandlerComponent<Self, ExtraTypes...>::Handler handler) {
+		m_handlers.Add(packetId, handler);
+	}
+
+	bool Handle(CAr & ar, DWORD packetId, ExtraTypes ... extra) {
+		return m_handlers.Handle(static_cast<Self *>(this), ar, packetId, extra...);
 	}
 };
 

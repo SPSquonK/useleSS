@@ -3,11 +3,9 @@
 #include "DPMng.h"
 
 class CDPDatabaseClient : public CDPMng,
-	public DPMngFeatures::SendPacketSole<CDPDatabaseClient>
+	public DPMngFeatures::SendPacketSole<CDPDatabaseClient>,
+	public DPMngFeatures::PacketHandler<CDPDatabaseClient, DPID, BYTE *, u_long>
 {
-private:
-	DPMngFeatures::PacketHandler<CDPDatabaseClient, DPID, BYTE *, u_long> m_handlers;
-
 public:
 //	Constructions
 	CDPDatabaseClient();

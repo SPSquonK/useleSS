@@ -5,9 +5,9 @@
 #include "msghdr.h"
 
 CDPCoreClient::CDPCoreClient() {
-	m_handlers.Add( PACKETTYPE_QUERYTICKCOUNT, &CDPCoreClient::OnQueryTickCount );
-	m_handlers.Add( PACKETTYPE_PRE_JOIN      , &CDPCoreClient::OnPreJoin );
-	m_handlers.Add( PACKETTYPE_DESTROY_PLAYER, &CDPCoreClient::OnQueryRemovePlayer );
+	ON_MSG( PACKETTYPE_QUERYTICKCOUNT, &CDPCoreClient::OnQueryTickCount );
+	ON_MSG( PACKETTYPE_PRE_JOIN      , &CDPCoreClient::OnPreJoin );
+	ON_MSG( PACKETTYPE_DESTROY_PLAYER, &CDPCoreClient::OnQueryRemovePlayer );
 }
 
 void CDPCoreClient::SysMessageHandler(LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom) {
@@ -17,7 +17,7 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
 	DWORD dw; ar >> dw;
 
-	if (m_handlers.Handle(this, ar, dw)) {
+	if (Handle(ar, dw)) {
 		if (ar.IsOverflow()) Error("Login-Core: Packet %08x overflowed", dw);
 	}
 }

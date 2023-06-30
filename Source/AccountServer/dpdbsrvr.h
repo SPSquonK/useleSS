@@ -5,10 +5,10 @@
 
 class CAccount;
 
-class CDPDBSrvr : public CDPMng, DPMngFeatures::BroadcastPacketNone<CDPDBSrvr>
+class CDPDBSrvr : public CDPMng,
+	public DPMngFeatures::BroadcastPacketNone<CDPDBSrvr>,
+	public DPMngFeatures::PacketHandler<CDPDBSrvr, DPID, BYTE *, u_long>
 {
-private:
-	DPMngFeatures::PacketHandler<CDPDBSrvr, DPID, BYTE *, u_long> m_handlers;
 public:
 //	Constructions
 	CDPDBSrvr();

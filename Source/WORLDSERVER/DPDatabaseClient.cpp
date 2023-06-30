@@ -46,7 +46,6 @@ CDPDatabaseClient	g_dpDBClient;
 
 CDPDatabaseClient::CDPDatabaseClient()
 {
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_JOIN, &CDPDatabaseClient::OnJoin );
 	ON_MSG( PACKETTYPE_ALL_PLAYER_DATA, &CDPDatabaseClient::OnAllPlayerData );
 	ON_MSG( PACKETTYPE_ADD_PLAYER_DATA, &CDPDatabaseClient::OnAddPlayerData );
@@ -184,7 +183,7 @@ void CDPDatabaseClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSiz
 void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	CAr ar( (LPBYTE)lpMsg + sizeof(DPID) + sizeof(DPID), dwMsgSize - ( sizeof(DPID) + sizeof(DPID) ) );
-	GETTYPE( ar );
+	DWORD dw; ar >> dw;
 
 	static std::map<DWORD, CString> mapstrProfile;
 	auto it = mapstrProfile.find( dw );
@@ -195,11 +194,8 @@ void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSi
 		it = mapstrProfile.emplace( dw, strTemp ).first;
 	}
 	_PROFILE( it->second );
-
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
-	
-	if (pfn) {
-		(this->*(pfn))(ar, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + sizeof(DPID)));
+		
+	if (Handle(ar, dw, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + sizeof(DPID)))) {
 		if (ar.IsOverflow()) Error("World-Database: Packet %08x overflowed", dw);
 	} else {
 		Error("Handler not found(%08x)\n", dw);

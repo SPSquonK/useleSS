@@ -10,11 +10,6 @@
 
 #include "Housing.h"
 #include "guild.h"
-
-#undef	theClass
-#define	theClass	CDPClient
-#undef theParameters
-#define theParameters	CAr & ar
    
 typedef	struct	tagPLAYERPOS
 {
@@ -76,7 +71,8 @@ SNAPSHOT, *LPSNAPSHOT;
 
 class CWndGuildVote;
 class CDPClient : public CDPMng,
-	public DPMngFeatures::SendPacketSole<CDPClient>
+	public DPMngFeatures::SendPacketSole<CDPClient>,
+	public DPMngFeatures::PacketHandler<CDPClient>
 {
 private:
 	SNAPSHOT	m_ss;
@@ -452,8 +448,9 @@ public:
 	void OnAngel( OBJID objid, CAr& ar );
 	void OnCreateAngel( OBJID objid, CAr & ar );
 	void OnAngelInfo( OBJID objid, CAr & ar );
+
+private:
 	// Handlers
-	USES_PFNENTRIES;
 	void	OnGetClock( CAr & ar );
 	void	OnKeepAlive( CAr & ar );
 	void	OnError( CAr & ar );

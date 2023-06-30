@@ -4,11 +4,9 @@
 #include "MsgHdr.h"
 
 class CDPLoginSrvr : public CDPMng,
-	public DPMngFeatures::BroadcastPacketNone<CDPLoginSrvr>
+	public DPMngFeatures::BroadcastPacketNone<CDPLoginSrvr>,
+	public DPMngFeatures::PacketHandler<CDPLoginSrvr, DPID>
 {
-private:
-	DPMngFeatures::PacketHandler<CDPLoginSrvr, DPID> m_handler;
-
 public:
 	void SendCacheAddr(DPID dpid);
 

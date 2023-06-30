@@ -8,14 +8,10 @@
 #include "SecretRoom.h"
 #include "GuildHouse.h"
 
-#undef	theClass
-#define theClass	CDPDatabaseClient
-#undef theParameters
-#define theParameters CAr & ar, DPID, DPID
-
 class CUser;
 class CDPDatabaseClient : public CDPMng,
-	public DPMngFeatures::SendPacketDual<CDPDatabaseClient>
+	public DPMngFeatures::SendPacketDual<CDPDatabaseClient>,
+	public DPMngFeatures::PacketHandler<CDPDatabaseClient, DPID, DPID>
 {
 private:
 	int		m_cbPing;
@@ -123,8 +119,6 @@ public:
 	void	SendUpdatePlayerData( CUser* pUser );
 
 private:
-	USES_PFNENTRIES;
-
 //	Handlers
 	void	OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnAllPlayerData( CAr & ar, DPID, DPID );

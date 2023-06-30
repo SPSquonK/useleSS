@@ -8,9 +8,9 @@
 
 CDPLoginSrvr::CDPLoginSrvr() 
 {
-	m_handlers.Add( PACKETTYPE_QUERYTICKCOUNT, &CDPLoginSrvr::OnQueryTickCount );
-	m_handlers.Add( PACKETTYPE_PRE_JOIN, &CDPLoginSrvr::OnPreJoin );
-	m_handlers.Add( PACKETTYPE_LEAVE, &CDPLoginSrvr::OnLeave );
+	ON_MSG( PACKETTYPE_QUERYTICKCOUNT, &CDPLoginSrvr::OnQueryTickCount );
+	ON_MSG( PACKETTYPE_PRE_JOIN, &CDPLoginSrvr::OnPreJoin );
+	ON_MSG( PACKETTYPE_LEAVE, &CDPLoginSrvr::OnLeave );
 }
 
 CDPLoginSrvr::~CDPLoginSrvr()
@@ -42,7 +42,7 @@ void CDPLoginSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
 	DWORD dw; ar >> dw;
 	
-	if( m_handlers.Handle(this, ar, dw) ) {
+	if( Handle(ar, dw) ) {
 		if (ar.IsOverflow()) Error("Core-Login: Packet %08x overflowed", dw);
 	}
 	else {

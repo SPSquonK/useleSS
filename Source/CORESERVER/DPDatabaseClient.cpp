@@ -13,22 +13,22 @@
 
 CDPDatabaseClient::CDPDatabaseClient()
 {
-	m_handlers.Add( PACKETTYPE_PARTYNAME, &CDPDatabaseClient::OnPartyName );
-	m_handlers.Add( PACKETTYPE_GLOBAL_DATA, &CDPDatabaseClient::OnGlobalData );
-	m_handlers.Add( PACKETTYPE_INSERTTAG_RESULT, &CDPDatabaseClient::OnInsertTagResult );
-	m_handlers.Add( PACKETTYPE_DC_ADDVOTERESULT, &CDPDatabaseClient::OnAddVoteResult );
-	m_handlers.Add( PACKETTYPE_UPDATE_GUILD_RANKING_END, &CDPDatabaseClient::OnUpdateGuildRankFinish );
-	m_handlers.Add( PACKETTYPE_DEL_PLAYER, &CDPDatabaseClient::OnDelPlayer );
-	m_handlers.Add( PACKETTYPE_GUILD_MEMBERTIME, &CDPDatabaseClient::OnGuildMemberTime );
-	m_handlers.Add( PACKETTYPE_BUYING_INFO, &CDPDatabaseClient::OnBuyingInfo );
-	m_handlers.Add( PACKETTYPE_TC_LIST, &CDPDatabaseClient::OnTCList );
-	m_handlers.Add( PACKETTYPE_QUERYSETPLAYERNAME, &CDPDatabaseClient::OnSetPlayerName );
+	ON_MSG( PACKETTYPE_PARTYNAME, &CDPDatabaseClient::OnPartyName );
+	ON_MSG( PACKETTYPE_GLOBAL_DATA, &CDPDatabaseClient::OnGlobalData );
+	ON_MSG( PACKETTYPE_INSERTTAG_RESULT, &CDPDatabaseClient::OnInsertTagResult );
+	ON_MSG( PACKETTYPE_DC_ADDVOTERESULT, &CDPDatabaseClient::OnAddVoteResult );
+	ON_MSG( PACKETTYPE_UPDATE_GUILD_RANKING_END, &CDPDatabaseClient::OnUpdateGuildRankFinish );
+	ON_MSG( PACKETTYPE_DEL_PLAYER, &CDPDatabaseClient::OnDelPlayer );
+	ON_MSG( PACKETTYPE_GUILD_MEMBERTIME, &CDPDatabaseClient::OnGuildMemberTime );
+	ON_MSG( PACKETTYPE_BUYING_INFO, &CDPDatabaseClient::OnBuyingInfo );
+	ON_MSG( PACKETTYPE_TC_LIST, &CDPDatabaseClient::OnTCList );
+	ON_MSG( PACKETTYPE_QUERYSETPLAYERNAME, &CDPDatabaseClient::OnSetPlayerName );
 
-	m_handlers.Add( PACKETTYPE_UPDATE_PLAYER_DATA, &CDPDatabaseClient::OnUpdatePlayerData );
+	ON_MSG( PACKETTYPE_UPDATE_PLAYER_DATA, &CDPDatabaseClient::OnUpdatePlayerData );
 #ifdef __AUTO_NOTICE
-	m_handlers.Add( PACKETTYPE_EVENTLUA_NOTICE, &CDPDatabaseClient::OnEventNotice );
+	ON_MSG( PACKETTYPE_EVENTLUA_NOTICE, &CDPDatabaseClient::OnEventNotice );
 #endif // __AUTO_NOTICE
-	m_handlers.Add( PACKETTYPE_REMOVEFRIEND, &CDPDatabaseClient::OnRemovePlayerFriend );
+	ON_MSG( PACKETTYPE_REMOVEFRIEND, &CDPDatabaseClient::OnRemovePlayerFriend );
 }
 
 CDPDatabaseClient::~CDPDatabaseClient()
@@ -55,7 +55,7 @@ void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSi
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
 	DWORD dw; ar >> dw;
 
-	if (m_handlers.Handle(this, ar, dw)) {
+	if (Handle(ar, dw)) {
 		if (ar.IsOverflow()) Error("Core-Database: Packet %08x overflowed", dw);
 	}
 }

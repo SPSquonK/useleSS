@@ -9,7 +9,6 @@ extern	CProject	prj;
 
 CDPCoreSrvr::CDPCoreSrvr()
 {
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_ADD_MESSENGER, &CDPCoreSrvr::OnAddMessenger );
 	ON_MSG( PACKETTYPE_DELETE_MESSENGER, &CDPCoreSrvr::OnDeleteMessenger );
 	ON_MSG( PACKETTYPE_UPDATE_MESSENGER, &CDPCoreSrvr::OnUpdateMessenger );
@@ -73,13 +72,9 @@ void CDPCoreSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPI
 void CDPCoreSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpid )
 {
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )
-		=	GetHandler( dw );
-	//	ASSERT( pfn );
+	DWORD dw; ar >> dw;
 
-	if (pfn) {
-		(this->*(pfn))(ar, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD));
+	if (Handle(ar, dw, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD))) {
 		if (ar.IsOverflow()) Error("Database-Core: Packet %08x overflowed", dw);
 	}
 }

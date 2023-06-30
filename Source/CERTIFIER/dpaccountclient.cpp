@@ -9,11 +9,11 @@
 
 CDPAccountClient::CDPAccountClient()
 {
-	m_handlers.Add( PACKETTYPE_ADD_ACCOUNT, &CDPAccountClient::OnAddAccount );
-	m_handlers.Add( PACKETTYPE_DESTROY_PLAYER, &CDPAccountClient::OnDestroyPlayer );
-	m_handlers.Add( PACKETTYPE_SRVR_LIST, &CDPAccountClient::OnServersetList );
-	m_handlers.Add( PACKETTYPE_PLAYER_COUNT, &CDPAccountClient::OnPlayerCount );
-	m_handlers.Add( PACKETTYPE_ENABLE_SERVER, &CDPAccountClient::OnEnableServer );
+	ON_MSG( PACKETTYPE_ADD_ACCOUNT, &CDPAccountClient::OnAddAccount );
+	ON_MSG( PACKETTYPE_DESTROY_PLAYER, &CDPAccountClient::OnDestroyPlayer );
+	ON_MSG( PACKETTYPE_SRVR_LIST, &CDPAccountClient::OnServersetList );
+	ON_MSG( PACKETTYPE_PLAYER_COUNT, &CDPAccountClient::OnPlayerCount );
+	ON_MSG( PACKETTYPE_ENABLE_SERVER, &CDPAccountClient::OnEnableServer );
 }
 
 void CDPAccountClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
@@ -27,7 +27,7 @@ void CDPAccountClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSiz
 	CAr ar( lpBuf, uBufSize );
 	DWORD dw; ar >> dw;
 
-	if (m_handlers.Handle(this, ar, dw, dpid2)) {
+	if (Handle(ar, dw, dpid2)) {
 		if (ar.IsOverflow()) Error("Certifier-Account: Packet %08x overflowed", dw);
 	}
 }

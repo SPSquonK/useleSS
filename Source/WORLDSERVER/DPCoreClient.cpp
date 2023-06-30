@@ -36,8 +36,6 @@ CDPCoreClient	g_DPCoreClient;
 
 CDPCoreClient::CDPCoreClient()
 {
-	BEGIN_MSG;
-
 	ON_MSG( PACKETTYPE_LOAD_WORLD, &CDPCoreClient::OnLoadWorld );
 	ON_MSG( PACKETTYPE_QUERYTICKCOUNT, &CDPCoreClient::OnQueryTickCount );
 	ON_MSG( PACKETTYPE_RECHARGE_IDSTACK, &CDPCoreClient::OnRecharge );
@@ -80,7 +78,7 @@ CDPCoreClient::CDPCoreClient()
 	ON_MSG( PACKETTYPE_GUILD_PENYA, &CDPCoreClient::OnGuildPenya );
 	ON_MSG( PACKETTYPE_GUILD_DB_REALPENYA, &CDPCoreClient::OnGuildRealPenya );
 	ON_MSG( PACKETTYPE_GUILD_SETNAME, &CDPCoreClient::OnGuildSetName );
-	ON_MSG( PACKETTYPE_GUILD_MSG_CONTROL, &CDPCoreClient::OnGuildMsgControl)
+	ON_MSG( PACKETTYPE_GUILD_MSG_CONTROL, &CDPCoreClient::OnGuildMsgControl);
 	ON_MSG( PACKETTYPE_GUILD_CLASS, &CDPCoreClient::OnGuildClass );
 	ON_MSG( PACKETTYPE_GUILD_NICKNAME, &CDPCoreClient::OnGuildNickName );
 
@@ -145,7 +143,7 @@ void CDPCoreClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	CAr ar( (LPBYTE)lpMsg + sizeof(DPID) + sizeof(DPID), dwMsgSize - ( sizeof(DPID) + sizeof(DPID) ) );
-	GETTYPE( ar );
+	DWORD dw; ar >> dw;
 
 	static std::map<DWORD, CString> mapstrProfile;
 	auto it = mapstrProfile.find( dw );
@@ -156,11 +154,8 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 		it = mapstrProfile.emplace( dw, strTemp ).first;
 	}
 	_PROFILE( it->second );
-
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
 	
-	if( pfn ) {
-		( this->*( pfn ) )( ar, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)( (LPBYTE)lpMsg + sizeof(DPID) ), NULL_ID );
+	if( Handle(ar, dw, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + sizeof(DPID)), NULL_ID) ) {
 		if (ar.IsOverflow()) Error("World-Core: Packet %08x overflowed", dw);
 	}
 	else {
@@ -171,9 +166,14 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 					DWORD dwtmp;
 					ar >> dwtmp;
 
-					pfn		= GetHandler( dwtmp );
-					ASSERT( pfn != NULL );
-					( this->*( pfn ) )( ar, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)( (LPBYTE)lpMsg + sizeof(DPID) ), NULL_ID );
+					Handle(
+						ar, dwtmp,
+						*(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + sizeof(DPID)),
+						NULL_ID
+					);
+
+					if (ar.IsOverflow()) Error("World-Core: Packet BROADCAST-%08x overflowed", dw);
+
 					break;
 				}
 			default:

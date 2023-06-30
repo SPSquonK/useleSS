@@ -17,7 +17,6 @@ CDPCertified::CDPCertified()
 	m_timer.Set( MIN( 1 ) );
 	m_lError = 0;
 
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_SRVR_LIST, &CDPCertified::OnSrvrList );
 	ON_MSG( PACKETTYPE_ERROR, &CDPCertified::OnError );
 #ifdef __GPAUTH
@@ -92,12 +91,9 @@ void CDPCertified::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 {
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
 
-	GETTYPE( ar );
-	
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
+	DWORD dw; ar >> dw;
 
-	if( pfn ) {
-		( this->*( pfn ) )( ar, dpId );
+	if ( Handle(ar, dw, dpId) ) {
 	}
 	else {
 		/*

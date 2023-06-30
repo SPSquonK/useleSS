@@ -8,11 +8,6 @@
 
 #include "lord.h"
 
-#undef	theClass
-#define theClass	CDPTrans
-#undef	theParameters
-#define theParameters	CAr & ar, DPID, DPID, DPID, LPBYTE lpBuf, u_long uBufSize
-
 class CMail;
 class CMailBox;
 
@@ -27,7 +22,8 @@ class CCoupleMgr;
 #include "Quiz.h"
 #endif // __QUIZ
 class CDPTrans : public CDPMng,
-	public DPMngFeatures::BroadcastPacketDual<CDPTrans>
+	public DPMngFeatures::BroadcastPacketDual<CDPTrans>,
+	public DPMngFeatures::PacketHandler<CDPTrans, DPID, DPID, DPID, LPBYTE, u_long>
 {
 public:
 //	Constructions
@@ -83,10 +79,9 @@ public:
 	void	SendEventLuaChanged( void );
 	void	OnEventLuaChanged( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 
-	// 나중에 USES_PFNENTRIES; 밑으로 옮기자 
 	void	OnSaveConcurrentUserNumber( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	
-	USES_PFNENTRIES;
+private:
 //	Handlers
 	void	OnRemoveConnection( DPID dpid );
 	void	OnJoin( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );

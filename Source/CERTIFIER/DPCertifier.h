@@ -8,11 +8,9 @@
 #include "ListedServer.h"
 #include "sqktd/mutexed_object.h"
 
-class CDPCertifier : public CDPMng
+class CDPCertifier : public CDPMng,
+	public DPMngFeatures::PacketHandler<CDPCertifier, DPID, BYTE *, u_long>
 {
-private:
-	DPMngFeatures::PacketHandler<CDPCertifier, DPID, BYTE *, u_long> m_handlers;
-
 public:
 	sqktd::mutexed_on_write_object<CListedServers> m_servers;
 

@@ -3,11 +3,9 @@
 #include "DPMng.h"
 
 class CDPCoreClient : public CDPMng,
-	public DPMngFeatures::SendPacketNone<CDPCoreClient>
+	public DPMngFeatures::SendPacketNone<CDPCoreClient>,
+	public DPMngFeatures::PacketHandler<CDPCoreClient>
 {
-private:
-	DPMngFeatures::PacketHandler<CDPCoreClient> m_handlers;
-
 public:
 	CDPCoreClient();
 

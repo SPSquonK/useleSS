@@ -16,7 +16,6 @@ CDPLoginClient::CDPLoginClient()
 	m_lError = 0;
 	m_idNumberPad = 0;
 
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_ERROR, &CDPLoginClient::OnError );
 	ON_MSG( PACKETTYPE_PLAYER_LIST, &CDPLoginClient::OnPlayerList );
 	ON_MSG( PACKETTYPE_CACHE_ADDR, &CDPLoginClient::OnCacheAddr );
@@ -73,11 +72,8 @@ void CDPLoginClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 void CDPLoginClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
-	
-	if( pfn ) 
-		( this->*( pfn ) )( ar );
+	DWORD dw; ar >> dw;
+	Handle(ar, dw);
 }
 
 void CDPLoginClient::QueryTickCount( void )

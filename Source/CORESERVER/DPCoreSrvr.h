@@ -14,7 +14,8 @@
 #include "rtmessenger.h"
 	
 class CDPCoreSrvr : public CDPMng,
-	public DPMngFeatures::BroadcastPacketDual<CDPCoreSrvr>
+	public DPMngFeatures::BroadcastPacketDual<CDPCoreSrvr>,
+	public DPMngFeatures::PacketHandler<CDPCoreSrvr, DPID, DPID, DPID, u_long>
 {
 public:
 	int					m_nGCState;
@@ -24,7 +25,6 @@ public:
 	boost::container::flat_map<u_long, DPID> m_multiIdToDpid; // [1]
 	CMclCritSec		m_AccessLock;
 	CObjMap		m_objmap;
-	DPMngFeatures::PacketHandler<CDPCoreSrvr, DPID, DPID, DPID, u_long> m_handlers;
 
 	// [1] By design, m_multiIdToDpid will never change size / invalidate its
 	// iterators / etc after reading the ini file. This make it a structure that

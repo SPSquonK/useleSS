@@ -104,7 +104,6 @@ CDPClient::CDPClient()
 	m_dwReturnScroll = 0;
 	m_bEventTextColor = TRUE;
 
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_JOIN, &CDPClient::OnJoin );
 	ON_MSG( PACKETTYPE_SNAPSHOT, &CDPClient::OnSnapshot );
 	ON_MSG( PACKETTYPE_REPLACE, &CDPClient::OnReplace );
@@ -264,11 +263,9 @@ void CDPClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID
 #endif	// __J
 
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
+	DWORD dw; ar >> dw;
 	
-	if( pfn ) {
-		( this->*( pfn ) )( ar );
+	if( Handle(ar, dw) ) {
 	}
 	else {
 /*

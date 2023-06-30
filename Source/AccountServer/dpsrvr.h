@@ -8,10 +8,9 @@
 #include "sqktd/mutexed_object.h"
 
 class CDPSrvr_AccToCert : public CDPMng, 
-	public DPMngFeatures::BroadcastPacketSole<CDPSrvr_AccToCert>
+	public DPMngFeatures::BroadcastPacketSole<CDPSrvr_AccToCert>,
+	public DPMngFeatures::PacketHandler<CDPSrvr_AccToCert, DPID, DPID>
 {
-private:
-	DPMngFeatures::PacketHandler<CDPSrvr_AccToCert, DPID, DPID> m_handlers;
 public:
 	static constexpr size_t MAX_IP = 10240;
 

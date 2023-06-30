@@ -3,11 +3,9 @@
 #include "dpmng.h"
 #include "msghdr.h"
 
-class CDPAccountClient : public CDPMng
+class CDPAccountClient : public CDPMng,
+	public DPMngFeatures::PacketHandler<CDPAccountClient, DPID>
 {
-private:
-	DPMngFeatures::PacketHandler<CDPAccountClient, DPID> m_handlers;
-
 public:
 //	Constructions
 	CDPAccountClient();

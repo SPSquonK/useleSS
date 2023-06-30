@@ -29,7 +29,6 @@
 CDPTrans::CDPTrans()
 :m_bPCBangApply( TRUE )
 {
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_JOIN, &CDPTrans::OnJoin );
 	ON_MSG( PACKETTYPE_SAVE_PLAYER, &CDPTrans::OnSavePlayer ); 
 	ON_MSG( PACKETTYPE_SAVE_CONCURRENT_USER_NUMBER, &CDPTrans::OnSaveConcurrentUserNumber );
@@ -80,7 +79,7 @@ CDPTrans::CDPTrans()
 	ON_MSG( PACKETTYPE_QUERYGETMAILGOLD, &CDPTrans::OnQueryGetMailGold );
 	ON_MSG( PACKETTYPE_READMAIL, &CDPTrans::OnReadMail );
 
-	ON_MSG( PACKETTYPE_START_GUILDCOMBAT, &CDPTrans::OnStartGuildCombat )
+	ON_MSG( PACKETTYPE_START_GUILDCOMBAT, &CDPTrans::OnStartGuildCombat );
 	ON_MSG( PACKETTYPE_IN_GUILDCOMBAT, &CDPTrans::OnGuidCombatInGuild );
 	ON_MSG( PACKETTYPE_OUT_GUILDCOMBAT, &CDPTrans::OnGuidCombatOutGuild );
 	ON_MSG( PACKETTYPE_RESULT_GUILDCOMBAT, &CDPTrans::OnResultGuildCombat );
@@ -284,11 +283,10 @@ void CDPTrans::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID 
 	static size_t	nSize	= sizeof(DPID);
 
 	CAr ar( (LPBYTE)lpMsg + ( nSize + nSize ), dwMsgSize - ( nSize + nSize ) );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
+	DWORD dw; ar >> dw;
 	
-	if( pfn ) {
-		( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)( (LPBYTE)lpMsg + nSize ), (LPBYTE)lpMsg + nSize + nSize + nSize, dwMsgSize - ( nSize + nSize + nSize ) );
+	if( Handle(ar, dw, idFrom, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + nSize), (LPBYTE)lpMsg + nSize + nSize + nSize, dwMsgSize - (nSize + nSize + nSize)) ) {
+		
 		if (ar.IsOverflow()) Error("Database-World: Packet %08x overflowed", dw);
 	}
 	else {

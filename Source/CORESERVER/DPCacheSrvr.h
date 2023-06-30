@@ -11,7 +11,8 @@
 class CGuild;
 
 class CDPCacheSrvr : public CDPMng,
-	public DPMngFeatures::BroadcastPacketSole<CDPCacheSrvr>
+	public DPMngFeatures::BroadcastPacketSole<CDPCacheSrvr>,
+	public DPMngFeatures::PacketHandler<CDPCacheSrvr, DPID, DPID>
 {
 private:
 	struct ClientInfo {
@@ -22,7 +23,6 @@ private:
 	};
 
 	std::optional<ClientInfo> m_clientInfo = std::nullopt;
-	DPMngFeatures::PacketHandler<CDPCacheSrvr, DPID, DPID> m_handlers;
 
 public:
 //	Constructions

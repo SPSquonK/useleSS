@@ -11,14 +11,9 @@
 
 #define PASS( ar )	SEND( ar, this, DPID_SERVERPLAYER );
 
-
-#undef	theClass
-#define theClass	CDPCoreClient
-#undef theParameters
-#define theParameters CAr & ar, DPID, DPID, OBJID objid
-
 class CDPCoreClient : public CDPMng,
-	public DPMngFeatures::SendPacketDual<CDPCoreClient>
+	public DPMngFeatures::SendPacketDual<CDPCoreClient>,
+	public DPMngFeatures::PacketHandler<CDPCoreClient, DPID, DPID, OBJID>
 {
 private:
 	WSAEVENT	m_hWait;
@@ -133,10 +128,8 @@ public:
 	void	SendQuizSystemMessage( int nDefinedTextId, BOOL bAll = FALSE, int nChannel = 0, int nTime = 0 );
 #endif // __QUIZ
 
-protected:
 	// Handlers
-	USES_PFNENTRIES;
-
+private:
 	void	OnLoadWorld( CAr & ar, DPID, DPID, OBJID );
 	void	OnQueryTickCount( CAr & ar, DPID, DPID, OBJID );
 	void	OnRecharge( CAr & ar, DPID, DPID, OBJID );

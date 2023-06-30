@@ -16,12 +16,12 @@
 
 CDPCoreClient::CDPCoreClient()
 {
-	m_handlers.Add( PACKETTYPE_PROCSERVER_LIST, &CDPCoreClient::OnProcServerList );
-	m_handlers.Add( PACKETTYPE_LOAD_WORLD, &CDPCoreClient::OnProcServer );
-	m_handlers.Add( PACKETTYPE_JOIN, &CDPCoreClient::OnJoin );
-	m_handlers.Add( PACKETTYPE_LEAVE, &CDPCoreClient::OnLeave );
-	m_handlers.Add( PACKETTYPE_DESTROY_ALLPLAYERS, &CDPCoreClient::OnDestroyAllPlayers );
-	m_handlers.Add( PACKETTYPE_KILLPLAYER, &CDPCoreClient::OnKillPlayer );
+	ON_MSG( PACKETTYPE_PROCSERVER_LIST, &CDPCoreClient::OnProcServerList );
+	ON_MSG( PACKETTYPE_LOAD_WORLD, &CDPCoreClient::OnProcServer );
+	ON_MSG( PACKETTYPE_JOIN, &CDPCoreClient::OnJoin );
+	ON_MSG( PACKETTYPE_LEAVE, &CDPCoreClient::OnLeave );
+	ON_MSG( PACKETTYPE_DESTROY_ALLPLAYERS, &CDPCoreClient::OnDestroyAllPlayers );
+	ON_MSG( PACKETTYPE_KILLPLAYER, &CDPCoreClient::OnKillPlayer );
 }
 
 void CDPCoreClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
@@ -56,7 +56,7 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 #endif	// __CRASH_0404
 
 	
-	if (m_handlers.Handle(this, ar, dw, dpidUser)) {
+	if (Handle(ar, dw, dpidUser)) {
 		if (ar.IsOverflow()) Error("Cache-Core: Packet %08x overflowed", dw);
 	} else {
 		g_DPCacheSrvr.Send( lpBuf, uBufSize, dpidUser );

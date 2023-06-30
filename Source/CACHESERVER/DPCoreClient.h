@@ -4,11 +4,9 @@
 #include "rtmessenger.h"
 
 class CCachePlayer;
-class CDPCoreClient : public CDPMng
+class CDPCoreClient : public CDPMng,
+	public DPMngFeatures::PacketHandler<CDPCoreClient, DPID>
 {
-private:
-	DPMngFeatures::PacketHandler<CDPCoreClient, DPID> m_handlers;
-
 public:
 //	Constructions
 	CDPCoreClient();

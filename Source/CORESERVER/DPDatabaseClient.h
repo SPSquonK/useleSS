@@ -6,10 +6,9 @@
 #include "guild.h"
 
 class CDPDatabaseClient : public CDPMng,
-	public DPMngFeatures::SendPacketNone<CDPDatabaseClient>
+	public DPMngFeatures::SendPacketNone<CDPDatabaseClient>,
+	public DPMngFeatures::PacketHandler<CDPDatabaseClient>
 {
-private:
-	DPMngFeatures::PacketHandler<CDPDatabaseClient> m_handlers;
 public:
 //	Constructions
 	CDPDatabaseClient();
