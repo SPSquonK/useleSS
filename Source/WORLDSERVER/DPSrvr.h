@@ -7,15 +7,13 @@
 #include "MsgHdr.h"
 #include "Snapshot.h"
 #include <variant>
-
-#undef	theClass
-#define theClass	CDPSrvr
-#undef theParameters
-#define theParameters	CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize
+#include <sqktd/flatter_map.hpp>
 
 class CDPSrvr;
 class CUser;
 
+// PacketHandler for the server. As it supports multiple signatures, it does
+// not use the usual DPMngFeatures::PacketHandler class.
 class CDPSrvrHandlers {
 public:
 	using GalaHandler = void (CDPSrvr:: *) (CAr &, DPID, DPID, LPBYTE, u_long);
@@ -25,7 +23,7 @@ public:
 	using HandlerStruct = std::variant<GalaHandler, UserHandler, UserPtrHandler>;
 private:
 
-	std::map<DWORD, HandlerStruct> m_handlers;
+	sqktd::flatter_map<DWORD, HandlerStruct> m_handlers;
 
 public:
 	void AddHandler(DWORD packetId, const HandlerStruct & handler) {

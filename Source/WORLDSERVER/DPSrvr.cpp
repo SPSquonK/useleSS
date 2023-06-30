@@ -413,8 +413,9 @@ CDPSrvr::CDPSrvr()
 
 	OnMsg(PACKETTYPE_SQUONK_ARBITRARY_PACKET, &CDPSrvr::OnSquonKArbitraryPacket);
 
-	// Reception is disabled on official V15, Emission is disabled on official v21. It is up to
-	// the developers of the server to choose whtenever they want to look further in this method
+	// Reception of PACKETTYPE_ERRORCODE is disabled on official V15, Emission of PACKETTYPE_ERRORCODE
+	// is disabled on official v21. It is up to
+	// the developers of the server to choose whetever they want to look further in this method
 	// on entirely remove this packet.
 	// OnMsg(PACKETTYPE_ERRORCODE, &CDPSrvr::OnError);
 }
@@ -422,11 +423,11 @@ CDPSrvr::CDPSrvr()
 bool CDPSrvrHandlers::Handle(CDPSrvr & self, CAr & ar, DPID dpidCache, DPID dpidUser) {
 	DWORD packetId; ar >> packetId;
 
-	const auto handler = m_handlers.find(packetId);
+	const auto * handler = m_handlers.get_at(packetId);
 
-	if (handler == m_handlers.end()) return false;
+	if (!handler) return false;
 
-	const HandlerStruct & pfn = handler->second;
+	const HandlerStruct & pfn = *handler;
 
 	struct Visitor {
 		CDPSrvr & self; CAr & ar;
