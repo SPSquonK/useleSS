@@ -9,12 +9,11 @@
 
 CDPCertifier::CDPCertifier()
 {
-	BEGIN_MSG;
-	ON_MSG( PACKETTYPE_CERTIFY, &CDPCertifier::OnCertify );
-	ON_MSG( PACKETTYPE_PING, &CDPCertifier::OnPing );
-	ON_MSG( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPCertifier::OnCloseExistingConnection );
-	ON_MSG( PACKETTYPE_KEEP_ALIVE, &CDPCertifier::OnKeepAlive );
-	ON_MSG( PACKETTYPE_ERROR, &CDPCertifier::OnError );
+	m_handlers.Add( PACKETTYPE_CERTIFY, &CDPCertifier::OnCertify );
+	m_handlers.Add( PACKETTYPE_PING, &CDPCertifier::OnPing );
+	m_handlers.Add( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPCertifier::OnCloseExistingConnection );
+	m_handlers.Add( PACKETTYPE_KEEP_ALIVE, &CDPCertifier::OnKeepAlive );
+	m_handlers.Add( PACKETTYPE_ERROR, &CDPCertifier::OnError );
 }
 
 void CDPCertifier::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpid )
@@ -46,13 +45,9 @@ void CDPCertifier::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 		return;
 	}
 
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )
-		=	GetHandler( dw );
+	DWORD dw; ar >> dw;
 
-//	ASSERT( pfn );
-	if (pfn) {
-		(this->*(pfn))(ar, dpid, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD));
+	if (m_handlers.Handle(this, ar, dw, dpid, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD))) {
 		if (ar.IsOverflow()) Error("Certifier-Neuz: Packet %08x overflowed", dw);
 	}
 }

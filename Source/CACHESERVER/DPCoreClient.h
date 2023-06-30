@@ -1,21 +1,18 @@
 #pragma once
 
 #include "DPMng.h"
-
 #include "rtmessenger.h"
-
-#undef	theClass
-#define	theClass	CDPCoreClient
-#undef theParameters
-#define theParameters	CAr & ar, DPID dpidUser
 
 class CCachePlayer;
 class CDPCoreClient : public CDPMng
 {
+private:
+	DPMngFeatures::PacketHandler<CDPCoreClient, DPID> m_handlers;
+
 public:
 //	Constructions
 	CDPCoreClient();
-	virtual	~CDPCoreClient();
+
 //	Overrides
 	virtual	void SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
 	virtual void UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom );
@@ -24,8 +21,7 @@ public:
 	void	SendAddPlayer(const CCachePlayer & pPlayer, CRTMessenger & rtmessenger );
 	void	SendDestroyPlayer(const CCachePlayer & pPlayer );
 // Handlers
-	USES_PFNENTRIES;
-protected:
+private:
 	void	OnProcServerList( CAr & ar, DPID );
 	void	OnProcServer( CAr & ar, DPID );
 	void	OnLeave( CAr & ar, DPID dpid );

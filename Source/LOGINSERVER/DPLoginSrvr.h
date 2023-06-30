@@ -3,11 +3,6 @@
 #include "DPMng.h"
 #include "MsgHdr.h"
 
-#undef	theClass
-#define theClass	CDPLoginSrvr
-#undef theParameters
-#define theParameters	CAr & ar, DPID
-
 class CDPLoginSrvr : public CDPMng,
 	public DPMngFeatures::BroadcastPacketNone<CDPLoginSrvr>
 {

@@ -9,30 +9,25 @@
 
 CDPAccountClient::CDPAccountClient()
 {
-	BEGIN_MSG;
-	ON_MSG( PACKETTYPE_ADD_ACCOUNT, &CDPAccountClient::OnAddAccount );
-	ON_MSG( PACKETTYPE_DESTROY_PLAYER, &CDPAccountClient::OnDestroyPlayer );
-	ON_MSG( PACKETTYPE_SRVR_LIST, &CDPAccountClient::OnServersetList );
-	ON_MSG( PACKETTYPE_PLAYER_COUNT, &CDPAccountClient::OnPlayerCount );
-	ON_MSG( PACKETTYPE_ENABLE_SERVER, &CDPAccountClient::OnEnableServer );
+	m_handlers.Add( PACKETTYPE_ADD_ACCOUNT, &CDPAccountClient::OnAddAccount );
+	m_handlers.Add( PACKETTYPE_DESTROY_PLAYER, &CDPAccountClient::OnDestroyPlayer );
+	m_handlers.Add( PACKETTYPE_SRVR_LIST, &CDPAccountClient::OnServersetList );
+	m_handlers.Add( PACKETTYPE_PLAYER_COUNT, &CDPAccountClient::OnPlayerCount );
+	m_handlers.Add( PACKETTYPE_ENABLE_SERVER, &CDPAccountClient::OnEnableServer );
 }
 
 void CDPAccountClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
-	static size_t	nSize	= sizeof(DPID);
+	static constexpr size_t	nSize	= sizeof(DPID);
 
 	LPBYTE lpBuf	= (LPBYTE)lpMsg + nSize;
 	ULONG	uBufSize	= dwMsgSize - nSize;
 	DPID dpid2	= *(UNALIGNED LPDPID)lpMsg;
 
 	CAr ar( lpBuf, uBufSize );
-	GETTYPE( ar );
+	DWORD dw; ar >> dw;
 
-
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
-//	ASSERT( pfn );
-	if (pfn) {
-		(this->*(pfn))(ar, dpid2);
+	if (m_handlers.Handle(this, ar, dw, dpid2)) {
 		if (ar.IsOverflow()) Error("Certifier-Account: Packet %08x overflowed", dw);
 	}
 }

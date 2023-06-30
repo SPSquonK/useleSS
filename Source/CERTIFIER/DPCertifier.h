@@ -8,14 +8,11 @@
 #include "ListedServer.h"
 #include "sqktd/mutexed_object.h"
 
-#undef	theClass
-#define theClass	CDPCertifier
-#undef theParameters
-#define theParameters	CAr & ar, DPID, LPBYTE, u_long
-
-
 class CDPCertifier : public CDPMng
 {
+private:
+	DPMngFeatures::PacketHandler<CDPCertifier, DPID, BYTE *, u_long> m_handlers;
+
 public:
 	sqktd::mutexed_on_write_object<CListedServers> m_servers;
 
@@ -48,8 +45,8 @@ public:
 	void	SendErrorString( const char* szError, DPID dpid );
 #endif	// __GPAUTH
 
-	USES_PFNENTRIES;
 
+private:
 	// Handlers
 	void	OnAddConnection( DPID dpid );
 	void	OnRemoveConnection( DPID dpid );

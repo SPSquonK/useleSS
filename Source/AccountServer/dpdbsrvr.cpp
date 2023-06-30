@@ -9,19 +9,13 @@
 
 CDPDBSrvr::CDPDBSrvr()
 {
-	BEGIN_MSG;
-	ON_MSG( PACKETTYPE_MYREG, &CDPDBSrvr::OnAddConnection );
-	ON_MSG( PACKETTYPE_REMOVE_ACCOUNT, &CDPDBSrvr::OnRemoveAccount );
-	ON_MSG( PACKETTYPE_GETPLAYERLIST, &CDPDBSrvr::OnGetPlayerList );
-	ON_MSG( PACKETTYPE_DEL_PLAYER, &CDPDBSrvr::OnRemovePlayer );
-	ON_MSG( PACKETTYPE_JOIN, &CDPDBSrvr::OnJoin );
-	ON_MSG( PACKETTYPE_REMOVE_ALLACCOUNTS, &CDPDBSrvr::OnRemoveAllAccounts );
-	ON_MSG( PACKETTYPE_BUYING_INFO, &CDPDBSrvr::OnBuyingInfo );
-}
-
-CDPDBSrvr::~CDPDBSrvr()
-{
-
+	m_handlers.Add( PACKETTYPE_MYREG, &CDPDBSrvr::OnAddConnection );
+	m_handlers.Add( PACKETTYPE_REMOVE_ACCOUNT, &CDPDBSrvr::OnRemoveAccount );
+	m_handlers.Add( PACKETTYPE_GETPLAYERLIST, &CDPDBSrvr::OnGetPlayerList );
+	m_handlers.Add( PACKETTYPE_DEL_PLAYER, &CDPDBSrvr::OnRemovePlayer );
+	m_handlers.Add( PACKETTYPE_JOIN, &CDPDBSrvr::OnJoin );
+	m_handlers.Add( PACKETTYPE_REMOVE_ALLACCOUNTS, &CDPDBSrvr::OnRemoveAllAccounts );
+	m_handlers.Add( PACKETTYPE_BUYING_INFO, &CDPDBSrvr::OnBuyingInfo );
 }
 
 void CDPDBSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpId )
@@ -40,11 +34,10 @@ void CDPDBSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID 
 void CDPDBSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpId )
 {
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )
-		=	GetHandler( dw );
-	ASSERT( pfn );
-	( this->*( pfn ) )( ar, dpId, (LPBYTE)lpMsg, (u_long)dwMsgSize );
+	DWORD dw; ar >> dw;
+
+	const bool handled = m_handlers.Handle(this, ar, dw, dpId, (LPBYTE)lpMsg, (u_long)dwMsgSize);
+	ASSERT(handled);
 
 	if (ar.IsOverflow()) Error("Account-Database: Packet %08x overflowed", dw);
 }

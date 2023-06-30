@@ -1,26 +1,21 @@
-#ifndef __DPDBSRVR_H__
-#define	__DPDBSRVR_H__
+#pragma once
 
 #include "dpmng.h"
 #include "msghdr.h"
-
-#undef	theClass
-#define theClass	CDPDBSrvr
-#undef theParameters
-#define theParameters	CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize
 
 class CAccount;
 
 class CDPDBSrvr : public CDPMng, DPMngFeatures::BroadcastPacketNone<CDPDBSrvr>
 {
+private:
+	DPMngFeatures::PacketHandler<CDPDBSrvr, DPID, BYTE *, u_long> m_handlers;
 public:
 //	Constructions
 	CDPDBSrvr();
-	virtual	~CDPDBSrvr();
 
 //	Overrides
-	virtual void	SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpId );
-	virtual void	UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpId );
+	void	SysMessageHandler ( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpId ) override;
+	void	UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpId ) override;
 
 // Operations
 	void	SendOneHourNotify( CAccount* pAccount );
@@ -31,33 +26,21 @@ public:
 	void	SendBuyingInfo( PBUYING_INFO2 pbi2 );
 	void	SendLogSMItem( );
 
-/*
-#ifdef __S0114_RELOADPRO
-	void	SendReloadAccount();
-#endif // __S0114_RELOADPRO
-*/
+
+private:
 //	Handlers
-	USES_PFNENTRIES;
 	void	OnAddConnection( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
 	void	OnRemoveAccount( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
 	void	OnGetPlayerList( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-#ifdef __REMOVE_PLAYER_0221
-	void	OnRemovePlayer( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-#endif	// __REMOVE_PLAYER_0221
 	void	OnJoin( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
 	void	OnRemoveAllAccounts( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
 	void	OnBuyingInfo( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-//	void	OnOpenBattleServer( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-//	void	OnCloseBattleServer( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
 	void	OnServerEnable( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-/*
-#ifdef __S0114_RELOADPRO
-	void	OnCompleteReloadProject( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-#endif // __S0114_RELOADPRO
-*/
+
+#ifdef __REMOVE_PLAYER_0221
+	void	OnRemovePlayer(CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize);
+#endif	// __REMOVE_PLAYER_0221
+
 };
 
 extern CDPDBSrvr g_dpDbSrvr;
-
-
-#endif	// __DPDBSRVR_H__
