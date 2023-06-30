@@ -679,45 +679,34 @@ void CWndMgr::OnDestroyChildWnd( CWndBase* pWndChild )
 	SAFE_DELETE( m_pWndTextScroll );
 	SAFE_DELETE( m_pWndTextLetter );
 }	
-void CWndMgr::OpenTextBook( CWndBase* pWndParent , CItemElem * pItemBase )
-{
-	SAFE_DELETE( m_pWndTextBook );
-	m_pWndTextBook = new CWndTextFromItem;
-	m_pWndTextBook->Initialize( pWndParent, pItemBase, APP_TEXT_BOOK );
-}
-void CWndMgr::OpenTextScroll( CWndBase* pWndParent, CItemElem * pItemBase )
-{
-	SAFE_DELETE( m_pWndTextScroll );
-	m_pWndTextScroll = new CWndTextFromItem;
-	m_pWndTextScroll->Initialize( pWndParent, pItemBase, APP_TEXT_SCROLL);
-}
-void CWndMgr::OpenTextLetter( CWndBase* pWndParent, CItemElem * pItemBase )
-{
-	SAFE_DELETE( m_pWndTextLetter );
-	m_pWndTextLetter = new CWndTextFromItem;
-	m_pWndTextLetter->Initialize( pWndParent, pItemBase, APP_TEXT_LETTER );
-}
-void CWndMgr::ChangeTextBook(CItemElem * pItemBase )
-{
-	m_pWndTextBook->SetItemBase( pItemBase );
-}
-void CWndMgr::ChangeTextScroll(CItemElem * pItemBase )
-{
-	m_pWndTextScroll->SetItemBase( pItemBase );
-}
-void CWndMgr::ChangeTextLetter(CItemElem * pItemBase )
-{
-	m_pWndTextLetter->SetItemBase( pItemBase );
-}
-void CWndMgr::OpenQuestItemInfo(CWndBase* pWndParent, CItemElem * pItemBase)
-{
-	SAFE_DELETE(m_pQuestItemInfo);
-	m_pQuestItemInfo = new CWndQuestItemInfo;
-	m_pQuestItemInfo->Initialize(pWndParent, pItemBase);
-}
 
-void CWndMgr::ChangeQuestItemInfo(CItemElem * pItemBase) {
-	m_pQuestItemInfo->SetItemBase(pItemBase);
+
+void CWndMgr::OpenItemInfo(CWndBase * pWndParent, ItemInfoType type, CItemElem * pItemBase) {
+	if (type == ItemInfoType::QuestItem) {
+		if (m_pQuestItemInfo && m_pQuestItemInfo->IsVisible()) {
+			m_pQuestItemInfo->SetItemBase(pItemBase);
+		} else {
+			SAFE_DELETE(m_pQuestItemInfo);
+			m_pQuestItemInfo = new CWndQuestItemInfo;
+			m_pQuestItemInfo->Initialize(pWndParent, pItemBase);
+		}
+	} else {
+		const auto OpenTextFromItem = [pWndParent, pItemBase](CWndTextFromItem *& m_pWnd, DWORD appId) {
+			if (m_pWnd && m_pWnd->IsVisible()) {
+				m_pWnd->SetItemBase(pItemBase);
+			} else {
+				SAFE_DELETE(m_pWnd);
+				m_pWnd = new CWndTextFromItem;
+				m_pWnd->Initialize(pWndParent, pItemBase, appId);
+			}
+		};
+
+		switch (type) {
+			case ItemInfoType::Book:   OpenTextFromItem(m_pWndTextBook  , APP_TEXT_BOOK  ); break;
+			case ItemInfoType::Scroll: OpenTextFromItem(m_pWndTextScroll, APP_TEXT_SCROLL); break;
+			case ItemInfoType::Letter: OpenTextFromItem(m_pWndTextLetter, APP_TEXT_LETTER); break;
+		}
+	}
 }
 
 void CWndMgr::OpenTitle( BOOL bFirstTime )

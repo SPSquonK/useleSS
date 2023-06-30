@@ -1127,47 +1127,23 @@ void CWndItemCtrl::OnRButtonDown( UINT nFlags, CPoint point )
 			CPoint point2 = point;
 			ClientToScreen( &point2 );
 			ClientToScreen( &rectHittest );
-			ItemProp* pItemProp = pItemElem->GetProp();
+			const ItemProp* pItemProp = pItemElem->GetProp();
 
-			if (pItemElem == NULL )
-				continue;
 			if( pItemProp->dwItemKind2 == IK2_TEXT ) 
 			{
 				CString strText = pItemProp->szTextFileName;
-				//strText = strText.Left( 5 );
 				strText.MakeLower();
-				if( strText.Find( "book_" ) != -1 )
-				{
-					if ( !g_WndMng.m_pWndTextBook || g_WndMng.m_pWndTextBook->IsVisible() == FALSE)
-						g_WndMng.OpenTextBook(this, pItemElem) ;
-					else
-						g_WndMng.ChangeTextBook(pItemElem) ;
-				}
-				else
-				if( strText.Find( "scroll_" ) != -1  )
-				{
-					if ( !g_WndMng.m_pWndTextScroll || g_WndMng.m_pWndTextScroll->IsVisible() == FALSE)
-						g_WndMng.OpenTextScroll(this, pItemElem) ;
-					else
-						g_WndMng.ChangeTextScroll(pItemElem) ;
-				}
-				else
-				if( strText.Find( "letter_" ) != -1 )
-				{
-					if ( !g_WndMng.m_pWndTextLetter || g_WndMng.m_pWndTextLetter->IsVisible() == FALSE)
-						g_WndMng.OpenTextLetter(this, pItemElem) ;
-					else
-						g_WndMng.ChangeTextLetter(pItemElem) ;
+
+				if (strText.Find("book_") != -1) {
+					g_WndMng.OpenItemInfo(this, CWndMgr::ItemInfoType::Book, pItemElem);
+				} else if (strText.Find("scroll_") != -1) {
+					g_WndMng.OpenItemInfo(this, CWndMgr::ItemInfoType::Scroll, pItemElem);
+				} else if (strText.Find("letter_") != -1) {
+					g_WndMng.OpenItemInfo(this, CWndMgr::ItemInfoType::Letter, pItemElem);
 				}
 
-			}
-			else
-			if( pItemProp->dwItemKind3 == IK3_QUEST )
-			{
-				if ( !g_WndMng.m_pQuestItemInfo || g_WndMng.m_pQuestItemInfo->IsVisible() == FALSE)
-					g_WndMng.OpenQuestItemInfo(this, pItemElem) ;
-				else
-					g_WndMng.ChangeQuestItemInfo(pItemElem) ;
+			} else if (pItemProp->dwItemKind3 == IK3_QUEST) {
+				g_WndMng.OpenItemInfo(this, CWndMgr::ItemInfoType::QuestItem, pItemElem);
 			}
 		}
 	}

@@ -555,43 +555,43 @@ public:
 	boost::container::flat_map<CString, std::unique_ptr<CWndMessage>>    m_mapMessage;
 
 	BOOL m_bAutoRun;
-	
+
 	DWORD m_dwSavePlayerTime;
-	
-	TCHAR m_szTimerChat[ 128 ];
+
+	TCHAR m_szTimerChat[128];
 	CTimer m_timerChat;
-	
+
 	BOOL   m_bConnect;
 
-	BOOL	m_bTitle        ;
+	BOOL	m_bTitle;
 	boost::container::flat_map<DWORD, AppletFunc *> m_mapAppletFunc;
 	std::vector<int> m_tempWndId;
 	BOOL m_clearFlag;
 
-	AppletFunc*		GetAppletFunc( DWORD dwIdApplet );
+	AppletFunc * GetAppletFunc(DWORD dwIdApplet);
 	void	AddAllApplet();
 	BOOL ScreenCapture();
-	BOOL SaveBitmap( LPCTSTR lpszName );
-	BOOL SaveJPG( LPCTSTR lpszName );
+	BOOL SaveBitmap(LPCTSTR lpszName);
+	BOOL SaveJPG(LPCTSTR lpszName);
 	void InitSetItemTextColor();
 	void Free();
 
 public:
 	DWORD		   m_dwSkillTime[MAX_SKILL];
-	
+
 	CWndTradeConfirm * m_pWndTradeConfirm; // Memory leak? (Original pos: just after CWndConfirmTrade)
 
-	CWndBank*	   m_pWndBank; // also destroys tradegold
-	CWndWorld*     m_pWndWorld;
+	CWndBank * m_pWndBank; // also destroys tradegold
+	CWndWorld * m_pWndWorld;
 
-	CWndSelectVillage*		m_pWndSelectVillage; // Native memleak
-	CWndRepairItem* m_pWndRepairItem; // Native memleak
+	CWndSelectVillage * m_pWndSelectVillage; // Native memleak
+	CWndRepairItem * m_pWndRepairItem; // Native memleak
 
-	CWndGuildBank*	m_pWndGuildBank;
+	CWndGuildBank * m_pWndGuildBank;
 
 	BOOL	m_bWaitRequestMail;
 
-	CWndGuildNickName* m_pWndGuildNickName;
+	CWndGuildNickName * m_pWndGuildNickName;
 
 
 
@@ -599,21 +599,20 @@ public:
 
 
 
-	CWndCloseExistingConnection*	m_pWndCloseExistingConnection; // CWndBase def is not included by default
-	
+	CWndCloseExistingConnection * m_pWndCloseExistingConnection; // CWndBase def is not included by default
+
 
 #ifdef __S_SERVER_UNIFY
 	BOOL							m_bAllAction;
 #endif // __S_SERVER_UNIFY
 
-	CWndGHMainMenu* m_pWndGHMain;
+	CWndGHMainMenu * m_pWndGHMain;
 
 #ifdef __PROTECT_AWAKE
-	CWndSelectAwakeCase* m_pWndSelectAwakeCase;
+	CWndSelectAwakeCase * m_pWndSelectAwakeCase;
 #endif 
 	CWndTaskBar * m_pWndTaskBar;
 	CWndTaskMenu * m_pWndMenu;
-	CWndQuestItemInfo * m_pQuestItemInfo;
 
 
 
@@ -625,18 +624,14 @@ public:
 
 	//	퀘스트 아이템 정보
 
-	void OpenQuestItemInfo(CWndBase* pWndParent, CItemElem * pItemBase);
-	void ChangeQuestItemInfo(CItemElem * pItemBase);
-
+	enum class ItemInfoType { Book, Scroll, Letter, QuestItem };
 	CWndTextFromItem * m_pWndTextBook;
 	CWndTextFromItem * m_pWndTextScroll;
 	CWndTextFromItem * m_pWndTextLetter;
-	void OpenTextBook    (CWndBase* pWndParent, CItemElem * pItemBase);
-	void OpenTextScroll  (CWndBase* pWndParent, CItemElem * pItemBase);
-	void OpenTextLetter  (CWndBase* pWndParent, CItemElem * pItemBase);
-	void ChangeTextBook  (CItemElem * pItemBase);
-	void ChangeTextScroll(CItemElem * pItemBase);
-	void ChangeTextLetter(CItemElem * pItemBase);
+	CWndQuestItemInfo * m_pQuestItemInfo;
+
+	void OpenItemInfo(CWndBase * pWndParent, ItemInfoType type, CItemElem * pItemBase);
+
 	// Field
 
 	std::map<DWORD, CWndNeuz *> m_mapWndApplet;
