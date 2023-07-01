@@ -147,7 +147,7 @@ void CWorld::RenderBase( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 	CHECK2( "  Render SkyBox" );
 #endif
 	// Ä«¸Þ¶ó Æ®·£½ºÆû ( View Æ®·£½ºÆû ) 
-	m_pCamera->Transform( pd3dDevice, this );
+	m_pCamera->Transform( this );
 	// ¹Ó¸Ê ¼¼ÆÃ 
 	//pd3dDevice->SetSamplerState( 0, D3DSAMP_MAXMIPLEVEL, 0 );
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_POINT );
@@ -229,7 +229,7 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 		CHECK2( "  Render SkyBox" );
 	 #endif
 		// Ä«¸Þ¶ó Æ®·£½ºÆû ( View Æ®·£½ºÆû ) 
-		m_pCamera->Transform( pd3dDevice, this );
+		m_pCamera->Transform( this );
 		// ¹Ó¸Ê ¼¼ÆÃ 
 		//pd3dDevice->SetSamplerState( 0, D3DSAMP_MAXMIPLEVEL, 0 );
 		pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_POINT );

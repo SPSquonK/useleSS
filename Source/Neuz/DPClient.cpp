@@ -2113,7 +2113,7 @@ void CDPClient::OnReplace( CAr & ar )
 	g_WorldMng.Open( g_Neuz.m_pd3dDevice, dwWorldID );
 	g_WorldMng.Get()->RestoreDeviceObjects( g_Neuz.m_pd3dDevice );
 	g_WorldMng.Get()->SetCamera( &g_Neuz.m_camera );
-	g_Neuz.m_camera.Transform( D3DDEVICE, g_WorldMng.Get() );
+	g_Neuz.m_camera.Transform( g_WorldMng.Get() );
 	g_Neuz.m_camera.Reset();
 	g_WorldMng.Get()->ReadWorld( vPos );
 #ifdef __HOUSING
@@ -15378,7 +15378,7 @@ void CDPClient::OnWorldReadInfo( CAr & ar )
 	g_WorldMng.Open( g_Neuz.m_pd3dDevice, dwWorldId );
 	g_WorldMng.Get()->RestoreDeviceObjects( g_Neuz.m_pd3dDevice );
 	g_WorldMng.Get()->SetCamera( &g_Neuz.m_camera );
-	g_Neuz.m_camera.Transform( D3DDEVICE, g_WorldMng.Get() );
+	g_Neuz.m_camera.Transform( g_WorldMng.Get() );
 	g_Neuz.m_camera.Reset();
 	g_WorldMng.Get()->ReadWorld( vPos );
 }

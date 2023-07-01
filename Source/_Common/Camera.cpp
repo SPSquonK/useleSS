@@ -15,10 +15,10 @@ CCamera::CCamera()
 	m_fQuakeSize = 0.06f;
 	m_dwCamStyle = 0;
 }
-void CCamera::Process( LPDIRECT3DDEVICE9 pd3dDevice ,float fFactor )
+void CCamera::Process( float fFactor )
 {
 }
-void CCamera::Transform( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWorld )
+void CCamera::Transform( CWorld* pWorld )
 {
 	D3DXVECTOR3	vTempPos = m_vPos;
 	if( m_nQuakeSec > 0 )
@@ -51,17 +51,10 @@ void CCamera::Transform( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWorld )
 #endif // client
 	D3DXMatrixLookAtLH( &m_matView, &vTempPos, &m_vLookAt, &vUp );
 
-	pd3dDevice->SetTransform( D3DTS_VIEW, &m_matView );
+	g_Neuz.m_pd3dDevice->SetTransform( D3DTS_VIEW, &m_matView );
 	pWorld->UpdateCullInfo( &m_matView, &pWorld->m_matProj );
-	// 거대한 오브젝트의 컬링을 위해 카메라를 실제보다 뒤로 조금 뺀다.
-	/*
-	D3DXVECTOR3 vTempLook = m_vLookAt;
-	D3DXVec3Normalize(&(vTempLook),&(vTempLook));
-	vTempPos -= ( vTempLook * 3);
-	D3DXMATRIX mTempView;
-	D3DXMatrixLookAtLH( &mTempView, &vTempPos, &m_vLookAt, &D3DXVECTOR3(0.0f,1.0f,0.0f) );
-	pWorld->UpdateCullInfo( &mTempView, &pWorld->m_matProj );
-	*/
+	// 거대한 오브젝트의 컬링을 위해 카메라를 실제보다 뒤로 조금 뺀다.$
+	// 
 	// 현재 카메라의 역함수를 구한다. 이것은 여기저기서 다목적으로 사용한다.
 	D3DXMatrixInverse( &m_matInvView, NULL, &m_matView );
 	m_matInvView._41 = 0.0f; m_matInvView._42 = 0.0f; m_matInvView._43 = 0.0f;
@@ -177,7 +170,7 @@ BOOL CBackCamera::SetCamMode(int nType)
 }
 #endif
 
-void CBackCamera::Process( LPDIRECT3DDEVICE9 pd3dDevice ,float fFactor )
+void CBackCamera::Process( float fFactor )
 {
 #ifdef __CLIENT
 	CMover *pMover = g_pPlayer;
@@ -438,17 +431,17 @@ CToolCamera::CToolCamera()
 	m_fPitchVelocity = 0;
 	//m_matOrientation = 0;
 }
-void CToolCamera::Process( LPDIRECT3DDEVICE9 pd3dDevice, float fFactor )
+void CToolCamera::Process( float fFactor )
 {
 }
-void CToolCamera::Transform( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWorld )
+void CToolCamera::Transform( CWorld* pWorld )
 {
     D3DXQUATERNION qR;
     D3DXQuaternionRotationYawPitchRoll( &qR, m_fYaw, m_fPitch, 0.0f );
     //D3DXMatrixAffineTransformation( &m_matOrientation, 1.25f, NULL, &qR, &m_vPos );
 	D3DXMatrixAffineTransformation( &m_matOrientation, 1.0f, NULL, &qR, &m_vPos );
     D3DXMatrixInverse( &m_matView, NULL, &m_matOrientation );
-    pd3dDevice->SetTransform( D3DTS_VIEW, &m_matView );
+		g_Neuz.m_pd3dDevice->SetTransform( D3DTS_VIEW, &m_matView );
 	pWorld->UpdateCullInfo( &m_matView, &pWorld->m_matProj );
 	D3DXMatrixInverse( &m_matInvView, NULL, &m_matView );
 	m_matInvView._41 = 0.0f; m_matInvView._42 = 0.0f; m_matInvView._43 = 0.0f;

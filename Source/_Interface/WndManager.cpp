@@ -2054,8 +2054,8 @@ void CWndMgr::SetPlayer( CMover* pMover )
 		//CWndWorld* pWndWorld = (CWndWorld*)GetWndBase( APP_WORLD );
 		//pWndWorld->Projection( D3DDEVICE );
 		g_Neuz.m_camera.Reset();
-		g_Neuz.m_camera.Process( D3DDEVICE );
-		g_Neuz.m_camera.Transform( D3DDEVICE, g_WorldMng.Get() );
+		g_Neuz.m_camera.Process( );
+		g_Neuz.m_camera.Transform( g_WorldMng.Get() );
 
 		//gmpbigsun: g_pPlayer가 이제 막 세팅됨, 길드하우스 
 		// 클라 LandScape는 실제로 ReadWorld가 실행될때 값이 채워진다. ( 서버로 패킷수신시 업데이트 됨 ), 그전에 보이는것들에 대해 문제가 발생하므로

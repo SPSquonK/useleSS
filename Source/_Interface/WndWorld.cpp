@@ -961,7 +961,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		RenderAltimeter();
 
 	CRect rectClient = GetClientRect();
-	g_Neuz.m_camera.Transform( g_Neuz.m_pd3dDevice, g_WorldMng.Get() );
+	g_Neuz.m_camera.Transform( g_WorldMng.Get() );
 
 #ifdef __CLIENT
 	// 머리위에 뜨는 데미지 숫자를 위해 게임화면 뷰표트를 받아둠.

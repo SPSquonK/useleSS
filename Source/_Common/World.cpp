@@ -835,9 +835,9 @@ void CWorld::Process()
 		if(g_pPlayer && g_pPlayer->m_pActMover )
 		{
 			if(g_pPlayer->m_pActMover->IsFly() )
-				m_pCamera->Process( m_pd3dDevice, 10.0f );
+				m_pCamera->Process( 10.0f );
 			else
-				m_pCamera->Process( m_pd3dDevice, 4.0f );
+				m_pCamera->Process( 4.0f );
 		}
 	}
 	if( g_pPlayer )
