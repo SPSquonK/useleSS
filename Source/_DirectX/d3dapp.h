@@ -85,9 +85,6 @@ protected:
     HRESULT Initialize3DEnvironment();
     HRESULT HandlePossibleSizeChange();
     HRESULT Reset3DEnvironment();
-    HRESULT ToggleFullscreen();
-    HRESULT ForceWindowed();
-    HRESULT UserSelectNewDevice();
     void    Cleanup3DEnvironment();
     HRESULT Render3DEnvironment();
     virtual HRESULT AdjustWindowForChange();
