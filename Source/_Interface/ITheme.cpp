@@ -69,8 +69,8 @@ BOOL CTheme::LoadTheme( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName)
 			scanner.GetToken();
 			scanner.GetToken();
 
-			m_texWallPaper.LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, scanner.token ), 0xff0000 );
-			m_texWndPaper.LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "WindField.bmp" ), 0xff0000 );
+			m_texWallPaper.LoadTexture( MakePath( DIR_THEME, scanner.token ), 0xff0000 );
+			m_texWndPaper.LoadTexture( MakePath( DIR_THEME, "WindField.bmp" ), 0xff0000 );
 		}	
 		else
 		if( scanner.Token == "m_dwWallPaperType" )

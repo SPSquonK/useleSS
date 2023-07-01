@@ -184,9 +184,9 @@ public:
 
 
 	LPDIRECT3DTEXTURE9 GetTexture() { return m_pTexture; }
-	BOOL CreateTexture( LPDIRECT3DDEVICE9 pd3dDevice, int nWidth, int nHeight, 
+	BOOL CreateTexture( int nWidth, int nHeight, 
 						   UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool = D3DPOOL_DEFAULT );
-	BOOL LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE );
+	BOOL LoadTexture( LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE );
 	//BOOL LoadTextureFromRes( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE );
 	void Render( C2DRender* p2DRender, CPoint pt, DWORD dwBlendFactorAlhpa = 255 ) {
 		p2DRender->RenderTexture( pt, this, dwBlendFactorAlhpa ); 
@@ -231,12 +231,12 @@ public:
 	[[nodiscard]] DWORD GetNumber() const noexcept { return m_dwNumber; }
 	void MakeVertex( C2DRender* p2DRender, CPoint point, int nIndex, TEXTUREVERTEX** ppVertices );
 	void MakeVertex( C2DRender* p2DRender, CPoint point, int nIndex, TEXTUREVERTEX2** ppVertices, DWORD dwColor );
-	void Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX* pVertices, int nVertexNum );
-	void Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX2* pVertices, int nVertexNum );
+	void Render( TEXTUREVERTEX* pVertices, int nVertexNum );
+	void Render( TEXTUREVERTEX2* pVertices, int nVertexNum );
 
-	virtual BOOL LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName );
+	virtual BOOL LoadScript( LPCTSTR pFileName );
 
-	CTexture* LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor );
+	CTexture* LoadTexture( LPCTSTR pFileName, D3DCOLOR d3dKeyColor );
 	CTexture* GetAt( DWORD dwIndex ) {
 		return &m_ap2DTexture[ dwIndex ];
 	}
@@ -294,7 +294,7 @@ public:
 	~CDamageNumMng();
 
 	void DeleteDeviceObjects();
-	void LoadTexture(LPDIRECT3DDEVICE9 pd3dDevice);
+	void LoadTexture();
 	void AddNumber(D3DXVECTOR3 vPos,DWORD nNumber,DWORD nAttribute); // 새로운 데미지 표시를 생성시킨다.
 	void Process(); // 현재 생성된 데미지 표시들을 처리한다.
 	void Render(); // 현재 생성된 데미지 표시들을 출력한다.

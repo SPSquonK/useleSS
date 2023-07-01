@@ -75,7 +75,7 @@ void CWndRankTab::OnDraw(C2DRender * p2DRender) {
 		sy += 25;
 	}
 
-	pWndWorld->m_texMsgIcon.Render(m_pApp->m_pd3dDevice, pVertex, ((int)pVertices - (int)pVertex) / sizeof(TEXTUREVERTEX2));
+	pWndWorld->m_texMsgIcon.Render(pVertex, ((int)pVertices - (int)pVertex) / sizeof(TEXTUREVERTEX2));
 }
 void CWndRankTab::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();

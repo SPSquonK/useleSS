@@ -643,7 +643,7 @@ void CWndRainbowRaceMiniGameButton::OnInitialUpdate()
 
 	Move( point );
 
-	m_bLoadTexMap = m_BtnTexture.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "texMapRainbowButton.inc" ) ) );
+	m_bLoadTexMap = m_BtnTexture.LoadScript( MakePath( DIR_THEME, _T( "texMapRainbowButton.inc" ) ) );
 } 
 
 void CWndRainbowRaceMiniGameButton::PaintFrame( C2DRender* p2DRender )
@@ -1172,7 +1172,7 @@ void CWndRRMiniGameDice::OnInitialUpdate()
 	m_strPathDice[4] = MakePath( DIR_ICON, "Icon_5Dice90X90.dds");
 	m_strPathDice[5] = MakePath( DIR_ICON, "Icon_6Dice90X90.dds");
 
-	if(!m_texTargetNum.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "RainbowDiceNumber.inc" ) ))
+	if(!m_texTargetNum.LoadScript( MakePath( DIR_THEME, "RainbowDiceNumber.inc" ) ))
 		Destroy();
 
 	MoveParentCenter();
@@ -1570,7 +1570,7 @@ void CWndRRMiniGameStopWatch::OnInitialUpdate()
 		_T("RRMinigameStopwatch.inc")
 	);
 
-	if(!m_texStopWatchNum.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "RainbowStopWatchNumber.inc" ) ))
+	if(!m_texStopWatchNum.LoadScript( MakePath( DIR_THEME, "RainbowStopWatchNumber.inc" ) ))
 		Destroy();
 
 	MoveParentCenter();
@@ -1837,7 +1837,7 @@ void CWndRRMiniGameCard::OnInitialUpdate()
 	m_nCustomID[16] = WIDC_CUSTOM17;
 	m_nCustomID[17] = WIDC_CUSTOM18;
 
-	if(!m_texPenaltyNum.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "RainbowCardPenaltyNumber.inc" ) ))
+	if(!m_texPenaltyNum.LoadScript( MakePath( DIR_THEME, "RainbowCardPenaltyNumber.inc" ) ))
 		Destroy();
 
 	MoveParentCenter();

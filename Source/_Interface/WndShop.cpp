@@ -1163,7 +1163,7 @@ BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 
 	m_nHairCost = 0;
 	m_nHairColorCost = 0;	
-	m_Texture.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "yellowbuttten.tga" ), 0xffff00ff, TRUE );
+	m_Texture.LoadTexture( MakePath( DIR_THEME, "yellowbuttten.tga" ), 0xffff00ff, TRUE );
 
 	return InitDialog( APP_BEAUTY_SHOP_EX, pWndParent, 0, 0 );
 }

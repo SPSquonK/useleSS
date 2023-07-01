@@ -468,7 +468,7 @@ void CWndSkillTreeCommon::ResetSkills() {
 	}
 
 	m_kTexLevel.DeleteDeviceObjects();
-	m_kTexLevel.LoadScript(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
+	m_kTexLevel.LoadScript(MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
 }
 
 void CWndSkillTreeCommon::OnSkillPointUp() {
@@ -1247,8 +1247,8 @@ void CWndSkillTreeEx::OnInitialUpdate() {
 
 	RestoreDeviceObjects();
 
-	m_texGauEmptyNormal.LoadTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "GauEmptyNormal.bmp"), 0xffff00ff, TRUE);
-	m_texGauFillNormal.LoadTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "GauFillNormal.bmp"), 0xffff00ff, TRUE);
+	m_texGauEmptyNormal.LoadTexture(MakePath(DIR_THEME, "GauEmptyNormal.bmp"), 0xffff00ff, TRUE);
+	m_texGauFillNormal.LoadTexture(MakePath(DIR_THEME, "GauFillNormal.bmp"), 0xffff00ff, TRUE);
 
 	m_aSkillLevel[0] = m_textureMng.AddTexture(MakePath(DIR_THEME, "ButtSkillLevelHold01.tga"), 0xffff00ff);
 	m_aSkillLevel[1] = m_textureMng.AddTexture(MakePath(DIR_THEME, "ButtSkillLevelup01.tga"), 0xffff00ff);

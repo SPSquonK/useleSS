@@ -18,16 +18,16 @@ CDialogMsg::~CDialogMsg()
 	ClearAllMessage();
 }
 
-HRESULT CDialogMsg::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CDialogMsg::InitDeviceObjects()
 {
-	m_texPack_ex[0].LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texDialogBox.inc" ) ) );
-	m_texPack_ex[1].LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texDialogBoxParty.inc" ) ) );
-	m_texPack_ex[2].LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texDialogBoxGuild.inc" ) ) );
+	m_texPack_ex[0].LoadScript( MakePath( DIR_THEME, _T( "texDialogBox.inc" ) ) );
+	m_texPack_ex[1].LoadScript( MakePath( DIR_THEME, _T( "texDialogBoxParty.inc" ) ) );
+	m_texPack_ex[2].LoadScript( MakePath( DIR_THEME, _T( "texDialogBoxGuild.inc" ) ) );
 	
-	m_texEmoticon.LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texDialogEmoticon.inc" ) ) );
+	m_texEmoticon.LoadScript( MakePath( DIR_THEME, _T( "texDialogEmoticon.inc" ) ) );
 
 
-	m_texEmoticonUser.LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texChatEmoticon.inc" ) ) );
+	m_texEmoticonUser.LoadScript( MakePath( DIR_THEME, _T( "texChatEmoticon.inc" ) ) );
 	LoadEmotion();
 
 	m_pTex[0] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "texDialogBox_left.tga" ), 0xffff00ff );

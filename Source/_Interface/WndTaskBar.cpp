@@ -687,7 +687,7 @@ void CWndTaskBar::OnInitialUpdate()
 		}
 		SetWndRect( rect );
 	}
-	m_texPack.LoadScript( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "hotkey.inc" ) );
+	m_texPack.LoadScript( MakePath( DIR_THEME, "hotkey.inc" ) );
 
 	m_menuShortcut.CreateMenu( this );	
 	m_menuShortcut.AddButton( 0 ,_T( "ªË¡¶" ) );

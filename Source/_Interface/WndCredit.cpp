@@ -291,7 +291,7 @@ void CWndCredit::OnInitialUpdate()
 			string.Format( "shotCredit%02d.dds", i );
 			//string = "shotCredit20.dds";
 			
-			m_aTexScreenShot[ i ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, string ), 0xffff00ff );
+			m_aTexScreenShot[ i ].LoadTexture( MakePath( DIR_THEME, string ), 0xffff00ff );
 			
 			m_aTexScreenShot[ i ].m_size = CSize( 598 + 76, 337 );
 		}

@@ -115,7 +115,7 @@ void CWndMacroChat::OnMouseMove(UINT nFlags, CPoint point)
 void CWndMacroChat::OnInitialUpdate()
 {
 	m_pTexMacro = m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_MacroChat.dds" ), 0xffff00ff );
-	m_texMacroChat.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "wndButtMacroChat.bmp" ), 0xffff00ff );
+	m_texMacroChat.LoadTexture( MakePath( DIR_THEME, "wndButtMacroChat.bmp" ), 0xffff00ff );
 }
 
 BOOL CWndTextChat::IsPickupSpace(CPoint) {

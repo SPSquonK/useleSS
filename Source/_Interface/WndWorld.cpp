@@ -216,7 +216,7 @@ void CCaption::AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLo
 	if( hr == D3D_OK )
 	{
 		AdjustSize( &size );
-		if( lpCaption->m_texture.CreateTexture( pd3dDevice, size.cx, size.cy, 0, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT ) )
+		if( lpCaption->m_texture.CreateTexture( size.cx, size.cy, 0, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT ) )
 		{
 			IDirect3DSurface9* pOldSurface;
 			IDirect3DSurface9* pOldSurfaceZ;
@@ -387,7 +387,7 @@ void CCapTime::SetTime( int nTime, CD3DFontAPI* pFont )
 	{
 		CSize size = m_size;
 		AdjustSize( &size );
-		if( m_texture.CreateTexture( pd3dDevice, size.cx, size.cy, 0, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT ) )
+		if( m_texture.CreateTexture( size.cx, size.cy, 0, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT ) )
 		{
 			IDirect3DSurface9* pOldSurface;
 			IDirect3DSurface9* pOldSurfaceZ;
@@ -2668,15 +2668,15 @@ void CWndWorld::OnInitialUpdate()
 
 	m_wndMenuMover.CreateMenu( this );	
 
-	m_texTarget.LoadScript( D3DDEVICE, MakePath( DIR_ICON, "icon_target.inc" ) );
-	m_texTargetFly.LoadScript( D3DDEVICE, MakePath( DIR_ICON, "icon_FlightTargetB.inc" ) );			// 비행모드시 타겟 4귀퉁이.		sun!!
-	m_texTargetArrow.LoadScript( D3DDEVICE, MakePath( DIR_ICON, "icon_FlightTargetArrow.inc" ) );	// 비행모드시 타겟방향을 가르키는 화살표
+	m_texTarget.LoadScript( MakePath( DIR_ICON, "icon_target.inc" ) );
+	m_texTargetFly.LoadScript( MakePath( DIR_ICON, "icon_FlightTargetB.inc" ) );			// 비행모드시 타겟 4귀퉁이.		sun!!
+	m_texTargetArrow.LoadScript( MakePath( DIR_ICON, "icon_FlightTargetArrow.inc" ) );	// 비행모드시 타겟방향을 가르키는 화살표
 	m_texTargetArrow.GetAt(0)->m_ptCenter.x += 32;
 	m_texTargetArrow.GetAt(0)->m_ptCenter.y += 32;
-	m_texGauFlight.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "Theme_GauFlight.inc" ) );		// 비행모드시 게이지 인터페이스
-	m_texFontDigital.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "Theme_FontDigital1.inc" ) );		// 디지탈모양의 폰트.
+	m_texGauFlight.LoadScript( MakePath( DIR_THEME, "Theme_GauFlight.inc" ) );		// 비행모드시 게이지 인터페이스
+	m_texFontDigital.LoadScript( MakePath( DIR_THEME, "Theme_FontDigital1.inc" ) );		// 디지탈모양의 폰트.
 	
-	//m_texFlaris.LoadTexture( D3DDEVICE, MakePath( DIR_EFFECT, "WelcomeToFlaris.tga" ), 0xff000000 );
+	//m_texFlaris.LoadTexture( MakePath( DIR_EFFECT, "WelcomeToFlaris.tga" ), 0xff000000 );
 	//m_texFlaris.m_ptCenter = CPoint( m_texFlaris.m_size.cx / 2, m_texFlaris.m_size.cy / 2 );
 
 	m_meshArrow.InitDeviceObjects( m_pApp->m_pd3dDevice );
@@ -2688,12 +2688,12 @@ void CWndWorld::OnInitialUpdate()
 	m_dwRenderArrowTime  = 0;
 	
 	RestoreDeviceObjects();
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texLvUp.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvUp.bmp" ), 0xffff00ff, TRUE );
-	m_texLvDn.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvDn.bmp" ), 0xffff00ff, TRUE );
-	m_texLvUp2.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvUp2.bmp" ), 0xffff00ff, TRUE );
-	m_texLvDn2.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvDn2.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texLvUp.LoadTexture( MakePath( DIR_THEME, "LvUp.bmp" ), 0xffff00ff, TRUE );
+	m_texLvDn.LoadTexture( MakePath( DIR_THEME, "LvDn.bmp" ), 0xffff00ff, TRUE );
+	m_texLvUp2.LoadTexture( MakePath( DIR_THEME, "LvUp2.bmp" ), 0xffff00ff, TRUE );
+	m_texLvDn2.LoadTexture( MakePath( DIR_THEME, "LvDn2.bmp" ), 0xffff00ff, TRUE );
 
 
 	for (const AddSkillProp & pAddSkill : prj.m_aPropAddSkill) {
@@ -2800,7 +2800,7 @@ void CWndWorld::OnInitialUpdate()
 	{
 		str.Format( "Icon_CloakSLogo%02d.jpg", i+1 );
 		
-		if( !m_pTextureLogo[i].LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_ICON, str ), D3DCOLOR_XRGB(0,0,0), FALSE ) )
+		if( !m_pTextureLogo[i].LoadTexture( MakePath( DIR_ICON, str ), D3DCOLOR_XRGB(0,0,0), FALSE ) )
 		{
 			Error( "길드 로고 텍스쳐 로딩 실패 : %s", str );
 		}
@@ -2821,11 +2821,11 @@ void CWndWorld::OnInitialUpdate()
 	}
 #endif
 	
-	m_texMsgIcon.LoadScript( m_pApp->m_pd3dDevice, "icon\\icon_IconMessenger.inc" );
+	m_texMsgIcon.LoadScript( "icon\\icon_IconMessenger.inc" );
 	
-	m_texAttrIcon.LoadScript( m_pApp->m_pd3dDevice, "icon\\Icon_MonElemantkind.inc" );
+	m_texAttrIcon.LoadScript( "icon\\Icon_MonElemantkind.inc" );
 	
-	m_texPlayerDataIcon.LoadScript( m_pApp->m_pd3dDevice, "icon\\icon_PlayerData.inc" );
+	m_texPlayerDataIcon.LoadScript( "icon\\icon_PlayerData.inc" );
 	for( int j = 0 ; j < SM_MAX ; ++j )
 	{
 		if( j != SM_RESIST_ATTACK_LEFT && j != SM_RESIST_ATTACK_RIGHT && j != SM_RESIST_DEFENSE )
@@ -2904,8 +2904,8 @@ void CWndWorld::OnInitialUpdate()
 	m_bViewMap = FALSE;	
 	CWorldMap* pWorldMap = CWorldMap::GetInstance();
 	pWorldMap->Init(); 
-	m_TexGuildWinner.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "TexGuildCombatWinner.bmp" ), 0xffff00ff );
-	m_TexGuildBest.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "TexGuildCombatBest.bmp" ), 0xffff00ff );
+	m_TexGuildWinner.LoadTexture( MakePath( DIR_THEME, "TexGuildCombatWinner.bmp" ), 0xffff00ff );
+	m_TexGuildBest.LoadTexture( MakePath( DIR_THEME, "TexGuildCombatBest.bmp" ), 0xffff00ff );
 	InitEyeFlash();
 
 #ifdef __Y_CAMERA_SLOW_8

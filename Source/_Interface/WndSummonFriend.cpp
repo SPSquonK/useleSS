@@ -174,7 +174,7 @@ void CWndSummonPartyMsg::OnInitialUpdate()
 	// 여기에 코딩하세요
 	ItemProp* pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_PARTYSUMMON );
 	if( pItemProp )
-		m_Texture.LoadTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
+		m_Texture.LoadTexture(MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
 
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();

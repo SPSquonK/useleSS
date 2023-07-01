@@ -45,7 +45,7 @@ void CToolTip::InitTexture()
 		for( int j = 0 ; j < 9 ; ++ j )
 		{
 			szTextName.Format("WndTooltipTile%02d.tga", (i * 10) + j);
-			m_apTextureToolTip[nloadTexture].LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, szTextName ), 0xffff00ff, TRUE );
+			m_apTextureToolTip[nloadTexture].LoadTexture( MakePath( DIR_THEME, szTextName ), 0xffff00ff, TRUE );
 			++nloadTexture;
 		}
 	}

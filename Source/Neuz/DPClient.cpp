@@ -2045,7 +2045,7 @@ void CDPClient::OnReplace( CAr & ar )
 	if( pWndWorld )
 		pWndWorld->m_pSelectRenderObj = NULL;
 
-	g_Neuz.m_TexLoading.LoadTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff, FALSE );
+	g_Neuz.m_TexLoading.LoadTexture( strPath, 0xffff00ff, FALSE );
 	
 	g_Neuz.m_bTexLoad = TRUE;
 	g_Neuz.m_nTexAlpha = 255;

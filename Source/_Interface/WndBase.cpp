@@ -2085,7 +2085,7 @@ void CWndBase::AdjustWndBase( D3DFORMAT d3dFormat ) //= D3DFMT_A4R4G4B4 )
 	AdjustSize( &size1 );
 
 	CTexture* pTexture = new CTexture;
-	pTexture->CreateTexture( m_pApp->m_pd3dDevice, size1.cx, size1.cy, 1, 0, d3dFormat, D3DPOOL_MANAGED );
+	pTexture->CreateTexture( size1.cx, size1.cy, 1, 0, d3dFormat, D3DPOOL_MANAGED );
 
 	m_backgroundTextureMng.insert_or_assign(this, std::unique_ptr<CTexture>(pTexture));
 	m_pTexture = pTexture;

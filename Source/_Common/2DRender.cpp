@@ -1043,10 +1043,10 @@ BOOL CTexture::DeleteDeviceObjects()
 	SAFE_RELEASE( m_pTexture );
 	return TRUE;
 }
-BOOL CTexture::CreateTexture( LPDIRECT3DDEVICE9 pd3dDevice, 
+BOOL CTexture::CreateTexture( 
 	 int nWidth, int nHeight, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool )
 {
-	HRESULT hr = pd3dDevice->CreateTexture( nWidth, nHeight, 1, Usage, Format, Pool, &m_pTexture, NULL );
+	HRESULT hr = g_Neuz.m_pd3dDevice->CreateTexture( nWidth, nHeight, 1, Usage, Format, Pool, &m_pTexture, NULL );
 	
 	if( hr != D3D_OK )	
 	{
@@ -1085,7 +1085,7 @@ BOOL CTexture::CreateTexture( LPDIRECT3DDEVICE9 pd3dDevice,
 	return TRUE;
 }
 
-BOOL CTexture::LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader )
+BOOL CTexture::LoadTexture( LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader )
 {
 #ifndef __WORLDSERVER
 	// 여기서 텍스춰 생성 
@@ -1112,7 +1112,7 @@ BOOL CTexture::LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3D
 		//dKeyColor = 0;
 		D3DXIMAGE_INFO imageInfo;
 		  // Create the texture using D3DX
-		HRESULT hr = ::LoadTextureFromRes( pd3dDevice, pFileName, 
+		HRESULT hr = ::LoadTextureFromRes( g_Neuz.m_pd3dDevice, pFileName, 
 			D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_A1R5G5B5,//D3DFMT_UNKNOWN,//D3DFMT_A1R5G5B5, 
 			D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 			D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );
@@ -1141,9 +1141,9 @@ BOOL CTexture::LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3D
 
 		//#define BMP32BIT
 		#ifdef BMP32BIT
-			CreateTexture( pd3dDevice, m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED );
+			CreateTexture( m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED );
 		#else
-			CreateTexture( pd3dDevice, m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A1R5G5B5, D3DPOOL_MANAGED );
+			CreateTexture( m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A1R5G5B5, D3DPOOL_MANAGED );
 		#endif
 			HRESULT hr;
 			D3DLOCKED_RECT lockedRect;
@@ -1202,9 +1202,9 @@ BOOL CTexture::LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3D
 			int nDestLine = m_size.cx - size.cx;
 		#define BMP32BIT
 		#ifdef BMP32BIT
-			CreateTexture( pd3dDevice, m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED );// == FALSE )
+			CreateTexture( m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED );// == FALSE )
 		#else
-			CreateTexture( pd3dDevice, m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A4R4G4B4, D3DPOOL_MANAGED );
+			CreateTexture( m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A4R4G4B4, D3DPOOL_MANAGED );
 		#endif
 			HRESULT hr;
 			D3DLOCKED_RECT lockedRect;
@@ -1351,10 +1351,12 @@ void CTexturePack::MakeVertex( C2DRender* p2DRender, CPoint point, int nIndex, T
 	SetTextureVertex2( *ppVertices, right, bottom, pTexture->m_fuRB, pTexture->m_fvRB, dwColor );
 	(*ppVertices)++;
 }
-void CTexturePack::Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX* pVertices, int nVertexNum )
+void CTexturePack::Render( TEXTUREVERTEX* pVertices, int nVertexNum )
 {
 	if( nVertexNum == 0 )
 		return;
+
+	LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSU, 1 );
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV, 1 );
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_POINT );		
@@ -1377,10 +1379,12 @@ void CTexturePack::Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX* pVertice
 	pd3dDevice->SetFVF( D3DFVF_TEXTUREVERTEX );
 	pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLELIST, nVertexNum / 3, pVertices, sizeof( TEXTUREVERTEX ) );
 }
-void CTexturePack::Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX2* pVertices, int nVertexNum )
+void CTexturePack::Render( TEXTUREVERTEX2* pVertices, int nVertexNum )
 {
 	if( nVertexNum == 0 )
 		return;
+
+	LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSU, 1 );
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV, 1 );
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_POINT );		
@@ -1401,7 +1405,7 @@ void CTexturePack::Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX2* pVertic
 	pd3dDevice->SetFVF( D3DFVF_TEXTUREVERTEX2 );
 	pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLELIST, nVertexNum / 3, pVertices, sizeof( TEXTUREVERTEX2 ) );
 }
-BOOL CTexturePack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName )
+BOOL CTexturePack::LoadScript( LPCTSTR pszFileName )
 {
 	CScanner scanner;
 	if( scanner.Load( pszFileName ) == FALSE )
@@ -1439,14 +1443,14 @@ BOOL CTexturePack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName
 
 			if( bMultiLang )
 			{
-				LoadTextureFromRes( pd3dDevice, MakePath( DIR_THEME, strFileName ), 
+				LoadTextureFromRes( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, strFileName ), 
 										D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 										D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 										D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );
 			}
 			else
 			{
-				LoadTextureFromRes( pd3dDevice, strFileName, 
+				LoadTextureFromRes( g_Neuz.m_pd3dDevice, strFileName, 
 					D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 					D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 					D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );
@@ -1620,7 +1624,7 @@ CTexture * CTextureMng::AddTexture(LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL
 	}
 
 	CTexture * pTexture = new CTexture;
-	if (pTexture->LoadTexture(g_Neuz.m_pd3dDevice, pFileName, d3dKeyColor, bMyLoader)) {
+	if (pTexture->LoadTexture(pFileName, d3dKeyColor, bMyLoader)) {
 		m_mapTexture.emplace(key, pTexture);
 		return pTexture;
 	} else {
@@ -1774,8 +1778,8 @@ void CDamageNum::Render(CTexturePack *textPackNum)
 	
 }
 
-void CDamageNumMng::LoadTexture(LPDIRECT3DDEVICE9 pd3dDevice) {
-	m_textPackNum.LoadScript(pd3dDevice, MakePath(DIR_SFX, _T("DmgEffect.inc")));
+void CDamageNumMng::LoadTexture() {
+	m_textPackNum.LoadScript(MakePath(DIR_SFX, _T("DmgEffect.inc")));
 }
 
 CDamageNumMng::~CDamageNumMng() {

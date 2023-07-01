@@ -95,7 +95,7 @@ void CWndQuizEventQuestionOX::OnInitialUpdate( void )
 		pWndBase->Destroy();
 	
 	m_texChar.DeleteDeviceObjects();
-	m_texChar.LoadTexture( g_Neuz.m_pd3dDevice, MakePath( "char\\", "char_Juria_JAP.tga" ), 0xffff00ff, TRUE );
+	m_texChar.LoadTexture( MakePath( "char\\", "char_Juria_JAP.tga" ), 0xffff00ff, TRUE );
 	
 	MoveParentCenter();
 }
@@ -177,7 +177,7 @@ void CWndQuizEventQuestion4C::OnInitialUpdate( void )
 		pWndBase->Destroy();
 	
 	m_texChar.DeleteDeviceObjects();
-	m_texChar.LoadTexture( g_Neuz.m_pd3dDevice, MakePath( "char\\", "char_Juria_JAP.tga" ), 0xffff00ff, TRUE );
+	m_texChar.LoadTexture( MakePath( "char\\", "char_Juria_JAP.tga" ), 0xffff00ff, TRUE );
 	
 	MoveParentCenter();
 }
@@ -307,7 +307,7 @@ void CWndQuizEventButton::OnInitialUpdate()
 
 	Move( point );
 
-	m_bLoadTexMap = m_BtnTexture.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "texMapQuizEventButton.inc" ) ) );
+	m_bLoadTexMap = m_BtnTexture.LoadScript( MakePath( DIR_THEME, _T( "texMapQuizEventButton.inc" ) ) );
 } 
 
 void CWndQuizEventButton::PaintFrame( C2DRender* p2DRender )

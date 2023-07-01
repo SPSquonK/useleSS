@@ -62,8 +62,8 @@ FLOAT _fMap_Y2 = 4250.0f;
 
 void CWorldMap::Init()
 {
-	m_texArrow[0].LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME,"ImgMapArrow.bmp"), 0xffff00ff );
-	m_texArrow[1].LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME,"ImgMapArrowParty.bmp"), 0xffff00ff );
+	m_texArrow[0].LoadTexture( MakePath( DIR_THEME,"ImgMapArrow.bmp"), 0xffff00ff );
+	m_texArrow[1].LoadTexture( MakePath( DIR_THEME,"ImgMapArrowParty.bmp"), 0xffff00ff );
 	ZeroMemory( &m_billboard, sizeof( m_billboard )  );
 	m_billboard[0].rect.SetRect( 0, 0, m_texArrow[0].m_size.cx, m_texArrow[0].m_size.cy );
 	m_billboard[0].ptCenter = CPoint( m_texArrow[0].m_size.cx / 2, m_texArrow[0].m_size.cy / 2 );
@@ -86,7 +86,7 @@ void CWorldMap::Init()
 
 	m_strMapStringList[7] = "WORLD_Estia.dds";
 
-	m_texMapButton.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "texMapButton.inc" ) ) );	
+	m_texMapButton.LoadScript( MakePath( DIR_THEME, _T( "texMapButton.inc" ) ) );	
 
 	m_strMonScript[0] = "texMapMonster_Darkon12.inc";
 	m_strMonScript[1] = "texMapMonster_Darkon3.inc";

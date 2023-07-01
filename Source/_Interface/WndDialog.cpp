@@ -234,7 +234,7 @@ void CWndDialog::OnInitialUpdate()
 	if( lpCharacter )
 	{
 		m_texChar.DeleteDeviceObjects();
-		m_texChar.LoadTexture( g_Neuz.m_pd3dDevice, MakePath( "char\\",lpCharacter->m_szChar ), 0xffff00ff, TRUE );
+		m_texChar.LoadTexture( MakePath( "char\\",lpCharacter->m_szChar ), 0xffff00ff, TRUE );
 		if( lpCharacter->m_dwMusicId )
 			PlayMusic( lpCharacter->m_dwMusicId, 1 );
 	}

@@ -82,7 +82,7 @@ public:
 	void RemoveDeleteObjMsg();
 
     // Initializing and destroying device-dependent objects
-    HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+    HRESULT InitDeviceObjects();
     HRESULT DeleteDeviceObjects();
     HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();

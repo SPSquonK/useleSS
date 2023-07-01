@@ -1357,7 +1357,7 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 	CString strDDSName = lpszFileName;
 	strDDSName = strDDSName.Left( strDDSName.GetLength() - 3 );
 	strDDSName += "dds";
-	m_texMiniMap.LoadTexture( m_pd3dDevice, strDDSName, 0, FALSE );
+	m_texMiniMap.LoadTexture( strDDSName, 0, FALSE );
 	return TRUE;
 }
 //

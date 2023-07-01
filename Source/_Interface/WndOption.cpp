@@ -340,8 +340,8 @@ void CWndOptSound::OnInitialUpdate()
 		pWndButton[ 1 ]->SetVisible(FALSE);
 		pWndButton[ 0 ]->SetVisible(FALSE);
 	}
-	m_Texture.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
-	m_TexturePt.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );		
+	m_Texture.LoadTexture( MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
+	m_TexturePt.LoadTexture( MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );		
 	m_nStep[0] = (int)( g_Option.m_fEffectVolume * 10 );
 	m_nStep[1] = (int)( g_Option.m_fBGMVolume * 10 );
 
@@ -676,8 +676,8 @@ void CWndOptVideo::OnInitialUpdate()
 	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_CHECK5 );
 	if(pWndButton[ 0 ])
 	pWndButton[ 0 ]->SetCheck( g_Option.m_bCameraLock );
-	m_Texture.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
-	m_TexturePt.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );		
+	m_Texture.LoadTexture( MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
+	m_TexturePt.LoadTexture( MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );		
 #ifdef __SFX_OPT
 	m_nStep[0] = g_Option.m_nSfxLevel;
 	m_nStep[1] = !g_Option.m_bSFXRenderOff;

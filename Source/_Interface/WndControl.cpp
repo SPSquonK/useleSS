@@ -2877,12 +2877,12 @@ void CWndTabCtrl::OnDraw( C2DRender* p2DRender )
 }
 void CWndTabCtrl::OnInitialUpdate()
 {
-	m_aTexture[ 0 ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndTabTile10.bmp" ), 0xffff00ff, TRUE );
-	m_aTexture[ 1 ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndTabTile11.bmp" ), 0xffff00ff, TRUE );
-	m_aTexture[ 2 ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndTabTile12.bmp" ), 0xffff00ff, TRUE );
-	m_aTexture[ 3 ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndTabTile13.bmp" ), 0xffff00ff, TRUE );
-	m_aTexture[ 4 ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndTabTile14.bmp" ), 0xffff00ff, TRUE );
-	m_aTexture[ 5 ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndTabTile15.bmp" ), 0xffff00ff, TRUE );
+	m_aTexture[ 0 ].LoadTexture( MakePath( DIR_THEME, "WndTabTile10.bmp" ), 0xffff00ff, TRUE );
+	m_aTexture[ 1 ].LoadTexture( MakePath( DIR_THEME, "WndTabTile11.bmp" ), 0xffff00ff, TRUE );
+	m_aTexture[ 2 ].LoadTexture( MakePath( DIR_THEME, "WndTabTile12.bmp" ), 0xffff00ff, TRUE );
+	m_aTexture[ 3 ].LoadTexture( MakePath( DIR_THEME, "WndTabTile13.bmp" ), 0xffff00ff, TRUE );
+	m_aTexture[ 4 ].LoadTexture( MakePath( DIR_THEME, "WndTabTile14.bmp" ), 0xffff00ff, TRUE );
+	m_aTexture[ 5 ].LoadTexture( MakePath( DIR_THEME, "WndTabTile15.bmp" ), 0xffff00ff, TRUE );
 }
 
 void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFORMAT d3dFormat )

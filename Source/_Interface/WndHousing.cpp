@@ -634,8 +634,8 @@ void CWndGuildHousing::OnInitialUpdate()
 	pStatic = (CWndStatic *)GetDlgItem( WIDC_STATIC5 );
 	pStatic->SetVisible( FALSE );
 
-	m_texUp.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvUp.bmp" ), 0xffff00ff );
-	m_texDown.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvDn.bmp" ), 0xffff00ff );
+	m_texUp.LoadTexture( MakePath( DIR_THEME, "LvUp.bmp" ), 0xffff00ff );
+	m_texDown.LoadTexture( MakePath( DIR_THEME, "LvDn.bmp" ), 0xffff00ff );
 	
 } 
 

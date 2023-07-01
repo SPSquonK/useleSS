@@ -228,7 +228,7 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 		sy += MEMBER_LIST_HEIGHT;
 	}
 
-	pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
+	pWndWorld->m_texPlayerDataIcon.Render( pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
 	
 } 
 void CWndGuildTabMember::OnInitialUpdate() 

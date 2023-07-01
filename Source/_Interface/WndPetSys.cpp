@@ -608,8 +608,8 @@ void CWndPetStatus::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate();
 	
 	RestoreDeviceObjects();
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
 
 	m_pTexPetLvBg = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "PetLevelBg.tga"), 0xffff00ff );
 	m_pTexPetStatusBg = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "PetStatusBg.tga"), 0xffff00ff, TRUE );

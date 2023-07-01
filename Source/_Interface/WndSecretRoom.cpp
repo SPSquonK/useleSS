@@ -1123,8 +1123,8 @@ void CWndSecretRoomQuick::OnInitialUpdate()
 	for (int i = 0; i < MAX_SECRETROOM_MEMBER; i++)
 		m_pWndMemberStatic[i] = GetDlgItem<CWndStatic>(m_StaticID[i]);
 
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauFillSmall.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauFillSmall.bmp" ), 0xffff00ff, TRUE );
 	
 	SetActiveMember(m_MemberCount);
 	SortMemberList();
