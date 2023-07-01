@@ -401,7 +401,7 @@ void	CActionMover::ProcessFlyMove( void )
 				if( ! ( pMover->IsMode( TRANSPARENT_MODE ) ) )		// 투명상태가 아닐때만 렌더.
 				{	
 					if( (g_nProcessCnt & 3) == 0 )
-						CreateSfx( g_Neuz.m_pd3dDevice, XI_NAT_DUST_RUN, pMover->GetPos() );
+						CreateSfx( XI_NAT_DUST_RUN, pMover->GetPos() );
 				}
 			#endif
 			}

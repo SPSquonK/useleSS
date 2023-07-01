@@ -183,7 +183,7 @@ void CSkyBox::Process()
 							{
 								FLOAT fHeight = (FLOAT)pWaterHeight->byWaterHeight;
 								v3Pos.y = fHeight;
-								CSfx *pObj = CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_RAINCIRCLE01, v3Pos );
+								CSfx *pObj = CreateSfx( XI_GEN_RAINCIRCLE01, v3Pos );
 								FLOAT fscal = (FLOAT)( xRandom(2)+1 );
 
 								fscal *= 0.1f;
@@ -193,7 +193,7 @@ void CSkyBox::Process()
 							else
 							{
 								FLOAT fscal = xRandom(2)+0.05f;
-								CSfx *pObj = CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_RAINCIRCLE01, v3Pos );
+								CSfx *pObj = CreateSfx( XI_GEN_RAINCIRCLE01, v3Pos );
 								fscal *= 0.1f;
 								pObj->SetScale( D3DXVECTOR3( fscal, fscal, fscal ) ); 
 

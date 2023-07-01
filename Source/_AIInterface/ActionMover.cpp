@@ -292,7 +292,7 @@ int		CActionMover :: ProcessAction( const D3DXVECTOR3 *vPos )
 		if( m_bGround )		// ¶¥¿¡¼­ ¹Ì²ô·¯Áú¶§ ¸ÕÁö.
 		{
 			if( g_nProcessCnt & 1 )
-				CreateSfx( g_Neuz.m_pd3dDevice, XI_NAT_DUST_RUN, pMover->GetPos() );
+				CreateSfx( XI_NAT_DUST_RUN, pMover->GetPos() );
 		}
 	}
 #endif

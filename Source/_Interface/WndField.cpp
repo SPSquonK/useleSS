@@ -1734,7 +1734,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						m_pUpgradeMaterialItem = pFocusItem;	
 
 						if((g_pPlayer->IsMode( TRANSPARENT_MODE ) ) == 0)
-							m_pSfxUpgrade = CreateSfx( g_Neuz.m_pd3dDevice, XI_INT_INCHANT, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1 );
+							m_pSfxUpgrade = CreateSfx( XI_INT_INCHANT, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1 );
 					}
 					
 					if( pProp->dwItemKind1 == IK1_RIDE )	// �����? �������� Ż���ΰ�.

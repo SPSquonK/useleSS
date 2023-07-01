@@ -265,7 +265,7 @@ void CSfxTroStretching01::Process()
 			
 			ItemProp* pItemProp = prj.GetPartySkill( ST_STRETCHING );
 			
-			CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj2, v, pObjSrc->GetId(), D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID, -1 );	// 머리위에 sfx생성.
+			CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj2, v, pObjSrc->GetId(), D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID, -1 );	// 머리위에 sfx생성.
 		}
 		
 	}
@@ -1052,7 +1052,7 @@ void CSfxItemRangeAtk1::Process()
 			// 폭발 오브젝트 생성.
 			if( m_dwSfxHit != NULL_ID )
 			{
-				CSfx *pSfx = CreateSfx( D3DDEVICE, m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
+				CSfx *pSfx = CreateSfx( m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
 				if( pSfx )
 				{
 					pSfx->SetAngle( m_pSfxObj->m_vRotate.y );
@@ -1315,7 +1315,7 @@ void CSfxItemYoyoAtk::Process()
 				// 폭발 오브젝트 생성.
 				if( m_dwSfxHit != NULL_ID )
 				{
-					CSfx *pSfx = CreateSfx( D3DDEVICE, m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
+					CSfx *pSfx = CreateSfx( m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
 					if( pSfx )
 					{
 						pSfx->SetAngle( m_pSfxObj->m_vRotate.y );
@@ -1481,7 +1481,7 @@ void CSfxItemRangeAtk_JunkBow::Process()
 			// 폭발 오브젝트 생성.
 			if( m_dwSfxHit != NULL_ID )
 			{
-				CSfx *pSfx = CreateSfx( D3DDEVICE, m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
+				CSfx *pSfx = CreateSfx( m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
 				if( pSfx )
 				{
 					pSfx->SetAngle( m_pSfxObj->m_vRotate.y );
@@ -1553,7 +1553,7 @@ void CSfxItemRangeAtk1_Allow::Process()
 		m_nFrame++;
 		vPos.y = fHeight;
 		
-		CSfx *pSfx = CreateSfx( D3DDEVICE, XI_SKILL_RAG_BOW_ARROWRAIN01, vPos );//, m_idSrc, vPos, m_idDest, 0 );		
+		CSfx *pSfx = CreateSfx( XI_SKILL_RAG_BOW_ARROWRAIN01, vPos );//, m_idSrc, vPos, m_idDest, 0 );		
 		Delete();
 	}
 
@@ -1600,12 +1600,12 @@ void CSfxItemRangeAtk1_AllowRain::Process()
 			vPos.x += (xRandomF( 6.0f ) + -3.0f);
 			vPos.z += (xRandomF( 6.0f ) + -3.0f);
 
-			CSfx *pSfx = CreateSfx( D3DDEVICE, XI_SKILL_RAG_BOW_ARROWRAIN, vPos, m_idSrc, m_vPosDest, m_idDest, 0 );
+			CSfx *pSfx = CreateSfx( XI_SKILL_RAG_BOW_ARROWRAIN, vPos, m_idSrc, m_vPosDest, m_idDest, 0 );
 
 			vPos.x += (xRandomF( 6.0f ) + -3.0f);
 			vPos.z += (xRandomF( 6.0f ) + -3.0f);
 			
-			pSfx = CreateSfx( D3DDEVICE, XI_SKILL_RAG_BOW_ARROWRAIN, vPos, m_idSrc, m_vPosDest, m_idDest, 0 );
+			pSfx = CreateSfx( XI_SKILL_RAG_BOW_ARROWRAIN, vPos, m_idSrc, m_vPosDest, m_idDest, 0 );
 			m_nCount++;
 		}
 	}
@@ -1648,7 +1648,7 @@ void CSfxItemRangeAtk1_Stone::Process()
 		m_nFrame++;
 		vPos.y = fHeight;
 		
-		CSfx *pSfx = CreateSfx( D3DDEVICE, XI_SKILL_CIRCLE_DUST, vPos );		
+		CSfx *pSfx = CreateSfx( XI_SKILL_CIRCLE_DUST, vPos );		
 		if( pSfx )
 		{
 			pSfx->SetScale( D3DXVECTOR3( 3.0f, 3.0f, 3.0f ) );					
@@ -1699,7 +1699,7 @@ void CSfxItemRangeAtk1_StoneRain::Process()
 			vPos.x += (xRandomF( 40.0f ) + -20.0f);
 			vPos.z += (xRandomF( 40.0f ) + -20.0f);
 			
-			CSfx *pSfx = CreateSfx( D3DDEVICE, XI_SKILL_DROP_DUST, vPos, m_idSrc, m_vPosDest, m_idDest, 0 );
+			CSfx *pSfx = CreateSfx( XI_SKILL_DROP_DUST, vPos, m_idSrc, m_vPosDest, m_idDest, 0 );
 			if( pSfx )
 			{
 				pSfx->SetScale( D3DXVECTOR3( 8.0f, 8.0f, 8.0f ) );					
@@ -1786,7 +1786,7 @@ void CSfxAtkStraight::Process()
 
 	if( IsRangeObj( m_vPosDest, 0 ) )							// 목표좌표에 다다르면
 	{
-		CreateSfx( D3DDEVICE, m_dwExplosion, m_vPosDest );		// 폭발 이펙트
+		CreateSfx( m_dwExplosion, m_vPosDest );		// 폭발 이펙트
 		Delete();												// 난 삭제.
 		return;
 	}
@@ -3520,7 +3520,7 @@ void CSfxShoot::Process()
 			// 폭발 오브젝트 생성.
 			if( m_dwSfxHit != NULL_ID )
 			{
-				CSfx *pSfx = CreateSfx( D3DDEVICE, m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
+				CSfx *pSfx = CreateSfx( m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
 				if( pSfx )
 				{
 					pSfx->SetAngle( m_pSfxObj->m_vRotate.y );

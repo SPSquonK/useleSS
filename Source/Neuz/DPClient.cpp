@@ -914,7 +914,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 		if( pWorld )
 		{
 			// waste it
-			CObj* pObjtmp	= CreateObj( g_Neuz.m_pd3dDevice, dwObjType, dwObjIndex, dwObjType != OT_MOVER );
+			CObj* pObjtmp	= CreateObj( dwObjType, dwObjIndex, dwObjType != OT_MOVER );
 			pObjtmp->Serialize( ar );
 			( (CCtrl*)pObjtmp )->SetId( NULL_ID );
 			safe_delete( pObjtmp );
@@ -931,7 +931,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 		else
 		{
 			safe_delete( pObj );
-			pObj	= (CCtrl*)CreateObj( g_Neuz.m_pd3dDevice, dwObjType, dwObjIndex, dwObjType != OT_MOVER );
+			pObj	= (CCtrl*)CreateObj( dwObjType, dwObjIndex, dwObjType != OT_MOVER );
 			pObj->Serialize( ar );
 
 			if( dwObjType == OT_MOVER )
@@ -955,7 +955,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 					{
 						D3DXVECTOR3 vTemp	=pObj->GetPos() - g_pPlayer->GetPos();
 						if( vTemp.x*vTemp.x + vTemp.z*vTemp.z < 32*32 )
-							CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_MONSTER_SPAWN01, pObj->GetPos(), ( (CMover*)pObj )->GetId() );
+							CreateSfx( XI_GEN_MONSTER_SPAWN01, pObj->GetPos(), ( (CMover*)pObj )->GetId() );
 					}
 				}
 
@@ -992,7 +992,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 	}
 	else
 	{
-		pObj	= (CCtrl*)CreateObj( g_Neuz.m_pd3dDevice, dwObjType, dwObjIndex, dwObjType != OT_MOVER );
+		pObj	= (CCtrl*)CreateObj( dwObjType, dwObjIndex, dwObjType != OT_MOVER );
 		if( pObj == NULL )
 		{
 			CString string;
@@ -1026,7 +1026,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 					{
 						D3DXVECTOR3 vTemp	=pObj->GetPos() - g_pPlayer->GetPos();
 						if( vTemp.x*vTemp.x + vTemp.z*vTemp.z < 32*32 )
-							CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_MONSTER_SPAWN01, pObj->GetPos(), ( (CMover*)pObj )->GetId() );
+							CreateSfx( XI_GEN_MONSTER_SPAWN01, pObj->GetPos(), ( (CMover*)pObj )->GetId() );
 					}
 				}
 			}
@@ -1154,7 +1154,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 					ItemProp* pItemProp = prj.GetItemProp( pMover->m_dwUseItemId );
 					if( pItemProp )
 					{
-						CreateItemReadySfx( D3DDEVICE, pItemProp->dwSfxObj, pMover->GetPos(), pMover->GetId(), 
+						CreateItemReadySfx( pItemProp->dwSfxObj, pMover->GetPos(), pMover->GetId(), 
 							pMover->GetPos(), pMover->GetId(), -1 ); 
 					}					
 				}
@@ -1278,7 +1278,7 @@ void CDPClient::OnEventMessage( OBJID objid, CAr & ar )
 		{
 		case 0: // 꽝 이벤트 상품권
 			{
-				CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_FAIL, vPos);	// 이벤트 꽝 이펙트.
+				CSfx *pSfx = CreateSfx( XI_EVE_EVENT_FAIL, vPos);	// 이벤트 꽝 이펙트.
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
 			}
@@ -1289,28 +1289,28 @@ void CDPClient::OnEventMessage( OBJID objid, CAr & ar )
 				switch( dwItemID )
 				{
 				case II_SYS_SYS_EVE_0504M1NOTEBOOK:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_NOTEBOOK, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_NOTEBOOK, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M2DCAMARA:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_DCAMARA, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_DCAMARA, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M3AIRSHIP:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_AIRSHIP, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_AIRSHIP, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M4USBFANLIGHT:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_USBFANLIGHT, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_USBFANLIGHT, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M5BALLOON:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_BALLOON, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_BALLOON, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M6GIFTTICKET:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_GIFTTICKET, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_GIFTTICKET, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M7MOVIETICKET:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_MOVIETICKET, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_MOVIETICKET, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M8OST:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_OST, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_OST, vPos );	// 이벤트 이펙트.
 					break;
 				default:
 					break;
@@ -1328,7 +1328,7 @@ void CDPClient::OnEventMessage( OBJID objid, CAr & ar )
 				g_WndMng.PutString( strString, pMover, 0xffffffff );
 				if( g_pPlayer == pMover )
 				{
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_WIN, vPos);	// 이벤트 꽝 이펙트.
+					CSfx *pSfx = CreateSfx( XI_EVE_EVENT_WIN, vPos);	// 이벤트 꽝 이펙트.
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
 				}
@@ -1608,7 +1608,7 @@ g_PASS:
 			{
 				D3DXVECTOR3 vPos = pMover->GetPos();
 				vPos.y += 1.5f;
-				CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_HIT_HITBLOCK01, vPos );
+				CSfx *pSfx = CreateSfx( XI_HIT_HITBLOCK01, vPos );
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 			}
@@ -1617,7 +1617,7 @@ g_PASS:
 			{
 				D3DXVECTOR3 vPos = pMover->GetPos();
 				vPos.y += 1.5f;
-				CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_HIT_PARRY01, vPos );
+				CSfx *pSfx = CreateSfx( XI_HIT_PARRY01, vPos );
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 			}
@@ -1628,7 +1628,7 @@ g_PASS:
 				{
 					D3DXVECTOR3 vPos = pMover->GetPos();
 					vPos.y += 1.5f;
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_HIT_MISS01, vPos );
+					CSfx *pSfx = CreateSfx( XI_HIT_MISS01, vPos );
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 				}
@@ -1640,7 +1640,7 @@ g_PASS:
 			{
 				D3DXVECTOR3 vPos = pMover->GetPos();
 				vPos.y += 1.5f;
-				CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_HIT_MISS01, vPos );
+				CSfx *pSfx = CreateSfx( XI_HIT_MISS01, vPos );
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 //				g_DamageNumMng.AddNumber( pMover->GetPos(), 0, 4 );
@@ -1651,7 +1651,7 @@ g_PASS:
 				{
 					D3DXVECTOR3 vPos = pMover->GetPos();
 					vPos.y += 1.5f;
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_HIT_CRITICAL01, vPos );
+					CSfx *pSfx = CreateSfx( XI_HIT_CRITICAL01, vPos );
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3( 3.0f, 3.0f, 3.0f ) );
 				}
@@ -2862,7 +2862,7 @@ void CDPClient::OnSetLevel( OBJID objid, CAr & ar )
 		{
 			if( pMover->m_pActMover && ( pMover->m_pActMover->IsState( OBJSTA_STAND ) || pMover->m_pActMover->IsState( OBJSTA_STAND2 )) )
 				pMover->SetMotion( MTI_LEVELUP, ANILOOP_1PLAY, MOP_FIXED );
-			CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId() );	// 레벨업 이펙트.
+			CreateSfx( XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId() );	// 레벨업 이펙트.
 		}
 
 		//현재 클라와 동기화가 안된 상황 - 기본 정보만 일단 셋팅 틱처리하는 부분이 수정되면 자동으로 Hp, Mp는 동기화가 될듯.
@@ -2881,7 +2881,7 @@ void CDPClient::OnSetFlightLevel( OBJID objid, CAr & ar )
 	if( IsValidObj( (CObj*)pMover ) )
 	{
 		if( (int)wFlightLv > pMover->GetFlightLv() )	// 레벨업 된상황이면 
-			CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId() );	// 레벨업 이펙트.
+			CreateSfx( XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId() );	// 레벨업 이펙트.
 		pMover->SetFlightLv( wFlightLv );
 	}
 }
@@ -2911,7 +2911,7 @@ void CDPClient::OnSetExperience( OBJID objid, CAr & ar )
 
 		if( nSP < nSkillPoint )
 		{
-			CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_LEVEL_UP01,g_pPlayer->GetPos(),g_pPlayer->GetId());
+			CreateSfx(XI_GEN_LEVEL_UP01,g_pPlayer->GetPos(),g_pPlayer->GetId());
 			if( pMover == g_pPlayer )
 			{
 				PlayMusic( BGM_IN_LEVELUP );
@@ -3029,7 +3029,7 @@ void CDPClient::OnSetChangeJob( OBJID objid, CAr & ar ) {
 	if (pMover->IsActiveMover()) {
 		if (pMover->m_pActMover && (pMover->m_pActMover->IsState(OBJSTA_STAND) || pMover->m_pActMover->IsState(OBJSTA_STAND2)))
 			pMover->SetMotion(MTI_LEVELUP, ANILOOP_1PLAY, MOP_FIXED);
-		CreateSfx(g_Neuz.m_pd3dDevice, XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId());
+		CreateSfx( XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId());
 		PlayMusic(BGM_IN_LEVELUP);
 		g_WndMng.PutString(TID_EVE_CHGJOB, pMover->GetJobString());
 
@@ -3048,7 +3048,7 @@ void CDPClient::OnSetNearChangeJob(OBJID objid, CAr & ar) {
 
 	ar >> pMover->m_nJob >> pMover->m_jobSkills;
 
-	CreateSfx(g_Neuz.m_pd3dDevice, XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId());
+	CreateSfx( XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId());
 
 	if (pMover->m_pActMover && (pMover->m_pActMover->IsState(OBJSTA_STAND) || pMover->m_pActMover->IsState(OBJSTA_STAND2)))
 		pMover->SetMotion(MTI_LEVELUP, ANILOOP_1PLAY, MOP_FIXED);
@@ -3330,12 +3330,12 @@ void CDPClient::OnCreateSfxObj( OBJID objid, CAr & ar )
 		}
 		else
 			vPos = pObj->GetPos();	// 없으면 오브젝트 좌표로 한다.
-		CreateSfx( g_Neuz.m_pd3dDevice, dwSfxObj, vPos, idObj, vPos, idObj );
+		CreateSfx( dwSfxObj, vPos, idObj, vPos, idObj );
 	}
 	else
 	{
 		if( x || y || z )		// 절대좌표가 있으면 그곳을 생성 위치로 한다.
-			CreateSfx( g_Neuz.m_pd3dDevice, dwSfxObj, vWorld, NULL_ID, vWorld, NULL_ID );
+			CreateSfx( dwSfxObj, vWorld, NULL_ID, vWorld, NULL_ID );
 	}
 }
 
@@ -4087,7 +4087,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 				{
 					D3DXVECTOR3 v = g_pPlayer->GetPos();
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, NULL_ID, D3DXVECTOR3(0,0,0), g_pPlayer->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, NULL_ID, D3DXVECTOR3(0,0,0), g_pPlayer->GetId() );	// 머리위에 sfx생성.
 
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(0.8f, 0.8f, 0.8f) );
@@ -4102,7 +4102,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 					
 					D3DXVECTOR3 v = pMover->GetPos();
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(0.8f, 0.8f, 0.8f) );
@@ -4124,7 +4124,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 				{
 					D3DXVECTOR3 v = g_pPlayer->GetPos();
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, NULL_ID, D3DXVECTOR3(0,0,0), g_pPlayer->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, NULL_ID, D3DXVECTOR3(0,0,0), g_pPlayer->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(0.7f, 0.7f, 0.7f) );
@@ -4139,7 +4139,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 					
 					D3DXVECTOR3 v = pMover->GetPos();
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(0.7f, 0.7f, 0.7f) );
@@ -4166,7 +4166,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 				{
 					D3DXVECTOR3 v = pPlayerMover->GetPos();
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pPlayerMover->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pPlayerMover->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -4208,7 +4208,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 				{
 					D3DXVECTOR3 v = g_pPlayer->GetPos();
 
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, g_pPlayer->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, g_pPlayer->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -4223,7 +4223,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 					
 					D3DXVECTOR3 v = pMover->GetPos();
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -4382,7 +4382,7 @@ void CDPClient::OnPartySkillCall( OBJID objid, CAr & ar )
 			#define ST_STRETCHING                      8
 			#define ST_GIFTBOX                         9
 		 */
-		CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj2, v, objid );	// 머리위에 sfx생성.
+		CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj2, v, objid );	// 머리위에 sfx생성.
 	
 		if( pSfx )
 			pSfx->SetScale( D3DXVECTOR3(1.1f, 1.1f, 1.1f) );
@@ -4397,14 +4397,14 @@ void CDPClient::OnPartySkillCall( OBJID objid, CAr & ar )
 		{
 			D3DXVECTOR3 v = pLeaderMover->GetPos();
 			
-			CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj2, v, pLeaderMover->GetId() );	// 머리위에 sfx생성.
+			CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj2, v, pLeaderMover->GetId() );	// 머리위에 sfx생성.
 			
 			if( pSfx )
 				pSfx->SetScale( D3DXVECTOR3(1.1f, 1.1f, 1.1f) );
 		}
 		
 		// 단원 표시하기
-		CSfx *pSfx2 = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, objid );	// 머리위에 sfx생성.
+		CSfx *pSfx2 = CreateSfx( pItemProp->dwSfxObj, v, objid );	// 머리위에 sfx생성.
 		if( pSfx2 )
 		{
 			pSfx2->SetScale( D3DXVECTOR3(1.1f, 1.1f, 1.1f) );
@@ -4435,7 +4435,7 @@ void CDPClient::OnPartySkillBlitz( CAr & ar )
 
 	ItemProp* pItemProp = prj.GetPartySkill( ST_BLITZ );
 	
-	CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, NULL_ID, D3DXVECTOR3(0,0,0), tagetID );	// 머리위에 sfx생성.
+	CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, NULL_ID, D3DXVECTOR3(0,0,0), tagetID );	// 머리위에 sfx생성.
 
 	if( pSfx )
 		pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -4458,7 +4458,7 @@ void CDPClient::OnPartySkillRetreat( OBJID objid )
 
 		D3DXVECTOR3 v = pPlayerMover->GetPos();
 		
-		CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pPlayerMover->GetId() );	// 머리위에 sfx생성.
+		CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pPlayerMover->GetId() );	// 머리위에 sfx생성.
 
 		if( pSfx )
 			pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -4483,7 +4483,7 @@ void CDPClient::OnPartySkillSphereCircle( OBJID objid )
 	CMover* pLeader	= g_Party.GetLeader();
 	if( IsValidObj( (CObj*)pLeader ) )
 	{
-		CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pLeader->GetId(), D3DXVECTOR3(0,0,0) );	// 머리위에 sfx생성.
+		CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pLeader->GetId(), D3DXVECTOR3(0,0,0) );	// 머리위에 sfx생성.
 		
 		if( pSfx )
 			pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -8597,7 +8597,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( bCreateMonster == FALSE && g_Neuz.m_pCreateMonItem == NULL )
 		{
 			g_Neuz.m_pCreateMonItem = pItemBase;
-			CreateSfx( g_Neuz.m_pd3dDevice, XI_CHR_CURSOR1, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1 );
+			CreateSfx( XI_CHR_CURSOR1, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1 );
 		}
 		return;
 	}
@@ -10022,7 +10022,7 @@ void CDPClient::OnStateMode( OBJID objid, CAr & ar )
 			ItemProp* pItemProp = prj.GetItemProp( dwItemId );
 			if( pItemProp )
 			{
-				CreateItemReadySfx( D3DDEVICE, pItemProp->dwSfxObj, pPlayer->GetPos(), pPlayer->GetId(), 
+				CreateItemReadySfx( pItemProp->dwSfxObj, pPlayer->GetPos(), pPlayer->GetId(), 
 					pPlayer->GetPos(), pPlayer->GetId(), -1 ); 
 			}
 		}
@@ -11899,7 +11899,7 @@ void CDPClient::OnInitSkillPoint( CAr & ar )
 	ar >> nSkillPoint;
 	if( g_pPlayer->m_nSkillPoint < nSkillPoint )
 	{
-		CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_LEVEL_UP01,g_pPlayer->GetPos(),g_pPlayer->GetId());
+		CreateSfx(XI_GEN_LEVEL_UP01,g_pPlayer->GetPos(),g_pPlayer->GetId());
 		PlayMusic( BGM_IN_LEVELUP );
 	}
 	g_pPlayer->m_nSkillPoint = nSkillPoint;
@@ -12705,7 +12705,7 @@ void CDPClient::OnSetPlayerName( CAr & ar )
 	{
 		if( pMover->IsActiveMover() )
 			g_WndMng.PutString( prj.GetText( TID_GAME_CHANGENAME ), NULL, prj.GetTextColor( TID_GAME_CHANGENAME  ) );
-		CreateSfx( g_Neuz.m_pd3dDevice, XI_SYS_EXCHAN01, pMover->GetPos(), pMover->GetId(), pMover->GetPos(), pMover->GetId() );
+		CreateSfx( XI_SYS_EXCHAN01, pMover->GetPos(), pMover->GetId(), pMover->GetPos(), pMover->GetId() );
 	}
 }
 
@@ -14575,12 +14575,12 @@ void CDPClient::OnLordSkillUse( OBJID objid, CAr & ar )
 			g_pPlayer->SetAngle( GetDegree(pTarget->GetPos(), pLord->GetPos()) );
 		}
 		g_pPlayer->SetMotion( MTI_ATK1, ANILOOP_1PLAY, MOP_SWDFORCE | MOP_NO_TRANS | MOP_FIXED );
-		CreateSfx(g_Neuz.m_pd3dDevice, (int)pSkill->GetSrcSfx(), pLord->GetPos(), pLord->GetId());
+		CreateSfx( (int)pSkill->GetSrcSfx(), pLord->GetPos(), pLord->GetId());
 	}
 	if( IsValidObj( pTarget ) && pSkill->GetDstSfx() != NULL_ID )
 	{
 		// pTarget에 pSkill->GetDstSfx() 효과 주기
-		CreateSfx(g_Neuz.m_pd3dDevice, (int)pSkill->GetDstSfx(), pTarget->GetPos(), pTarget->GetId());
+		CreateSfx( (int)pSkill->GetDstSfx(), pTarget->GetPos(), pTarget->GetId());
 	}
 }
 

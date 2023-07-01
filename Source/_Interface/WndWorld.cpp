@@ -7113,7 +7113,7 @@ BOOL CWndWorld::Process()
 			g_Caption1.AddCaption( "Happy New Year", m_pFontAPITitle );
 			D3DXVECTOR3	vPos	= g_pPlayer->GetPos();
 			vPos.y	+= 2.0f;
-			CreateSfx( g_Neuz.m_pd3dDevice, XI_NAT_MAGICBOMB01, vPos, NULL_ID );	// g_pPlayer->GetId() );
+			CreateSfx( XI_NAT_MAGICBOMB01, vPos, NULL_ID );	// g_pPlayer->GetId() );
 		}
 		else
 		{

@@ -13,10 +13,10 @@
 // idSrc ½ð³ð ID
 // vPosDest ¸ÂÀ» À§Ä¡
 // idDest ¸ÂÀ»³ð ID
-CSfx* CreateSfx( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj, D3DXVECTOR3 vPosSrc, OBJID idSrc = NULL_ID, D3DXVECTOR3 vPosDest = D3DXVECTOR3( 0, 0, 0), OBJID idDest = NULL_ID, int nSec = 0 );				
-CSfx* CreateItemReadySfx( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj, D3DXVECTOR3 vPosSrc, OBJID idSrc = NULL_ID, D3DXVECTOR3 vPosDest = D3DXVECTOR3( 0, 0, 0), OBJID idDest = NULL_ID, int nSec = 0 );
-CSfxShoot* CreateShootSfx( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj, D3DXVECTOR3 vPosSrc, OBJID idSrc = NULL_ID, D3DXVECTOR3 vPosDest = D3DXVECTOR3( 0, 0, 0), OBJID idDest = NULL_ID, int nSec = 0 );
-CSfx* CreateSfxYoYo( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj, D3DXVECTOR3 vPosSrc, OBJID idSrc = NULL_ID, D3DXVECTOR3 vPosDest = D3DXVECTOR3( 0, 0, 0), OBJID idDest = NULL_ID, int nSec = 0 );
+CSfx* CreateSfx( DWORD dwSfxObj, D3DXVECTOR3 vPosSrc, OBJID idSrc = NULL_ID, D3DXVECTOR3 vPosDest = D3DXVECTOR3( 0, 0, 0), OBJID idDest = NULL_ID, int nSec = 0 );				
+CSfx* CreateItemReadySfx( DWORD dwSfxObj, D3DXVECTOR3 vPosSrc, OBJID idSrc = NULL_ID, D3DXVECTOR3 vPosDest = D3DXVECTOR3( 0, 0, 0), OBJID idDest = NULL_ID, int nSec = 0 );
+CSfxShoot* CreateShootSfx( DWORD dwSfxObj, D3DXVECTOR3 vPosSrc, OBJID idSrc = NULL_ID, D3DXVECTOR3 vPosDest = D3DXVECTOR3( 0, 0, 0), OBJID idDest = NULL_ID, int nSec = 0 );
+CSfx* CreateSfxYoYo( DWORD dwSfxObj, D3DXVECTOR3 vPosSrc, OBJID idSrc = NULL_ID, D3DXVECTOR3 vPosDest = D3DXVECTOR3( 0, 0, 0), OBJID idDest = NULL_ID, int nSec = 0 );
 
 #endif // __CLIENT
 
@@ -25,7 +25,7 @@ CMover *CreateMover( CWorld *pWorld, DWORD dwID, const D3DXVECTOR3 &vPos, int nL
 #else	// __LAYER_1015
 CMover *CreateMover( CWorld *pWorld, DWORD dwID, D3DXVECTOR3 vPos );
 #endif	// __LAYER_1015
-CObj* CreateObj( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwObjType, DWORD dwObjIndex, BOOL bInitProp = TRUE );
+CObj* CreateObj( DWORD dwObjType, DWORD dwObjIndex, BOOL bInitProp = TRUE );
 CObj* ReadObj( CFileIO* pFile );
 
 

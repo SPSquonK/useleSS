@@ -726,7 +726,7 @@ BOOL	CDeployManager::LoadToDeploy(int nItemId, HOUSINGINFO housingInfo)
 	m_ItemInfo.tKeepTime = housingInfo.tKeepTime;
 	m_ItemInfo.vPos      = housingInfo.vPos;
 
-	m_pTargetObj = CreateObj( g_Neuz.m_pd3dDevice,OT_CTRL, nItemId);
+	m_pTargetObj = CreateObj( OT_CTRL, nItemId);
 	
 	if(m_pTargetObj)
 	{	
@@ -992,7 +992,7 @@ BOOL	CGuildDeployManager::LoadToDeploy(int nItemId, const HOUSING_ITEM& housingI
 	*m_pItem = housingInfo;
 	m_pItem->m_bDeploy = TRUE;
 
-	m_pTargetObj = CreateObj( g_Neuz.m_pd3dDevice,OT_CTRL, nItemId, TRUE );
+	m_pTargetObj = CreateObj( OT_CTRL, nItemId, TRUE );
 	if( !m_pTargetObj )
 	{
 		assert( 0 && "CreateObj failed" );

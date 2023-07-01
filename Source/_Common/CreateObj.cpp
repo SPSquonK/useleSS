@@ -30,7 +30,7 @@
 
 // 일반 효과 생성 
 // SFX 새로 만들고도 여기다가 추가 안해주면 생성 안된다.
-CSfx* CreateSfx( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj, 
+CSfx* CreateSfx( DWORD dwSfxObj, 
 				 D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec )
 {
 	CSfx* pObj = NULL;
@@ -225,11 +225,11 @@ CSfx* CreateSfx( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj,
 		break;
 	case XI_NAT_WASTART01:	// 천사의 날개 시전 효과.
 		pObj = new CSfx();
-		CreateSfx( pd3dDevice, XI_NAT_WINGANGEL01, vPosSrc, idSrc, vPosDest, idDest, nSec );		// 날개 2분동안 출력.
+		CreateSfx( XI_NAT_WINGANGEL01, vPosSrc, idSrc, vPosDest, idDest, nSec );		// 날개 2분동안 출력.
 		break;
 	case XI_NAT_CUPITSTART01:	// 큐피트날개 시전 효과.
 		pObj = new CSfx();
-		CreateSfx( pd3dDevice, XI_NAT_WINGANGEL01, vPosSrc, idSrc, vPosDest, idDest, nSec );		// 날개 5분동안 출력.
+		CreateSfx( XI_NAT_WINGANGEL01, vPosSrc, idSrc, vPosDest, idDest, nSec );		// 날개 5분동안 출력.
 		break;
 	case XI_SKILL_KNT_TWO_POWERSWING01:		// 나이트-가드스킬
 		idDest = NULL_ID;
@@ -310,7 +310,7 @@ CSfx* CreateSfx( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj,
 	}
 	if( pObj )
 	{
-		int bRet = pObj->SetSfx( pd3dDevice, dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
+		int bRet = pObj->SetSfx( g_Neuz.m_pd3dDevice, dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
 		if( bRet )
 		{
 			if( pObj->GetModel() == NULL )
@@ -375,7 +375,7 @@ CSfx* CreateSfx( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj,
 }
 
 // 요요무기는 무조건 여기만 호출
-CSfx* CreateSfxYoYo( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj, 
+CSfx* CreateSfxYoYo( DWORD dwSfxObj, 
 				 D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec )
 {
 	CSfx* pObj = NULL;
@@ -400,7 +400,7 @@ CSfx* CreateSfxYoYo( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj,
 
 	if( pObj )
 	{
-		int bRet = pObj->SetSfx( pd3dDevice, dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
+		int bRet = pObj->SetSfx( g_Neuz.m_pd3dDevice, dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
 		if( bRet )
 		{
 			if( pObj->GetModel() == NULL )
@@ -427,7 +427,7 @@ CSfx* CreateSfxYoYo( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj,
 	return pObj;
 }
 
-CSfxShoot* CreateShootSfx( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj, 
+CSfxShoot* CreateShootSfx( DWORD dwSfxObj, 
 						D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec )
 {
 	CSfxShoot* pObj = NULL;
@@ -504,7 +504,7 @@ CSfxShoot* CreateShootSfx( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj,
 	if( pObj )
 	{
 		D3DXVECTOR3 vPosShoot = vPosSrc;	vPosShoot.y += 1.0f;
-		int bRet = pObj->SetSfx( pd3dDevice, dwSfxObj, vPosShoot, idSrc, vPosDest, idDest, nSec ); 
+		int bRet = pObj->SetSfx( g_Neuz.m_pd3dDevice, dwSfxObj, vPosShoot, idSrc, vPosDest, idDest, nSec ); 
 		if( bRet )
 		{
 			if( pObj->GetModel()->m_pModelElem == NULL )
@@ -540,7 +540,7 @@ CSfxShoot* CreateShootSfx( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj,
 	return pObj;
 }
 
-CSfx* CreateItemReadySfx( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj, 
+CSfx* CreateItemReadySfx( DWORD dwSfxObj, 
 				 D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec )
 {
 	CSfx* pObj = NULL;
@@ -550,7 +550,7 @@ CSfx* CreateItemReadySfx( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwSfxObj,
 	pObj = new CSfxReady();
 	if( pObj )
 	{
-		int bRet = pObj->SetSfx( pd3dDevice, dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
+		int bRet = pObj->SetSfx( g_Neuz.m_pd3dDevice, dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
 		if( bRet )
 		{
 			if( pObj->GetModel() == NULL )
@@ -586,7 +586,7 @@ CMover *CreateMover( CWorld *pWorld, DWORD dwID, D3DXVECTOR3 vPos )
 {
 	CMover *pMover;
 
-	pMover = (CMover *)CreateObj( D3DDEVICE, OT_MOVER, dwID );
+	pMover = (CMover *)CreateObj( OT_MOVER, dwID );
 	if( pMover == NULL )	
 		return NULL;
 	pMover->SetPos( vPos );
@@ -599,7 +599,7 @@ CMover *CreateMover( CWorld *pWorld, DWORD dwID, D3DXVECTOR3 vPos )
 	return pMover;
 }
 
-CObj* CreateObj( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwObjType, DWORD dwObjIndex, BOOL bInitProp )
+CObj* CreateObj( DWORD dwObjType, DWORD dwObjIndex, BOOL bInitProp )
 {
 	CObj* pObj = NULL;
 	switch( dwObjType )
@@ -628,11 +628,11 @@ CObj* CreateObj( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwObjType, DWORD dwObjIndex
 	if( pObj && pObj->GetType() == OT_SFX )
 	{
 		#ifdef __CLIENT
-			((CSfx*)pObj)->SetSfx( pd3dDevice, dwObjIndex, D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID, D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID ); 
+			((CSfx*)pObj)->SetSfx( g_Neuz.m_pd3dDevice, dwObjIndex, D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID, D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID ); 
 		#endif
 		return pObj;
 	}
-	else if( pObj->SetIndex( pd3dDevice, dwObjIndex, bInitProp ) == TRUE )
+	else if( pObj->SetIndex( D3DDEVICE, dwObjIndex, bInitProp ) == TRUE )
 	{
 		pObj->SetMotion( MTI_STAND );
 		// 스피드를 설정하려면 현재로선 이수밖에....좆치안타.

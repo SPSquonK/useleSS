@@ -612,7 +612,7 @@ void CCommonCtrl::SetActionPlay()
 		{
 			if( pCtrlProp && pCtrlProp->dwSfxCtrl != -1 )
 			{
-				CreateSfx( g_Neuz.m_pd3dDevice, pCtrlProp->dwSfxCtrl, GetPos() );
+				CreateSfx( pCtrlProp->dwSfxCtrl, GetPos() );
 			}
 		}
 	}
@@ -696,7 +696,7 @@ void CCommonCtrl::DropNPC()
 
 		for( j=0; j<(int)( dwBaseMob ); j++ )
 		{
-			CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+			CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 			if( NULL == pObj )	
 				return;
 
@@ -723,7 +723,7 @@ void CCommonCtrl::DropNPC()
 		// 識因 光 持失
 		for( j=0; j<(int)( m_CtrlElem.m_dwMonActAttack[i] ); j++ )
 		{
-			CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+			CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 			if( NULL == pObj )	
 				return;
 			

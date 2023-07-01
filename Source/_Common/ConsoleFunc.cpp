@@ -153,7 +153,7 @@ void _sfx_pos( std::vector< string >& arg )
 // 			if( pPet )
 // 			{
 // 				index = pPet->m_dwMoverSfxId;
-// 				pSfx = CreateSfx( D3DDEVICE, index, kPos );
+// 				pSfx = CreateSfx( index, kPos );
 // 				pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f  ) );
 // 			}
 			
@@ -171,7 +171,7 @@ void _sfx_link( std::vector< string >& arg )
 
 	if( g_pPlayer )
 	{
-		CSfx *pSfx = CreateSfx( D3DDEVICE, index, g_pPlayer->GetPos(), g_pPlayer->GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
+		CSfx *pSfx = CreateSfx( index, g_pPlayer->GetPos(), g_pPlayer->GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
 		if( pSfx )
 		{
 			pSfx->SetPartLink( 0 );		// 오른손에 링크.

@@ -330,7 +330,7 @@ int		CWndWorld::ControlGround( DWORD dwMessage, CPoint point )
 
 						if( g_pMoveMark && g_pMoveMark->m_pSfxObj )
 							g_pMoveMark->m_pSfxObj->m_nCurFrame		= 180;
-						CSfx *pObj = CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_MOVEMARK01,vRayEnd);
+						CSfx *pObj = CreateSfx(XI_GEN_MOVEMARK01,vRayEnd);
 						
 						
 						D3DXVECTOR3 vVector1 = vec3Tri[2] - vec3Tri[0];

@@ -451,7 +451,7 @@ void CItem::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 
 	CObj::Render( pd3dDevice );
 	if( xRandom( 50 ) == 1 )
-		CreateSfx( pd3dDevice, XI_GEN_ITEM_SHINE01, GetPos() );
+		CreateSfx( XI_GEN_ITEM_SHINE01, GetPos() );
 #endif
 }
 

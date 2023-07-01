@@ -1491,7 +1491,7 @@ void CMover::SetSfxBuffPet( const DWORD idEffect )
 	}
 
 	if( NULL_ID != idEffect )
-		m_pSfxBuffPet =  CreateSfx( g_Neuz.m_pd3dDevice, idEffect, GetPos(), GetId(), GetPos(), GetId(), -1 );
+		m_pSfxBuffPet =  CreateSfx( idEffect, GetPos(), GetId(), GetPos(), GetId(), -1 );
 }
 
 #endif //__CLIENT
@@ -2520,11 +2520,11 @@ void CMover::ProcessWaterCircle( const D3DXVECTOR3& vPosTemp, const D3DXVECTOR3&
 			FLOAT fHeight = (FLOAT)pWaterHeight->byWaterHeight;
 			if( vPosTemp.y > fHeight && vPos.y <= fHeight && m_pActMover->IsActJump() ) 
 			{
-				CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_WATERCROWN01, D3DXVECTOR3( vPos.x, fHeight, vPos.z ) );
+				CreateSfx( XI_GEN_WATERCROWN01, D3DXVECTOR3( vPos.x, fHeight, vPos.z ) );
 			}
 			if( vPos != vPosTemp && vPos.y < fHeight && vPos.y > ( fHeight - 1.5f )  && m_nWaterCircleCount > 7 ) 
 			{
-				CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_WATERCIRCLE01, D3DXVECTOR3( vPos.x, fHeight + .01f, vPos.z) );
+				CreateSfx( XI_GEN_WATERCIRCLE01, D3DXVECTOR3( vPos.x, fHeight + .01f, vPos.z) );
 				m_nWaterCircleCount = 0;
 			}
 		}
@@ -2563,10 +2563,10 @@ void CMover::ProcessDustSFX()
  		if( IsPlayer() && pAttr && pAttr->m_nSndID > 0 )  // 효과음 속성이 있다면 플레이, pause상태면 사운드 출력 안함
 		{
 			if( m_pActMover->IsActJump() )
-				CreateSfx( g_Neuz.m_pd3dDevice, XI_NAT_DUST_JUMP, GetPos() );
+				CreateSfx( XI_NAT_DUST_JUMP, GetPos() );
 			else
 			if( m_pActMover->IsRun() && !m_pActMover->IsActAttack() )
-				CreateSfx( g_Neuz.m_pd3dDevice, XI_NAT_DUST_RUN, GetPos() );
+				CreateSfx( XI_NAT_DUST_RUN, GetPos() );
 		}
 	}
 }
@@ -2995,7 +2995,7 @@ void CMover::Process()
 		if(HasBuff( BUFF_ITEM, II_CHR_MAG_TRI_ANGELWING ) || HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_WINGS ))
 		{
 			if(m_pSfxWing == NULL)				
-				m_pSfxWing = CreateSfx( D3DDEVICE, XI_NAT_WINGANGEL01, GetPos(), GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );				
+				m_pSfxWing = CreateSfx( XI_NAT_WINGANGEL01, GetPos(), GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );				
 		}
 		else
 		{
@@ -3574,7 +3574,7 @@ void CMover::CreateAbilityOption_SetItemSFX(const int nAbilityOption )
 	if (generalSfx == 0) return;
 
 	const auto BuildSfx_ = [&](const DWORD dwSfx, const int partLink, const float yOffset, const std::optional<D3DXVECTOR3> scale) {
-		CSfxPartsLinkShoulder * pSfx = (CSfxPartsLinkShoulder *)CreateSfx(D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1);
+		CSfxPartsLinkShoulder * pSfx = (CSfxPartsLinkShoulder *)CreateSfx(dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1);
 		pSfx->m_nPartsLink = partLink;
 		pSfx->m_nOldAbilityOption = nAbilityOption;
 
@@ -6538,7 +6538,7 @@ CSfx* CMover::CreateSfxArrow( DWORD dwSfxObjArrow, DWORD dwSfxObjHit, D3DXVECTOR
 	CModelObject *pModel = (CModelObject *)m_pModel;
 	pModel->GetHandPos( &vPos, PARTS_LWEAPON, GetMatrixWorld() );		// 주먹 월드좌표 구함	
 	
-	pSfx = CreateSfx( D3DDEVICE, dwSfxObjArrow, vPos, GetId(), vPosDest , idTarget );
+	pSfx = CreateSfx( dwSfxObjArrow, vPos, GetId(), vPosDest , idTarget );
 	
 	if( dwSfxObjHit != NULL_ID )
 	{
@@ -8436,7 +8436,7 @@ void CMover::ProcessPet( void )
 			
 			if( dwIndex > 0 )
 			{
-				CMover* pPet	= (CMover *)CreateObj( D3DDEVICE, OT_MOVER, dwIndex );
+				CMover* pPet	= (CMover *)CreateObj( OT_MOVER, dwIndex );
 				if( m_pet.HasName() )
 					pPet->SetName( m_pet.GetName() );
 				pPet->InitMotion( MTI_STAND );
@@ -9036,7 +9036,7 @@ void	CMover::ProcessCollecting( void )
 				D3DXVECTOR3 vSrc, vLocal	= D3DXVECTOR3( 0, 0.5f, 0 );
 				( (CModelObject *)m_pModel )->GetForcePos( &vLocal, 0, PARTS_RWEAPON, GetMatrixWorld() );
 				vSrc	= vLocal;
-				CSfx *pSfx	= CreateSfx( D3DDEVICE, pHandProp->dwSfxObj2, vSrc, GetId(), D3DXVECTOR3( 0, 0, 0 ), NULL_ID, -1 );
+				CSfx *pSfx	= CreateSfx( pHandProp->dwSfxObj2, vSrc, GetId(), D3DXVECTOR3( 0, 0, 0 ), NULL_ID, -1 );
 				if( pSfx )
 				{
 					pSfx->SetAngle( -GetAngle() + 90.0f );

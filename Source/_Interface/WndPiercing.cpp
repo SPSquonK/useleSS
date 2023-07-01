@@ -109,7 +109,7 @@ void CWndPiercing::OnInitialUpdate()
 	
 
 	if (g_pPlayer) {
-		m_pSfx = CreateSfx(g_Neuz.m_pd3dDevice, XI_INT_INCHANT, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1);
+		m_pSfx = CreateSfx( XI_INT_INCHANT, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1);
 	}
 } 
 

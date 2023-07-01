@@ -738,7 +738,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		case MI_RISEM2:
 		case MI_RISEM3:
 		case MI_RISEM4:
-			pSfx = CreateSfx( D3DDEVICE, XI_NPCRISEMSIGN, GetPos(), GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );
+			pSfx = CreateSfx( XI_NPCRISEMSIGN, GetPos(), GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );
 			if( pSfx )
 				pSfx->SetScale( GetScale() );
 		}
@@ -1587,7 +1587,7 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 void CMover::RenderFlag( int nType )
 {
 	// 결투상대라는 sfx를 머리위에 띄워줌.
-	CSfx *pSfx = CreateSfx( D3DDEVICE, XI_GEN_PVP_FLAG01, GetPos(), GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );
+	CSfx *pSfx = CreateSfx( XI_GEN_PVP_FLAG01, GetPos(), GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );
 	if( pSfx )
 	{
 		pSfx->SetScale( D3DXVECTOR3(1.5f, 1.5f, 1.5f) );

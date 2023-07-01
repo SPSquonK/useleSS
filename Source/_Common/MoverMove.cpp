@@ -107,7 +107,7 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 						}
 						
 						if(g_pMoveMark!=NULL) g_pMoveMark->m_pSfxObj->m_nCurFrame=180;
-						CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_MOVEMARK01,pWndWorld->m_vTelePos);
+						CreateSfx(XI_GEN_MOVEMARK01,pWndWorld->m_vTelePos);
 					} else if (pSkill->dwSkill == SI_WIN_YOYO_BACKSTEP) {
 						if (pWorld->IntersectObjLine(NULL, vStart, vEnd, FALSE, FALSE) == TRUE) {
 							g_WndMng.m_pWndWorld->SetNextSkill(NEXTSKILL_NONE);
