@@ -1715,7 +1715,7 @@ BOOL	CMover::OnAttackMeleeContinue( DWORD dwState )
 						vTemp.y -= (xRandomF( 0.05f ) + 0.01f );
 						
 						extern CPartsFireDragon	g_FireDragon;
-						g_FireDragon.Create( D3DDEVICE, v1, XI_NAT_FIRE01_ADV, vScal, vTemp );
+						g_FireDragon.Create( v1, XI_NAT_FIRE01_ADV, vScal, vTemp );
 					}
 
 			#endif

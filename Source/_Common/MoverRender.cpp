@@ -876,13 +876,13 @@ void CMover::RenderPartsEffect( LPDIRECT3DDEVICE9 pd3dDevice )
 
 	extern CPartsLaser g_Laser;
 	D3DXMatrixIdentity( &matWorld );
-	g_Laser.Render( pd3dDevice, &matWorld, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward );
+	g_Laser.Render( &matWorld, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward );
 
 	if( m_dwIndex == MI_DU_METEONYKER || m_dwIndex == MI_DU_METEONYKER2 || m_dwIndex == MI_DU_METEONYKER3 ||
 		m_dwIndex == MI_DU_METEONYKER4 )
 	{
 		extern CPartsFireDragon	g_FireDragon;
-		g_FireDragon.Render( pd3dDevice, &matWorld );
+		g_FireDragon.Render( &matWorld );
 	}
 }
 

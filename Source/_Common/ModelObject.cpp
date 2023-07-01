@@ -1497,14 +1497,14 @@ HRESULT CModelObject::RestoreDeviceObjects()
 	}
 	
 	if( m_pPartsEffect )
-		m_pPartsEffect->RestoreDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect->RestoreDeviceObjects( );
 	if( m_pPartsEffect2 )
-		m_pPartsEffect2->RestoreDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect2->RestoreDeviceObjects( );
 
 	if( m_pPartsEffect1_Detail )
-		m_pPartsEffect1_Detail->RestoreDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect1_Detail->RestoreDeviceObjects( );
 	if( m_pPartsEffect2_Detail )
-		m_pPartsEffect2_Detail->RestoreDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect2_Detail->RestoreDeviceObjects( );
 
 #ifdef __ATTACH_MODEL
 	RestoreAttachModelDeviceObjects();
@@ -1517,14 +1517,14 @@ HRESULT CModelObject::InvalidateDeviceObjects()
 	DeleteDeviceObjects();
 
 	if( m_pPartsEffect )
-		m_pPartsEffect->InvalidateDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect->InvalidateDeviceObjects( );
 	if( m_pPartsEffect2 )
-		m_pPartsEffect2->InvalidateDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect2->InvalidateDeviceObjects( );
 
 	if( m_pPartsEffect1_Detail )
-		m_pPartsEffect1_Detail->InvalidateDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect1_Detail->InvalidateDeviceObjects( );
 	if( m_pPartsEffect2_Detail )
-		m_pPartsEffect2_Detail->InvalidateDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect2_Detail->InvalidateDeviceObjects( );
 
 	return  S_OK;
 }	
@@ -1975,29 +1975,29 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 #ifdef __CSC_ENCHANT_EFFECT_2
 		if(nLevel > 0)
 #endif //__CSC_ENCHANT_EFFECT_2
-		pFire->Create( m_pd3dDevice, v3, dwSfx, vScale * fScalLevel );	// 해당 sfx로 파티클 생성시킴.
+		pFire->Create( v3, dwSfx, vScale * fScalLevel );	// 해당 sfx로 파티클 생성시킴.
 #ifdef __CSC_ENCHANT_EFFECT_2
 		if(nEffLevel_2 > 0 && (nType == PE_FIRE || nType == PE_WATER || nType == PE_WIND || nType == PE_EARTH
 			|| nType == PE_FIRE_AL || nType == PE_WATER_AL || nType == PE_WIND_AL || nType == PE_EARTH_AL)
 			&& (fTemp > 0.1f && fTemp < 0.93f))
-			pFire->Create( m_pd3dDevice, v3, dwSfx_2 );	// 해당 sfx로 파티클 생성시킴.
+			pFire->Create( v3, dwSfx_2 );	// 해당 sfx로 파티클 생성시킴.
 #endif //__CSC_ENCHANT_EFFECT_2
 		if(IsSecondLine)
 		{
 #ifdef __CSC_ENCHANT_EFFECT_2
 			if(nLevel > 0)
 #endif //__CSC_ENCHANT_EFFECT_2
-			pFire->Create( m_pd3dDevice, v2_3, dwSfx, vScale * fScalLevel );	// 해당 sfx로 파티클 생성시킴.
+			pFire->Create( v2_3, dwSfx, vScale * fScalLevel );	// 해당 sfx로 파티클 생성시킴.
 #ifdef __CSC_ENCHANT_EFFECT_2
 		if(nEffLevel_2 > 0 && (nType == PE_FIRE || nType == PE_WATER || nType == PE_WIND || nType == PE_EARTH
 			|| nType == PE_FIRE_AL || nType == PE_WATER_AL || nType == PE_WIND_AL || nType == PE_EARTH_AL)
 			&& (fTemp > 0.1f && fTemp < 0.93f))
-				pFire->Create( m_pd3dDevice, v2_3, dwSfx_2 );	// 해당 sfx로 파티클 생성시킴.
+				pFire->Create( v2_3, dwSfx_2 );	// 해당 sfx로 파티클 생성시킴.
 #endif //__CSC_ENCHANT_EFFECT_2
 		}
 	}
 
-	pFire->Render( m_pd3dDevice, &m2 );
+	pFire->Render( &m2 );
 
 #endif // client
 }
@@ -2084,9 +2084,9 @@ void	CModelObject::RenderItemElec_Adv( int nParts, const D3DXMATRIX *pmWorld, in
 		pBeam = (CPartsBeam *)m_pPartsEffect1_Detail;
 	}
 	
-	pBeam->Render( m_pd3dDevice, &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v1, v2, nLevel );
+	pBeam->Render( &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v1, v2, nLevel );
 	if(IsSecondLine)
-		pBeam->Render( m_pd3dDevice, &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v2_1, v2_2, nLevel );
+		pBeam->Render( &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v2_1, v2_2, nLevel );
 
 #endif // CLIENT
 }
@@ -2149,7 +2149,7 @@ void	CModelObject::RenderItemElec( int nParts, const D3DXMATRIX *pmWorld, int nL
 		pBeam = (CPartsBeam *)m_pPartsEffect;
 	}
 	
-	pBeam->Render( m_pd3dDevice, &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v1, v2, nLevel );
+	pBeam->Render( &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v1, v2, nLevel );
 #endif // CLIENT
 }
 

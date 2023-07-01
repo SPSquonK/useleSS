@@ -132,8 +132,8 @@ HRESULT CModelGlobal::InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 		SAFE_RELEASE(m_pElecTexture[i]);
 	}	
 
-	g_Laser.InvalidateDeviceObjects( pd3dDevice );
-	g_FireDragon.InvalidateDeviceObjects( pd3dDevice );
+	g_Laser.InvalidateDeviceObjects();
+	g_FireDragon.InvalidateDeviceObjects();
 #endif //__CLIENT
 	
 	return S_OK;
@@ -159,8 +159,8 @@ HRESULT CModelGlobal::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 	}
 
 #ifdef __CLIENT
-	g_Laser.RestoreDeviceObjects( pd3dDevice );
-	g_FireDragon.RestoreDeviceObjects( pd3dDevice );
+	g_Laser.RestoreDeviceObjects();
+	g_FireDragon.RestoreDeviceObjects();
 #endif // Client
 	return S_OK;
 }
@@ -333,7 +333,7 @@ void ResetStateShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, int nShadowStage )
 #ifdef __CLIENT
 
 ////////////////////////////////////////////////////////////////////////////
-void	CPartsFire::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale )
+void	CPartsFire::Create( const D3DXVECTOR3 vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale )
 {
 	int		i;
 	D3DXMATRIX	m_mScale;
@@ -343,7 +343,7 @@ void	CPartsFire::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, D
 	for( i = 0; i < MAX_PARTS_FIRE; i ++ )
 	{
 		if( m_pList[i] )	continue;
-		m_pList[i] = (CSfxModel *)prj.m_modelMng.LoadModel( pd3dDevice, OT_SFX, dwSfx );
+		m_pList[i] = (CSfxModel *)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_SFX, dwSfx );
 		m_pList[i]->m_matScale = m_mScale;
 
 		m_pList[i]->m_vScale = vScale;
@@ -362,7 +362,7 @@ CPartsFire::~CPartsFire()
 }
 
 #ifdef __CSC_ENCHANT_EFFECT_2
-void	CPartsFire::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, DWORD dwSfx )
+void	CPartsFire::Create( const D3DXVECTOR3 vPos, DWORD dwSfx )
 {
 	int		i;
 	D3DXMATRIX	m_mScale;
@@ -372,7 +372,7 @@ void	CPartsFire::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, D
 	for( i = 0; i < MAX_PARTS_FIRE_2; i ++ )
 	{
 		if( m_pList_2[i] )	continue;
-		m_pList_2[i] = (CSfxModel *)prj.m_modelMng.LoadModel( pd3dDevice, OT_SFX, dwSfx );
+		m_pList_2[i] = (CSfxModel *)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_SFX, dwSfx );
 		m_pList_2[i]->m_matScale = m_mScale;
 		m_vList_2[i] = vPos;
 		break;
@@ -380,7 +380,7 @@ void	CPartsFire::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, D
 }
 #endif //__CSC_ENCHANT_EFFECT_2
 
-void	CPartsFire::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld )
+void	CPartsFire::Render( const D3DXMATRIX *mWorld )
 {
 	int		i;
 	CSfxModel *pSfxModel = NULL;
@@ -421,7 +421,7 @@ void	CPartsFire::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld 
 		D3DXVec3TransformCoord( &pSfxModel->m_vPos, &m_vList[i], mWorld );
 		
 
-		pSfxModel->Render( pd3dDevice, NULL );	
+		pSfxModel->Render( g_Neuz.m_pd3dDevice, NULL );	
 	}
 
 #ifdef __CSC_ENCHANT_EFFECT_2
@@ -469,14 +469,14 @@ void	CPartsFire::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld 
 			pSfxModel->m_vScale.z = pSfxModel->m_pModelElem->m_fScale;
 		}
 		
-		pSfxModel->Render( pd3dDevice, NULL );	
+		pSfxModel->Render( g_Neuz.m_pd3dDevice, NULL );	
 	}
 #endif //__CSC_ENCHANT_EFFECT_2
 }
 
 
 ////////////////////////////////////////////////////////////////////////////
-void	CPartsFireDragon::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 &vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale, const D3DXVECTOR3 &vVel  )
+void	CPartsFireDragon::Create( const D3DXVECTOR3 &vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale, const D3DXVECTOR3 &vVel  )
 {
 	int		i;
 	D3DXMATRIX	m_mScale;
@@ -510,14 +510,14 @@ CPartsFireDragon::CPartsFireDragon()
 	m_vFan[5].v = D3DXVECTOR3( 0.5f, -0.5f, -0.5f );
 }
 
-void CPartsFireDragon::Process( LPDIRECT3DDEVICE9 pd3dDevice )
+void CPartsFireDragon::Process( )
 {
 	int		i;
 	HRESULT hr;
 
 	PARTICLE_DRAGON *pParticle = NULL;
 	
-	hr = pd3dDevice->CreateVertexBuffer( MAX_PARTS_FIRE_DRAGON * 6 * sizeof(FIREVERTEX),
+	hr = g_Neuz.m_pd3dDevice->CreateVertexBuffer( MAX_PARTS_FIRE_DRAGON * 6 * sizeof(FIREVERTEX),
 										D3DUSAGE_WRITEONLY, FIREVERTEX::FVF,
 										 D3DPOOL_MANAGED, &m_pParticleVB, NULL );
 
@@ -606,12 +606,13 @@ void CPartsFireDragon::Process( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pParticleVB->Unlock();
 }
 
-void	CPartsFireDragon::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld )
+void	CPartsFireDragon::Render( const D3DXMATRIX *mWorld )
 {
 	HRESULT hr;
 
-	Process( pd3dDevice );
-
+	Process();
+	
+	LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
 	pd3dDevice->SetTransform( D3DTS_WORLD, mWorld );		// Set World Transform 
 
  	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
@@ -652,12 +653,12 @@ void	CPartsFireDragon::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *m
 
 }
 
-HRESULT CPartsFireDragon::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CPartsFireDragon::RestoreDeviceObjects()
 {
 	HRESULT hr;
 	char szFileName[128] = {0};
 
-	hr = LoadTextureFromRes( pd3dDevice, MakePath( DIR_SFXTEX, "Sfx_NpcSp1DiePartbo03.dds" ), &m_pTexture );
+	hr = LoadTextureFromRes( g_Neuz.m_pd3dDevice, MakePath( DIR_SFXTEX, "Sfx_NpcSp1DiePartbo03.dds" ), &m_pTexture );
 
 	if( hr == E_FAIL )
 	{
@@ -666,7 +667,7 @@ HRESULT CPartsFireDragon::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 	return S_OK;
 }
 
-HRESULT CPartsFireDragon::InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CPartsFireDragon::InvalidateDeviceObjects()
 {
 	SAFE_RELEASE( m_pTexture );
 	SAFE_RELEASE( m_pParticleVB );
@@ -776,7 +777,7 @@ void	CPartsBeam :: Generate( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, int n
 	Create( vv, v2, fSize, nLevel );
 }
 
-void CPartsBeam :: Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward,
+void CPartsBeam :: Render( const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward,
 					  const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, int nLevel )
 {
 	Generate( v1, v2, nLevel );		// 번개 이펙트 생성.
@@ -784,6 +785,7 @@ void CPartsBeam :: Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 	if( m_bActive == FALSE )	return;
 	int		i;
 
+	LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
 	pd3dDevice->SetVertexShader( NULL );
 	pd3dDevice->SetFVF( D3DFVF_BEAM );
 	
@@ -900,7 +902,7 @@ void CPartsBeam :: Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-HRESULT CPartsLaser::InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CPartsLaser::InvalidateDeviceObjects()
 {
 	SAFE_RELEASE( m_pTexture );
 	
@@ -908,9 +910,9 @@ HRESULT CPartsLaser::InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 }
 
 
-HRESULT CPartsLaser::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CPartsLaser::RestoreDeviceObjects()
 {
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_MODELTEX, "etc_Laser01.tga" ), &m_pTexture ) ) )
+	if( FAILED( LoadTextureFromRes( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, "etc_Laser01.tga" ), &m_pTexture ) ) )
 		Error( "Read not Texture etc_Laser01.tga" );
 	return S_OK;
 }
@@ -936,7 +938,7 @@ void CPartsLaser::SetPos( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, float fS
 // v1, v2 레이저 시작과 끝. 로컬좌표
 // fSize : 레이저 폭, 여기에 내부적으로 커졌다 작아졌다하는 크기가 더해진다.
 //
-void CPartsLaser :: Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward
+void CPartsLaser :: Render( const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward
 					  /*const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, FLOAT fSize*/ )
 {
 //	Generate( v1, v2 );		// 레이저 이펙트 생성.
@@ -946,6 +948,7 @@ void CPartsLaser :: Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWor
 	
 	//	int		i;
 
+	LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
 	pd3dDevice->SetVertexShader( NULL );
 	pd3dDevice->SetFVF( D3DFVF_BEAM );
 	

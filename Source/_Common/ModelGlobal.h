@@ -127,8 +127,8 @@ public:
 	CPartsEffect() { m_nType = 0; }
 	virtual	~CPartsEffect() {}
 
-	virtual HRESULT InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) { return S_OK; }
-	virtual HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) { return S_OK; }
+	virtual HRESULT InvalidateDeviceObjects() { return S_OK; }
+	virtual HRESULT RestoreDeviceObjects() { return S_OK; }
 	
 };
 
@@ -169,11 +169,11 @@ public:
 #endif //__CSC_ENCHANT_EFFECT_2
 	}
 	virtual	~CPartsFire();
-	void	Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale );
+	void	Create( const D3DXVECTOR3 vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale );
 #ifdef __CSC_ENCHANT_EFFECT_2
-	void	Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, DWORD dwSfx );
+	void	Create( const D3DXVECTOR3 vPos, DWORD dwSfx );
 #endif //__CSC_ENCHANT_EFFECT_2
-	void	Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
+	void	Render( const D3DXMATRIX *mWorld );
 };
 
 
@@ -215,11 +215,11 @@ class CPartsFireDragon : public CPartsEffect
 public:
 	CPartsFireDragon(); 
 	~CPartsFireDragon() {}
-	void	Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 &vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale, const D3DXVECTOR3 &vVel );
-	void	Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
-	void	Process( LPDIRECT3DDEVICE9 pd3dDevice );
-	HRESULT InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
-	HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	void	Create( const D3DXVECTOR3 &vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale, const D3DXVECTOR3 &vVel );
+	void	Render( const D3DXMATRIX *mWorld );
+	void	Process( );
+	HRESULT InvalidateDeviceObjects( );
+	HRESULT RestoreDeviceObjects( );
 };
 
 
@@ -261,7 +261,7 @@ public:
 	void	Create( const D3DXVECTOR3 &v );
 	void	Create( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, float fSize = 1.0f, int nLevel = 0 );
 	void	Generate( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, int nLevel );
-	void	Render( LPDIRECT3DDEVICE9 pd3dDevice, 
+	void	Render( 
 					const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward, 
 					const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, int nLevel );
 };
@@ -295,13 +295,13 @@ public:
 	}
 	~CPartsLaser() {}
 	
-	HRESULT InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
-	HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT InvalidateDeviceObjects();
+	HRESULT RestoreDeviceObjects();
 		
 	void	Create( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, float fSize = 1.0f );
 	void	SetPos( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, float fSize );
 //	void	Generate( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2 );
-	void	Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward/*, const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, FLOAT fSize = 0*/ );
+	void	Render( const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward/*, const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, FLOAT fSize = 0*/ );
 };
 
 #endif // __CLIENT
