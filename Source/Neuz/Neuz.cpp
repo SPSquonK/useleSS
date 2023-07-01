@@ -49,18 +49,6 @@ CModelObject			g_Shadow;
 // global enum
 //////////////////////////////////////////////////////////////////////////////
 
-enum 
-{
-	NOTIFY_STATUS_NONE,
-	NOTIFY_STATUS_45MIN,
-	NOTIFY_STATUS_50MIN,
-	NOTIFY_STATUS_55MIN,
-	NOTIFY_STATUS_56MIN,
-	NOTIFY_STATUS_57MIN,
-	NOTIFY_STATUS_58MIN,
-	NOTIFY_STATUS_59MIN,
-};
-
 #ifdef __GAME_GRADE_SYSTEM
 #ifdef __CLIENT
 const FLOAT CNeuzApp::GAME_GRADE_MARK_FADING_SPEED( 800.0F );
@@ -143,7 +131,7 @@ CNeuzApp::CNeuzApp()
 
 	m_dwTimeLeft = 0;
 	m_dwCurTick	 = 0;		
-	m_nLeftTimeNotifyStatus = NOTIFY_STATUS_NONE;
+	m_nLeftTimeNotifyStatus = std::nullopt;
 	
 	m_bActiveNeuz = TRUE;
 	
@@ -860,18 +848,20 @@ void CNeuzApp::SetLeftTime( long lTimeLeft )
 	m_dwCurTick = timeGetTime();
 }
 
-void CNeuzApp::NotifyLeftMinute( UINT type, int nMin )
+void CNeuzApp::NotifyLeftMinute( std::optional<int> nMin )
 {
 	if( ::GetLanguage() == LANG_THA )
 	{
-		if( type == m_nLeftTimeNotifyStatus )
+		if (nMin == m_nLeftTimeNotifyStatus )
 			return;
 
-		m_nLeftTimeNotifyStatus = type;
+		m_nLeftTimeNotifyStatus = nMin;
 
-		char szBuffer[256];
-		sprintf( szBuffer, prj.GetText(TID_GAME_REMAINPLAYTIMEMIN), nMin );
-		g_WndMng.OpenMessageBox( szBuffer );
+		if (nMin) {
+			char szBuffer[256];
+			sprintf(szBuffer, prj.GetText(TID_GAME_REMAINPLAYTIMEMIN), *nMin );
+			g_WndMng.OpenMessageBox(szBuffer);
+		}
 	}
 }
 
@@ -909,25 +899,25 @@ void CNeuzApp::NotifyLeftTime()
 			switch( lLeftTime )
 			{
 			case 60 * 1:
-				NotifyLeftMinute( NOTIFY_STATUS_59MIN, 1 );
+				NotifyLeftMinute( 1 );
 				break;
 			case 60 * 2:
-				NotifyLeftMinute( NOTIFY_STATUS_58MIN, 2 );
+				NotifyLeftMinute( 2 );
 				break;
 			case 60 * 3:
-				NotifyLeftMinute( NOTIFY_STATUS_57MIN, 3 );
+				NotifyLeftMinute( 3 );
 				break;
 			case 60 * 4:
-				NotifyLeftMinute( NOTIFY_STATUS_56MIN, 4 );
+				NotifyLeftMinute( 4 );
 				break;
 			case 60 * 5:
-				NotifyLeftMinute( NOTIFY_STATUS_55MIN, 5 );
+				NotifyLeftMinute( 5 );
 				break;
 			case 60 * 10:
-				NotifyLeftMinute( NOTIFY_STATUS_50MIN, 10 );
+				NotifyLeftMinute( 10 );
 				break;
 			case 60 * 15:
-				NotifyLeftMinute( NOTIFY_STATUS_45MIN, 15 );
+				NotifyLeftMinute( 15 );
 				break;
 			}
 		}

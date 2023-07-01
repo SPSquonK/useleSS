@@ -2,6 +2,7 @@
 #define __NEUZAPP_H
 
 #include <array>
+#include <optional>
 
 #define WM_LOGOUT ( WM_USER + 10 )
 
@@ -120,7 +121,7 @@ public:
 	BYTE					m_cbAccountFlag;	// 18세이상, 학교대항전, 24시간플레이 플래그 
 	DWORD					m_dwCurTick;
 	DWORD					m_dwTimeLeft;		// 플레이할 수 있게 남은 시간 (태국의 경우)
-	UINT					m_nLeftTimeNotifyStatus;
+	std::optional<int> m_nLeftTimeNotifyStatus;
 	DWORD					m_dwShoutLimitSecond;
 	int						m_nShoutLimitCount;
 	u_long					m_uIdofMulti;
@@ -207,7 +208,7 @@ protected:
 	HRESULT		ConfirmDevice( D3DCAPS9* pCaps, DWORD dwBehavior, 
 								D3DFORMAT adapterFormat, D3DFORMAT backBufferFormat );
 	void		NotifyLeftTime();
-	void		NotifyLeftMinute( UINT type, int nMin );
+	void		NotifyLeftMinute( std::optional<int> nMin );
 	void		HashMD5( char* szResult, LPCTSTR szPWD );
 
 public:
