@@ -675,10 +675,10 @@ BOOL CWorldMap::LoadWorldMap()
 		if(nMap > 0 && nMap < MAX_BUTTON - 1 && m_MonsterInfo.m_nMap != nMap)
 		{
 			m_MonsterInfo.DeleteDeviceObjects();
-			m_MonsterInfo.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( m_strMonScript[nMap-1] ) ), nMap );	
+			m_MonsterInfo.LoadScript( MakePath( DIR_THEME, _T( m_strMonScript[nMap-1] ) ), nMap );	
 		}
 
-		m_RainbowNPC.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "texMapRainbow_NPC.inc" ) ) );
+		m_RainbowNPC.LoadScript( MakePath( DIR_THEME, _T( "texMapRainbow_NPC.inc" ) ) );
 
 		if( m_pTexWorldMap )
 		{
@@ -818,7 +818,7 @@ void CWorldMap::OnLButtonDown( )
 					if(m_nMap > 0 && m_MonsterInfo.m_nMap != m_nMap)
 					{
 						m_MonsterInfo.DeleteDeviceObjects();
-						m_MonsterInfo.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( m_strMonScript[m_nMap-1] ) ), m_nMap );
+						m_MonsterInfo.LoadScript( MakePath( DIR_THEME, _T( m_strMonScript[m_nMap-1] ) ), m_nMap );
 					}
 				}
 				else if(i == MAX_BUTTON - 1)
@@ -1092,7 +1092,7 @@ BOOL CWorldMap::WorldPosToMapPos( const D3DXVECTOR3& vPos, OUT CPoint& cPos )
 
 //=====================================================================================================================================================
 
-BOOL CMonsterInfoPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName, int nMap )
+BOOL CMonsterInfoPack::LoadScript( LPCTSTR pszFileName, int nMap )
 {
 	CScript scanner;
 	if( scanner.Load( pszFileName ) == FALSE )
@@ -1131,14 +1131,14 @@ BOOL CMonsterInfoPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFile
 
 			if( bMultiLang )
 			{
-				LoadTextureFromRes( pd3dDevice, MakePath( DIR_THEME, strFileName ), 
+				LoadTextureFromRes( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, strFileName ), 
 										D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 										D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 										D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );
 			}
 			else
 			{
-				LoadTextureFromRes( pd3dDevice, MakePath( DIR_THEME, strFileName ), 
+				LoadTextureFromRes( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, strFileName ), 
 					D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 					D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 					D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );
@@ -1228,7 +1228,7 @@ CMonsterInfoPack::MonsterInfo::MonsterInfo(CScript & scanner, const CSize size) 
 }
 
 
-BOOL CRainbowNPCPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName )
+BOOL CRainbowNPCPack::LoadScript( LPCTSTR pszFileName )
 {
 	CScript scanner;
 	if( scanner.Load( pszFileName ) == FALSE )
@@ -1265,14 +1265,14 @@ BOOL CRainbowNPCPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileN
 
 			if( bMultiLang )
 			{
-				LoadTextureFromRes( pd3dDevice, MakePath( DIR_THEME, strFileName ), 
+				LoadTextureFromRes( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, strFileName ), 
 										D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 										D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 										D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );
 			}
 			else
 			{
-				LoadTextureFromRes( pd3dDevice, MakePath( DIR_THEME, strFileName ), 
+				LoadTextureFromRes( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, strFileName ), 
 					D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 					D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 					D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );
