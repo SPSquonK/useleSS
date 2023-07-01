@@ -652,15 +652,13 @@ int		CModelObject::LoadElement( LPCTSTR szFileName, int nParts )
 		//ADDERRORMSG( szErr );
 	}
 #endif
-	pObject3D = g_Object3DMng.LoadObject3D( m_pd3dDevice, szFileName );
+	pObject3D = g_Object3DMng.LoadObject3D( szFileName );
 	if( pObject3D == NULL )
 	{
 		LPCTSTR szStr = Error( "%s : 찾을 수 없음", MakePath( DIR_MODEL, szFileName ) );
 		//ADDERRORMSG( szStr );
 		return FAIL;
 	}
-
-	pObject3D->InitDeviceObjects( m_pd3dDevice );
 
 	// 스킨파츠의 경우 외부본을 읽었는지 검사.
 	if( pObject3D->IsUseExternBone() )		// 외장본을 사용하는 오브젝이다.
@@ -784,15 +782,12 @@ int CModelObject::LoadClonedElement( LPCTSTR szFileName )
 	O3D_ELEMENT* pElem = NULL;
 
 	pObject3D	= new CObject3D;
-	pObject3D->InitDeviceObjects( m_pd3dDevice );
 	if( pObject3D->LoadObject( szFileName ) == FAIL )
 	{
 		assert( 0 );
 		SAFE_DELETE( pObject3D );
 		return -1;
 	}
-
-	pObject3D->InitDeviceObjects( m_pd3dDevice );
 
 	pElem = &m_Element[ 0 ];
 	memset( pElem, 0, sizeof(O3D_ELEMENT) );

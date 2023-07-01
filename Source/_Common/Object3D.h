@@ -215,7 +215,6 @@ private:
 	
 public:
 	D3DXVECTOR3	m_vEvent[MAX_MDL_EVENT];
-	LPDIRECT3DDEVICE9		m_pd3dDevice;
 	int		m_bSendVS;
 	int		m_bLOD;						// LOD데이타가 있는가?
 	int		m_nID;						// 오브젝트의 고유 아이디
@@ -268,7 +267,7 @@ public:
 #ifdef __YENV
 	LPDIRECT3DVERTEXDECLARATION9 m_pNormalDecl;
 	HRESULT						ExtractBuffers( int nType, LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB, GMOBJECT *pObject );
-	LPDIRECT3DTEXTURE9			CreateNormalMap( int nType, LPDIRECT3DDEVICE9 m_pd3dDevice, LPDIRECT3DTEXTURE9* pTexture, LPCTSTR strFileName, LPCTSTR szPath = NULL );
+	LPDIRECT3DTEXTURE9			CreateNormalMap( int nType, LPDIRECT3DTEXTURE9* pTexture, LPCTSTR strFileName, LPCTSTR szPath = NULL );
 #endif //__YENV
 	
 	CObject3D();
@@ -378,7 +377,6 @@ static 	BOOL IsAnimateFile( LPCTSTR szFileName );		// szFileName이 애니메이션이 
 #endif
 #endif
 	
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) { m_pd3dDevice = pd3dDevice;  return S_OK; }
 	HRESULT RestoreDeviceObjects( LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB, D3DPOOL pool = D3DPOOL_MANAGED );
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
@@ -403,7 +401,7 @@ public:
 	~CObject3DMng();
 
 	int			DeleteObject3D( CObject3D *pObject3D );
-	CObject3D	*LoadObject3D( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName );
+	CObject3D	*LoadObject3D( LPCTSTR szFileName );
 	void	Process( void );
 
 	//HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) { m_pd3dDevice = pd3dDevice; }

@@ -288,7 +288,7 @@ int CObject3DMng::DeleteObject3D( CObject3D *pObject3D )
 //
 //
 //
-CObject3D		*CObject3DMng :: LoadObject3D( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
+CObject3D		*CObject3DMng :: LoadObject3D( LPCTSTR szFileName )
 {
 	char sFile[MAX_PATH]	= { 0,};
 	strcpy( sFile, szFileName );
@@ -301,7 +301,6 @@ CObject3D		*CObject3DMng :: LoadObject3D( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR 
 		return i->second;
 	}
 	CObject3D* pObject3D	= new CObject3D;
-	pObject3D->InitDeviceObjects( pd3dDevice );
 	if( pObject3D->LoadObject( szFileName ) == FAIL )
 	{
 		SAFE_DELETE( pObject3D );
@@ -608,7 +607,8 @@ HRESULT	CObject3D :: CreateDeviceBuffer( GMOBJECT *pObject, LPDIRECT3DVERTEXBUFF
 	return S_OK;
 #else
 //	pool = D3DPOOL_MANAGED;
-	
+	LPDIRECT3DDEVICE9 m_pd3dDevice = g_Neuz.m_pd3dDevice;
+
 	HRESULT		hr;
 	int			nVertexSize;
 	DWORD		dwFVF;
@@ -2521,7 +2521,6 @@ HRESULT		CObject3D::SetVertexBuffer( GMOBJECT *pObj )
 //
 HRESULT CObject3D::SendVertexBuffer( GMOBJECT *pObj, LPDIRECT3DVERTEXBUFFER9 pd3d_VB )
 {
-	LPDIRECT3DDEVICE9 pd3dDevice = m_pd3dDevice;
 	HRESULT	hr;
 	VOID*	pVertices;
 	int		nMax;
@@ -2551,7 +2550,6 @@ HRESULT CObject3D::SendVertexBuffer( GMOBJECT *pObj, LPDIRECT3DVERTEXBUFFER9 pd3
 //
 HRESULT CObject3D::SendIndexBuffer( GMOBJECT *pObj )
 {
-	LPDIRECT3DDEVICE9 pd3dDevice = m_pd3dDevice;
 	VOID*	pVertices;
 	int		nMax;
 
@@ -2570,6 +2568,8 @@ HRESULT CObject3D::SendIndexBuffer( GMOBJECT *pObj )
 #ifndef __WORLDSERVER
 void CObject3D::SetState( MATERIAL_BLOCK* pBlock, int nEffect, DWORD dwBlendFactor )
 {
+	LPDIRECT3DDEVICE9 m_pd3dDevice = g_Neuz.m_pd3dDevice;
+
 	// set
 	if( pBlock->m_dwEffect & XE_2SIDE )
 		m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
@@ -2742,6 +2742,8 @@ void CObject3D::SetState( MATERIAL_BLOCK* pBlock, int nEffect, DWORD dwBlendFact
 //
 void CObject3D::ResetState( MATERIAL_BLOCK* pBlock,  int nEffect, DWORD dwBlendFactor )
 {
+	LPDIRECT3DDEVICE9 m_pd3dDevice = g_Neuz.m_pd3dDevice;
+
 	// reset
 	if( pBlock->m_dwEffect & XE_2SIDE )
 		m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
@@ -3491,7 +3493,7 @@ void	CObject3D::SetShader( const D3DXMATRIX *mWorld )
 			HRESULT hr = g_Neuz.m_pEffect->SetMatrix( str, &mWorldTranspose );
 #else //__YENV
 			D3DXMatrixTranspose( &mWorldTranspose, &mWorldTranspose );		// 매트릭스를 돌린다음.
-			m_pd3dDevice->SetVertexShaderConstantF( i * 3, (float*)&mWorldTranspose, 3 );		// 상수레지스터에 집어넣음.
+			g_Neuz.m_pd3dDevice->SetVertexShaderConstantF( i * 3, (float*)&mWorldTranspose, 3 );		// 상수레지스터에 집어넣음.
 #endif //__YENV
 
 		}
@@ -3545,15 +3547,10 @@ void	CObject3D::SetShader( const D3DXMATRIX *mWorld )
 	g_Neuz.m_pEffect->SetVector( g_Neuz.m_hvAmbient, (D3DXVECTOR4*)&s_fAmbient[0] );	
 	*/
 #else //__YENV
-	m_pd3dDevice->SetVertexShaderConstantF( 84, (float*)&mViewProjTranspose, 4 );
-	//		m_pd3dDevice->SetVertexShaderConstantF( 88, (float*)&mWorldTranspose, 4 );
-//	m_pd3dDevice->SetVertexShaderConstantF( 88, (float*)&vEyePos,  1 );
-//	m_pd3dDevice->SetVertexShaderConstantF( 89, (float*)&fSpecular, 1 );
-//	m_pd3dDevice->SetVertexShaderConstantF( 90, (float*)&fLightCol, 1 );
-	m_pd3dDevice->SetVertexShaderConstantF( 92, (float*)&vLight,   1 );
-	m_pd3dDevice->SetVertexShaderConstantF( 93, (float*)&s_fDiffuse, 1 );
-	m_pd3dDevice->SetVertexShaderConstantF( 94, (float*)&s_fAmbient, 1 );
-	//		m_pd3dDevice->SetVertexShaderConstant( 95, &vConst, 1 );
+	g_Neuz.m_pd3dDevice->SetVertexShaderConstantF( 84, (float*)&mViewProjTranspose, 4 );
+	g_Neuz.m_pd3dDevice->SetVertexShaderConstantF( 92, (float*)&vLight,   1 );
+	g_Neuz.m_pd3dDevice->SetVertexShaderConstantF( 93, (float*)&s_fDiffuse, 1 );
+	g_Neuz.m_pd3dDevice->SetVertexShaderConstantF( 94, (float*)&s_fAmbient, 1 );
 #endif //__YENV
 
 }
@@ -3891,7 +3888,7 @@ HRESULT CObject3D::ExtractBuffers( int nType, LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB,
 	return S_OK;
 }
 
-LPDIRECT3DTEXTURE9 CObject3D::CreateNormalMap( int nType, LPDIRECT3DDEVICE9 m_pd3dDevice, LPDIRECT3DTEXTURE9* pTexture, LPCTSTR strFileName, LPCTSTR szPath )
+LPDIRECT3DTEXTURE9 CObject3D::CreateNormalMap( int nType, LPDIRECT3DTEXTURE9* pTexture, LPCTSTR strFileName, LPCTSTR szPath )
 {
 	HRESULT hr;
 	

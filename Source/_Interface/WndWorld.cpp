@@ -8814,7 +8814,7 @@ void CWndWorld::InitEyeFlash()
 		for( int i=0; i<MAX_HEAD; i++ )
 		{
 			_stprintf( lpszTemp, PARTSMESH_HEAD( nSex ), i + 1 );
-			pObject3D = g_Object3DMng.LoadObject3D( g_Neuz.m_pd3dDevice, lpszTemp );
+			pObject3D = g_Object3DMng.LoadObject3D( lpszTemp );
 			pGmObj = pObject3D->GetGMOBJECT();
 			str1 = pGmObj->m_MaterialAry[0].strBitMapFileName;
 			CMover::m_pTextureEye[nSex][i] = *(pGmObj->m_pMtrlBlkTexture);
