@@ -1359,7 +1359,7 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 			strcpy( pObject->m_MaterialAry[i].strBitMapFileName, szBitmap );
 		#if	!defined(__WORLDSERVER)
 			if( !IsEmpty(szBitmap) )
-				mMaterialAry[i] = g_TextureMng.AddMaterial( m_pd3dDevice, &mMaterial, szBitmap );
+				mMaterialAry[i] = g_TextureMng.AddMaterial( &mMaterial, szBitmap );
 		#endif
 		}
 	}
@@ -1532,9 +1532,8 @@ void	CObject3D::ChangeTexture( LPCTSTR szSrc, LPCTSTR szDest )
 				int nID = pObject->m_pMtrlBlk[j].m_nTextureID;
 				if( strcmp( szBitMapFileName[j], szBuff ) == 0 )	// szSrc랑 같은 파일명이 있으면
 				{
-					MATERIAL	*pMtrl;
 					D3DMATERIAL9	mMtrl;
-					pMtrl = g_TextureMng.AddMaterial( m_pd3dDevice, &mMtrl, szDest );		// szDest로 읽어서
+					MATERIAL * pMtrl = g_TextureMng.AddMaterial( &mMtrl, szDest );		// szDest로 읽어서
 					pObject->m_pMtrlBlkTexture[j] = pMtrl->m_pTexture;	// 그놈으로 대체시키고
 					strcpy( pObject->m_MaterialAry[ nID ].strBitMapFileName, szDest );	// 파일명 바꿔놓는다.
 				}
@@ -2411,10 +2410,9 @@ D3DXVECTOR3 *CObject3D::IntersectRayTri( const D3DXVECTOR3 &vRayOrig, const D3DX
 void	CObject3D::SetTexture( LPCTSTR szTexture )
 {
 #if !defined(__WORLDSERVER)
-	MATERIAL	*pMtrl;
 	D3DMATERIAL9	mMtrl;
 
-	pMtrl = g_TextureMng.AddMaterial( m_pd3dDevice, &mMtrl, szTexture );
+	MATERIAL * pMtrl = g_TextureMng.AddMaterial( &mMtrl, szTexture );
 	m_Group[0].m_pObject[0].m_pMtrlBlkTexture[0] = pMtrl->m_pTexture;
 #endif
 }
@@ -2452,7 +2450,7 @@ void	CObject3D::LoadTextureEx( int nNumEx, GMOBJECT *pObj, MATERIAL *pmMaterial[
 		lstrcat( szTexture, szFileExt );
 
 		if( !IsEmpty(szTexture) )
-			pmMaterial[i] = g_TextureMng.AddMaterial( m_pd3dDevice, &mMaterial, szTexture );
+			pmMaterial[i] = g_TextureMng.AddMaterial( &mMaterial, szTexture );
 	}
 #endif // !__WORLDSERVER
 }

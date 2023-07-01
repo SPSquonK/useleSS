@@ -219,7 +219,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 
 #endif
 
-	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( pd3dDevice, 0 ) );
+	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( 0 ) );
 
 	D3DXMATRIX  mWorld;
 
@@ -789,7 +789,7 @@ void CMover::RenderPartsEffect( LPDIRECT3DDEVICE9 pd3dDevice )
 	if( !IsVisible() || IsCull() )
 		return;
 
-	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( pd3dDevice, 0 ) );
+	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( 0 ) );
 
 	D3DXVECTOR3 vPos = GetPos();
 	D3DXMATRIX  matWorld;

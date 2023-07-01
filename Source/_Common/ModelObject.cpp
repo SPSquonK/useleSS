@@ -923,7 +923,7 @@ void	CModelObject::SetTextureMulti( LPCTSTR szBitmap, int nParts )
 	D3DMATERIAL9	d3dmtrl;
 	MATERIAL		*mtrl;
 
-	mtrl = g_TextureMng.AddMaterial( m_pd3dDevice, &d3dmtrl, szBitmap );
+	mtrl = g_TextureMng.AddMaterial( &d3dmtrl, szBitmap );
 	O3D_ELEMENT* pParts = GetParts(nParts);
 
 	if( pParts )
@@ -1105,7 +1105,7 @@ int		CModelObject::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 	}
 
 	nNextFrame = GetNextFrame();
-	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( pd3dDevice, 0 ) );
+	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( 0 ) );
 
 	D3DXVECTOR3 vec3LightBackup = D3DXVECTOR3( s_vLight[0], s_vLight[1], s_vLight[2] );
 	D3DXVECTOR4 vec4Diffuse = D3DXVECTOR4( s_fDiffuse[0], s_fDiffuse[1], s_fDiffuse[2], s_fDiffuse[3] );;
