@@ -430,7 +430,7 @@ void CWorld::RenderTerrain()
 				if( LandInWorld( (int)j, (int)i ) && m_apLand[ nOffset ] )
 				{
 					if(m_apLand[ nOffset ]->isVisibile())
-						m_apLand[ nOffset ]->Render( m_pd3dDevice );
+						m_apLand[ nOffset ]->Render();
 				}
 			}
 		}
@@ -465,7 +465,7 @@ void CWorld::RenderWater()
 						if( m_bViewWater )
 						{
 							m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, m_bViewLight );
-							m_apLand[ nOffset ]->RenderWater( m_pd3dDevice);
+							m_apLand[ nOffset ]->RenderWater();
 						}
 					}						
 				}
@@ -1739,7 +1739,7 @@ HRESULT CWorld::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 	for( int i = 0; i < m_nLandWidth * m_nLandHeight; i++ ) 
 	{
 		if( m_apLand[ i ] )
-			m_apLand[ i ]->RestoreDeviceObjects( pd3dDevice );
+			m_apLand[ i ]->RestoreDeviceObjects();
 	}
 	// 바운드 박스 버텍스 버퍼 만들기 
 	// BoundBoxVertexNum = 12 // 라인수 * 점 ( 하나의 라인은 점 두쌍 )

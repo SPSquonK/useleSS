@@ -926,13 +926,13 @@ BOOL CWorld::ReadWorld( D3DXVECTOR3 vPos, BOOL bEraseOldLand  )
 					pLand = new CLandscape;
 					pLand->m_nWorldX = j * MAP_SIZE;
 					pLand->m_nWorldY = i * MAP_SIZE;
-					pLand->InitDeviceObjects( m_pd3dDevice, this );
+					pLand->InitDeviceObjects( this );
 					if( pLand->LoadLandscape( strLandTemp, j, i ) == FALSE )
 					{
 						safe_delete( pLand );
 						continue;
 					}
-					pLand->RestoreDeviceObjects( m_pd3dDevice );
+					pLand->RestoreDeviceObjects();
 
 					m_apLand[ i * m_nLandWidth + j] = pLand;
 

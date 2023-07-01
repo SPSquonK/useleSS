@@ -226,7 +226,6 @@ void CPatch::CalculateLevel()
 CLandscape::CLandscape()
 {
 	m_dwVersion = 0;
-	m_pd3dDevice = NULL;
 	m_pHeightMap = NULL;
 	m_pVB=NULL;
 	m_pWorld = NULL;
@@ -315,9 +314,8 @@ CLandscape::~CLandscape()
 //
 // 디바이스 관련
 //
-HRESULT CLandscape::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWorld )
+HRESULT CLandscape::InitDeviceObjects( CWorld* pWorld )
 {
-	m_pd3dDevice = pd3dDevice;
 	m_pWorld = pWorld;
 
 	FreeTerrain();
@@ -327,13 +325,13 @@ HRESULT CLandscape::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWo
 	return S_OK;
 }
 
-HRESULT CLandscape::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
+HRESULT CLandscape::RestoreDeviceObjects()
 {
 	if( m_pVB ) 
 		return S_OK;
 
-	if(pd3dDevice) 
-		pd3dDevice->CreateVertexBuffer( (PATCH_SIZE+1) * (PATCH_SIZE+1) * (NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE) *sizeof(D3DLANDSCAPEVERTEX),
+	if(g_Neuz.m_pd3dDevice)
+		g_Neuz.m_pd3dDevice->CreateVertexBuffer( (PATCH_SIZE+1) * (PATCH_SIZE+1) * (NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE) *sizeof(D3DLANDSCAPEVERTEX),
 										  D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &m_pVB , NULL);
 	
 	CPatch *patch;
@@ -347,8 +345,8 @@ HRESULT CLandscape::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
 		}
 	}
 	CalculateBound();
-	pd3dDevice->SetSamplerState( 1, D3DSAMP_MINFILTER, D3DTEXF_LINEAR );		
-	pd3dDevice->SetSamplerState( 1, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR );		
+	g_Neuz.m_pd3dDevice->SetSamplerState( 1, D3DSAMP_MINFILTER, D3DTEXF_LINEAR );
+	g_Neuz.m_pd3dDevice->SetSamplerState( 1, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR );
 
 	for (auto & apObject : m_apObjects) {
 		for (CObj * pObj : apObject.ValidObjs()) {
@@ -370,6 +368,8 @@ HRESULT CLandscape::MakeWaterVertexBuffer()
 #ifdef __FULLWORLD 
 	return S_OK;	// 물,구름,높이속성,위치정보의 버텍스를 만들지 않는다.
 #endif
+	LPDIRECT3DDEVICE9 m_pd3dDevice = g_Neuz.m_pd3dDevice;
+
 	SAFE_RELEASE( m_pWaterVertexBuffer );
 	SAFE_RELEASE( m_pCloudVertexBuffer );
 	// 물 버텍스 버퍼 만들기 
@@ -794,6 +794,8 @@ BOOL CLandscape::ForceTexture(LPDIRECT3DTEXTURE9 pNewTex)
 
 void CLandscape::RenderPatches()
 {
+	LPDIRECT3DDEVICE9 m_pd3dDevice = g_Neuz.m_pd3dDevice;
+
 	int nBlendStatus=0;
 	
 	for(int i = 0; i < NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE; i++ )
@@ -846,21 +848,9 @@ void CLandscape::RenderPatches()
 		}
 	}
 }
-HRESULT CLandscape::Render(LPDIRECT3DDEVICE9 pd3dDevice,BOOL bLod)
+HRESULT CLandscape::Render(BOOL bLod)
 {
-	/*
-	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE);
-	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
-
-	pd3dDevice->SetRenderState( D3DRS_CULLMODE,   D3DCULL_CCW );
-//	pd3dDevice->SetRenderState( D3DRS_CULLMODE,   D3DCULL_NONE );
-//	pd3dDevice->SetRenderState( D3DRS_FILLMODE,   D3DFILL_WIREFRAME );
-*/
-	//m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	//m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-	//m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
-//	m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
-	//m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
+	LPDIRECT3DDEVICE9 m_pd3dDevice = g_Neuz.m_pd3dDevice;
 
 	m_pd3dDevice->SetTextureStageState( 1, D3DTSS_COLORARG1, D3DTA_CURRENT);
 	m_pd3dDevice->SetTextureStageState( 1, D3DTSS_COLORARG2, D3DTA_TEXTURE);
@@ -868,80 +858,27 @@ HRESULT CLandscape::Render(LPDIRECT3DDEVICE9 pd3dDevice,BOOL bLod)
 	m_pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 	m_pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 
-//	m_pd3dDevice->SetTextureStageState( 2, D3DTSS_COLOROP,   D3DTOP_DISABLE);
-//	m_pd3dDevice->SetTextureStageState( 2, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
-
-    //m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
-    //m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
-    //m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
-	
-	//m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND , D3DBLEND_SRCALPHA    );
-	//m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-
 	m_pd3dDevice->SetVertexDeclaration( NULL );
 	m_pd3dDevice->SetVertexShader( NULL );
 	m_pd3dDevice->SetFVF( D3DFVF_D3DLANDSCAPEVERTEX );
 	m_pd3dDevice->SetStreamSource( 0, m_pVB, 0, sizeof( D3DLANDSCAPEVERTEX ) );
-
-	//m_pd3dDevice->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_POINT);
-	//m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_POINT );
-
-
-//	m_pd3dDevice->SetTextureStageState(0, D3DTSS_MAXMIPLEVEL, 2);
-	//float fBias=-.7f;
-	//m_pd3dDevice->SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS , *((LPDWORD) (&fBias)));
-	//m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPMAPLODBIAS , *((LPDWORD) (&fBias)));
-	
-/*
-	m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
-	m_pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE,   TRUE );
-	m_pd3dDevice->SetRenderState( D3DRS_ALPHAREF,        0x08 );
-	m_pd3dDevice->SetRenderState( D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL   );		
-*/
-//	m_pd3dDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-
+		
 	RenderPatches();
 
-//	m_pd3dDevice->SetRenderState( D3DRS_FILLMODE,   D3DFILL_SOLID );
-	//m_pd3dDevice->SetTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_DISABLE);
-	//m_pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
-
-	//m_pd3dDevice->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
-	//m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_NONE );		
 	return S_OK;
 	
 }
 //////////////////////////////////////////////////////////////
-HRESULT CLandscape::RenderWater( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CLandscape::RenderWater()
 {
+	LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
 //	return S_OK;
 	D3DXMATRIX mat,matView,matProj;
-	m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	D3DXMatrixIdentity( &mat );
-	m_pd3dDevice->SetTransform( D3DTS_WORLD, &mat );
-/*
-	m_pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
-	m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_SELECTARG1 );
-	m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-	m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-	m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );
-	
-	m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE);
-	m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
-	m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-*/
+	pd3dDevice->SetTransform( D3DTS_WORLD, &mat );
+
 	// 랜더 워터 
-/*
-	int nDivWater1 = m_nWaterFrame / 4;
-	int nDivWater2 = m_nWaterFrame % 4;
-	mat._31 = ( 1.0f / 4.0f ) * (FLOAT)nDivWater2;  //m_fCloud_u1;
-	mat._32 = ( 1.0f / 4.0f ) * (FLOAT)nDivWater1;  //m_fCloud_v1;
-	m_pd3dDevice->SetTransform( D3DTS_TEXTURE0, &mat );
-	m_nWaterFrame++;
-	if( m_nWaterFrame >= 16 )
-	m_nWaterFrame = 0;
-	m_pd3dDevice->SetTexture( 0, prj.m_terrainMng.GetTerrain( 11 )->m_pTexture );
-	*/
 	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
 	pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB( 200, 0, 0, 0) );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
@@ -954,8 +891,8 @@ HRESULT CLandscape::RenderWater( LPDIRECT3DDEVICE9 pd3dDevice )
 	pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
 	pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 	
-	m_pd3dDevice->SetVertexShader( NULL );
-	m_pd3dDevice->SetFVF ( D3DFVF_WATERVERTEX ); 
+	pd3dDevice->SetVertexShader( NULL );
+	pd3dDevice->SetFVF ( D3DFVF_WATERVERTEX );
 	//	이 버텍스 버퍼를 여러개를 만들어서 뿌릴수 있도록 만들어 주어야 한다.
 
 	for ( int i = 0 ; i < prj.m_terrainMng.m_nWaterFrame ; i++)
@@ -963,80 +900,60 @@ HRESULT CLandscape::RenderWater( LPDIRECT3DDEVICE9 pd3dDevice )
 		if ( !m_pWaterVB[ i ].WaterVertexNum )
 			continue;
 
-		m_pd3dDevice->SetStreamSource( 0, m_pWaterVB[ i ].pVB, 0, sizeof(WATERVERTEX) );
-		m_pd3dDevice->SetTransform( D3DTS_TEXTURE0, &mat );
-		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
+		pd3dDevice->SetStreamSource( 0, m_pWaterVB[ i ].pVB, 0, sizeof(WATERVERTEX) );
+		pd3dDevice->SetTransform( D3DTS_TEXTURE0, &mat );
+		pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
 
 		//gmpbigsun : 함수분해함, 배열 인덱스가 0보다 작은경우가 발생할 경우 안전조치 
 		if(const auto pdwID = prj.m_terrainMng.m_pWaterIndexList[i].GetTerrainId())
 		{
 			LPDIRECT3DTEXTURE9 pTexture = prj.m_terrainMng.GetTerrain(pdwID.value())->m_pTexture;
-			m_pd3dDevice->SetTexture(0, pTexture );
+			pd3dDevice->SetTexture(0, pTexture );
 
 		//	prj.m_terrainMng.GetTerrain( prj.m_terrainMng.m_pWaterIndexList[ i ].pList[ static_cast<int>(prj.m_terrainMng.m_fWaterFrame[i]) ] )->m_pTexture);  
 		}
-		m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, m_pWaterVB[ i ].WaterVertexNum / 3);
+		pd3dDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, m_pWaterVB[ i ].WaterVertexNum / 3);
     }
 
-	//3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB( nTemp * 255 / 10, 0, 0, 0 ) );
-	//nt nWaterFrame = m_fWaterFrame + 1;
-	//if( nWaterFrame >= 16 ) nWaterFrame = 0;
-	//m_pd3dDevice->SetTexture( 0, prj.m_terrainMng.GetTerrain( 20 + nWaterFrame )->m_pTexture );
-	//m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, m_nWaterVertexNum/3);
 	
-/*
-	pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB( 255, 0, 0, 0 ) );
-	// 시간에 따라 하늘 텍스쳐를 자연스럽게 바꿔치기한다.
-	if(g_GameTimer.m_nHour<6) {
-		pd3dDevice->SetTexture( 0, m_pSkyBoxTexture3);
-		pd3dDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 0, 56);
-	}
-	else if(g_GameTimer.m_nHour==6) {
-		pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB( 255-(g_GameTimer.m_nMin*255/59), 0, 0, 0 ) );
-		pd3dDevice->SetTexture( 0, m_pSkyBoxTexture3);
-		pd3dDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 0, 56);
-		pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB( g_GameTimer.m_nMin*255/59, 0, 0, 0 ) );
-		pd3dDevice->SetTexture( 0, m_pSkyBoxTexture);
-		pd3dDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 0, 56);
-*/
-	m_pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
+	pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
 	if( m_nCloudVertexNum )
 	{
 		// 랜더 구름 
-		m_pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
-		m_pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
+		pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
+		pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
 
 #ifdef __BS_CHANGEABLE_WORLD_SEACLOUD
 		if( m_pWorld->m_kSeaCloud._bUse )
-			m_pd3dDevice->SetTexture( 0, m_pWorld->m_kSeaCloud._pTexture );
+			pd3dDevice->SetTexture( 0, m_pWorld->m_kSeaCloud._pTexture );
 #else
-		m_pd3dDevice->SetTexture( 0, prj.m_terrainMng.GetTerrain( 10 )->m_pTexture );
+		pd3dDevice->SetTexture( 0, prj.m_terrainMng.GetTerrain( 10 )->m_pTexture );
 #endif // __BS_CHANGEABLE_WORLD_SEACLOUD
 		
-		m_pd3dDevice->SetVertexShader( NULL );
-		m_pd3dDevice->SetFVF ( D3DFVF_WATERVERTEX );
-		m_pd3dDevice->SetStreamSource( 0, m_pCloudVertexBuffer, 0, sizeof( WATERVERTEX ) );
+		pd3dDevice->SetVertexShader( NULL );
+		pd3dDevice->SetFVF ( D3DFVF_WATERVERTEX );
+		pd3dDevice->SetStreamSource( 0, m_pCloudVertexBuffer, 0, sizeof( WATERVERTEX ) );
 
 		mat._31 = m_fCloud_u1;
 		mat._32 = m_fCloud_v1;
-		m_pd3dDevice->SetTransform( D3DTS_TEXTURE0, &mat );
+		pd3dDevice->SetTransform( D3DTS_TEXTURE0, &mat );
 		D3DXMatrixTranslation( &mat, 0.0f, 40.0f, 0.0f );
-		m_pd3dDevice->SetTransform( D3DTS_WORLD, &mat );
-		m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, m_nCloudVertexNum / 3 );
+		pd3dDevice->SetTransform( D3DTS_WORLD, &mat );
+		pd3dDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, m_nCloudVertexNum / 3 );
 
 		mat._31 = m_fCloud_u2;
 		mat._32 = m_fCloud_v2;
-		m_pd3dDevice->SetTransform( D3DTS_TEXTURE0, &mat );
+		pd3dDevice->SetTransform( D3DTS_TEXTURE0, &mat );
 		D3DXMatrixTranslation( &mat, 0.0f, 80.0f, 0.0f );
-		m_pd3dDevice->SetTransform( D3DTS_WORLD, &mat );
-		m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, m_nCloudVertexNum / 3 );
+		pd3dDevice->SetTransform( D3DTS_WORLD, &mat );
+		pd3dDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, m_nCloudVertexNum / 3 );
 
 		m_fCloud_u1 += 0.001f;
 		m_fCloud_v1 += 0.001f;
 		m_fCloud_u2 += 0.0015f;
 		m_fCloud_v2 += 0.0015f;
 	}
-	m_pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
+	pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
 	return S_OK;
 }
 
@@ -1302,7 +1219,7 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 		}
 
 		//pObj->m_vPos += D3DXVECTOR3( 1024, 0, 0 );
-		if( pObj->SetIndex( m_pd3dDevice, pObj->m_dwIndex ) == TRUE)
+		if( pObj->SetIndex( g_Neuz.m_pd3dDevice, pObj->m_dwIndex ) == TRUE)
 		{
 			if( ::GetLanguage() == LANG_JAP && pObj->m_dwIndex == 360 )
 			{
@@ -1344,7 +1261,7 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 				pObj->m_vPos.z += yy * LANDREALSCALE;
 			}
 			//pObj->m_vPos += D3DXVECTOR3( 1024, 0, 0 );
-			if( pObj->SetIndex( m_pd3dDevice, pObj->m_dwIndex ) == TRUE )
+			if( pObj->SetIndex( g_Neuz.m_pd3dDevice, pObj->m_dwIndex ) == TRUE )
 			{
 				InsertObjLink( pObj );
 				AddObjArray( pObj );
@@ -1504,7 +1421,7 @@ CLandLayer* CLandscape::NewLayer( WORD nTex )
 	);
 	if (it != m_aLayer.end()) return &*it;
 
-	CLandLayer * pLayer = &m_aLayer.emplace_back(m_pd3dDevice, nTex);
+	CLandLayer * pLayer = &m_aLayer.emplace_back(nTex);
 
 	if( m_aLayer.empty() ) 
 	{
@@ -1563,16 +1480,16 @@ FLOAT CLandscape::GetHeightMap( int nOffset )
 }
 
 
-CLandLayer::CLandLayer(LPDIRECT3DDEVICE9 pd3dDevice,WORD nTex) 
+CLandLayer::CLandLayer(WORD nTex) 
 {
 	m_pLightMap = NULL;
 	m_bVisible = TRUE;
 	m_nTex = nTex;
 
-	if( pd3dDevice ) 
+	if(g_Neuz.m_pd3dDevice)
 	{
 
-		pd3dDevice->CreateTexture( MAP_SIZE, MAP_SIZE, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED,
+		g_Neuz.m_pd3dDevice->CreateTexture( MAP_SIZE, MAP_SIZE, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED,
 										   &m_pLightMap, NULL );
 
 		D3DLOCKED_RECT rectLock;
