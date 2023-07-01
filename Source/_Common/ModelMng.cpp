@@ -210,9 +210,9 @@ T CModelMng::LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL
 		if (info.type == ModelType::ModelObject) {
 			CModelObject * ptr = static_cast<CModelObject *>(info.ptr);
 			if (info.isOwned) {
-				return sqktd::maybe_owned_ptr<CModelObject>(ptr);
-			} else {
 				return std::unique_ptr<CModelObject>(ptr);
+			} else {
+				return sqktd::maybe_owned_ptr<CModelObject>(ptr);
 			}
 		}
 	}
