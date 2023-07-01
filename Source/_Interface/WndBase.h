@@ -148,7 +148,7 @@ static CWndBase*      m_pWndOnSetCursor;
 static int            m_nAlpha;
 static CTheme         m_Theme;
 
-	static BOOL SetForbidTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName );
+	static BOOL SetForbidTexture( LPCTSTR lpszFileName );
 	static void SetForbid( BOOL bForbid );
 	static BOOL IsForbid() { return m_pTexForbid && m_bForbid; }
 
@@ -177,7 +177,7 @@ static SHORTCUT       m_GlobalShortcut;
 	}
 	
 	BOOL Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID);
-	void SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName, BOOL bMyLoader = FALSE );
+	void SetTexture( LPCTSTR lpszFileName, BOOL bMyLoader = FALSE );
 
 	static void RemoveDestroyWnd();
 	void MoveParentCenter(); // 윈도를 부모 윈도의 중앙으로 옮긴다.

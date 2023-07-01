@@ -176,7 +176,7 @@ BOOL CWndPetRes::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	if(m_pEItemProp != NULL)
 	{
 		m_pTexture = m_pItemElem->m_pTexture;
-		//m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
+		//m_pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
 	}	
 
 	return TRUE;

@@ -561,13 +561,13 @@ void CWndMgr::OnInitialUpdate()
 	for( int i=0; i<128; i++ )
 	{
 		sprintf( filename, "Icon_CoolTime_%.3d.tga", i );
-		g_pCoolTexArry[i] = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, filename ), 0xffff00ff );
+		g_pCoolTexArry[i] = m_textureMng.AddTexture( MakePath( DIR_ICON, filename ), 0xffff00ff );
 	}
 
 	for( int i=0; i<11; i++ )
 	{
 		sprintf( filename, "Icon_ImgIncAni_%.2d.tga", i );
-		g_pEnchantTexArry[i] = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, filename ), 0xffffffff );
+		g_pEnchantTexArry[i] = m_textureMng.AddTexture( MakePath( DIR_ICON, filename ), 0xffffffff );
 	}	
 }
 

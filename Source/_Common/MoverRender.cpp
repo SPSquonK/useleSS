@@ -1422,7 +1422,7 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 			//	strPath = MakePath( DIR_ICON, "icon_Expert6.dds");
 				pTexture = g_Neuz.m_pMasterIcon[5];
 
-			//pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+			//pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 			if(pTexture != NULL)
 			{
 				point.y -= pTexture->m_size.cy + 5;
@@ -1432,7 +1432,7 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 		else if(checkhero == LEGEND_CLASS_HERO) //영웅일 경우.
 		{
 			//strPath = MakePath( DIR_ICON, "icon_Hero.dds");
-			//pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+			//pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 			pTexture = g_Neuz.m_pHeroIcon;
 			if(pTexture != NULL)
 			{

@@ -160,14 +160,14 @@ void CWndKawiBawiBoGame::OnDraw( C2DRender* p2DRender )
 	
 	if(strMyPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strMyPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strMyPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC_MY )->rect.left + 3, GetWndCtrl( WIDC_STATIC_MY )->rect.top + 8 ) );		
 	}
 
 	if(strComPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strComPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strComPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC_COM )->rect.left + 3, GetWndCtrl( WIDC_STATIC_COM )->rect.top + 8 ) );		
 	}
@@ -349,7 +349,7 @@ void CWndKawiBawiBoGameWin::OnDraw( C2DRender* p2DRender )
 		if(pItemProp != NULL)
 		{
 			point = CPoint( GetWndCtrl( WIDC_CURRENT_PRESENT )->rect.left + 16, GetWndCtrl( WIDC_CURRENT_PRESENT )->rect.top + 16 );
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+			pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 			if(pTexture != NULL)
 				pTexture->Render( p2DRender,  point);
 			if(m_nItemCount > 1)
@@ -365,7 +365,7 @@ void CWndKawiBawiBoGameWin::OnDraw( C2DRender* p2DRender )
 		if(pItemProp != NULL)
 		{
 			point = CPoint( GetWndCtrl( WIDC_NEXT_PRESENT )->rect.left + 16, GetWndCtrl( WIDC_NEXT_PRESENT )->rect.top + 16 );
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+			pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 			if(pTexture != NULL)
 				pTexture->Render( p2DRender,  point);
 			if(m_nNextItemCount > 1)
@@ -562,8 +562,8 @@ void CWndKawiBawiBoGameConfirm::OnInitialUpdate()
 	
 	m_wndButton1.Create("OK"    , 0, rect2_1, this, IDOK    );
 	m_wndButton2.Create("CANCEL", 0, rect2_2, this, IDCANCEL);
-	m_wndButton1.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtOk.tga" ) );
-	m_wndButton2.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtCancel.tga" ) );
+	m_wndButton1.SetTexture( MakePath( DIR_THEME, "ButtOk.tga" ) );
+	m_wndButton2.SetTexture( MakePath( DIR_THEME, "ButtCancel.tga" ) );
 	m_wndButton1.FitTextureSize();
 	m_wndButton2.FitTextureSize();
 
@@ -699,7 +699,7 @@ void CWndFindWordGame::OnDraw( C2DRender* p2DRender )
 		pItemProp = prj.GetItemProp( m_firstwordID );
 		if(pItemProp != NULL)
 		{
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+			pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 			if(pTexture != NULL)
 				pTexture->Render( p2DRender, CPoint( GetWndCtrl( m_pStaticID[m_nPublic] )->rect.left, GetWndCtrl( m_pStaticID[m_nPublic] )->rect.top ), 100 );
 		}
@@ -713,7 +713,7 @@ void CWndFindWordGame::OnDraw( C2DRender* p2DRender )
 			pItemProp = m_pItemElem[i]->GetProp();
 			if(pItemProp != NULL)
 			{
-				pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+				pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 				if(pTexture != NULL)
 					pTexture->Render( p2DRender, CPoint( GetWndCtrl( m_pStaticID[i] )->rect.left, GetWndCtrl( m_pStaticID[i] )->rect.top ) );
 			}
@@ -996,7 +996,7 @@ void CWndDiceGame::OnDraw( C2DRender* p2DRender )
 
 	if(strPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC_DICE )->rect.left + 3, GetWndCtrl( WIDC_STATIC_DICE )->rect.top + 4 ) );	
 	}
@@ -1006,7 +1006,7 @@ void CWndDiceGame::OnDraw( C2DRender* p2DRender )
 		strPath = m_strPathDiceNum[i];
 		if(strPath.GetLength() > 0)
 		{
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+			pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 			if(pTexture != NULL)
 				pTexture->Render( p2DRender, CPoint( GetWndCtrl( m_pStaticNum[i] )->rect.left, GetWndCtrl( m_pStaticNum[i] )->rect.top) );			
 		}
@@ -1513,7 +1513,7 @@ void CWndDiceGameMessage::OnInitialUpdate()
 	m_wndText.ResetString();
 	
 	m_wndButton.Create("OK", 0, rect1, this, IDOK);
-	m_wndButton.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtOk.tga" ) );
+	m_wndButton.SetTexture( MakePath( DIR_THEME, "ButtOk.tga" ) );
 	m_wndButton.FitTextureSize();
 
 	CWndDiceGame* pWndGame = (CWndDiceGame*)GetWndBase( APP_MINIGAME_DICE );
@@ -1666,7 +1666,7 @@ void CWndPuzzleGame::OnDraw( C2DRender* p2DRender )
 			if(pItemProp != NULL)
 			{
 				//아이템 아이콘이 아닌 큰 크기의 그림이 따로 들어갈 경우 여기를 수정.
-				pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+				pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 				if(pTexture != NULL)
 					pTexture->Render( p2DRender, CPoint( GetWndCtrl( m_pStaticID[i] )->rect.left, GetWndCtrl( m_pStaticID[i] )->rect.top ) );
 			}

@@ -373,7 +373,7 @@ void CWndAbout::OnInitialUpdate()
 	if(m_resMng.GetAt(GetWndId()))
 	{
 		const char * strName = "WndAboutFlyff.tga";
-		SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, strName ), TRUE );
+		SetTexture( MakePath( DIR_THEME, strName ), TRUE );
 	}
 	
 

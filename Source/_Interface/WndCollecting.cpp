@@ -132,8 +132,8 @@ void CCollectingWnd::OnInitialUpdate()
 		if(!m_pVBGauge)
 			m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
 
-		m_pTexGauEmptyNormal = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff );
-		m_pTexGauFillNormal  = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff );
+		m_pTexGauEmptyNormal = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff );
+		m_pTexGauFillNormal  = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff );
 
 		wsprintf(m_pbufText, "%d / %d (%d%%)", nBtryRemain, nMax, nRatio * 100);
 		
@@ -148,8 +148,8 @@ void CCollectingWnd::OnInitialUpdate()
 		CWndStatic * pLevel = (CWndStatic *)GetDlgItem(WIDC_STATIC3);
 		pLevel->SetTitle(szTemp);
 
-		m_pTexBatt  = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "Icon_ColBattery.tga" )), 0xffff00ff );
-		m_pTexLevel = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "Icon_ColLevel.tga" )), 0xffff00ff );
+		m_pTexBatt  = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, _T( "Icon_ColBattery.tga" )), 0xffff00ff );
+		m_pTexLevel = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, _T( "Icon_ColLevel.tga" )), 0xffff00ff );
 		
 	}
 
@@ -193,11 +193,11 @@ void CCollectingWnd::SetButtonCaption(bool bIsStart) {
 	CWndBase * pWndButton = GetDlgItem(WIDC_BUTTON1);
 
 	if (bIsStart) {
-		pWndButton->SetTexture(m_pParentWnd->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtStop.bmp")), TRUE);
+		pWndButton->SetTexture(MakePath(DIR_THEME, _T("ButtStop.bmp")), TRUE);
 	} else if (::GetLanguage() == LANG_FRE) {
-		pWndButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("ButOk2.bmp")), TRUE);
+		pWndButton->SetTexture(MakePath(DIR_THEME, _T("ButOk2.bmp")), TRUE);
 	} else {
-		pWndButton->SetTexture(m_pParentWnd->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtStart.bmp")), TRUE);
+		pWndButton->SetTexture(MakePath(DIR_THEME, _T("ButtStart.bmp")), TRUE);
 	}
 }
 

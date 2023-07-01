@@ -76,7 +76,7 @@ void CWndTaskBar::SetTaskBarTexture( SHORTCUT & shortcut )
 		AppletFunc* pAppletFunc = g_WndMng.GetAppletFunc( shortcut.m_dwId );
 		if( pAppletFunc )
 		{
-			shortcut.m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, pAppletFunc->m_pszIconName ), 0xffff00ff );
+			shortcut.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pAppletFunc->m_pszIconName ), 0xffff00ff );
 		} else
 		{
 #ifndef __BS_CONSOLE
@@ -92,13 +92,13 @@ void CWndTaskBar::SetTaskBarTexture( SHORTCUT & shortcut )
 	}
 	else if (shortcut.m_dwShortcut == ShortcutType::PartySkill) {
 		ItemProp * pProp = prj.GetPartySkill(shortcut.m_dwId);
-		if (pProp) shortcut.m_pTexture = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff);
+		if (pProp) shortcut.m_pTexture = m_textureMng.AddTexture(MakePath(DIR_ICON, pProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff);
 	}
 	else if ( shortcut.m_dwShortcut == ShortcutType::Skill)
 	{
 		ItemProp* pSkillProp = prj.m_aPropSkill.GetAt(shortcut.m_dwId);
 		if( pSkillProp )
-			shortcut.m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pSkillProp->szIcon ), 0xffff00ff );
+			shortcut.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pSkillProp->szIcon ), 0xffff00ff );
 	}
 	else if ( shortcut.m_dwShortcut == ShortcutType::Lord)
 	{
@@ -111,13 +111,13 @@ void CWndTaskBar::SetTaskBarTexture( SHORTCUT & shortcut )
 		MotionProp* pMotionProp = prj.GetMotionProp( shortcut.m_dwId );
 		if(pMotionProp)			//061206 ma	8차에 들어갈 모션관리를 위해 버전 추가	propMotion.txt
 		{
-			pMotionProp->pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pMotionProp->szIconName ), 0xffff00ff );
+			pMotionProp->pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pMotionProp->szIconName ), 0xffff00ff );
 			shortcut.m_pTexture = pMotionProp->pTexture;
 		}
 	}
 	else if( shortcut.m_dwShortcut == ShortcutType::Chat)
 	{
-		shortcut.m_pTexture	= m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_MacroChat.dds" ), 0xffff00ff );
+		shortcut.m_pTexture	= m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_MacroChat.dds" ), 0xffff00ff );
 	}
 	else if( shortcut.m_dwShortcut == ShortcutType::Emoticon)
 	{
@@ -692,7 +692,7 @@ void CWndTaskBar::OnInitialUpdate()
 	m_menuShortcut.CreateMenu( this );	
 	m_menuShortcut.AddButton( 0 ,_T( "삭제" ) );
 
-	m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, "icon_ActionSkill.dds" ), 0xffff00ff );
+	m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_ActionSkill.dds" ), 0xffff00ff );
 	m_aSlotSkill.m_dwShortcut = ShortcutType::SkillFun;
 	m_aSlotSkill.m_pTexture   = m_pTexture;
 }
@@ -1163,7 +1163,7 @@ BOOL CWndTaskBar::SetSkillQueue( int nIndex, const DWORD skillId, CTexture* pTex
 	if( pTexture == NULL )
 	{
 		LPSKILL lpSkill = g_pPlayer->GetSkill( skillId );
-		pShortcut->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, lpSkill->GetProp()->szIcon), 0xff000000, FALSE );
+		pShortcut->m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, lpSkill->GetProp()->szIcon), 0xff000000, FALSE );
 	}
 	else pShortcut->m_pTexture = pTexture;
 
@@ -1844,7 +1844,7 @@ void CWndTaskMenu::OnInitialUpdate()
 	AddApplet(APP_LOGOUT  , TID_APP_LOGOUT);
 	AddApplet(APP_QUIT    , TID_APP_QUIT);
 
-	CWndBase::SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "WndTaskMenu.tga" ) ), TRUE );
+	CWndBase::SetTexture( MakePath( DIR_THEME, _T( "WndTaskMenu.tga" ) ), TRUE );
 
 	CRect nextRectSurface(10, 50, m_pTexture->m_size.cx - 20, 50 + 20);
 
@@ -1862,7 +1862,7 @@ void CWndTaskMenu::AddApplet(DWORD appId, DWORD textId) {
 
 CWndTaskMenu::FolderAdder CWndTaskMenu::AddFolder(DWORD textId) {
 	CWndButton * menuButton = MakeButton(this, 0, prj.GetText(textId));
-	menuButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_Folder.dds")));
+	menuButton->SetTexture( MakePath(DIR_ICON, _T("icon_Folder.dds")));
 
 	CWndMenu * menu = new CWndMenu;
 	menu->CreateMenu(this);
@@ -1885,7 +1885,7 @@ CWndButton* CWndTaskMenu::MakeButton( CWndMenu* pWndMenu, UINT nIDNewItem,	LPCTS
 	}
 	pWndButton->m_strToolTip = string;
 	pWndButton->m_shortcut.m_dwShortcut = ShortcutType::Applet; 
-	pWndButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, g_WndMng.GetAppletFunc(pWndButton->GetWndId())->m_pszIconName));
+	pWndButton->SetTexture( MakePath(DIR_ICON, g_WndMng.GetAppletFunc(pWndButton->GetWndId())->m_pszIconName));
 	
 	return pWndButton;
 }

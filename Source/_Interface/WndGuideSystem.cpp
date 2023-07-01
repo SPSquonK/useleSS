@@ -847,7 +847,7 @@ void CWndGuideTextMgr::OnInitialUpdate()
 
 	m_nCurrentVector = 0;
 	m_VecGuideText.clear();	
-	m_pTextureBG = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "GuideBG.tga" ), 0, TRUE );
+	m_pTextureBG = m_textureMng.AddTexture( MakePath( DIR_THEME, "GuideBG.tga" ), 0, TRUE );
 } 
 
 BOOL CWndGuideTextMgr::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 

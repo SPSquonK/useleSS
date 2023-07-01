@@ -209,8 +209,8 @@ void CWndDialog::OnInitialUpdate()
 	m_newQuestListBox.SetLineSpace(QUEST_LIST_LINE_SPACE);
 	m_newQuestListBox.SetVisible( FALSE );
 
-	m_newQuestListBox.displayer.m_pNewQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperGreen.tga")), 0xffffffff);
-	m_newQuestListBox.displayer.m_pExpectedQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperRed.tga")), 0xffffffff);
+	m_newQuestListBox.displayer.m_pNewQuestListIconTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, _T("QuestUiPaperGreen.tga")), 0xffffffff);
+	m_newQuestListBox.displayer.m_pExpectedQuestListIconTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, _T("QuestUiPaperRed.tga")), 0xffffffff);
 	m_newQuestListBox.displayer.xOffset = m_newQuestListBox.displayer.m_pNewQuestListIconTexture->m_size.cx;
 
 
@@ -219,8 +219,8 @@ void CWndDialog::OnInitialUpdate()
 	m_currentQuestListBox.SetLineSpace(QUEST_LIST_LINE_SPACE);
 	m_currentQuestListBox.SetVisible( FALSE );
 
-	m_currentQuestListBox.displayer.m_pCurrentQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperGray.tga")), 0xffffffff);
-	m_currentQuestListBox.displayer.m_pCompleteQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperYellow.tga")), 0xffffffff);
+	m_currentQuestListBox.displayer.m_pCurrentQuestListIconTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, _T("QuestUiPaperGray.tga")), 0xffffffff);
+	m_currentQuestListBox.displayer.m_pCompleteQuestListIconTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, _T("QuestUiPaperYellow.tga")), 0xffffffff);
 	m_currentQuestListBox.displayer.xOffset = m_currentQuestListBox.displayer.m_pCurrentQuestListIconTexture->m_size.cx;
 
 
@@ -792,7 +792,7 @@ void CWndDialog::MakeAnswerButton()
 			{
 				m_apWndAnswer[ j ] = std::make_unique<CWndAnswer>();
 				m_apWndAnswer[ j ]->Create( "", WBS_CHILD, rect, this, nWndId );
-				m_apWndAnswer[ j ]->SetTexture( D3DDEVICE, MakePath( DIR_THEME, strTexture ), 1 );
+				m_apWndAnswer[ j ]->SetTexture( MakePath( DIR_THEME, strTexture ), 1 );
 				m_apWndAnswer[ j ]->FitTextureSize();
 				m_apWndAnswer[ j ]->m_pWordButton = pWordButton;
 				j++;

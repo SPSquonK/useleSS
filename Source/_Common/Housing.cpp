@@ -685,9 +685,9 @@ CDeployManager::CDeployManager(void)
 {
 	if( g_Neuz.m_pd3dDevice )	//gmpbigsun(20100421) : 사운드 초기화등이 실패등으로 메시지가 발생할때  CNeuzApp에서 이놈의 생성자를 호출하고있다. 아직 디바이스는 노생성 
 	{
-		m_pRed		  = ((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T("red.tga")), 0xffff00ff ))->m_pTexture;
-		m_pOriginWall = ((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T("Obj_MiniWall01.dds")), 0xffff00ff ))->m_pTexture;
-		m_pOriginTile = ((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_WORLDTEX, _T("Miniroom_floor01.dds")), 0xffff00ff ))->m_pTexture;
+		m_pRed		  = ((CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T("red.tga")), 0xffff00ff ))->m_pTexture;
+		m_pOriginWall = ((CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T("Obj_MiniWall01.dds")), 0xffff00ff ))->m_pTexture;
+		m_pOriginTile = ((CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_WORLDTEX, _T("Miniroom_floor01.dds")), 0xffff00ff ))->m_pTexture;
 	}
 
 	m_fAngle		= 0.0f;
@@ -892,7 +892,7 @@ BOOL	CDeployManager::ChangeWallTex(TCHAR* pTexName)
 		if(pObj)
 		{
 			if(pTexName)
-				((CModelObject*)pObj->m_pModel)->GetObject3D()->SetTexture(((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture);
+				((CModelObject*)pObj->m_pModel)->GetObject3D()->SetTexture(((CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture);
 			else
 				((CModelObject*)pObj->m_pModel)->GetObject3D()->SetTexture(m_pOriginWall);
 			return TRUE;
@@ -911,7 +911,7 @@ BOOL	CDeployManager::ChangeTileTex(TCHAR* pTexName)
 	if(pWorld)
 	{
 		if(pTexName)
-			pWorld->ForceTexture(((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture);
+			pWorld->ForceTexture(((CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture);
 		else
 			pWorld->ForceTexture(m_pOriginTile);
 		return TRUE;
@@ -1063,7 +1063,7 @@ BOOL	CGuildDeployManager::IsReady()
 BOOL	CGuildDeployManager::ChangeObjMode(int nType)
 {
 	if( !m_pRed )
-		m_pRed		  = ((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T("red.tga")), 0xffff00ff ))->m_pTexture;
+		m_pRed		  = ((CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T("red.tga")), 0xffff00ff ))->m_pTexture;
 
 	if(m_pTargetObj)
 	{
@@ -1176,7 +1176,7 @@ BOOL	CGuildDeployManager::ChangeWallTex(TCHAR* pTexName)
 	if( !m_pOriginWall )
 	{
 		std::string filename = GetNameHouseWallTex( );
-		CTexture* pCTex = (CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, (LPCTSTR)filename.c_str() ), 0xffff00ff );
+		CTexture* pCTex = (CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, (LPCTSTR)filename.c_str() ), 0xffff00ff );
 		m_pOriginWall = pCTex->m_pTexture;
 		assert( m_pOriginWall );
 	}
@@ -1190,7 +1190,7 @@ BOOL	CGuildDeployManager::ChangeWallTex(TCHAR* pTexName)
 		if(pObj)
 		{
 			if(pTexName)
-				((CModelObject*)pObj->m_pModel)->GetObject3D()->SetTexture(((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture);
+				((CModelObject*)pObj->m_pModel)->GetObject3D()->SetTexture(((CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture);
 			else
 				((CModelObject*)pObj->m_pModel)->GetObject3D()->SetTexture(m_pOriginWall);
 			return TRUE;
@@ -1206,7 +1206,7 @@ BOOL	CGuildDeployManager::ChangeTileTex(TCHAR* pTexName)
 	if( !m_pOriginTile )
 	{
 		std::string filename = GetNameHouseTileTex( );
-		CTexture* pCTex = (CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_WORLDTEX, (LPCTSTR)filename.c_str() ), 0xffff00ff );
+		CTexture* pCTex = (CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_WORLDTEX, (LPCTSTR)filename.c_str() ), 0xffff00ff );
 		m_pOriginTile = pCTex->m_pTexture;
 
 		assert( m_pOriginTile );
@@ -1218,7 +1218,7 @@ BOOL	CGuildDeployManager::ChangeTileTex(TCHAR* pTexName)
 	{
 		if(pTexName)
 		{
-			IDirect3DTexture9* pApplyTex = ((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture;
+			IDirect3DTexture9* pApplyTex = ((CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture;
 			pWorld->ForceTexture( pApplyTex );
 		}
 		else

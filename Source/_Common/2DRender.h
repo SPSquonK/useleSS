@@ -257,7 +257,7 @@ private:
 	std::map<std::string, std::unique_ptr<CTexture>> m_mapTexture;
 	std::set<std::string> m_failedTextures;
 public:
-	CTexture * AddTexture(LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE);
+	CTexture * AddTexture(LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE);
 	void Clear() { m_mapTexture.clear(); m_failedTextures.clear(); }
 };
 

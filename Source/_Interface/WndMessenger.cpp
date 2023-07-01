@@ -182,9 +182,9 @@ void CWndMessengerEx::OnInitialUpdate()
 	{
 //		if(::GetLanguage() == LANG_KOR || ::GetLanguage() == LANG_FRE || ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK)
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerChannel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerChannel.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerChannel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerChannel.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_STATE);
@@ -192,9 +192,9 @@ void CWndMessengerEx::OnInitialUpdate()
 	{
 //		if(::GetLanguage() == LANG_KOR || ::GetLanguage() == LANG_FRE || ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK)
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerState.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerState.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerState.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerState.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_LEVEL);
@@ -202,9 +202,9 @@ void CWndMessengerEx::OnInitialUpdate()
 	{
 //		if(::GetLanguage() == LANG_KOR || ::GetLanguage() == LANG_FRE || ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK)
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerLevel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerLevel.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerLevel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerLevel.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_JOB);
@@ -212,9 +212,9 @@ void CWndMessengerEx::OnInitialUpdate()
 	{
 //		if(::GetLanguage() == LANG_KOR || ::GetLanguage() == LANG_FRE || ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK)
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerJob.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerJob.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerJob.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerJob.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_NAME);
@@ -222,9 +222,9 @@ void CWndMessengerEx::OnInitialUpdate()
 	{
 //		if(::GetLanguage() == LANG_KOR || ::GetLanguage() == LANG_FRE || ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK)
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerChar.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerChar.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerChar.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerChar.bmp" ), 0xffff00ff );
 	}
 
 	// 윈도를 중앙으로 옮기는 부분.

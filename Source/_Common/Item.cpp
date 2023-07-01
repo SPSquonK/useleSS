@@ -50,7 +50,7 @@ void CItemElem::SetTexture()
 				break;
 		}
 	}
-	m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
+	m_pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
 #endif
 }
 

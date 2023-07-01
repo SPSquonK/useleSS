@@ -20,7 +20,7 @@ void CWndBlessingCancel::OnInitialUpdate()
 	CWndButton* pButton = GetDlgItem<CWndButton>(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture( MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 

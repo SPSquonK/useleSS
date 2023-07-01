@@ -257,45 +257,45 @@ void CWndGuildTabMember::OnInitialUpdate()
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabMLevel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabMLevel.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabMLevel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabMLevel.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_JOB);
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabJob.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabJob.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabJob.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabJob.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_LEVEL);
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabLevel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabLevel.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabLevel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabLevel.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_NAME);
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabChar.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabChar.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabChar.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabChar.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_ALIAS);
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabAlias.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabAlias.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabAlias.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabAlias.bmp" ), 0xffff00ff );
 	}
 
 	UpdateData();

@@ -2705,7 +2705,7 @@ void CWndWorld::OnInitialUpdate()
 				if( pItem )
 				{
 					BUFFSKILL buffskill;
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItem->szIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pItem->szIcon ), 0xffff00ff );
 
 					m_pBuffTexture[0].emplace(pItem->dwID, buffskill);
 				}
@@ -2717,7 +2717,7 @@ void CWndWorld::OnInitialUpdate()
 			if( pItemProp.dwSkillTime != -1 )
 			{
 				BUFFSKILL buffskill;
-				buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItemProp.szIcon ), 0xffff00ff );
+				buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pItemProp.szIcon ), 0xffff00ff );
 				m_pBuffTexture[1].emplace(pItemProp.dwID, buffskill);
 			}
 	}
@@ -2740,24 +2740,24 @@ void CWndWorld::OnInitialUpdate()
 				if( pItemProp.dwItemKind3 == IK3_EGG && pItemProp.dwID != II_PET_EGG )
 				{
 					strIcon.Replace( ".", "_00." );
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
 					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 0 ), buffskill );
 					strIcon.Replace( "0.", "1." );
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
 					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 1 ), buffskill );
 					strIcon.Replace( "1.", "2." );
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
 					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 2 ), buffskill );
 				}
 				else
 				{
 #ifdef __DST_GIFTBOX
 					if(pItemProp.dwDestParam[0] == DST_GIFTBOX || pItemProp.dwDestParam[1] == DST_GIFTBOX || pItemProp.dwDestParam[2] == DST_GIFTBOX)
-						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, "Skill_TroGiftbox02.dds" ), 0xffff00ff );
+						buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, "Skill_TroGiftbox02.dds" ), 0xffff00ff );
 					else
-						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
+						buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
 #else //__DST_GIFTBOX
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
 #endif //__DST_GIFTBOX
 					m_pBuffTexture[2].emplace( pItemProp.dwID, buffskill );
 				}
@@ -2832,7 +2832,7 @@ void CWndWorld::OnInitialUpdate()
 		{
 			ItemProp* pItem = prj.GetItemProp( g_AddSMMode.dwSMItemID[j] );
 			if( pItem )
-				m_dwSMItemTexture[j] = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItem->szIcon ), 0xffff00ff );
+				m_dwSMItemTexture[j] = m_textureMng.AddTexture( MakePath( DIR_ITEM, pItem->szIcon ), 0xffff00ff );
 		}
 	}
 
@@ -2854,7 +2854,7 @@ void CWndWorld::OnInitialUpdate()
 		pItem = prj.GetItemProp( dwArry[kk] );
 
 		if( pItem )
-			m_dwSMResistItemTexture[kk] = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItem->szIcon ), 0xffff00ff );	
+			m_dwSMResistItemTexture[kk] = m_textureMng.AddTexture( MakePath( DIR_ITEM, pItem->szIcon ), 0xffff00ff );	
 	}
 	
 	m_wndTitleBar.SetVisible( FALSE );
@@ -8755,7 +8755,7 @@ void CAdvMgr::AddAdvButton(const DWORD dwid) {
 
 	button.m_pwndButton = std::make_unique<CWndButton>();
 	button.m_pwndButton->Create("", 0, CRect(CPoint(0, 0), CSize(25, 25)), m_pParentWnd, m_nIndex + 2000);
-	button.m_pwndButton->SetTexture(m_pParentWnd->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtAdvPlus.bmp")), TRUE);
+	button.m_pwndButton->SetTexture(MakePath(DIR_THEME, _T("ButtAdvPlus.bmp")), TRUE);
 
 	button.m_dwRunWindow = dwid;
 	m_nIndex++;		

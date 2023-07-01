@@ -24,7 +24,7 @@ void CWndAwakening::OnInitialUpdate()
 	CWndButton* pButton = GetDlgItem<CWndButton>(WIDC_BUTTON1);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture( MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 
@@ -111,10 +111,10 @@ void CWndSelectAwakeCase::OnInitialUpdate()
 
 	const ItemProp * pProp = prj.GetItemProp( m_dwItemIndex );
 	if (pProp) {
-		m_pTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, pProp->szIcon), 0xffff00ff);
+		m_pTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_ITEM, pProp->szIcon), 0xffff00ff);
 	}
 	
-	m_pTexGuage = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "Wndguage.tga"   ), 0xffff00ff );
+	m_pTexGuage = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "Wndguage.tga"   ), 0xffff00ff );
 	if (!m_pTexGuage) {
 		Error("CWndSelectAwakeCase::OnInitialUpdate m_pTexGuage(Wndguage.tga) is NULL");
 	}

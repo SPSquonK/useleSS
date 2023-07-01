@@ -52,7 +52,7 @@ void CWndMotion1::OnInitialUpdate()
 
 	for (MotionProp & pMotionProp : prj.m_aPropMotion) {
 		m_motionArray.emplace_back(&pMotionProp);
-		pMotionProp.pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pMotionProp.szIconName ), 0xffff00ff );
+		pMotionProp.pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pMotionProp.szIconName ), 0xffff00ff );
 	}
 
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();

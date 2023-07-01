@@ -94,7 +94,7 @@ void CWndGuildTabWar::OnInitialUpdate()
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildDuel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildDuel.bmp" ), 0xffff00ff );
 	}
 
 	// 윈도를 중앙으로 옮기는 부분.

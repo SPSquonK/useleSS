@@ -670,7 +670,7 @@ BOOL CWorldMap::LoadWorldMap()
 	if( nMap != 100 )
 	{
 		m_strViewMapString = m_strMapStringList[nMap];
-		m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
+		m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
 
 		if(nMap > 0 && nMap < MAX_BUTTON - 1 && m_MonsterInfo.m_nMap != nMap)
 		{
@@ -783,7 +783,7 @@ void CWorldMap::OnLButtonDown( )
 			UpdateTeleportWorld( );
 			UpdateDestinationPosition( pWndWorld->m_vDestinationArrow );
 			m_strViewMapString = m_strMapStringList[nowMapNum];
-			m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
+			m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
 
 			if(nowMapNum > 0 && m_MonsterInfo.m_nMap != nowMapNum)
 			{
@@ -813,7 +813,7 @@ void CWorldMap::OnLButtonDown( )
 					UpdateTeleportWorld( );
 					UpdateDestinationPosition( pWndWorld->m_vDestinationArrow );
 					m_strViewMapString = m_strMapStringList[m_nMap];
-					m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
+					m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
 
 					if(m_nMap > 0 && m_MonsterInfo.m_nMap != m_nMap)
 					{
@@ -878,7 +878,7 @@ void CWorldMap::ProcessingTeleporter( CMover* pFocusMover )
 
 void CWorldMap::RenderTelPos( C2DRender *p2DRender )
 {
-	m_pTelPosTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "ButtTeleport.bmp"), 0xffff00ff );
+	m_pTelPosTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtTeleport.bmp"), 0xffff00ff );
 	if( !m_pTelPosTexture )
 		return;
 
@@ -935,7 +935,7 @@ void CWorldMap::RenderDestinationPosition( C2DRender* p2DRender )
 	if( m_rectDestination == CRect( -1, -1, -1, -1 ) )
 		return;
 	
-	m_pDestinationPositionTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "ButtDestination.bmp"), 0xffff00ff );
+	m_pDestinationPositionTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtDestination.bmp"), 0xffff00ff );
 	if( m_pDestinationPositionTexture == NULL )
 		return;
 

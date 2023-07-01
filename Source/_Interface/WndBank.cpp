@@ -85,7 +85,7 @@ void CWndBank::OnInitialUpdate()
 		ptMove = ptInventory + CPoint( rectInventory.Width(), 0 );
 	Move( ptMove );
 
-	m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "WndCommonBankNotUse.tga" ), 0xffff00ff );
+	m_pTexture = m_textureMng.AddTexture( MakePath( DIR_THEME, "WndCommonBankNotUse.tga" ), 0xffff00ff );
 } 
 
 void CWndBank::ReSetBank() {

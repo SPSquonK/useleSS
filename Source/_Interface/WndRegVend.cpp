@@ -83,7 +83,7 @@ void CWndRegVend::OnInitialUpdate()
 	m_Calc.m_ch     = 0;
 	SetFocus();
 
-	m_pTex = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "WndVenderArrowEx.tga" ), 0xffff00ff );
+	m_pTex = m_textureMng.AddTexture( MakePath( DIR_THEME, "WndVenderArrowEx.tga" ), 0xffff00ff );
 
 	MoveParentCenter();
 } 

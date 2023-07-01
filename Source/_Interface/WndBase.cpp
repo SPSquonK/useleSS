@@ -59,16 +59,16 @@ IMAGE * CTileMapManager::GetImage(std::string_view lpszFileName) {
 	return image;
 }
 
-BOOL CWndBase::SetForbidTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName )
+BOOL CWndBase::SetForbidTexture( LPCTSTR lpszFileName )
 {
-	m_pTexForbid = CWndBase::m_textureMng.AddTexture( pd3dDevice, lpszFileName, 0xffff00ff );
+	m_pTexForbid = CWndBase::m_textureMng.AddTexture( lpszFileName, 0xffff00ff );
 	if( m_pTexForbid ) return TRUE;
 	return FALSE;
 }
 
-void CWndBase::SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName, BOOL bMyLoader )
+void CWndBase::SetTexture( LPCTSTR lpszFileName, BOOL bMyLoader )
 {
-	m_pTexture = m_textureMng.AddTexture( pd3dDevice, lpszFileName, 0xffff00ff, bMyLoader );
+	m_pTexture = m_textureMng.AddTexture( lpszFileName, 0xffff00ff, bMyLoader );
 }
 
 void CWndBase::SetForbid( BOOL bForbid ) 

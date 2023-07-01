@@ -499,7 +499,7 @@ void CWndPartySkill::OnDraw( C2DRender* p2DRender )  {
 		const ItemProp * const pItemProp = prj.GetPartySkill(nCount + 1);
 		if (!pItemProp) continue;
 
-		m_atexSkill[nCount] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pItemProp->szIcon), 0xffff00ff, FALSE);
+		m_atexSkill[nCount] = m_textureMng.AddTexture(MakePath(DIR_ICON, pItemProp->szIcon), 0xffff00ff, FALSE);
 
 		const CPoint ptName = CPoint( j * nWidth + 35 , i * nHeight + 6 );
 		const CPoint ptIcon = CPoint( j * nWidth + 3  , i * nHeight + 3 );

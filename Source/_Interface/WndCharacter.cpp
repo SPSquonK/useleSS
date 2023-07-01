@@ -124,7 +124,7 @@ CTexture * CWndCharInfo::UpdateAndGetMasterIcon() {
 	}
 
 	m_currentMasterIcon = expected;
-	m_masterIcon = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, strPath, 0xffff00ff);
+	m_masterIcon = CWndBase::m_textureMng.AddTexture(strPath, 0xffff00ff);
 	return m_masterIcon;
 }
 
@@ -367,7 +367,7 @@ DWORD CWndCharInfo::StatColor(const int rawStat, const int totalStat) {
 
 void CWndCharInfo::OnInitialUpdate() {
 	CWndBase::OnInitialUpdate();
-	SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("WndNewCharacter01.tga")), TRUE);
+	SetTexture(MakePath(DIR_THEME, _T("WndNewCharacter01.tga")), TRUE);
 
 	// �Ʒ����� �ɷ�ġ ���� 
 	static constexpr int nyAdd = 121;
@@ -383,7 +383,7 @@ void CWndCharInfo::OnInitialUpdate() {
 			stat->edit.Create(g_Neuz.GetSafeHwnd(), 0, CRect(posX - 38, posY, posX - 4, posY + 16), this, nextAppId);
 			stat->plus.Create("<", 0, CRect(posX, posY + 2, posX + 14, posY + 18), this, nextAppId + 1);
 			stat->minus.Create("<", 0, CRect(posX + 16, posY + 2, posX + 30, posY + 18), this, nextAppId + 2);
-			stat->Setup(m_pApp->m_pd3dDevice, m_nGpPoint > 0);
+			stat->Setup(m_nGpPoint > 0);
 
 			nextAppId += 3;
 			});
@@ -394,11 +394,11 @@ void CWndCharInfo::OnInitialUpdate() {
 	m_wndReset.Create("Reset", 0, CRect(posX - 30, posY, posX + 20, posY + 22), this, 113);
 
 	if (::GetLanguage() == LANG_FRE) {
-		m_wndApply.SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButStateOk.tga")), TRUE);
-		m_wndReset.SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButStateCancel.tga")), TRUE);
+		m_wndApply.SetTexture(MakePath(DIR_THEME, _T("ButStateOk.tga")), TRUE);
+		m_wndReset.SetTexture(MakePath(DIR_THEME, _T("ButStateCancel.tga")), TRUE);
 	} else {
-		m_wndApply.SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtCharApply.tga")), TRUE);
-		m_wndReset.SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtCharReset.tga")), TRUE);
+		m_wndApply.SetTexture(MakePath(DIR_THEME, _T("ButtCharApply.tga")), TRUE);
+		m_wndReset.SetTexture(MakePath(DIR_THEME, _T("ButtCharReset.tga")), TRUE);
 	}
 
 	int nyAdd2 = 280;
@@ -659,9 +659,9 @@ void CWndCharInfo::RenderATK(C2DRender * p2DRender, const int x, const int y) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void CWndCharInfo::StatChange::Setup(LPDIRECT3DDEVICE9 device, const bool hasGp) {
-	plus.SetTexture(device, MakePath(DIR_THEME, _T("ButtCharPlus.bmp")), TRUE);
-	minus.SetTexture(device, MakePath(DIR_THEME, _T("ButtCharMinus.bmp")), TRUE);
+void CWndCharInfo::StatChange::Setup(const bool hasGp) {
+	plus.SetTexture(MakePath(DIR_THEME, _T("ButtCharPlus.bmp")), TRUE);
+	minus.SetTexture(MakePath(DIR_THEME, _T("ButtCharMinus.bmp")), TRUE);
 
 	plus.EnableWindow(hasGp ? TRUE : FALSE);
 	minus.EnableWindow(FALSE);

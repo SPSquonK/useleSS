@@ -315,9 +315,9 @@ BOOL CWndButton::Create(LPCTSTR lpszCaption,DWORD dwStyle,const RECT& rect,CWndB
 	BOOL b = CWndBase::Create(dwStyle|WBS_CHILD|/*WBS_NODRAWFRAME|*/WBS_NOFRAME,rect,pParentWnd,nID);//,pSprPack,nSprIdx,nColorTable);;
 	//m_strTexture = "ButtRadio.bmp";
 	if( IsWndStyle( WBS_RADIO ) )
-		SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, DEF_CTRL_RADIO ), 1 );
+		SetTexture( MakePath( DIR_THEME, DEF_CTRL_RADIO ), 1 );
 	if( IsWndStyle( WBS_CHECK ) )
-		SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, DEF_CTRL_CHECK ), 1 );
+		SetTexture( MakePath( DIR_THEME, DEF_CTRL_CHECK ), 1 );
 	
 #ifdef __CLIENT
 	//AddWndStyle( WBS_NODRAWFRAME );
@@ -734,7 +734,7 @@ TREEELEM * CWndTreeCtrl::InsertItem( LPTREEELEM lpParent, LPCTSTR lpString, DWOR
 		CWndButton* pWndCheckBox = lpTreeElem.m_pWndCheckBox;
 		CRect rectCheckBox( 0, 0, CHECK_BOX_SIZE_XY, CHECK_BOX_SIZE_XY );
 		pWndCheckBox->Create( "", WBS_CHECK, rectCheckBox, this, WIDC_CHECK );
-		pWndCheckBox->SetTexture( D3DDEVICE, MakePath( DIR_THEME, _T( DEF_CTRL_CHECK ) ), 1 );
+		pWndCheckBox->SetTexture( MakePath( DIR_THEME, _T( DEF_CTRL_CHECK ) ), 1 );
 		pWndCheckBox->FitTextureSize();
 		pWndCheckBox->SetCheck( bCheck );
 		pWndCheckBox->EnableWindow( FALSE );
@@ -889,8 +889,8 @@ void CWndTreeCtrl::CalculateTextColor(DWORD dwCategoryTextColor, DWORD dwNormalT
 void CWndTreeCtrl::OnInitialUpdate()
 {
 	CRect rect = GetWindowRect();
-	m_pTexButtOpen  = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtTreeOpen.tga"   ), 0xffff00ff );
-	m_pTexButtClose = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtTreeClose.tga"   ), 0xffff00ff );
+	m_pTexButtOpen  = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtTreeOpen.tga"   ), 0xffff00ff );
+	m_pTexButtClose = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtTreeClose.tga"   ), 0xffff00ff );
 
 	m_wndScrollBar.Create( WBS_DOCKING | WBS_VERT, rect, this, 1000 );//,m_pSprPack,-1);
 	m_wndScrollBar.SetVisible( IsWndStyle( WBS_VSCROLL ) );
@@ -1281,22 +1281,22 @@ void CWndScrollBar::OnDraw(C2DRender* p2DRender)
 
 void CWndScrollBar::OnInitialUpdate()
 {
-	m_pTexButtVScrBar   = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrBar.bmp"   ), 0xffff00ff );
-	m_pTexButtVScrPUp   = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrPUp.bmp"   ), 0xffff00ff );
-	m_pTexButtVScrPDown = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrPDown.bmp" ), 0xffff00ff );
-	m_pTexButtVScrPBar  = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrPBar.bmp"  ), 0xffff00ff );
+	m_pTexButtVScrBar   = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtVScrBar.bmp"   ), 0xffff00ff );
+	m_pTexButtVScrPUp   = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtVScrPUp.bmp"   ), 0xffff00ff );
+	m_pTexButtVScrPDown = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtVScrPDown.bmp" ), 0xffff00ff );
+	m_pTexButtVScrPBar  = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtVScrPBar.bmp"  ), 0xffff00ff );
 
 	CRect rect = GetClientRect();
 	rect.bottom = rect.bottom / 4 * 4;
 	//rect.DeflateRect( 1, 1 );
 	//CSize size;// = m_pSprPack->GetAt(13+2)->GetSize();
 	m_wndArrow1.Create( "",0,CRect( rect.left, rect.top, rect.right, rect.top + rect.Width()),this,1000);//,m_pSprPack,13+0);
-	m_wndArrow1.SetTexture( m_pApp->m_pd3dDevice,MakePath( DIR_THEME, "ButtVScrUp.tga" ), TRUE );
+	m_wndArrow1.SetTexture(MakePath( DIR_THEME, "ButtVScrUp.tga" ), TRUE );
 	m_wndArrow1.FitTextureSize();
 	//rect.top = rect.bottom - size.cy;
 	rect.top = 0;
 	m_wndArrow2.Create( "",0,CRect( rect.left, rect.bottom - rect.Width(), rect.right, rect.bottom),this,1001);//,m_pSprPack,13+2);
-	m_wndArrow2.SetTexture( m_pApp->m_pd3dDevice,MakePath( DIR_THEME, "ButtVScrDown.tga" ), TRUE );
+	m_wndArrow2.SetTexture(MakePath( DIR_THEME, "ButtVScrDown.tga" ), TRUE );
 	m_wndArrow2.FitTextureSize();
 
 	m_wndArrow1.SetPushTime(500);
@@ -3192,7 +3192,7 @@ void CWndComboBox::OnInitialUpdate()
 	rect.left = rect.right - 20;
 	m_wndButton.AddWndStyle( WBS_DOCKING );
 	m_wndButton.Create( _T( "V" ), WBS_CHILD, rect, this, 0 );
-	m_wndButton.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtQuickListDn.tga" ), 0xffff00ff, TRUE );
+	m_wndButton.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtQuickListDn.tga" ), 0xffff00ff, TRUE );
 	rect = GetWindowRect();
 	ClientToScreen( &rect );
 	rect.top = rect.bottom;

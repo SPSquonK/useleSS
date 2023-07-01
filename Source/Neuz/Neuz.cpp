@@ -1509,13 +1509,13 @@ HRESULT CNeuzApp::InitDeviceObjects()
 	m_TextureCastingGauge[0].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAccelBG.TGA" ), 0xffff00ff, TRUE );
 	m_TextureCastingGauge[1].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAccelInner.TGA" ), 0xffff00ff, TRUE );
 
-	m_pMasterIcon[0] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Expert1.dds"), 0xffff00ff );
-	m_pMasterIcon[1] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Expert2.dds"), 0xffff00ff );
-	m_pMasterIcon[2] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Expert3.dds"), 0xffff00ff );
-	m_pMasterIcon[3] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Expert4.dds"), 0xffff00ff );
-	m_pMasterIcon[4] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Expert5.dds"), 0xffff00ff );
-	m_pMasterIcon[5] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Expert6.dds"), 0xffff00ff );
-	m_pHeroIcon		 = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Hero.dds"), 0xffff00ff );
+	m_pMasterIcon[0] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Expert1.dds"), 0xffff00ff );
+	m_pMasterIcon[1] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Expert2.dds"), 0xffff00ff );
+	m_pMasterIcon[2] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Expert3.dds"), 0xffff00ff );
+	m_pMasterIcon[3] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Expert4.dds"), 0xffff00ff );
+	m_pMasterIcon[4] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Expert5.dds"), 0xffff00ff );
+	m_pMasterIcon[5] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Expert6.dds"), 0xffff00ff );
+	m_pHeroIcon		 = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Hero.dds"), 0xffff00ff );
 
 	m_TexCltGauge[0].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAccelBG.TGA" ), 0xffff00ff, TRUE );
 	m_TexCltGauge[1].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAccelInner.TGA" ), 0xffff00ff, TRUE );
@@ -1578,7 +1578,7 @@ HRESULT CNeuzApp::InitDeviceObjects()
 	g_WndMng.Initialize();
 	g_WndMng.InitDeviceObjects();
 	CWndBase::m_hWnd = GetSafeHwnd();
-	CWndBase::SetForbidTexture( m_pd3dDevice, MakePath( DIR_ICON, "icon_forbid.dds" ) );
+	CWndBase::SetForbidTexture( MakePath( DIR_ICON, "icon_forbid.dds" ) );
 
 	// 다이얼로그 메시지 세팅 
 	g_DialogMsg.InitDeviceObjects( m_pd3dDevice );

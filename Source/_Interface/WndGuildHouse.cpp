@@ -551,7 +551,7 @@ void CWndGHTeleporter::DrawSlotItems( C2DRender* p2DRender )
 		if( !pProp )
 			continue;
 
-		m_pTexture[ i ] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
+		m_pTexture[ i ] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
 			
 		if(m_pTexture[ i ] != NULL)
 		{

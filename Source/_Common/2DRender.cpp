@@ -1610,7 +1610,7 @@ BOOL CTexturePack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName
 	return TRUE;
 }
 
-CTexture * CTextureMng::AddTexture(LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader) {
+CTexture * CTextureMng::AddTexture(LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader) {
 	const std::string key = pFileName;
 	
 	if (const auto mapTexItor = m_mapTexture.find(key); mapTexItor != m_mapTexture.end()) {
@@ -1620,7 +1620,7 @@ CTexture * CTextureMng::AddTexture(LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileNa
 	}
 
 	CTexture * pTexture = new CTexture;
-	if (pTexture->LoadTexture(pd3dDevice, pFileName, d3dKeyColor, bMyLoader)) {
+	if (pTexture->LoadTexture(g_Neuz.m_pd3dDevice, pFileName, d3dKeyColor, bMyLoader)) {
 		m_mapTexture.emplace(key, pTexture);
 		return pTexture;
 	} else {

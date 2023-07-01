@@ -20,7 +20,7 @@ void CWndPetAwakCancel::OnInitialUpdate()
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_BUTTON1);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture( MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 	
@@ -323,7 +323,7 @@ void CWndPetStatus::DrawPetInformation(C2DRender* p2DRender)
 						else
 							strPath = m_strPathLvImage[bLevel-1];
 						
-						m_pTexPetLv[i] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+						m_pTexPetLv[i] = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 						m_aPetLv[i] = bLevel;
 					}
 					if(m_pTexPetLv[i] != NULL)
@@ -611,8 +611,8 @@ void CWndPetStatus::OnInitialUpdate()
 	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
 	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
 
-	m_pTexPetLvBg = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "PetLevelBg.tga"), 0xffff00ff );
-	m_pTexPetStatusBg = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "PetStatusBg.tga"), 0xffff00ff, TRUE );
+	m_pTexPetLvBg = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "PetLevelBg.tga"), 0xffff00ff );
+	m_pTexPetStatusBg = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "PetStatusBg.tga"), 0xffff00ff, TRUE );
 
 	// 장착, 게이지에 나올 캐릭터 오브젝트 설정
 	if( g_pPlayer->HasActivatedSystemPet() )
@@ -821,7 +821,7 @@ void CWndPetStatus::LockShowLevel(BOOL lFlag, int nLevel, int nPos)
 		if(bLevel != 0)
 		{
 			strPath = m_strPathLvImage[bLevel-1];
-			m_pTexPetLv[nLevel] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+			m_pTexPetLv[nLevel] = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 		}
 	}
 }
@@ -1113,7 +1113,7 @@ void CWndPetMiracle::OnDraw( C2DRender* p2DRender )
 		strPath = m_strPathLvImage[m_nMiracleLv[0] - 1];
 	if(strPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC3 )->rect.left, GetWndCtrl( WIDC_STATIC3 )->rect.top + 4 ) );	
 	}
@@ -1125,7 +1125,7 @@ void CWndPetMiracle::OnDraw( C2DRender* p2DRender )
 	
 	if(strPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC4 )->rect.left, GetWndCtrl( WIDC_STATIC4 )->rect.top + 4 ) );
 	}
@@ -1140,7 +1140,7 @@ void CWndPetMiracle::OnInitialUpdate()
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButChance.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButChance.bmp" ), 0xffff00ff );
 	}
 
 	//B/A/S 급 펫만 해당 기능을 이용할 수 있다.
@@ -1545,7 +1545,7 @@ void CWndPetFoodMill::SetItemForFeed(CItemElem* pItemElem, int nCount)
 		ItemProp* pItemProp = m_pItemElem->GetProp();
 		
 		if(pItemProp != NULL)
-			m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+			m_pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 	}
 }
 
@@ -1606,8 +1606,8 @@ void CWndPetLifeConfirm::OnInitialUpdate()
 	
 	m_wndButton1.Create("YES", 0, rect2_1, this, IDYES);
 	m_wndButton2.Create("NO" , 0, rect2_2, this, IDNO);
-	m_wndButton1.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtYes.tga" ) );
-	m_wndButton2.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtNo.tga" ) );
+	m_wndButton1.SetTexture( MakePath( DIR_THEME, "ButtYes.tga" ) );
+	m_wndButton2.SetTexture( MakePath( DIR_THEME, "ButtNo.tga" ) );
 	m_wndButton1.FitTextureSize();
 	m_wndButton2.FitTextureSize();
 
@@ -1692,7 +1692,7 @@ void CWndPetTransEggs::OnInitialUpdate()
 
 	ItemProp* pItemProp = prj.GetItemProp( II_PET_EGG );
 	if(pItemProp)
-		m_pEggTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+		m_pEggTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 
 	CWndText::SetupDescription(m_pText, _T("PetTransEggs.inc"));
 
@@ -1956,7 +1956,7 @@ void CWndBuffPetStatus::OnInitialUpdate()
 	m_nCtrlId[7] = WIDC_BUFFPET_SLOT8;
 	m_nCtrlId[8] = WIDC_BUFFPET_SLOT9;
 
-	m_pTexPetStatusBg = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "BuffpetStatusBg .tga"), 0xffff00ff, TRUE );
+	m_pTexPetStatusBg = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "BuffpetStatusBg .tga"), 0xffff00ff, TRUE );
 }
 
 BOOL CWndBuffPetStatus::Initialize(CWndBase* pWndParent,DWORD dwWndId)
@@ -2381,7 +2381,7 @@ void CWndBuffPetStatus::DrawSlotItems( C2DRender* p2DRender )
 			if( !pProp )
 				continue;
 
-			m_pTexture[ i ] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
+			m_pTexture[ i ] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
 			
 			if(m_pTexture[ i ] != NULL)
 			{
@@ -2400,7 +2400,7 @@ void CWndBuffPetStatus::DrawSlotItems( C2DRender* p2DRender )
 		{
 			//사용불가능 슬롯 
 			wndCtrl = GetWndCtrl( m_nCtrlId[i] );
-			CTexture* pTexClosed = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "Icon_Lock.dds" ), 0xffff00ff );
+			CTexture* pTexClosed = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "Icon_Lock.dds" ), 0xffff00ff );
 			if( pTexClosed )
 				pTexClosed->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
 

@@ -30,9 +30,9 @@ HRESULT CDialogMsg::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_texEmoticonUser.LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texChatEmoticon.inc" ) ) );
 	LoadEmotion();
 
-	m_pTex[0] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "texDialogBox_left.tga" ), 0xffff00ff );
-	m_pTex[1] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "texDialogBox_center.TGA" ), 0xffff00ff );
-	m_pTex[2] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "texDialogBox_right.tga" ), 0xffff00ff );
+	m_pTex[0] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "texDialogBox_left.tga" ), 0xffff00ff );
+	m_pTex[1] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "texDialogBox_center.TGA" ), 0xffff00ff );
+	m_pTex[2] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "texDialogBox_right.tga" ), 0xffff00ff );
 	
 	RemoveDeleteObjMsg();
 	
@@ -199,7 +199,7 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 					const size_t nlen = _tcsclen(lpStr);
 					const char * buffer = GetTextDialogShout(nlen);
 
-					CTexture * pShoutTex = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, buffer ), 0xffff00ff );
+					CTexture * pShoutTex = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, buffer ), 0xffff00ff );
 					if( pShoutTex )
 					{
 						p2DRender->RenderTextureEx( CPoint( (int)( x-20 ), (int)( y-20 ) ), CPoint( (int)( fWidth+50.0f ), (int)( fHeight+40.0f ) ), pShoutTex, nAlpha, 1.0f, 1.0f, FALSE );
