@@ -979,7 +979,7 @@ void CGuildCombat::GuildCombatCloseTeleport()
 
 void CGuildCombat::SetNpc( void )
 {
-	CMover* pMover	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, MI_MADA_ACHABEN );
+	CMover* pMover	= (CMover*)CreateObj( OT_MOVER, MI_MADA_ACHABEN );
 	lstrcpy( pMover->m_szCharacterKey, "Mada_Guildcombatshop" );
 	pMover->InitNPCProperty();
 	pMover->InitCharacter( pMover->GetCharacter() );
@@ -990,7 +990,7 @@ void CGuildCombat::SetNpc( void )
 	if( pWorld )
 		pWorld->ADDOBJ( pMover, TRUE, nDefaultLayer );
 	
-	CMover* pMover1	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, MI_MADA_ACHABEN );
+	CMover* pMover1	= (CMover*)CreateObj( OT_MOVER, MI_MADA_ACHABEN );
 	lstrcpy( pMover1->m_szCharacterKey, "Mada_Guildcombatshop" );
 	pMover1->InitNPCProperty();
 	pMover1->InitCharacter( pMover1->GetCharacter() );

@@ -1503,7 +1503,7 @@ int		CCtrl::DoApplySkillEx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 				{
 					if( pUser->m_pWall[i] == NULL )
 					{
-						CObj *pObj = CreateObj( D3DDEVICE, OT_CTRL, CI_PSYCHICWALL );		// 寒 牧飘费 积己.
+						CObj *pObj = CreateObj( OT_CTRL, CI_PSYCHICWALL );		// 寒 牧飘费 积己.
 						if( pObj )
 						{
 							pObj->SetPos( this->GetPos() );

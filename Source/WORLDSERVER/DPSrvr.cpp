@@ -7735,7 +7735,7 @@ CCommonCtrl* CreateExpBox( CUser* pUser )
 	if( fDecExp == 0.0f )
 		return NULL;
 	
-	CCommonCtrl* pCtrl	= (CCommonCtrl*)CreateObj( D3DDEVICE, OT_CTRL, 46 );
+	CCommonCtrl* pCtrl	= (CCommonCtrl*)CreateObj( OT_CTRL, 46 );
 	
 	if( !pCtrl )
 		return NULL;

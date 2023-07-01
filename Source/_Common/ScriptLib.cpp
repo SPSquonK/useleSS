@@ -424,7 +424,7 @@ int APIENTRY  MonHuntStart( NPCDIALOG_INFO* pInfo, int nQuest, int nState, int n
 			GUILDQUESTPROP* pProp	= prj.GetGuildQuestProp( nQuest );
 			if( pProp )
 			{
-				CMover* pWormon	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, pProp->wormon.dwWormon );
+				CMover* pWormon	= (CMover*)CreateObj( OT_MOVER, pProp->wormon.dwWormon );
 				if( pWormon )
 				{
 					pWormon->SetPos( pProp->wormon.vPos );
@@ -490,7 +490,7 @@ int APIENTRY  MonHuntStartParty( NPCDIALOG_INFO*  pInfo, int nQuest, int nState,
 				BOOL bSuccess = FALSE;
 
 				for (const GroupQuest::WORMON & WorMon : pProp->vecWormon) {
-					CMover* pWormon	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, WorMon.dwWormon );
+					CMover* pWormon	= (CMover*)CreateObj( OT_MOVER, WorMon.dwWormon );
 
 					if( pWormon )
 					{

@@ -974,7 +974,7 @@ CUser::DoUseSystemAnswer CUser::DoUseItemSystem(ItemProp * pItemProp, CItemElem 
 		break;
 		case II_SYS_SYS_SCR_CUSTODY2:
 		{
-			CMover * pMover = (CMover *)CreateObj(D3DDEVICE, OT_MOVER, MI_INFO_PENG);
+			CMover * pMover = (CMover *)CreateObj(OT_MOVER, MI_INFO_PENG);
 			lstrcpy(pMover->m_szCharacterKey, "MaFl_InstantBank");
 			pMover->InitNPCProperty();
 			pMover->InitCharacter(pMover->GetCharacter());

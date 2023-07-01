@@ -137,7 +137,7 @@ void CRangda::CreateMonster( void )
 	CWorld* pWorld	= g_WorldMng.GetWorld( pos.dwWorldId );
 	if( !pWorld )
 		return;
-	CMover* pMonster	= static_cast<CMover*>( ::CreateObj( D3DDEVICE, OT_MOVER, m_dwMonster ) );
+	CMover* pMonster	= static_cast<CMover*>( ::CreateObj( OT_MOVER, m_dwMonster ) );
 	if( pMonster )
 	{
 		pMonster->m_bActiveAttack	= m_bActiveAttack;

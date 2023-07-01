@@ -338,7 +338,7 @@ BOOL CHousing::AddFurnitureControl( int nIndex )
 			}
 			else
 			{
-				CCtrl* pCtrl	= (CCtrl*)CreateObj( D3DDEVICE, OT_CTRL, pItemProp->dwLinkKind );
+				CCtrl* pCtrl	= (CCtrl*)CreateObj( OT_CTRL, pItemProp->dwLinkKind );
 				if( !pCtrl )
 					return FALSE;
 

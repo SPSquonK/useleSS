@@ -1087,7 +1087,7 @@ void CSecretRoomContinent::CreateMonster()
 		{
 			for( int j=0; j<nCount; j++ )
 			{
-				CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+				CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 				if( NULL == pObj )	
 					return;	
 				D3DXVECTOR3 vPos;
