@@ -33,6 +33,7 @@ protected:
 	FLOAT	m_fFadeSpeed;
 	int		m_nMaxTail;
 public:
+	// TODO: why no virtual destructor?
 	virtual void Init( void ) { m_nType = 0; m_bActive = FALSE; };
 	
 	virtual void	Create( int nType, FLOAT fFadeSpeed = 0.030f ) {};
@@ -43,12 +44,12 @@ public:
 	
 	virtual void	Destroy( void ) = 0;
 	virtual HRESULT FrameMove( void ) = 0;
-	virtual HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName ) = 0;
-	virtual HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) = 0;
+	virtual HRESULT InitDeviceObjects( LPCTSTR szFileName ) = 0;
+	virtual HRESULT RestoreDeviceObjects( ) = 0;
     virtual HRESULT InvalidateDeviceObjects() = 0;
 	virtual HRESULT Render( LPDIRECT3DDEVICE9 pd3dDevice ) = 0;
 
-	virtual HRESULT ChangeTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName, int nType ) { return S_OK; }
+	virtual HRESULT ChangeTexture( LPCTSTR szFileName, int nType ) { return S_OK; }
 };
 	
 class CTailEffectBelt : public CTailEffect
@@ -80,12 +81,12 @@ public:
 	
 	virtual HRESULT FrameMove( void );
 	
-	virtual HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName );
-	virtual HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT InitDeviceObjects( LPCTSTR szFileName ) override;
+	HRESULT RestoreDeviceObjects( ) override;
     virtual HRESULT InvalidateDeviceObjects();
-	HRESULT ChangeTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName, int nType );
+	HRESULT ChangeTexture(  LPCTSTR szFileName, int nType ) override;
 	
-	virtual HRESULT Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT Render( LPDIRECT3DDEVICE9 pd3dDevice ) override;
 };
 
 typedef struct TAILMODEL
@@ -114,8 +115,8 @@ public:
 	
 	virtual HRESULT FrameMove( void );
 	
-	virtual HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName );
-	virtual HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT InitDeviceObjects( LPCTSTR szFileName ) override;
+	HRESULT RestoreDeviceObjects( ) override;
     virtual HRESULT InvalidateDeviceObjects();
 	
 	virtual HRESULT Render( LPDIRECT3DDEVICE9 pd3dDevice );
@@ -124,9 +125,8 @@ public:
 
 #define		MAX_TAILEFFECT	32		// 최대 파티클 종류.
 
-class CTailEffectMng
+class CTailEffectMng final
 {
-	LPDIRECT3DDEVICE9 m_pd3dDevice;
 	CTailEffect* m_TailEffects[ MAX_TAILEFFECT ];
 
 	void	Init( void );
@@ -137,11 +137,11 @@ public:
 	CTailEffectMng();
 	~CTailEffectMng();
 	
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) { m_pd3dDevice = pd3dDevice; return S_OK; }
-	HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT InitDeviceObjects( ) { return S_OK; }
+	HRESULT RestoreDeviceObjects( );
     HRESULT InvalidateDeviceObjects();
 		
-	CTailEffect *AddEffect( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName, int nType, FLOAT fFadeSpeed = 0.030f );
+	CTailEffect *AddEffect( LPCTSTR szFileName, int nType, FLOAT fFadeSpeed = 0.030f );
 	int			Delete( CTailEffect *pTail );
 		
 	void	Process( void );

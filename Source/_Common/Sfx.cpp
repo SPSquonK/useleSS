@@ -1012,11 +1012,11 @@ void CSfxItemRangeAtk1::Process()
 		if( m_pTail )
 		{
 			if( m_pTail->GetType() != 2 )	// 생성되었던 꼬리고 일반보드용이 아니면 
-				m_pTail->ChangeTexture( D3DDEVICE, "etc_Tail2.bmp", 2 );	// 일반보드용으로 텍스쳐 교체.
+				m_pTail->ChangeTexture( "etc_Tail2.bmp", 2 );	// 일반보드용으로 텍스쳐 교체.
 		}
 		if( m_pTail == NULL )	// 아직 할당 안됐으면 할당하고.
 		{
-			m_pTail = (CTailEffectBelt*)g_TailEffectMng.AddEffect( g_Neuz.m_pd3dDevice, "etc_Tail2.bmp", 2, 0.35f );
+			m_pTail = (CTailEffectBelt*)g_TailEffectMng.AddEffect( "etc_Tail2.bmp", 2, 0.35f );
 		}
 		
 		D3DXVECTOR3	vPos1, vPos2;
@@ -1333,7 +1333,7 @@ void CSfxItemYoyoAtk::Process()
 		if( m_pTail == NULL )	// 아직 할당 안됐으면 할당하고.
 		{
 			if( m_pSfxObj->m_pSfxBase->m_aParts[0] )
-				m_pTail = (CTailEffectModel*)g_TailEffectMng.AddEffect( g_Neuz.m_pd3dDevice, m_pSfxObj->m_pSfxBase->m_aParts[0]->m_strTex, 100, 30.0f );
+				m_pTail = (CTailEffectModel*)g_TailEffectMng.AddEffect( m_pSfxObj->m_pSfxBase->m_aParts[0]->m_strTex, 100, 30.0f );
 		}
 
 		if( m_pTail )
@@ -1429,11 +1429,11 @@ void CSfxItemRangeAtk_JunkBow::Process()
 			if( m_pTail[i] )
 			{
 				if( m_pTail[i]->GetType() != 2 )	// 생성되었던 꼬리고 일반보드용이 아니면 
-					m_pTail[i]->ChangeTexture( D3DDEVICE, "etc_Tail2.bmp", 2 );	// 일반보드용으로 텍스쳐 교체.
+					m_pTail[i]->ChangeTexture( "etc_Tail2.bmp", 2 );	// 일반보드용으로 텍스쳐 교체.
 			}
 			if( m_pTail[i] == NULL )	// 아직 할당 안됐으면 할당하고.
 			{
-				m_pTail[i] = (CTailEffectBelt*)g_TailEffectMng.AddEffect( g_Neuz.m_pd3dDevice, "etc_Tail2.bmp", 2, 0.35f );
+				m_pTail[i] = (CTailEffectBelt*)g_TailEffectMng.AddEffect( "etc_Tail2.bmp", 2, 0.35f );
 			}
 		}
 		

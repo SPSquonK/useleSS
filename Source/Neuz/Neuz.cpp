@@ -334,7 +334,7 @@ HRESULT CNeuzApp::RestoreDeviceObjects()
 	}
 
 	g_ParticleMng.RestoreDeviceObjects( m_pd3dDevice );
-	g_TailEffectMng.RestoreDeviceObjects( m_pd3dDevice );
+	g_TailEffectMng.RestoreDeviceObjects( );
 
     // Initialize the particle system
 //	HRESULT hr;

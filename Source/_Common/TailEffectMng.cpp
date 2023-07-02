@@ -168,7 +168,7 @@ HRESULT CTailEffectBelt::FrameMove( void )
 //---------------------------------------------------------------------
 //
 //---------------------------------------------------------------------
-HRESULT CTailEffectBelt::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
+HRESULT CTailEffectBelt::InitDeviceObjects( LPCTSTR szFileName )
 {
 	HRESULT hr;
 	
@@ -176,7 +176,7 @@ HRESULT CTailEffectBelt::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTST
 	if( m_pTexture )			return S_OK;
 	
 	// Create the texture using D3DX
-	hr = LoadTextureFromRes( pd3dDevice, MakePath( DIR_MODELTEX, szFileName ), 
+	hr = LoadTextureFromRes( D3DDEVICE, MakePath( DIR_MODELTEX, szFileName ), 
 								D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, 
 								D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 								D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 0, NULL, NULL, &m_pTexture );
@@ -189,7 +189,7 @@ HRESULT CTailEffectBelt::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTST
 	return hr;
 }
 
-HRESULT CTailEffectBelt::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CTailEffectBelt::RestoreDeviceObjects( )
 {
 	if( m_bActive == FALSE )	return S_OK;
 	if( m_pTexture == NULL )	return S_OK;
@@ -197,7 +197,7 @@ HRESULT CTailEffectBelt::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 		return S_OK;		// 이미 할당되어 있으면 다시 할당 안함.
     HRESULT hr;
 	
-    if(FAILED(hr = pd3dDevice->CreateVertexBuffer( (MAX_TAIL * 2) *		// 꼬랑지리스트 하나당 버텍스2개기땜에 * 2
+    if(FAILED(hr = D3DDEVICE->CreateVertexBuffer( (MAX_TAIL * 2) *		// 꼬랑지리스트 하나당 버텍스2개기땜에 * 2
 													sizeof(TAILVERTEX), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, 
 													TAILVERTEX::FVF, D3DPOOL_DEFAULT, &m_pVB, NULL )))
 	{
@@ -207,11 +207,11 @@ HRESULT CTailEffectBelt::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
     return S_OK;
 }
 
-HRESULT CTailEffectBelt::ChangeTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName, int nType )
+HRESULT CTailEffectBelt::ChangeTexture( LPCTSTR szFileName, int nType )
 {
 	SAFE_RELEASE( m_pTexture );
 	m_nType = nType;
-	return InitDeviceObjects( pd3dDevice, szFileName );
+	return InitDeviceObjects( szFileName );
 }
 
 HRESULT CTailEffectBelt::InvalidateDeviceObjects()
@@ -452,7 +452,7 @@ HRESULT CTailEffectModel::FrameMove( void )
 //---------------------------------------------------------------------
 //
 //---------------------------------------------------------------------
-HRESULT CTailEffectModel::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
+HRESULT CTailEffectModel::InitDeviceObjects( LPCTSTR szFileName )
 {
 	if( m_bActive == FALSE )	return S_OK;
 
@@ -464,7 +464,7 @@ HRESULT CTailEffectModel::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTS
 		return E_FAIL;
 }
 
-HRESULT CTailEffectModel::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CTailEffectModel::RestoreDeviceObjects( )
 {
 	if( m_bActive == FALSE )	return S_OK;
 	
@@ -540,13 +540,13 @@ void CTailEffectMng::Destroy( void )
 	Init();
 }
 
-HRESULT CTailEffectMng::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CTailEffectMng::RestoreDeviceObjects( )
 {
 	int		i;
 	for( i = 0; i < MAX_TAILEFFECT; i ++ )
 	{
 		if( m_TailEffects[ i ] == NULL ) continue;
-		m_TailEffects[i]->RestoreDeviceObjects( pd3dDevice );
+		m_TailEffects[i]->RestoreDeviceObjects( );
 	}
 	
 	return S_OK;
@@ -567,7 +567,7 @@ HRESULT CTailEffectMng::InvalidateDeviceObjects( void )
 //
 // 파티클 하나 생성.
 //
-CTailEffect *CTailEffectMng::AddEffect( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName, int nType, FLOAT fFadeSpeed )
+CTailEffect *CTailEffectMng::AddEffect( LPCTSTR szFileName, int nType, FLOAT fFadeSpeed )
 {
 	int		i;
 	for( i = 0; i < MAX_TAILEFFECT; i ++ )
@@ -582,8 +582,8 @@ CTailEffect *CTailEffectMng::AddEffect( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR sz
 		//if( m_TailEffects[ i ]->IsActive() == TRUE )	continue;
 
 		m_TailEffects[ i ]->Create( nType, fFadeSpeed );		// 꼬리메모리 할당하고
-		m_TailEffects[ i ]->InitDeviceObjects( pd3dDevice, szFileName );	// 텍스쳐 읽고
-		m_TailEffects[ i ]->RestoreDeviceObjects( pd3dDevice );	// 버텍스 버퍼 할당하고.
+		m_TailEffects[ i ]->InitDeviceObjects( szFileName );	// 텍스쳐 읽고
+		m_TailEffects[ i ]->RestoreDeviceObjects( );	// 버텍스 버퍼 할당하고.
 		return m_TailEffects[ i ];
 	}
 	
