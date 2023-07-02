@@ -168,7 +168,7 @@ HRESULT CWndCredit::InitDeviceObjects()
 	m_pFont->m_nOutLine = 2;
 	m_pFont->m_dwColor = 0xffffffff;
 	m_pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 0, 0, 0);
-	m_pFont->InitDeviceObjects( m_pApp->m_pd3dDevice );
+	m_pFont->InitDeviceObjects( g_Neuz.m_pd3dDevice );
 	return CWndNeuz::InitDeviceObjects();
 }
 HRESULT CWndCredit::RestoreDeviceObjects()
@@ -401,7 +401,7 @@ HRESULT CWndAbout::InitDeviceObjects()
 	m_pFont->m_nOutLine = 1;
 	m_pFont->m_dwColor = 0xffffffff;
 	m_pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 255, 32, 32);
-	m_pFont->InitDeviceObjects( m_pApp->m_pd3dDevice );
+	m_pFont->InitDeviceObjects( g_Neuz.m_pd3dDevice );
 
 	return CWndNeuz::InitDeviceObjects();
 }

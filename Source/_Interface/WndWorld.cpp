@@ -985,10 +985,10 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 
 	RenderWantedArrow();
 
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
+	g_Neuz.m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
+	g_Neuz.m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+	g_Neuz.m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+	g_Neuz.m_pd3dDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
 
 	// LIGHT / FOG가 꺼진상태에서 드로우 되어야 한다,.
 	// 비행중 사경반경이내에 들어오는 플레이어들은 사각테두리가 쳐진다.
@@ -1727,7 +1727,7 @@ void CWndWorld::RenderArrow()
 		return; // 플레이어가 없으면 렌더 안한다
 	D3DXVECTOR3 vSrc = g_pPlayer->GetPos();
 	D3DXVECTOR3 vDest( 0.0F, 0.0F, 0.0F );
-	LPDIRECT3DDEVICE9 pd3dDevice = m_pApp->m_pd3dDevice;
+	LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
 
 	int nBlend = 255;
 	if( m_vDestinationArrow == D3DXVECTOR3( -1.0F, 0.0F, -1.0F ) || g_pPlayer->GetWorld()->GetID() != WI_WORLD_MADRIGAL )
@@ -2648,21 +2648,21 @@ void CWndWorld::OnInitialUpdate()
 			m_pFontAPICaption->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPICaption->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
 			m_pFontAPICaption->m_dwFlags = D3DFONT_FILTERED;
-			m_pFontAPICaption->InitDeviceObjects( m_pApp->m_pd3dDevice );
+			m_pFontAPICaption->InitDeviceObjects( g_Neuz.m_pd3dDevice );
 
 			m_pFontAPITitle	= MakeFont( strFont, rectClient.Width() / plfCaption.nDivCaption );
 			m_pFontAPITitle->m_nOutLine = 2;
 			m_pFontAPITitle->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPITitle->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
 			m_pFontAPITitle->m_dwFlags = D3DFONT_FILTERED;
-			m_pFontAPITitle->InitDeviceObjects( m_pApp->m_pd3dDevice );
+			m_pFontAPITitle->InitDeviceObjects( g_Neuz.m_pd3dDevice );
 
 			m_pFontAPITime	= MakeFont( plfCaption.szFontSecond, rectClient.Width() / 40 );
 			m_pFontAPITime->m_nOutLine = 2;
 			m_pFontAPITime->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPITime->m_dwBgColor = D3DCOLOR_ARGB( 255, 220, 100, 40 );
 			m_pFontAPITime->m_dwFlags = D3DFONT_FILTERED;
-			m_pFontAPITime->InitDeviceObjects( m_pApp->m_pd3dDevice );
+			m_pFontAPITime->InitDeviceObjects( g_Neuz.m_pd3dDevice );
 		}
 	}
 
@@ -2679,10 +2679,10 @@ void CWndWorld::OnInitialUpdate()
 	//m_texFlaris.LoadTexture( MakePath( DIR_EFFECT, "WelcomeToFlaris.tga" ), 0xff000000 );
 	//m_texFlaris.m_ptCenter = CPoint( m_texFlaris.m_size.cx / 2, m_texFlaris.m_size.cy / 2 );
 
-	m_meshArrow.InitDeviceObjects( m_pApp->m_pd3dDevice );
+	m_meshArrow.InitDeviceObjects( g_Neuz.m_pd3dDevice );
 	m_meshArrow.LoadModel( "etc_arrow.o3d" );
 
-	m_meshArrowWanted.InitDeviceObjects( m_pApp->m_pd3dDevice );
+	m_meshArrowWanted.InitDeviceObjects( g_Neuz.m_pd3dDevice );
 	m_meshArrowWanted.LoadModel( "arrow.o3d" );
 	m_bRenderArrowWanted = FALSE;
 	m_dwRenderArrowTime  = 0;
@@ -7274,7 +7274,7 @@ HRESULT CWndWorld::RestoreDeviceObjects()
 {
 	CWndBase::RestoreDeviceObjects();
 	if( m_pVBGauge == NULL )
-		return m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
+		return g_Neuz.m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
 	m_meshArrow.RestoreDeviceObjects();
 
 	m_meshArrowWanted.RestoreDeviceObjects();
@@ -8606,7 +8606,7 @@ void CWndWorld::RenderWantedArrow()
 		D3DXVECTOR3 vSrc = g_pPlayer->GetPos();
 		D3DXVECTOR3 vDest = m_v3Dest;
 
-		LPDIRECT3DDEVICE9 pd3dDevice = m_pApp->m_pd3dDevice;
+		LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
 
 		pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   FALSE );
 		pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, FALSE );

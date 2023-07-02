@@ -333,7 +333,7 @@ void CWndButton::OnDraw( C2DRender* p2DRender )
 void CWndButton::PaintFrame( C2DRender* p2DRender )
 {
 	CRect rect = GetWindowRect();
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(),  point );
+	GET_CLIENT_POINT( g_Neuz.GetSafeHwnd(),  point );
 	CString string;
 
 	DWORD dwColor = D3DCOLOR_TEMP( 200, 240, 240, 240 );
@@ -3210,7 +3210,7 @@ void CWndComboBox::OnInitialUpdate()
 
 void CWndComboBox::Create( DWORD dwComboBoxStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
-	CWndEdit::Create( pParentWnd->m_pApp->GetSafeHwnd(), dwComboBoxStyle | WBS_CHILD, rect, pParentWnd, nID );
+	CWndEdit::Create( g_Neuz.GetSafeHwnd(), dwComboBoxStyle | WBS_CHILD, rect, pParentWnd, nID );
 }
 void CWndComboBox::SetWndRect( CRect rectWnd, BOOL bOnSize )
 {

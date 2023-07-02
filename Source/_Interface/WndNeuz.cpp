@@ -160,7 +160,7 @@ void CWndNeuz::OnInitialUpdate()
 
 
 		for (WNDCTRL * pWndCtrl : lpWndApplet->ptrCtrlArray) {
-			m_wndArrayTemp.emplace_back(CreateControl(m_pApp->GetSafeHwnd(), pWndCtrl));
+			m_wndArrayTemp.emplace_back(CreateControl(g_Neuz.GetSafeHwnd(), pWndCtrl));
 		}
 	}
 

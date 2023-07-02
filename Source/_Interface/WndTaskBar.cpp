@@ -722,7 +722,7 @@ HRESULT CWndTaskBar::RestoreDeviceObjects()
 	CWndBase::RestoreDeviceObjects();
 	
 #ifdef __YDEBUG
-	m_texPack.RestoreDeviceObjects(m_pApp->m_pd3dDevice);
+	m_texPack.RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
 #endif //__YDEBUG
 	
 	return 0;

@@ -950,11 +950,11 @@ BOOL CWndOptVideo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 	case WIDC_SHADOW_HIGH:
 		g_Option.m_nShadow = 0;
-		CreateShadowMap( m_pApp->m_pd3dDevice, g_Neuz.m_d3dpp.BackBufferFormat );
+		CreateShadowMap( g_Neuz.m_pd3dDevice, g_Neuz.m_d3dpp.BackBufferFormat );
 		break;
 	case WIDC_SHADOW_MID:
 		g_Option.m_nShadow = 1;
-		CreateShadowMap( m_pApp->m_pd3dDevice, g_Neuz.m_d3dpp.BackBufferFormat );
+		CreateShadowMap( g_Neuz.m_pd3dDevice, g_Neuz.m_d3dpp.BackBufferFormat );
 		break;
 	case WIDC_SHADOW_LOW:
 		g_Option.m_nShadow = 2;

@@ -1572,7 +1572,7 @@ HRESULT CNeuzApp::InitDeviceObjects()
 	CWndBase::m_Theme.InitDeviceObjects( m_pd3dDevice );
 
 	// CWndBase ¼¼ÆÃ 
-	g_WndMng.m_pApp = this;
+	g_WndMng.m_hasApp = true;
 	g_WndMng.m_pTheme = &CWndBase::m_Theme;
 	g_WndMng.m_pFont = CWndBase::m_Theme.m_pFontText;
 	g_WndMng.Initialize();

@@ -1326,7 +1326,7 @@ void CWndEdit::PaintFrame(C2DRender* p2DRender)
 BOOL CWndEdit::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 {
 	if( !IsWndStyle( EBS_READONLY ) )
-		m_pApp->SetDeviceCursor( m_hEditCursor );
+		g_Neuz.SetDeviceCursor( m_hEditCursor );
 	return TRUE;
 }
 // 마우스 왼쪽 버튼을 에디트 창에 누르면 조합이 완료된다.

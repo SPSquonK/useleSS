@@ -81,7 +81,7 @@ void CWndBase::SetForbid( BOOL bForbid )
 CWndBase::CWndBase()
 {
 	//m_bAutoFree    = FALSE;
-	m_pApp         = NULL ;
+	m_hasApp = false;
 	m_pTheme       = NULL ;
 	m_pFont        = NULL ;
 	m_nIdWnd       = 0    ;
@@ -261,7 +261,7 @@ BOOL CWndBase::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT n
 		m_pParentWnd = m_pWndRoot;
 
 	m_pTheme = m_pParentWnd->m_pTheme;
-	m_pApp = m_pParentWnd->m_pApp;
+	m_hasApp = m_pParentWnd->m_hasApp;
 	m_pFont = m_pParentWnd->m_pFont;
 
 	SetWndRect( rect, FALSE );
@@ -269,7 +269,7 @@ BOOL CWndBase::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT n
 	if( m_pWndRoot == this )
 		m_dwStyle |= WBS_MANAGER;
 	m_pParentWnd->AddWnd( this );
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(), point );
+	GET_CLIENT_POINT( g_Neuz.GetSafeHwnd(), point );
 	m_ptMouse = point - GetScreenRect().TopLeft();
 
 	OnInitialUpdate();
@@ -287,10 +287,10 @@ void CWndBase::PaintRoot( C2DRender* p2DRender )
 	CPoint ptViewPortOld = p2DRender->GetViewportOrg();
 	m_bFullWnd = FALSE; 
 
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
+	g_Neuz.m_pd3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	g_Neuz.m_pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	g_Neuz.m_pd3dDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+	g_Neuz.m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
 	
 	// m_wndOrder 리스트에 있는 윈도는 차일드(종속) 윈도가 아니기 때문에
 	// 좌표계 이동이 필요 없고 단지 클립 영역만 지정해 주면 된다.
@@ -311,7 +311,7 @@ void CWndBase::PaintRoot( C2DRender* p2DRender )
 	}
 	p2DRender->m_clipRect = rectOld;
 	p2DRender->SetViewportOrg( ptViewPortOld );
-	p2DRender->SetViewport( m_pApp->GetDeviceRect() );
+	p2DRender->SetViewport( g_Neuz.GetDeviceRect() );
 	if( IsForbid() )
 	{
 		CPoint point = m_ptForbid;
@@ -464,7 +464,7 @@ void CWndBase::RenderWnd()
 {
 	if( m_pTexture == NULL || m_pVB == NULL )
 		return;
-	LPDIRECT3DDEVICE9 m_pd3dDevice = m_pApp->m_pd3dDevice;
+	LPDIRECT3DDEVICE9 m_pd3dDevice = g_Neuz.m_pd3dDevice;
 	m_pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSU, 1 );
 	m_pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV, 1 );
 	m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_POINT );		
@@ -528,7 +528,7 @@ HRESULT CWndBase::RestoreDeviceObjects()
 	}
 	if( m_pVB == NULL )
 	{
-		m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX ) * 4, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_DEFAULT, &m_pVB, NULL );
+		g_Neuz.m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX ) * 4, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_DEFAULT, &m_pVB, NULL );
 		MakeVertexBuffer();
 	}
 
@@ -621,12 +621,12 @@ CWndBase* CWndBase::GetChildFocus( POINT point )
 // 이 함수는 좌표계 세팅과 메시지 필터링을 한다.
 LRESULT CWndBase::WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam )
 {
-	if( m_pApp == NULL )
+	if( !m_hasApp )
 		return 0;
 	m_rectCurrentWindow = m_rectWindow;
 	m_rectCurrentClient = m_rectClient;
 
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(),  point );
+	GET_CLIENT_POINT( g_Neuz.GetSafeHwnd(),  point );
 	CRect rectWnd = m_rectWindow;
 	CPoint ptClient = point - m_rectCurrentClient.TopLeft();
 	CPoint ptWindow = point - m_rectCurrentWindow.TopLeft();
@@ -747,7 +747,7 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 		m_rectCurrentWindow = m_rectWindow;
 		m_rectCurrentClient = m_rectClient;
 	}
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(),  point );
+	GET_CLIENT_POINT( g_Neuz.GetSafeHwnd(),  point );
 	CRect rectWnd = m_rectWindow;
 	CPoint ptClient = point - m_rectCurrentClient.TopLeft();
 	CPoint ptWindow = point - m_rectCurrentWindow.TopLeft();
@@ -972,7 +972,7 @@ std::vector<T>::iterator AdvanceInRing(
 
 LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 {
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(), point);
+	GET_CLIENT_POINT( g_Neuz.GetSafeHwnd(), point);
 	CPoint ptClient = point - m_rectCurrentClient.TopLeft();
 	CPoint ptWindow = point - m_rectCurrentWindow.TopLeft();
 	CRect rectWnd = m_rectWindow;
@@ -1747,7 +1747,7 @@ void CWndBase::OnDestroy()
 }
 BOOL CWndBase::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 {
-	m_pApp->SetDeviceCursor( m_hDefaultCursor );
+	g_Neuz.SetDeviceCursor( m_hDefaultCursor );
 	return TRUE;
 }
 void CWndBase::GradationRect( C2DRender* p2DRender, CRect rect, DWORD dwColor1t, DWORD dwColor1b, DWORD dwColor2b, int nMidPercent )
@@ -1825,7 +1825,7 @@ void CWndBase::SetCapture()
 { 
 	//m_bCapture = TRUE; 
 	m_pWndCapture = this;
-	::SetCapture( m_pApp->GetSafeHwnd() );
+	::SetCapture( g_Neuz.GetSafeHwnd() );
 } 
 // 캡춰 잡은 것을 풀어 놓는다.
 void CWndBase::ReleaseCapture() 
