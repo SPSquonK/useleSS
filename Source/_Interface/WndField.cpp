@@ -2008,11 +2008,8 @@ void CWndInventory::OnRButtonDown(UINT nFlags, CPoint point)
 	BaseMouseCursor();
 }
 
-BOOL CWndInventory::OnSetCursor ( CWndBase* pWndBase, UINT nHitTest, UINT message )
-{
+void CWndInventory::OnSetCursor() {
 	SetEnchantCursor();
-
-	return TRUE;
 }
 
 void CWndInventory::SetEnchantCursor() {
@@ -10045,30 +10042,26 @@ void CWndChangeAttribute::OnLButtonUp( UINT nFlags, CPoint point )
 	}
 }
 
-BOOL CWndChangeAttribute::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
+void CWndChangeAttribute::OnSetCursor()
 {
-	CRect rect;
-	LPWNDCTRL lpWndCtrl;
-	BOOL bOnTitle = FALSE;
-	CPoint point = GetMousePoint();
+	bool bOnTitle = false;
+	const CPoint point = GetMousePoint();
 
 	for(int i=0; i<5; i++) 
 	{
-		lpWndCtrl = GetWndCtrl( m_nAttributeStaticID[i] );
-		rect = lpWndCtrl->rect;
-		if( rect.PtInRect( point ) )
-			bOnTitle = TRUE;
+		LPWNDCTRL lpWndCtrl = GetWndCtrl( m_nAttributeStaticID[i] );
+		CRect rect = lpWndCtrl->rect;
+		if (rect.PtInRect(point)) {
+			bOnTitle = true;
+		}
 	}
 
-	if(bOnTitle)
-		SetMouseCursor( CUR_SELECT );
-	else
-	{
-		SetMouseCursor( CUR_BASE );
-		CWndBase::OnSetCursor( pWndBase, nHitTest, message );
+	if (bOnTitle) {
+		SetMouseCursor(CUR_SELECT);
+	} else {
+		SetMouseCursor(CUR_BASE);
+		CWndBase::OnSetCursor();
 	}
-
-	return TRUE;
 }
 
 void CWndChangeAttribute::SetChangeItem( CItemElem* pItemElem )

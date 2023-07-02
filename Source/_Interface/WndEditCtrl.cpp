@@ -1323,12 +1323,12 @@ void CWndEdit::PaintFrame(C2DRender* p2DRender)
 	CRect rect = GetWindowRect();
 	m_pTheme->RenderWndEditFrame( p2DRender, &rect );
 }
-BOOL CWndEdit::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
-{
-	if( !IsWndStyle( EBS_READONLY ) )
-		m_pApp->SetDeviceCursor( m_hEditCursor );
-	return TRUE;
+
+void CWndEdit::OnSetCursor() {
+	if (!IsWndStyle(EBS_READONLY))
+		m_pApp->SetDeviceCursor(m_hEditCursor);
 }
+
 // 마우스 왼쪽 버튼을 에디트 창에 누르면 조합이 완료된다.
 // 이는 조합시 다른 오동작을 방지하기 위해 클릭하면 무조건 조합을 완료하게 한 것이다.
 void CWndEdit::OnLButtonDown( UINT nFlags, CPoint point )

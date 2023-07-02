@@ -548,7 +548,7 @@ BOOL CWndNeuz::InitDialog( DWORD dwWID, CWndBase * pWndParent, DWORD dwStyle, CP
 	return CWndNeuz::Create( lpWndApplet->dwWndStyle | dwStyle, rect, pWndParent, lpWndApplet->dwWndId );
 }  
 
-BOOL CWndNeuz::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
+void CWndNeuz::OnSetCursor()
 {
 	if( IsWndStyle( WBS_THICKFRAME ) && ( IsFullMax() == FALSE || m_nWinSize != WSIZE_MAX ) )
 	{
@@ -559,8 +559,9 @@ BOOL CWndNeuz::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 			CRect rectWindow = GetWindowRect( TRUE );
 			point -= rectWindow.TopLeft();
 			int nResizeDir = GetResizeDir( point );
-			if( nResizeDir )
-			{
+			if (nResizeDir == 0) {
+				CWndBase::OnSetCursor();
+			} else {
 				// 1 = top
 				// 2 = bottom
 				// 3 = left
@@ -590,13 +591,9 @@ BOOL CWndNeuz::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 						
 				}
 			}
-			else
-				CWndBase::OnSetCursor( pWndBase, nHitTest, message );
 		}
 	}
 	else
-		CWndBase::OnSetCursor( pWndBase, nHitTest, message );
-
-	return TRUE;
+		CWndBase::OnSetCursor();
 }
 //enum { IDD = IDD_PROP_APPLET_GENERAL };

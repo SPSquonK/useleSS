@@ -199,7 +199,7 @@ public:
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
 	virtual void OnDestroy( void );
-	virtual BOOL OnSetCursor ( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	void OnSetCursor() override;
 	
 public:
 	void UpdateTooltip( void )	{	m_wndItemCtrl.UpdateTooltip();	}
@@ -1496,7 +1496,7 @@ public:
 	virtual	void OnInitialUpdate();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual void OnLButtonUp( UINT nFlags, CPoint point );
-	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	void OnSetCursor() override;
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
 	virtual BOOL Process();

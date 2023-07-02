@@ -21,10 +21,8 @@ CWndDialog::~CWndDialog() {
 		pWndQuest->Update();
 	}
 } 
-BOOL CWndDialog::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
-{
-	return TRUE;
-}
+void CWndDialog::OnSetCursor() {}
+
 BOOL CWndDialog::Process() 
 {
 	CMover* pMover = prj.GetMover( m_idMover );

@@ -186,7 +186,7 @@ public:
 
 	virtual void	SetWndRect(CRect rectWnd, BOOL bOnSize = TRUE );
 	virtual	void	PaintFrame(C2DRender* p2DRender);
-	virtual BOOL	OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	void OnSetCursor() override;
 	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 
 	// CWndText overide

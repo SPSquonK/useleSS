@@ -130,7 +130,7 @@ public:
 	virtual	void OnInitialUpdate();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual void OnLButtonUp( UINT nFlags, CPoint point );
-	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	void OnSetCursor() override;
 	virtual BOOL Process();
 
 	void FillRect(C2DRender *p2DRender, CRect rectBg, DWORD dwColorstart, DWORD dwColorend, BOOL bLamp);
@@ -321,7 +321,7 @@ public:
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual BOOL Process();
 	virtual void OnLButtonUp( UINT nFlags, CPoint point );
-	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	void OnSetCursor() override;
 	virtual HRESULT DeleteDeviceObjects();
 
 public:
@@ -381,7 +381,7 @@ public:
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual BOOL Process();
 	virtual void OnLButtonUp( UINT nFlags, CPoint point );
-	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	void OnSetCursor() override;
 
 public:
 	BOOL MakeLadder();

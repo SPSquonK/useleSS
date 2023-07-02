@@ -802,7 +802,7 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 		}
 	}
 	if( m_pWndOnSetCursor == this )
-		m_pWndOnSetCursor->OnSetCursor( this, 0, 0);
+		m_pWndOnSetCursor->OnSetCursor();
 	switch( message )
 	{
 		case WM_SETFOCUS:
@@ -1743,11 +1743,11 @@ void CWndBase::OnDestroy()
 	g_toolTipSub2.CancelToolTip();
 #endif
 }
-BOOL CWndBase::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
-{
-	m_pApp->SetDeviceCursor( m_hDefaultCursor );
-	return TRUE;
+
+void CWndBase::OnSetCursor() {
+	m_pApp->SetDeviceCursor(m_hDefaultCursor);
 }
+
 void CWndBase::GradationRect( C2DRender* p2DRender, CRect rect, DWORD dwColor1t, DWORD dwColor1b, DWORD dwColor2b, int nMidPercent )
 {
 	int nFirstHeight = rect.Height() * nMidPercent / 100;

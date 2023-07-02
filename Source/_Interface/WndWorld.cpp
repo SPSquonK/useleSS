@@ -1812,11 +1812,11 @@ void CWndWorld::RenderArrow_Text( const D3DXVECTOR3& vDest, const D3DXMATRIX& ma
 	}
 }
 
-BOOL CWndWorld::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
+void CWndWorld::OnSetCursor()
 {
 	DWORD dwCursor = 0xffffffff;
 #ifdef __VRCAMERA
-	if( m_bRButtonDown &&/* m_bCameraMode &&*/ g_WorldMng()->GetObjFocus() != CObj::m_pObjHighlight )
+	if( m_bRButtonDown && g_WorldMng()->GetObjFocus() != CObj::m_pObjHighlight )
 #else
 	if( m_bMButtonDown )
 #endif
@@ -1900,10 +1900,9 @@ BOOL CWndWorld::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 		
 	}
 	if( dwCursor == 0xffffffff )
-		CWndNeuz::OnSetCursor( pWndBase, nHitTest, message );
+		CWndNeuz::OnSetCursor();
 	else
 		SetMouseCursor( dwCursor );
-	return TRUE;
 }
 void CWndWorld::GetBoundRect( CObj* pObj, CRect* pRect )
 {

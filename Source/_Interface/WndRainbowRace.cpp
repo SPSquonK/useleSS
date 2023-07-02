@@ -424,30 +424,24 @@ void CWndRainbowRaceMiniGame::OnLButtonUp( UINT nFlags, CPoint point )
 	}
 }
 
-BOOL CWndRainbowRaceMiniGame::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
+void CWndRainbowRaceMiniGame::OnSetCursor()
 {
-	CRect rect;
-	LPWNDCTRL lpWndCtrl;
-	BOOL bOnTitle = FALSE;
-	CPoint point = GetMousePoint();
+	bool bOnTitle = false;
+	const CPoint point = GetMousePoint();
 
-	for(int i=0; i<7; i++) 
-	{
-		lpWndCtrl = GetWndCtrl( m_TitleStaticID[i] );
-		rect = lpWndCtrl->rect;
-		if( rect.PtInRect( point ) )
-			bOnTitle = TRUE;
+	for (int i = 0; i < 7; i++) {
+		LPWNDCTRL lpWndCtrl = GetWndCtrl(m_TitleStaticID[i]);
+		CRect rect = lpWndCtrl->rect;
+		if (rect.PtInRect(point))
+			bOnTitle = true;
 	}
 
-	if(bOnTitle)
-		SetMouseCursor( CUR_SELECT );
-	else
-	{
-		SetMouseCursor( CUR_BASE );
-		CWndBase::OnSetCursor( pWndBase, nHitTest, message );
+	if (bOnTitle) {
+		SetMouseCursor(CUR_SELECT);
+	} else {
+		SetMouseCursor(CUR_BASE);
+		CWndBase::OnSetCursor();
 	}
-
-	return TRUE;
 }
 
 void CWndRainbowRaceMiniGame::FillRect(C2DRender *p2DRender, CRect rectBg, DWORD dwColorstart, DWORD dwColorend, BOOL bLamp)
@@ -1910,30 +1904,25 @@ void CWndRRMiniGameCard::OnLButtonUp( UINT nFlags, CPoint point )
 	}
 }
 
-BOOL CWndRRMiniGameCard::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
+void CWndRRMiniGameCard::OnSetCursor()
 {
-	CRect rect;
-	LPWNDCTRL lpWndCtrl;
-	BOOL bOnTitle = FALSE;
-	CPoint point = GetMousePoint();
+	bool bOnTitle = false;
+	const CPoint point = GetMousePoint();
 
 	for(int i=0; i<18; i++) 
 	{
-		lpWndCtrl = GetWndCtrl( m_nCustomID[i] );
-		rect = lpWndCtrl->rect;
+		LPWNDCTRL lpWndCtrl = GetWndCtrl( m_nCustomID[i] );
+		CRect rect = lpWndCtrl->rect;
 		if( rect.PtInRect( point ) && !m_stCard[i].m_bCheck )
-			bOnTitle = TRUE;
+			bOnTitle = true;
 	}
 
-	if(m_dwPenaltyTime == 0 && bOnTitle)
-		SetMouseCursor( CUR_SELECT );
-	else
-	{
-		SetMouseCursor( CUR_BASE );
-		CWndBase::OnSetCursor( pWndBase, nHitTest, message );
+	if (m_dwPenaltyTime == 0 && bOnTitle) {
+		SetMouseCursor(CUR_SELECT);
+	} else {
+		SetMouseCursor(CUR_BASE);
+		CWndBase::OnSetCursor();
 	}
-
-	return TRUE;
 }
 
 void CWndRRMiniGameCard::ReceiveResult(int nResult)
@@ -2113,30 +2102,25 @@ void CWndRRMiniGameLadder::OnLButtonUp(UINT nFlags, CPoint point )
 	}
 }
 
-BOOL CWndRRMiniGameLadder::OnSetCursor(CWndBase* pWndBase, UINT nHitTest, UINT message )
+void CWndRRMiniGameLadder::OnSetCursor()
 {
-	CRect rect;
-	LPWNDCTRL lpWndCtrl;
-	BOOL bOnTitle = FALSE;
-	CPoint point = GetMousePoint();
+	bool bOnTitle = false;
+	const CPoint point = GetMousePoint();
 
 	for(int i=0; i<15; i++) 
 	{
-		lpWndCtrl = GetWndCtrl( m_nStartCustomID[i] );
-		rect = lpWndCtrl->rect;
+		LPWNDCTRL lpWndCtrl = GetWndCtrl( m_nStartCustomID[i] );
+		CRect rect = lpWndCtrl->rect;
 		if( rect.PtInRect( point ) )
-			bOnTitle = TRUE;
+			bOnTitle = true;
 	}
 
-	if(!m_bStart && bOnTitle)
-		SetMouseCursor( CUR_SELECT );
-	else
-	{
-		SetMouseCursor( CUR_BASE );
-		CWndBase::OnSetCursor( pWndBase, nHitTest, message );
+	if (!m_bStart && bOnTitle) {
+		SetMouseCursor(CUR_SELECT);
+	} else {
+		SetMouseCursor(CUR_BASE);
+		CWndBase::OnSetCursor();
 	}
-
-	return TRUE;
 }
 
 void CWndRRMiniGameLadder::OnDraw(C2DRender* p2DRender)

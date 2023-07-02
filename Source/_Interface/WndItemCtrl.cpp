@@ -1148,14 +1148,12 @@ void CWndItemCtrl::OnRButtonDown( UINT nFlags, CPoint point )
 		}
 	}
 }
-BOOL CWndItemCtrl::OnSetCursor ( CWndBase* pWndBase, UINT nHitTest, UINT message )
-{
+
+void CWndItemCtrl::OnSetCursor() {
 	// 인벤창이 열려있고 인첸트 모드이면 커서모양 변경
-	CWndInventory* pWndInventory	= (CWndInventory*)GetWndBase( APP_INVENTORY );	
-	if( pWndInventory )
+	CWndInventory * pWndInventory = GetWndBase<CWndInventory>(APP_INVENTORY);
+	if (pWndInventory)
 		pWndInventory->SetEnchantCursor();
-	
-	return TRUE;
 }
 
 void CWndItemCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )

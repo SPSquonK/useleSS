@@ -84,7 +84,7 @@ public:
 	virtual void OnSize( UINT nType, int cx, int cy );
 	virtual void OnNonClientLButtonDblClk( UINT nFlags, CPoint point );
 	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE);
-	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	void OnSetCursor() override;
 
 	void SetSizeMax();
 	void SetSizeWnd();

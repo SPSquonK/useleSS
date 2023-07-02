@@ -197,25 +197,23 @@ void CWndInfoNotice::OnSize( UINT nType, int cx, int cy ) \
 void CWndInfoNotice::OnLButtonUp( UINT nFlags, CPoint point ) 
 { 
 } 
-BOOL CWndInfoNotice::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
+void CWndInfoNotice::OnSetCursor()
 {
 	if( ::GetLanguage() == LANG_KOR )
 	{
 		DWORD dwCursor = 0xffffffff;
 
-		LPWNDCTRL pCustom = NULL;
-		pCustom = GetWndCtrl( WIDC_COMMER_BANNER1 );
+		LPWNDCTRL pCustom = GetWndCtrl( WIDC_COMMER_BANNER1 );
 		if( PtInRect(&pCustom->rect, GetMousePoint() ) )
 		{
 			dwCursor = CUR_SELECT; 
 		}	
 		
 		if( dwCursor == 0xffffffff )
-			CWndNeuz::OnSetCursor( pWndBase, nHitTest, message );
+			CWndNeuz::OnSetCursor();
 		else
 			SetMouseCursor( dwCursor );
 	}
-	return TRUE;
 }
 void CWndInfoNotice::OnLButtonDown( UINT nFlags, CPoint point ) 
 { 

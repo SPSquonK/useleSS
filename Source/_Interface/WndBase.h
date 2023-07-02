@@ -281,7 +281,7 @@ public:
 	virtual	void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
-	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	virtual void OnSetCursor();
 	// message
 //Protected:
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
