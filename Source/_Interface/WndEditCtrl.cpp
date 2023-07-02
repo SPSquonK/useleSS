@@ -1218,8 +1218,9 @@ CWndEdit::~CWndEdit()
 	SAFE_DELETE( m_pWndReadingList );
 }
 // 창을 생성한다.
-BOOL CWndEdit::Create(HWND hwnd,DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID)
+BOOL CWndEdit::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID)
 {
+	HWND hwnd = g_Neuz.GetSafeHwnd();
 	if(hwnd) m_hWnd = hwnd;
 
 	g_imeMgr.InputLangChange(m_hWnd, GetKeyboardLayout(0));
@@ -1326,7 +1327,7 @@ void CWndEdit::PaintFrame(C2DRender* p2DRender)
 
 void CWndEdit::OnSetCursor() {
 	if (!IsWndStyle(EBS_READONLY))
-		m_pApp->SetDeviceCursor(m_hEditCursor);
+		g_Neuz.SetDeviceCursor(m_hEditCursor);
 }
 
 // 마우스 왼쪽 버튼을 에디트 창에 누르면 조합이 완료된다.

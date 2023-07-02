@@ -2749,7 +2749,7 @@ BOOL CWndMgr::SaveBitmap( LPCTSTR lpszName )
 	m_pd3dDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pDestSurface );
 
 	D3DLOCKED_RECT lockedRect;
-	CRect rectIn ( 0, 0, m_pApp->m_d3dsdBackBuffer.Width, m_pApp->m_d3dsdBackBuffer.Height );//cb.bih.biWidth, abs(cb.bih.biHeight) );
+	CRect rectIn ( 0, 0, g_Neuz.m_d3dsdBackBuffer.Width, g_Neuz.m_d3dsdBackBuffer.Height );//cb.bih.biWidth, abs(cb.bih.biHeight) );
 	HRESULT hr = pDestSurface->LockRect( &lockedRect, NULL, 0 ) ;
 	if( hr == D3D_OK )// Lock
 	{

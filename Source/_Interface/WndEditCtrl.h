@@ -177,7 +177,7 @@ public:
 	CWndEdit();
 	~CWndEdit();
 
-	BOOL	Create(HWND hwnd,DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID);
+	BOOL	Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID);
 
 	// CWndBase overide
 	virtual void	OnDestroyChildWnd( CWndBase* pWndChild );

@@ -86,7 +86,7 @@ static CWndBase* m_pWndCapture;
 public:
 static CResManager m_resMng;
 	static CTileMapManager m_strWndTileMap;
-	CD3DApplication* m_pApp;
+	bool m_isCreated;
 	CTheme*   m_pTheme;
 	CWndBase* m_pParentWnd;
 	std::vector<CWndBase *> m_wndArray;

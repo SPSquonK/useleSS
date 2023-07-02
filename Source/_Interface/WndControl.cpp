@@ -3210,7 +3210,7 @@ void CWndComboBox::OnInitialUpdate()
 
 void CWndComboBox::Create( DWORD dwComboBoxStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
-	CWndEdit::Create( pParentWnd->m_pApp->GetSafeHwnd(), dwComboBoxStyle | WBS_CHILD, rect, pParentWnd, nID );
+	CWndEdit::Create( dwComboBoxStyle | WBS_CHILD, rect, pParentWnd, nID );
 }
 void CWndComboBox::SetWndRect( CRect rectWnd, BOOL bOnSize )
 {

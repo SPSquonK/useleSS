@@ -160,7 +160,7 @@ void CWndNeuz::OnInitialUpdate()
 
 
 		for (WNDCTRL * pWndCtrl : lpWndApplet->ptrCtrlArray) {
-			m_wndArrayTemp.emplace_back(CreateControl(m_pApp->GetSafeHwnd(), pWndCtrl));
+			m_wndArrayTemp.emplace_back(CreateControl(pWndCtrl));
 		}
 	}
 
@@ -433,7 +433,7 @@ void CWndNeuz::SetWndRect( CRect rectWnd, BOOL bOnSize )
 	else
 		CWndBase::SetWndRect( rectWnd, bOnSize );
 }
-CWndBase* CWndNeuz::CreateControl( HWND hWnd, LPWNDCTRL lpWndCtrl ) 
+CWndBase* CWndNeuz::CreateControl( LPWNDCTRL lpWndCtrl ) 
 {
 	DWORD dwWndStyle = lpWndCtrl->dwWndStyle;
 	CWndBase* pWndBase = NULL;
@@ -470,7 +470,7 @@ CWndBase* CWndNeuz::CreateControl( HWND hWnd, LPWNDCTRL lpWndCtrl )
 		break;
 	case WTYPE_EDITCTRL:
 		pWndBase = new CWndEdit;
-		((CWndEdit*)pWndBase)->Create( hWnd, dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId );
+		((CWndEdit*)pWndBase)->Create( dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId );
 		//((CWndButton*)pWndBase)->Create( _T( "Button" ), 0, CRect( 0, 0, 100, 20), &m_dialogWnd, 10 );
 
 		if( lpWndCtrl->strTexture.IsEmpty() == FALSE )
@@ -520,7 +520,7 @@ BOOL CWndNeuz::InitDialog( HWND hWnd, LPWNDAPPLET LPWNDAPPLET )
 	SetTitle( LPWNDAPPLET->strTitle );
 	BOOL bResult = CWndNeuz::Create( 0 | WBS_MOVE | WBS_SOUND | WBS_THICKFRAME | WBS_CAPTION, rect, NULL, LPWNDAPPLET->dwWndId);
 	for( int i = 0; i < LPWNDAPPLET->ptrCtrlArray.GetSize(); i++ )
-		CreateControl( hWnd, (LPWNDCTRL)LPWNDAPPLET->ptrCtrlArray.GetAt( i ) );
+		CreateControl( (LPWNDCTRL)LPWNDAPPLET->ptrCtrlArray.GetAt( i ) );
 	return bResult;
 }
 */

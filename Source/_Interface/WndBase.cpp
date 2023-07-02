@@ -80,7 +80,7 @@ void CWndBase::SetForbid( BOOL bForbid )
 CWndBase::CWndBase()
 {
 	//m_bAutoFree    = FALSE;
-	m_pApp         = NULL ;
+	m_isCreated = false;
 	m_pTheme       = NULL ;
 	m_pFont        = NULL ;
 	m_nIdWnd       = 0    ;
@@ -260,7 +260,7 @@ BOOL CWndBase::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT n
 		m_pParentWnd = m_pWndRoot;
 
 	m_pTheme = m_pParentWnd->m_pTheme;
-	m_pApp = m_pParentWnd->m_pApp;
+	m_isCreated = m_pParentWnd->m_isCreated;
 	m_pFont = m_pParentWnd->m_pFont;
 
 	SetWndRect( rect, FALSE );
@@ -310,7 +310,7 @@ void CWndBase::PaintRoot( C2DRender* p2DRender )
 	}
 	p2DRender->m_clipRect = rectOld;
 	p2DRender->SetViewportOrg( ptViewPortOld );
-	p2DRender->SetViewport( m_pApp->GetDeviceRect() );
+	p2DRender->SetViewport( g_Neuz.GetDeviceRect() );
 	if( IsForbid() )
 	{
 		CPoint point = m_ptForbid;
@@ -619,8 +619,8 @@ CWndBase* CWndBase::GetChildFocus( POINT point )
 // 이 함수는 좌표계 세팅과 메시지 필터링을 한다.
 LRESULT CWndBase::WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam )
 {
-	if( m_pApp == NULL )
-		return 0;
+	if (!m_isCreated) return 0;
+
 	m_rectCurrentWindow = m_rectWindow;
 	m_rectCurrentClient = m_rectClient;
 
@@ -1745,7 +1745,7 @@ void CWndBase::OnDestroy()
 }
 
 void CWndBase::OnSetCursor() {
-	m_pApp->SetDeviceCursor(m_hDefaultCursor);
+	g_Neuz.SetDeviceCursor(m_hDefaultCursor);
 }
 
 void CWndBase::GradationRect( C2DRender* p2DRender, CRect rect, DWORD dwColor1t, DWORD dwColor1b, DWORD dwColor2b, int nMidPercent )
@@ -1823,7 +1823,7 @@ void CWndBase::SetCapture()
 { 
 	//m_bCapture = TRUE; 
 	m_pWndCapture = this;
-	::SetCapture( m_pApp->GetSafeHwnd() );
+	::SetCapture( g_Neuz.GetSafeHwnd() );
 } 
 // 캡춰 잡은 것을 풀어 놓는다.
 void CWndBase::ReleaseCapture() 

@@ -257,7 +257,7 @@ void CWndChat::OnInitialUpdate()
 	m_wndMacroChat.AddWndStyle( WBS_NODRAWFRAME );
 
 	lpWndCtrl = GetWndCtrl( WIDC_EDIT );
-	m_wndEdit.Create( g_Neuz.GetSafeHwnd(), WBS_NODRAWFRAME, lpWndCtrl->rect, this, WIDC_EDIT );
+	m_wndEdit.Create( WBS_NODRAWFRAME, lpWndCtrl->rect, this, WIDC_EDIT );
 	m_wndText.Create( WBS_NOFRAME | WBS_NODRAWFRAME | WBS_VSCROLL, lpWndText->rect, this, WIDC_TEXT );
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT );
 	CWndEdit* pWndHead = (CWndEdit*)GetDlgItem( WIDC_HEAD );

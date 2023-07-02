@@ -63,7 +63,7 @@ public:
 	// 윈도 정보 저장 관련 끝 
 
 	BOOL InitDialog( DWORD dwWID, CWndBase * pWndParent = nullptr, DWORD dwStyle = 0, CPoint ptLeftTop = 0 );
-	CWndBase* CreateControl( HWND hWnd, LPWNDCTRL lpWndCtrl );
+	CWndBase* CreateControl( LPWNDCTRL lpWndCtrl );
 	//CWndBase* GetDlgItem( UINT nID )
 protected:
 	CWndNeuz();
