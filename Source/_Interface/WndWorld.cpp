@@ -7285,16 +7285,6 @@ HRESULT CWndWorld::RestoreDeviceObjects()
 	if( m_pFontAPITime )
 		m_pFontAPITime->RestoreDeviceObjects();
 	
-#ifdef __YDEBUG
-	m_texTarget.RestoreDeviceObjects(m_pApp->m_pd3dDevice);		// 지상에서의 4귀퉁이 타겟그림
-	m_texTargetFly.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행중에서의 4귀퉁이 타겟그림.
-	m_texTargetArrow.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 타겟이 화면을 벗어났을때 화살표방향표시.
-	m_texGauFlight.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행 게이지 인터페이스.
-
-	m_texMsgIcon.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행 게이지 인터페이스.
-	m_texAttrIcon.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행 게이지 인터페이스.
-	m_texFontDigital.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행 게이지 인터페이스.
-#endif //__YDEBUG	
 
 	return S_OK;
 }
@@ -7316,17 +7306,6 @@ HRESULT CWndWorld::InvalidateDeviceObjects()
 	g_CapTime.InvalidateDeviceObjects();
 	g_Caption1.InvalidateDeviceObjects();
 
-#ifdef __YDEBUG
-	m_texTarget.InvalidateDeviceObjects();		// 지상에서의 4귀퉁이 타겟그림
-	m_texTargetFly.InvalidateDeviceObjects();	// 비행중에서의 4귀퉁이 타겟그림.
-	m_texTargetArrow.InvalidateDeviceObjects();	// 타겟이 화면을 벗어났을때 화살표방향표시.
-	m_texGauFlight.InvalidateDeviceObjects();	// 비행 게이지 인터페이스.
-
-
-	m_texMsgIcon.InvalidateDeviceObjects();	// 비행 게이지 인터페이스.
-	m_texAttrIcon.InvalidateDeviceObjects();	// 비행 게이지 인터페이스.
-	m_texFontDigital.InvalidateDeviceObjects();	// 비행 게이지 인터페이스.
-#endif //__YDEBUG	
 
 	return S_OK;
 }
@@ -7365,13 +7344,6 @@ HRESULT CWndWorld::DeleteDeviceObjects()
 	}
 
 	SAFE_DELETE(m_pWndGuideSystem);
-#ifdef __YDEBUG
-	m_texTargetArrow.DeleteDeviceObjects();	// 타겟이 화면을 벗어났을때 화살표방향표시.
-	m_texGauFlight.DeleteDeviceObjects();	// 비행 게이지 인터페이스.		
-	m_texMsgIcon.DeleteDeviceObjects();	// 비행 게이지 인터페이스.
-	m_texAttrIcon.DeleteDeviceObjects();	// 비행 게이지 인터페이스.
-	m_texFontDigital.DeleteDeviceObjects();	// 비행 게이지 인터페이스.
-#endif //__YDEBUG	
 	m_TexGuildWinner.DeleteDeviceObjects();
 	m_TexGuildBest.DeleteDeviceObjects();
 	return S_OK;

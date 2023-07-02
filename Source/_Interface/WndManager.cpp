@@ -962,9 +962,6 @@ HRESULT CWndMgr::InvalidateDeviceObjects()
 {
 	CWndBase::InvalidateDeviceObjects();
 	
-#ifdef __YDEBUG
-	m_texture.InvalidateDeviceObjects();
-#endif //__YDEBUG
 	return S_OK;
 }
 
@@ -972,9 +969,6 @@ HRESULT CWndMgr::DeleteDeviceObjects()
 {
 	CWndBase::DeleteDeviceObjects();
 	
-#ifdef __YDEBUG
-	m_texture.DeleteDeviceObjects();
-#endif //__YDEBUG
 	return S_OK;
 }
 
@@ -986,9 +980,6 @@ HRESULT CWndMgr::RestoreDeviceObjects()
 	//	g_WndMng.SetWndRect( CRect( 0, 0, CLIENT_WIDTH, CLIENT_HEIGHT - TASKBAR_HEIGHT ) );
 	CWndBase::RestoreDeviceObjects();
 	
-#ifdef __YDEBUG
-	m_texture.RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
-#endif //__YDEBUG
 	
 	return 0;
 }

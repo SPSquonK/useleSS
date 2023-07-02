@@ -701,9 +701,6 @@ HRESULT CWndTaskBar::InvalidateDeviceObjects()
 {
 	CWndBase::InvalidateDeviceObjects();
 	
-#ifdef __YDEBUG
-	m_texPack.InvalidateDeviceObjects();
-#endif //__YDEBUG
 	return S_OK;
 }
 
@@ -711,9 +708,6 @@ HRESULT CWndTaskBar::DeleteDeviceObjects()
 {
 	CWndBase::DeleteDeviceObjects();
 	
-#ifdef __YDEBUG
-	m_texPack.DeleteDeviceObjects();
-#endif //__YDEBUG
 	return S_OK;
 }
 
@@ -721,9 +715,6 @@ HRESULT CWndTaskBar::RestoreDeviceObjects()
 {
 	CWndBase::RestoreDeviceObjects();
 	
-#ifdef __YDEBUG
-	m_texPack.RestoreDeviceObjects(g_Neuz.m_pd3dDevice);
-#endif //__YDEBUG
 	
 	return 0;
 }

@@ -1025,9 +1025,6 @@ CTexture::CTexture()
 	m_bAutoFree = FALSE;
 	m_ptCenter = CPoint( 0, 0 );
 
-#ifdef __YDEBUG
-	m_Pool = D3DPOOL_MANAGED;
-#endif //__YDEBUG
 	
 	
 
@@ -1076,12 +1073,6 @@ BOOL CTexture::CreateTexture(
 	m_bAutoFree = TRUE;
 //#endif
 
-#ifdef __YDEBUG
-	m_nLevels = Levels;
-	m_dwUsage = Usage;
-	m_Pool    = Pool;
-	m_Format  = Format;
-#endif //__YDEBUG
 	return TRUE;
 }
 
@@ -1100,11 +1091,6 @@ BOOL CTexture::LoadTexture( LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoa
 	_tcscpy( szFileName, pFileName );
 	_tcslwr( szFileName );
 
-#ifdef __YDEBUG
-	m_strTexFileName = pFileName;
-	m_d3dKeyColor    = d3dKeyColor;
-	m_bMyLoader      = bMyLoader;
-#endif //__YDEBUG
 
 	if( bMyLoader == FALSE ) // dds only
 	{

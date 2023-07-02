@@ -3078,9 +3078,6 @@ HRESULT CWndNavigator::DeleteDeviceObjects()
 	m_billArrow.DeleteDeviceObjects();
 	m_texNavPos.DeleteDeviceObjects();
 	m_GuildCombatTextureMask.DeleteDeviceObjects();
-#ifdef __YDEBUG
-	m_texDunFog.DeleteDeviceObjects();
-#endif //__YDEBUG
 	
 	return CWndNeuz::DeleteDeviceObjects();
 }

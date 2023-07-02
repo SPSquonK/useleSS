@@ -165,16 +165,6 @@ public:
 	CString m_strFileName;
 #endif
 	
-#ifdef __YDEBUG
-	CString		m_strTexFileName;
-	D3DCOLOR	m_d3dKeyColor;
-	UINT		m_nLevels;
-	BOOL		m_bMyLoader;
-	DWORD		m_dwUsage;
-
-	D3DPOOL		m_Pool;
-	D3DFORMAT	m_Format;
-#endif //__YDEBUG
 
 	CTexture();
 	~CTexture();

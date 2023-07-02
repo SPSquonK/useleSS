@@ -685,9 +685,6 @@ void CCommonCtrl::DropNPC()
 		
 		if( pMoverProp == NULL )
 		{
-#ifdef __YDEBUG
-			Error( "CtrlProp(%s)의 m_dwMonResKind(%d)값이 잘못되었다.", GetName(), m_CtrlElem.m_dwMonResKind[i] );
-#endif // __YDEBUG
 			return;
 		}
 

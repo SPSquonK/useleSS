@@ -1229,9 +1229,6 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 	#ifdef __WORLDSERVER
 		switch( pSkillProp->dwSpellRegion )
 		{
-#ifdef __YDEBUG
-		case SRO_DIRECT:
-#endif //__YDEBUG
 		case SRO_AROUND:
 		case SRO_REGION:	// ¹üÀ§°ø°ÝÀÏ¶© ¿©±â¼­ Å¸°Ùµé °¢°¢¿¡ sfxobj3¸¦ »Ñ·ÁÁÜ.
 			if( pSkillProp->dwExeTarget != EXT_MAGICATKSHOT )
