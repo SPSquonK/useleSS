@@ -287,10 +287,10 @@ void CWndBase::PaintRoot( C2DRender* p2DRender )
 	CPoint ptViewPortOld = p2DRender->GetViewportOrg();
 	m_bFullWnd = FALSE; 
 
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
+	m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
+	m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+	m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+	m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
 	
 	// m_wndOrder 리스트에 있는 윈도는 차일드(종속) 윈도가 아니기 때문에
 	// 좌표계 이동이 필요 없고 단지 클립 영역만 지정해 주면 된다.
@@ -527,7 +527,7 @@ HRESULT CWndBase::RestoreDeviceObjects()
 	}
 	if( m_pVB == NULL )
 	{
-		m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX ) * 4, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_DEFAULT, &m_pVB, NULL );
+		m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX ) * 4, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_DEFAULT, &m_pVB, NULL );
 		MakeVertexBuffer();
 	}
 

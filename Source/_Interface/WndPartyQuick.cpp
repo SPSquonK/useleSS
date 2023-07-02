@@ -28,7 +28,7 @@ CWndPartyQuick::~CWndPartyQuick() {
 HRESULT CWndPartyQuick::RestoreDeviceObjects() {
 	CWndBase::RestoreDeviceObjects();
 	if (!m_pVBGauge) {
-		return m_pApp->m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL);
+		return m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL);
 	}
 	return S_OK;
 }

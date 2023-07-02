@@ -88,7 +88,7 @@ HRESULT CCollectingWnd::RestoreDeviceObjects()
 {
 	CWndBase::RestoreDeviceObjects();
 	if(!m_pVBGauge)
-	m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
+	m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
 	
 	return S_OK;
 }
@@ -130,7 +130,7 @@ void CCollectingWnd::OnInitialUpdate()
 		m_LevelRect		= lpWndCtrl2->rect;
 		
 		if(!m_pVBGauge)
-			m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
+			m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
 
 		m_pTexGauEmptyNormal = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff );
 		m_pTexGauFillNormal  = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff );

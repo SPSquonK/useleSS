@@ -1676,7 +1676,7 @@ BOOL CWndMgr::OnEraseBkgnd( C2DRender* p2DRender )
 	}
 #endif // __GAME_GRADE_SYSTEM
 	else
-		m_pApp->m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 0, 0, 0 ), 1.0f, 0 ) ;
+		m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 0, 0, 0 ), 1.0f, 0 ) ;
 	D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
 	D3DDEVICE->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	return TRUE;
@@ -2732,7 +2732,7 @@ BOOL CWndMgr::SaveJPG( LPCTSTR lpszName )
 	CSize size = m_p2DRender->m_pFont->GetTextExtent( lpString );
 	g_Neuz.m_2DRender.TextOut(rect.right - size.cx - 20, rect.bottom - 70, lpString);
 
-	m_pApp->m_pd3dDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pDestSurface );
+	m_pd3dDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pDestSurface );
 	BOOL bResult = D3DXSaveSurfaceToFile(lpszName, D3DXIFF_JPG, pDestSurface, NULL, NULL );
 	pDestSurface->Release();
 
@@ -2746,7 +2746,7 @@ BOOL CWndMgr::SaveBitmap( LPCTSTR lpszName )
 	memset( lpData, 255, g_Option.m_nResWidth * g_Option.m_nResHeight * 4 );
 	
 	IDirect3DSurface9* pDestSurface;
-	m_pApp->m_pd3dDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pDestSurface );
+	m_pd3dDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pDestSurface );
 
 	D3DLOCKED_RECT lockedRect;
 	CRect rectIn ( 0, 0, m_pApp->m_d3dsdBackBuffer.Width, m_pApp->m_d3dsdBackBuffer.Height );//cb.bih.biWidth, abs(cb.bih.biHeight) );
