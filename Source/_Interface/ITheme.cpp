@@ -23,7 +23,6 @@ CTheme::CTheme()
 	m_bNudeSkin = FALSE;
 	//m_pActiveDesktop = NULL;
 	//m_pd3dsdBackBuffer = NULL;
-	m_pd3dDevice =NULL;
 
 	m_pFontStatus = NULL;
 
@@ -45,10 +44,8 @@ CTheme::~CTheme()
 {
 	DeleteTheme();
 }
-BOOL CTheme::LoadTheme( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName)
+BOOL CTheme::LoadTheme( LPCTSTR lpszFileName)
 {
-	m_pd3dDevice = pd3dDevice;
-
 	//DeleteTheme();
 
 	CScanner scanner;
@@ -141,10 +138,9 @@ void CTheme::DeleteTheme()
 	DeleteDeviceObjects();
 } 
 
-HRESULT CTheme::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
-	m_pd3dDevice = pd3dDevice;
+HRESULT CTheme::InitDeviceObjects() {
 	for (CD3DFont * pFont : m_mapFont | std::views::values) {
-		pFont->InitDeviceObjects(pd3dDevice);
+		pFont->InitDeviceObjects();
 	}
 
 	return TRUE;
@@ -198,8 +194,8 @@ HRESULT CTheme::RestoreDeviceObjects( )
 	}
 
 	HRESULT hr = S_OK;
-	m_pd3dDevice->CreateVertexBuffer( sizeof(TEXTUREVERTEX)*24, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_SYSTEMMEM, &m_pVBTexture      , NULL);
-	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX)*42, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX, D3DPOOL_SYSTEMMEM, &m_pVBGauge       , NULL );
+	g_Neuz.m_pd3dDevice->CreateVertexBuffer( sizeof(TEXTUREVERTEX)*24, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_SYSTEMMEM, &m_pVBTexture      , NULL);
+	g_Neuz.m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX)*42, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX, D3DPOOL_SYSTEMMEM, &m_pVBGauge       , NULL );
 	return hr;
 }
 

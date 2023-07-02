@@ -494,7 +494,6 @@ CD3DFont::CD3DFont( const char* strFontName, DWORD dwHeight, DWORD dwFlags )// :
     m_dwFontHeight         = dwHeight;
     m_dwFontFlags          = dwFlags;
 	m_nOutLine             = 0;
-    m_pd3dDevice           = NULL;
     m_pVB                  = NULL;
 
     m_pStateBlockSaved     = NULL;
@@ -556,12 +555,12 @@ HRESULT CD3DFont::CreateGDIFont( HDC hDC, HFONT* pFont )
 // Desc: Initializes device-dependent objects, including the vertex buffer used
 //       for rendering text and the texture map which stores the font image.
 //-----------------------------------------------------------------------------
-HRESULT CD3DFont::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CD3DFont::InitDeviceObjects()
 {
     HRESULT hr = S_OK;
 
     // Keep a local copy of the device
-    m_pd3dDevice = pd3dDevice;
+		LPDIRECT3DDEVICE9 m_pd3dDevice = g_Neuz.m_pd3dDevice;
 
     // Assume we will draw fonts into texture without scaling unless the
     // required texture size is found to be larger than the device max
@@ -646,7 +645,7 @@ HRESULT CD3DFont::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 LPDIRECT3DTEXTURE9 CD3DFont::CreateTexture()
 {
 	LPDIRECT3DTEXTURE9 lpTexture;
-	m_pd3dDevice->CreateTexture( m_dwTexWidth, m_dwTexHeight, 1, 0, D3DFMT_A4R4G4B4, D3DPOOL_MANAGED, &lpTexture, NULL );
+	g_Neuz.m_pd3dDevice->CreateTexture( m_dwTexWidth, m_dwTexHeight, 1, 0, D3DFMT_A4R4G4B4, D3DPOOL_MANAGED, &lpTexture, NULL );
 	D3DLOCKED_RECT d3dlr;
 	lpTexture->LockRect( 0, &d3dlr, NULL, 0 );
 	WORD* pDstRow = (WORD*)d3dlr.pBits;
@@ -665,6 +664,7 @@ LPDIRECT3DTEXTURE9 CD3DFont::CreateTexture()
 //-----------------------------------------------------------------------------
 HRESULT CD3DFont::RestoreDeviceObjects()
 {
+	LPDIRECT3DDEVICE9 m_pd3dDevice = g_Neuz.m_pd3dDevice;
     HRESULT hr;
 
     // Create vertex buffer for the letters
@@ -800,9 +800,6 @@ HRESULT CD3DFont::DeleteDeviceObjects()
 		SAFE_RELEASE( pTex );
 	}
 	m_apTexture.clear();
-
-  m_pd3dDevice = NULL;
-	
 
     return S_OK;
 }
@@ -1089,6 +1086,7 @@ HRESULT CD3DFont::DrawText( FLOAT sx, FLOAT sy, DWORD dwColor,
 HRESULT CD3DFont::DrawText( FLOAT sx, FLOAT sy, FLOAT fXScale, FLOAT fYScale, DWORD dwColor,
                             const char* strText, DWORD dwFlags, WORD wCodePage )
 {
+	LPDIRECT3DDEVICE9 m_pd3dDevice = g_Neuz.m_pd3dDevice;
     if( m_pd3dDevice == NULL )
         return E_FAIL;
 
@@ -1195,8 +1193,10 @@ HRESULT CD3DFont::DrawText( FLOAT sx, FLOAT sy, DWORD dwColor,
 HRESULT CD3DFont::DrawText( FLOAT sx, FLOAT sy, FLOAT fXScale, FLOAT fYScale, DWORD dwColor,
                             CEditString& strEditString, int nPos, int nLines, int nLineSpace, DWORD dwFlags )
 {
-    if( m_pd3dDevice == NULL )
+    if( g_Neuz.m_pd3dDevice == NULL )
         return E_FAIL;
+
+		LPDIRECT3DDEVICE9 m_pd3dDevice = g_Neuz.m_pd3dDevice;
 
     // Setup renderstate
     m_pStateBlockSaved->Capture();
@@ -1540,7 +1540,7 @@ HRESULT CD3DFontAPIVTN::GetTextExtent( const TCHAR* strText, SIZE* pSize )
 	return S_FALSE;
 }
 
-HRESULT CD3DFontAPIVTN::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CD3DFontAPIVTN::InitDeviceObjects()
 {
 	if(m_pD3DFont != NULL)
 	{
@@ -1558,7 +1558,7 @@ HRESULT CD3DFontAPIVTN::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 		dwBlue  = ( m_dwColor & 0x000000ff ) >> 4;
 		m_dwColor = ( dwRed << 8 ) | ( dwGreen << 4 ) | dwBlue;
 
-		m_pD3DFont->InitDeviceObjects(pd3dDevice);
+		m_pD3DFont->InitDeviceObjects();
 	}
 
 	return S_FALSE;

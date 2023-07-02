@@ -142,7 +142,6 @@ class CD3DFont //: public CD3DFontAPI
     DWORD   m_dwFontFlags;
 
 	DWORD   m_bCaption;
-    LPDIRECT3DDEVICE9       m_pd3dDevice; // A D3DDevice used for rendering
 	LPDIRECT3DVERTEXBUFFER9 m_pVB;        // VertexBuffer for rendering text
     DWORD   m_dwTexWidth;                 // Texture dimensions
     DWORD   m_dwTexHeight;
@@ -212,7 +211,7 @@ public:
     CSize GetTextExtent( LPCTSTR pszText ) { SIZE size; GetTextExtent( pszText, &size ); return size; }
 
     // Initializing and destroying device-dependent objects
-    HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+    HRESULT InitDeviceObjects();
     HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();
     HRESULT DeleteDeviceObjects();
@@ -248,7 +247,7 @@ public:
     HRESULT GetTextExtent( const TCHAR* strText, SIZE* pSize );
 
     // Initializing and destroying device-dependent objects
-    HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+    HRESULT InitDeviceObjects();
     HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();
     HRESULT DeleteDeviceObjects();

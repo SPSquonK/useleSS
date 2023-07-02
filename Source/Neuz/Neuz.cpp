@@ -1568,8 +1568,8 @@ HRESULT CNeuzApp::InitDeviceObjects()
 #endif //__YENV	
 
 	// 테마 세팅 
-	CWndBase::m_Theme.LoadTheme( m_pd3dDevice, "Default.thm" );
-	CWndBase::m_Theme.InitDeviceObjects( m_pd3dDevice );
+	CWndBase::m_Theme.LoadTheme( "Default.thm" );
+	CWndBase::m_Theme.InitDeviceObjects( );
 
 	// CWndBase 세팅 
 	g_WndMng.m_hasApp = true;
