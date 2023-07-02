@@ -23,7 +23,9 @@ CTailEffectBelt::CTailEffectBelt()
 
 CTailEffectBelt::~CTailEffectBelt()
 {
-	Destroy();
+	InvalidateDeviceObjects();
+	SAFE_RELEASE(m_pTexture);
+	SAFE_DELETE_ARRAY(m_pPool);
 }
 
 void CTailEffectBelt::Init( void )
@@ -55,14 +57,6 @@ void CTailEffectBelt::Clear( void )
 	m_dwDiscard = 0;
 	m_nMaxTail = 0;
 	m_nType = 0;
-}
-
-void CTailEffectBelt::Destroy( void )
-{
-	InvalidateDeviceObjects();
-	SAFE_RELEASE( m_pTexture );
-	SAFE_DELETE_ARRAY( m_pPool );
-	Init();
 }
 
 #define		MAX_TAIL	512
@@ -374,7 +368,9 @@ CTailEffectModel::CTailEffectModel()
 
 CTailEffectModel::~CTailEffectModel()
 {
-	Destroy();
+	InvalidateDeviceObjects();
+	m_pModel->DeleteDeviceObjects();
+	SAFE_DELETE(m_pModel);
 }
 
 void CTailEffectModel::Init( void )
@@ -393,15 +389,6 @@ void CTailEffectModel::Clear( void )
 	m_nType = 0;
 	m_pModel    = NULL;
 	m_nMaxTail  = 0;
-}
-
-void CTailEffectModel::Destroy( void )
-{
-	InvalidateDeviceObjects();
-	m_pModel->DeleteDeviceObjects();
-	SAFE_DELETE(m_pModel);	
-	m_vecTail.clear();
-	Init();
 }
 
 void CTailEffectModel::Create( int nType, FLOAT fFadeSpeed )
@@ -519,52 +506,32 @@ HRESULT CTailEffectModel::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 //////////////////////////////////////////////////////////////////////////
 CTailEffectMng	g_TailEffectMng;
 
-CTailEffectMng::CTailEffectMng()
-{
-	Init();
+CTailEffectMng::CTailEffectMng() {
+	m_TailEffects.fill(nullptr);
 }
 
-CTailEffectMng::~CTailEffectMng()
-{
-	Destroy();
-}
-
-void CTailEffectMng::Init( void )
-{
-	m_bActive = TRUE;
-
-	for( int i = 0; i < MAX_TAILEFFECT; i ++ )
-	{
-		SAFE_DELETE( m_TailEffects[i] );
-	}	
-}
-
-void CTailEffectMng::Destroy( void )
-{
-	// 이곳에 파괴 코드를 넣으셈.
-	
-	Init();
-}
-
-HRESULT CTailEffectMng::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
-{
-	int		i;
-	for( i = 0; i < MAX_TAILEFFECT; i ++ )
-	{
-		if( m_TailEffects[ i ] == NULL ) continue;
-		m_TailEffects[i]->RestoreDeviceObjects( pd3dDevice );
+CTailEffectMng::~CTailEffectMng() {
+	for (CTailEffect * pTailEffect : m_TailEffects) {
+		delete pTailEffect;
 	}
-	
+}
+
+HRESULT CTailEffectMng::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
+	for (CTailEffect * pTailEffect : m_TailEffects) {
+		if (pTailEffect) {
+			pTailEffect->RestoreDeviceObjects(pd3dDevice);
+		}
+	}
+
 	return S_OK;
 }
 
 HRESULT CTailEffectMng::InvalidateDeviceObjects( void )
 {
-	int		i;
-	for( i = 0; i < MAX_TAILEFFECT; i ++ )
-	{
-		if( m_TailEffects[ i ] == NULL ) continue;
-		m_TailEffects[i]->InvalidateDeviceObjects();
+	for (CTailEffect * pTailEffect : m_TailEffects) {
+		if (pTailEffect) {
+			pTailEffect->InvalidateDeviceObjects();
+		}
 	}
 	
 	return S_OK;
@@ -575,62 +542,46 @@ HRESULT CTailEffectMng::InvalidateDeviceObjects( void )
 //
 CTailEffect *CTailEffectMng::AddEffect( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName, int nType, FLOAT fFadeSpeed )
 {
-	int		i;
-	for( i = 0; i < MAX_TAILEFFECT; i ++ )
+	for(int i = 0; i < MAX_TAILEFFECT; i ++ )
 	{
-		if( m_TailEffects[ i ] != NULL ) continue;
+		if( m_TailEffects[ i ] ) continue;
 
 		if( nType != 100 )
-			m_TailEffects[ i ] = new CTailEffectBelt;
+			m_TailEffects[ i ] = new CTailEffectBelt();
 		else
-			m_TailEffects[ i ] = new CTailEffectModel;
+			m_TailEffects[ i ] = new CTailEffectModel();
 		
-		//if( m_TailEffects[ i ]->IsActive() == TRUE )	continue;
-
 		m_TailEffects[ i ]->Create( nType, fFadeSpeed );		// 꼬리메모리 할당하고
 		m_TailEffects[ i ]->InitDeviceObjects( pd3dDevice, szFileName );	// 텍스쳐 읽고
 		m_TailEffects[ i ]->RestoreDeviceObjects( pd3dDevice );	// 버텍스 버퍼 할당하고.
 		return m_TailEffects[ i ];
 	}
 	
-	return NULL;
+	return nullptr;
 }
 
 // pTail을 찾아서 지움.
 int		CTailEffectMng::Delete( CTailEffect *pTail )
 {
-	int		i;
-	for( i = 0; i < MAX_TAILEFFECT; i ++ )
-	{
-		if( m_TailEffects[i] == pTail )
-		{
-			m_TailEffects[i]->Destroy();		// 메모리는 재할당하지 않고 초기화만 시킨다.
-			SAFE_DELETE( m_TailEffects[i] );
-			return 1;
+	const auto it = std::find(m_TailEffects.begin(), m_TailEffects.end(), pTail);
+	if (it == m_TailEffects.end()) return 0;
+
+	SAFE_DELETE(*it);
+	return 1;
+}
+
+void CTailEffectMng::Process() {
+	for (CTailEffect * pTailEffect : m_TailEffects) {
+		if (pTailEffect && pTailEffect->IsActive()) {
+			pTailEffect->FrameMove();
 		}
 	}
-
-	return 0;
 }
 
-void CTailEffectMng::Process( void )
-{
-	int		i;
-	for( i = 0; i < MAX_TAILEFFECT; i ++ )
-	{
-		if( m_TailEffects[ i ] == NULL ) continue;
-		if( m_TailEffects[i]->IsActive() == FALSE )	continue;
-		m_TailEffects[i]->FrameMove();
-	}
-}
-
-void CTailEffectMng::Render( LPDIRECT3DDEVICE9 pd3dDevice )
-{
-	int		i;
-	for( i = 0; i < MAX_TAILEFFECT; i ++ )
-	{
-		if( m_TailEffects[ i ] == NULL ) continue;
-		if( m_TailEffects[i]->IsActive() == FALSE )	continue;
-		m_TailEffects[i]->Render( pd3dDevice );
+void CTailEffectMng::Render(LPDIRECT3DDEVICE9 pd3dDevice) {
+	for (CTailEffect * pTailEffect : m_TailEffects) {
+		if (pTailEffect && pTailEffect->IsActive()) {
+			pTailEffect->Render(pd3dDevice);
+		}
 	}
 }
