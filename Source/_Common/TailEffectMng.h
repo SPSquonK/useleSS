@@ -25,29 +25,6 @@ struct TAIL
 };
 
 
-class CTailModel
-{
-protected:
-	CSfxModel	m_SfxModel[20];
-
-public:
-	CTailModel();
-	~CTailModel();
-};
-
-
-class CTailModelMng
-{
-protected:
-	std::list<CTailModel*>	m_ListTailModel;
-
-public:
-	CTailModelMng();
-	~CTailModelMng();
-};
-
-
-
 class CTailEffect
 {
 protected:

@@ -7,16 +7,6 @@
 
 const DWORD TAILVERTEX::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
-
-CTailModelMng::CTailModelMng()
-{
-	m_ListTailModel.clear();
-}
-CTailModelMng::~CTailModelMng()
-{
-}
-
-
 //
 //
 //
