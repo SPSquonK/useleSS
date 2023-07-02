@@ -123,8 +123,8 @@ void CWndGuildSetLogo::OnDraw(C2DRender * p2DRender) {
 		p2DRender->RenderRect(rect, D3DCOLOR_XRGB(255, 0, 255));
 	}
 
-	p2DRender->m_pd3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
-	p2DRender->m_pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+	D3DDEVICE->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+	D3DDEVICE->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
 
 	if (CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD)) {
 		for (int i = 0; i < CUSTOM_LOGO_MAX - 7; i++) {
@@ -132,8 +132,8 @@ void CWndGuildSetLogo::OnDraw(C2DRender * p2DRender) {
 		}
 	}
 
-	p2DRender->m_pd3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	p2DRender->m_pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	D3DDEVICE->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	D3DDEVICE->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 }
 
 void CWndGuildSetLogo::OnInitialUpdate() 
@@ -259,13 +259,13 @@ void CWndGuildTabInfo::OnDraw( C2DRender* p2DRender )
 
 			CPoint point = lpWndCtrl->rect.TopLeft();
 
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ONE );
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ZERO );
+			D3DDEVICE->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ONE );
+			D3DDEVICE->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ZERO );
 			
 			pWndWorld->m_pTextureLogo[pGuild->m_dwLogo-1].Render( &g_Neuz.m_2DRender, point, 255 );
 
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+			D3DDEVICE->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
+			D3DDEVICE->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 			
 		}
 	}

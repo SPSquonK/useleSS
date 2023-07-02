@@ -231,7 +231,6 @@ public:
 class CSfxMng
 {
 public:
-	static LPDIRECT3DDEVICE9 m_pd3dDevice; // d3d 디바이스 포인터
 	static LPDIRECT3DVERTEXBUFFER9 m_pSfxVB; // 에 사용할 버텍스 버퍼
 
 	FLOAT m_fScale = 0.5f; // sfx의 크기
@@ -245,7 +244,7 @@ public:
 
 	CSfxBase* GetSfxBase(std::string_view strSfxName); // SfxBase의 이름으로 지정한 SfxBase의 포인터를 갖고온다.
 
-	HRESULT InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
+	HRESULT InitDeviceObjects();
 	HRESULT RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
@@ -277,11 +276,11 @@ public:
 	void SetSfx(DWORD dwIndex);	
 	void SetSfx(LPCTSTR strSfxName);
 #ifndef __WORLDSERVER	
-	virtual BOOL Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld = NULL );
-	BOOL RenderZ( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld = NULL );
+	virtual BOOL Render( const D3DXMATRIX* pmWorld = NULL );
+	BOOL RenderZ( const D3DXMATRIX* pmWorld = NULL );
 	void RenderParticles( D3DXVECTOR3 vPos,WORD nFrame,FLOAT fAngle,CSfxPartParticle* pPartParticle, Particles & pParticles, D3DXVECTOR3 vScale = D3DXVECTOR3( 1.0f, 1.0f, 1.0f ) );
 #endif
-	virtual BOOL Render2( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld = NULL );
+	virtual BOOL Render2( const D3DXMATRIX* pmWorld = NULL );
 	void RenderParticles2( D3DXVECTOR3 vPos,WORD nFrame,D3DXVECTOR3 fAngle,CSfxPartParticle* pPartParticle, Particles & pParticles, D3DXVECTOR3 vScale = D3DXVECTOR3( 1.0f, 1.0f, 1.0f ) );
 	//void Render(void);
 	BOOL Process(void);
@@ -326,13 +325,12 @@ public:
 
 class CSfxMeshMng final {
 public:
-	LPDIRECT3DDEVICE9 m_pd3dDevice; // d3d디바이스 포인터
 	std::map<CString, std::unique_ptr<CModelObject>> m_aMeshs; // 스트링으로 메쉬 포인터를 참조하는 해쉬테이블
 
 	CModelObject * Mesh(const CString & str); //  지정한 이름의 메쉬 포인터를 돌려준다
 	void DeleteAll() { m_aMeshs.clear(); } // 전부 삭제
 
-	HRESULT InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
+	HRESULT InitDeviceObjects();
 	HRESULT RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
@@ -365,7 +363,7 @@ struct SfxModelSet final {
 	SfxModelSet(OBJID idMaster, const char * szSfxName, const char * szBoneName, BOOL bLoop, int _nState);
 	
 	bool Update();
-	void Render(LPDIRECT3DDEVICE9 pd3dDevice);
+	void Render();
 	
 	OBJID _idMaster;
 	char _szBone[ 64 ];
@@ -388,7 +386,7 @@ public:
 	BOOL SubData( OBJID objID, const char* szBone );	//해당 오브젝트의 해당 본에 링크된 모든 sfx삭제
 	
 	void Update( );
-	void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	void Render( );
 
 	static CSfxModelMng* GetThis();
 	static void Free();

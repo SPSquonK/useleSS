@@ -65,9 +65,9 @@ void CCtrl::Process()
 #endif
 }
 
-void CCtrl::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CCtrl::Render( )
 {
-	CObj::Render( pd3dDevice );
+	CObj::Render( );
 }
 
 BOOL CCtrl::Read( CFileIO* pFile )
@@ -800,7 +800,7 @@ void CCtrl::CreateYoyoSkill( CSfx* pSfx, CCtrl *pTarget, ItemProp *pSkillProp, A
 		case SI_JST_YOYO_VATALSTAB:
 			{
 				pModel->GetHandPos( &vPos, PARTS_RWEAPON, GetMatrixWorld() );
-				pSfx = CreateSfxYoYo( D3DDEVICE, pItemProp->dwSfxObj2, vPos, GetId(), vPosDest );	
+				pSfx = CreateSfxYoYo( pItemProp->dwSfxObj2, vPos, GetId(), vPosDest );	
 				((CSfxItemYoyoAtk*)pSfx)->MakePath(PARTS_RWEAPON);
 			}
 			break;
@@ -808,11 +808,11 @@ void CCtrl::CreateYoyoSkill( CSfx* pSfx, CCtrl *pTarget, ItemProp *pSkillProp, A
 		case SI_ACR_YOYO_CROSSLINE:
 			{
 				pModel->GetHandPos( &vPos, PARTS_RWEAPON, GetMatrixWorld() );
-				pSfx = CreateSfxYoYo( D3DDEVICE, pItemProp->dwSfxObj2, vPos, GetId(), vPosDest );	
+				pSfx = CreateSfxYoYo( pItemProp->dwSfxObj2, vPos, GetId(), vPosDest );	
 				((CSfxItemYoyoAtk*)pSfx)->MakePath(PARTS_RWEAPON);
 
 				pModel->GetHandPos( &vPos, PARTS_LWEAPON, GetMatrixWorld() );
-				pSfx = CreateSfxYoYo( D3DDEVICE, pItemProp->dwSfxObj2, vPos, GetId(), vPosDest );	
+				pSfx = CreateSfxYoYo( pItemProp->dwSfxObj2, vPos, GetId(), vPosDest );	
 				((CSfxItemYoyoAtk*)pSfx)->MakePath(PARTS_LWEAPON);
 			}
 			break;							
@@ -852,16 +852,16 @@ void CCtrl::CreateSkillSfx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 						vLocal.y += 1.0f;
 					}
 
-					pSfx = CreateSfx( D3DDEVICE, pSkillProp->dwSfxObj3, GetPos(), GetId(), vLocal, pTarget->GetId(), 0 );
+					pSfx = CreateSfx( pSkillProp->dwSfxObj3, GetPos(), GetId(), vLocal, pTarget->GetId(), 0 );
 					
 					if( pSkillProp->dwSfxObj5 != NULL_ID )		// 시전자에게 발생
-						pSfx = CreateSfx( D3DDEVICE, pSkillProp->dwSfxObj5, GetPos(), GetId(), this->GetPos(), this->GetId(), 0 );  // 5번 이펙트를 출력함.
+						pSfx = CreateSfx( pSkillProp->dwSfxObj5, GetPos(), GetId(), this->GetPos(), this->GetId(), 0 );  // 5번 이펙트를 출력함.
 				} else
 				{
 					if( pSkillProp->dwSfxObj3 != NULL_ID )		// 타겟에게 발생
-						pSfx = CreateSfx( D3DDEVICE, pSkillProp->dwSfxObj3, GetPos(), GetId(), pTarget->GetPos(), pTarget->GetId(), 0 );  // 3번 이펙트를 출력함.
+						pSfx = CreateSfx( pSkillProp->dwSfxObj3, GetPos(), GetId(), pTarget->GetPos(), pTarget->GetId(), 0 );  // 3번 이펙트를 출력함.
 					if( pSkillProp->dwSfxObj5 != NULL_ID )		// 시전자에게 발생
-						pSfx = CreateSfx( D3DDEVICE, pSkillProp->dwSfxObj5, GetPos(), GetId(), this->GetPos(), this->GetId(), 0 );  // 5번 이펙트를 출력함.
+						pSfx = CreateSfx( pSkillProp->dwSfxObj5, GetPos(), GetId(), this->GetPos(), this->GetId(), 0 );  // 5번 이펙트를 출력함.
 				}
 
 				if( pSkillProp->dwLinkKind == IK3_YOYO )  //요요는 아이템프로퍼티참조하여 이펙트 생성(예외처리)
@@ -877,13 +877,13 @@ void CCtrl::CreateSkillSfx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 					if( pSkillProp->dwSkillType == NULL_ID )	// NULL_ID면 아이템들
 					{
 						if( ((CMover *)this)->HasBuff( BUFF_ITEM, (WORD)( pSkillProp->dwID ) ) == FALSE )	// 이미 실행되고 있지 않을때만 이펙 출력
-							CreateSfx( D3DDEVICE, pSkillProp->dwSfxObj4, this->GetPos(), this->GetId(), pTarget->GetPos(), pTarget->GetId(), (int)(pAddSkillProp->dwSkillTime / 1000.0f) );
+							CreateSfx( pSkillProp->dwSfxObj4, this->GetPos(), this->GetId(), pTarget->GetPos(), pTarget->GetId(), (int)(pAddSkillProp->dwSkillTime / 1000.0f) );
 					} else
 					{
 						// 이미 실행되고 있지 않을때만 이펙 출력
 						if( ((CMover *)this)->HasBuff( BUFF_SKILL, (WORD)( pSkillProp->dwID ) ) == FALSE
 							&& pSkillProp->dwID != SI_MER_SHIELD_PROTECTION && pSkillProp->dwID != SI_MER_SHIELD_PANBARRIER )	// 091022 mirchang - 여기서 먼저 생성 후 IBuff.Process에서 sfx를 다시 생성하는 문제 발생. 땜빵.
-							CreateSfx( D3DDEVICE, pSkillProp->dwSfxObj4, this->GetPos(), this->GetId(), pTarget->GetPos(), pTarget->GetId(), (int)(pAddSkillProp->dwSkillTime / 1000.0f) );
+							CreateSfx( pSkillProp->dwSfxObj4, this->GetPos(), this->GetId(), pTarget->GetPos(), pTarget->GetId(), (int)(pAddSkillProp->dwSkillTime / 1000.0f) );
 					}
 				}
 			}
@@ -907,7 +907,7 @@ void CCtrl::CreateSkillSfx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 						vLocal.y += 1.0f;
 					}
 
-					pSfx = CreateSfx( D3DDEVICE, pSkillProp->dwSfxObj3, vLocal, GetId(), vLocal, pTarget->GetId(), 0 );	// 2006/6/20 xuzhu 가 바꿈.
+					pSfx = CreateSfx( pSkillProp->dwSfxObj3, vLocal, GetId(), vLocal, pTarget->GetId(), 0 );	// 2006/6/20 xuzhu 가 바꿈.
 				}
 			} else
 			{
@@ -915,7 +915,7 @@ void CCtrl::CreateSkillSfx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 				{
 					D3DXVECTOR3 vPos = pTarget->GetPos();
 					vPos.y += 1.0f;
-					pSfx = CreateSfx( D3DDEVICE, pSkillProp->dwSfxObj3, GetPos(), GetId(), vPos, pTarget->GetId(), 0 );
+					pSfx = CreateSfx( pSkillProp->dwSfxObj3, GetPos(), GetId(), vPos, pTarget->GetId(), 0 );
 				}
 			}
 
@@ -927,7 +927,7 @@ void CCtrl::CreateSkillSfx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 			}
 			else
 			if( pSkillProp->dwSfxObj5 != NULL_ID )		// 시전자에게 발생
-				pSfx = CreateSfx( D3DDEVICE, pSkillProp->dwSfxObj5, GetPos(), GetId(), this->GetPos(), this->GetId(), 0 );  // 5번 이펙트는 시전자 자신에게 출력
+				pSfx = CreateSfx( pSkillProp->dwSfxObj5, GetPos(), GetId(), this->GetPos(), this->GetId(), 0 );  // 5번 이펙트는 시전자 자신에게 출력
 		}
 		if( pSfx )
 		{
@@ -1315,7 +1315,7 @@ int		CCtrl::ShootSkill( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pAdd
 			}
 		}
 		
-		CSfxShoot *pShootSfx = CreateShootSfx( D3DDEVICE, dwShootObj, vPos, GetId(), D3DXVECTOR3(0,0,0), pTarget->GetId() );
+		CSfxShoot *pShootSfx = CreateShootSfx( dwShootObj, vPos, GetId(), D3DXVECTOR3(0,0,0), pTarget->GetId() );
 		if( pShootSfx )
 		{		
 			D3DXVECTOR3 vPos = GetPos();
@@ -1503,7 +1503,7 @@ int		CCtrl::DoApplySkillEx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 				{
 					if( pUser->m_pWall[i] == NULL )
 					{
-						CObj *pObj = CreateObj( D3DDEVICE, OT_CTRL, CI_PSYCHICWALL );		// 벽 컨트롤 생성.
+						CObj *pObj = CreateObj( OT_CTRL, CI_PSYCHICWALL );		// 벽 컨트롤 생성.
 						if( pObj )
 						{
 							pObj->SetPos( this->GetPos() );

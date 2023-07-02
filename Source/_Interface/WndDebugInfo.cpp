@@ -156,7 +156,7 @@ BOOL CWndDebugInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 //		case 104: g_World.m_bViewObject    = !g_World.m_bViewObject    ; break;
 //		case 105: 
 //			g_World.m_bViewFog = !g_World.m_bViewFog; 			    
-//			g_World.SetFogEnable( g_Neuz.m_pd3dDevice, g_World.m_bViewFog ); 
+//			g_World.SetFogEnable( g_World.m_bViewFog ); 
 //			break;
 //		case 106: g_World.m_bViewLOD       = !g_World.m_bViewLOD       ; break;
 //		case 107: g_World.m_bViewWater     = !g_World.m_bViewWater     ; break;
@@ -167,7 +167,7 @@ BOOL CWndDebugInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 		case WIDC_OBJECT: g_WorldMng()->m_bViewAllObjects   = !g_WorldMng()->m_bViewAllObjects   ; break;
 		case 105: 
 			g_WorldMng()->m_bViewFog = !g_WorldMng()->m_bViewFog; 			    
-			g_WorldMng()->SetFogEnable( g_Neuz.m_pd3dDevice, g_WorldMng()->m_bViewFog ); 
+			g_WorldMng()->SetFogEnable( g_WorldMng()->m_bViewFog ); 
 			break;
 		case WIDC_LOD_TERRAIN: g_WorldMng()->m_bViewLODTerrain       = !g_WorldMng()->m_bViewLODTerrain       ; break;
 		case WIDC_LOD_OBJ: g_WorldMng()->m_bViewLODObj      = !g_WorldMng()->m_bViewLODObj       ; break;

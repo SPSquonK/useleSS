@@ -364,7 +364,7 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 		pMover->m_dwIndex = dwIndex;
 		g_Neuz.m_apPlayer[slot]	= pMover;
 
-		//g_Neuz.m_apPlayer[slot]	= (CMover*)CreateObj( g_Neuz.m_pd3dDevice, OT_MOVER, dwIndex, FALSE );
+		//g_Neuz.m_apPlayer[slot]	= (CMover*)CreateObj( OT_MOVER, dwIndex, FALSE );
 		g_Neuz.m_apPlayer[slot]->m_bPlayer	= TRUE;
 		g_Neuz.m_apPlayer[slot]->InitProp();
 

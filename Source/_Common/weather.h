@@ -28,7 +28,7 @@ static int m_nSnowNum;
 	CSnow(CWeather* pWeather,CObj* pObj);
 	~CSnow();
 	virtual void Process();
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render();
 };
 //////////////////////////////////
 
@@ -43,7 +43,7 @@ static int m_nRainNum;
 	CRain(CWeather* pWeather,CObj* pObj);
 	~CRain();
 	virtual void Process();
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render();
 };
 //////////////////////////////////
 
@@ -58,7 +58,7 @@ static int m_nFireRainNum;
 	CFireRain(CObj *pObj);
 	~CFireRain();
 	virtual void Process();
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render();
 };
 class CWeather  
 {
@@ -95,6 +95,6 @@ public:
 	void SetWeather(int nSeason,int nCloud,int nTemperature,int nHumidity,int nWind);
 	BOOL IsThunder();
 	virtual void Process( CWorld* pWorld );
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 };
 #endif

@@ -14,7 +14,7 @@ void CWndLvReqDown::OnInitialUpdate()
 
 	CWndButton* pButton = GetDlgItem<CWndButton>(WIDC_BUTTON1);
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 	pButton->EnableWindow(FALSE);
 	
 	CWndText::SetupDescription(GetDlgItem<CWndText>(WIDC_TEXT1), _T("ReqLvDown.inc"));

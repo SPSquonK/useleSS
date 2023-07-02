@@ -22,12 +22,12 @@ public:
 	BOOL			IsActive() { return m_bActive; }
 	
 	virtual HRESULT FrameMove( void ) = 0;
-	virtual HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName ) = 0;
-	virtual HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) = 0;
+	virtual HRESULT InitDeviceObjects( LPCTSTR szFileName ) = 0;
+	virtual HRESULT RestoreDeviceObjects() = 0;
     virtual HRESULT InvalidateDeviceObjects() = 0;
-	virtual HRESULT Render( LPDIRECT3DDEVICE9 pd3dDevice ) = 0;
+	virtual HRESULT Render() = 0;
 
-	virtual HRESULT ChangeTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName, int nType ) { return S_OK; }
+	virtual HRESULT ChangeTexture( LPCTSTR szFileName, int nType ) { return S_OK; }
 };
 	
 class CTailEffectBelt : public CTailEffect
@@ -71,12 +71,12 @@ public:
 	
 	virtual HRESULT FrameMove( void );
 	
-	virtual HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName );
-	virtual HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual HRESULT InitDeviceObjects( LPCTSTR szFileName );
+	virtual HRESULT RestoreDeviceObjects();
     virtual HRESULT InvalidateDeviceObjects();
-	HRESULT ChangeTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName, int nType );
+	HRESULT ChangeTexture( LPCTSTR szFileName, int nType );
 	
-	virtual HRESULT Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual HRESULT Render();
 };
 
 
@@ -104,17 +104,16 @@ public:
 	
 	virtual HRESULT FrameMove( void );
 	
-	virtual HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName );
-	virtual HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual HRESULT InitDeviceObjects( LPCTSTR szFileName );
+	virtual HRESULT RestoreDeviceObjects();
     virtual HRESULT InvalidateDeviceObjects();
 	
-	virtual HRESULT Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual HRESULT Render();
 };
 
 class CTailEffectMng final {
 	static constexpr size_t MAX_TAILEFFECT = 32; 		// 최대 파티클 종류.
 	
-	LPDIRECT3DDEVICE9 m_pd3dDevice = nullptr;
 	std::array<CTailEffect *, MAX_TAILEFFECT> m_TailEffects;
 
 public:
@@ -123,15 +122,15 @@ public:
 	CTailEffectMng & operator=(const CTailEffectMng &) = delete;
 	~CTailEffectMng();
 
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) { m_pd3dDevice = pd3dDevice; return S_OK; }
-	HRESULT RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
+	HRESULT InitDeviceObjects() { return S_OK; }
+	HRESULT RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 		
-	CTailEffect *AddEffect( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName, int nType, FLOAT fFadeSpeed = 0.030f );
+	CTailEffect *AddEffect( LPCTSTR szFileName, int nType, FLOAT fFadeSpeed = 0.030f );
 	int			Delete(CTailEffect * pTail);
 		
 	void	Process( void );
-	void	Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	void	Render();
 	
 };
 

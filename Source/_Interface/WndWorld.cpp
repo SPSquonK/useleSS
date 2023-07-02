@@ -98,7 +98,7 @@ void CCaption::Process()
 		}
 	}
 }
-HRESULT CCaption::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CCaption::InitDeviceObjects()
 {
 	return S_OK;
 }
@@ -188,8 +188,6 @@ void CCaption::AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLo
 		return;
 	}
 
-	LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
-
 	// 여분을 만들자 
 	size.cx += 16 + 64; 
 	size.cy += 16;
@@ -216,7 +214,7 @@ void CCaption::AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLo
 	if( hr == D3D_OK )
 	{
 		AdjustSize( &size );
-		if( lpCaption->m_texture.CreateTexture( pd3dDevice, size.cx, size.cy, 0, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT ) )
+		if( lpCaption->m_texture.CreateTexture( size.cx, size.cy, 0, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT ) )
 		{
 			IDirect3DSurface9* pOldSurface;
 			IDirect3DSurface9* pOldSurfaceZ;
@@ -240,7 +238,7 @@ void CCaption::AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLo
 		}
 	}
 }
-HRESULT CCapTime::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CCapTime::InitDeviceObjects()
 {
 	return S_OK;
 }
@@ -357,9 +355,6 @@ void CCapTime::SetTime( int nTime, CD3DFontAPI* pFont )
 		return;	
 	}
 
-
-	LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
-
 	m_pFont = pFont;
 	m_size.cx += 16;// + 64; 
 	m_size.cy += 16;
@@ -387,7 +382,7 @@ void CCapTime::SetTime( int nTime, CD3DFontAPI* pFont )
 	{
 		CSize size = m_size;
 		AdjustSize( &size );
-		if( m_texture.CreateTexture( pd3dDevice, size.cx, size.cy, 0, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT ) )
+		if( m_texture.CreateTexture( size.cx, size.cy, 0, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT ) )
 		{
 			IDirect3DSurface9* pOldSurface;
 			IDirect3DSurface9* pOldSurfaceZ;
@@ -712,9 +707,9 @@ void CWndWorld::OnDraw( C2DRender* p2DRender )
 		D3DXMatrixScaling( &matWorld, 0.1f, 0.1f, 0.1f );
 		//matWorld *= g_pPlayer->GetMatrixTrans();
 
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ZENABLE,      TRUE );
+		D3DDEVICE->SetRenderState( D3DRS_ZENABLE,      TRUE );
 
-		g_Cloth.Render(p2DRender->m_pd3dDevice, &matWorld );
+		g_Cloth.Render(&matWorld );
 	}
 #endif
 	
@@ -735,14 +730,14 @@ void CWndWorld::OnDraw( C2DRender* p2DRender )
 */
 }
 /*
-void CWndWorld::ProjectionAndView( LPDIRECT3DDEVICE9 pd3dDevice )
+void CWndWorld::ProjectionAndView()
 {
-	Projection( D3DDEVICE );
-	g_Neuz.m_camera.Process( D3DDEVICE );
-	g_Neuz.m_camera.Transform( D3DDEVICE, g_WorldMng() );
+	Projection();
+	g_Neuz.m_camera.Process();
+	g_Neuz.m_camera.Transform( g_WorldMng() );
 }
 */
-void CWndWorld::Projection( LPDIRECT3DDEVICE9 pd3dDevice )
+void CWndWorld::Projection()
 {
 	// Frame Window와 관련된 Viewport 세팅 
 	CRect rectRoot = m_pWndRoot->GetWindowRect();
@@ -775,7 +770,7 @@ void CWndWorld::Projection( LPDIRECT3DDEVICE9 pd3dDevice )
 		//m_pd3dDevice->SetViewport(&viewport);
 	}
 	// 프로젝션 
-	g_WorldMng.Get()->Projection( pd3dDevice, viewport.Width, viewport.Height );
+	g_WorldMng.Get()->Projection( viewport.Width, viewport.Height );
 }
 
 BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
@@ -783,17 +778,15 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 	_PROFILE("CWndWorld::OnEraseBkgnd()");
 	CHECK1();
 
-	Projection( D3DDEVICE );
+	Projection( );
 	// CNeuzApp:Render()에도 Clear가 있어 중복되므로 지웠음. -XuZhu-
-	//p2DRender->m_pd3dDevice->Clear(0, NULL,  D3DCLEAR_TARGET, CWorld::m_dwBgColor, 1.0f, 0 ) ;
+	//D3DDEVICE->Clear(0, NULL,  D3DCLEAR_TARGET, CWorld::m_dwBgColor, 1.0f, 0 ) ;
 	//if( m_nWinSize != WSIZE_MAX )
-		//p2DRender->m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 90, 146, 222 ), 1.0f, 0 ) ;
+		//D3DDEVICE->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 90, 146, 222 ), 1.0f, 0 ) ;
 	DWORD dwColor = CWorld::GetDiffuseColor();
-	p2DRender->m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, dwColor /*D3DCOLOR_ARGB( 255, 255, 255, 255 )*/, 1.0f, 0 ) ;
+	m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, dwColor /*D3DCOLOR_ARGB( 255, 255, 255, 255 )*/, 1.0f, 0 ) ;
 
 	if( g_pPlayer == NULL )		return FALSE;
-
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 
 	CWorld* pWorld = g_WorldMng.Get();
 	// 필드 출력 
@@ -808,7 +801,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 			pModel->SetEffect( i, XE_HIGHLIGHT_OBJ );
 	}	
 */			
-	pWorld->Render( pd3dDevice, m_Theme.m_pFontWorld );
+	pWorld->Render( m_Theme.m_pFontWorld );
 	CHECK2("Render World" );
 
 	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
@@ -894,14 +887,14 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		else if( m_bLButtonDown == FALSE || m_bSelectTarget == FALSE)	
 			nPower = 0;					// 그리지 않는다.
 
-		g_pPlayer->RenderGauge( pd3dDevice, nPower );	// 0-4
+		g_pPlayer->RenderGauge( nPower );	// 0-4
 	}
 
 	// 비행시 터보게이지
 	if( g_pPlayer->IsFly() )
 	{
 		// 최대 12초 가속을 기준으로한 가속 게이지.
-		g_pPlayer->RenderTurboGauge( pd3dDevice, 0xff0000ff, g_pPlayer->m_tmAccFuel, 12 * 1000 );
+		g_pPlayer->RenderTurboGauge( 0xff0000ff, g_pPlayer->m_tmAccFuel, 12 * 1000 );
 	}
 	
 	D3DXVECTOR3 v3CameraDir, v3PartyMemberDir;
@@ -925,7 +918,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		if( D3DXVec3Dot( &v3CameraDir, &v3PartyMemberDir ) < 0.0f )
 			continue;
 		
-		pMover->RenderHP( g_Neuz.m_pd3dDevice );
+		pMover->RenderHP( );
 	}
 	
 	if( IsValidObj(g_pPlayer) )
@@ -934,12 +927,12 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		{
 			_PROFILE("Render Player HP, Casting, Gauge, ...");
 
-			g_pPlayer->RenderHP( g_Neuz.m_pd3dDevice );
-			g_pPlayer->RenderCasting( g_Neuz.m_pd3dDevice );
-			g_pPlayer->RenderPVPCount( g_Neuz.m_pd3dDevice );
-			g_pPlayer->RenderCtrlCasting( g_Neuz.m_pd3dDevice );
-			g_pPlayer->RenderSkillCasting( g_Neuz.m_pd3dDevice );
-			g_pPlayer->RenderCltGauge( g_Neuz.m_pd3dDevice );
+			g_pPlayer->RenderHP( );
+			g_pPlayer->RenderCasting( );
+			g_pPlayer->RenderPVPCount( );
+			g_pPlayer->RenderCtrlCasting( );
+			g_pPlayer->RenderSkillCasting( );
+			g_pPlayer->RenderCltGauge( );
 		}
 	}
 	
@@ -961,7 +954,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		RenderAltimeter();
 
 	CRect rectClient = GetClientRect();
-	g_Neuz.m_camera.Transform( g_Neuz.m_pd3dDevice, g_WorldMng.Get() );
+	g_Neuz.m_camera.Transform( g_WorldMng.Get() );
 
 #ifdef __CLIENT
 	// 머리위에 뜨는 데미지 숫자를 위해 게임화면 뷰표트를 받아둠.
@@ -1727,7 +1720,6 @@ void CWndWorld::RenderArrow()
 		return; // 플레이어가 없으면 렌더 안한다
 	D3DXVECTOR3 vSrc = g_pPlayer->GetPos();
 	D3DXVECTOR3 vDest( 0.0F, 0.0F, 0.0F );
-	LPDIRECT3DDEVICE9 pd3dDevice = m_pApp->m_pd3dDevice;
 
 	int nBlend = 255;
 	if( m_vDestinationArrow == D3DXVECTOR3( -1.0F, 0.0F, -1.0F ) || g_pPlayer->GetWorld()->GetID() != WI_WORLD_MADRIGAL )
@@ -1768,14 +1760,14 @@ void CWndWorld::RenderArrow()
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 
 	m_meshArrow.SetBlendFactor( nBlend );
-	m_meshArrow.Render( pd3dDevice, &matWorld );
+	m_meshArrow.Render( &matWorld );
 
 	if( m_bSetQuestNPCDest )
-		RenderArrow_Text( pd3dDevice, vDest, matWorld);		//gmpbisgun : refactoring 2009_10_20
+		RenderArrow_Text( vDest, matWorld);		//gmpbisgun : refactoring 2009_10_20
 
 }
 
-void CWndWorld::RenderArrow_Text( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3& vDest, const D3DXMATRIX& matWorld  )
+void CWndWorld::RenderArrow_Text( const D3DXVECTOR3& vDest, const D3DXMATRIX& matWorld  )
 {
 	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
 	D3DXVECTOR3 vOut, vPos, vPosHeight;
@@ -1928,7 +1920,6 @@ BOOL CWndWorld::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 void CWndWorld::GetBoundRect( CObj* pObj, CRect* pRect )
 {
 	CWorld* pWorld	= g_WorldMng.Get();
-	LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
 	CModel* pModel = pObj->m_pModel;
 	D3DXVECTOR3 vMin, vMax, vPos;
 
@@ -2041,10 +2032,10 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 
 					ClientToScreen( rect );
 					ClientToScreen( rectTemp );
-					m_Theme.MakeGaugeVertex( p2DRender->m_pd3dDevice, &rect, D3DCOLOR_ARGB( 200, 255, 255, 255 ), m_pVBGauge, &m_texGauEmptyNormal );
-					m_Theme.RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, &m_texGauEmptyNormal );
-					m_Theme.MakeGaugeVertex( p2DRender->m_pd3dDevice, &rectTemp, D3DCOLOR_ARGB( 128, 255, 15, 15 ), m_pVBGauge, &m_texGauEmptyNormal );
-					m_Theme.RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.MakeGaugeVertex( &rect, D3DCOLOR_ARGB( 200, 255, 255, 255 ), m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.RenderGauge( m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.MakeGaugeVertex( &rectTemp, D3DCOLOR_ARGB( 128, 255, 15, 15 ), m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.RenderGauge( m_pVBGauge, &m_texGauEmptyNormal );
 					
 					//p2DRender->RenderTexture( CPoint( nPos-60, 7 ), &m_texTargetGauge );
 					
@@ -2200,10 +2191,10 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 					rectTemp.right = rectTemp.left + nWidth;
 					ClientToScreen( rect );
 					ClientToScreen( rectTemp );
-					m_Theme.MakeGaugeVertex( p2DRender->m_pd3dDevice, &rect, D3DCOLOR_ARGB( 200, 255, 255, 255 ), m_pVBGauge, &m_texGauEmptyNormal );
-					m_Theme.RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, &m_texGauEmptyNormal );
-					m_Theme.MakeGaugeVertex( p2DRender->m_pd3dDevice, &rectTemp, D3DCOLOR_ARGB( 128, 255, 15, 15 ), m_pVBGauge, &m_texGauEmptyNormal );
-					m_Theme.RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.MakeGaugeVertex( &rect, D3DCOLOR_ARGB( 200, 255, 255, 255 ), m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.RenderGauge( m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.MakeGaugeVertex( &rectTemp, D3DCOLOR_ARGB( 128, 255, 15, 15 ), m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.RenderGauge( m_pVBGauge, &m_texGauEmptyNormal );
 
 					CD3DFont* pOldFont = p2DRender->GetFont();
 					p2DRender->SetFont( m_Theme.m_pFontWorld );
@@ -2648,52 +2639,52 @@ void CWndWorld::OnInitialUpdate()
 			m_pFontAPICaption->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPICaption->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
 			m_pFontAPICaption->m_dwFlags = D3DFONT_FILTERED;
-			m_pFontAPICaption->InitDeviceObjects( m_pApp->m_pd3dDevice );
+			m_pFontAPICaption->InitDeviceObjects( );
 
 			m_pFontAPITitle	= MakeFont( strFont, rectClient.Width() / plfCaption.nDivCaption );
 			m_pFontAPITitle->m_nOutLine = 2;
 			m_pFontAPITitle->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPITitle->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
 			m_pFontAPITitle->m_dwFlags = D3DFONT_FILTERED;
-			m_pFontAPITitle->InitDeviceObjects( m_pApp->m_pd3dDevice );
+			m_pFontAPITitle->InitDeviceObjects( );
 
 			m_pFontAPITime	= MakeFont( plfCaption.szFontSecond, rectClient.Width() / 40 );
 			m_pFontAPITime->m_nOutLine = 2;
 			m_pFontAPITime->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPITime->m_dwBgColor = D3DCOLOR_ARGB( 255, 220, 100, 40 );
 			m_pFontAPITime->m_dwFlags = D3DFONT_FILTERED;
-			m_pFontAPITime->InitDeviceObjects( m_pApp->m_pd3dDevice );
+			m_pFontAPITime->InitDeviceObjects( );
 		}
 	}
 
 	m_wndMenuMover.CreateMenu( this );	
 
-	m_texTarget.LoadScript( D3DDEVICE, MakePath( DIR_ICON, "icon_target.inc" ) );
-	m_texTargetFly.LoadScript( D3DDEVICE, MakePath( DIR_ICON, "icon_FlightTargetB.inc" ) );			// 비행모드시 타겟 4귀퉁이.		sun!!
-	m_texTargetArrow.LoadScript( D3DDEVICE, MakePath( DIR_ICON, "icon_FlightTargetArrow.inc" ) );	// 비행모드시 타겟방향을 가르키는 화살표
+	m_texTarget.LoadScript( MakePath( DIR_ICON, "icon_target.inc" ) );
+	m_texTargetFly.LoadScript( MakePath( DIR_ICON, "icon_FlightTargetB.inc" ) );			// 비행모드시 타겟 4귀퉁이.		sun!!
+	m_texTargetArrow.LoadScript( MakePath( DIR_ICON, "icon_FlightTargetArrow.inc" ) );	// 비행모드시 타겟방향을 가르키는 화살표
 	m_texTargetArrow.GetAt(0)->m_ptCenter.x += 32;
 	m_texTargetArrow.GetAt(0)->m_ptCenter.y += 32;
-	m_texGauFlight.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "Theme_GauFlight.inc" ) );		// 비행모드시 게이지 인터페이스
-	m_texFontDigital.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "Theme_FontDigital1.inc" ) );		// 디지탈모양의 폰트.
+	m_texGauFlight.LoadScript( MakePath( DIR_THEME, "Theme_GauFlight.inc" ) );		// 비행모드시 게이지 인터페이스
+	m_texFontDigital.LoadScript( MakePath( DIR_THEME, "Theme_FontDigital1.inc" ) );		// 디지탈모양의 폰트.
 	
-	//m_texFlaris.LoadTexture( D3DDEVICE, MakePath( DIR_EFFECT, "WelcomeToFlaris.tga" ), 0xff000000 );
+	//m_texFlaris.LoadTexture( MakePath( DIR_EFFECT, "WelcomeToFlaris.tga" ), 0xff000000 );
 	//m_texFlaris.m_ptCenter = CPoint( m_texFlaris.m_size.cx / 2, m_texFlaris.m_size.cy / 2 );
 
-	m_meshArrow.InitDeviceObjects( m_pApp->m_pd3dDevice );
+	m_meshArrow.InitDeviceObjects( );
 	m_meshArrow.LoadModel( "etc_arrow.o3d" );
 
-	m_meshArrowWanted.InitDeviceObjects( m_pApp->m_pd3dDevice );
+	m_meshArrowWanted.InitDeviceObjects( );
 	m_meshArrowWanted.LoadModel( "arrow.o3d" );
 	m_bRenderArrowWanted = FALSE;
 	m_dwRenderArrowTime  = 0;
 	
 	RestoreDeviceObjects();
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texLvUp.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvUp.bmp" ), 0xffff00ff, TRUE );
-	m_texLvDn.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvDn.bmp" ), 0xffff00ff, TRUE );
-	m_texLvUp2.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvUp2.bmp" ), 0xffff00ff, TRUE );
-	m_texLvDn2.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvDn2.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texLvUp.LoadTexture( MakePath( DIR_THEME, "LvUp.bmp" ), 0xffff00ff, TRUE );
+	m_texLvDn.LoadTexture( MakePath( DIR_THEME, "LvDn.bmp" ), 0xffff00ff, TRUE );
+	m_texLvUp2.LoadTexture( MakePath( DIR_THEME, "LvUp2.bmp" ), 0xffff00ff, TRUE );
+	m_texLvDn2.LoadTexture( MakePath( DIR_THEME, "LvDn2.bmp" ), 0xffff00ff, TRUE );
 
 
 	for (const AddSkillProp & pAddSkill : prj.m_aPropAddSkill) {
@@ -2705,7 +2696,7 @@ void CWndWorld::OnInitialUpdate()
 				if( pItem )
 				{
 					BUFFSKILL buffskill;
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItem->szIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pItem->szIcon ), 0xffff00ff );
 
 					m_pBuffTexture[0].emplace(pItem->dwID, buffskill);
 				}
@@ -2717,7 +2708,7 @@ void CWndWorld::OnInitialUpdate()
 			if( pItemProp.dwSkillTime != -1 )
 			{
 				BUFFSKILL buffskill;
-				buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItemProp.szIcon ), 0xffff00ff );
+				buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pItemProp.szIcon ), 0xffff00ff );
 				m_pBuffTexture[1].emplace(pItemProp.dwID, buffskill);
 			}
 	}
@@ -2740,24 +2731,24 @@ void CWndWorld::OnInitialUpdate()
 				if( pItemProp.dwItemKind3 == IK3_EGG && pItemProp.dwID != II_PET_EGG )
 				{
 					strIcon.Replace( ".", "_00." );
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
 					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 0 ), buffskill );
 					strIcon.Replace( "0.", "1." );
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
 					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 1 ), buffskill );
 					strIcon.Replace( "1.", "2." );
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
 					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 2 ), buffskill );
 				}
 				else
 				{
 #ifdef __DST_GIFTBOX
 					if(pItemProp.dwDestParam[0] == DST_GIFTBOX || pItemProp.dwDestParam[1] == DST_GIFTBOX || pItemProp.dwDestParam[2] == DST_GIFTBOX)
-						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, "Skill_TroGiftbox02.dds" ), 0xffff00ff );
+						buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, "Skill_TroGiftbox02.dds" ), 0xffff00ff );
 					else
-						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
+						buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
 #else //__DST_GIFTBOX
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
 #endif //__DST_GIFTBOX
 					m_pBuffTexture[2].emplace( pItemProp.dwID, buffskill );
 				}
@@ -2800,7 +2791,7 @@ void CWndWorld::OnInitialUpdate()
 	{
 		str.Format( "Icon_CloakSLogo%02d.jpg", i+1 );
 		
-		if( !m_pTextureLogo[i].LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_ICON, str ), D3DCOLOR_XRGB(0,0,0), FALSE ) )
+		if( !m_pTextureLogo[i].LoadTexture( MakePath( DIR_ICON, str ), D3DCOLOR_XRGB(0,0,0), FALSE ) )
 		{
 			Error( "길드 로고 텍스쳐 로딩 실패 : %s", str );
 		}
@@ -2821,18 +2812,18 @@ void CWndWorld::OnInitialUpdate()
 	}
 #endif
 	
-	m_texMsgIcon.LoadScript( m_pApp->m_pd3dDevice, "icon\\icon_IconMessenger.inc" );
+	m_texMsgIcon.LoadScript( "icon\\icon_IconMessenger.inc" );
 	
-	m_texAttrIcon.LoadScript( m_pApp->m_pd3dDevice, "icon\\Icon_MonElemantkind.inc" );
+	m_texAttrIcon.LoadScript( "icon\\Icon_MonElemantkind.inc" );
 	
-	m_texPlayerDataIcon.LoadScript( m_pApp->m_pd3dDevice, "icon\\icon_PlayerData.inc" );
+	m_texPlayerDataIcon.LoadScript( "icon\\icon_PlayerData.inc" );
 	for( int j = 0 ; j < SM_MAX ; ++j )
 	{
 		if( j != SM_RESIST_ATTACK_LEFT && j != SM_RESIST_ATTACK_RIGHT && j != SM_RESIST_DEFENSE )
 		{
 			ItemProp* pItem = prj.GetItemProp( g_AddSMMode.dwSMItemID[j] );
 			if( pItem )
-				m_dwSMItemTexture[j] = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItem->szIcon ), 0xffff00ff );
+				m_dwSMItemTexture[j] = m_textureMng.AddTexture( MakePath( DIR_ITEM, pItem->szIcon ), 0xffff00ff );
 		}
 	}
 
@@ -2854,14 +2845,14 @@ void CWndWorld::OnInitialUpdate()
 		pItem = prj.GetItemProp( dwArry[kk] );
 
 		if( pItem )
-			m_dwSMResistItemTexture[kk] = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItem->szIcon ), 0xffff00ff );	
+			m_dwSMResistItemTexture[kk] = m_textureMng.AddTexture( MakePath( DIR_ITEM, pItem->szIcon ), 0xffff00ff );	
 	}
 	
 	m_wndTitleBar.SetVisible( FALSE );
 
 	g_DialogMsg.ClearVendorObjMsg();
 	
-	Projection( D3DDEVICE );
+	Projection( );
 
 	SAFE_DELETE(m_pWndGuideSystem);
 	m_pWndGuideSystem = new CWndGuideSystem;
@@ -2904,8 +2895,8 @@ void CWndWorld::OnInitialUpdate()
 	m_bViewMap = FALSE;	
 	CWorldMap* pWorldMap = CWorldMap::GetInstance();
 	pWorldMap->Init(); 
-	m_TexGuildWinner.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "TexGuildCombatWinner.bmp" ), 0xffff00ff );
-	m_TexGuildBest.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "TexGuildCombatBest.bmp" ), 0xffff00ff );
+	m_TexGuildWinner.LoadTexture( MakePath( DIR_THEME, "TexGuildCombatWinner.bmp" ), 0xffff00ff );
+	m_TexGuildBest.LoadTexture( MakePath( DIR_THEME, "TexGuildCombatBest.bmp" ), 0xffff00ff );
 	InitEyeFlash();
 
 #ifdef __Y_CAMERA_SLOW_8
@@ -7113,7 +7104,7 @@ BOOL CWndWorld::Process()
 			g_Caption1.AddCaption( "Happy New Year", m_pFontAPITitle );
 			D3DXVECTOR3	vPos	= g_pPlayer->GetPos();
 			vPos.y	+= 2.0f;
-			CreateSfx( g_Neuz.m_pd3dDevice, XI_NAT_MAGICBOMB01, vPos, NULL_ID );	// g_pPlayer->GetId() );
+			CreateSfx( XI_NAT_MAGICBOMB01, vPos, NULL_ID );	// g_pPlayer->GetId() );
 		}
 		else
 		{
@@ -7286,14 +7277,14 @@ HRESULT CWndWorld::RestoreDeviceObjects()
 		m_pFontAPITime->RestoreDeviceObjects();
 	
 #ifdef __YDEBUG
-	m_texTarget.RestoreDeviceObjects(m_pApp->m_pd3dDevice);		// 지상에서의 4귀퉁이 타겟그림
-	m_texTargetFly.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행중에서의 4귀퉁이 타겟그림.
-	m_texTargetArrow.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 타겟이 화면을 벗어났을때 화살표방향표시.
-	m_texGauFlight.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행 게이지 인터페이스.
+	m_texTarget.RestoreDeviceObjects();		// 지상에서의 4귀퉁이 타겟그림
+	m_texTargetFly.RestoreDeviceObjects();	// 비행중에서의 4귀퉁이 타겟그림.
+	m_texTargetArrow.RestoreDeviceObjects();	// 타겟이 화면을 벗어났을때 화살표방향표시.
+	m_texGauFlight.RestoreDeviceObjects();	// 비행 게이지 인터페이스.
 
-	m_texMsgIcon.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행 게이지 인터페이스.
-	m_texAttrIcon.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행 게이지 인터페이스.
-	m_texFontDigital.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행 게이지 인터페이스.
+	m_texMsgIcon.RestoreDeviceObjects();	// 비행 게이지 인터페이스.
+	m_texAttrIcon.RestoreDeviceObjects();	// 비행 게이지 인터페이스.
+	m_texFontDigital.RestoreDeviceObjects();	// 비행 게이지 인터페이스.
 #endif //__YDEBUG	
 
 	return S_OK;
@@ -8359,10 +8350,10 @@ void CWndWorld::RenderCasting(C2DRender *p2DRender)
 				rectTemp.right = rectTemp.left + nWidth;
 				ClientToScreen( rect );
 				ClientToScreen( rectTemp );
-				m_Theme.MakeGaugeVertex( p2DRender->m_pd3dDevice, &rect, D3DCOLOR_ARGB( 200, 255, 255, 255 ), m_pVBGauge, &m_texGauEmptyNormal );
-				m_Theme.RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, &m_texGauEmptyNormal );
-				m_Theme.MakeGaugeVertex( p2DRender->m_pd3dDevice, &rectTemp, D3DCOLOR_ARGB( 128, 255, 15, 15 ), m_pVBGauge, &m_texGauEmptyNormal );
-				m_Theme.RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, &m_texGauEmptyNormal );
+				m_Theme.MakeGaugeVertex( &rect, D3DCOLOR_ARGB( 200, 255, 255, 255 ), m_pVBGauge, &m_texGauEmptyNormal );
+				m_Theme.RenderGauge( m_pVBGauge, &m_texGauEmptyNormal );
+				m_Theme.MakeGaugeVertex( &rectTemp, D3DCOLOR_ARGB( 128, 255, 15, 15 ), m_pVBGauge, &m_texGauEmptyNormal );
+				m_Theme.RenderGauge( m_pVBGauge, &m_texGauEmptyNormal );
 			}
 		}
 	}
@@ -8606,8 +8597,6 @@ void CWndWorld::RenderWantedArrow()
 		D3DXVECTOR3 vSrc = g_pPlayer->GetPos();
 		D3DXVECTOR3 vDest = m_v3Dest;
 
-		LPDIRECT3DDEVICE9 pd3dDevice = m_pApp->m_pd3dDevice;
-
 		pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   FALSE );
 		pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, FALSE );
 		pd3dDevice->SetRenderState( D3DRS_CULLMODE,   D3DCULL_NONE );
@@ -8635,7 +8624,7 @@ void CWndWorld::RenderWantedArrow()
 		pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 
 		m_meshArrowWanted.SetBlendFactor( 128 );
-		m_meshArrowWanted.Render( pd3dDevice, &matWorld );
+		m_meshArrowWanted.Render( &matWorld );
 	}
 	else
 	{
@@ -8755,7 +8744,7 @@ void CAdvMgr::AddAdvButton(const DWORD dwid) {
 
 	button.m_pwndButton = std::make_unique<CWndButton>();
 	button.m_pwndButton->Create("", 0, CRect(CPoint(0, 0), CSize(25, 25)), m_pParentWnd, m_nIndex + 2000);
-	button.m_pwndButton->SetTexture(m_pParentWnd->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtAdvPlus.bmp")), TRUE);
+	button.m_pwndButton->SetTexture(MakePath(DIR_THEME, _T("ButtAdvPlus.bmp")), TRUE);
 
 	button.m_dwRunWindow = dwid;
 	m_nIndex++;		
@@ -8814,7 +8803,7 @@ void CWndWorld::InitEyeFlash()
 		for( int i=0; i<MAX_HEAD; i++ )
 		{
 			_stprintf( lpszTemp, PARTSMESH_HEAD( nSex ), i + 1 );
-			pObject3D = g_Object3DMng.LoadObject3D( g_Neuz.m_pd3dDevice, lpszTemp );
+			pObject3D = g_Object3DMng.LoadObject3D( lpszTemp );
 			pGmObj = pObject3D->GetGMOBJECT();
 			str1 = pGmObj->m_MaterialAry[0].strBitMapFileName;
 			CMover::m_pTextureEye[nSex][i] = *(pGmObj->m_pMtrlBlkTexture);
@@ -8822,7 +8811,7 @@ void CWndWorld::InitEyeFlash()
 			strTexture += "_Flash";
 			strTexture += str1.Right(4);
 
-			pMtrl = g_TextureMng.AddMaterial( g_Neuz.m_pd3dDevice, &mMtrl, strTexture );
+			pMtrl = g_TextureMng.AddMaterial( &mMtrl, strTexture );
 			CMover::m_pTextureEyeFlash[nSex][i] = pMtrl->m_pTexture;
 		}
 	}

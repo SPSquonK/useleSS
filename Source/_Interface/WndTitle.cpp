@@ -1128,7 +1128,7 @@ HRESULT CWndSelectChar::InitDeviceObjects()
 	for( int i = 0; i < MAX_CHARACTER_LIST; i++ )
 	{
 		if( m_pBipedMesh[ i ] )
-			m_pBipedMesh[ i ]->InitDeviceObjects( m_pApp->m_pd3dDevice );
+			m_pBipedMesh[ i ]->InitDeviceObjects( );
 	}
 
 	return S_OK;
@@ -1290,7 +1290,6 @@ void CWndSelectChar::OnDraw( C2DRender* p2DRender )
 				p2DRender->TextOut( rect.left, rect.bottom + 10, g_Neuz.m_apPlayer[i]->GetName(), 0xff505050 );
 
 			CModelObject* pModel = m_pBipedMesh[ i ].get();
-			LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 
 			pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 			pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
@@ -1458,10 +1457,10 @@ void CWndSelectChar::OnDraw( C2DRender* p2DRender )
 			SetLightVec( D3DXVECTOR3( 0.0f, 0.0f, 1.0f ) );
 #endif //__YENV
 			
-			pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+			pModel->Render( &matWorld );
 
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+			D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+			D3DDEVICE->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 		
 			
 			viewport.X      = p2DRender->m_ptOrigin.x;// + 5;
@@ -1523,7 +1522,7 @@ void CWndSelectChar::UpdateCharacter()
 			m_dwMotion[i] = (i == m_nSelectCharacter ? MTI_STAND : MTI_SITSTAND);
 			
 			m_pBipedMesh[i] = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>(
-				g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE
+				OT_MOVER, nMover, TRUE
 			);
 			m_pBipedMesh[i]->LoadMotionId(m_dwMotion[i]);
 
@@ -1811,7 +1810,7 @@ HRESULT CWndCreateChar::InitDeviceObjects()
 {
 	CWndBase::InitDeviceObjects();
 	if( m_pModel )
-		m_pModel->InitDeviceObjects( m_pApp->m_pd3dDevice );
+		m_pModel->InitDeviceObjects( );
 	return S_OK;
 }
 HRESULT CWndCreateChar::RestoreDeviceObjects()
@@ -1842,8 +1841,6 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 
 	pt = CPoint( 260, 15 );
 
-
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
@@ -1958,10 +1955,10 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 		}
 	}
 	
-	m_pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+	m_pModel->Render( &matWorld );
 
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+	D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+	D3DDEVICE->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 
 	viewport.X      = p2DRender->m_ptOrigin.x;// + 5;
 	viewport.Y      = p2DRender->m_ptOrigin.y;// + 5;
@@ -2031,7 +2028,7 @@ void CWndCreateChar::SetSex( int nSex )
 	int nMover = m_Player.m_bySex == SEX_MALE ? MI_MALE : MI_FEMALE;
 
 	SAFE_DELETE( m_pModel );
-	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( OT_MOVER, nMover, TRUE );
 
 	const DWORD dwMotion = nSex == SEX_MALE ? MTI_STAND : MTI_STAND2;
 	m_pModel->LoadMotionId(dwMotion);

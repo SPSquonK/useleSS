@@ -44,7 +44,7 @@ public:
 	void AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLog = TRUE, DWORD dwColor = D3DCOLOR_ARGB(  255, 255, 255, 255 ) );
 
     // Initializing and destroying device-dependent objects
-    HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+    HRESULT InitDeviceObjects();
     HRESULT DeleteDeviceObjects();
     HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();
@@ -70,7 +70,7 @@ public:
 	void Process();
 	void Render( CPoint ptBegin, C2DRender* p2DRender );
 	void SetTime( int nTime, CD3DFontAPI* pFont );
-    HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+    HRESULT InitDeviceObjects();
     HRESULT DeleteDeviceObjects();
     HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();
@@ -308,7 +308,7 @@ public:
 	BOOL UseSkillToFocusObj( CCtrl* pFocusObj );
 	void GetBoundRect( CObj* pObj, CRect* pRect );
 
-	void RenderArrow_Text( LPDIRECT3DDEVICE9 pDevice, const D3DXVECTOR3& vDest, const D3DXMATRIX& mat );	//gmpbigsun : refactoring
+	void RenderArrow_Text( const D3DXVECTOR3& vDest, const D3DXMATRIX& mat );	//gmpbigsun : refactoring
 	
 	WndWorld::FlyTargets m_flyTarget;
 
@@ -402,7 +402,7 @@ public:
 	}
 	int	GetMouseMode( void ) { return m_nMouseMode; }
 
-	void Projection( LPDIRECT3DDEVICE9 pd3dDevice );
+	void Projection( );
 
 	CObj* PickObj( POINT point, BOOL bOnlyNPC = FALSE );
 	CObj* SelectObj( POINT point );

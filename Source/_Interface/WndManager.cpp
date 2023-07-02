@@ -561,13 +561,13 @@ void CWndMgr::OnInitialUpdate()
 	for( int i=0; i<128; i++ )
 	{
 		sprintf( filename, "Icon_CoolTime_%.3d.tga", i );
-		g_pCoolTexArry[i] = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, filename ), 0xffff00ff );
+		g_pCoolTexArry[i] = m_textureMng.AddTexture(  MakePath( DIR_ICON, filename ), 0xffff00ff );
 	}
 
 	for( int i=0; i<11; i++ )
 	{
 		sprintf( filename, "Icon_ImgIncAni_%.2d.tga", i );
-		g_pEnchantTexArry[i] = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, filename ), 0xffffffff );
+		g_pEnchantTexArry[i] = m_textureMng.AddTexture(  MakePath( DIR_ICON, filename ), 0xffffffff );
 	}	
 }
 
@@ -987,7 +987,7 @@ HRESULT CWndMgr::RestoreDeviceObjects()
 	CWndBase::RestoreDeviceObjects();
 	
 #ifdef __YDEBUG
-	m_texture.RestoreDeviceObjects(m_pApp->m_pd3dDevice);
+	m_texture.RestoreDeviceObjects();
 #endif //__YDEBUG
 	
 	return 0;
@@ -1641,7 +1641,7 @@ BOOL CWndMgr::WndMessageBoxToTitle(CString strMessage)
 */
 BOOL CWndMgr::OnEraseBkgnd( C2DRender* p2DRender )
 {
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   FALSE );
+	D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE,   FALSE );
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetApplet( APP_WORLD );
 #ifdef __GAME_GRADE_SYSTEM
 	static DWORD dwTimeGameGradeScreen = g_tmCurrent + SEC( 3 );
@@ -1677,8 +1677,8 @@ BOOL CWndMgr::OnEraseBkgnd( C2DRender* p2DRender )
 #endif // __GAME_GRADE_SYSTEM
 	else
 		m_pApp->m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 0, 0, 0 ), 1.0f, 0 ) ;
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+	D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+	D3DDEVICE->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	return TRUE;
 }
 BOOL CWndMgr::Process()
@@ -2052,10 +2052,10 @@ void CWndMgr::SetPlayer( CMover* pMover )
 		// 문제가 없다. CWndWorld는 매시지 처리기이기 때문에 미처 행렬들이
 		// 세팅되기도 전에 우선된 매시지에서 행렬을 사용할 우려가 있다.(PickObject 따위들)
 		//CWndWorld* pWndWorld = (CWndWorld*)GetWndBase( APP_WORLD );
-		//pWndWorld->Projection( D3DDEVICE );
+		//pWndWorld->Projection( );
 		g_Neuz.m_camera.Reset();
-		g_Neuz.m_camera.Process( D3DDEVICE );
-		g_Neuz.m_camera.Transform( D3DDEVICE, g_WorldMng.Get() );
+		g_Neuz.m_camera.Process( );
+		g_Neuz.m_camera.Transform( g_WorldMng.Get() );
 
 		//gmpbigsun: g_pPlayer가 이제 막 세팅됨, 길드하우스 
 		// 클라 LandScape는 실제로 ReadWorld가 실행될때 값이 채워진다. ( 서버로 패킷수신시 업데이트 됨 ), 그전에 보이는것들에 대해 문제가 발생하므로

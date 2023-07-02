@@ -18,7 +18,7 @@ public:
 	int m_nMap;
 	std::vector<MonsterInfo>	m_vecMonsterInfo;
 public:
-	BOOL LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, int nMap );
+	BOOL LoadScript( LPCTSTR pFileName, int nMap );
 };
 
 
@@ -32,7 +32,7 @@ public:
 
 	std::vector<RainbowNpc>	m_vecRainbowNPC;
 public:
-	BOOL LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName );
+	BOOL LoadScript( LPCTSTR pFileName );
 };
 
 class CWorldMap

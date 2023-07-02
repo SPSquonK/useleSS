@@ -54,7 +54,7 @@ void CModel::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 	m_fFrameCurrent = (float)nCurrFrame + m_fSlp;	// 편의상 시각적으로 보기 쉽도록 수치 보정
 }
 
-BOOL CModel::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld )
+BOOL CModel::Render( const D3DXMATRIX* pmWorld )
 {
 	return TRUE;
 }

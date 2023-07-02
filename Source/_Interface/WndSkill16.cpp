@@ -28,7 +28,7 @@ void CWndSkill_16::OnInitialUpdate() {
 	m_buttonOk    = GetDlgItem<CWndButton>(WIDC_BUTTON_OK);
 	m_buttonReset = GetDlgItem<CWndButton>(WIDC_BUTTON_BACK);
 
-	m_pTexSeletionBack = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "WndPosMark.tga"), 0xffff00ff);
+	m_pTexSeletionBack = m_textureMng.AddTexture(MakePath(DIR_THEME, "WndPosMark.tga"), 0xffff00ff);
 	assert(m_pTexSeletionBack);
 
 	MoveParentCenter();
@@ -190,7 +190,7 @@ void CWndSkill_16::OnDraw(C2DRender * p2DRender) {
 		CPoint point = lpWndCtrl->rect.TopLeft();
 		point.y -= 2;
 
-		CTexture * pTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, m_strHeroSkilBg), 0xffff00ff);
+		CTexture * pTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, m_strHeroSkilBg), 0xffff00ff);
 		if (pTexture) {
 			pTexture->Render(p2DRender, point, CPoint(27, 27));
 		}
@@ -430,10 +430,10 @@ void CWndSkill_16::InitItem_AutoControlClassBtn() {
 		}
 
 		if (buttonName) {
-			jobButton->SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, buttonName));
+			jobButton->SetTexture(MakePath(DIR_THEME, buttonName));
 			jobButton->EnableWindow(TRUE);
 		} else {
-			jobButton->SetTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "SlotVan.bmp"));
+			jobButton->SetTexture(MakePath(DIR_THEME, "SlotVan.bmp"));
 			jobButton->EnableWindow(FALSE);
 		}
 

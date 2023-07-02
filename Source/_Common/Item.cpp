@@ -50,7 +50,7 @@ void CItemElem::SetTexture()
 				break;
 		}
 	}
-	m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
+	m_pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
 #endif
 }
 
@@ -439,7 +439,7 @@ void CItem::Process()
 #endif	// __WORLDSERVER
 }
 
-void CItem::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CItem::Render( )
 {
 #ifndef __WORLDSERVER
 	ItemProp *pItemProp = GetProp();
@@ -449,17 +449,17 @@ void CItem::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		((CModelObject*)m_pModel)->SetEffect( 0, XE_REFLECT );	
 	}
 
-	CObj::Render( pd3dDevice );
+	CObj::Render( );
 	if( xRandom( 50 ) == 1 )
-		CreateSfx( pd3dDevice, XI_GEN_ITEM_SHINE01, GetPos() );
+		CreateSfx( XI_GEN_ITEM_SHINE01, GetPos() );
 #endif
 }
 
-void CItem::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor )
+void CItem::RenderName( CD3DFont* pFont, DWORD dwColor )
 {
 #ifndef __WORLDSERVER
 	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(
-		pd3dDevice, std::nullopt,
+		std::nullopt,
 		PWCTSC_DoNotResetWorldTransform | PWCTSC_UntouchedViewport
 	);
 

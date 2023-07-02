@@ -30,7 +30,7 @@ void	CShader::DeleteDeviceObjects( void )
 	SAFE_RELEASE( m_pEffect );
 }
 
-HRESULT CShader::LoadEffect( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
+HRESULT CShader::LoadEffect( LPCTSTR szFileName )
 {
     HRESULT hr;
     LPD3DXEFFECT pEffect;
@@ -41,14 +41,14 @@ HRESULT CShader::LoadEffect( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
 	pd3dDevice->CreateVertexDeclaration( decl, &m_pDecl );
 	
 #ifdef _DEBUG
-    if(FAILED(hr = D3DXCreateEffectFromFile( D3DDEVICE, szFileName, NULL, NULL, 0, NULL, &pEffect, NULL )))
+    if(FAILED(hr = D3DXCreateEffectFromFile( szFileName, NULL, NULL, 0, NULL, &pEffect, NULL )))
 	{
 		Error( "CShader::LoadEffect : %s 积己 角菩", szFileName );
         return hr;
 	}
 #else
 
-	if(FAILED(hr = D3DXCreateEffectFromResource( D3DDEVICE, NULL, MAKEINTRESOURCE(IDR_DATA2), NULL, NULL, 0, NULL, &pEffect, NULL )))
+	if(FAILED(hr = D3DXCreateEffectFromResource( g_Neuz.m_pd3dDevice, NULL, MAKEINTRESOURCE(IDR_DATA2), NULL, NULL, 0, NULL, &pEffect, NULL )))
 	{
 		Error( "CShader::LoadEffect : %s 积己 角菩", szFileName );
 		return hr;

@@ -382,7 +382,7 @@ void CWnd2ndPassword::ResetNumberpad( u_long idNumberPad )
 	{
 		strKeyNumber[ i ].Format( _T( "ButtNum%d.bmp" ), byNumberTable[ idNumberPad ][ i ] );
 		CWndButton* pWndButton = ( CWndButton* )GetDlgItem( m_dwButtonID[ i ] );
-		pWndButton->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, strKeyNumber[ i ] ), TRUE );
+		pWndButton->SetTexture( MakePath( DIR_THEME, strKeyNumber[ i ] ), TRUE );
 	}
 
 #ifdef __CON_AUTO_LOGIN

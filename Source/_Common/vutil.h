@@ -55,14 +55,12 @@ struct IMAGE final {
 typedef IMAGE* LPIMAGE;
 
 HRESULT LoadTextureFromRes( 
-	LPDIRECT3DDEVICE9 pd3dDevice, 
 	LPCTSTR strTexture,
 	LPDIRECT3DTEXTURE9* ppTexture,
 	DWORD MipFilter = 1,
 	D3DFORMAT d3dFormat = D3DFMT_UNKNOWN 
 	);
 HRESULT LoadTextureFromRes( 
-	LPDIRECT3DDEVICE9 pDevice,
 	LPCTSTR pFileName,
 	UINT Width,
 	UINT Height,

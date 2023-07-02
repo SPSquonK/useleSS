@@ -550,7 +550,7 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		nOnError	= 1;
 #endif	// __ON_ERROR
 
-		pUser->SetIndex( NULL, dwIndex, FALSE );
+		pUser->SetIndex( dwIndex, FALSE );
 		CObj::SetMethod( METHOD_NONE );
 		pUser->Serialize( ar );
 		pUser->InitMotion( pUser->m_dwMotion );

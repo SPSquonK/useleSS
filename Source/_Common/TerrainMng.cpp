@@ -12,8 +12,7 @@ CTerrainMng::~CTerrainMng() {
 	SAFE_DELETE_ARRAY(m_pWaterIndexList);
 }
 
-HRESULT CTerrainMng::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
-	m_pd3dDevice = pd3dDevice;
+HRESULT CTerrainMng::InitDeviceObjects() {
 	return S_OK;
 }
 
@@ -41,7 +40,7 @@ BOOL CTerrainMng::LoadTexture( DWORD dwId )
 		else
 			strPath = MakePath( DIR_WORLDTEXLOW, lpTerrain->m_szTextureFileName );
 		D3DXIMAGE_INFO srcInfo;
-		HRESULT hr = LoadTextureFromRes( m_pd3dDevice, strPath, 
+		HRESULT hr = LoadTextureFromRes( strPath, 
 			D3DX_DEFAULT, D3DX_DEFAULT, 4, 0, D3DFMT_UNKNOWN, 
 			D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 			D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 0, &srcInfo, NULL, &lpTerrain->m_pTexture );

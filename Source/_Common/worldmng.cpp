@@ -118,11 +118,11 @@ BOOL CWorldMng::AddObj( CObj* pObj, DWORD dwWorldID, BOOL bAddItToGlobalId )
 
 #else	// __WORLDSERVER
 
-CWorld* CWorldMng::Open( LPDIRECT3DDEVICE9 pd3dDevice, OBJID idWorld ) {
+CWorld* CWorldMng::Open( OBJID idWorld ) {
 	const WORLD * lpWorld = GetWorldStruct(idWorld);
 	if (!lpWorld) return nullptr;
 
-	CWorld* pWorld	= Open( pd3dDevice, lpWorld->m_szFileName );
+	CWorld* pWorld	= Open( lpWorld->m_szFileName );
 	pWorld->m_dwWorldID	= idWorld;
 	pWorld->InProcessing( );			//added by gmpbigsun
 	strcpy( pWorld->m_szWorldName, lpWorld->m_szWorldName );
@@ -146,11 +146,11 @@ void CWorldMng::DestroyCurrentWorld()
 
 	m_currentWorld.reset();
 }
-CWorld* CWorldMng::Open( LPDIRECT3DDEVICE9 pd3dDevice, LPCSTR lpszWorld ) {
+CWorld* CWorldMng::Open( LPCSTR lpszWorld ) {
 	DestroyCurrentWorld();
 
 	m_currentWorld = std::make_unique<CWorld>();
-	m_currentWorld->InitDeviceObjects( pd3dDevice );
+	m_currentWorld->InitDeviceObjects();
 	m_currentWorld->OpenWorld( MakePath( DIR_WORLD, lpszWorld ), TRUE );
 
 	return m_currentWorld.get();

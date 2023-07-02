@@ -120,8 +120,6 @@ void CWndChangeSex::OnDraw( C2DRender* p2DRender )
 	if( g_pPlayer == NULL  )
 		return;
 
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
@@ -217,7 +215,7 @@ void CWndChangeSex::OnDraw( C2DRender* p2DRender )
 		::SetTransformView( matView );
 		::SetTransformProj( matProj );
 				
-		m_pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+		m_pModel->Render( &matWorld );
 	}
 } 
 void CWndChangeSex::OnInitialUpdate() 
@@ -227,12 +225,12 @@ void CWndChangeSex::OnInitialUpdate()
 	
 	// 성전환이니깐 반대로 하자~
 	int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_FEMALE:MI_MALE );
-	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( OT_MOVER, nMover, TRUE );
 	m_pModel->LoadMotionId(MTI_STAND2);
 
 	UpdateModelParts();
 	
-	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );
+	m_pModel->InitDeviceObjects( );
 	
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();

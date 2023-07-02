@@ -2165,7 +2165,7 @@ BOOL TextCmd_CreateChar(CScanner & scanner, CPlayer_ * pUser) {
 		BOOL bActiveAttack = scanner.GetNumber();
 		for( DWORD dw = 0; dw < dwNum; dw++ )
 		{
-			CMover* pMover = (CMover*)CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+			CMover* pMover = (CMover*)CreateObj( OT_MOVER, pMoverProp->dwID );
 			if( NULL == pMover ) return FALSE; // ASSERT( pObj );
 			strcpy( pMover->m_szCharacterKey, strName );
 			pMover->InitNPCProperty();
@@ -2192,7 +2192,7 @@ BOOL TextCmd_CreateCtrl(CScanner & s, CPlayer_ * pUser) {
 	if( dwID == 0 )
 		return FALSE;
 
-	CCtrl* pCtrl	= (CCtrl*)CreateObj( D3DDEVICE, OT_CTRL, dwID );
+	CCtrl* pCtrl	= (CCtrl*)CreateObj( OT_CTRL, dwID );
 	if( !pCtrl )
 		return FALSE;
 
@@ -2412,7 +2412,7 @@ BOOL TextCmd_CreateNPC(CScanner & scanner, CPlayer_ * pUser) {
 		BOOL bActiveAttack = scanner.GetNumber();
 		for( DWORD dw = 0; dw < dwNum; dw++ )
 		{
-			CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+			CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 			if( NULL == pObj )	
 				return FALSE;	
 			pObj->SetPos( vPos );
@@ -2532,7 +2532,7 @@ BOOL TextCmd_Undying2(CScanner &, CPlayer_ * pUser) {
 
 BOOL TextCmd_NoDisguise(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
-	pUser->NoDisguise( NULL );
+	pUser->NoDisguise( );
 	g_UserMng.AddNoDisguise( pUser );
 #endif // __WORLDSERVER
 	return TRUE;
@@ -2541,7 +2541,7 @@ BOOL TextCmd_NoDisguise(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 BOOL DoDisguise( CUser* pUser, DWORD dwIndex )
 {
-	pUser->Disguise( NULL, dwIndex );
+	pUser->Disguise( dwIndex );
 	g_UserMng.AddDisguise( pUser, dwIndex );
 	return TRUE;
 }

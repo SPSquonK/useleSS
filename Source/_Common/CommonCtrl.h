@@ -114,8 +114,8 @@ public:
 	CtrlProp*		GetProp() { return prj.GetCtrlProp( GetIndex() ); }
 
 	virtual void Process();
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
-	virtual void RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor = 0xffffffff );
+	virtual void Render( );
+	virtual void RenderName( CD3DFont* pFont, DWORD dwColor = 0xffffffff );
 	virtual BOOL Read( CFileIO* pFile );
 };
 

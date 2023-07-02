@@ -634,8 +634,8 @@ void CWndGuildHousing::OnInitialUpdate()
 	pStatic = (CWndStatic *)GetDlgItem( WIDC_STATIC5 );
 	pStatic->SetVisible( FALSE );
 
-	m_texUp.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvUp.bmp" ), 0xffff00ff );
-	m_texDown.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvDn.bmp" ), 0xffff00ff );
+	m_texUp.LoadTexture( MakePath( DIR_THEME, "LvUp.bmp" ), 0xffff00ff );
+	m_texDown.LoadTexture( MakePath( DIR_THEME, "LvDn.bmp" ), 0xffff00ff );
 	
 } 
 
@@ -704,7 +704,7 @@ void CWndGuildHousing::OnDraw( C2DRender* p2DRender )
 		//	if( IsSection( GS_TELEPORTER ) )
 		//		p2DRender->TextOut( pCustom->rect.left + 55, pCustom->rect.top + 20 + ( nIndex )*nListFontHeight, "1Lv", 0xffcc11cc );
 
-			CTexture* pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
+			CTexture* pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
 			if( pTexture )
 				p2DRender->RenderTexture( pt, pTexture );
 		
@@ -901,7 +901,7 @@ void CWndGuildHousing::UpdateIRButton( )
 				// 해체하는 이미지 ( 설치가 되어있으므로 )
 				
 				//sunTODO: 확정 이미지 나오면 교체요망 
-				pBtn->SetTexture( D3DDEVICE, MakePath( DIR_THEME, "Buttlockerinstall.BMP" ), TRUE );
+				pBtn->SetTexture( MakePath( DIR_THEME, "Buttlockerinstall.BMP" ), TRUE );
 				pBtn->SetToolTip( GETTEXT(TID_TOOLTIP_GUILDHOUSE_BUTT_DISMANTLE) );		//가구가 해체됩니다.
 			}
 			else									
@@ -909,7 +909,7 @@ void CWndGuildHousing::UpdateIRButton( )
 				// 설치하는 이미지 ( 해체가 되어있으므로 )
 				
 				//sunTODO: 확정 이미지 나오면 교체요망
-				pBtn->SetTexture( D3DDEVICE, MakePath( DIR_THEME, "Buttlockerdismantle.BMP" ), TRUE );
+				pBtn->SetTexture( MakePath( DIR_THEME, "Buttlockerdismantle.BMP" ), TRUE );
 				pBtn->SetToolTip( GETTEXT(TID_TOOLTIP_GUILDHOUSE_BUTT_INSTALL) );		//가구가 설치됩니다.
 			}
 		}
@@ -1454,7 +1454,7 @@ void CWndGHouseShowOneUnit::OnDraw( C2DRender* p2DRender )
  	if( !pProp )
 		return;
  
- 	CTexture* pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
+ 	CTexture* pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
  	if( pTexture )
  		p2DRender->RenderTexture( pt, pTexture );
  

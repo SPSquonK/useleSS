@@ -32,18 +32,18 @@ void CWndTitleBar::OnInitialUpdate() {
 	if(m_pParentWnd->IsWndStyle( WBS_HELP ) )
 	{
 		m_awndButton[ WTBID_HELP - 10000 ].Create( _T( "?" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax * 16 + 16, 20), this, WTBID_HELP ), m_nButtonMax++;
-		m_awndButton[ WTBID_HELP - 10000 ].SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtWndHelp.tga" ), TRUE );
+		m_awndButton[ WTBID_HELP - 10000 ].SetTexture( MakePath( DIR_THEME, "ButtWndHelp.tga" ), TRUE );
 		m_awndButton[ WTBID_HELP - 10000 ].FitTextureSize();
 	}
 	if(m_pParentWnd->IsWndStyle( WBS_MINIMIZEBOX ) )
 		m_awndButton[ WTBID_MIN - 10000 ].Create( _T( "_" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax* 16 + 16, 20), this, WTBID_MIN ), m_nButtonMax++;
-	m_awndButton[ WTBID_MIN - 10000 ].SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtWndMin.tga" ), TRUE );
+	m_awndButton[ WTBID_MIN - 10000 ].SetTexture( MakePath( DIR_THEME, "ButtWndMin.tga" ), TRUE );
 	m_awndButton[ WTBID_MIN - 10000 ].FitTextureSize();
 
 	if(m_pParentWnd->IsWndStyle( WBS_MAXIMIZEBOX ) )
 	{
 		m_awndButton[ WTBID_MAX - 10000 ].Create( _T( "|" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax* 16 + 16, 20), this, WTBID_MAX ), m_nButtonMax++;
-		m_awndButton[ WTBID_MAX - 10000 ].SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtWndMax.tga" ), TRUE );
+		m_awndButton[ WTBID_MAX - 10000 ].SetTexture( MakePath( DIR_THEME, "ButtWndMax.tga" ), TRUE );
 		m_awndButton[ WTBID_MAX - 10000 ].FitTextureSize();
 	}
 
@@ -52,7 +52,7 @@ void CWndTitleBar::OnInitialUpdate() {
 		if( m_pParentWnd->m_bNoCloseButton == FALSE )
 		{
 			m_awndButton[ WTBID_CLOSE - 10000 ].Create( _T( "x" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax * 16 + 16, 20), this, WTBID_CLOSE ), m_nButtonMax++;
-			m_awndButton[ WTBID_CLOSE - 10000 ].SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtWndExit.tga" ), TRUE );
+			m_awndButton[ WTBID_CLOSE - 10000 ].SetTexture( MakePath( DIR_THEME, "ButtWndExit.tga" ), TRUE );
 			m_awndButton[ WTBID_CLOSE - 10000 ].FitTextureSize();
 		}
 	}
@@ -181,7 +181,7 @@ void CWndNeuz::AdjustWndBase( D3DFORMAT d3dFormat )
 
 	if( m_bTile == FALSE )
 	{
-		SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, m_strTexture ), TRUE );
+		SetTexture( MakePath( DIR_THEME, m_strTexture ), TRUE );
 		return;
 	}
 	CWndBase::AdjustWndBase( m_d3dFormat );
@@ -443,7 +443,7 @@ CWndBase* CWndNeuz::CreateControl( HWND hWnd, LPWNDCTRL lpWndCtrl )
 		pWndBase = new CWndButton;
 		((CWndButton*)pWndBase)->Create( lpWndCtrl->strTitle, dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId );
 		if( lpWndCtrl->strTexture.IsEmpty() == FALSE )
-			((CWndButton*)pWndBase)->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, lpWndCtrl->strTexture ), TRUE );
+			((CWndButton*)pWndBase)->SetTexture( MakePath( DIR_THEME, lpWndCtrl->strTexture ), TRUE );
 
 		pWndBase->m_bTile = (lpWndCtrl->bTile != FALSE);
 

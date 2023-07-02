@@ -59,16 +59,16 @@ IMAGE * CTileMapManager::GetImage(std::string_view lpszFileName) {
 	return image;
 }
 
-BOOL CWndBase::SetForbidTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName )
+BOOL CWndBase::SetForbidTexture( LPCTSTR lpszFileName )
 {
-	m_pTexForbid = CWndBase::m_textureMng.AddTexture( pd3dDevice, lpszFileName, 0xffff00ff );
+	m_pTexForbid = CWndBase::m_textureMng.AddTexture( lpszFileName, 0xffff00ff );
 	if( m_pTexForbid ) return TRUE;
 	return FALSE;
 }
 
-void CWndBase::SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName, BOOL bMyLoader )
+void CWndBase::SetTexture( LPCTSTR lpszFileName, BOOL bMyLoader )
 {
-	m_pTexture = m_textureMng.AddTexture( pd3dDevice, lpszFileName, 0xffff00ff, bMyLoader );
+	m_pTexture = m_textureMng.AddTexture( lpszFileName, 0xffff00ff, bMyLoader );
 }
 
 void CWndBase::SetForbid( BOOL bForbid ) 
@@ -464,7 +464,6 @@ void CWndBase::RenderWnd()
 {
 	if( m_pTexture == NULL || m_pVB == NULL )
 		return;
-	LPDIRECT3DDEVICE9 m_pd3dDevice = m_pApp->m_pd3dDevice;
 	m_pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSU, 1 );
 	m_pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV, 1 );
 	m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_POINT );		
@@ -2085,7 +2084,7 @@ void CWndBase::AdjustWndBase( D3DFORMAT d3dFormat ) //= D3DFMT_A4R4G4B4 )
 	AdjustSize( &size1 );
 
 	CTexture* pTexture = new CTexture;
-	pTexture->CreateTexture( m_pApp->m_pd3dDevice, size1.cx, size1.cy, 1, 0, d3dFormat, D3DPOOL_MANAGED );
+	pTexture->CreateTexture( size1.cx, size1.cy, 1, 0, d3dFormat, D3DPOOL_MANAGED );
 
 	m_backgroundTextureMng.insert_or_assign(this, std::unique_ptr<CTexture>(pTexture));
 	m_pTexture = pTexture;

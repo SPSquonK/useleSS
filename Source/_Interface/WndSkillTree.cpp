@@ -461,14 +461,14 @@ void CWndSkillTreeCommon::ResetSkills() {
 		const ItemProp * pSkillProp = skill.GetProp();
 		if (!pSkillProp) continue;
 
-		CTexture * texture = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pSkillProp->szIcon), 0xffff00ff);
+		CTexture * texture = m_textureMng.AddTexture(MakePath(DIR_ICON, pSkillProp->szIcon), 0xffff00ff);
 		if (!texture) continue;
 
 		m_pTexSkill.emplace(skill.dwSkill, texture);
 	}
 
 	m_kTexLevel.DeleteDeviceObjects();
-	m_kTexLevel.LoadScript(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
+	m_kTexLevel.LoadScript(MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
 }
 
 void CWndSkillTreeCommon::OnSkillPointUp() {
@@ -1121,7 +1121,7 @@ void CWndSkillTreeEx::OnDraw(C2DRender * p2DRender) {
 			rect.OffsetRect(0, m_nTopDownGap);
 			point = rect.TopLeft();
 			point.y -= 2;
-			CTexture * pTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, m_strHeroSkilBg), 0xffff00ff);
+			CTexture * pTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, m_strHeroSkilBg), 0xffff00ff);
 			if (pTexture)
 				pTexture->Render(p2DRender, point, CPoint(27, 27));
 		}
@@ -1247,17 +1247,17 @@ void CWndSkillTreeEx::OnInitialUpdate() {
 
 	RestoreDeviceObjects();
 
-	m_texGauEmptyNormal.LoadTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "GauEmptyNormal.bmp"), 0xffff00ff, TRUE);
-	m_texGauFillNormal.LoadTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "GauFillNormal.bmp"), 0xffff00ff, TRUE);
+	m_texGauEmptyNormal.LoadTexture(MakePath(DIR_THEME, "GauEmptyNormal.bmp"), 0xffff00ff, TRUE);
+	m_texGauFillNormal.LoadTexture(MakePath(DIR_THEME, "GauFillNormal.bmp"), 0xffff00ff, TRUE);
 
-	m_aSkillLevel[0] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "ButtSkillLevelHold01.tga"), 0xffff00ff);
-	m_aSkillLevel[1] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "ButtSkillLevelup01.tga"), 0xffff00ff);
-	m_aSkillLevel[2] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "ButtSkillLevelHold02.tga"), 0xffff00ff);
+	m_aSkillLevel[0] = m_textureMng.AddTexture(MakePath(DIR_THEME, "ButtSkillLevelHold01.tga"), 0xffff00ff);
+	m_aSkillLevel[1] = m_textureMng.AddTexture(MakePath(DIR_THEME, "ButtSkillLevelup01.tga"), 0xffff00ff);
+	m_aSkillLevel[2] = m_textureMng.AddTexture(MakePath(DIR_THEME, "ButtSkillLevelHold02.tga"), 0xffff00ff);
 
 	InitItem();
 
-	m_atexTopDown[0] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "LvUp.bmp"), 0xffff00ff);
-	m_atexTopDown[1] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "LvDn.bmp"), 0xffff00ff);
+	m_atexTopDown[0] = m_textureMng.AddTexture(MakePath(DIR_THEME, "LvUp.bmp"), 0xffff00ff);
+	m_atexTopDown[1] = m_textureMng.AddTexture(MakePath(DIR_THEME, "LvDn.bmp"), 0xffff00ff);
 
 	m_nTopDownGap = 0;
 	m_bSlot[0] = TRUE;

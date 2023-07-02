@@ -306,7 +306,7 @@ BOOL	CAIBear::SelectTarget( void )
 
 void CAIBear::SummonMonster( DWORD dwObjIndex, D3DXVECTOR3 vPos )
 {
-	CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, dwObjIndex );
+	CObj* pObj	= CreateObj( OT_MOVER, dwObjIndex );
 	if( pObj )
 	{
 		pObj->SetPos( vPos );

@@ -61,7 +61,7 @@ extern DWORD FULLSCREEN_HEIGHT;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void ResetRenderState(IDirect3DDevice9 * const pd3dDevice) {
+static void ResetRenderState() {
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
@@ -400,7 +400,7 @@ void CWndGold::OnMouseMove(UINT nFlags, CPoint point)
 }
 void CWndGold::OnInitialUpdate()
 {
-	m_texture.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_ITEM, "itm_GolGolSeed.dds" ), 0xffff00ff );
+	m_texture.LoadTexture( MakePath( DIR_ITEM, "itm_GolGolSeed.dds" ), 0xffff00ff );
 }
 
 //////////////////////////////////////////////
@@ -414,11 +414,11 @@ CWndQueryEquip::CWndQueryEquip(CMover & mover, std::unique_ptr<std::array<CItemE
 
 	const int nMover = (mover.GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
 	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>(
-			g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE
+			OT_MOVER, nMover, TRUE
 		);
 	m_pModel->LoadMotionId(MTI_STAND);
 	CMover::UpdateParts(mover.GetSex(), mover.m_skin, mover.m_aEquipInfo, m_pModel.get(), NULL);
-	m_pModel->InitDeviceObjects(g_Neuz.GetDevice());
+	m_pModel->InitDeviceObjects();
 
 	// Set Equip Info add
 	m_aEquipInfoAdd = std::move(aEquipInfoAdd);
@@ -472,8 +472,6 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 	if( IsInvalidObj(pMover) )
 		return ;
 	
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-
 	// ����Ʈ ���� 
 	D3DVIEWPORT9 viewport;
 
@@ -529,7 +527,7 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 	if( m_pModel == NULL )
 		return;
 
-	ResetRenderState(pd3dDevice);
+	ResetRenderState();
 
 	pd3dDevice->SetRenderState( D3DRS_AMBIENT,  D3DCOLOR_ARGB( 255, 255,255,255) );
 	
@@ -671,7 +669,7 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 		m_pModel->GetObject3D(PARTS_HAIR)->m_fAmbient[2] = pMover->m_fHairColorB;
 			
 		m_pModel->SetGroup( 0 );	
-		m_pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+		m_pModel->Render( &matWorld );
 	}
 
 	return;
@@ -907,8 +905,6 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 	if( !pMover )
 		return;
 
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-
 	// ����Ʈ ���� 
 	D3DVIEWPORT9 viewport;
 
@@ -1014,7 +1010,7 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 	if( g_pPlayer == NULL || m_pModel == NULL )
 		return;
 
-	ResetRenderState(pd3dDevice);
+	ResetRenderState();
 
 	pd3dDevice->SetRenderState( D3DRS_AMBIENT,  D3DCOLOR_ARGB( 255, 255,255,255) );
 	
@@ -1162,7 +1158,7 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 			}
 		}
 		
-		m_pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+		m_pModel->Render( &matWorld );
 	}
 
 	return;
@@ -1171,10 +1167,10 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 void CWndInventory::UpDateModel()
 {
 	const int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( OT_MOVER, nMover, TRUE );
 	m_pModel->LoadMotionId(MTI_STAND);
 	UpdateParts();
-	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );	
+	m_pModel->InitDeviceObjects();	
 }
 
 
@@ -1208,7 +1204,7 @@ void CWndInventory::OnInitialUpdate()
 	m_bIsUpgradeMode = FALSE;
 	m_dwEnchantWaitTime = 0xffffffff;
 
-	m_TexRemoveItem = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndInventoryGarbage.dds" ), 0xffff00ff );
+	m_TexRemoveItem = m_textureMng.AddTexture( MakePath( DIR_THEME, "WndInventoryGarbage.dds" ), 0xffff00ff );
 	
 	CRect rectRoot = m_pWndRoot->GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
@@ -1734,7 +1730,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						m_pUpgradeMaterialItem = pFocusItem;	
 
 						if((g_pPlayer->IsMode( TRANSPARENT_MODE ) ) == 0)
-							m_pSfxUpgrade = CreateSfx( g_Neuz.m_pd3dDevice, XI_INT_INCHANT, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1 );
+							m_pSfxUpgrade = CreateSfx( XI_INT_INCHANT, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1 );
 					}
 					
 					if( pProp->dwItemKind1 == IK1_RIDE )	// �����? �������� Ż���ΰ�.
@@ -2690,7 +2686,6 @@ void CWndNavigator::SetRegionName( const TCHAR *tszName )
 BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 {
 	if( g_pPlayer == NULL ) return TRUE;
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 	CWorld* pWorld	= g_WorldMng();
 	CRect rect = GetClientRect();
 
@@ -2940,7 +2935,7 @@ BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 				m_texNavObjs.MakeVertex( p2DRender, point, 5, &pVertices );
 			}
 		}
-		m_texNavObjs.Render( m_pApp->m_pd3dDevice, vertex, ( (int) pVertices - (int) vertex ) / sizeof( TEXTUREVERTEX ) );
+		m_texNavObjs.Render( vertex, ( (int) pVertices - (int) vertex ) / sizeof( TEXTUREVERTEX ) );
 
 		D3DXVECTOR3& rDestinationArrow = g_WndMng.m_pWndWorld->m_vDestinationArrow;
 		if( rDestinationArrow != D3DXVECTOR3( -1.0F, 0.0F, -1.0F ) )
@@ -3021,7 +3016,7 @@ BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_POINT );		
 
 	// ȭ��ǥ ���? 
-	m_billArrow.Render( pd3dDevice );
+	m_billArrow.Render( );
 
 	return TRUE;
 }
@@ -3144,16 +3139,16 @@ void CWndNavigator::OnInitialUpdate()
 	m_wndZoomIn.Create ( "+", 0, CRect( rectClient.left,  54, rectClient.left + 16,  54 + 16 ), this, 100005 );
 	m_wndZoomOut.Create( "-", 0, CRect( rectClient.left,  70, rectClient.left + 16,  70 + 16 ), this, 100006 );
 
-	m_wndPlace.SetTexture( D3DDEVICE, MakePath( DIR_THEME, "ButtNavLeft.tga" ), TRUE );
+	m_wndPlace.SetTexture( MakePath( DIR_THEME, "ButtNavLeft.tga" ), TRUE );
 	m_wndPlace.FitTextureSize();
-	m_wndZoomIn.SetTexture( D3DDEVICE, MakePath( DIR_THEME, "ButtNavZoomIn.tga" ), TRUE );
+	m_wndZoomIn.SetTexture( MakePath( DIR_THEME, "ButtNavZoomIn.tga" ), TRUE );
 	m_wndZoomIn.FitTextureSize();
-	m_wndZoomOut.SetTexture( D3DDEVICE, MakePath( DIR_THEME, "ButtNavZoomOut.tga" ), TRUE );
+	m_wndZoomOut.SetTexture( MakePath( DIR_THEME, "ButtNavZoomOut.tga" ), TRUE );
 	m_wndZoomOut.FitTextureSize();
 
-	m_texDunFog.LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "NavDunFog.tga" ), 0 , 1 );
+	m_texDunFog.LoadTexture( MakePath( DIR_THEME, "NavDunFog.tga" ), 0 , 1 );
 
-	m_pDestinationPositionTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "ButtDestination.bmp"), 0xffff00ff );
+	m_pDestinationPositionTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtDestination.bmp"), 0xffff00ff );
 
 	m_wndMenuPlace.CreateMenu( this );	
 	m_wndMenuPlace.AddButton(0, prj.GetText(TID_GAME_PLAYER));
@@ -3185,16 +3180,16 @@ BOOL CWndNavigator::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	CRect rectWindow = m_pWndRoot->GetWindowRect();
 	CRect rect( 0, 0, 115, 110 ); // 1024 768
 
-	m_texNavObjs.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME,"Navigator.inc") );
-	m_texArrow.LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME,"ImgNavArrow.bmp"), 0xffff00ff );
-	m_texNavPos.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "NavPosition.inc") );
+	m_texNavObjs.LoadScript( MakePath( DIR_THEME,"Navigator.inc") );
+	m_texArrow.LoadTexture( MakePath( DIR_THEME,"ImgNavArrow.bmp"), 0xffff00ff );
+	m_texNavPos.LoadScript( MakePath( DIR_THEME, "NavPosition.inc") );
 	ZeroMemory( &m_billboard, sizeof( m_billboard ) );
 	m_billboard.rect.SetRect( 0, 0, m_texArrow.m_size.cx, m_texArrow.m_size.cy );
 	m_billboard.ptCenter = CPoint( m_texArrow.m_size.cx / 2, m_texArrow.m_size.cy / 2 );
-	m_billArrow.InitDeviceObjects( g_Neuz.m_pd3dDevice, &m_billboard, &m_texArrow );
+	m_billArrow.InitDeviceObjects( &m_billboard, &m_texArrow );
 	m_billArrow.RestoreDeviceObjects();
 
-	m_GuildCombatTextureMask.LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_WORLD_GUILDCOMBAT, "WdGuildWar_Mask.dds" ), 0  );
+	m_GuildCombatTextureMask.LoadTexture( MakePath( DIR_WORLD_GUILDCOMBAT, "WdGuildWar_Mask.dds" ), 0  );
 	
 	SetTitle( GETTEXT( TID_APP_NAVIGATOR ) );
 	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
@@ -3526,7 +3521,7 @@ void CWndStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBHPGauge = m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, 0x64ff0000, m_pVBHPGauge, &m_texGauFillNormal );
+			m_bVBHPGauge = m_pTheme->MakeGaugeVertex( &rectTemp, 0x64ff0000, m_pVBHPGauge, &m_texGauFillNormal );
 		}
 		//else m_bVBHPGauge = TRUE;
 		// MP
@@ -3538,7 +3533,7 @@ void CWndStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBMPGauge = m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, 0x640000ff, m_pVBMPGauge, &m_texGauFillNormal );
+			m_bVBMPGauge = m_pTheme->MakeGaugeVertex( &rectTemp, 0x640000ff, m_pVBMPGauge, &m_texGauFillNormal );
 		}
 		//else m_bVBMPGauge = TRUE;
 		// FP
@@ -3550,7 +3545,7 @@ void CWndStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBFPGauge = m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, 0x6400ff00, m_pVBFPGauge, &m_texGauFillNormal );
+			m_bVBFPGauge = m_pTheme->MakeGaugeVertex( &rectTemp, 0x6400ff00, m_pVBFPGauge, &m_texGauFillNormal );
 		}
 	//lse m_bVBFPGauge = TRUE;
 		//nWidth	= ( ( hyper ) nWidthClient * pMover->GetExp1() ) / pMover->GetMaxExp1();
@@ -3564,7 +3559,7 @@ void CWndStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBEXPGauge = m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, 0x847070ff, m_pVBEXPGauge, &m_texGauFillSmall );
+			m_bVBEXPGauge = m_pTheme->MakeGaugeVertex( &rectTemp, 0x847070ff, m_pVBEXPGauge, &m_texGauFillSmall );
 		}
 
 		if( m_nPXPWidth != GuildHouse->m_nExtraExp )
@@ -3577,7 +3572,7 @@ void CWndStatus::MakeGaugeVertex()
 				m_nPXPWidth = 9;
 			rectTemp.right = rectTemp.left + m_nPXPWidth;
 			ClientToScreen( rectTemp );
-			m_bVBAEXPGauge = m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, 0x84e6ce19, m_pVBAEXPGauge, &m_texGauFillSmall );
+			m_bVBAEXPGauge = m_pTheme->MakeGaugeVertex( &rectTemp, 0x84e6ce19, m_pVBAEXPGauge, &m_texGauFillSmall );
 		}
 	}
 }
@@ -3657,12 +3652,12 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 //			m_bHPVisible = TRUE;
 //#endif
 			if( m_bHPVisible )
-				m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBHPGauge, &m_texGauFillNormal );
+				m_pTheme->RenderGauge( m_pVBHPGauge, &m_texGauFillNormal );
 		}
 		if( m_bVBMPGauge )
-			m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBMPGauge, &m_texGauFillNormal );
+			m_pTheme->RenderGauge( m_pVBMPGauge, &m_texGauFillNormal );
 		if( m_bVBFPGauge )
-			m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBFPGauge, &m_texGauFillNormal );
+			m_pTheme->RenderGauge( m_pVBFPGauge, &m_texGauFillNormal );
 		if( g_pPlayer->IsAfterDeath() )
 			m_bExpVisible = !m_bExpVisible;
 		else
@@ -3670,7 +3665,7 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 
 		if( m_bVBEXPGauge )
 		{
-			m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBEXPGauge, &m_texGauFillSmall );
+			m_pTheme->RenderGauge( m_pVBEXPGauge, &m_texGauFillSmall );
 		}
 		if( m_bExpVisible )
 		{
@@ -3678,7 +3673,7 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 #if __VER < 8 // #ifndef __SKILL_WITHOUT_EXP
 			if( m_bVBPXPGauge )
 			{
-				m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBPXPGauge, &m_texGauFillSmall );
+				m_pTheme->RenderGauge( m_pVBPXPGauge, &m_texGauFillSmall );
 
 			}
 #endif // __VER < 8
@@ -3686,7 +3681,7 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 		}
 
 		if( m_bVBAEXPGauge )
-			m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBAEXPGauge, &m_texGauFillSmall );
+			m_pTheme->RenderGauge( m_pVBAEXPGauge, &m_texGauFillSmall );
 		
 
 
@@ -3788,11 +3783,9 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 		p2DRender->TextOut( x - (int)(nCharEXP*5.8f), lpAExp->rect.top - 0, cbufExp, dwColor, 0xff000000 );
 	}
 
-
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 	pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER, 0xffa08080, 1.0f, 0 ) ;
 
-	ResetRenderState(pd3dDevice);
+	ResetRenderState();
 
 	// ����Ʈ ���� 
 	D3DVIEWPORT9 viewport = BuildViewport(p2DRender, lpFace);
@@ -3988,7 +3981,7 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
  	SetDiffuse( 1.0f, 1.0f, 1.0f );
  	SetAmbient( 1.0f, 1.0f, 1.0f );
 
-		g_pBipedMesh->Render(pd3dDevice,&matWorld);
+		g_pBipedMesh->Render(&matWorld);
 
 		SetDiffuse( 0.0f, 0.0f, 0.0f );
 		SetAmbient( 1.0f, 1.0f, 1.0f );
@@ -4042,10 +4035,10 @@ void CWndStatus::OnInitialUpdate()
 	
 	RestoreDeviceObjects();
 	//m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( DRAWVERTEX ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texGauEmptySmall.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillSmall.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptySmall.LoadTexture( MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillSmall.LoadTexture( MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
 	
 	//m_texGauEmptySmall  
 	//m_texGauFillNormal  
@@ -4055,7 +4048,7 @@ void CWndStatus::OnInitialUpdate()
 	if( g_pBipedMesh == NULL )
 	{
 		int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-		g_pBipedMesh = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+		g_pBipedMesh = (CModelObject*)prj.m_modelMng.LoadModel( OT_MOVER, nMover, TRUE );
 		g_pBipedMesh->LoadMotionId(MTI_STAND);
 		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin, g_pPlayer->m_aEquipInfo, g_pBipedMesh, &g_pPlayer->m_Inventory );
 	}
@@ -4116,7 +4109,7 @@ BOOL CWndStatus::OnEraseBkgnd(C2DRender* p2DRender)
 	return CWndBase::OnEraseBkgnd( p2DRender );
 	//oint pt = m_rectClient.TopLeft() - m_rectWindow.TopLeft();
 	CRect rect = GetClientRect();
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
+	D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
 
 
 	//p2DRender->RenderFillRect( rect, D3DCOLOR_ARGB( 255, 70, 70, 170 ) );
@@ -7420,7 +7413,7 @@ void CWndFontEdit::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 
-	m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "yellowbuttten.tga" ), 0xffff00ff, TRUE );
+	m_pTexture = m_textureMng.AddTexture( MakePath( DIR_THEME, "yellowbuttten.tga" ), 0xffff00ff, TRUE );
 
 	m_ColorRect[0].left   = 38;
 	m_ColorRect[0].top    = 46;
@@ -7688,7 +7681,7 @@ void CWndMixJewel::OnInitialUpdate()
 	CWndButton* pButton = GetDlgItem<CWndButton>(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 
@@ -7814,7 +7807,7 @@ void CWndMixJewelConfirm::OnDraw( C2DRender* p2DRender )
 	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
 	if(pItemProp != NULL)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
 	}
@@ -7882,7 +7875,7 @@ void CWndExtraction::OnInitialUpdate()
 	CWndButton * pButton = GetDlgItem<CWndButton>(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 
@@ -8032,7 +8025,7 @@ void CWndSmeltJewel::OnInitialUpdate()
 
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 
@@ -8133,9 +8126,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 	if( m_pItemElem == NULL )
 		return;
 
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-
-	ResetRenderState(pd3dDevice);
+	ResetRenderState();
 
 	pd3dDevice->SetRenderState( D3DRS_AMBIENT,  D3DCOLOR_ARGB( 255,255,255,255 ) );
 	
@@ -8279,7 +8270,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 		}
 	}
 */
-	m_pMainItem->Render( p2DRender->m_pd3dDevice, &matWorld );
+	m_pMainItem->Render( &matWorld );
 
 	viewport.X      = p2DRender->m_ptOrigin.x;
 	viewport.Y      = p2DRender->m_ptOrigin.y;
@@ -8306,7 +8297,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 				{
 					if(i != m_nUsableSlot) //���� ���� ���������� ��ĥ���� ����.
 					{
-						pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndDisableBlue.bmp"), 0xffff00ff );
+						pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndDisableBlue.bmp"), 0xffff00ff );
 						if(pTexture != NULL)
 							pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
 						//p2DRender->RenderFillRect( pWndCtrl->rect, 0x609370db );
@@ -8315,7 +8306,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 					pItemProp = prj.GetItemProp( m_dwJewel[i] );
 					if(pItemProp != NULL)
 					{
-						pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+						pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 						if(pTexture != NULL)
 							pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
 					}
@@ -8324,7 +8315,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 				{
 					if(i != m_nUsableSlot) //�ո� ���� �� ������ ���� �� �ִ� ù��° ���Ը� ���� �������� ȸ������.
 					{
-						pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndDisableBlack.bmp"), 0xffff00ff );
+						pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndDisableBlack.bmp"), 0xffff00ff );
 						if(pTexture != NULL)
 							pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
 						//p2DRender->RenderFillRect( pWndCtrl->rect, 0xa0a8a8a8 );
@@ -8333,7 +8324,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 			}
 			else //�� �ո� ����
 			{
-				pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndDisableRed.bmp"), 0xffff00ff );
+				pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndDisableRed.bmp"), 0xffff00ff );
 				if(pTexture != NULL)
 					pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
 				//p2DRender->RenderFillRect( pWndCtrl->rect, 0xa0ff0000 );
@@ -8378,8 +8369,8 @@ BOOL CWndSmeltJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			if(m_pItemElem != NULL)
 				m_pItemElem->SetExtra(pItemElem->GetExtra()+1);
 			
-			m_pMainItem = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_ITEM, m_pItemElem->m_dwItemId );
-			m_pMainItem->InitDeviceObjects( g_Neuz.GetDevice() );
+			m_pMainItem = (CModelObject*)prj.m_modelMng.LoadModel( OT_ITEM, m_pItemElem->m_dwItemId );
+			m_pMainItem->InitDeviceObjects( );
 		}
 	} 
 	
@@ -8548,7 +8539,7 @@ void CWndChangeWeapon::OnInitialUpdate()
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 	
@@ -9488,7 +9479,7 @@ void CWndRemoveAttribute::OnInitialUpdate()
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 
@@ -9649,7 +9640,7 @@ void CWndRemovePiercing::OnInitialUpdate()
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 	
@@ -9815,7 +9806,7 @@ void CWndRemoveJewel::OnInitialUpdate() {
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 	
@@ -10140,7 +10131,7 @@ BOOL CWndChangeAttribute::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			if(pTempElem && CItemElem::IsEleRefineryAble(pItemProp) && pTempElem->m_nResistAbilityOption > 0)
 			{
 				m_pItemElem = pTempElem;
-				m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+				m_pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 				m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
 			}
 			else
@@ -10266,16 +10257,16 @@ void CWndCoupleTabInfo::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// ���⿡ �ڵ��ϼ���
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauFillNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauFillNormal.bmp" ), 0xffff00ff, TRUE );
 
 	CWndButton* pWndButton = (CWndButton*)GetDlgItem(WIDC_BUTTON1);
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtBreakUp.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtBreakUp.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtBreakUp.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtBreakUp.bmp" ), 0xffff00ff );
 	}
 
 	MoveParentCenter();
@@ -10373,7 +10364,7 @@ void CWndCoupleTabInfo::OnDraw(C2DRender* p2DRender)
 					pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, ptJobType, nMasterIndex, &pVertices, 0xffffffff);
 				}
 
-				pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
+				pWndWorld->m_texPlayerDataIcon.Render( pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
 			}
 		}
 
@@ -10432,7 +10423,7 @@ void CWndCoupleTabSkill::OnInitialUpdate()
 		_T("CoupleSkillInfo.inc")
 	);
 
-	m_pSkillBgTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "Bg_Couple_Skill.tga"), 0xffff00ff );
+	m_pSkillBgTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "Bg_Couple_Skill.tga"), 0xffff00ff );
 
 	MoveParentCenter();
 } 
@@ -10482,7 +10473,7 @@ void CWndCoupleTabSkill::OnDraw(C2DRender* p2DRender)
 				ItemProp* pItemProp = prj.GetItemProp( vSkillKinds[i] );
 				if(pItemProp)
 				{
-					CTexture* pTex = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pItemProp->szIcon), 0xffff00ff );
+					CTexture* pTex = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, pItemProp->szIcon), 0xffff00ff );
 
 					if(pTex)
 						p2DRender->RenderTexture( point, pTex );
@@ -10860,9 +10851,9 @@ void CWndSmeltSafety::OnInitialUpdate()
 	assert(pWndInventory != NULL);
 	pWndInventory->m_wndItemCtrl.SetDieFlag(TRUE);
 
-	m_pNowGaugeTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "SafetyGauge.bmp"), 0xffff00ff);
-	m_pSuccessTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "SafetySuccess.bmp"), 0xffff00ff);
-	m_pFailureTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "SafetyFailure.bmp"), 0xffff00ff);
+	m_pNowGaugeTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_THEME, "SafetyGauge.bmp"), 0xffff00ff);
+	m_pSuccessTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_THEME, "SafetySuccess.bmp"), 0xffff00ff);
+	m_pFailureTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_THEME, "SafetyFailure.bmp"), 0xffff00ff);
 
 	MoveParentCenter();
 }
@@ -11469,7 +11460,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 			m_pItemElem->SetExtra(m_pItemElem->GetExtra() + 1);
 
 			assert(pItemProp != NULL);
-			m_pItemTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+			m_pItemTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 
 			CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem(WIDC_EDIT_MAX_GRADE);
 			assert(pWndEdit != NULL);
@@ -11828,7 +11819,7 @@ void CWndSmeltSafety::DrawListItem(C2DRender* p2DRender)
 		if( m_eWndMode != WND_ELEMENT || pItemProp )
 		{
 			assert(pItemProp != NULL);
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
+			pTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
 			assert(pTexture != NULL);
 			nAlphaBlend = (m_Material[i].isUse != FALSE) ? NORMAL_ALPHA : TRANSLUCENT_ALPHA;
 			pTexture->Render( p2DRender, CPoint( m_Material[i].wndCtrl->rect.left, m_Material[i].wndCtrl->rect.top ), nAlphaBlend );
@@ -11859,7 +11850,7 @@ void CWndSmeltSafety::DrawListItem(C2DRender* p2DRender)
 			}
 		}
 		assert(pItemProp != NULL);
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
+		pTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
 		assert(pTexture != NULL);
 		nAlphaBlend = (m_Scroll1[i].isUse != FALSE) ? NORMAL_ALPHA : TRANSLUCENT_ALPHA;
 		pTexture->Render( p2DRender, CPoint( m_Scroll1[i].wndCtrl->rect.left, m_Scroll1[i].wndCtrl->rect.top ), nAlphaBlend );
@@ -11869,7 +11860,7 @@ void CWndSmeltSafety::DrawListItem(C2DRender* p2DRender)
 			assert(m_Scroll2[i].wndCtrl != NULL);
 			pItemProp = prj.GetItemProp(II_SYS_SYS_SCR_SMELTING);
 			assert(pItemProp != NULL);
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
+			pTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
 			assert(pTexture != NULL);
 			nAlphaBlend = (m_Scroll2[i].isUse != FALSE) ? NORMAL_ALPHA : TRANSLUCENT_ALPHA;
 			pTexture->Render( p2DRender, CPoint( m_Scroll2[i].wndCtrl->rect.left, m_Scroll2[i].wndCtrl->rect.top ), nAlphaBlend );
@@ -11879,7 +11870,7 @@ void CWndSmeltSafety::DrawListItem(C2DRender* p2DRender)
 			assert( m_Scroll2[ i ].wndCtrl != NULL );
 			pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_SMELTING2 );
 			assert( pItemProp != NULL );
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
+			pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
 			assert( pTexture != NULL );
 			nAlphaBlend = ( m_Scroll2[ i ].isUse != FALSE ) ? NORMAL_ALPHA : TRANSLUCENT_ALPHA;
 			pTexture->Render( p2DRender, CPoint( m_Scroll2[ i ].wndCtrl->rect.left, m_Scroll2[ i ].wndCtrl->rect.top ), nAlphaBlend );

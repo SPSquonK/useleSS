@@ -161,7 +161,6 @@ public:
     CD3DApplication();
 
 	HWND GetSafeHwnd() { return m_hWnd; } 
-	LPDIRECT3DDEVICE9 GetDevice() { return m_pd3dDevice; }
 };
 
 

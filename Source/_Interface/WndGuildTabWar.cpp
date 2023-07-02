@@ -73,13 +73,13 @@ void CWndGuildTabWar::OnDraw( C2DRender* p2DRender )
 		
 		CPoint point = lpWndCtrl->rect.TopLeft();
 		
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ONE );
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ZERO );
+		D3DDEVICE->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ONE );
+		D3DDEVICE->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ZERO );
 		
 		pWndWorld->m_pTextureLogo[dwEnemyLogo-1].Render( &g_Neuz.m_2DRender, point, 255 );
 		
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+		D3DDEVICE->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
+		D3DDEVICE->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 	}
 } 
 
@@ -94,7 +94,7 @@ void CWndGuildTabWar::OnInitialUpdate()
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildDuel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildDuel.bmp" ), 0xffff00ff );
 	}
 
 	// 윈도를 중앙으로 옮기는 부분.

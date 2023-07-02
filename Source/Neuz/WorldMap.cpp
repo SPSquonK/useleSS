@@ -62,17 +62,17 @@ FLOAT _fMap_Y2 = 4250.0f;
 
 void CWorldMap::Init()
 {
-	m_texArrow[0].LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME,"ImgMapArrow.bmp"), 0xffff00ff );
-	m_texArrow[1].LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME,"ImgMapArrowParty.bmp"), 0xffff00ff );
+	m_texArrow[0].LoadTexture( MakePath( DIR_THEME,"ImgMapArrow.bmp"), 0xffff00ff );
+	m_texArrow[1].LoadTexture( MakePath( DIR_THEME,"ImgMapArrowParty.bmp"), 0xffff00ff );
 	ZeroMemory( &m_billboard, sizeof( m_billboard )  );
 	m_billboard[0].rect.SetRect( 0, 0, m_texArrow[0].m_size.cx, m_texArrow[0].m_size.cy );
 	m_billboard[0].ptCenter = CPoint( m_texArrow[0].m_size.cx / 2, m_texArrow[0].m_size.cy / 2 );
-	m_billArrow[0].InitDeviceObjects( g_Neuz.m_pd3dDevice, &m_billboard[0], &m_texArrow[0] );
+	m_billArrow[0].InitDeviceObjects( &m_billboard[0], &m_texArrow[0] );
 	m_billArrow[0].RestoreDeviceObjects();
 
 	m_billboard[1].rect.SetRect( 0, 0, m_texArrow[1].m_size.cx, m_texArrow[1].m_size.cy );
 	m_billboard[1].ptCenter = CPoint( m_texArrow[1].m_size.cx / 2, m_texArrow[1].m_size.cy / 2 );
-	m_billArrow[1].InitDeviceObjects( g_Neuz.m_pd3dDevice, &m_billboard[1], &m_texArrow[1] );
+	m_billArrow[1].InitDeviceObjects( &m_billboard[1], &m_texArrow[1] );
 	m_billArrow[1].RestoreDeviceObjects();
 	
 
@@ -86,7 +86,7 @@ void CWorldMap::Init()
 
 	m_strMapStringList[7] = "WORLD_Estia.dds";
 
-	m_texMapButton.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "texMapButton.inc" ) ) );	
+	m_texMapButton.LoadScript( MakePath( DIR_THEME, _T( "texMapButton.inc" ) ) );	
 
 	m_strMonScript[0] = "texMapMonster_Darkon12.inc";
 	m_strMonScript[1] = "texMapMonster_Darkon3.inc";
@@ -492,9 +492,9 @@ void CWorldMap::RenderPlayer( C2DRender *p2DRender, BOOL bMyPlayer, D3DXVECTOR3 
 
 	// 화살표 출력 
 	if( bMyPlayer )
-		m_billArrow[0].Render( D3DDEVICE );
+		m_billArrow[0].Render( );
 	else
-		m_billArrow[1].Render( D3DDEVICE );	
+		m_billArrow[1].Render( );	
 
 	{
 		int nX;
@@ -670,15 +670,15 @@ BOOL CWorldMap::LoadWorldMap()
 	if( nMap != 100 )
 	{
 		m_strViewMapString = m_strMapStringList[nMap];
-		m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
+		m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
 
 		if(nMap > 0 && nMap < MAX_BUTTON - 1 && m_MonsterInfo.m_nMap != nMap)
 		{
 			m_MonsterInfo.DeleteDeviceObjects();
-			m_MonsterInfo.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( m_strMonScript[nMap-1] ) ), nMap );	
+			m_MonsterInfo.LoadScript( MakePath( DIR_THEME, _T( m_strMonScript[nMap-1] ) ), nMap );	
 		}
 
-		m_RainbowNPC.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "texMapRainbow_NPC.inc" ) ) );
+		m_RainbowNPC.LoadScript( MakePath( DIR_THEME, _T( "texMapRainbow_NPC.inc" ) ) );
 
 		if( m_pTexWorldMap )
 		{
@@ -783,12 +783,12 @@ void CWorldMap::OnLButtonDown( )
 			UpdateTeleportWorld( );
 			UpdateDestinationPosition( pWndWorld->m_vDestinationArrow );
 			m_strViewMapString = m_strMapStringList[nowMapNum];
-			m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
+			m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
 
 			if(nowMapNum > 0 && m_MonsterInfo.m_nMap != nowMapNum)
 			{
 				m_MonsterInfo.DeleteDeviceObjects();
-				m_MonsterInfo.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( m_strMonScript[nowMapNum-1] ) ), nowMapNum );
+				m_MonsterInfo.LoadScript( MakePath( DIR_THEME, _T( m_strMonScript[nowMapNum-1] ) ), nowMapNum );
 			}
 		}
 		else if( nowMapNum == MAX_BUTTON - 1 )
@@ -813,12 +813,12 @@ void CWorldMap::OnLButtonDown( )
 					UpdateTeleportWorld( );
 					UpdateDestinationPosition( pWndWorld->m_vDestinationArrow );
 					m_strViewMapString = m_strMapStringList[m_nMap];
-					m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
+					m_pTexWorldMap = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, m_strViewMapString ), 0xff000000 );
 
 					if(m_nMap > 0 && m_MonsterInfo.m_nMap != m_nMap)
 					{
 						m_MonsterInfo.DeleteDeviceObjects();
-						m_MonsterInfo.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( m_strMonScript[m_nMap-1] ) ), m_nMap );
+						m_MonsterInfo.LoadScript( MakePath( DIR_THEME, _T( m_strMonScript[m_nMap-1] ) ), m_nMap );
 					}
 				}
 				else if(i == MAX_BUTTON - 1)
@@ -878,7 +878,7 @@ void CWorldMap::ProcessingTeleporter( CMover* pFocusMover )
 
 void CWorldMap::RenderTelPos( C2DRender *p2DRender )
 {
-	m_pTelPosTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "ButtTeleport.bmp"), 0xffff00ff );
+	m_pTelPosTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtTeleport.bmp"), 0xffff00ff );
 	if( !m_pTelPosTexture )
 		return;
 
@@ -935,7 +935,7 @@ void CWorldMap::RenderDestinationPosition( C2DRender* p2DRender )
 	if( m_rectDestination == CRect( -1, -1, -1, -1 ) )
 		return;
 	
-	m_pDestinationPositionTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "ButtDestination.bmp"), 0xffff00ff );
+	m_pDestinationPositionTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtDestination.bmp"), 0xffff00ff );
 	if( m_pDestinationPositionTexture == NULL )
 		return;
 
@@ -1092,7 +1092,7 @@ BOOL CWorldMap::WorldPosToMapPos( const D3DXVECTOR3& vPos, OUT CPoint& cPos )
 
 //=====================================================================================================================================================
 
-BOOL CMonsterInfoPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName, int nMap )
+BOOL CMonsterInfoPack::LoadScript( LPCTSTR pszFileName, int nMap )
 {
 	CScript scanner;
 	if( scanner.Load( pszFileName ) == FALSE )
@@ -1131,14 +1131,14 @@ BOOL CMonsterInfoPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFile
 
 			if( bMultiLang )
 			{
-				LoadTextureFromRes( pd3dDevice, MakePath( DIR_THEME, strFileName ), 
+				LoadTextureFromRes( MakePath( DIR_THEME, strFileName ), 
 										D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 										D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 										D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );
 			}
 			else
 			{
-				LoadTextureFromRes( pd3dDevice, MakePath( DIR_THEME, strFileName ), 
+				LoadTextureFromRes( MakePath( DIR_THEME, strFileName ), 
 					D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 					D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 					D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );
@@ -1228,7 +1228,7 @@ CMonsterInfoPack::MonsterInfo::MonsterInfo(CScript & scanner, const CSize size) 
 }
 
 
-BOOL CRainbowNPCPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName )
+BOOL CRainbowNPCPack::LoadScript( LPCTSTR pszFileName )
 {
 	CScript scanner;
 	if( scanner.Load( pszFileName ) == FALSE )
@@ -1265,14 +1265,14 @@ BOOL CRainbowNPCPack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileN
 
 			if( bMultiLang )
 			{
-				LoadTextureFromRes( pd3dDevice, MakePath( DIR_THEME, strFileName ), 
+				LoadTextureFromRes( MakePath( DIR_THEME, strFileName ), 
 										D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 										D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 										D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );
 			}
 			else
 			{
-				LoadTextureFromRes( pd3dDevice, MakePath( DIR_THEME, strFileName ), 
+				LoadTextureFromRes( MakePath( DIR_THEME, strFileName ), 
 					D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 					D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 					D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );

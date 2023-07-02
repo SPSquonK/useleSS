@@ -65,8 +65,8 @@ void CWndOptionGame::OnInitialUpdate()
 	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_RADIO6 );
 	pWndButton[ 0 ]->SetGroup( TRUE );
 	pWndButton[ !(g_Option.m_bParty) ]->SetCheck( TRUE );
-	m_Texture.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
-	m_TexturePt.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );	
+	m_Texture.LoadTexture( MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
+	m_TexturePt.LoadTexture( MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );	
 	m_nStep[0] = (int)( g_Option.m_fEffectVolume * 10 );
 	m_nStep[1] = (int)( g_Option.m_fBGMVolume * 10 );
 

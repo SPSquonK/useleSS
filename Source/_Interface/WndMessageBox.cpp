@@ -57,20 +57,20 @@ static void SetupWindowsStyleDialog(
 			break;
 		case MB_OK:
 			buttons[0].Create("OK", 0, rect1_1, self, IDOK);
-			buttons[0].SetTexture(self->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "ButtOk.tga"));
+			buttons[0].SetTexture(MakePath(DIR_THEME, "ButtOk.tga"));
 			buttons[0].FitTextureSize();
 			break;
 		case MB_CANCEL:
 			buttons[0].Create("CANCEL", 0, rect1_1, self, IDCANCEL);
-			buttons[0].SetTexture(self->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "ButtCancel.tga"));
+			buttons[0].SetTexture(MakePath(DIR_THEME, "ButtCancel.tga"));
 			buttons[0].FitTextureSize();
 			break;
 		case MB_OKCANCEL:
 			buttons[0].Create("OK", 0, rect2_1, self, IDOK);
-			buttons[0].SetTexture(self->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "ButtOk.tga"));
+			buttons[0].SetTexture(MakePath(DIR_THEME, "ButtOk.tga"));
 			buttons[0].FitTextureSize();
 			buttons[1].Create("CANCEL", 0, rect2_2, self, IDCANCEL);
-			buttons[1].SetTexture(self->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "ButtCancel.tga"));
+			buttons[1].SetTexture(MakePath(DIR_THEME, "ButtCancel.tga"));
 			buttons[1].FitTextureSize();
 			break;
 		case MB_RETRYCANCEL:

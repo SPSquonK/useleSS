@@ -22,13 +22,13 @@ void CWndSummonAngel::OnDraw( C2DRender* p2DRender )
 { 
 	//Render Icon
 	if (const ItemProp * const pItemProp = prj.GetItemProp(II_GEN_MAT_ORICHALCUM01)) {
-		CTexture * pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+		CTexture * pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( 30, 218 ) );
 	}
 
 	if (const ItemProp * pItemProp = prj.GetItemProp(II_GEN_MAT_MOONSTONE)) {
-		CTexture * pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+		CTexture * pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( 30, 306 ) );
 	}
@@ -81,7 +81,7 @@ void CWndSummonAngel::OnInitialUpdate()
 	//France Button Image
 	CWndButton * pButton = GetDlgItem<CWndButton>(WIDC_START);
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	//Window Position
 	CWndInventory * m_pWndInventory = GetWndBase<CWndInventory>(APP_INVENTORY);

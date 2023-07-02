@@ -129,7 +129,7 @@ void CSnow::Process()
 	*/
 //Obj::Process( fElapsedTime );
 }
-void CSnow::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSnow::Render()
 {
 	if( !IsVisible() || ( IsCull() && GetType() != 1 ))
 		return;
@@ -151,7 +151,7 @@ void CSnow::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCCOLOR );
 		pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
 
-		m_pModel->Render(pd3dDevice);
+		m_pModel->Render();
 
 		pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
 		pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, FALSE );
@@ -234,7 +234,7 @@ void CRain::Process()
 	//if(vPos.x >= MAP_SIZE * 3)	ptz.x = MAP_SIZE * 3 - 1;
 	SetPos( vPos );
 }
-void CRain::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CRain::Render()
 {
 	if( !IsVisible() || ( IsCull() && GetType() != 1 ))
 		return;
@@ -255,7 +255,7 @@ void CRain::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_DESTALPHA );
 		pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_SRCALPHA );
 
-		m_pModel->Render(pd3dDevice);
+		m_pModel->Render();
 
 		pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
 		pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, FALSE );
@@ -316,7 +316,7 @@ void CFireRain::Process()
 	*/
 	CObj::Process();
 }
-void CFireRain::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CFireRain::Render()
 {
 	/*
 	if(GetPtz().z >= 0)
@@ -517,7 +517,7 @@ void CWeather::Process( CWorld* pWorld )
 					pSnow->m_dwType = 1;
 					pSnow->SetScale( D3DXVECTOR3(1.5f,1.5f,1.5f) );
 					pSnow->SetPos( D3DXVECTOR3( 0.0f,-1.0f,0.0f) );
-					pSnow->SetIndex( g_Neuz.m_pd3dDevice, 19 );
+					pSnow->SetIndex( 19 );
 					pWorld->AddObj( pSnow );
 				}
 			}
@@ -533,7 +533,7 @@ void CWeather::Process( CWorld* pWorld )
 					pRain->m_dwType = 1;
 					pRain->SetScale( D3DXVECTOR3(1.5f,1.5f,1.5f) );
 					pRain->SetPos( D3DXVECTOR3( 0.0f,-1.0f,0.0f) );
-					pRain->SetIndex( g_Neuz.m_pd3dDevice, 18 );
+					pRain->SetIndex( 18 );
 					pWorld->AddObj( pRain );
 				}
 			}
@@ -541,7 +541,7 @@ void CWeather::Process( CWorld* pWorld )
 	}
 #endif // !defined( __WORLDSERVER )
 }
-void CWeather::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CWeather::Render()
 {
 //	if(m_nThunderLight)
 	//	pMemDC->PaintAlphaRect(pMemDC->m_clipRect,MKRGB15(31,31,31),m_nThunderLight);

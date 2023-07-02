@@ -208,11 +208,11 @@ void CActionMover::ProcessFlyParticle( float fLenSq )
 						if( pRideProp->dwID == II_RID_RID_BOR_RIDINGCLOUD ) // 근두운일때
 						{
 							if( m_pTail->GetType() != 2 )	// 생성되었던 꼬리고 근두운용이 아니면
-								m_pTail->ChangeTexture( D3DDEVICE, "etc_Tail2.bmp", 2 );
+								m_pTail->ChangeTexture( "etc_Tail2.bmp", 2 );
 						} else
 						{
 							if( m_pTail->GetType() != 1 )	// 생성되었던 꼬리고 일반보드용이 아니면 
-								m_pTail->ChangeTexture( D3DDEVICE, "etc_Tail1.bmp", 1 );	// 일반보드용으로 텍스쳐 교체.
+								m_pTail->ChangeTexture( "etc_Tail1.bmp", 1 );	// 일반보드용으로 텍스쳐 교체.
 						}
 
 							
@@ -221,11 +221,11 @@ void CActionMover::ProcessFlyParticle( float fLenSq )
 					{
 						if( pRideProp->dwID == II_RID_RID_BOR_RIDINGCLOUD ) // 근두운...
 						{
-							m_pTail = (CTailEffectBelt*)g_TailEffectMng.AddEffect( g_Neuz.m_pd3dDevice, "etc_Tail2.bmp", 2 );
+							m_pTail = (CTailEffectBelt*)g_TailEffectMng.AddEffect( "etc_Tail2.bmp", 2 );
 						}
 						else
 						{
-							m_pTail = (CTailEffectBelt*)g_TailEffectMng.AddEffect( g_Neuz.m_pd3dDevice, "etc_Tail1.bmp", 1 );
+							m_pTail = (CTailEffectBelt*)g_TailEffectMng.AddEffect( "etc_Tail1.bmp", 1 );
 						}
 					}
 					D3DXVECTOR3	vPos1, vPos2;
@@ -401,7 +401,7 @@ void	CActionMover::ProcessFlyMove( void )
 				if( ! ( pMover->IsMode( TRANSPARENT_MODE ) ) )		// 투명상태가 아닐때만 렌더.
 				{	
 					if( (g_nProcessCnt & 3) == 0 )
-						CreateSfx( g_Neuz.m_pd3dDevice, XI_NAT_DUST_RUN, pMover->GetPos() );
+						CreateSfx( XI_NAT_DUST_RUN, pMover->GetPos() );
 				}
 			#endif
 			}

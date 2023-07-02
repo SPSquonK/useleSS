@@ -152,14 +152,14 @@ void CModelObject::SetDetachModel(int nEventIndex)
 		m_mapAttachModel.erase(iter);
 }
 
-void CModelObject::InitAttachModelDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
+void CModelObject::InitAttachModelDeviceObjects()
 {
 	for(map<int, SpModelObject>::const_iterator i=m_mapAttachModel.begin(); i!=m_mapAttachModel.end(); ++i)
 	{
 		SpModelObject pModelObject = i->second;
 		if(pModelObject.get() != NULL)
 		{
-			pModelObject->InitDeviceObjects(pd3dDevice);
+			pModelObject->InitDeviceObjects();
 		}
 	}
 }
@@ -200,7 +200,7 @@ void CModelObject::DeleteAttachModelDeviceObjects()
 	}
 }
 
-void CModelObject::RenderAttachModel(LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld)
+void CModelObject::RenderAttachModel(const D3DXMATRIX *mWorld)
 {
 	for(map<int, SpModelObject>::const_iterator i=m_mapAttachModel.begin(); i!=m_mapAttachModel.end(); ++i)
 	{
@@ -240,13 +240,13 @@ void CModelObject::RenderAttachModel(LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMAT
 			pModelObject->SetBlendFactor(m_dwBlendFactor);
 
 			pModelObject->m_nNoEffect = m_nNoEffect;
-			pModelObject->RenderAttachModelElem(pd3dDevice, &matAttachModelWorld);
+			pModelObject->RenderAttachModelElem(&matAttachModelWorld);
 			pModelObject->m_nNoEffect = 0;
 		}
 	}
 }
 
-int CModelObject::RenderAttachModelElem(LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld)
+int CModelObject::RenderAttachModelElem(const D3DXMATRIX *mWorld)
 {
 #ifdef	__WORLDSERVER
 	return 1;
@@ -318,7 +318,7 @@ int CModelObject::RenderAttachModelElem(LPDIRECT3DDEVICE9 pd3dDevice, const D3DX
 	}
 
 	nNextFrame = GetNextFrame();
-	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( pd3dDevice, 0 ) );
+	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( 0 ) );
 
 	D3DXVECTOR3 vec3LightBackup = D3DXVECTOR3( s_vLight[0], s_vLight[1], s_vLight[2] );
 	D3DXVECTOR4 vec4Diffuse = D3DXVECTOR4( s_fDiffuse[0], s_fDiffuse[1], s_fDiffuse[2], s_fDiffuse[3] );;
@@ -346,7 +346,7 @@ int CModelObject::RenderAttachModelElem(LPDIRECT3DDEVICE9 pd3dDevice, const D3DX
 		}
 		
 		DWORD dwBlendFactor = m_dwColor | ( m_dwBlendFactor << 24 );
-		pObject3D->Render( pd3dDevice, pElem->m_ppd3d_VBSel, m_fFrameCurrent, nNextFrame, &m1, pElem->m_nEffect, dwBlendFactor );
+		pObject3D->Render( pElem->m_ppd3d_VBSel, m_fFrameCurrent, nNextFrame, &m1, pElem->m_nEffect, dwBlendFactor );
 
 		pObject3D->m_nNoEffect = 0;
 	}
@@ -652,7 +652,7 @@ int		CModelObject::LoadElement( LPCTSTR szFileName, int nParts )
 		//ADDERRORMSG( szErr );
 	}
 #endif
-	pObject3D = g_Object3DMng.LoadObject3D( m_pd3dDevice, szFileName );
+	pObject3D = g_Object3DMng.LoadObject3D( szFileName );
 	if( pObject3D == NULL )
 	{
 		LPCTSTR szStr = Error( "%s : 찾을 수 없음", MakePath( DIR_MODEL, szFileName ) );
@@ -660,7 +660,7 @@ int		CModelObject::LoadElement( LPCTSTR szFileName, int nParts )
 		return FAIL;
 	}
 
-	pObject3D->InitDeviceObjects( m_pd3dDevice );
+	pObject3D->InitDeviceObjects( );
 
 	// 스킨파츠의 경우 외부본을 읽었는지 검사.
 	if( pObject3D->IsUseExternBone() )		// 외장본을 사용하는 오브젝이다.
@@ -784,7 +784,7 @@ int CModelObject::LoadClonedElement( LPCTSTR szFileName )
 	O3D_ELEMENT* pElem = NULL;
 
 	pObject3D	= new CObject3D;
-	pObject3D->InitDeviceObjects( m_pd3dDevice );
+	pObject3D->InitDeviceObjects( );
 	if( pObject3D->LoadObject( szFileName ) == FAIL )
 	{
 		assert( 0 );
@@ -792,7 +792,7 @@ int CModelObject::LoadClonedElement( LPCTSTR szFileName )
 		return -1;
 	}
 
-	pObject3D->InitDeviceObjects( m_pd3dDevice );
+	pObject3D->InitDeviceObjects( );
 
 	pElem = &m_Element[ 0 ];
 	memset( pElem, 0, sizeof(O3D_ELEMENT) );
@@ -923,7 +923,7 @@ void	CModelObject::SetTextureMulti( LPCTSTR szBitmap, int nParts )
 	D3DMATERIAL9	d3dmtrl;
 	MATERIAL		*mtrl;
 
-	mtrl = g_TextureMng.AddMaterial( m_pd3dDevice, &d3dmtrl, szBitmap );
+	mtrl = g_TextureMng.AddMaterial( &d3dmtrl, szBitmap );
 	O3D_ELEMENT* pParts = GetParts(nParts);
 
 	if( pParts )
@@ -976,7 +976,7 @@ SetAmbient( 1.0, 1.0, 1.0 );
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
  */
-int		CModelObject::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld )
+int		CModelObject::Render( const D3DXMATRIX *mWorld )
 {
 #ifdef	__WORLDSERVER
 	return 1;
@@ -1105,7 +1105,7 @@ int		CModelObject::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 	}
 
 	nNextFrame = GetNextFrame();
-	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( pd3dDevice, 0 ) );
+	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( 0 ) );
 
 	D3DXVECTOR3 vec3LightBackup = D3DXVECTOR3( s_vLight[0], s_vLight[1], s_vLight[2] );
 	D3DXVECTOR4 vec4Diffuse = D3DXVECTOR4( s_fDiffuse[0], s_fDiffuse[1], s_fDiffuse[2], s_fDiffuse[3] );;
@@ -1198,7 +1198,7 @@ int		CModelObject::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 			SetDiffuse( vec3Diffuse.x, vec3Diffuse.y, vec3Diffuse.z );
 		}
 		
-		pObject3D->Render( pd3dDevice, pElem->m_ppd3d_VBSel, m_fFrameCurrent, nNextFrame, &m1, pElem->m_nEffect, dwBlendFactor );
+		pObject3D->Render( pElem->m_ppd3d_VBSel, m_fFrameCurrent, nNextFrame, &m1, pElem->m_nEffect, dwBlendFactor );
 
 		pObject3D->m_nNoEffect = 0;
 
@@ -1221,7 +1221,7 @@ int		CModelObject::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 	}
 
 #ifdef __ATTACH_MODEL
-	RenderAttachModel(pd3dDevice, mWorld);
+	RenderAttachModel(mWorld);
 #endif //__ATTACH_MODEL
 
 	// 상태 해제
@@ -1243,7 +1243,7 @@ int		CModelObject::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 #endif // !__WORLDSERVER
 }
 
-void	CModelObject::RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld, DWORD dwItemKind3, int nLevelL, int nLeveR )
+void	CModelObject::RenderEffect( const D3DXMATRIX *mWorld, DWORD dwItemKind3, int nLevelL, int nLeveR )
 {
 
 #ifdef __SFX_OPT
@@ -1258,8 +1258,8 @@ void	CModelObject::RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX 
 	if( m_nNoEffect == 0 )
 	{
 		// 검광 렌더.
-		if( m_pForce && m_pForce->m_nMaxSpline > 0 )	m_pForce->Draw( pd3dDevice, mWorld );
-		if( m_pForce2 && m_pForce2->m_nMaxSpline > 0 )	m_pForce2->Draw( pd3dDevice, mWorld );
+		if( m_pForce && m_pForce->m_nMaxSpline > 0 )	m_pForce->Draw( mWorld );
+		if( m_pForce2 && m_pForce2->m_nMaxSpline > 0 )	m_pForce2->Draw( mWorld );
 		
 #ifdef __CLIENT
 		if( g_pPlayer )
@@ -1468,12 +1468,10 @@ void	CModelObject::RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX 
 
 
 //
-HRESULT CModelObject::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CModelObject::InitDeviceObjects( )
 { 
-	m_pd3dDevice = pd3dDevice;
-
 #ifdef __ATTACH_MODEL
-	InitAttachModelDeviceObjects(pd3dDevice);
+	InitAttachModelDeviceObjects();
 #endif //__ATTACH_MODEL
 	return S_OK; 
 }
@@ -1497,14 +1495,14 @@ HRESULT CModelObject::RestoreDeviceObjects()
 	}
 	
 	if( m_pPartsEffect )
-		m_pPartsEffect->RestoreDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect->RestoreDeviceObjects( );
 	if( m_pPartsEffect2 )
-		m_pPartsEffect2->RestoreDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect2->RestoreDeviceObjects( );
 
 	if( m_pPartsEffect1_Detail )
-		m_pPartsEffect1_Detail->RestoreDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect1_Detail->RestoreDeviceObjects( );
 	if( m_pPartsEffect2_Detail )
-		m_pPartsEffect2_Detail->RestoreDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect2_Detail->RestoreDeviceObjects( );
 
 #ifdef __ATTACH_MODEL
 	RestoreAttachModelDeviceObjects();
@@ -1517,14 +1515,14 @@ HRESULT CModelObject::InvalidateDeviceObjects()
 	DeleteDeviceObjects();
 
 	if( m_pPartsEffect )
-		m_pPartsEffect->InvalidateDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect->InvalidateDeviceObjects( );
 	if( m_pPartsEffect2 )
-		m_pPartsEffect2->InvalidateDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect2->InvalidateDeviceObjects( );
 
 	if( m_pPartsEffect1_Detail )
-		m_pPartsEffect1_Detail->InvalidateDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect1_Detail->InvalidateDeviceObjects( );
 	if( m_pPartsEffect2_Detail )
-		m_pPartsEffect2_Detail->InvalidateDeviceObjects( m_pd3dDevice );
+		m_pPartsEffect2_Detail->InvalidateDeviceObjects( );
 
 	return  S_OK;
 }	
@@ -1975,29 +1973,29 @@ void	CModelObject::CreateParticle( int nParts, const D3DXMATRIX *pmWorld, int nT
 #ifdef __CSC_ENCHANT_EFFECT_2
 		if(nLevel > 0)
 #endif //__CSC_ENCHANT_EFFECT_2
-		pFire->Create( m_pd3dDevice, v3, dwSfx, vScale * fScalLevel );	// 해당 sfx로 파티클 생성시킴.
+		pFire->Create( v3, dwSfx, vScale * fScalLevel );	// 해당 sfx로 파티클 생성시킴.
 #ifdef __CSC_ENCHANT_EFFECT_2
 		if(nEffLevel_2 > 0 && (nType == PE_FIRE || nType == PE_WATER || nType == PE_WIND || nType == PE_EARTH
 			|| nType == PE_FIRE_AL || nType == PE_WATER_AL || nType == PE_WIND_AL || nType == PE_EARTH_AL)
 			&& (fTemp > 0.1f && fTemp < 0.93f))
-			pFire->Create( m_pd3dDevice, v3, dwSfx_2 );	// 해당 sfx로 파티클 생성시킴.
+			pFire->Create( v3, dwSfx_2 );	// 해당 sfx로 파티클 생성시킴.
 #endif //__CSC_ENCHANT_EFFECT_2
 		if(IsSecondLine)
 		{
 #ifdef __CSC_ENCHANT_EFFECT_2
 			if(nLevel > 0)
 #endif //__CSC_ENCHANT_EFFECT_2
-			pFire->Create( m_pd3dDevice, v2_3, dwSfx, vScale * fScalLevel );	// 해당 sfx로 파티클 생성시킴.
+			pFire->Create( v2_3, dwSfx, vScale * fScalLevel );	// 해당 sfx로 파티클 생성시킴.
 #ifdef __CSC_ENCHANT_EFFECT_2
 		if(nEffLevel_2 > 0 && (nType == PE_FIRE || nType == PE_WATER || nType == PE_WIND || nType == PE_EARTH
 			|| nType == PE_FIRE_AL || nType == PE_WATER_AL || nType == PE_WIND_AL || nType == PE_EARTH_AL)
 			&& (fTemp > 0.1f && fTemp < 0.93f))
-				pFire->Create( m_pd3dDevice, v2_3, dwSfx_2 );	// 해당 sfx로 파티클 생성시킴.
+				pFire->Create( v2_3, dwSfx_2 );	// 해당 sfx로 파티클 생성시킴.
 #endif //__CSC_ENCHANT_EFFECT_2
 		}
 	}
 
-	pFire->Render( m_pd3dDevice, &m2 );
+	pFire->Render( &m2 );
 
 #endif // client
 }
@@ -2084,9 +2082,9 @@ void	CModelObject::RenderItemElec_Adv( int nParts, const D3DXMATRIX *pmWorld, in
 		pBeam = (CPartsBeam *)m_pPartsEffect1_Detail;
 	}
 	
-	pBeam->Render( m_pd3dDevice, &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v1, v2, nLevel );
+	pBeam->Render( &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v1, v2, nLevel );
 	if(IsSecondLine)
-		pBeam->Render( m_pd3dDevice, &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v2_1, v2_2, nLevel );
+		pBeam->Render( &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v2_1, v2_2, nLevel );
 
 #endif // CLIENT
 }
@@ -2149,7 +2147,7 @@ void	CModelObject::RenderItemElec( int nParts, const D3DXMATRIX *pmWorld, int nL
 		pBeam = (CPartsBeam *)m_pPartsEffect;
 	}
 	
-	pBeam->Render( m_pd3dDevice, &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v1, v2, nLevel );
+	pBeam->Render( &m2, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward, v1, v2, nLevel );
 #endif // CLIENT
 }
 
@@ -2438,10 +2436,11 @@ void	CSwordForce::Process( void )
 
 }
 
+#ifdef __CLIENT
 //
 //
 //
-void	CSwordForce::Draw( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld )
+void	CSwordForce::Draw( const D3DXMATRIX *mWorld )
 {
 	pd3dDevice->SetTransform( D3DTS_WORLD, mWorld );
 	pd3dDevice->SetVertexShader( NULL );
@@ -2487,5 +2486,5 @@ void	CSwordForce::Draw( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld )
     pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
 
 }
-
+#endif
 

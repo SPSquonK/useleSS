@@ -45,7 +45,7 @@ void CToolTip::InitTexture()
 		for( int j = 0 ; j < 9 ; ++ j )
 		{
 			szTextName.Format("WndTooltipTile%02d.tga", (i * 10) + j);
-			m_apTextureToolTip[nloadTexture].LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, szTextName ), 0xffff00ff, TRUE );
+			m_apTextureToolTip[nloadTexture].LoadTexture( MakePath( DIR_THEME, szTextName ), 0xffff00ff, TRUE );
 			++nloadTexture;
 		}
 	}
@@ -58,8 +58,8 @@ void CToolTip::InitTexture()
 	else
 		strPath = MakePath( DIR_ICON, "Icon_Ultimate.dds");
 
-	m_pUltimateTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
-	m_pJewelBgTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndChgElemItem.bmp"), 0xffff00ff );
+	m_pUltimateTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
+	m_pJewelBgTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndChgElemItem.bmp"), 0xffff00ff );
 }
 /////////////////////////////////////////////////////////////////////////////
 // Parameters :
@@ -562,7 +562,7 @@ void CToolTip::Paint(C2DRender* p2DRender)
 					const ItemProp* pItemProp = prj.GetItemProp( m_nAddedJewel[i] );
 					if(pItemProp != NULL)
 					{
-						pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+						pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 						if(pTexture != NULL)
 							pTexture->RenderScal( p2DRender, point, 255, 1.0f, 1.0f );
 					}

@@ -1147,9 +1147,9 @@ void CWndPostReceive::OnInitialUpdate()
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
 	
-	m_Texture[0].LoadTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndPostTable.tga" ), 0xffff00ff );	
-	m_Texture[1].LoadTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndNotUse.tga" ), 0xffff00ff );	
-	m_Texture[2].LoadTexture(g_Neuz.m_pd3dDevice, MakePath( "item\\", "itm_GolGolSeed.dds" ), 0xffff00ff );	
+	m_Texture[0].LoadTexture(MakePath( DIR_THEME, "WndPostTable.tga" ), 0xffff00ff );	
+	m_Texture[1].LoadTexture(MakePath( DIR_THEME, "WndNotUse.tga" ), 0xffff00ff );	
+	m_Texture[2].LoadTexture(MakePath( "item\\", "itm_GolGolSeed.dds" ), 0xffff00ff );	
 	
 } 
 

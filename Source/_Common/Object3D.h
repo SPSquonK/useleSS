@@ -215,7 +215,6 @@ private:
 	
 public:
 	D3DXVECTOR3	m_vEvent[MAX_MDL_EVENT];
-	LPDIRECT3DDEVICE9		m_pd3dDevice;
 	int		m_bSendVS;
 	int		m_bLOD;						// LOD데이타가 있는가?
 	int		m_nID;						// 오브젝트의 고유 아이디
@@ -268,7 +267,7 @@ public:
 #ifdef __YENV
 	LPDIRECT3DVERTEXDECLARATION9 m_pNormalDecl;
 	HRESULT						ExtractBuffers( int nType, LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB, GMOBJECT *pObject );
-	LPDIRECT3DTEXTURE9			CreateNormalMap( int nType, LPDIRECT3DDEVICE9 m_pd3dDevice, LPDIRECT3DTEXTURE9* pTexture, LPCTSTR strFileName, LPCTSTR szPath = NULL );
+	LPDIRECT3DTEXTURE9			CreateNormalMap( int nType, LPDIRECT3DTEXTURE9* pTexture, LPCTSTR strFileName, LPCTSTR szPath = NULL );
 #endif //__YENV
 	
 	CObject3D();
@@ -366,19 +365,19 @@ static 	BOOL IsAnimateFile( LPCTSTR szFileName );		// szFileName이 애니메이션이 
 	void    SetState( MATERIAL_BLOCK* pBlock, int nEffect, DWORD dwBlendFactor );
 	void    ResetState( MATERIAL_BLOCK* pBlock, int nEffect, DWORD dwBlendFactor );
 	void	SetShader( const D3DXMATRIX *mWorld );
-	void	Render( LPDIRECT3DDEVICE9 pd3dDevice, LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB, FLOAT fFrameCurrent, int nNextFrame, const D3DXMATRIX *mWorld, int nEffect = 0, DWORD dwBlendFactor = 0xff000000 );
-	void	RenderSkin( LPDIRECT3DDEVICE9 pd3dDevice, LPDIRECT3DVERTEXBUFFER9 pd3d_VB, GMOBJECT *pObj, const D3DXMATRIX *mWorld, int nEffect, DWORD dwBlendFactor = 0xff000000 );
-	void	RenderNormal( LPDIRECT3DDEVICE9 pd3dDevice, GMOBJECT *pObj, const D3DXMATRIX *mWorld, int nEffect, int nBlendFactor = 255 );
+	void	Render( LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB, FLOAT fFrameCurrent, int nNextFrame, const D3DXMATRIX *mWorld, int nEffect = 0, DWORD dwBlendFactor = 0xff000000 );
+	void	RenderSkin( LPDIRECT3DVERTEXBUFFER9 pd3d_VB, GMOBJECT *pObj, const D3DXMATRIX *mWorld, int nEffect, DWORD dwBlendFactor = 0xff000000 );
+	void	RenderNormal( GMOBJECT *pObj, const D3DXMATRIX *mWorld, int nEffect, int nBlendFactor = 255 );
 	
-	void	RenderBB( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
+	void	RenderBB( const D3DXMATRIX *mWorld );
 #ifdef __SHADOW
-	void	RenderNormalShadow( LPDIRECT3DDEVICE9 pd3dDevice, GMOBJECT *pObj, const D3DXMATRIX *mWorld, int nBlendFactor );
-	void	RenderShadow( LPDIRECT3DDEVICE9 pd3dDevice, LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB, FLOAT fFrameCurrent, int nNextFrame, const D3DXMATRIX *mWorld, int nBlendFactor = 255 );
-//	void	RenderShadow( LPDIRECT3DDEVICE9 pd3dDevice, FLOAT fFrameCurrent, int nNextFrame, const D3DXMATRIX *mWorld, int nBlendFactor );
+	void	RenderNormalShadow( GMOBJECT *pObj, const D3DXMATRIX *mWorld, int nBlendFactor );
+	void	RenderShadow( LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB, FLOAT fFrameCurrent, int nNextFrame, const D3DXMATRIX *mWorld, int nBlendFactor = 255 );
+//	void	RenderShadow( FLOAT fFrameCurrent, int nNextFrame, const D3DXMATRIX *mWorld, int nBlendFactor );
 #endif
 #endif
 	
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) { m_pd3dDevice = pd3dDevice;  return S_OK; }
+	HRESULT InitDeviceObjects( ) { return S_OK; }
 	HRESULT RestoreDeviceObjects( LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB, D3DPOOL pool = D3DPOOL_MANAGED );
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
@@ -403,23 +402,21 @@ public:
 	~CObject3DMng();
 
 	int			DeleteObject3D( CObject3D *pObject3D );
-	CObject3D	*LoadObject3D( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName );
+	CObject3D	*LoadObject3D( LPCTSTR szFileName );
 	void	Process( void );
-
-	//HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) { m_pd3dDevice = pd3dDevice; }
 
 };
 
 extern CObject3DMng		g_Object3DMng;
 extern D3DXMATRIX	g_mReflect;
 
-HRESULT		CreateShadowVS( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName );
-HRESULT		CreateSkinningVS( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName );
-void		DeleteVertexShader( LPDIRECT3DDEVICE9 pd3dDevice );
+HRESULT		CreateShadowVS( LPCTSTR szFileName );
+HRESULT		CreateSkinningVS( LPCTSTR szFileName );
+void		DeleteVertexShader( );
 
 
-HRESULT		CreateShadowMask( LPDIRECT3DDEVICE9 pd3dDevice, int nWidth, int nHeight );
-void	RenderShadowMask( LPDIRECT3DDEVICE9 pd3dDevice );
+HRESULT		CreateShadowMask( int nWidth, int nHeight );
+void	RenderShadowMask( );
 void	DeleteShadowMask( void );
 
 void	SetTransformViewProj( const D3DXMATRIX &mViewProj );

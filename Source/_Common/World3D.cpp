@@ -54,7 +54,7 @@ BOOL EdgeIntersectsFace( D3DXVECTOR3* pEdges, D3DXVECTOR3* pFacePoints, D3DXPLAN
 
 float fDiv = 4.0f;
 
-void CWorld::Projection( LPDIRECT3DDEVICE9 pd3dDevice, int nWidth, int nHeight )
+void CWorld::Projection( int nWidth, int nHeight )
 { 
 	// Frame Window와 관려된 Projection
 	FLOAT fAspect = (FLOAT)nWidth / (FLOAT)nHeight;
@@ -107,7 +107,7 @@ void CWorld::Projection( LPDIRECT3DDEVICE9 pd3dDevice, int nWidth, int nHeight )
 
 
 // 지형과 오브젝트만 렌더링.
-void CWorld::RenderBase( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
+void CWorld::RenderBase( CD3DFont* pFont )
 {
 #ifdef __CLIENT
 	// 기본 랜더 세팅 
@@ -141,13 +141,13 @@ void CWorld::RenderBase( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 	CHECK1();
 	if( m_bViewSkybox )
 	{
-		m_skyBox.Render( this, pd3dDevice );
+		m_skyBox.Render( this );
 		pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	}
 	CHECK2( "  Render SkyBox" );
 #endif
 	// 카메라 트랜스폼 ( View 트랜스폼 ) 
-	m_pCamera->Transform( pd3dDevice, this );
+	m_pCamera->Transform( this );
 	// 밉맵 세팅 
 	//pd3dDevice->SetSamplerState( 0, D3DSAMP_MAXMIPLEVEL, 0 );
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_POINT );
@@ -159,13 +159,13 @@ void CWorld::RenderBase( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 
 	SetLight( TRUE ); // 지형은 반드시 조명을 받게 한다.
 
-	SetFogEnable( m_pd3dDevice, m_bViewFog );
+	SetFogEnable( m_bViewFog );
 	
 	// 지형 랜더링  
 	CHECK1(); 
-	if( g_Option.m_nShadow < 2 ) SetStateShadowMap( m_pd3dDevice, 2, m_pCamera->m_matView );
+	if( g_Option.m_nShadow < 2 ) SetStateShadowMap( 2, m_pCamera->m_matView );
 	RenderTerrain();
-	if( g_Option.m_nShadow < 2 ) ResetStateShadowMap( m_pd3dDevice, 2 );
+	if( g_Option.m_nShadow < 2 ) ResetStateShadowMap( 2 );
 	CHECK2( "  Render Terrain" );
 	
 	if( m_bViewLight != TRUE )
@@ -177,7 +177,7 @@ void CWorld::RenderBase( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 }
 
 
-void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
+void CWorld::Render( CD3DFont* pFont )
 {
 	_PROFILE("CWorld::Render()");
 	CWorldMap* pWorldMap = CWorldMap::GetInstance();
@@ -185,10 +185,10 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 	if( g_Option.m_nBloom && !pWorldMap->IsRender() )
 	{
 		//	RenderBase로 다른 렌더타겟에 렌더링한 텍스쳐를 this에 렌더함.
-		// RenderBase( pd3dDevice, pFont );		// 이건 외부에서 미리 실행되어야 한다.
+		// RenderBase( pFont );		// 이건 외부에서 미리 실행되어야 한다.
 		
-			g_Glare.m_Src.RenderNormal( pd3dDevice );	// 게임화면 원본을 스크린에 박음
-			g_Glare.RenderGlareEffect( pd3dDevice );	// 그위에 블러된 화면을 덧씌움.
+			g_Glare.m_Src.RenderNormal( );	// 게임화면 원본을 스크린에 박음
+			g_Glare.RenderGlareEffect( );	// 그위에 블러된 화면을 덧씌움.
 	} 
 	else
 	{
@@ -223,13 +223,13 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 		CHECK1();
 		if( m_bViewSkybox )
 		{
-			m_skyBox.Render( this, pd3dDevice );
+			m_skyBox.Render( this );
 			pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 		}
 		CHECK2( "  Render SkyBox" );
 	 #endif
 		// 카메라 트랜스폼 ( View 트랜스폼 ) 
-		m_pCamera->Transform( pd3dDevice, this );
+		m_pCamera->Transform( this );
 		// 밉맵 세팅 
 		//pd3dDevice->SetSamplerState( 0, D3DSAMP_MAXMIPLEVEL, 0 );
 		pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_POINT );
@@ -240,14 +240,14 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 		//m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPMAPLODBIAS , 0 );
 		
 		SetLight( TRUE ); // 지형은 반드시 조명을 받게 한다.
-		SetFogEnable( m_pd3dDevice, m_bViewFog );
+		SetFogEnable( m_bViewFog );
 		
 		// 지형 랜더링  
 		CHECK1(); 
 		//m_pd3dDevice->SetRenderState( D3DRS_AMBIENT, D3DCOLOR_ARGB( 255,0,0,0) ); 
-		if( g_Option.m_nShadow < 2 ) SetStateShadowMap( m_pd3dDevice, 2, m_pCamera->m_matView );
+		if( g_Option.m_nShadow < 2 ) SetStateShadowMap( 2, m_pCamera->m_matView );
 		RenderTerrain();
-		if( g_Option.m_nShadow < 2 ) ResetStateShadowMap( m_pd3dDevice, 2 );
+		if( g_Option.m_nShadow < 2 ) ResetStateShadowMap( 2 );
 
 		CHECK2( "  Render Terrain" );
 
@@ -261,7 +261,7 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 		RenderObject( pFont );
 
 #ifdef __BS_EFFECT_LUA
-		CSfxModelMng::GetThis()->Render( m_pd3dDevice );
+		CSfxModelMng::GetThis()->Render( );
 #endif //__BS_EFFECT_LUA
 	}
 
@@ -272,10 +272,10 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 	g_GameTimer.GetMoonPercent();
 	// 스카이 박스 랜더링 
 	CHECK1();
-	m_skyBox.RenderFall( pd3dDevice );
+	m_skyBox.RenderFall( );
 	if( m_bViewSkybox ) //&& g_GameTimer.GetSunPercent() )
 	{
-		m_skyBox.DrawLensFlare(pd3dDevice);
+		m_skyBox.DrawLensFlare();
 	}
 	CHECK2( "  Render LensFlare" );
 	
@@ -293,7 +293,7 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 	// 랜더 스테이트 복구 
 	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_NONE );
-	SetFogEnable( pd3dDevice, FALSE );
+	SetFogEnable( FALSE );
 }
 //-----------------------------------------------------------------------------
 // Name: ObjSortNearToFar()
@@ -430,7 +430,7 @@ void CWorld::RenderTerrain()
 				if( LandInWorld( (int)j, (int)i ) && m_apLand[ nOffset ] )
 				{
 					if(m_apLand[ nOffset ]->isVisibile())
-						m_apLand[ nOffset ]->Render( m_pd3dDevice );
+						m_apLand[ nOffset ]->Render( );
 				}
 			}
 		}
@@ -448,7 +448,7 @@ void CWorld::RenderTerrain()
 void CWorld::RenderWater()
 {
 //	SetLight( m_bViewLight );		//!!gmpbigsun: Light를 계산하는 함수인데 .. 물의경우라고 다시 계산해야할 이유는?
-//	SetFogEnable( m_pd3dDevice, m_bViewFog );
+//	SetFogEnable( m_bViewFog );
 
 	{
 		const auto [x, z] = WorldPosToLand( m_pCamera->m_vPos );
@@ -465,7 +465,7 @@ void CWorld::RenderWater()
 						if( m_bViewWater )
 						{
 							m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, m_bViewLight );
-							m_apLand[ nOffset ]->RenderWater( m_pd3dDevice);
+							m_apLand[ nOffset ]->RenderWater();
 						}
 					}						
 				}
@@ -502,7 +502,7 @@ void CWorld::RenderObj(CObj* pObj)
 		}		
 	}
 	
-	pObj->Render( m_pd3dDevice );
+	pObj->Render( );
 	if( m_bViewBoundBox )
 	{
 		SetBoundBoxVertex( pObj );
@@ -723,7 +723,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				}
 				
 				{
-					pObj->Render( m_pd3dDevice );
+					pObj->Render( );
 				}
 #endif //__CSC_UPDATE_WORLD3D
 				// The object name is moved to the last shot.
@@ -765,7 +765,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 						{
 							if( !IsWorldGuildHouse() )			//In the guild house, do not cast shadows on objects.
 							{
-								SetStateShadowMap( m_pd3dDevice, 2, m_pCamera->m_matView );
+								SetStateShadowMap( 2, m_pCamera->m_matView );
 								bRenderedShadow = true;
 							}
 						}
@@ -794,10 +794,10 @@ void CWorld::RenderObject( CD3DFont* pFont )
 						}
 					}
 					if( pObj->m_pModel->m_bSkin )
-						ResetStateShadowMap( m_pd3dDevice, 2 );
-					pObj->Render( m_pd3dDevice );
+						ResetStateShadowMap( 2 );
+					pObj->Render( );
 					if( pObj->m_pModel->m_bSkin )
-						SetStateShadowMap( m_pd3dDevice, 2, m_pCamera->m_matView );
+						SetStateShadowMap( 2, m_pCamera->m_matView );
 					
 					if( m_bViewBoundBox )
 					{
@@ -808,22 +808,22 @@ void CWorld::RenderObject( CD3DFont* pFont )
 					if( bRenderedShadow )
 					{
 						bRenderedShadow = false;
-						ResetStateShadowMap( m_pd3dDevice, 2 );
+						ResetStateShadowMap( 2 );
 					}
 				}
 
-				ResetStateShadowMap( m_pd3dDevice, 2 );
+				ResetStateShadowMap( 2 );
 			}
 
 			for (CObj * pObj : m_objCull) {
 				if( pObj == NULL )	continue;
 				if( pObj->GetType() != OT_MOVER )	continue;
 				CMover* pMover = (CMover*) pObj;
-				pMover->RenderPartsEffect( m_pd3dDevice );
+				pMover->RenderPartsEffect( );
 			}
 
 #ifdef __CLIENT			
-			g_ParticleMng.Render( m_pd3dDevice );
+			g_ParticleMng.Render( );
 #endif
 			
 			// Simple shadow
@@ -833,7 +833,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				D3DXMATRIX mWorldShadow;
 				g_Shadow.SetGroup(0);
 				float bias = -0.0001f;
-				LPDIRECT3DDEVICE9 pd3dDevice = m_pd3dDevice;
+
 				if( g_ModelGlobal.m_bDepthBias )
 					pd3dDevice->SetRenderState(D3DRS_DEPTHBIAS, *((DWORD*) (&bias)));
 				pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
@@ -905,7 +905,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 						mWorldShadow = mRot * mWorldShadow;
 						//////////////////////////////////////////
 						
-						g_Shadow.Render( pd3dDevice, &mWorldShadow );
+						g_Shadow.Render( &mWorldShadow );
 					}
 				}
 				
@@ -921,7 +921,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 	RenderWater();
 	CHECK2( "  Render Water" );
 
-	g_TailEffectMng.Render( m_pd3dDevice );
+	g_TailEffectMng.Render( );
 	
 	// Water surface treatment (when the camera goes under water, it draws a water texture on the front of the screen to make it look like it is under water)
 	D3DXMATRIX matWorld;
@@ -1005,7 +1005,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				continue;
 		}
 		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
-		pObj->Render( m_pd3dDevice );
+		pObj->Render( );
 	}
 	//
 	// 4.Print a semi-transparent object
@@ -1037,7 +1037,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 					}
 				}
 			}
-			pObj->Render( m_pd3dDevice );
+			pObj->Render( );
 			if( m_bViewBoundBox )
 			{
 				SetBoundBoxVertex( pObj );
@@ -1083,13 +1083,13 @@ void CWorld::RenderObject( CD3DFont* pFont )
 							// Normal users are yellow only if they are game masters.
 							if( pMover->IsAuthorization( AUTH_GAMEMASTER ) )
 								dwColor = 0xffffff00; // Yellow
-						pMover->RenderName( m_pd3dDevice, pFont, dwColor );
+						pMover->RenderName( pFont, dwColor );
 							
 					}
 				}
 				// Displays emoticons with status abnormalities such as stun (previously it was handled in g_DialogMsg,
 				// I shouldn't draw it, but if I touch it, it gets messy, so I removed it separately)
-				pMover->RenderChrState( m_pd3dDevice );
+				pMover->RenderChrState( );
 			}
 		}
 	}
@@ -1115,7 +1115,7 @@ CMover * CWorld::RenderObject_IsTabbable(CObj * pObj) {
 }
 
 
-void	_DrawRect( LPDIRECT3DDEVICE9 pd3dDevice, int x, int y, int w, int h, DWORD dwColor )
+void	_DrawRect( int x, int y, int w, int h, DWORD dwColor )
 {
 	#define D3DFVF_2DVERTEX (D3DFVF_XYZRHW | D3DFVF_DIFFUSE)
 	
@@ -1173,7 +1173,7 @@ void	_DrawRect( LPDIRECT3DDEVICE9 pd3dDevice, int x, int y, int w, int h, DWORD 
 }
 
 // 쉐도우 맵에 오브젝트들을 렌더함.
-void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, std::span<CObj *> pList )
+void RenderShadowMap( std::span<CObj *> pList )
 {
 	extern BOOL g_bShadow;
 	if( g_bShadow == FALSE )	return;
@@ -1233,7 +1233,7 @@ void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, std::span<CObj *> pList )
 			if( pObj->m_pModel && pObj->m_pModel->m_pModelElem->m_bShadow )		// 그림자를 드리워야 하는것만 한다.
 			{
 				pObj->m_pModel->m_nNoEffect = 2;	// 키값만 빠지게 하는 스테이트만 사용.
-				pObj->Render( pd3dDevice );
+				pObj->Render( );
 				pObj->m_pModel->m_nNoEffect = 0;
 			}
 		}
@@ -1250,7 +1250,7 @@ void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, std::span<CObj *> pList )
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_DIFFUSE );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 	
-	_DrawRect( pd3dDevice, 0, 0, 2048, 2048, D3DCOLOR_ARGB( 255, 255, 255, 255 ) );		// 외곽에 흰색 테두리를 씌우자.
+	_DrawRect( 0, 0, 2048, 2048, D3DCOLOR_ARGB( 255, 255, 255, 255 ) );		// 외곽에 흰색 테두리를 씌우자.
 
 	extern BOOL s_bLight;
 	pd3dDevice->SetRenderState( D3DRS_LIGHTING, s_bLight );	//
@@ -1493,7 +1493,7 @@ void CWorld::SetLight( BOOL bLight )
  			D3DXVECTOR3 vecSun = D3DXVECTOR3( 0.0f, 0.5f,0.5f);
  			D3DXVec3Normalize(&(vecSun),&(vecSun));
  			pLight->SetDir( -vecSun.x, -vecSun.y, -vecSun.z ); 
- 			pLight->Appear( m_pd3dDevice, TRUE );
+ 			pLight->Appear( TRUE );
 	
 			DWORD dwR, dwG, dwB;
 			dwR = (DWORD)( pLight->Ambient.r * 255 );
@@ -1550,7 +1550,7 @@ void CWorld::SetLight( BOOL bLight )
 			memcpy( &m_light, pLight, sizeof( m_light ) );
 			
 			pLight->SetDir( m_v3LightDir.x, m_v3LightDir.y, m_v3LightDir.z );
-			pLight->Appear( m_pd3dDevice, TRUE );
+			pLight->Appear( TRUE );
 	
 			DWORD dwR, dwG, dwB;
 			dwR = (DWORD)( pLight->Ambient.r * 255 );
@@ -1653,7 +1653,7 @@ void CWorld::SetLight( BOOL bLight )
 			D3DXMatrixRotationX( &matTemp,(m_skyBox.m_fSunAngle +180)*CONS_VAL);
 			D3DXVec3TransformCoord(&vecSun,&vecSun,&matTemp);
 			pLight->SetDir( vecSun.x, vecSun.y, vecSun.z ); 
-			pLight->Appear( m_pd3dDevice, TRUE );
+			pLight->Appear( TRUE );
 
 			//	D3DXVECTOR3 vecSun = D3DXVECTOR3( 0.0f, 0.5f,0.5f);
 			//	D3DXVec3Normalize(&(vecSun),&(vecSun));
@@ -1677,10 +1677,9 @@ void CWorld::SetLight( BOOL bLight )
 #endif // not WORLDSERVER
 }
 #ifdef __CLIENT
-HRESULT CWorld::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CWorld::InitDeviceObjects()
 {
 	HRESULT hr = S_OK;
-	m_pd3dDevice = pd3dDevice;
 
 	if (!prj.m_terrainMng.GetTerrain(10)->m_pTexture) {
 		prj.m_terrainMng.LoadTexture(10);
@@ -1730,16 +1729,16 @@ HRESULT CWorld::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 }
 #endif
 
-HRESULT CWorld::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CWorld::RestoreDeviceObjects()
 {
 	if( m_pBoundBoxVertexBuffer ) 
 		return S_OK;
 	HRESULT hr;
-	SetFogEnable( pd3dDevice, m_bViewFog );
+	SetFogEnable( m_bViewFog );
 	for( int i = 0; i < m_nLandWidth * m_nLandHeight; i++ ) 
 	{
 		if( m_apLand[ i ] )
-			m_apLand[ i ]->RestoreDeviceObjects( pd3dDevice );
+			m_apLand[ i ]->RestoreDeviceObjects();
 	}
 	// 바운드 박스 버텍스 버퍼 만들기 
 	// BoundBoxVertexNum = 12 // 라인수 * 점 ( 하나의 라인은 점 두쌍 )
@@ -1783,17 +1782,17 @@ HRESULT CWorld::DeleteDeviceObjects()
 	}
 	return hr;
 }
-HRESULT CWorld::StaticInitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CWorld::StaticInitDeviceObjects()
 {
 #ifdef __CLIENT
-	m_skyBox.InitDeviceObjects( pd3dDevice );
+	m_skyBox.InitDeviceObjects();
 #endif
 	return S_OK;
 }
-HRESULT CWorld::StaticRestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CWorld::StaticRestoreDeviceObjects()
 {
 #ifdef __CLIENT
-	m_skyBox.RestoreDeviceObjects( pd3dDevice );
+	m_skyBox.RestoreDeviceObjects();
 #endif
 	if( g_pExIB == NULL ) 
 	{
@@ -1927,7 +1926,7 @@ HRESULT CWorld::StaticDeleteDeviceObjects()
 	return S_OK;
 }
 
-void CWorld::SetFogEnable(LPDIRECT3DDEVICE9 pd3dDevice,BOOL bEnable)
+void CWorld::SetFogEnable(BOOL bEnable)
 {
 	pd3dDevice->SetRenderState( D3DRS_FOGENABLE, bEnable );
 	if(bEnable)

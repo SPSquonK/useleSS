@@ -689,6 +689,6 @@ namespace ItemProps {
 
 #ifdef __CLIENT
 CTexture * ItemProp::GetTexture() const {
-	return CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, szIcon), 0xffff00ff);
+	return CWndBase::m_textureMng.AddTexture(MakePath(DIR_ITEM, szIcon), 0xffff00ff);
 }
 #endif

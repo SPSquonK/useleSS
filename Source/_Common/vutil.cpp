@@ -196,7 +196,6 @@ void SetStrNull( CString& string, int nNullLength )
 #if	defined (__WORLDSERVER) || defined (__CLIENT)
 
 HRESULT LoadTextureFromRes( 
-	LPDIRECT3DDEVICE9 pd3dDevice, 
 	LPCTSTR strTexture,
 	LPDIRECT3DTEXTURE9* ppTexture,
 	DWORD MipFilter,
@@ -204,14 +203,13 @@ HRESULT LoadTextureFromRes(
 	)
 {
 
-    return LoadTextureFromRes( pd3dDevice, strTexture, 
+    return LoadTextureFromRes( strTexture, 
 		D3DX_DEFAULT, D3DX_DEFAULT, MipFilter, 0, d3dFormat, 
 		D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 		D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 0, NULL, NULL, ppTexture );
 }
 
 HRESULT LoadTextureFromRes( 
-	LPDIRECT3DDEVICE9 pDevice,
 	LPCTSTR pFileName,
 	UINT Width,
 	UINT Height,
@@ -240,7 +238,7 @@ HRESULT LoadTextureFromRes(
 	LPBYTE pSrcData = new BYTE[ nSrcDataSize ];
 	if( file.Read( pSrcData, nSrcDataSize ) >= 1 )
 	{
-		hr = D3DXCreateTextureFromFileInMemoryEx( pDevice,
+		hr = D3DXCreateTextureFromFileInMemoryEx( D3DDEVICE,
 			   pSrcData, nSrcDataSize, Width, Height, MipLevels, Usage, Format, Pool, Filter, MipFilter, ColorKey, pSrcInfo, pPalette, ppTexture );
 		if( FAILED( hr ) )
 		{

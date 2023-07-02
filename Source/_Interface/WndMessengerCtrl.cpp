@@ -342,7 +342,7 @@ void CWndFriendCtrlEx::OnDraw( C2DRender* p2DRender )
 		pt.y += m_nFontHeight;
 	}
 
-	pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
+	pWndWorld->m_texPlayerDataIcon.Render( pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
 	SAFE_DELETE_ARRAY( pVertex );
 }
 
@@ -774,7 +774,7 @@ void CWndGuildCtrlEx::OnDraw( C2DRender* p2DRender )
 		pt.y += m_nFontHeight;
 	}
 
-	pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
+	pWndWorld->m_texPlayerDataIcon.Render( pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
 	SAFE_DELETE_ARRAY( pVertex );
 }
 

@@ -396,7 +396,7 @@ void CCloth::Process(float f, D3DXVECTOR3 v3Pos1, D3DXVECTOR3 v3Pos2 )
 	}
 }
 
-void CCloth::Render(LPDIRECT3DDEVICE9 pd3dDevice, D3DXMATRIX* pWorldM )
+void CCloth::Render(D3DXMATRIX* pWorldM )
 {
 	if( m_pTexture )
 		pd3dDevice->SetTexture(0, m_pTexture );

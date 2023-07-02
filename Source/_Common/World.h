@@ -278,7 +278,6 @@ public:
 
 	static constexpr int BoundBoxVertexNum = 12;
 	LPDIRECT3DVERTEXBUFFER9 m_pBoundBoxVertexBuffer;
-    LPDIRECT3DDEVICE9       m_pd3dDevice;        
 	D3DMATERIAL9			m_baseMaterial;
 
 	// 디버그 정보 관련 
@@ -515,9 +514,9 @@ public:
 	void			OutProcessing( );		// gmpibgsun : 현재 월드에서 퇴장시 한번 호출됨 
 
 	// Render
-	void			Projection( LPDIRECT3DDEVICE9 pd3dDevice, int nWidth, int nHeight );
-	void			Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont = NULL );
-	void			RenderBase( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont );
+	void			Projection( int nWidth, int nHeight );
+	void			Render( CD3DFont* pFont = NULL );
+	void			RenderBase( CD3DFont* pFont );
 		
 	// Light, Camera and etc...
 	void			AddLight( CLight* pLight );
@@ -525,7 +524,7 @@ public:
 	void			SetCamera( CCamera* pCamera ) { m_pCamera = pCamera; }
 	CCamera*		GetCamera() { return m_pCamera; }
 	void			SetLight( BOOL bLight );
-	void			SetFogEnable( LPDIRECT3DDEVICE9 pd3dDevice, BOOL bEnable );
+	void			SetFogEnable( BOOL bEnable );
 
 	// Culling
 	void			UpdateCullInfo( D3DXMATRIX* pMatView, D3DXMATRIX* pMatProj );
@@ -543,13 +542,13 @@ public:
 	void			RenderWorldGrids(int wx,int wy,CPoint ptLT,CPoint ptRB,WORD dx,DWORD color);
 	
 	// Direct3D 관련 오브젝트 초기화및 제거, 재설정 관련 
-	HRESULT			InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
-	HRESULT			RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT			InitDeviceObjects();
+	HRESULT			RestoreDeviceObjects();
 	HRESULT			DeleteDeviceObjects();
 	HRESULT			InvalidateDeviceObjects();
 	void			RenderTerrain();
-	static HRESULT	StaticInitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
-	static HRESULT	StaticRestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	static HRESULT	StaticInitDeviceObjects();
+	static HRESULT	StaticRestoreDeviceObjects();
 	static HRESULT	StaticDeleteDeviceObjects();
 	static HRESULT	StaticInvalidateDeviceObjects();
 

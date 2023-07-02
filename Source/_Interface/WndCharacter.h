@@ -16,7 +16,7 @@ public:
 		CWndEdit edit;
 		int count = 0;
 
-		void Setup(LPDIRECT3DDEVICE9 device, bool hasGp);
+		void Setup(bool hasGp);
 		void Update(int gp);
 		bool Handle(UINT nID, UINT messagen, CWndCharInfo & parent);
 	};

@@ -72,7 +72,6 @@ typedef struct _SPARKINFO
 class CModel 
 {
 protected:
-	LPDIRECT3DDEVICE9	m_pd3dDevice;        // The D3D rendering device
 	int					m_nModelType;
 	BOUND_BOX			m_BB;
 	DWORD				m_dwRenderEffect;
@@ -112,7 +111,6 @@ public:
 		m_vMax.x = m_vMax.y = m_vMax.z = 0.0f;
 		m_dwBlendFactor = 255;
 		m_dwColor = 0;
-		m_pd3dDevice = NULL;
 		m_bSkin = FALSE;
 	#if defined(__CLIENT)
 		memset( &m_SparkInfo, 0, sizeof(_SPARKINFO) );
@@ -172,10 +170,10 @@ public:
 	virtual int		IsHaveCollObj( void ) { return 0; }
 	
 	// Rendering
-	virtual BOOL	Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld = NULL );
-	virtual void	RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld = NULL, DWORD dwItemKind3 = NULL_ID, int nLevelL = 0, int nLeveR = 0) {}
+	virtual BOOL	Render( const D3DXMATRIX* pmWorld = NULL );
+	virtual void	RenderEffect( const D3DXMATRIX* pmWorld = NULL, DWORD dwItemKind3 = NULL_ID, int nLevelL = 0, int nLeveR = 0) {}
 	virtual void	FrameMove( D3DXVECTOR3 *pvSndPos = NULL, float fSpeed = 1.0f );
-	virtual HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) { m_pd3dDevice = pd3dDevice; return S_OK; }
+	virtual HRESULT InitDeviceObjects( ) { return S_OK; }
 	virtual HRESULT RestoreDeviceObjects() { return S_OK; }
 	virtual HRESULT InvalidateDeviceObjects() { return S_OK; }
 	virtual HRESULT DeleteDeviceObjects() { return S_OK; }

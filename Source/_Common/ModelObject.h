@@ -60,7 +60,7 @@ public:
 
 	void	Add( D3DXVECTOR3 v1, D3DXVECTOR3 v2 );
 	void	Process( void );
-	void	Draw( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
+	void	Draw( const D3DXMATRIX *mWorld );
 	void	MakeSpline( void );
 
 };
@@ -164,11 +164,11 @@ public:
 #ifdef __ATTACH_MODEL
 	void				SetAttachModel(int nEventIndex, CModelObject* pModelObject);
 	void				SetDetachModel(int nEventIndex);
-	void				RenderAttachModel(LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld);
-	int					RenderAttachModelElem(LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld);
+	void				RenderAttachModel(const D3DXMATRIX *mWorld);
+	int					RenderAttachModelElem(const D3DXMATRIX *mWorld);
 	void				FrameMoveAttachModel( D3DXVECTOR3 *pvSndPos = NULL, float fSpeed = 1.0f );
 
-	void				InitAttachModelDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
+	void				InitAttachModelDeviceObjects();
 	void				RestoreAttachModelDeviceObjects();
 	void				InvalidateAttachModelDeviceObjects();
 	void				DeleteAttachModelDeviceObjects();
@@ -340,12 +340,12 @@ public:
 	void	RenderItemElec_Adv( int nParts, const D3DXMATRIX *pmWorld, int nLevel );
 
 #ifndef __WORLDSERVER
-	BOOL	Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
-	void	RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld, DWORD dwItemKind3 = NULL_ID, int nLevelL = 0, int nLeveR = 0);
+	BOOL	Render( const D3DXMATRIX *mWorld );
+	void	RenderEffect( const D3DXMATRIX *mWorld, DWORD dwItemKind3 = NULL_ID, int nLevelL = 0, int nLeveR = 0);
 #ifdef __SHADOW
-	BOOL	RenderShadow( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
-	void	SetStateShadow( LPDIRECT3DDEVICE9 pd3dDevice );
-	void	ResetStateShadow( LPDIRECT3DDEVICE9 pd3dDevice );
+	BOOL	RenderShadow( const D3DXMATRIX *mWorld );
+	void	SetStateShadow( );
+	void	ResetStateShadow( );
 #endif
 
 	int LoadClonedElement( LPCTSTR szFileName );		//gmpbigsun:복제본 생성 
@@ -398,7 +398,7 @@ public:
 #endif
 
 	// 디바이스 초기화 및 삭제 
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT InitDeviceObjects( );
 	HRESULT RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();

@@ -44,11 +44,11 @@ void CWndRankTab::OnDraw(C2DRender * p2DRender) {
 
 			CPoint point = CPoint(sx + 42, sy - 5);
 
-			p2DRender->m_pd3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
-			p2DRender->m_pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+			D3DDEVICE->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+			D3DDEVICE->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
 			pWndWorld->m_pTextureLogo[guild.m_dwLogo - 1].Render(&g_Neuz.m_2DRender, point, 255);
-			p2DRender->m_pd3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			p2DRender->m_pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+			D3DDEVICE->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+			D3DDEVICE->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		}
 
 		// ±æµå¸í
@@ -75,7 +75,7 @@ void CWndRankTab::OnDraw(C2DRender * p2DRender) {
 		sy += 25;
 	}
 
-	pWndWorld->m_texMsgIcon.Render(m_pApp->m_pd3dDevice, pVertex, ((int)pVertices - (int)pVertex) / sizeof(TEXTUREVERTEX2));
+	pWndWorld->m_texMsgIcon.Render(pVertex, ((int)pVertices - (int)pVertex) / sizeof(TEXTUREVERTEX2));
 }
 void CWndRankTab::OnInitialUpdate() {
 	CWndNeuz::OnInitialUpdate();

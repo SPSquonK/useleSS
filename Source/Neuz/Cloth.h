@@ -93,7 +93,7 @@ public:
 			   LPDIRECT3DTEXTURE9 pTexture, D3DXMATRIX* pWorldM );
 
 	void DeleteDeviceObjects();
-	void Render(LPDIRECT3DDEVICE9 pd3dDevice, D3DXMATRIX* pWorldM );
+	void Render(D3DXMATRIX* pWorldM );
 	void Process(float f, D3DXVECTOR3 v3Pos1, D3DXVECTOR3 v3Pos2 );
 	void ResetCloth(D3DXMATRIX* pWorldM);
 	CCloth();

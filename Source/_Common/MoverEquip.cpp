@@ -1811,7 +1811,7 @@ CItem* CMover::DropGold( DWORD dwGold, const D3DXVECTOR3& vPos, BOOL bPK )
 
 		CItem* pItem	= new CItem;
 		pItem->m_pItemBase	= pItemElem;
-		pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+		pItem->SetIndex( pItemElem->m_dwItemId );
 		pItem->SetPos( vPos );
 		pItem->SetAngle( (float)xRandom( 360 ) );
 		pItem->m_dwDropTime		= timeGetTime();	
@@ -1858,7 +1858,7 @@ BOOL CMover::DropEquipedItem( int nParts )
 		CItem* pItem	= new CItem;
 		pItem->m_pItemBase	= new CItemElem;
 		*pItem->m_pItemBase		= *pItemElem;
-		pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+		pItem->SetIndex( pItemElem->m_dwItemId );
 		pItem->SetPos( GetPos() );
 		pItem->SetAngle( xRandom( 360 ) );
 		GetWorld()->AddObj( pItem, TRUE );

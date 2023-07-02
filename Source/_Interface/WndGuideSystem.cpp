@@ -51,8 +51,6 @@ void CWndGuideSystem::OnDraw( C2DRender* p2DRender )
 	if( m_pModel == NULL )
 		return;
 
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
@@ -147,7 +145,7 @@ void CWndGuideSystem::OnDraw( C2DRender* p2DRender )
 		
 		::SetTransformView( matView );		
 		::SetTransformProj( matProj );
-		m_pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+		m_pModel->Render( &matWorld );
 	}
 	
 	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
@@ -160,7 +158,7 @@ void CWndGuideSystem::ChangeModel( int nJob )
 {
 	SAFE_DELETE(m_pModel);
 	m_pModel = new CModelObject;
-	m_pModel->InitDeviceObjects(g_Neuz.GetDevice());
+	m_pModel->InitDeviceObjects();
 
 	if( m_pModel )
 	{
@@ -847,7 +845,7 @@ void CWndGuideTextMgr::OnInitialUpdate()
 
 	m_nCurrentVector = 0;
 	m_VecGuideText.clear();	
-	m_pTextureBG = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "GuideBG.tga" ), 0, TRUE );
+	m_pTextureBG = m_textureMng.AddTexture( MakePath( DIR_THEME, "GuideBG.tga" ), 0, TRUE );
 } 
 
 BOOL CWndGuideTextMgr::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
@@ -903,7 +901,7 @@ BOOL CWndGuideTextMgr::OnEraseBkgnd( C2DRender* p2DRender )
 	CRect rect = GetLayoutRect();
 
 	rect.bottom = rect.bottom+5;
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+	D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
 	if(m_pTextureBG)
 		m_pTextureBG->Render( p2DRender, CPoint(8,0), CPoint( rect.right, rect.bottom ), 200 );
 	//p2DRender->RenderFillRect( CRect( 8, -8, rect.right, rect.bottom ), D3DXCOLOR( 1.0f, 1.0f, 1.0f, 0.8f ) );

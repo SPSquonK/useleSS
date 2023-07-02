@@ -171,6 +171,15 @@
 
 #define D3DDEVICE   g_Neuz.m_pd3dDevice
 
+struct DeviceIndirection {
+  LPDIRECT3DDEVICE9 operator->() { return g_Neuz.m_pd3dDevice; }
+  [[nodiscard]] bool IsMissing() const noexcept { return !g_Neuz.m_pd3dDevice; }
+  DeviceIndirection & operator=(DeviceIndirection) = delete;
+};
+
+static DeviceIndirection m_pd3dDevice;
+static DeviceIndirection pd3dDevice;
+
 extern BYTE             g_bKeyTable[256]; // 키 입력 테이블 
 extern BOOL             g_bSlotSwitchAboutEquipItem[ MAX_SLOT_ITEM ];
 #ifdef __XKEYEDGE

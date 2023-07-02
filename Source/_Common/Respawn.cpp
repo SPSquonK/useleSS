@@ -281,7 +281,7 @@ u_long CRespawnInfo::ProcessRespawn(CWorld * const pWorld, const int nLayer, con
 	}
 
 	for (int iCb = 0; iCb != cb; ++iCb) {
-		CCtrl * pObj = static_cast<CCtrl *>(CreateObj(D3DDEVICE, m_dwType, m_dwIndex));
+		CCtrl * pObj = static_cast<CCtrl *>(CreateObj(m_dwType, m_dwIndex));
 
 		if (!pObj) {
 			WriteLog("SPAWN: %lu, %lu", m_dwType, m_dwIndex);

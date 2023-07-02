@@ -694,8 +694,6 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 	if( g_pPlayer == NULL || m_pModel == NULL || m_pApplyModel == NULL )
 		return;
 
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
@@ -802,7 +800,7 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 		if( g_pPlayer )
 			g_pPlayer->OverCoatItemRenderCheck(m_pModel);
 
-		m_pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+		m_pModel->Render( &matWorld );
 	}
 	// 오른쪽 색입힌 모델 랜더링
 	{
@@ -865,7 +863,7 @@ void CWndBeautyShop::OnDraw( C2DRender* p2DRender )
 		::SetTransformProj( matProj );
 
 		
-		m_pApplyModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+		m_pApplyModel->Render( &matWorld );
 		
 		m_pApplyModel->GetObject3D(PARTS_HAIR)->m_fAmbient[0] = 1.0f;
 		m_pApplyModel->GetObject3D(PARTS_HAIR)->m_fAmbient[1] = 1.0f;
@@ -963,8 +961,6 @@ void CWndBeautyShop::DrawHairKind(C2DRender* p2DRender, D3DXMATRIX matView)
 	D3DXMATRIXA16 matTrans;
 	
 	//Hair Kind
-
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 	
 	int custom[4] = {WIDC_CUSTOM1, WIDC_CUSTOM2, WIDC_CUSTOM3, WIDC_CUSTOM4};
 
@@ -1037,7 +1033,7 @@ void CWndBeautyShop::DrawHairKind(C2DRender* p2DRender, D3DXMATRIX matView)
 		::SetTransformView( matView );
 		::SetTransformProj( matProj );
 		
-		m_pHairModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+		m_pHairModel->Render( &matWorld );
 
 		//Select Draw
 		if(m_dwSelectHairMesh == m_nHairNum[i])
@@ -1138,22 +1134,22 @@ BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
 	
 	SAFE_DELETE( m_pModel );
-	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel(  OT_MOVER, nMover, TRUE );
 	m_pModel->LoadMotionId(MTI_STAND2);
 	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
-	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );
+	m_pModel->InitDeviceObjects( );
 
 	SAFE_DELETE( m_pApplyModel );
-	m_pApplyModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+	m_pApplyModel = (CModelObject*)prj.m_modelMng.LoadModel( OT_MOVER, nMover, TRUE );
 	m_pApplyModel->LoadMotionId(MTI_STAND2);
 	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
-	m_pApplyModel->InitDeviceObjects( g_Neuz.GetDevice() );
+	m_pApplyModel->InitDeviceObjects( );
 	
 	SAFE_DELETE(m_pHairModel);
-	m_pHairModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+	m_pHairModel = (CModelObject*)prj.m_modelMng.LoadModel(OT_MOVER, nMover, TRUE );
 	m_pHairModel->LoadMotionId(MTI_STAND2);
 	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin,g_pPlayer->m_aEquipInfo, m_pHairModel, &g_pPlayer->m_Inventory );
-	m_pHairModel->InitDeviceObjects( g_Neuz.GetDevice() );
+	m_pHairModel->InitDeviceObjects( );
 
 	///
 	m_fColor[0] = g_pPlayer->m_fHairColorR;
@@ -1163,7 +1159,7 @@ BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 
 	m_nHairCost = 0;
 	m_nHairColorCost = 0;	
-	m_Texture.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "yellowbuttten.tga" ), 0xffff00ff, TRUE );
+	m_Texture.LoadTexture( MakePath( DIR_THEME, "yellowbuttten.tga" ), 0xffff00ff, TRUE );
 
 	return InitDialog( APP_BEAUTY_SHOP_EX, pWndParent, 0, 0 );
 }
@@ -1795,8 +1791,6 @@ void CWndFaceShop::OnDraw( C2DRender* p2DRender )
 	if( g_pPlayer == NULL || m_pMainModel == NULL || m_pApplyModel == NULL )
 		return;
 
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
@@ -1896,7 +1890,7 @@ void CWndFaceShop::OnDraw( C2DRender* p2DRender )
 		if( g_pPlayer )
 			g_pPlayer->OverCoatItemRenderCheck(m_pMainModel.get());
 		
-		m_pMainModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+		m_pMainModel->Render( &matWorld );
 	}
 	// 오른쪽 얼굴변경 모델 랜더링
 	{
@@ -1952,7 +1946,7 @@ void CWndFaceShop::OnDraw( C2DRender* p2DRender )
 		if( g_pPlayer )
 			g_pPlayer->OverCoatItemRenderCheck(m_pApplyModel.get());
 
-		m_pApplyModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+		m_pApplyModel->Render( &matWorld );
 	}
 	viewport.X      = p2DRender->m_ptOrigin.x;// + 5;
 	viewport.Y      = p2DRender->m_ptOrigin.y;// + 5;
@@ -1980,7 +1974,6 @@ void CWndFaceShop::DrawFaces(bool ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX m
 	D3DXMATRIXA16 matTrans;
 	
 	//Face Kind
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 	CModelObject * m_pFaceModel = m_pFriendshipFace.get();
 	if (!m_pFaceModel) return;
 
@@ -2055,7 +2048,7 @@ void CWndFaceShop::DrawFaces(bool ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX m
 		::SetTransformView( matView );
 		::SetTransformProj( matProj );
 		
-		m_pFaceModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+		m_pFaceModel->Render( &matWorld );
 
 		//Select Draw
 		if (m_nSelectedFace == FaceNum) {
@@ -2106,10 +2099,10 @@ BOOL CWndFaceShop::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 	int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
 	
 	const auto InitializeModel = [](const int nMover, std::unique_ptr<CModelObject> & pModel) {
-		pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE);
+		pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>(OT_MOVER, nMover, TRUE);
 		pModel->LoadMotionId(MTI_STAND2);
 		CMover::UpdateParts(g_pPlayer->GetSex(), g_pPlayer->m_skin, g_pPlayer->m_aEquipInfo, pModel, &g_pPlayer->m_Inventory);
-		pModel->InitDeviceObjects(g_Neuz.GetDevice());
+		pModel->InitDeviceObjects();
 	};
 
 	InitializeModel(nMover, m_pMainModel);

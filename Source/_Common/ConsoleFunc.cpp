@@ -120,7 +120,7 @@ void _change_model( std::vector< string >& arg )
 
 	if( g_pPlayer ) 
 	{
-		g_pPlayer->SetIndex( D3DDEVICE , modelIndex );
+		g_pPlayer->SetIndex( modelIndex );
 	}
 }
 
@@ -153,7 +153,7 @@ void _sfx_pos( std::vector< string >& arg )
 // 			if( pPet )
 // 			{
 // 				index = pPet->m_dwMoverSfxId;
-// 				pSfx = CreateSfx( D3DDEVICE, index, kPos );
+// 				pSfx = CreateSfx( index, kPos );
 // 				pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f  ) );
 // 			}
 			
@@ -171,7 +171,7 @@ void _sfx_link( std::vector< string >& arg )
 
 	if( g_pPlayer )
 	{
-		CSfx *pSfx = CreateSfx( D3DDEVICE, index, g_pPlayer->GetPos(), g_pPlayer->GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
+		CSfx *pSfx = CreateSfx( index, g_pPlayer->GetPos(), g_pPlayer->GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
 		if( pSfx )
 		{
 			pSfx->SetPartLink( 0 );		// 오른손에 링크.
@@ -274,7 +274,7 @@ void _diffuse( std::vector< string >& arg )
 //	if( g_pReflectMap )
 //		SAFE_RELEASE( g_pReflectMap );
 //	
-//	if( FAILED( LoadTextureFromRes( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, arg[1].c_str() ), &g_pReflectMap ) ) )
+//	if( FAILED( LoadTextureFromRes( MakePath( DIR_MODELTEX, arg[1].c_str() ), &g_pReflectMap ) ) )
 //		AfxMessageBox( "error! cannot find reflect1 texture file" );
 //
 //	g_Console.Log( "changed reflection texture1" );
@@ -288,7 +288,7 @@ void _diffuse( std::vector< string >& arg )
 //	if( g_pReflectMap2 )
 //		SAFE_RELEASE( g_pReflectMap2 );
 //	
-//	if( FAILED( LoadTextureFromRes( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, arg[1].c_str() ), &g_pReflectMap2 ) ) )
+//	if( FAILED( LoadTextureFromRes( MakePath( DIR_MODELTEX, arg[1].c_str() ), &g_pReflectMap2 ) ) )
 //		AfxMessageBox( "error! cannot find reflect1 texture file" );
 //
 //	g_Console.Log( "changed reflection texture2" );

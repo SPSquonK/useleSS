@@ -389,7 +389,7 @@ void CWndRainbowRaceMiniGame::OnDraw(C2DRender* p2DRender)
 		else if(m_bIsCompletedGame[i])
 		{
 			CTexture* pTexture;
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strPathCheck[i]), 0xffff00ff );
+			pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, m_strPathCheck[i]), 0xffff00ff );
 			if(pTexture != NULL)
 				pTexture->Render( p2DRender, CPoint( GetWndCtrl( m_CheckStaticID[i] )->rect.left, GetWndCtrl( m_CheckStaticID[i] )->rect.top  ) );
 		}
@@ -643,7 +643,7 @@ void CWndRainbowRaceMiniGameButton::OnInitialUpdate()
 
 	Move( point );
 
-	m_bLoadTexMap = m_BtnTexture.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "texMapRainbowButton.inc" ) ) );
+	m_bLoadTexMap = m_BtnTexture.LoadScript( MakePath( DIR_THEME, _T( "texMapRainbowButton.inc" ) ) );
 } 
 
 void CWndRainbowRaceMiniGameButton::PaintFrame( C2DRender* p2DRender )
@@ -1037,14 +1037,14 @@ void CWndRRMiniGameKawiBawiBo::OnDraw( C2DRender* p2DRender )
 	
 	if(strMyPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strMyPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strMyPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC_MY1 )->rect.left + 3, GetWndCtrl( WIDC_STATIC_MY1 )->rect.top + 8 ) );		
 	}
 
 	if(strComPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strComPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strComPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC_COM1 )->rect.left + 3, GetWndCtrl( WIDC_STATIC_COM1 )->rect.top + 8 ) );		
 	}
@@ -1172,7 +1172,7 @@ void CWndRRMiniGameDice::OnInitialUpdate()
 	m_strPathDice[4] = MakePath( DIR_ICON, "Icon_5Dice90X90.dds");
 	m_strPathDice[5] = MakePath( DIR_ICON, "Icon_6Dice90X90.dds");
 
-	if(!m_texTargetNum.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "RainbowDiceNumber.inc" ) ))
+	if(!m_texTargetNum.LoadScript( MakePath( DIR_THEME, "RainbowDiceNumber.inc" ) ))
 		Destroy();
 
 	MoveParentCenter();
@@ -1235,7 +1235,7 @@ void CWndRRMiniGameDice::OnDraw(C2DRender* p2DRender )
 
 	if(strPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC2 )->rect.left + 3, GetWndCtrl( WIDC_STATIC2 )->rect.top + 4 ) );	
 	}
@@ -1244,7 +1244,7 @@ void CWndRRMiniGameDice::OnDraw(C2DRender* p2DRender )
 
 	if(strPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC3 )->rect.left + 3, GetWndCtrl( WIDC_STATIC3 )->rect.top + 4 ) );	
 	}
@@ -1570,7 +1570,7 @@ void CWndRRMiniGameStopWatch::OnInitialUpdate()
 		_T("RRMinigameStopwatch.inc")
 	);
 
-	if(!m_texStopWatchNum.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "RainbowStopWatchNumber.inc" ) ))
+	if(!m_texStopWatchNum.LoadScript( MakePath( DIR_THEME, "RainbowStopWatchNumber.inc" ) ))
 		Destroy();
 
 	MoveParentCenter();
@@ -1606,7 +1606,7 @@ BOOL CWndRRMiniGameStopWatch::OnChildNotify( UINT message, UINT nID, LRESULT* pL
 
 			CWndButton* pWndButton = (CWndButton*)GetDlgItem(WIDC_START);
 			if(pWndButton)
-				pWndButton->SetTexture( m_pParentWnd->m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "Buttstop.bmp" ) ), TRUE );
+				pWndButton->SetTexture( MakePath( DIR_THEME, _T( "Buttstop.bmp" ) ), TRUE );
 
 			m_bStart = TRUE;
 		}
@@ -1614,7 +1614,7 @@ BOOL CWndRRMiniGameStopWatch::OnChildNotify( UINT message, UINT nID, LRESULT* pL
 		{
 			CWndButton* pWndButton = (CWndButton*)GetDlgItem(WIDC_START);
 			if(pWndButton)
-				pWndButton->SetTexture( m_pParentWnd->m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "ButtStart.bmp" ) ), TRUE );
+				pWndButton->SetTexture( MakePath( DIR_THEME, _T( "ButtStart.bmp" ) ), TRUE );
 
 			m_bStart = FALSE;
 			m_dwTime = GetTickCount() - m_dwStartTime;
@@ -1667,7 +1667,7 @@ BOOL CWndRRMiniGameStopWatch::Process()
 		//m_dwStartTime = GetTickCount();
 		CWndButton* pWndButton = (CWndButton*)GetDlgItem(WIDC_START);
 		if(pWndButton)
-			pWndButton->SetTexture( m_pParentWnd->m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "ButtStart.bmp" ) ), TRUE );
+			pWndButton->SetTexture( MakePath( DIR_THEME, _T( "ButtStart.bmp" ) ), TRUE );
 
 		m_bStart = FALSE;
 		m_dwTime = SEC(60);
@@ -1816,7 +1816,7 @@ void CWndRRMiniGameCard::OnInitialUpdate()
 	m_strCard[7] = "RainbowRaceCard8.tga";
 	m_strCard[8] = "RainbowRaceCard9.tga";
 
-	m_texCardBack = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "RainbowRaceCardBack.tga"), 0xffff00ff );
+	m_texCardBack = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "RainbowRaceCardBack.tga"), 0xffff00ff );
 
 	m_nCustomID[0] = WIDC_CUSTOM1;
 	m_nCustomID[1] = WIDC_CUSTOM2;
@@ -1837,7 +1837,7 @@ void CWndRRMiniGameCard::OnInitialUpdate()
 	m_nCustomID[16] = WIDC_CUSTOM17;
 	m_nCustomID[17] = WIDC_CUSTOM18;
 
-	if(!m_texPenaltyNum.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "RainbowCardPenaltyNumber.inc" ) ))
+	if(!m_texPenaltyNum.LoadScript( MakePath( DIR_THEME, "RainbowCardPenaltyNumber.inc" ) ))
 		Destroy();
 
 	MoveParentCenter();
@@ -1912,7 +1912,7 @@ void CWndRRMiniGameCard::SetQuestion(CString strQuestion)
 		m_stCard[i].m_nCardNum = strQuestion.GetAt(i) - 1;
 		
 		if(m_stCard[i].m_nCardNum >= 0 && m_stCard[i].m_nCardNum < 9)
-			m_stCard[i].m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strCard[m_stCard[i].m_nCardNum]), 0xffff00ff );
+			m_stCard[i].m_pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, m_strCard[m_stCard[i].m_nCardNum]), 0xffff00ff );
 		
 		m_stCard[i].m_bCheck = FALSE;
 	}
@@ -2081,13 +2081,13 @@ void CWndRRMiniGameLadder::OnInitialUpdate()
 	m_nStartCustomID[13] = WIDC_CUSTOM14;
 	m_nStartCustomID[14] = WIDC_CUSTOM15;
 
-	m_pTexBg1 = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndRainbowRaceLadderBg1.bmp"), 0xffff00ff );
-	m_pTexBg2 = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndRainbowRaceLadderBg2.bmp"), 0xffff00ff );
-	m_pTexHorizon = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "RainbowRaceLadderHorizon.bmp"), 0xffff00ff );
-	m_pTexChoice = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndRainbowRaceLadderChoice.bmp"), 0xffff00ff );
-	m_pTexPoint = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndRainbowRaceLadderPoint.bmp"), 0xffff00ff );
-	m_pTexGoal = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndRainbowRaceLadderGoal.bmp"), 0xffff00ff );
-	m_pTexFail = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndRainbowRaceLadderFail.bmp"), 0xffff00ff );
+	m_pTexBg1 = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndRainbowRaceLadderBg1.bmp"), 0xffff00ff );
+	m_pTexBg2 = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndRainbowRaceLadderBg2.bmp"), 0xffff00ff );
+	m_pTexHorizon = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "RainbowRaceLadderHorizon.bmp"), 0xffff00ff );
+	m_pTexChoice = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndRainbowRaceLadderChoice.bmp"), 0xffff00ff );
+	m_pTexPoint = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndRainbowRaceLadderPoint.bmp"), 0xffff00ff );
+	m_pTexGoal = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndRainbowRaceLadderGoal.bmp"), 0xffff00ff );
+	m_pTexFail = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndRainbowRaceLadderFail.bmp"), 0xffff00ff );
 
 	m_ptPoint.x = GetWndCtrl(m_nStartCustomID[m_nStart])->rect.left;
 	m_ptPoint.y = GetWndCtrl(m_nStartCustomID[m_nStart])->rect.top;
