@@ -1,21 +1,11 @@
 #include "stdafx.h"
 #include "TailEffectMng.h"
 
-
-#ifdef __CLIENT
-
+#ifndef __CLIENT
+static_assert(false, "TailEffectMng.cpp should only be included in the client");
+#endif
 
 const DWORD TAILVERTEX::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
-
-
-CTailModelMng::CTailModelMng()
-{
-	m_ListTailModel.clear();
-}
-CTailModelMng::~CTailModelMng()
-{
-}
-
 
 //
 //
@@ -638,6 +628,3 @@ void CTailEffectMng::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		m_TailEffects[i]->Render( pd3dDevice );
 	}
 }
-
-
-#endif // CLIENT

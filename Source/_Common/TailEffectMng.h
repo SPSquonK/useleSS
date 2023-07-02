@@ -1,5 +1,4 @@
-#ifndef __TAILEFFECTMNG_H__
-#define __TAILEFFECTMNG_H__
+#pragma once
 
 #ifdef __CLIENT
 
@@ -23,30 +22,6 @@ struct TAIL
 	
     TAIL*   m_pNext;      // Next Tail in list
 };
-
-
-class CTailModel
-{
-protected:
-	CSfxModel	m_SfxModel[20];
-
-public:
-	CTailModel();
-	~CTailModel();
-};
-
-
-class CTailModelMng
-{
-protected:
-	std::list<CTailModel*>	m_ListTailModel;
-
-public:
-	CTailModelMng();
-	~CTailModelMng();
-};
-
-
 
 class CTailEffect
 {
@@ -178,5 +153,3 @@ public:
 extern CTailEffectMng	g_TailEffectMng;
 
 #endif // CLIENT
-
-#endif // __TAILEFFECTMNG_H__
