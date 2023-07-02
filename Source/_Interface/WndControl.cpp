@@ -333,7 +333,7 @@ void CWndButton::OnDraw( C2DRender* p2DRender )
 void CWndButton::PaintFrame( C2DRender* p2DRender )
 {
 	CRect rect = GetWindowRect();
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(),  point );
+	CPoint point = GetClientPoint();
 	CString string;
 
 	DWORD dwColor = D3DCOLOR_TEMP( 200, 240, 240, 240 );

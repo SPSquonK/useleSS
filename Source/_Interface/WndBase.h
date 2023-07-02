@@ -24,9 +24,6 @@
 #define D3DCOLOR_TEMP(a,b,g,r) \
     ((D3DCOLOR)((((a)&0xff)<<24)|(((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff))) 
 
-// 클라이언트의 좌표 얻기 
-#define GET_CLIENT_POINT( hwnd, pt ) CPoint pt; ::GetCursorPos( &pt ); ::ScreenToClient( hwnd, &pt );
-
 class C2DRender;
 
 #include "ResManager.h"
@@ -334,6 +331,8 @@ public:
 	void RenderWnd();
 	
 friend class CWndButton;
+public:
+	[[nodiscard]] static CPoint GetClientPoint();
 };
 
 template<std::derived_from<CWndBase> CWndClass>

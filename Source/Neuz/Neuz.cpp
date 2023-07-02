@@ -745,9 +745,9 @@ HRESULT CNeuzApp::Render()
 		// 드래그 아이템 
 		if(	CWndBase::m_GlobalShortcut.IsEmpty() == FALSE )
 		{
-			GET_CLIENT_POINT( GetSafeHwnd(), point );
+			CPoint point = CWndBase::GetClientPoint();
 			if( CWndBase::m_GlobalShortcut.m_pTexture )
-				CWndBase::m_GlobalShortcut.m_pTexture->Render( &m_2DRender, CPoint( point.x - 16, point.y - 16 ) );
+				CWndBase::m_GlobalShortcut.m_pTexture->Render( &m_2DRender, point - CPoint( 16, 16 ) );
 			else
 			{
 				int nHeight = m_2DRender.m_pFont->GetMaxHeight() / 2;
@@ -961,35 +961,33 @@ HRESULT CNeuzApp::FrameMove()
 	g_dpCertified.ReceiveMessage();
 	CHECK2( "Receive" );
 
-	if( m_dwTempMessage )
-	{
-		CWndBase* pWndBase;
-		if( m_timerConnect.TimeOut() )
-		{
+	bool skipWorldProcess = false;
+	if (m_dwTempMessage) {
+		if (m_timerConnect.TimeOut()) {
 			m_dwTempMessage = 0;
-			pWndBase = g_WndMng.GetWndBase( APP_SELECT_CHAR );
-			if( pWndBase )
-			{
-				((CWndSelectChar*)pWndBase)->Connected();
-				goto NEXT;
+
+			if (CWndSelectChar * pWndBase = g_WndMng.GetWndBase<CWndSelectChar>(APP_SELECT_CHAR)) {
+				pWndBase->Connected();
+				skipWorldProcess = true;
 			}
 		}
 	}
 
-	if( g_pBipedMesh )
-		g_pBipedMesh->FrameMove();
+	if (!skipWorldProcess) {
+		if (g_pBipedMesh)
+			g_pBipedMesh->FrameMove();
 
-	g_WndMng.Process(); // 실제적인 월드와 캐릭터 컨트롤 인터페이스는 CWndWorld::Process가 처리함 
-	
-	// 위치 바꾸지 마시오!! ata3k
-	// 키보드 업했을때 반응하기 위해 클리어 시켜준다....
-	if( g_nOldVirtKey != 0 )
-		g_bKeyTable[ g_nOldVirtKey ] = FALSE;	
+		g_WndMng.Process(); // 실제적인 월드와 캐릭터 컨트롤 인터페이스는 CWndWorld::Process가 처리함 
 
-NEXT:
+		// 위치 바꾸지 마시오!! ata3k
+		// 키보드 업했을때 반응하기 위해 클리어 시켜준다....
+		if (g_nOldVirtKey != 0)
+			g_bKeyTable[g_nOldVirtKey] = FALSE;
+	}
+
 	if( g_WndMng.IsTitle() == TRUE )
 		CWndBase::m_Theme.FrameMove();
-	GET_CLIENT_POINT( GetSafeHwnd(), point );
+	CPoint point = CWndBase::GetClientPoint();
 	g_toolTip.Process( point, &m_2DRender );
 	g_toolTipSub1.Process( point, &m_2DRender );
 	g_toolTipSub2.Process( point, &m_2DRender );

@@ -537,8 +537,7 @@ BOOL CWndNeuz::InitDialog( DWORD dwWID, CWndBase * pWndParent, DWORD dwStyle, CP
 
 	if( m_ptMouseCenter.x != -1 )
 	{
-		HWND hWnd = g_Neuz.GetSafeHwnd();
-		GET_CLIENT_POINT( hWnd, point );
+		CPoint point = GetClientPoint();
 		rect.OffsetRect( -point );
 	}
 

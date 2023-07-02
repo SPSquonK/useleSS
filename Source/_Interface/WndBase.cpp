@@ -75,8 +75,7 @@ void CWndBase::SetForbid( BOOL bForbid )
 { 
 	m_bForbid = bForbid; 
 	m_timerForbid.Set( 500 );  
-	GET_CLIENT_POINT( m_hWnd, point );
-	m_ptForbid = point;
+	m_ptForbid = GetClientPoint();
 }
 CWndBase::CWndBase()
 {
@@ -269,7 +268,7 @@ BOOL CWndBase::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT n
 	if( m_pWndRoot == this )
 		m_dwStyle |= WBS_MANAGER;
 	m_pParentWnd->AddWnd( this );
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(), point );
+	CPoint point = GetClientPoint();
 	m_ptMouse = point - GetScreenRect().TopLeft();
 
 	OnInitialUpdate();
@@ -625,7 +624,7 @@ LRESULT CWndBase::WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam )
 	m_rectCurrentWindow = m_rectWindow;
 	m_rectCurrentClient = m_rectClient;
 
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(),  point );
+	CPoint point = GetClientPoint();
 	CRect rectWnd = m_rectWindow;
 	CPoint ptClient = point - m_rectCurrentClient.TopLeft();
 	CPoint ptWindow = point - m_rectCurrentWindow.TopLeft();
@@ -746,7 +745,7 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 		m_rectCurrentWindow = m_rectWindow;
 		m_rectCurrentClient = m_rectClient;
 	}
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(),  point );
+	CPoint point = GetClientPoint();
 	CRect rectWnd = m_rectWindow;
 	CPoint ptClient = point - m_rectCurrentClient.TopLeft();
 	CPoint ptWindow = point - m_rectCurrentWindow.TopLeft();
@@ -971,7 +970,7 @@ std::vector<T>::iterator AdvanceInRing(
 
 LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 {
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(), point);
+	CPoint point = GetClientPoint();
 	CPoint ptClient = point - m_rectCurrentClient.TopLeft();
 	CPoint ptWindow = point - m_rectCurrentWindow.TopLeft();
 	CRect rectWnd = m_rectWindow;
@@ -2105,4 +2104,12 @@ void CWndBase::AdjustWndBase( D3DFORMAT d3dFormat ) //= D3DFMT_A4R4G4B4 )
 		SetWndRect( rect );
 		pTexture->m_pTexture->UnlockRect( 0);
 	}
+}
+
+CPoint CWndBase::GetClientPoint() {
+	HWND hwnd = g_Neuz.GetSafeHwnd();
+	CPoint pt;
+	::GetCursorPos(&pt);
+	::ScreenToClient(hwnd, &pt);
+	return pt;
 }
