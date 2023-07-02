@@ -5,7 +5,13 @@
 static_assert(false, "TailEffectMng.cpp should only be included in the client");
 #endif
 
-const DWORD TAILVERTEX::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
+struct TAILVERTEX {
+	static constexpr DWORD FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
+
+	D3DXVECTOR3 v;
+	D3DCOLOR    color;
+	FLOAT       tx, ty;
+};
 
 //
 //

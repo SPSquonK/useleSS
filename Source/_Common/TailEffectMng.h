@@ -2,14 +2,6 @@
 
 #ifdef __CLIENT
 
-struct TAILVERTEX
-{
-    D3DXVECTOR3 v;
-    D3DCOLOR    color;
-	FLOAT	tx, ty;
-	
-    static const DWORD FVF;
-};
 
 struct TAIL
 {
