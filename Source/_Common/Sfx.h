@@ -63,7 +63,7 @@ public:
 	
 	void Process(); // 각 프레임마다 위치이동, 애니메이션 등 처리
 	void DamageToTarget( int nDmgCnt = 0, float fDmgAngle = 0, float fDmgPower = 0, int nMaxDmgCnt = 1 ); // 목표물에 맞았을때 데미지를 준다
-	BOOL SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwIndex, BOOL bInitProp = FALSE );
+	BOOL SetIndex( DWORD dwIndex, BOOL bInitProp = FALSE ) override;
 
 	virtual	int SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex, D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec = 0 ); // 사용할 SFX 지정
 	virtual void ShootSfx( float fAngXZ, float fAngY, float fSpeed ) {}

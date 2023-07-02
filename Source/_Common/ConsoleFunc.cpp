@@ -120,7 +120,7 @@ void _change_model( std::vector< string >& arg )
 
 	if( g_pPlayer ) 
 	{
-		g_pPlayer->SetIndex( D3DDEVICE , modelIndex );
+		g_pPlayer->SetIndex( modelIndex );
 	}
 }
 

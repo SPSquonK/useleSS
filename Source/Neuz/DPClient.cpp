@@ -1163,7 +1163,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 			DWORD dwDisquise = pMover->GetDisguise();
 			if( dwDisquise != NULL_ID )
 			{
-				pMover->Disguise( D3DDEVICE, dwDisquise );
+				pMover->Disguise( dwDisquise );
 				CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
 				if( pWndQuestDetail )
 					pWndQuestDetail->UpdateQuestText();
@@ -1174,7 +1174,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 			}
 #ifdef __QUIZ
 			else if( g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->GetID() == WI_WORLD_QUIZ && g_pPlayer && g_pPlayer != pMover )
-				pMover->Disguise( D3DDEVICE, MI_AIBATT1 );
+				pMover->Disguise( MI_AIBATT1 );
 #endif // __QUIZ
 		}
 
@@ -11055,7 +11055,7 @@ void CDPClient::OnDisguise( OBJID objid, CAr & ar )
 
 	if( pMover )
 	{
-		pMover->Disguise( D3DDEVICE, dwMoverIdx );
+		pMover->Disguise( dwMoverIdx );
 		CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
 		if( pWndQuestDetail )
 			pWndQuestDetail->UpdateQuestText();
@@ -11073,7 +11073,7 @@ void CDPClient::OnNoDisguise( OBJID objid, CAr & ar )
 
 	if( pMover )
 	{
-		pMover->NoDisguise( D3DDEVICE );
+		pMover->NoDisguise();
 		CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
 		if( pWndQuestDetail )
 			pWndQuestDetail->UpdateQuestText();
@@ -12111,7 +12111,7 @@ void CDPClient::OnSexChange( OBJID objid, CAr & ar )
 		pMover->SetSex( (uIndex==MI_MALE) ? SEX_MALE : SEX_FEMALE );
 		if( pMover->m_pModel && pMover->m_pModel->IsAniable() )
 			SAFE_DELETE( pMover->m_pModel );
-		pMover->SetTypeIndex( D3DDEVICE, OT_MOVER, (DWORD)uIndex );
+		pMover->SetTypeIndex( OT_MOVER, (DWORD)uIndex );
 		pMover->ResetScale();
 		pMover->UpdateLocalMatrix();
 		pMover->m_dwMotion = -1;

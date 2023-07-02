@@ -1324,7 +1324,7 @@ bool CUser::DoUseItemSexChange(int nFace) {
 		SetSex(SEX_MALE);
 	}
 
-	SetTypeIndex(D3DDEVICE, OT_MOVER, dwIndex);
+	SetTypeIndex(OT_MOVER, dwIndex);
 	ResetScale();
 	SetMotion(MTI_WALK);
 	//RedoEquip( FALSE );		// chipi_091125 Á¦°Å

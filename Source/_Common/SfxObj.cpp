@@ -55,7 +55,7 @@ CSfx::~CSfx()
 #endif // __CLIENT
 }
 
-BOOL CSfx::SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwIndex, BOOL bInitProp )
+BOOL CSfx::SetIndex( DWORD dwIndex, BOOL bInitProp )
 {
 	BOOL bResult = FALSE;
 	m_idSrc = NULL_ID;
@@ -65,7 +65,7 @@ BOOL CSfx::SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwIndex, BOOL bInitProp
 	if( dwIndex >= 0 ) 
 	{
 #ifndef __WORLDSERVER
-		bResult = SetTypeIndex( pd3dDevice, OT_SFX, dwIndex, bInitProp );
+		bResult = SetTypeIndex( OT_SFX, dwIndex, bInitProp );
 		m_pSfxObj = (CSfxModel*)m_pModel;
 #endif	// __WORLDSERVER
 	}
@@ -87,7 +87,7 @@ int	CSfx::SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex,
 	if( nIndex >= 0 ) 
 	{
 #ifndef __WORLDSERVER
-		SetTypeIndex( pd3dDevice, OT_SFX, nIndex,TRUE);
+		SetTypeIndex( OT_SFX, nIndex,TRUE);
 		m_pSfxObj = (CSfxModel*)m_pModel;
 #endif	// __WORLDSERVER
 		return 1;

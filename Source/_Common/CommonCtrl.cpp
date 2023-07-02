@@ -660,7 +660,7 @@ void CCommonCtrl::DropItem() {
 		pItem->m_dwDropTime		= timeGetTime();
 
 		pItem->m_bDropMob	= FALSE;
-		pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
+		pItem->SetIndex( pItem->m_pItemBase->m_dwItemId );
 			
 		D3DXVECTOR3	v3Pos = GetPos();
 		v3Pos.x += static_cast<float>(xRandom(30) - 15) * 0.1f;

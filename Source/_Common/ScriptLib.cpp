@@ -909,7 +909,7 @@ int APIENTRY EquipItem( NPCDIALOG_INFO* pInfo, DWORD dwID )
 			pItem->m_pItemBase	= pItemElem;
 
 			if( pItemElem->m_dwItemId == 0 ) Error("EquipItem SetIndex\n" );
-			pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+			pItem->SetIndex( pItemElem->m_dwItemId );
 			pItem->SetPos( pUser->GetPos() );
 			pItem->SetAngle( (float)( xRandom( 360 ) ) );
 			pItem->m_idHolder	= pUser->m_idPlayer;
@@ -945,7 +945,7 @@ int APIENTRY DropQuestItem( NPCDIALOG_INFO* pInfo, DWORD dwID, DWORD dwProb )
 				CItem* pItem	= new CItem;
 				pItem->m_pItemBase	= pItemElem;
 				if( pItemElem->m_dwItemId == 0 ) Error( "DropQuestItem SetIndex\n" );
-				pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+				pItem->SetIndex( pItemElem->m_dwItemId );
 				pItem->m_idHolder	= pUser->m_idPlayer;
 				pItem->m_idOwn	= pUser->GetId();
 				pItem->m_dwDropTime	= timeGetTime();

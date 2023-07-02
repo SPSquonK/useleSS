@@ -202,7 +202,7 @@ public:
 
 	virtual	BOOL	SetMotion(DWORD dwMotion, int nLoop = ANILOOP_LOOP, DWORD dwOption = 0 ) { return FALSE; }
 	virtual	BOOL	InitMotion(DWORD dwMotion) { return FALSE; }
-	virtual	CModel* LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex );
+	virtual	CModel* LoadModel( DWORD dwType, DWORD dwIndex );
 	virtual void	InitProp( BOOL bInitAI = TRUE );
 	virtual	LPCTSTR GetName() { return _T( "hello" ); }
 	virtual void	Process();
@@ -210,7 +210,7 @@ public:
 	virtual void	Serialize( CAr & ar );
 	virtual void	Render( LPDIRECT3DDEVICE9 pd3dDevice );
 	virtual void	RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor = 0xffffffff );
-	virtual	BOOL	SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwIndex, BOOL bInitProp = FALSE ) { return SetTypeIndex( pd3dDevice, m_dwType, dwIndex, bInitProp ); }
+	virtual	BOOL	SetIndex( DWORD dwIndex, BOOL bInitProp = FALSE ) { return SetTypeIndex( m_dwType, dwIndex, bInitProp ); }
 
 	BOOL			IsUpdateMatrix() { 	return (m_dwFlags & OBJ_FLAG_UPDATEMATRIX); }
 	void			SetUpdateMatrix( BOOL bUpdate ) { SetFlag( bUpdate, OBJ_FLAG_UPDATEMATRIX ); }
@@ -246,7 +246,7 @@ public:
 	ObjProp*		GetProp();
 	[[nodiscard]] DWORD GetType() const { return m_dwType; }
 	DWORD			GetIndex() { return m_dwIndex; }
-	BOOL			SetTypeIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex, BOOL bInitProp = FALSE );
+	BOOL			SetTypeIndex( DWORD dwType, DWORD dwIndex, BOOL bInitProp = FALSE );
 	void			ProcessAI();
 	void			ProcessAirShip();		
 	DWORD			GetLinkType();

@@ -372,7 +372,7 @@ void CObj::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 }
 
 
-CModel* CObj::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex ) 
+CModel* CObj::LoadModel( DWORD dwType, DWORD dwIndex ) 
 {
 	return prj.m_modelMng.LoadModel( dwType, dwIndex );
 }
@@ -384,10 +384,10 @@ void CObj::ResetScale()
 	m_vScale.z = m_pModel->m_pModelElem->m_fScale;
 }
 
-BOOL CObj::SetTypeIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex, BOOL bInitProp )
+BOOL CObj::SetTypeIndex( DWORD dwType, DWORD dwIndex, BOOL bInitProp )
 {
 	m_dwIndex = dwIndex;
-	m_pModel = LoadModel( pd3dDevice, dwType, dwIndex );
+	m_pModel = LoadModel( dwType, dwIndex );
 	if( m_pModel ) 
 	{ 
 		if( bInitProp )
@@ -854,7 +854,7 @@ void	CObj::ProcessAirShip( void )
 				pObj->m_dwType = 1;
 				pObj->SetScale( D3DXVECTOR3(50, 50, 50) );
 				pObj->SetPos( vPos );
-				pObj->SetIndex( g_Neuz.m_pd3dDevice, 22 );
+				pObj->SetIndex( 22 );
 				pObj->UpdateLocalMatrix();
 				m_pWorld->AddObj( pObj );
 			}
@@ -886,7 +886,7 @@ void	CObj::ProcessAirShip( void )
 				pObj->m_dwType = 1;
 				pObj->SetScale( D3DXVECTOR3(50, 50, 50) );
 				pObj->SetPos( vPos );
-				pObj->SetIndex( g_Neuz.m_pd3dDevice, 22 );
+				pObj->SetIndex( 22 );
 				pObj->UpdateLocalMatrix();
 				m_pWorld->AddObj( pObj );
 			}

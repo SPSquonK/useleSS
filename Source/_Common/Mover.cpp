@@ -1193,7 +1193,7 @@ void CMover::ProcessRegenItem()
 
 #endif	// __WORLDSERVER
 
-CModel* CMover::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex )
+CModel* CMover::LoadModel( DWORD dwType, DWORD dwIndex )
 {
 	if( m_dwIndex == MI_FEMALE || m_dwIndex == MI_MALE )
 		return prj.m_modelMng.LoadModel( dwType, dwIndex, TRUE );
@@ -2013,7 +2013,7 @@ CItem *CMover::_DropItemNPC( DWORD dwItemType, DWORD dwID, short nDropNum, const
 	if( pItemBase->m_dwItemId == 0 ) 
 		Error( "_DropItemNPC SetIndex: %s \n", GetName() ); 
 
-	pItem->SetIndex( D3DDEVICE, pItemBase->m_dwItemId );
+	pItem->SetIndex( pItemBase->m_dwItemId );
 	if( pItem->m_pModel )
 	{
 		D3DXVECTOR3 v = vPos;
@@ -2108,7 +2108,7 @@ CItem* CMover::DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BO
 		g_DPSrvr.OnLogItem( aLogItem, pItemBase, nDropNum );
 	}
 	
-	pItem->SetIndex( D3DDEVICE, pItemBase->m_dwItemId );
+	pItem->SetIndex( pItemBase->m_dwItemId );
 
 	if( pItem->m_pModel )
 	{
@@ -5463,7 +5463,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 					pItem->m_idOwn	= pAttacker->GetId();
 					pItem->m_dwDropTime		= timeGetTime();
 					pItem->m_bDropMob	= TRUE;
-					pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
+					pItem->SetIndex( pItem->m_pItemBase->m_dwItemId );
 					D3DXVECTOR3 vPos = GetPos();
 					vPos.x += ( xRandomF(2.0f) - 1.0f );
 					vPos.z += ( xRandomF(2.0f) - 1.0f );
@@ -5504,7 +5504,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 					pItem->m_idOwn	= pAttacker->GetId();
 					pItem->m_dwDropTime		= timeGetTime();
 					pItem->m_bDropMob	= TRUE;
-					pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
+					pItem->SetIndex( pItem->m_pItemBase->m_dwItemId );
 					D3DXVECTOR3 vPos = GetPos();
 					vPos.x += ( xRandomF(2.0f) - 1.0f );
 					vPos.z += ( xRandomF(2.0f) - 1.0f );
@@ -5576,7 +5576,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 									pItem->m_pItemBase	= pItemElem;
 									if( pItemElem->m_dwItemId == 0 )
 										Error("DropItem:1st %s\n", GetName() );
-									pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+									pItem->SetIndex( pItemElem->m_dwItemId );
 									pItem->SetPos( pMember->GetPos() );
 									pItem->SetAngle( (float)( xRandom( 360 ) ) );
 									pItem->m_idHolder	= pMember->m_idPlayer;
@@ -5621,7 +5621,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							pItem->m_pItemBase	= pItemElem;
 							if( pItemElem->m_dwItemId == 0 )
 								Error("DropItem:1st %s\n", GetName() );
-							pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+							pItem->SetIndex( pItemElem->m_dwItemId );
 							pItem->SetPos( pAttacker->GetPos() );
 							pItem->SetAngle( (float)( xRandom( 360 ) ) );
 							pItem->m_idHolder	= pAttacker->m_idPlayer;
@@ -5785,7 +5785,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							}
 							pItem->m_bDropMob = TRUE;		// 몹이 죽어서 떨군 돈은 표시를 해둠.
 							if (pItem->m_pItemBase->m_dwItemId == 0) Error("DropItem: 3rd %s\n", GetName());
-							pItem->SetIndex(D3DDEVICE, pItem->m_pItemBase->m_dwItemId);
+							pItem->SetIndex(pItem->m_pItemBase->m_dwItemId);
 
 							vPos = GetPos();
 							vPos.x += (xRandomF(2.0f) - 1.0f);
@@ -5880,7 +5880,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							}
 							pItem->m_bDropMob = TRUE;		// 몹이 죽어서 떨군 돈은 표시를 해둠.
 							if( pItem->m_pItemBase->m_dwItemId == 0 ) Error("DropItem:2nd %s\n", GetName() );
-							pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
+							pItem->SetIndex( pItem->m_pItemBase->m_dwItemId );
 
 							vPos = GetPos();
 							vPos.x += ( xRandomF(2.0f) - 1.0f );
@@ -6010,7 +6010,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							}
 					#endif // __EVENT_MONSTER
 							if( pItem->m_pItemBase->m_dwItemId == 0 ) Error("DropItem: 4th %s\n", GetName() );
-							pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
+							pItem->SetIndex( pItem->m_pItemBase->m_dwItemId );
 							pItem->SetPos( GetPos() );
 							GetWorld()->ADDOBJ( pItem, TRUE, GetLayer() );
 							bDrop = true;
@@ -6757,7 +6757,7 @@ void CMover::SetCheerParam( int nCheerPoint, DWORD dwTickCount, DWORD dwRest )
 }
 
 
-BOOL CMover::NoDisguise( LPDIRECT3DDEVICE9 pd3dDevice )     
+BOOL CMover::NoDisguise()     
 { 
 #ifdef __CLIENT
 	// 이미 사람 모양이므로 해제 처리 할 필요 없음. 
@@ -6765,18 +6765,18 @@ BOOL CMover::NoDisguise( LPDIRECT3DDEVICE9 pd3dDevice )
 		return FALSE;
 	// 기존 모델 파괴 
 	DWORD dwIndex = (GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-	SetIndex( pd3dDevice, dwIndex, FALSE, FALSE );
+	SetIndex( dwIndex, FALSE, FALSE );
 #endif  //__CLIENT
 	return TRUE;
 }
-BOOL CMover::Disguise( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwMoverIndex )
+BOOL CMover::Disguise( DWORD dwMoverIndex )
 {
 #ifdef __CLIENT
-	return SetIndex( pd3dDevice, dwMoverIndex );
+	return SetIndex( dwMoverIndex );
 #endif // __CLIENT
 	return TRUE;
 }
-BOOL CMover::SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwMoverIndex, BOOL bInitProp, BOOL bDestParam )
+BOOL CMover::SetIndex( DWORD dwMoverIndex, BOOL bInitProp, BOOL bDestParam )
 { 
 	MoverProp* pMoverProp = prj.GetMoverProp( dwMoverIndex );
 	if( pMoverProp == NULL )
@@ -6787,7 +6787,7 @@ BOOL CMover::SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwMoverIndex, BOOL bI
 	// 기존 모델 파괴 
 	if( m_pModel && m_pModel->IsAniable() )
 		SAFE_DELETE( m_pModel );
-	SetTypeIndex( pd3dDevice, OT_MOVER, dwMoverIndex, bInitProp );//
+	SetTypeIndex( OT_MOVER, dwMoverIndex, bInitProp );//
 	m_dwMotion = -1;
 	SetMotion( MTI_STAND );
 	// 이런건 프로퍼티를 이용하는게 좋다.

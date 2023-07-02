@@ -289,7 +289,7 @@ BOOL CWorld::LoadObject()
 
 		D3DXVECTOR3 vPos = pObj->GetPos();
 		pObj->SetPos( vPos );
-		pObj->SetIndex( NULL, pObj->m_dwIndex );
+		pObj->SetIndex( pObj->m_dwIndex );
 		if( pObj->GetType() == OT_MOVER )
 			pObj->InitMotion( ((CMover *)pObj)->m_dwMotion );
 		pObj->UpdateLocalMatrix();
@@ -839,7 +839,7 @@ BOOL CWorld::ReadWorld()
 					if( pBkgnd->m_dwIndex <= 10 )
 						pBkgnd->SetAngle( (float)( rand() % 360 ) );
 
-					pBkgnd->SetIndex( D3DDEVICE, pBkgnd->m_dwIndex );
+					pBkgnd->SetIndex( pBkgnd->m_dwIndex );
 
 					if( pBkgnd->GetType() != OT_OBJ )
 					{

@@ -632,7 +632,7 @@ CObj* CreateObj( DWORD dwObjType, DWORD dwObjIndex, BOOL bInitProp )
 		#endif
 		return pObj;
 	}
-	else if( pObj->SetIndex( D3DDEVICE, dwObjIndex, bInitProp ) == TRUE )
+	else if( pObj->SetIndex( dwObjIndex, bInitProp ) == TRUE )
 	{
 		pObj->SetMotion( MTI_STAND );
 		// 스피드를 설정하려면 현재로선 이수밖에....좆치안타.

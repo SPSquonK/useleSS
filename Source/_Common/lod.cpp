@@ -1219,7 +1219,7 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 		}
 
 		//pObj->m_vPos += D3DXVECTOR3( 1024, 0, 0 );
-		if( pObj->SetIndex( g_Neuz.m_pd3dDevice, pObj->m_dwIndex ) == TRUE)
+		if( pObj->SetIndex( pObj->m_dwIndex ) == TRUE)
 		{
 			if( ::GetLanguage() == LANG_JAP && pObj->m_dwIndex == 360 )
 			{
@@ -1261,7 +1261,7 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 				pObj->m_vPos.z += yy * LANDREALSCALE;
 			}
 			//pObj->m_vPos += D3DXVECTOR3( 1024, 0, 0 );
-			if( pObj->SetIndex( g_Neuz.m_pd3dDevice, pObj->m_dwIndex ) == TRUE )
+			if( pObj->SetIndex( pObj->m_dwIndex ) == TRUE )
 			{
 				InsertObjLink( pObj );
 				AddObjArray( pObj );

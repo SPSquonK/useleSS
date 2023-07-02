@@ -2532,7 +2532,7 @@ BOOL TextCmd_Undying2(CScanner &, CPlayer_ * pUser) {
 
 BOOL TextCmd_NoDisguise(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
-	pUser->NoDisguise( NULL );
+	pUser->NoDisguise( );
 	g_UserMng.AddNoDisguise( pUser );
 #endif // __WORLDSERVER
 	return TRUE;
@@ -2541,7 +2541,7 @@ BOOL TextCmd_NoDisguise(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 BOOL DoDisguise( CUser* pUser, DWORD dwIndex )
 {
-	pUser->Disguise( NULL, dwIndex );
+	pUser->Disguise( dwIndex );
 	g_UserMng.AddDisguise( pUser, dwIndex );
 	return TRUE;
 }

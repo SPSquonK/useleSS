@@ -817,7 +817,7 @@ void CAttackArbiter::OnDiedSchoolEvent()
 
 			CItem* pItem		= new CItem;
 			pItem->m_pItemBase	= pItemElem;
-			pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+			pItem->SetIndex( pItemElem->m_dwItemId );
 			pItem->SetPos( m_pDefender->GetPos() );
 			pItem->SetAngle( (float)( xRandom( 360 ) ) );
 			m_pDefender->GetWorld()->ADDOBJ( pItem, TRUE, m_pDefender->GetLayer() );

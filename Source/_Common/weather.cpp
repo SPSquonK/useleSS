@@ -517,7 +517,7 @@ void CWeather::Process( CWorld* pWorld )
 					pSnow->m_dwType = 1;
 					pSnow->SetScale( D3DXVECTOR3(1.5f,1.5f,1.5f) );
 					pSnow->SetPos( D3DXVECTOR3( 0.0f,-1.0f,0.0f) );
-					pSnow->SetIndex( g_Neuz.m_pd3dDevice, 19 );
+					pSnow->SetIndex( 19 );
 					pWorld->AddObj( pSnow );
 				}
 			}
@@ -533,7 +533,7 @@ void CWeather::Process( CWorld* pWorld )
 					pRain->m_dwType = 1;
 					pRain->SetScale( D3DXVECTOR3(1.5f,1.5f,1.5f) );
 					pRain->SetPos( D3DXVECTOR3( 0.0f,-1.0f,0.0f) );
-					pRain->SetIndex( g_Neuz.m_pd3dDevice, 18 );
+					pRain->SetIndex( 18 );
 					pWorld->AddObj( pRain );
 				}
 			}
