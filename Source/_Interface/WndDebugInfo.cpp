@@ -186,7 +186,7 @@ BOOL CWndDebugInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 		case WIDC_WEATHER: g_WorldMng()->m_bViewWeather = !g_WorldMng()->m_bViewWeather; break;
 		case WIDC_ATTRIBUTE: g_WorldMng()->m_bViewHeightAttribute = !g_WorldMng()->m_bViewHeightAttribute; break;
 		case WIDC_HIDE: g_pPlayer->SetVisible( !g_pPlayer->IsVisible() ); break;
-		//case WIDC_114: m_pTheme->m_bNudeSkin = !m_pTheme->m_bNudeSkin; break;
+		//case WIDC_114: m_Theme.m_bNudeSkin = !m_Theme.m_bNudeSkin; break;
 		case WIDC_BOUNDBOX: 
 //			g_World.m_bViewBoundBox = !g_World.m_bViewBoundBox;
 			g_WorldMng()->m_bViewBoundBox = !g_WorldMng()->m_bViewBoundBox;

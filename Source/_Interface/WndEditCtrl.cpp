@@ -1067,7 +1067,7 @@ void CWndHCandList::PaintFrame(C2DRender* p2DRender)
 {
 	CRect rect = GetWindowRect();
 	
-	m_pTheme->RenderWndTextFrame( p2DRender, &rect );
+	m_Theme.RenderWndTextFrame( p2DRender, &rect );
 }
 void CWndHCandList::OnDraw( C2DRender* p2DRender )
 {
@@ -1322,7 +1322,7 @@ void CWndEdit::PaintFrame(C2DRender* p2DRender)
 {
 	return;
 	CRect rect = GetWindowRect();
-	m_pTheme->RenderWndEditFrame( p2DRender, &rect );
+	m_Theme.RenderWndEditFrame( p2DRender, &rect );
 }
 
 void CWndEdit::OnSetCursor() {

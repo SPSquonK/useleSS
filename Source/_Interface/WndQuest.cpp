@@ -650,11 +650,11 @@ void CWndQuestDetail::PaintFrame( C2DRender* p2DRender )
 	}
 	else if( m_strTexture.IsEmpty() )
 	{
-		m_pTheme->RenderWndBaseFrame( p2DRender, &rect );
+		m_Theme.RenderWndBaseFrame( p2DRender, &rect );
 		if( IsWndStyle( WBS_CAPTION ) )
 		{
 			rect.bottom = 21;
-			m_pTheme->RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
+			m_Theme.RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
 		}
 	}
 }

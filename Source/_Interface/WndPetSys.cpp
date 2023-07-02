@@ -189,7 +189,7 @@ void CWndPetStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBHPGauge = m_pTheme->MakeGaugeVertex( &rectTemp, 0x64ff0000, m_pVBHPGauge, &m_texGauFillNormal );
+			m_bVBHPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x64ff0000, m_pVBHPGauge, &m_texGauFillNormal );
 		}
 
 		// Exp
@@ -201,7 +201,7 @@ void CWndPetStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBEXPGauge = m_pTheme->MakeGaugeVertex( &rectTemp, 0x847070ff, m_pVBEXPGauge, &m_texGauFillNormal );
+			m_bVBEXPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x847070ff, m_pVBEXPGauge, &m_texGauFillNormal );
 		}
 	}
 }
@@ -248,13 +248,13 @@ void CWndPetStatus::PaintFrame( C2DRender* p2DRender )
 		}
 		else
 		{
-			m_pTheme->RenderWndBaseFrame( p2DRender, &rect );
+			m_Theme.RenderWndBaseFrame( p2DRender, &rect );
 			if( IsWndStyle( WBS_CAPTION ) )
 			{
 				// 타이틀 바 
 				rect.bottom = 21;
 				{
-					m_pTheme->RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
+					m_Theme.RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
 				}
 			}
 		}
@@ -373,10 +373,10 @@ void CWndPetStatus::OnDraw(C2DRender* p2DRender)
 			m_bHPVisible = TRUE;
 
 		if( m_bHPVisible )
-			m_pTheme->RenderGauge( m_pVBHPGauge, &m_texGauFillNormal );
+			m_Theme.RenderGauge( m_pVBHPGauge, &m_texGauFillNormal );
 	}
 	if( m_bVBEXPGauge )
-		m_pTheme->RenderGauge( m_pVBEXPGauge, &m_texGauFillNormal );
+		m_Theme.RenderGauge( m_pVBEXPGauge, &m_texGauFillNormal );
 	
 	//Pet Information
 	DrawPetInformation(p2DRender);
@@ -1023,13 +1023,13 @@ void CWndFoodConfirm::PaintFrame( C2DRender* p2DRender )
 	}
 	else
 	{
-		m_pTheme->RenderWndBaseFrame( p2DRender, &rect );
+		m_Theme.RenderWndBaseFrame( p2DRender, &rect );
 		if( IsWndStyle( WBS_CAPTION ) )
 		{
 			// 타이틀 바 
 			rect.bottom = 21;
 			{
-				m_pTheme->RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
+				m_Theme.RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
 			}
 		}
 	}

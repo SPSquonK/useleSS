@@ -105,8 +105,8 @@ void CWndPartyQuick::OnDraw( C2DRender* p2DRender )
 		rectTemp.right = rectTemp.left + nWidth;
 		if( rect.right < rectTemp.right )
 			rectTemp.right = rect.right;
-		m_pTheme->RenderGauge( p2DRender, &rect, 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
-		m_pTheme->RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
+		m_Theme.RenderGauge( p2DRender, &rect    , 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
+		m_Theme.RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
 	}
 } 
 

@@ -353,17 +353,17 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 	}
 	if(m_dwStyle & WBS_RADIO)
 	{
-		m_pTheme->RenderWndButtonRadio( p2DRender, this );
+		m_Theme.RenderWndButtonRadio( p2DRender, this );
 	}
 	else
 	if(m_dwStyle & WBS_CHECK)
 	{
-		m_pTheme->RenderWndButtonCheck( p2DRender,  this );
+		m_Theme.RenderWndButtonCheck( p2DRender,  this );
 	}
 	else
 	if(m_dwStyle & WBS_TEXT)
 	{
-		m_pTheme->RenderWndButtonText( p2DRender, this );
+		m_Theme.RenderWndButtonText( p2DRender, this );
 	}
 	else
 	if(m_dwStyle & WBS_MENUITEM)
@@ -437,7 +437,7 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 	else
 	// 표준 버튼 
 	{
-			m_pTheme->RenderWndButton( p2DRender, this );
+		m_Theme.RenderWndButton( p2DRender, this );
 	}
 }
 BOOL CWndButton::Process()
@@ -3166,7 +3166,7 @@ CAr & operator>>(CAr & ar, CWndTabCtrl & tab) {
 #ifdef __IMPROVE_MAP_SYSTEM
 void CWndComboListBox::PaintFrame( C2DRender* p2DRender )
 {
-	m_pTheme->RenderWndEditFrame( p2DRender, &GetWindowRect() );
+	m_Theme.RenderWndEditFrame( p2DRender, &GetWindowRect() );
 }
 #endif // __IMPROVE_MAP_SYSTEM
 
@@ -3220,7 +3220,7 @@ void CWndComboBox::SetWndRect( CRect rectWnd, BOOL bOnSize )
 void CWndComboBox::PaintFrame( C2DRender* p2DRender )
 {
 #ifdef __IMPROVE_MAP_SYSTEM
-	m_pTheme->RenderWndEditFrame( p2DRender, &GetWindowRect() );
+	m_Theme.RenderWndEditFrame( p2DRender, &GetWindowRect() );
 #else // __IMPROVE_MAP_SYSTEM
 	CWndEdit::PaintFrame( p2DRender);
 #endif // __IMPROVE_MAP_SYSTEM

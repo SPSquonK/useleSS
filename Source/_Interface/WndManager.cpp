@@ -1654,7 +1654,7 @@ BOOL CWndMgr::OnEraseBkgnd( C2DRender* p2DRender )
 			pWndLogin->EnableWindow( FALSE );
 		}
 
-		m_pTheme->RenderGameGradeScreen( &g_Neuz.m_2DRender );
+		m_Theme.RenderGameGradeScreen( &g_Neuz.m_2DRender );
 	}
 	else if( pWndWorld == NULL && m_bTitle )
 	{
@@ -1665,14 +1665,14 @@ BOOL CWndMgr::OnEraseBkgnd( C2DRender* p2DRender )
 			pWndLogin->EnableWindow( TRUE );
 		}
 
-			m_pTheme->RenderDesktop( &g_Neuz.m_2DRender );
+		m_Theme.RenderDesktop( &g_Neuz.m_2DRender );
 
 	}
 #else // __GAME_GRADE_SYSTEM
 	// 월드가 없거나 풀화면이 아닐 때
 	if( pWndWorld == NULL && m_bTitle ) //|| pWndWorld->m_nWinSize != WSIZE_MAX )
 	{
-			m_pTheme->RenderDesktop( &g_Neuz.m_2DRender );
+		m_Theme.RenderDesktop( &g_Neuz.m_2DRender );
 	}
 #endif // __GAME_GRADE_SYSTEM
 	else

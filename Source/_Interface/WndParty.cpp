@@ -373,9 +373,9 @@ void CWndPartyInfo::OnDraw( C2DRender* p2DRender )
 		rectTemp = rect; 
 		rectTemp.right = rectTemp.left + nWidth;
 
-		m_pTheme->RenderGauge( p2DRender, &rect, 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
+		m_Theme.RenderGauge( p2DRender, &rect, 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
 		if( IsValidObj(pObjMember) )
-			m_pTheme->RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
+			m_Theme.RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
 	
 		y+=15; // ¥Ÿ¿Ω¡Ÿ
 	}

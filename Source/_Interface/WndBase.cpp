@@ -81,7 +81,6 @@ CWndBase::CWndBase()
 {
 	//m_bAutoFree    = FALSE;
 	m_isCreated = false;
-	m_pTheme       = NULL ;
 	m_pFont        = NULL ;
 	m_nIdWnd       = 0    ;
 	m_dwStyle      = 0    ;
@@ -259,7 +258,6 @@ BOOL CWndBase::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT n
 	else
 		m_pParentWnd = m_pWndRoot;
 
-	m_pTheme = m_pParentWnd->m_pTheme;
 	m_isCreated = m_pParentWnd->m_isCreated;
 	m_pFont = m_pParentWnd->m_pFont;
 
@@ -383,12 +381,12 @@ void CWndBase::PaintFrame(C2DRender* p2DRender)
 		else
 		if( m_strTexture.IsEmpty() )
 		{
-			m_pTheme->RenderWndBaseFrame( p2DRender, &rect );
+			m_Theme.RenderWndBaseFrame( p2DRender, &rect );
 			if( IsWndStyle( WBS_CAPTION ) )
 			{
 				// 타이틀 바 
 				rect.bottom = 21;
-					m_pTheme->RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
+				m_Theme.RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
 			}
 		}
 
@@ -1774,7 +1772,7 @@ BOOL CWndBase::OnEraseBkgnd( C2DRender* p2DRender )
 	}
 	else
 	{
-		m_pTheme->RenderWndBaseBkgr( p2DRender, &rect );
+		m_Theme.RenderWndBaseBkgr( p2DRender, &rect );
 	}
 /*
 	// 테두리 박스 

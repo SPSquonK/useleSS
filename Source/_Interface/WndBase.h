@@ -87,7 +87,6 @@ public:
 static CResManager m_resMng;
 	static CTileMapManager m_strWndTileMap;
 	bool m_isCreated;
-	CTheme*   m_pTheme;
 	CWndBase* m_pParentWnd;
 	std::vector<CWndBase *> m_wndArray;
 	UINT      m_nIdWnd;

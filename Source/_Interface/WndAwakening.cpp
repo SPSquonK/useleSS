@@ -184,7 +184,7 @@ void CWndSelectAwakeCase::OnDraw( C2DRender* p2DRender )
 	rect.right = LONG(( rect.left + (AWAKE_KEEP_TIME - m_dwDeltaTime) / 100 ) * 0.6f) ;		//±ÍÂúÀ¸´Ï °Á ¹ÙÀÇ ±æÀÌ¸¦ ÃÖ´ëÃÊ·Î...
 	rect.bottom = rect.top + 20;
 
-	m_pTheme->RenderGauge(p2DRender, &rect, 0xffffffff, m_pVertexBufferGauge, m_pTexGuage);
+	m_Theme.RenderGauge(p2DRender, &rect, 0xffffffff, m_pVertexBufferGauge, m_pTexGuage);
 
 	// draw icon
 	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );

@@ -67,8 +67,8 @@ void CCollectingWnd::OnDraw( C2DRender* p2DRender )
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
 
-			m_pTheme->MakeGaugeVertex( &rectTemp, D3DCOLOR_ARGB( 128, 0, 0, 255 ), m_pVBGauge, m_pTexGauFillNormal );
-			m_pTheme->RenderGauge( m_pVBGauge, m_pTexGauEmptyNormal );	
+			m_Theme.MakeGaugeVertex( &rectTemp, D3DCOLOR_ARGB( 128, 0, 0, 255 ), m_pVBGauge, m_pTexGauFillNormal );
+			m_Theme.RenderGauge( m_pVBGauge, m_pTexGauEmptyNormal );	
 		}
 	}
 	

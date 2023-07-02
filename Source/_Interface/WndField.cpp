@@ -3518,7 +3518,7 @@ void CWndStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBHPGauge = m_pTheme->MakeGaugeVertex( &rectTemp, 0x64ff0000, m_pVBHPGauge, &m_texGauFillNormal );
+			m_bVBHPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x64ff0000, m_pVBHPGauge, &m_texGauFillNormal );
 		}
 		//else m_bVBHPGauge = TRUE;
 		// MP
@@ -3530,7 +3530,7 @@ void CWndStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBMPGauge = m_pTheme->MakeGaugeVertex( &rectTemp, 0x640000ff, m_pVBMPGauge, &m_texGauFillNormal );
+			m_bVBMPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x640000ff, m_pVBMPGauge, &m_texGauFillNormal );
 		}
 		//else m_bVBMPGauge = TRUE;
 		// FP
@@ -3542,7 +3542,7 @@ void CWndStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBFPGauge = m_pTheme->MakeGaugeVertex( &rectTemp, 0x6400ff00, m_pVBFPGauge, &m_texGauFillNormal );
+			m_bVBFPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x6400ff00, m_pVBFPGauge, &m_texGauFillNormal );
 		}
 	//lse m_bVBFPGauge = TRUE;
 		//nWidth	= ( ( hyper ) nWidthClient * pMover->GetExp1() ) / pMover->GetMaxExp1();
@@ -3556,7 +3556,7 @@ void CWndStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBEXPGauge = m_pTheme->MakeGaugeVertex( &rectTemp, 0x847070ff, m_pVBEXPGauge, &m_texGauFillSmall );
+			m_bVBEXPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x847070ff, m_pVBEXPGauge, &m_texGauFillSmall );
 		}
 
 		if( m_nPXPWidth != GuildHouse->m_nExtraExp )
@@ -3569,7 +3569,7 @@ void CWndStatus::MakeGaugeVertex()
 				m_nPXPWidth = 9;
 			rectTemp.right = rectTemp.left + m_nPXPWidth;
 			ClientToScreen( rectTemp );
-			m_bVBAEXPGauge = m_pTheme->MakeGaugeVertex( &rectTemp, 0x84e6ce19, m_pVBAEXPGauge, &m_texGauFillSmall );
+			m_bVBAEXPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x84e6ce19, m_pVBAEXPGauge, &m_texGauFillSmall );
 		}
 	}
 }
@@ -3604,13 +3604,13 @@ void CWndStatus::PaintFrame( C2DRender* p2DRender )
 	}
 	else
 	{
-		m_pTheme->RenderWndBaseFrame( p2DRender, &rect );
+		m_Theme.RenderWndBaseFrame( p2DRender, &rect );
 		if( IsWndStyle( WBS_CAPTION ) )
 		{
 			// Ÿ��Ʋ �� 
 			rect.bottom = 21;
 			{
-				m_pTheme->RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
+				m_Theme.RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
 			}
 		}
 	}
@@ -3643,18 +3643,15 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 
 		if( m_bVBHPGauge )
 		{
-//#ifdef __VCRITICAL
-				m_bHPVisible = TRUE;
-//#else
-//			m_bHPVisible = TRUE;
-//#endif
+			m_bHPVisible = TRUE;
+
 			if( m_bHPVisible )
-				m_pTheme->RenderGauge( m_pVBHPGauge, &m_texGauFillNormal );
+				m_Theme.RenderGauge( m_pVBHPGauge, &m_texGauFillNormal );
 		}
 		if( m_bVBMPGauge )
-			m_pTheme->RenderGauge( m_pVBMPGauge, &m_texGauFillNormal );
+			m_Theme.RenderGauge( m_pVBMPGauge, &m_texGauFillNormal );
 		if( m_bVBFPGauge )
-			m_pTheme->RenderGauge( m_pVBFPGauge, &m_texGauFillNormal );
+			m_Theme.RenderGauge( m_pVBFPGauge, &m_texGauFillNormal );
 		if( g_pPlayer->IsAfterDeath() )
 			m_bExpVisible = !m_bExpVisible;
 		else
@@ -3662,7 +3659,7 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 
 		if( m_bVBEXPGauge )
 		{
-			m_pTheme->RenderGauge( m_pVBEXPGauge, &m_texGauFillSmall );
+			m_Theme.RenderGauge( m_pVBEXPGauge, &m_texGauFillSmall );
 		}
 		if( m_bExpVisible )
 		{
@@ -3670,7 +3667,7 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 #if __VER < 8 // #ifndef __SKILL_WITHOUT_EXP
 			if( m_bVBPXPGauge )
 			{
-				m_pTheme->RenderGauge( m_pVBPXPGauge, &m_texGauFillSmall );
+				m_Theme.RenderGauge( m_pVBPXPGauge, &m_texGauFillSmall );
 
 			}
 #endif // __VER < 8
@@ -3678,7 +3675,7 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 		}
 
 		if( m_bVBAEXPGauge )
-			m_pTheme->RenderGauge( m_pVBAEXPGauge, &m_texGauFillSmall );
+			m_Theme.RenderGauge( m_pVBAEXPGauge, &m_texGauFillSmall );
 		
 
 
@@ -3698,7 +3695,7 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 	if( m_nDisplay != 0 )
 	{
 		DWORD dwColor = D3DCOLOR_ARGB(255, 255, 255, 255 );
-		//p2DRender->SetFont( m_pTheme->m_pFontWndTitle );
+		//p2DRender->SetFont( m_Theme.m_pFontWndTitle );
 
 		char cbufHp[16] = {0,};
 		char cbufMp[16] = {0,};
@@ -10395,8 +10392,8 @@ void CWndCoupleTabInfo::OnDraw(C2DRender* p2DRender)
 
 	if(m_pVBGauge)
 	{
-		m_pTheme->RenderGauge( p2DRender, &rect, 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
-		m_pTheme->RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
+		m_Theme.RenderGauge( p2DRender, &rect, 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
+		m_Theme.RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
 	}
 
 	SAFE_DELETE_ARRAY( pVertex );
@@ -10991,11 +10988,11 @@ void CWndSmeltSafety::OnDraw(C2DRender* p2DRender)
 		rectStaticTemp.BottomRight().x = lpStatic->rect.right + nExtensionPixel;
 		if(m_bResultStatic[i] != false)
 		{
-			m_pTheme->RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferSuccessImage, m_pSuccessTexture);
+			m_Theme.RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferSuccessImage, m_pSuccessTexture);
 		}
 		else
 		{
-			m_pTheme->RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferSuccessImage, m_pFailureTexture);
+			m_Theme.RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferSuccessImage, m_pFailureTexture);
 		}
 	}
 
@@ -11011,7 +11008,7 @@ void CWndSmeltSafety::OnDraw(C2DRender* p2DRender)
 		nGaugeWidth = nGaugeWidth < lpStatic->rect.right ? nGaugeWidth : lpStatic->rect.right;
 		rectStaticTemp.BottomRight().x = nGaugeWidth + nExtensionPixel;
 		assert(m_pVertexBufferGauge != NULL);
-		m_pTheme->RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferGauge, m_pNowGaugeTexture);
+		m_Theme.RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferGauge, m_pNowGaugeTexture);
 	}
 }
 

@@ -824,7 +824,7 @@ HRESULT CNeuzApp::Render()
 #ifdef __CLIENT
 		if( ::GetLanguage() == LANG_KOR )
 		{
-			g_WndMng.m_pTheme->RenderGameGradeMark( &m_2DRender, static_cast< DWORD >( m_nGameGradeMarkAlpha ) );
+			m_Theme.RenderGameGradeMark( &m_2DRender, static_cast< DWORD >( m_nGameGradeMarkAlpha ) );
 		}
 #endif // __CLIENT
 #endif // __GAME_GRADE_SYSTEM
@@ -1559,7 +1559,6 @@ HRESULT CNeuzApp::InitDeviceObjects()
 
 	// CWndBase ¼¼ÆÃ 
 	g_WndMng.m_isCreated = true;
-	g_WndMng.m_pTheme = &CWndBase::m_Theme;
 	g_WndMng.m_pFont = CWndBase::m_Theme.m_pFontText;
 	g_WndMng.Initialize();
 	g_WndMng.InitDeviceObjects();
