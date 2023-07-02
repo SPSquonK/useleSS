@@ -235,45 +235,17 @@ CObject3DMng :: ~CObject3DMng()
 
 void	CObject3DMng :: Init( void )
 {
-#ifdef __JEFF_11_5
 	m_mapObject3D.clear();
-#else	// __JEFF_11_5
-	int		i;
-	m_nSize = 0;
-	m_nMax = 0;
-	m_nCachePos = 0;
-
-	for( i = 0; i < MAX_OBJECT3D; i ++ )	m_pObject3DAry[i] = NULL;
-	for( i = 0; i < MAX_OBJECT3D_CACHE; i ++ )	m_pCache[i] = NULL;
-//	m_tmTimer	= timeGetTime();
-#endif	// __JEFF_11_5
 }
 
 // 디바이스 자원과 메모리 모두를 날림.
 void	CObject3DMng :: Destroy( void )
 {
-#ifdef __JEFF_11_5
 	for( auto i = m_mapObject3D.begin(); i != m_mapObject3D.end(); ++i )
 	{
 		i->second->DeleteDeviceObjects();
 		SAFE_DELETE( i->second );
 	}
-#else	// __JEFF_11_5
-	int		i;
-	CObject3D		**pAry = m_pObject3DAry;
-	CObject3D		*pObject3D;
-
-	for( i = 0; i < MAX_OBJECT3D; i ++ )
-	{
-		pObject3D = *pAry++;
-		if( pObject3D )
-		{
-			pObject3D->DeleteDeviceObjects();
-			SAFE_DELETE( pObject3D );
-			//TRACE( "Delete Object 3D%p\n", pObject3D);
-		}
-	}
-#endif	// __JEFF_11_5
 
 	Init();
 }
@@ -287,23 +259,8 @@ HRESULT CObject3DMng :: InvalidateDeviceObjects()
 // 디바이스 자원만 날림.
 HRESULT CObject3DMng :: DeleteDeviceObjects()
 {
-#ifdef __JEFF_11_5
 	for( auto i = m_mapObject3D.begin(); i != m_mapObject3D.end(); ++i )
 		i->second->DeleteDeviceObjects();
-#else	// __JEFF_11_5
-	int		i;
-	CObject3D		**pAry = m_pObject3DAry;
-	CObject3D		*pObject3D;
-	
-	for( i = 0; i < MAX_OBJECT3D; i ++ )
-	{
-		pObject3D = *pAry++;
-		if( pObject3D )
-		{
-			pObject3D->DeleteDeviceObjects();
-		}
-	}
-#endif	// __JEFF_11_5
 	return S_OK;
 }
 
@@ -311,7 +268,6 @@ HRESULT CObject3DMng :: DeleteDeviceObjects()
 // 공유되어 있는 텍스쳐라면 사용카운터를 보고 1인것만 삭제한다..
 int CObject3DMng::DeleteObject3D( CObject3D *pObject3D )
 {
-#ifdef __JEFF_11_5
 	if( !pObject3D )
 		return FALSE;
 	if( m_mapObject3D.size() == 0 )
@@ -325,38 +281,6 @@ int CObject3DMng::DeleteObject3D( CObject3D *pObject3D )
 		return TRUE;
 	}
 	return FALSE;
-#else	// __JEFF_11_5
-	if( pObject3D == NULL )	return FALSE;
-	if( m_nMax == 0 )	return FALSE;
-	
-	int	i, j;
-
-	for( i = 0; i < MAX_OBJECT3D; i ++ )
-	{
-		if( m_pObject3DAry[i] )
-		{
-			if( m_pObject3DAry[i] == pObject3D )		// pObject3D를 찾았다.
-			{
-				if( m_pObject3DAry[i]->m_nUseCnt == 1 )			// 공유된게 아니다(usecnt == 1)
-				{
-					for( j = 0; j < MAX_OBJECT3D_CACHE; j ++ )
-					{
-						if( m_pCache[j] == pObject3D )
-						{
-							m_pCache[j] = NULL;			// 캐쉬에 있었는지 먼저 검사해보고 캐쉬를 먼저 치움.
-							break;
-						}
-					}
-					SAFE_DELETE( m_pObject3DAry[i] );			// 오브젝트 관리자에서도 삭제하고 실제 객체도 날려버림.
-					m_nMax --;
-					return TRUE;
-				}
-			}
-		}
-	}
-
-	return FALSE;
-#endif	// __JEFF_11_5
 }
 
 
@@ -366,7 +290,6 @@ int CObject3DMng::DeleteObject3D( CObject3D *pObject3D )
 //
 CObject3D		*CObject3DMng :: LoadObject3D( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
 {
-#ifdef __JEFF_11_5
 	char sFile[MAX_PATH]	= { 0,};
 	strcpy( sFile, szFileName );
 	strlwr( sFile );
@@ -388,72 +311,6 @@ CObject3D		*CObject3DMng :: LoadObject3D( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR 
 	bool bResult	= m_mapObject3D.emplace( sFile, pObject3D).second;
 
 	return pObject3D;
-#else	// __JEFF_11_5
-	int			i;
-	CObject3D	**pAry;
-	CObject3D	*pObject3D;
-	int			nIdx = -1;
-
-	// 이미 메모리에 적재 되었는지 검색, 동시에 빈곳도 검색
-	// 일단 캐쉬를 검색
-	pAry = m_pCache;
-	for( i = 0; i < MAX_OBJECT3D_CACHE; i ++ )
-	{
-		pObject3D = *pAry++;
-		if( pObject3D )
-		{
-			if( strcmpi(pObject3D->m_szFileName, szFileName) == 0 && pObject3D->m_pd3dDevice == pd3dDevice )		// 같은걸 찾았으면 그걸 리턴
-			{
-				pObject3D->m_nUseCnt ++;	// 중복되어 사용되어지면 카운트 올림.
-				return pObject3D;
-			}
-		}
-	}
-	// 이미 메모리에 적재 되었는지 검색, 동시에 빈곳도 검색
-	pAry = m_pObject3DAry;
-	for( i = 0; i < MAX_OBJECT3D; i ++ )
-	{
-		pObject3D = *pAry++;
-		if( pObject3D )				// 널이 아닌것은 무슨 모션이든 로딩되어 있다는 뜻
-		{
-			if( strcmpi(pObject3D->m_szFileName, szFileName) == 0 && pObject3D->m_pd3dDevice == pd3dDevice )		// 같은걸 찾았으면 그걸 리턴
-			{
-				pObject3D->m_nUseCnt ++;	// 중복되어 사용되어지면 카운트 올림.
-				return pObject3D;
-			}
-		} else
-		{
-			if( nIdx == -1 )		nIdx = i;			// 빈곳이 있으면 가장처음 빈곳이 나온곳을 기억해둠
-		}
-	}
-	if( nIdx == -1 )	
-	{
-		Error( "%s : 읽을 수 있는 한계를 초과했다", szFileName );
-	}
-
-	pObject3D = new CObject3D;
-//	pObject3D->m_tmCreate = timeGetTime();		// 객체가 생성된 당시시간을 기록
-	pObject3D->InitDeviceObjects( pd3dDevice );
-
-	// 로딩된게 아니었다면.  실제로 데이타 읽음.
-	if( pObject3D->LoadObject( szFileName ) == FAIL )
-	{
-		SAFE_DELETE( pObject3D );
-		return NULL;
-	}
-
-	pObject3D->m_nUseCnt = 1;	// 처음 로딩되었으면 1부터
-	// 읽은 메쉬포인터를 리스트에 등록
-	m_pObject3DAry[ nIdx ] = pObject3D;
-	
-	// 캐시에도 넣음
-	m_pCache[ m_nCachePos++ ] = pObject3D;
-	if( m_nCachePos >= MAX_OBJECT3D_CACHE )		m_nCachePos = 0;
-
-	m_nMax ++;			// 가진 모션 갯수 증가
-
-	return pObject3D;		// 읽은 모션 포인터 리턴
-#endif	// __JEFF_11_5
 }
 
 // 주기적으로 검사해서 사용한지 오래된놈은 메모리에서 날림.

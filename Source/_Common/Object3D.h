@@ -390,19 +390,7 @@ static 	BOOL IsAnimateFile( LPCTSTR szFileName );		// szFileName이 애니메이션이 
 class	CObject3DMng
 {
 private:
-#ifdef __JEFF_11_5
 	std::map<std::string, CObject3D*>	m_mapObject3D;
-#else	// __JEFF_11_5
-	int			m_nCachePos;
-	int			m_nSize;
-	int			m_nMax;
-//	DWORD		m_tmTimer;
-//#ifdef __WORLDSERVER
-//	CRIT_SEC	m_AccessLock;
-//#endif	// __WORLDSERVER
-	CObject3D		*m_pCache[ MAX_OBJECT3D_CACHE ];				// 메쉬 캐쉬
-	CObject3D		*m_pObject3DAry[ MAX_OBJECT3D ];						// 메모리상에 일괄적으로 저장되는 메쉬 데이타
-#endif	// __JEFF_11_5
 
 	void	Init( void );
 

@@ -95,7 +95,6 @@
 #define		__EVENTLUA_GIFT				// 특정 레벨로 레벨업시 아이템 지급
 
 #define		__JEFF_11_4					// 아레나
-#define		__JEFF_11_5					// 메모리 누수
 #define		__JEFF_11_6					// 바보 몬스터
 
 #define		__DST_GIFTBOX				// 착용 아이템에 기프트 박스 기능 추가
