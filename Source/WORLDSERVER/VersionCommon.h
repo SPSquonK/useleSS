@@ -6,7 +6,7 @@
 	#define __INTERNALSERVER
 #endif
 
-#define		D3DDEVICE	NULL
+#define		D3DDEVICE	nullptr
 #define		__SERVER						// 클라이언트 전용코드를 빌드하지 않기 위한 define
 #define		__X15
 #define		__VERIFY_LOOP041010
