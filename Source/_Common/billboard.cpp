@@ -41,7 +41,7 @@ HRESULT CBillboard::RestoreDeviceObjects()
 	// 버텍스 버퍼 만들기 
 	if( m_pBillboard->bAnimation )
 	{
-		hr = m_pd3dDevice->CreateVertexBuffer
+		hr = g_Neuz.m_pd3dDevice->CreateVertexBuffer
 			(	
 				m_nVertexNum * sizeof(BILLBOARDVERTEX),
 				D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFVF_BILLBOARDVERTEX,
@@ -49,7 +49,7 @@ HRESULT CBillboard::RestoreDeviceObjects()
 	}
 	else
 	{
-		hr = m_pd3dDevice->CreateVertexBuffer
+		hr = g_Neuz.m_pd3dDevice->CreateVertexBuffer
 			(	
 				m_nVertexNum * sizeof(BILLBOARDVERTEX),
 				0, D3DFVF_BILLBOARDVERTEX,
@@ -214,10 +214,9 @@ HRESULT CBillboard::DeleteDeviceObjects()
 	SAFE_RELEASE(m_pVertexBuffer);
 	return hr;
 }
-HRESULT CBillboard::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPBILLBOARD lpBillboard, CTexture* pTexture )
+HRESULT CBillboard::InitDeviceObjects( LPBILLBOARD lpBillboard, CTexture* pTexture )
 {
 	HRESULT hr = S_OK;
-	m_pd3dDevice = pd3dDevice;
 	m_pBillboard = lpBillboard;
 	m_pTexture = pTexture;
 	return hr;

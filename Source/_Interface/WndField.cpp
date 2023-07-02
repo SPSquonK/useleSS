@@ -418,7 +418,7 @@ CWndQueryEquip::CWndQueryEquip(CMover & mover, std::unique_ptr<std::array<CItemE
 		);
 	m_pModel->LoadMotionId(MTI_STAND);
 	CMover::UpdateParts(mover.GetSex(), mover.m_skin, mover.m_aEquipInfo, m_pModel.get(), NULL);
-	m_pModel->InitDeviceObjects(g_Neuz.GetDevice());
+	m_pModel->InitDeviceObjects();
 
 	// Set Equip Info add
 	m_aEquipInfoAdd = std::move(aEquipInfoAdd);
@@ -1174,7 +1174,7 @@ void CWndInventory::UpDateModel()
 	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
 	m_pModel->LoadMotionId(MTI_STAND);
 	UpdateParts();
-	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );	
+	m_pModel->InitDeviceObjects( );	
 }
 
 
@@ -3188,7 +3188,7 @@ BOOL CWndNavigator::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	ZeroMemory( &m_billboard, sizeof( m_billboard ) );
 	m_billboard.rect.SetRect( 0, 0, m_texArrow.m_size.cx, m_texArrow.m_size.cy );
 	m_billboard.ptCenter = CPoint( m_texArrow.m_size.cx / 2, m_texArrow.m_size.cy / 2 );
-	m_billArrow.InitDeviceObjects( g_Neuz.m_pd3dDevice, &m_billboard, &m_texArrow );
+	m_billArrow.InitDeviceObjects( &m_billboard, &m_texArrow );
 	m_billArrow.RestoreDeviceObjects();
 
 	m_GuildCombatTextureMask.LoadTexture( MakePath( DIR_WORLD_GUILDCOMBAT, "WdGuildWar_Mask.dds" ), 0  );
@@ -8375,7 +8375,7 @@ BOOL CWndSmeltJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				m_pItemElem->SetExtra(pItemElem->GetExtra()+1);
 			
 			m_pMainItem = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_ITEM, m_pItemElem->m_dwItemId );
-			m_pMainItem->InitDeviceObjects( g_Neuz.GetDevice() );
+			m_pMainItem->InitDeviceObjects( );
 		}
 	} 
 	

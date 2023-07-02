@@ -160,7 +160,7 @@ void CWndGuideSystem::ChangeModel( int nJob )
 {
 	SAFE_DELETE(m_pModel);
 	m_pModel = new CModelObject;
-	m_pModel->InitDeviceObjects(g_Neuz.GetDevice());
+	m_pModel->InitDeviceObjects();
 
 	if( m_pModel )
 	{

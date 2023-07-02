@@ -43,10 +43,10 @@ public:
 	virtual BOOL Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmatWorld = NULL );
 	virtual void FrameMove() { }
 	// dx 초기화 관련 
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPBILLBOARD lpBillboard, CTexture* pTexture );
-	HRESULT RestoreDeviceObjects();
-	HRESULT InvalidateDeviceObjects();
-	HRESULT DeleteDeviceObjects();
+	HRESULT InitDeviceObjects( LPBILLBOARD lpBillboard, CTexture* pTexture );
+	HRESULT RestoreDeviceObjects() override;
+	HRESULT InvalidateDeviceObjects() override;
+	HRESULT DeleteDeviceObjects() override;
 
 };
 

@@ -1141,19 +1141,19 @@ BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
 	m_pModel->LoadMotionId(MTI_STAND2);
 	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
-	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );
+	m_pModel->InitDeviceObjects( );
 
 	SAFE_DELETE( m_pApplyModel );
 	m_pApplyModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
 	m_pApplyModel->LoadMotionId(MTI_STAND2);
 	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin,g_pPlayer->m_aEquipInfo, m_pApplyModel, &g_pPlayer->m_Inventory );
-	m_pApplyModel->InitDeviceObjects( g_Neuz.GetDevice() );
+	m_pApplyModel->InitDeviceObjects( );
 	
 	SAFE_DELETE(m_pHairModel);
 	m_pHairModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
 	m_pHairModel->LoadMotionId(MTI_STAND2);
 	CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin,g_pPlayer->m_aEquipInfo, m_pHairModel, &g_pPlayer->m_Inventory );
-	m_pHairModel->InitDeviceObjects( g_Neuz.GetDevice() );
+	m_pHairModel->InitDeviceObjects( );
 
 	///
 	m_fColor[0] = g_pPlayer->m_fHairColorR;
@@ -2109,7 +2109,7 @@ BOOL CWndFaceShop::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 		pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>(g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE);
 		pModel->LoadMotionId(MTI_STAND2);
 		CMover::UpdateParts(g_pPlayer->GetSex(), g_pPlayer->m_skin, g_pPlayer->m_aEquipInfo, pModel, &g_pPlayer->m_Inventory);
-		pModel->InitDeviceObjects(g_Neuz.GetDevice());
+		pModel->InitDeviceObjects();
 	};
 
 	InitializeModel(nMover, m_pMainModel);

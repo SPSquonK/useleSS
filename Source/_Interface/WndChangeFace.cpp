@@ -232,7 +232,7 @@ void CWndChangeSex::OnInitialUpdate()
 
 	UpdateModelParts();
 	
-	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );
+	m_pModel->InitDeviceObjects( );
 	
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();

@@ -638,7 +638,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 				if( m_pLadolf == NULL )
 				{ 
 					m_pLadolf = new CModelObject;
-					m_pLadolf->InitDeviceObjects( pd3dDevice );
+					m_pLadolf->InitDeviceObjects( );
 					m_pLadolf->LoadBone( "mvr_Ladolf.chr" );
 					m_pLadolf->LoadElement( "mvr_Ladolf.o3d", 0 );
 					m_pLadolf->LoadMotion( "mvr_Ladolf_stand.ani" );

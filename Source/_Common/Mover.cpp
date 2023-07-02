@@ -2879,7 +2879,7 @@ void CMover::Process()
 		if( m_pAngel == NULL )
 		{
 			m_pAngel = new CModelObject;
-			m_pAngel->InitDeviceObjects( g_Neuz.m_pd3dDevice );
+			m_pAngel->InitDeviceObjects();
 			
 			IBuff* pBuff	= m_buffs.GetBuffByIk3( IK3_ANGEL_BUFF );
 			ItemProp* pItemProp	= NULL;
@@ -2942,7 +2942,7 @@ void CMover::Process()
 		if( m_pBalloon == NULL )
 		{
 			m_pBalloon = new CModelObject;
-			m_pBalloon->InitDeviceObjects( g_Neuz.m_pd3dDevice );
+			m_pBalloon->InitDeviceObjects( );
 			
 			IBuff* pBuff = m_buffs.GetBuffByIk3( IK3_BALLOON );
 			if( pBuff != NULL )

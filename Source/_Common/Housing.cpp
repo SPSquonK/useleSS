@@ -1011,7 +1011,7 @@ BOOL	CGuildDeployManager::LoadToDeploy(int nItemId, const HOUSING_ITEM& housingI
  	m_pClonedModel = new CModelObject;
  	m_pClonedModel->SetModelType( OT_CTRL ); 
  	m_pClonedModel->m_pModelElem = lpModelElem;
- 	HRESULT hr = m_pClonedModel->InitDeviceObjects( D3DDEVICE );
+ 	HRESULT hr = m_pClonedModel->InitDeviceObjects();
  	TCHAR szFileName[ MAX_PATH ];
  	prj.m_modelMng.MakeModelName( szFileName, OT_CTRL, nItemId );
 	m_pClonedModel->LoadClonedElement( szFileName );

@@ -67,12 +67,12 @@ void CWorldMap::Init()
 	ZeroMemory( &m_billboard, sizeof( m_billboard )  );
 	m_billboard[0].rect.SetRect( 0, 0, m_texArrow[0].m_size.cx, m_texArrow[0].m_size.cy );
 	m_billboard[0].ptCenter = CPoint( m_texArrow[0].m_size.cx / 2, m_texArrow[0].m_size.cy / 2 );
-	m_billArrow[0].InitDeviceObjects( g_Neuz.m_pd3dDevice, &m_billboard[0], &m_texArrow[0] );
+	m_billArrow[0].InitDeviceObjects( &m_billboard[0], &m_texArrow[0] );
 	m_billArrow[0].RestoreDeviceObjects();
 
 	m_billboard[1].rect.SetRect( 0, 0, m_texArrow[1].m_size.cx, m_texArrow[1].m_size.cy );
 	m_billboard[1].ptCenter = CPoint( m_texArrow[1].m_size.cx / 2, m_texArrow[1].m_size.cy / 2 );
-	m_billArrow[1].InitDeviceObjects( g_Neuz.m_pd3dDevice, &m_billboard[1], &m_texArrow[1] );
+	m_billArrow[1].InitDeviceObjects( &m_billboard[1], &m_texArrow[1] );
 	m_billArrow[1].RestoreDeviceObjects();
 	
 

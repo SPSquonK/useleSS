@@ -2470,7 +2470,7 @@ CModelObject * CSfxMeshMng::Mesh(const CString & str) {
 
 	// Load the mesh
 	CModelObject * pMesh = new CModelObject;
-	pMesh->InitDeviceObjects(m_pd3dDevice);
+	pMesh->InitDeviceObjects();
 
 	const int nTex = g_Option.m_nTextureQuality;
 	g_Option.m_nTextureQuality = 0;

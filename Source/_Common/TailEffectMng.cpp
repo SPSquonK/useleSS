@@ -467,7 +467,7 @@ HRESULT CTailEffectModel::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTS
 	if( m_bActive == FALSE )	return S_OK;
 
 	m_pModel = new CModelObject;
-	m_pModel->InitDeviceObjects(pd3dDevice);
+	m_pModel->InitDeviceObjects();
 	if( m_pModel->LoadElement(szFileName, 0 ) == SUCCESS )
 		return S_OK;
 	else

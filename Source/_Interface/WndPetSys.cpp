@@ -777,7 +777,7 @@ BOOL CWndPetStatus::Process()
 			else if( m_pPetElem->m_pPet != NULL && g_pPlayer->GetPetModel() != NULL && m_pPetModel == NULL )
 			{
 				m_pPetModel = new CModelObject;
-				m_pPetModel->InitDeviceObjects( g_Neuz.m_pd3dDevice );
+				m_pPetModel->InitDeviceObjects( );
 				
 				CString textFile;
 				textFile.Format("Mvr_%s.chr", g_pPlayer->GetPetModel()->m_pModelElem->m_szName);

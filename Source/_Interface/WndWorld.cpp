@@ -2679,10 +2679,10 @@ void CWndWorld::OnInitialUpdate()
 	//m_texFlaris.LoadTexture( MakePath( DIR_EFFECT, "WelcomeToFlaris.tga" ), 0xff000000 );
 	//m_texFlaris.m_ptCenter = CPoint( m_texFlaris.m_size.cx / 2, m_texFlaris.m_size.cy / 2 );
 
-	m_meshArrow.InitDeviceObjects( g_Neuz.m_pd3dDevice );
+	m_meshArrow.InitDeviceObjects( );
 	m_meshArrow.LoadModel( "etc_arrow.o3d" );
 
-	m_meshArrowWanted.InitDeviceObjects( g_Neuz.m_pd3dDevice );
+	m_meshArrowWanted.InitDeviceObjects( );
 	m_meshArrowWanted.LoadModel( "arrow.o3d" );
 	m_bRenderArrowWanted = FALSE;
 	m_dwRenderArrowTime  = 0;

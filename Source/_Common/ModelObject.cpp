@@ -152,14 +152,14 @@ void CModelObject::SetDetachModel(int nEventIndex)
 		m_mapAttachModel.erase(iter);
 }
 
-void CModelObject::InitAttachModelDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
+void CModelObject::InitAttachModelDeviceObjects()
 {
 	for(map<int, SpModelObject>::const_iterator i=m_mapAttachModel.begin(); i!=m_mapAttachModel.end(); ++i)
 	{
 		SpModelObject pModelObject = i->second;
 		if(pModelObject.get() != NULL)
 		{
-			pModelObject->InitDeviceObjects(pd3dDevice);
+			pModelObject->InitDeviceObjects();
 		}
 	}
 }
@@ -646,7 +646,7 @@ int		CModelObject::LoadElement( LPCTSTR szFileName, int nParts )
 #ifdef __CLIENT
 	HRESULT hr;
 	// Object3D관리자를 통해 메쉬를 로딩한 후 그 포인터를 받아온다.
-	if( FAILED( hr = m_pd3dDevice->TestCooperativeLevel() ) )		// 디바이스가 허접하면 에러남김.
+	if( FAILED( hr = g_Neuz.m_pd3dDevice->TestCooperativeLevel() ) )		// 디바이스가 허접하면 에러남김.
 	{
 		LPCTSTR szErr = Error( "%s 디바이스실패 %08x", szFileName, (int)hr );
 		//ADDERRORMSG( szErr );
@@ -1021,7 +1021,7 @@ int		CModelObject::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 				HRESULT hr = g_Neuz.m_pEffect->SetMatrix( str, &mWorldTranspose );
 #else //__YENV
 				D3DXMatrixTranspose( &mWorldTranspose, &mWorldTranspose );		// 매트릭스를 돌린다음.
-				m_pd3dDevice->SetVertexShaderConstantF( i * 3, (float*)&mWorldTranspose, 3 );		// 상수레지스터에 집어넣음.
+				pd3dDevice->SetVertexShaderConstantF( i * 3, (float*)&mWorldTranspose, 3 );		// 상수레지스터에 집어넣음.
 #endif //__YENV		
 			}
 		}
@@ -1062,16 +1062,11 @@ int		CModelObject::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 		g_Neuz.m_pEffect->SetVector( g_Neuz.m_hvAmbient, (D3DXVECTOR4*)&s_fAmbient[0] );
 		*/
 #else //__YENV
-		m_pd3dDevice->SetVertexShaderConstantF( 84, (float*)&mViewProjTranspose, 4 );
-//		m_pd3dDevice->SetVertexShaderConstantF( 88, (float*)&mWorldTranspose, 4 );
-//		m_pd3dDevice->SetVertexShaderConstantF( 88, (float*)&vEyePos,  1 );		// specular use
-//		m_pd3dDevice->SetVertexShaderConstantF( 89, (float*)&fSpecular, 1 );	// specular use
-//		m_pd3dDevice->SetVertexShaderConstantF( 90, (float*)&fLightCol, 1 );	// specular use
-		m_pd3dDevice->SetVertexShaderConstantF( 91, (float*)&vLightPos, 1 );
-		m_pd3dDevice->SetVertexShaderConstantF( 92, (float*)&vLight,   1 );
-		m_pd3dDevice->SetVertexShaderConstantF( 93, (float*)&s_fDiffuse, 1 );
-		m_pd3dDevice->SetVertexShaderConstantF( 94, (float*)&s_fAmbient, 1 );
-//		m_pd3dDevice->SetVertexShaderConstant( 95, &vConst, 1 );
+		pd3dDevice->SetVertexShaderConstantF( 84, (float*)&mViewProjTranspose, 4 );
+		pd3dDevice->SetVertexShaderConstantF( 91, (float*)&vLightPos, 1 );
+		pd3dDevice->SetVertexShaderConstantF( 92, (float*)&vLight,   1 );
+		pd3dDevice->SetVertexShaderConstantF( 93, (float*)&s_fDiffuse, 1 );
+		pd3dDevice->SetVertexShaderConstantF( 94, (float*)&s_fAmbient, 1 );
 #endif //__YENV
 	}
 
@@ -1463,12 +1458,10 @@ void	CModelObject::RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX 
 
 
 //
-HRESULT CModelObject::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CModelObject::InitDeviceObjects()
 { 
-	m_pd3dDevice = pd3dDevice;
-
 #ifdef __ATTACH_MODEL
-	InitAttachModelDeviceObjects(pd3dDevice);
+	InitAttachModelDeviceObjects();
 #endif //__ATTACH_MODEL
 	return S_OK; 
 }

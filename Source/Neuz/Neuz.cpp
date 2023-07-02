@@ -1490,7 +1490,7 @@ HRESULT CNeuzApp::InitDeviceObjects()
 	g_SfxMng.InitDeviceObjects(m_pd3dDevice);
 	g_SfxMeshMng.InitDeviceObjects(m_pd3dDevice);
 
-	g_Shadow.InitDeviceObjects( m_pd3dDevice );
+	g_Shadow.InitDeviceObjects( );
 	g_Shadow.LoadElement( "Shadow.o3d" );
 
 	g_ParticleMng.InitDeviceObjects( m_pd3dDevice );

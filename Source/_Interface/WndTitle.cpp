@@ -1128,7 +1128,7 @@ HRESULT CWndSelectChar::InitDeviceObjects()
 	for( int i = 0; i < MAX_CHARACTER_LIST; i++ )
 	{
 		if( m_pBipedMesh[ i ] )
-			m_pBipedMesh[ i ]->InitDeviceObjects( g_Neuz.m_pd3dDevice );
+			m_pBipedMesh[ i ]->InitDeviceObjects( );
 	}
 
 	return S_OK;
@@ -1811,7 +1811,7 @@ HRESULT CWndCreateChar::InitDeviceObjects()
 {
 	CWndBase::InitDeviceObjects();
 	if( m_pModel )
-		m_pModel->InitDeviceObjects( g_Neuz.m_pd3dDevice );
+		m_pModel->InitDeviceObjects( );
 	return S_OK;
 }
 HRESULT CWndCreateChar::RestoreDeviceObjects()

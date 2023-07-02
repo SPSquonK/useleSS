@@ -268,7 +268,7 @@ CModelMng::ModelPtrInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHA
 			CModelObject * pModel = new CModelObject;
 			pModel->SetModelType( nModelType );
 			pModel->m_pModelElem = lpModelElem;
-			HRESULT hr = pModel->InitDeviceObjects( pd3dDevice );
+			HRESULT hr = pModel->InitDeviceObjects();
 			hr = pModel->LoadModel( lpszFileName );
 			if( hr == SUCCESS )
 			{
@@ -288,7 +288,7 @@ CModelMng::ModelPtrInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHA
 		case MODELTYPE_ANIMATED_MESH: {
 			CModelObject * pModel = new CModelObject;
 			pModel->SetModelType(nModelType);
-			pModel->InitDeviceObjects(pd3dDevice);
+			pModel->InitDeviceObjects();
 			pModel->m_pModelElem = lpModelElem;
 			pModel->m_pModelElem->m_bUsed = TRUE;
 			TCHAR szFileName[MAX_PATH];

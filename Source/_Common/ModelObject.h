@@ -168,7 +168,7 @@ public:
 	int					RenderAttachModelElem(LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld);
 	void				FrameMoveAttachModel( D3DXVECTOR3 *pvSndPos = NULL, float fSpeed = 1.0f );
 
-	void				InitAttachModelDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
+	void				InitAttachModelDeviceObjects();
 	void				RestoreAttachModelDeviceObjects();
 	void				InvalidateAttachModelDeviceObjects();
 	void				DeleteAttachModelDeviceObjects();
@@ -398,10 +398,10 @@ public:
 #endif
 
 	// 디바이스 초기화 및 삭제 
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
-	HRESULT RestoreDeviceObjects();
-	HRESULT InvalidateDeviceObjects();
-	HRESULT DeleteDeviceObjects();
+	HRESULT InitDeviceObjects() override;
+	HRESULT RestoreDeviceObjects() override;
+	HRESULT InvalidateDeviceObjects() override;
+	HRESULT DeleteDeviceObjects() override;
 };
 
 extern BOOL		g_bUsableVS;			// 하드웨어 버텍스 쉐이더(1.1)를 쓸수 있는가.
