@@ -343,7 +343,7 @@ void	CPartsFire::Create( const D3DXVECTOR3 vPos, DWORD dwSfx, const D3DXVECTOR3 
 	for( i = 0; i < MAX_PARTS_FIRE; i ++ )
 	{
 		if( m_pList[i] )	continue;
-		m_pList[i] = (CSfxModel *)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_SFX, dwSfx );
+		m_pList[i] = (CSfxModel *)prj.m_modelMng.LoadModel( OT_SFX, dwSfx );
 		m_pList[i]->m_matScale = m_mScale;
 
 		m_pList[i]->m_vScale = vScale;
@@ -372,7 +372,7 @@ void	CPartsFire::Create( const D3DXVECTOR3 vPos, DWORD dwSfx )
 	for( i = 0; i < MAX_PARTS_FIRE_2; i ++ )
 	{
 		if( m_pList_2[i] )	continue;
-		m_pList_2[i] = (CSfxModel *)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_SFX, dwSfx );
+		m_pList_2[i] = (CSfxModel *)prj.m_modelMng.LoadModel( OT_SFX, dwSfx );
 		m_pList_2[i]->m_matScale = m_mScale;
 		m_vList_2[i] = vPos;
 		break;

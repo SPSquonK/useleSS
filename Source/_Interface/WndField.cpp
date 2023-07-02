@@ -414,7 +414,7 @@ CWndQueryEquip::CWndQueryEquip(CMover & mover, std::unique_ptr<std::array<CItemE
 
 	const int nMover = (mover.GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
 	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>(
-			g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE
+			OT_MOVER, nMover, TRUE
 		);
 	m_pModel->LoadMotionId(MTI_STAND);
 	CMover::UpdateParts(mover.GetSex(), mover.m_skin, mover.m_aEquipInfo, m_pModel.get(), NULL);
@@ -1171,7 +1171,7 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 void CWndInventory::UpDateModel()
 {
 	const int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( OT_MOVER, nMover, TRUE );
 	m_pModel->LoadMotionId(MTI_STAND);
 	UpdateParts();
 	m_pModel->InitDeviceObjects( );	
@@ -4051,7 +4051,7 @@ void CWndStatus::OnInitialUpdate()
 	if( g_pBipedMesh == NULL )
 	{
 		int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-		g_pBipedMesh = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+		g_pBipedMesh = (CModelObject*)prj.m_modelMng.LoadModel( OT_MOVER, nMover, TRUE );
 		g_pBipedMesh->LoadMotionId(MTI_STAND);
 		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin, g_pPlayer->m_aEquipInfo, g_pBipedMesh, &g_pPlayer->m_Inventory );
 	}
@@ -8374,7 +8374,7 @@ BOOL CWndSmeltJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			if(m_pItemElem != NULL)
 				m_pItemElem->SetExtra(pItemElem->GetExtra()+1);
 			
-			m_pMainItem = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_ITEM, m_pItemElem->m_dwItemId );
+			m_pMainItem = (CModelObject*)prj.m_modelMng.LoadModel( OT_ITEM, m_pItemElem->m_dwItemId );
 			m_pMainItem->InitDeviceObjects( );
 		}
 	} 

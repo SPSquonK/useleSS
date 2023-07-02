@@ -374,7 +374,7 @@ void CObj::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 
 CModel* CObj::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex ) 
 {
-	return prj.m_modelMng.LoadModel( pd3dDevice, dwType, dwIndex );
+	return prj.m_modelMng.LoadModel( dwType, dwIndex );
 }
 
 void CObj::ResetScale()

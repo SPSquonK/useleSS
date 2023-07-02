@@ -357,7 +357,7 @@ HRESULT CNeuzApp::RestoreDeviceObjects()
 		if( g_WorldMng.Get() )
 			g_WorldMng.Get()->RestoreDeviceObjects( m_pd3dDevice );
 		CWorld::StaticRestoreDeviceObjects( m_pd3dDevice );
-		prj.m_modelMng.RestoreDeviceObjects(m_pd3dDevice);
+		prj.m_modelMng.RestoreDeviceObjects();
 	}
 	if( g_pBipedMesh )
 		g_pBipedMesh->RestoreDeviceObjects();	
@@ -1480,7 +1480,7 @@ HRESULT CNeuzApp::InitDeviceObjects()
 
 	m_pd3dDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
-	prj.m_modelMng.InitDeviceObjects( m_pd3dDevice );
+	prj.m_modelMng.InitDeviceObjects( );
 	prj.m_terrainMng.InitDeviceObjects( m_pd3dDevice );
 
 	CWorld::StaticInitDeviceObjects( m_pd3dDevice );

@@ -1196,8 +1196,8 @@ void CMover::ProcessRegenItem()
 CModel* CMover::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex )
 {
 	if( m_dwIndex == MI_FEMALE || m_dwIndex == MI_MALE )
-		return prj.m_modelMng.LoadModel( pd3dDevice, dwType, dwIndex, TRUE );
-	return prj.m_modelMng.LoadModel( pd3dDevice, dwType, dwIndex );
+		return prj.m_modelMng.LoadModel( dwType, dwIndex, TRUE );
+	return prj.m_modelMng.LoadModel( dwType, dwIndex );
 }
 
 
@@ -3217,7 +3217,7 @@ void CMover::SetRide(DWORD itemIdx) {
 		return;
 	}
 
-	auto pModelObject = prj.m_modelMng.LoadModel<sqktd::maybe_owned_ptr<CModelObject>>(D3DDEVICE, OT_ITEM, itemIdx);
+	auto pModelObject = prj.m_modelMng.LoadModel<sqktd::maybe_owned_ptr<CModelObject>>(OT_ITEM, itemIdx);
 
 	if (pModelObject->m_pBone) {
 		CString strMotion = pModelObject->GetMotionFileName(_T("stand"));

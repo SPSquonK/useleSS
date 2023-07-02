@@ -1523,7 +1523,7 @@ void CWndSelectChar::UpdateCharacter()
 			m_dwMotion[i] = (i == m_nSelectCharacter ? MTI_STAND : MTI_SITSTAND);
 			
 			m_pBipedMesh[i] = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>(
-				g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE
+				OT_MOVER, nMover, TRUE
 			);
 			m_pBipedMesh[i]->LoadMotionId(m_dwMotion[i]);
 
@@ -2031,7 +2031,7 @@ void CWndCreateChar::SetSex( int nSex )
 	int nMover = m_Player.m_bySex == SEX_MALE ? MI_MALE : MI_FEMALE;
 
 	SAFE_DELETE( m_pModel );
-	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( OT_MOVER, nMover, TRUE );
 
 	const DWORD dwMotion = nSex == SEX_MALE ? MTI_STAND : MTI_STAND2;
 	m_pModel->LoadMotionId(dwMotion);

@@ -227,7 +227,7 @@ void CWndChangeSex::OnInitialUpdate()
 	
 	// 성전환이니깐 반대로 하자~
 	int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_FEMALE:MI_MALE );
-	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( OT_MOVER, nMover, TRUE );
 	m_pModel->LoadMotionId(MTI_STAND2);
 
 	UpdateModelParts();
