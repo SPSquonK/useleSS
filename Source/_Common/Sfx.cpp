@@ -586,10 +586,10 @@ CSfxItemWandAtkAir::~CSfxItemWandAtkAir()
 {
 }
 
-int CSfxItemWandAtkAir::SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex, 
+int CSfxItemWandAtkAir::SetSfx( int nIndex, 
 								 const D3DXVECTOR3 vPosSrc, OBJID idSrc, const D3DXVECTOR3 vPosDest, OBJID idDest, int nSec )
 {
-	CSfx::SetSfx( pd3dDevice, nIndex, vPosSrc, idSrc, vPosDest, idDest, nSec );		// 기본초기화 먼저하고.
+	CSfx::SetSfx( nIndex, vPosSrc, idSrc, vPosDest, idDest, nSec );		// 기본초기화 먼저하고.
 
 	CMover* pObjSrc = prj.GetMover( m_idSrc );		// 발사측.
 	if( IsInvalidObj(pObjSrc) )		return 0;		// 실패.

@@ -310,7 +310,7 @@ CSfx* CreateSfx( DWORD dwSfxObj,
 	}
 	if( pObj )
 	{
-		int bRet = pObj->SetSfx( g_Neuz.m_pd3dDevice, dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
+		int bRet = pObj->SetSfx( dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
 		if( bRet )
 		{
 			if( pObj->GetModel() == NULL )
@@ -400,7 +400,7 @@ CSfx* CreateSfxYoYo( DWORD dwSfxObj,
 
 	if( pObj )
 	{
-		int bRet = pObj->SetSfx( g_Neuz.m_pd3dDevice, dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
+		int bRet = pObj->SetSfx( dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
 		if( bRet )
 		{
 			if( pObj->GetModel() == NULL )
@@ -504,7 +504,7 @@ CSfxShoot* CreateShootSfx( DWORD dwSfxObj,
 	if( pObj )
 	{
 		D3DXVECTOR3 vPosShoot = vPosSrc;	vPosShoot.y += 1.0f;
-		int bRet = pObj->SetSfx( g_Neuz.m_pd3dDevice, dwSfxObj, vPosShoot, idSrc, vPosDest, idDest, nSec ); 
+		int bRet = pObj->SetSfx( dwSfxObj, vPosShoot, idSrc, vPosDest, idDest, nSec ); 
 		if( bRet )
 		{
 			if( pObj->GetModel()->m_pModelElem == NULL )
@@ -550,7 +550,7 @@ CSfx* CreateItemReadySfx( DWORD dwSfxObj,
 	pObj = new CSfxReady();
 	if( pObj )
 	{
-		int bRet = pObj->SetSfx( g_Neuz.m_pd3dDevice, dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
+		int bRet = pObj->SetSfx( dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
 		if( bRet )
 		{
 			if( pObj->GetModel() == NULL )
@@ -628,7 +628,7 @@ CObj* CreateObj( DWORD dwObjType, DWORD dwObjIndex, BOOL bInitProp )
 	if( pObj && pObj->GetType() == OT_SFX )
 	{
 		#ifdef __CLIENT
-			((CSfx*)pObj)->SetSfx( g_Neuz.m_pd3dDevice, dwObjIndex, D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID, D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID ); 
+			((CSfx*)pObj)->SetSfx( dwObjIndex, D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID, D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID ); 
 		#endif
 		return pObj;
 	}

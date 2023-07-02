@@ -73,7 +73,7 @@ BOOL CSfx::SetIndex( DWORD dwIndex, BOOL bInitProp )
 	return bResult;
 }
 
-int	CSfx::SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex, 
+int	CSfx::SetSfx( int nIndex, 
 				   D3DXVECTOR3 vPosSrc, OBJID idSrc, const D3DXVECTOR3 vPosDest, OBJID idDest, int nSec )
 {
 	m_idSrc = idSrc;
