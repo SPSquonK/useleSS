@@ -12,10 +12,6 @@ CTerrainMng::~CTerrainMng() {
 	SAFE_DELETE_ARRAY(m_pWaterIndexList);
 }
 
-HRESULT CTerrainMng::InitDeviceObjects() {
-	return S_OK;
-}
-
 HRESULT CTerrainMng::DeleteDeviceObjects() {
 	for (TERRAIN & terrain : m_terrains) {
 		if (terrain.m_pTexture) {

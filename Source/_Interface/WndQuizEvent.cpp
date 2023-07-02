@@ -280,16 +280,6 @@ HRESULT CWndQuizEventButton::DeleteDeviceObjects()
 	return CWndNeuz::DeleteDeviceObjects();
 }
 
-HRESULT CWndQuizEventButton::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
-
-HRESULT CWndQuizEventButton::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-
 void CWndQuizEventButton::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate();

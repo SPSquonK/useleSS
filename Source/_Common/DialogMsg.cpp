@@ -49,15 +49,6 @@ HRESULT CDialogMsg::DeleteDeviceObjects()
 	
 	return S_OK;
 }
-HRESULT CDialogMsg::RestoreDeviceObjects()
-{
-	return S_OK;
-}
-
-HRESULT CDialogMsg::InvalidateDeviceObjects()
-{
-	return S_OK;
-}
 
 void CDialogMsg::TextDeleter::operator()(CUSTOMTEXT * customText) const {
 	if (customText->m_pObj->GetType() == OT_MOVER)

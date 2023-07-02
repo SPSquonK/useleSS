@@ -493,16 +493,6 @@ void CWndOptSound::GetRangeSlider(DWORD dwWndId, int &nStep, CPoint point)
 		nStep = MAX_SLIDER;
 }
 
-HRESULT CWndOptSound::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-HRESULT CWndOptSound::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
-
-
 CWndOptVideo::CWndOptVideo() 
 { 
 	m_bLButtonClick = FALSE;
@@ -525,14 +515,6 @@ CWndOptVideo::~CWndOptVideo()
 { 
 	g_Option.Save( "neuz.ini" );	
 } 
-HRESULT CWndOptVideo::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-HRESULT CWndOptVideo::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
 
 CPoint CWndOptVideo::GetStepPos(int nStep, int nWidth, int nDivision)
 {

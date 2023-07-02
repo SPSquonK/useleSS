@@ -26,8 +26,5 @@ public:
 	void GetRangeSlider( DWORD dwWndId, int& nStep, CPoint point );
 	int GetSliderStep( DWORD dwWndId, int &nStep, CPoint point );
 	CPoint GetStepPos( int nStep, int nWidth, int nDivision );
-
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
 }; 
 #endif

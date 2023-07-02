@@ -61,9 +61,6 @@ class CParticleMng final {
 	CParticles m_Particles[ MAX_PARTICLE_TYPE ];
 
 public:
-	HRESULT InitDeviceObjects( ) {
-		return S_OK;
-	}
 	HRESULT RestoreDeviceObjects( );
   HRESULT InvalidateDeviceObjects();
 

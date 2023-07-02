@@ -44,9 +44,7 @@ public:
 	void AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLog = TRUE, DWORD dwColor = D3DCOLOR_ARGB(  255, 255, 255, 255 ) );
 
     // Initializing and destroying device-dependent objects
-    HRESULT InitDeviceObjects();
     HRESULT DeleteDeviceObjects();
-    HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();
 };
 
@@ -70,9 +68,7 @@ public:
 	void Process();
 	void Render( CPoint ptBegin, C2DRender* p2DRender );
 	void SetTime( int nTime, CD3DFontAPI* pFont );
-    HRESULT InitDeviceObjects();
     HRESULT DeleteDeviceObjects();
-    HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();
 };
 

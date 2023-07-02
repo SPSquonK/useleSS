@@ -1502,10 +1502,7 @@ CSfxBase* CSfxMng::GetSfxBase( std::string_view strSfxName )
 		return NULL;
 	}
 }
-HRESULT CSfxMng::InitDeviceObjects()
-{
-	return S_OK;
-}
+
 HRESULT CSfxMng::RestoreDeviceObjects()
 {
 	m_pd3dDevice->CreateVertexBuffer( sizeof(D3DSFXVERTEX)*4, D3DUSAGE_WRITEONLY, D3DFVF_D3DSFXVERTEX, D3DPOOL_SYSTEMMEM, &m_pSfxVB, NULL );
@@ -2481,10 +2478,6 @@ CModelObject * CSfxMeshMng::Mesh(const CString & str) {
 	m_aMeshs.emplace(str, std::unique_ptr<CModelObject>(pMesh));
 
 	return pMesh;
-}
-
-HRESULT CSfxMeshMng::InitDeviceObjects() {
-	return S_OK;
 }
 
 HRESULT CSfxMeshMng::RestoreDeviceObjects() {

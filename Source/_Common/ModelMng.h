@@ -103,7 +103,6 @@ public:
 	void DestroyUnusedModels();
 
 	// D3DX initialization related
-	HRESULT InitDeviceObjects(  );
 	HRESULT RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();

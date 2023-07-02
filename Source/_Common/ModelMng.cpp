@@ -324,10 +324,6 @@ CModelMng::ModelPtrInfo CModelMng::LoadModel( TCHAR* lpszFileName, MODELELEM * l
 	}
 }
 
-HRESULT CModelMng::InitDeviceObjects() {
-	return S_OK;
-}
-
 HRESULT CModelMng::RestoreDeviceObjects() {
 	for (auto & pModel : m_mapFileToMesh | std::views::values) {
 		pModel->RestoreDeviceObjects();

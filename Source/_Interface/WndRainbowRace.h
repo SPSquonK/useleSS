@@ -95,8 +95,6 @@ public:
 	virtual	void OnInitialUpdate();
 	virtual void PaintFrame( C2DRender* p2DRender );
 	virtual void OnDraw(C2DRender* p2DRender);
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
 	virtual void OnLButtonDown( UINT nFlags, CPoint point );
 	virtual void OnLButtonUp( UINT nFlags, CPoint point );
@@ -218,8 +216,6 @@ public:
 	virtual	void OnInitialUpdate();
 	virtual void OnDraw( C2DRender* p2DRender );
 	virtual BOOL Process();
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
 
 	void SetTargetNumber(int nNum) {m_nTargetNum = nNum;};
@@ -275,8 +271,6 @@ public:
 	virtual	void OnInitialUpdate();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual BOOL Process();
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
 
 public:
@@ -328,8 +322,6 @@ public:
 	virtual BOOL Process();
 	virtual void OnLButtonUp( UINT nFlags, CPoint point );
 	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
 
 public:

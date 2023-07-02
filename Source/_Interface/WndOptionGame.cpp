@@ -402,13 +402,3 @@ void CWndOptionGame::GetRangeSlider(DWORD dwWndId, int &nStep, CPoint point)
 		nStep = MAX_SLIDER;
 }
 
-HRESULT CWndOptionGame::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-HRESULT CWndOptionGame::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
-
-

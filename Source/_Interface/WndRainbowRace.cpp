@@ -608,16 +608,6 @@ HRESULT CWndRainbowRaceMiniGameButton::DeleteDeviceObjects()
 	return CWndNeuz::DeleteDeviceObjects();
 }
 
-HRESULT CWndRainbowRaceMiniGameButton::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
-
-HRESULT CWndRainbowRaceMiniGameButton::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-
 void CWndRainbowRaceMiniGameButton::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate();
@@ -1183,14 +1173,6 @@ HRESULT CWndRRMiniGameDice::DeleteDeviceObjects()
 	m_texTargetNum.DeleteDeviceObjects();
 	return CWndNeuz::DeleteDeviceObjects();
 }
-HRESULT CWndRRMiniGameDice::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-HRESULT CWndRRMiniGameDice::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
 
 BOOL CWndRRMiniGameDice::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
@@ -1581,14 +1563,6 @@ HRESULT CWndRRMiniGameStopWatch::DeleteDeviceObjects()
 	m_texStopWatchNum.DeleteDeviceObjects();
 	return CWndNeuz::DeleteDeviceObjects();
 }
-HRESULT CWndRRMiniGameStopWatch::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-HRESULT CWndRRMiniGameStopWatch::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
 
 BOOL CWndRRMiniGameStopWatch::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
 { 
@@ -1847,14 +1821,6 @@ HRESULT CWndRRMiniGameCard::DeleteDeviceObjects()
 {
 	m_texPenaltyNum.DeleteDeviceObjects();
 	return CWndNeuz::DeleteDeviceObjects();
-}
-HRESULT CWndRRMiniGameCard::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-HRESULT CWndRRMiniGameCard::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
 }
 
 BOOL CWndRRMiniGameCard::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 

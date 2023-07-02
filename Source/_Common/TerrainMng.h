@@ -41,7 +41,6 @@ public:
 	}
 	BOOL LoadScript( LPCTSTR lpszFileName );
 
-	HRESULT InitDeviceObjects();
 	HRESULT DeleteDeviceObjects();
 };
 

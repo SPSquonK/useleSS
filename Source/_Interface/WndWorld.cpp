@@ -98,19 +98,13 @@ void CCaption::Process()
 		}
 	}
 }
-HRESULT CCaption::InitDeviceObjects()
-{
-	return S_OK;
-}
+
 HRESULT CCaption::DeleteDeviceObjects()
 {
 	RemoveAll();
 	return S_OK;
 }
-HRESULT CCaption::RestoreDeviceObjects()
-{
-	return S_OK;
-}
+
 HRESULT CCaption::InvalidateDeviceObjects()
 {
 	RemoveAll();
@@ -238,19 +232,13 @@ void CCaption::AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLo
 		}
 	}
 }
-HRESULT CCapTime::InitDeviceObjects()
-{
-	return S_OK;
-}
+
 HRESULT CCapTime::DeleteDeviceObjects()
 {
 	m_texture.DeleteDeviceObjects();
 	return S_OK;
 }
-HRESULT CCapTime::RestoreDeviceObjects()
-{
-	return S_OK;
-}
+
 HRESULT CCapTime::InvalidateDeviceObjects()
 {
 	m_texture.DeleteDeviceObjects();

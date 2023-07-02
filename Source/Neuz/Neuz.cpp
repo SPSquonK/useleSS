@@ -364,9 +364,7 @@ HRESULT CNeuzApp::RestoreDeviceObjects()
 
 	g_SfxMng.RestoreDeviceObjects();
 	g_SfxMeshMng.RestoreDeviceObjects();
-	
-	g_DialogMsg.RestoreDeviceObjects();
-	
+		
 	CWorldMap* pWorldMap = CWorldMap::GetInstance();
 	pWorldMap->RestoreDeviceObjects(); 
 
@@ -410,8 +408,6 @@ HRESULT CNeuzApp::InvalidateDeviceObjects()
 	g_TailEffectMng.InvalidateDeviceObjects();
 
 	g_ModelGlobal.InvalidateDeviceObjects( );
-
-	g_DialogMsg.InvalidateDeviceObjects();
 	
 	return S_OK;
 }
@@ -1480,20 +1476,12 @@ HRESULT CNeuzApp::InitDeviceObjects()
 
 	m_pd3dDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
-	prj.m_modelMng.InitDeviceObjects( );
-	prj.m_terrainMng.InitDeviceObjects( );
-
 	CWorld::StaticInitDeviceObjects( );
 	
 	g_DamageNumMng.LoadTexture( );		// 데미지 이펙트 
 
-	g_SfxMng.InitDeviceObjects();
-	g_SfxMeshMng.InitDeviceObjects();
-
 	g_Shadow.InitDeviceObjects( );
 	g_Shadow.LoadElement( "Shadow.o3d" );
-
-	g_ParticleMng.InitDeviceObjects( );
 
 	m_TextureGauge[0].LoadTexture( MakePath( DIR_THEME, "GauMagChargeBG.TGA" ), 0xffff00ff, TRUE );
 	m_TextureGauge[1].LoadTexture( MakePath( DIR_THEME, "GauMagChargeHead.TGA" ), 0xffff00ff, TRUE );
@@ -1584,7 +1572,6 @@ HRESULT CNeuzApp::InitDeviceObjects()
 	g_DialogMsg.InitDeviceObjects( );
 
 	// 2DRender 세팅 
-	m_2DRender.InitDeviceObjects( );
 	m_2DRender.m_pFont = CWndBase::m_Theme.m_pFontText;
 	g_WndMng.OpenTitle( TRUE );
 

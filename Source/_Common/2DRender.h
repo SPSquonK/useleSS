@@ -72,7 +72,7 @@ class CTexture;
 class CTexturePack;
 
 
-class C2DRender
+class C2DRender final
 {
 	LPDIRECT3DVERTEXBUFFER9 m_pVBRect;
 	LPDIRECT3DVERTEXBUFFER9 m_pVBFillRect;
@@ -143,7 +143,6 @@ public:
 	void TextOut( int x,int y, int nValue, DWORD dwColor = 0xffffffff, DWORD dwShadowColor = 0x00000000 );
 	void TextOut( int x,int y, FLOAT fXScale, FLOAT fYScale, LPCTSTR pszString, DWORD dwColor = 0xffffffff, DWORD dwShadowColor = 0x00000000 );
 
-	HRESULT InitDeviceObjects( );
 	HRESULT RestoreDeviceObjects(  D3DSURFACE_DESC*  pd3dsdBackBuffer );
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();

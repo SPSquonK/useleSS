@@ -228,7 +228,7 @@ public:
 };
 
 // CSfxBase 관리자
-class CSfxMng
+class CSfxMng final
 {
 public:
 	static LPDIRECT3DVERTEXBUFFER9 m_pSfxVB; // 에 사용할 버텍스 버퍼
@@ -244,7 +244,6 @@ public:
 
 	CSfxBase* GetSfxBase(std::string_view strSfxName); // SfxBase의 이름으로 지정한 SfxBase의 포인터를 갖고온다.
 
-	HRESULT InitDeviceObjects();
 	HRESULT RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
@@ -330,7 +329,6 @@ public:
 	CModelObject * Mesh(const CString & str); //  지정한 이름의 메쉬 포인터를 돌려준다
 	void DeleteAll() { m_aMeshs.clear(); } // 전부 삭제
 
-	HRESULT InitDeviceObjects();
 	HRESULT RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();

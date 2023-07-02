@@ -71,8 +71,6 @@ public:
 	virtual	void OnInitialUpdate();
 	virtual void PaintFrame( C2DRender* p2DRender );
 	virtual void OnDraw( C2DRender* p2DRender );
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
 	virtual void OnLButtonDown( UINT nFlags, CPoint point );
 	virtual void OnLButtonUp( UINT nFlags, CPoint point );

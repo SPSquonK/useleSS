@@ -90,11 +90,7 @@ C2DRender::~C2DRender()
 {
 	DeleteDeviceObjects();
 }
-HRESULT C2DRender::InitDeviceObjects( )
-{
-	HRESULT hr = S_OK;
-	return hr;
-}
+
 HRESULT C2DRender::RestoreDeviceObjects( D3DSURFACE_DESC*  pd3dsdBackBuffer )
 {
 	if( m_pd3dDevice.IsMissing() ) return S_OK;

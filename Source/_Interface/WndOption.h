@@ -56,9 +56,6 @@ public:
 	void GetRangeSlider( DWORD dwWndId, int& nStep, CPoint point );
 	int GetSliderStep( DWORD dwWndId, int &nStep, CPoint point );
 	CPoint GetStepPos( int nStep, int nWidth, int nDivision );
-
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
 	
 }; 
 class CWndOptVideo : public CWndNeuz 
@@ -93,9 +90,6 @@ public:
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
-
 private:
 	void RenderSlider(C2DRender * p2DRender, UINT widgetCtrlId, int value, int max);
 }; 
