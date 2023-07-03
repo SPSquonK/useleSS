@@ -79,7 +79,7 @@ void CWndBank::OnInitialUpdate()
 	CPoint ptInventory = rectInventory.TopLeft();
 	CPoint ptMove;
 
-	if( ptInventory.x > m_pWndRoot->GetWndRect().Width() / 2 )
+	if( ptInventory.x > g_WndMng.GetWndRect().Width() / 2 )
 		ptMove = ptInventory - CPoint( (int)( rectInventory.Width() * 2.525 ), 0 );
 	else
 		ptMove = ptInventory + CPoint( rectInventory.Width(), 0 );

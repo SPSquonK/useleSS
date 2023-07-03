@@ -417,7 +417,7 @@ void CWndKawiBawiBoGameWin::OnInitialUpdate()
 	CWndKawiBawiBoGame* pWndGame = (CWndKawiBawiBoGame*)GetWndBase( APP_MINIGAME_KAWIBAWIBO );
 	if(pWndGame != NULL)
 	{
-		CRect rectRoot = pWndGame->m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CRect rectGame = pWndGame->GetWindowRect( TRUE );
 
 		CPoint ptMove;

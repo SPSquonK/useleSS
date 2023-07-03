@@ -200,7 +200,7 @@ void CWndQuestQuickInfo::OnInitialUpdate( void )
 	m_CWndQITreeCtrl.SetCategoryTextSpace( 12 );
 
 	static const int TOP_MARGIN = 220;
-	CRect rectRoot = m_pWndRoot->m_rectWindow;
+	CRect rectRoot = g_WndMng.m_rectWindow;
 	Move( rectRoot.right - m_rectWindow.Width(), TOP_MARGIN );
 }
 //-----------------------------------------------------------------------------

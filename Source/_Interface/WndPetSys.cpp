@@ -631,7 +631,7 @@ void CWndPetStatus::OnInitialUpdate()
 	}
 	else
 	{
-		CRect rectRoot = m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CPoint point( rectRoot.left+192, rectRoot.top );
 		Move( point );
 	}
@@ -1939,7 +1939,7 @@ void CWndBuffPetStatus::OnInitialUpdate()
 	}
 	else
 	{
-		CRect rectRoot = m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CPoint point( rectRoot.left+192, rectRoot.top );
 		Move( point );
 	}

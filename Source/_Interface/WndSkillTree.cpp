@@ -941,7 +941,7 @@ BOOL CWndSkillTreeEx::Process() {
 
 			SetWndRect(rect);
 
-			CRect rectRoot = m_pWndRoot->GetLayoutRect();
+			CRect rectRoot = g_WndMng.GetLayoutRect();
 			int x = rectRoot.right - rect.Width();
 			int y = rectRoot.bottom - rect.Height();
 
@@ -967,7 +967,7 @@ BOOL CWndSkillTreeEx::Process() {
 
 			SetWndRect(rect);
 
-			CRect rectRoot = m_pWndRoot->GetLayoutRect();
+			CRect rectRoot = g_WndMng.GetLayoutRect();
 			int x = rectRoot.right - rect.Width();
 			int y = rectRoot.bottom - rect.Height();
 
@@ -1301,7 +1301,7 @@ void CWndSkillTreeEx::OnInitialUpdate() {
 		SetWndRect(rect);
 	}
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rect = GetWindowRect();
 	int x = rectRoot.right - rect.Width();
 	int y = rectRoot.bottom - rect.Height();
@@ -1310,7 +1310,7 @@ void CWndSkillTreeEx::OnInitialUpdate() {
 	Move(point);
 }
 BOOL CWndSkillTreeEx::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
+	CRect rectWindow = g_WndMng.GetWindowRect();
 	return CWndNeuz::InitDialog(dwWndId, pWndParent, 0, CPoint(792, 130));
 }
 BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
@@ -1385,7 +1385,7 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 			SetActiveSlot(1, FALSE);
 			if (FULLSCREEN_HEIGHT == 600 && m_bLegend) {
 				SetActiveSlot(2, TRUE);
-				CRect rectRoot = m_pWndRoot->GetLayoutRect();
+				CRect rectRoot = g_WndMng.GetLayoutRect();
 				CRect rect = GetWindowRect();
 				int x = this->m_rectWindow.left;
 				int y = rectRoot.bottom - rect.Height();
@@ -1397,7 +1397,7 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 			SetActiveSlot(1, TRUE);
 			if (FULLSCREEN_HEIGHT == 600 && m_bLegend) {
 				SetActiveSlot(2, FALSE);
-				CRect rectRoot = m_pWndRoot->GetLayoutRect();
+				CRect rectRoot = g_WndMng.GetLayoutRect();
 				CRect rect = GetWindowRect();
 				int x = this->m_rectWindow.left;
 				int y = rectRoot.bottom - rect.Height();
@@ -1415,7 +1415,7 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 			SetActiveSlot(2, FALSE);
 			if (FULLSCREEN_HEIGHT == 600 && m_bLegend) {
 				SetActiveSlot(1, TRUE);
-				CRect rectRoot = m_pWndRoot->GetLayoutRect();
+				CRect rectRoot = g_WndMng.GetLayoutRect();
 				CRect rect = GetWindowRect();
 				int x = this->m_rectWindow.left;
 				int y = rectRoot.bottom - rect.Height();
@@ -1427,7 +1427,7 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 			SetActiveSlot(2, TRUE);
 			if (FULLSCREEN_HEIGHT == 600 && m_bLegend) {
 				SetActiveSlot(1, FALSE);
-				CRect rectRoot = m_pWndRoot->GetLayoutRect();
+				CRect rectRoot = g_WndMng.GetLayoutRect();
 				CRect rect = GetWindowRect();
 				int x = this->m_rectWindow.left;
 				int y = rectRoot.bottom - rect.Height();

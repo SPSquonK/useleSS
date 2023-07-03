@@ -287,7 +287,7 @@ void CWndQuizEventButton::OnInitialUpdate()
 	this->DelWndStyle(WBS_CAPTION);
 	m_wndTitleBar.SetVisible( FALSE );
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point;
 	

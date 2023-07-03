@@ -20,7 +20,7 @@ void CWndMotion::OnInitialUpdate() {
 
 	lpTapCtrl->SetButtonLength(130);
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	Move(rectRoot.TopLeft());
 }
 
@@ -55,14 +55,14 @@ void CWndMotion1::OnInitialUpdate()
 		pMotionProp.pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pMotionProp.szIconName ), 0xffff00ff );
 	}
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
 	Move( point );
 }
 BOOL CWndMotion1::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
+	CRect rectWindow = g_WndMng.GetWindowRect();
 	CRect rect( 240, 0, 240 + 330, 255 - 135 ); 
 	return CWndBase::Create(WBS_THICKFRAME|WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
 }
@@ -228,7 +228,7 @@ void CWndEmoticon::OnInitialUpdate()
 }
 BOOL CWndEmoticon::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
+	CRect rectWindow = g_WndMng.GetWindowRect();
 	CRect rect( 240, 0, 240 + 330, 255 - 135 ); 
 	return CWndBase::Create(WBS_THICKFRAME|WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
 }

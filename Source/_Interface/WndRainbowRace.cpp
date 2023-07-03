@@ -306,7 +306,7 @@ void CWndRainbowRaceMiniGame::OnInitialUpdate()
 	m_nTextID[6] = TID_MMI_LORD_RAINBOW_LADDER;
 /*
 	CWndRainbowRaceMiniGameButton* pWndButton = (CWndRainbowRaceMiniGameButton*)g_WndMng.GetWndBase( APP_RAINBOWRACE_BUTTON );
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point;
 
@@ -327,7 +327,7 @@ void CWndRainbowRaceMiniGame::OnInitialUpdate()
 	CWndRainbowRaceMiniGameButton* pWndButton = (CWndRainbowRaceMiniGameButton*)g_WndMng.GetWndBase( APP_RAINBOWRACE_BUTTON );
 	if(pWndButton != NULL)
 	{
-		CRect rectRoot = pWndButton->m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CRect rectButton = pWndButton->GetWindowRect( TRUE );
 
 		CPoint ptMove;
@@ -538,7 +538,7 @@ void CWndRainbowRaceMiniGameInfo::OnInitialUpdate()
 	CWndRainbowRaceMiniGame* pWndGame = (CWndRainbowRaceMiniGame*)GetWndBase( APP_RAINBOWRACE_MINIGAME );
 	if(pWndGame != NULL)
 	{
-		CRect rectRoot = pWndGame->m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CRect rectGame = pWndGame->GetWindowRect( TRUE );
 
 		CPoint ptMove;
@@ -610,7 +610,7 @@ void CWndRainbowRaceMiniGameButton::OnInitialUpdate()
 	m_wndTitleBar.SetVisible( FALSE );
 
 	CWndNavigator* pWndNavigator = (CWndNavigator*)g_WndMng.GetWndBase( APP_NAVIGATOR );
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point;
 

@@ -665,24 +665,24 @@ void CWndTaskBar::OnInitialUpdate()
 
 	{
 		rect = g_Neuz.GetDeviceRect();
-		m_pWndRoot->m_rectLayout = rect;
+		g_WndMng.m_rectLayout = rect;
 		switch( m_nPosition )
 		{
 		case TASKBAR_TOP:
 			rect.bottom = TASKBAR_HEIGHT;
-			m_pWndRoot->m_rectLayout.top = rect.bottom;
+			g_WndMng.m_rectLayout.top = rect.bottom;
 			break;
 		case TASKBAR_BOTTOM:
 			rect.top = rect.bottom - TASKBAR_HEIGHT;
-			m_pWndRoot->m_rectLayout.bottom = rect.top;
+			g_WndMng.m_rectLayout.bottom = rect.top;
 			break;
 		case TASKBAR_LEFT:
 			rect.right = TASKBAR_HEIGHT;
-			m_pWndRoot->m_rectLayout.left = rect.right;
+			g_WndMng.m_rectLayout.left = rect.right;
 			break;
 		case TASKBAR_RIGHT:
 			rect.left = rect.right - TASKBAR_HEIGHT;
-			m_pWndRoot->m_rectLayout.right = rect.left;
+			g_WndMng.m_rectLayout.right = rect.left;
 			break;
 		}
 		SetWndRect( rect );
@@ -737,11 +737,11 @@ BOOL CWndTaskBar::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	{
 	case TASKBAR_TOP:
 		rect.bottom = TASKBAR_HEIGHT;
-		m_pWndRoot->m_rectLayout.top = rect.bottom;
+		g_WndMng.m_rectLayout.top = rect.bottom;
 		break;
 	case TASKBAR_BOTTOM:
 		rect.top = rect.bottom - TASKBAR_HEIGHT;
-		m_pWndRoot->m_rectLayout.bottom = rect.top;
+		g_WndMng.m_rectLayout.bottom = rect.top;
 		break;
 	case TASKBAR_LEFT:
 		break;
@@ -749,7 +749,7 @@ BOOL CWndTaskBar::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 		break;
 	}
 	*/
-	//m_pWndRoot->SetWndRect( rectRoot );
+	//g_WndMng.SetWndRect( rectRoot );
 
 //CMainFrame
 	//rect.top = rect.bottom;
@@ -1750,7 +1750,7 @@ BOOL CWndTaskMenu::Process()
 				pWndButton.m_pWndMenu->Move( CPoint( rcButton.right, rcButton.top ) );
 				// 그런데 그 메뉴가 화면을 벗어났다면 위치를 수정 
 				const CRect rcMenu = pWndButton.m_pWndMenu->GetScreenRect();
-				const CRect rcLayout = m_pWndRoot->GetLayoutRect();
+				const CRect rcLayout = g_WndMng.GetLayoutRect();
 				CPoint pt = rcMenu.TopLeft();
 				if (rcMenu.right > rcLayout.right) {
 					pt.x = rcButton.left - rcMenu.Width();

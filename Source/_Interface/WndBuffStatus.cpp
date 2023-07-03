@@ -16,7 +16,7 @@ void CWndBuffStatus::OnInitialUpdate() {
 	m_wndTitleBar.SetVisible(FALSE);
 	SetBuffIconInfo(true);
 
-	const CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	const CRect rectRoot = g_WndMng.GetLayoutRect();
 	const CPoint point(rectRoot.Width() / 3, rectRoot.Height() / 3);
 	Move(point);
 }

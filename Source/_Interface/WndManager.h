@@ -744,6 +744,8 @@ protected:
 extern std::vector<CWndBase *> m_wndOrder;
 extern CWndMgr          g_WndMng; // 윈도 매니저 클래스 
 
+inline bool CWndBase::IsWndRoot() const { return this == &g_WndMng; }
+
 extern void RenderEnchant( C2DRender* p2DRender, CPoint pt );
 extern void RenderRadar( C2DRender* p2DRender, CPoint pt, DWORD dwValue, DWORD dwDivisor );
 #define WID_MESSAGEBOX        10

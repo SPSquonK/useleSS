@@ -288,7 +288,7 @@ void CWndGuildBankLog::OnInitialUpdate()
 	CWndGuildBank* pWndGuildBank = (CWndGuildBank*)GetWndBase( APP_GUILD_BANK );
 	if(pWndGuildBank != NULL)
 	{
-		CRect rectRoot = pWndGuildBank->m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CRect rectBank = pWndGuildBank->GetWindowRect( TRUE );
 
 		CPoint ptMove;
@@ -312,7 +312,7 @@ void CWndGuildBankLog::OnInitialUpdate()
 	}
 	else
 	{
-		CRect rectRoot = m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CRect rectWindow = GetWindowRect();
 		CPoint point( rectRoot.right - rectWindow.Width(), rectRoot.bottom - rectWindow.Height() );
 		Move( point );

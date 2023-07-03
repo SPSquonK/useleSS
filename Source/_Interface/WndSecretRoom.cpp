@@ -1129,7 +1129,7 @@ void CWndSecretRoomQuick::OnInitialUpdate()
 	SetActiveMember(m_MemberCount);
 	SortMemberList();
 	
-	const CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	const CRect rectRoot = g_WndMng.GetLayoutRect();
 	const CRect rectWindow = GetWindowRect();
 	const CPoint point( rectRoot.right - rectWindow.Width(), 112 + 48 );
 	Move( point );

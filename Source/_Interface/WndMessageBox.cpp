@@ -133,7 +133,7 @@ BOOL CWndMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			Destroy(); 
 			break;
 	}
-	if( GetParentWnd() != m_pWndRoot )
+	if( GetParentWnd() != &g_WndMng )
 		GetParentWnd()->OnCommand( nID, message, this );
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
@@ -205,7 +205,7 @@ BOOL CWndMessageBoxUpper::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 	if( nID == 10000 )
 		return TRUE;
 
-	if( GetParentWnd() != m_pWndRoot )
+	if( GetParentWnd() != &g_WndMng )
 		GetParentWnd()->OnCommand( nID, message, this );
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
@@ -217,7 +217,7 @@ BOOL CWndMessageBoxUpper::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 BOOL CWndMessageBoxUpper::Initialize( LPCTSTR lpszMessage, CWndBase* pWndParent, DWORD nType, BOOL bPostLogoutMsg )
 {
 	m_bPostLogoutMsg = bPostLogoutMsg;
-	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 	//Create( _T( "매시지 박스" ), nType, rect, APP_MESSAGEBOX );
 	if( g_WndMng.m_pWndWorld && g_WndMng.m_pWndWorld->GetMouseMode() == 1 )	// FPS모드일때
 	{

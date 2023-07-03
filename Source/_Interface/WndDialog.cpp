@@ -245,7 +245,7 @@ void CWndDialog::OnInitialUpdate()
 
 	UpdateButtonEnable();
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rect = GetWindowRect();
 	int nWidth  = rect.Width(); 
 	int nHeight = rect.Height(); 

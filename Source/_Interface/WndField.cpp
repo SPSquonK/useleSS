@@ -292,7 +292,7 @@ BOOL CWndRandomScrollConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*
   ���� ������ ���� ���? 
 BOOL CWndRandomScrollConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+	CRect rectWindow = g_WndMng.GetWindowRect(); 
 	CRect rect( 50 ,50, 300, 300 ); 
 	SetTitle( _T( "title" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
@@ -343,7 +343,7 @@ BOOL CWndQuestItemWarning::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 ���� ������ ���� ���? 
 BOOL CWndQuestItemWarning::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+CRect rectWindow = g_WndMng.GetWindowRect(); 
 CRect rect( 50 ,50, 300, 300 ); 
 SetTitle( _T( "title" ) ); 
 return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
@@ -1206,7 +1206,7 @@ void CWndInventory::OnInitialUpdate()
 
 	m_TexRemoveItem = m_textureMng.AddTexture( MakePath( DIR_THEME, "WndInventoryGarbage.dds" ), 0xffff00ff );
 	
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point( rectRoot.right - rectWindow.Width(), 112 + 48 );
 	Move( point );
@@ -3164,7 +3164,7 @@ void CWndNavigator::OnInitialUpdate()
 	m_size = CSize( 256, 256) ;//MINIMAP_SIZE, MINIMAP_SIZE );
 	m_nSizeCnt = 0;
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point( rectRoot.right - rectWindow.Width(), rectRoot.top );
 	Move( point );
@@ -3174,7 +3174,7 @@ void CWndNavigator::OnInitialUpdate()
 }
 BOOL CWndNavigator::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 {
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
+	CRect rectWindow = g_WndMng.GetWindowRect();
 	CRect rect( 0, 0, 115, 110 ); // 1024 768
 
 	m_texNavObjs.LoadScript( MakePath( DIR_THEME,"Navigator.inc") );
@@ -3240,7 +3240,7 @@ BOOL CWndNavigator::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 		{
 			case 100000: // ���? ã��
 				{
-					CRect rectRootLayout = m_pWndRoot->GetLayoutRect();
+					CRect rectRootLayout = g_WndMng.GetLayoutRect();
 					int nMenuPlaceLeft = rect.left - m_wndMenuPlace.GetWindowRect().Width();
 					if( nMenuPlaceLeft < rectRootLayout.left )
 						m_wndMenuPlace.Move( CPoint( rect.right, rect.top ) );
@@ -3371,7 +3371,7 @@ void CWndNavigator::OnRButtonDown(UINT nFlags, CPoint point)
 	if(hasTarget)
 	{
 		CRect rect = GetWindowRect( TRUE );
-		CRect rectRootLayout = m_pWndRoot->GetLayoutRect();
+		CRect rectRootLayout = g_WndMng.GetLayoutRect();
 		int nMenuMoverLeft = rect.left - m_wndMenuMover.GetWindowRect().Width();
 		if( nMenuMoverLeft < rectRootLayout.left )
 			m_wndMenuMover.Move( CPoint( rect.right, rect.top ) );
@@ -4046,7 +4046,7 @@ void CWndStatus::OnInitialUpdate()
 		g_pBipedMesh->LoadMotionId(MTI_STAND);
 		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin, g_pPlayer->m_aEquipInfo, g_pBipedMesh, &g_pPlayer->m_Inventory );
 	}
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CPoint point( rectRoot.left, rectRoot.top );
 	Move( point );
 
@@ -4190,7 +4190,7 @@ void CWndQuestItemInfo::OnInitialUpdate()
 
 BOOL CWndLogOut::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
 	Create( _T( prj.GetText(TID_DIAG_0068) ), MB_OKCANCEL, rect, APP_MESSAGEBOX );//dwWndId );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0069) ) );
@@ -4316,7 +4316,7 @@ void CWndLogOutWaitting::OnInitialUpdate()
 
 BOOL CWndQuit::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 	/*
 	Create( _T( "�Ž��� �ڽ�" ), MB_OKCANCEL, rect, APP_MESSAGEBOX );//dwWndId );
 	m_wndText.SetString( _T( "���α׷��� �����Ͻðڽ��ϱ�?" ) );

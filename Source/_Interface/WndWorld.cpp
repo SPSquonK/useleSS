@@ -728,7 +728,7 @@ void CWndWorld::ProjectionAndView()
 void CWndWorld::Projection()
 {
 	// Frame Window客 包访等 Viewport 技泼 
-	CRect rectRoot = m_pWndRoot->GetWindowRect();
+	CRect rectRoot = g_WndMng.GetWindowRect();
 	D3DVIEWPORT9 viewport;
 	viewport.X      = 0;
 	viewport.Y      = 0;
@@ -2894,7 +2894,7 @@ void CWndWorld::OnInitialUpdate()
 
 BOOL CWndWorld::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 {
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
+	CRect rectWindow = g_WndMng.GetWindowRect();
 	CRect rect( 100,100,500,400 );
 	SetTitle( _T( "World" ) );
 	return CWndNeuz::Create(WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_THICKFRAME|WBS_MANAGER|WBS_MAXIMIZEBOX,rect,pWndParent,dwWndId);

@@ -15,7 +15,6 @@
 BOOL      CWndBase::m_bCling   = TRUE;
 BOOL      CWndBase::m_bEdit    = FALSE;
 BOOL      CWndBase::m_bFullWnd = FALSE;
-CWndBase* CWndBase::m_pWndRoot = NULL;
 CWndBase* CWndBase::m_pWndFocus = NULL;
 CWndBase* CWndBase::m_pCurFocus = NULL;
 
@@ -249,21 +248,15 @@ BOOL CWndBase::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT n
 	m_rectClient = rect;
 	m_rectLayout = rect;
 	m_nIdWnd = nID;
-	if( pParentWnd )
-	{
-		m_pParentWnd = pParentWnd;
-		if( m_pParentWnd == this )
-			m_pWndRoot = m_pParentWnd;
-	}
-	else
-		m_pParentWnd = m_pWndRoot;
+	
+	m_pParentWnd = pParentWnd ? pParentWnd : &g_WndMng;
 
 	m_isCreated = m_pParentWnd->m_isCreated;
 	m_pFont = m_pParentWnd->m_pFont;
 
 	SetWndRect( rect, FALSE );
 
-	if( m_pWndRoot == this )
+	if( &g_WndMng == this )
 		m_dwStyle |= WBS_MANAGER;
 	m_pParentWnd->AddWnd( this );
 	CPoint point = GetClientPoint();
@@ -562,7 +555,7 @@ CRect CWndBase::GetScreenRect()
 	CRect rect = pWndCur->m_rectWindow;
 	// 해당 윈도가 차일드 윈도(콘트롵타입)일 경우에만 패어런트 
 	// 윈도 좌표의 영향을 받으므로 페어런트 윈도 좌표를 더해주어야한다.
-	while( pWndCur != m_pWndRoot && pWndCur->IsWndStyle( WBS_CHILD ) )
+	while( pWndCur != &g_WndMng && pWndCur->IsWndStyle( WBS_CHILD ) )
 	{
 		if( pWndCur->IsWndStyle( WBS_DOCKING ) )
 			rect += pWndCur->m_pParentWnd->m_rectWindow.TopLeft();
@@ -849,7 +842,7 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 		// 7 = bottomLeft
 		// 8 = bottomRigh;
 		//CPoint pt = ptWindow - m_pointOld;
-		if( point.x < 0 || point.y < 0 || point.x > m_pWndRoot->m_rectWindow.right || point.y > m_pWndRoot->m_rectWindow.bottom )
+		if( point.x < 0 || point.y < 0 || point.x > g_WndMng.m_rectWindow.right || point.y > g_WndMng.m_rectWindow.bottom )
 		{
 			m_bPush = FALSE;
 			m_nResizeDir = 0;
@@ -880,7 +873,7 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 			}
 			if( m_bCling ) //&& !IsWndStyle( WBS_NOCLING ) )
 			{
-				CRect rect = m_pWndRoot->GetLayoutRect();
+				CRect rect = g_WndMng.GetLayoutRect();
 				if( rectWnd.top < rect.top + 10 ) rectWnd.top = rect.top;
 				if( rectWnd.bottom > rect.bottom - 10 ) rectWnd.bottom = rect.bottom;
 				if( rectWnd.left < rect.left + 10 ) rectWnd.left = rect.left;
@@ -916,7 +909,7 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 
 				if( m_bCling )//&& !IsWndStyle( WBS_NOCLING ) )
 				{
-					CRect rect = m_pWndRoot->GetLayoutRect();
+					CRect rect = g_WndMng.GetLayoutRect();
 
 					if( pt.x < rect.left + 10 && pt.x > rect.left ) pt.x = rect.left;
 					if( pt.y < rect.top  + 10 && pt.y > rect.top  ) pt.y = rect.top;
@@ -1286,7 +1279,7 @@ void CWndBase::SetFocus()
 			!IsWndStyle(WBS_CHILD)
 			&& !m_wndOrder.empty()
 			&& !(m_dwStyle & WBS_MANAGER)
-			&& this != m_pWndRoot
+			&& this != &g_WndMng
 			&& IsVisible();
 
 		if (changeOrder) {
@@ -1440,7 +1433,7 @@ void CWndBase::Move(CPoint pt)
 }
 
 void CWndBase::Move70() {
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point((rectRoot.right - rectWindow.Width()) / 2, 70);
 	Move(point);
@@ -1448,7 +1441,7 @@ void CWndBase::Move70() {
 
 void CWndBase::MoveParentCenter()
 {
-	MoveRectCenter(m_pWndRoot->m_rectWindow);
+	MoveRectCenter(g_WndMng.m_rectWindow);
 }
 void CWndBase::MoveRectCenter(CRect rect)
 {

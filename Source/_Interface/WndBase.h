@@ -127,7 +127,6 @@ static CResManager m_resMng;
 static BOOL           m_bCling          ;
 static BOOL           m_bEdit           ;
 static BOOL           m_bFullWnd        ;
-static CWndBase*      m_pWndRoot        ;
 static CWndBase*      m_pWndFocus       ; // 다이얼로그 윈도 포커스 
 static CWndBase*      m_pCurFocus       ; // 다이얼로그, 차일드 중 최종 현재 포커스 
 
@@ -198,7 +197,7 @@ static SHORTCUT       m_GlobalShortcut;
 	CRect GetWindowRect( BOOL bParent = FALSE );
 	CRect GetLayoutRect( BOOL bParent = FALSE );
 	CRect GetWndRect() { return m_rectWindow; }
-	[[nodiscard]] bool IsWndRoot() const { return this == m_pWndRoot; }
+	[[nodiscard]] bool IsWndRoot() const;
 	[[nodiscard]] static bool IsOpenModalWnd() { return m_pWndFocus && m_pWndFocus->IsWndStyle(WBS_MODAL); }
 	CWndBase* GetFocusChild() { return m_pWndFocusChild; }
 	[[nodiscard]] static CWndBase * GetFocusWnd() { return m_pWndFocus; }

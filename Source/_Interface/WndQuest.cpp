@@ -14,7 +14,7 @@
 CTreeInformationManager g_QuestTreeInfoManager;
 
 BOOL CWndRemoveQuest::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
-	CRect rect = m_pWndRoot->MakeCenterRect(250, 130);
+	CRect rect = g_WndMng.MakeCenterRect(250, 130);
 	Create("", MB_OKCANCEL, rect, APP_MESSAGEBOX);
 
 	m_wndText.SetString(prj.GetText(TID_GAME_QUEST_DELCONFIRM));

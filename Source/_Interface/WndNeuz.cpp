@@ -263,9 +263,8 @@ BOOL CWndNeuz::Initialize(CWndBase* pWndParent,DWORD dwStyle)
 	//m_strMessage = lpszMessage;
 	//m_nType = nType;
 	//SetTitle("메지시 윈도");
-	return CWndBase::Create(dwStyle | WBS_MOVE|/*WBS_MODAL|*/WBS_SOUND|WBS_CAPTION,rect,m_pWndRoot,10);
+	return CWndBase::Create(dwStyle | WBS_MOVE|/*WBS_MODAL|*/WBS_SOUND|WBS_CAPTION,rect,&g_WndMng,10);
 }
-
 BOOL CWndNeuz::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
 	if( message == WNM_CLICKED )
@@ -325,7 +324,7 @@ void CWndNeuz::SetSizeMax()
 		{
 			m_rectBackup = GetWindowRect(TRUE);
 			CRect rect;
-			CWndBase * pWndFull = m_pWndRoot->FindFullWnd();
+			CWndBase * pWndFull = g_WndMng.FindFullWnd();
 			if(pWndFull)
 				rect = pWndFull->GetWindowRect(TRUE);
 			else
@@ -333,7 +332,7 @@ void CWndNeuz::SetSizeMax()
 					rect = m_pParentWnd->GetClientRect(TRUE);
 				else
 				{
-					rect = m_pWndRoot->GetLayoutRect();
+					rect = g_WndMng.GetLayoutRect();
 				}
 				m_wndTitleBar.GetDlgItem( WTBID_MAX )->SetTitle( _T( "#" ) );
 				m_bFullWnd = TRUE;
@@ -347,7 +346,7 @@ void CWndNeuz::SetSizeMax()
 		m_rectBackup = GetWindowRect(TRUE);
 		CRect rect;
 		CWndBase* pWndFull 
-			= m_pWndRoot->FindFullWnd();
+			= g_WndMng.FindFullWnd();
 		if(pWndFull)
 			rect = pWndFull->GetWindowRect(TRUE);
 		else
@@ -355,8 +354,7 @@ void CWndNeuz::SetSizeMax()
 				rect = m_pParentWnd->GetClientRect(TRUE);
 			else
 			{
-				//rect = m_pWndRoot->GetWindowRect();
-				rect = m_pWndRoot->GetLayoutRect();
+				rect = g_WndMng.GetLayoutRect();
 				rect.left = rect.Width() - 200;
 			}
 			SetWndRect(rect);

@@ -128,7 +128,7 @@ void CWndVendor::OnInitialUpdate()
 	CRect rcVendor = GetWindowRect( TRUE );
 	CPoint ptInventory	= rcInventory.TopLeft();
 	CPoint point;
-	if( ptInventory.x > m_pWndRoot->GetWndRect().Width() / 2 )
+	if( ptInventory.x > g_WndMng.GetWndRect().Width() / 2 )
 		point	= ptInventory - CPoint( rcVendor.Width(), 0 );
 	else
 		point	= ptInventory + CPoint( rcInventory.Width(), 0 );

@@ -44,7 +44,7 @@ BOOL GetIePath( LPSTR lpPath )
 
 BOOL CWndConnectingBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
 	Create( _T( prj.GetText(TID_DIAG_0068) ), /*MB_CANCEL*/0xFFFFFFFF, rect, APP_MESSAGEBOX );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0064) ) );
@@ -59,7 +59,7 @@ BOOL CWndConnectingBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 
 BOOL CWndCharBlockBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
 	Create( _T( prj.GetText(TID_DIAG_0068) ), MB_CANCEL, rect, APP_MESSAGEBOX );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0073) ) );
@@ -73,7 +73,7 @@ BOOL CWndCharBlockBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 }
 BOOL CWndAllCharBlockBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
 {
-    CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+    CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
 	Create( _T( prj.GetText(TID_DIAG_0068) ), MB_CANCEL, rect, APP_MESSAGEBOX );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0074) ) );
@@ -295,7 +295,7 @@ void CWndLogin::OnInitialUpdate()
 	{
 		CRect HanrectWindow = GetWindowRect( TRUE );
 		SetWndRect( CRect( HanrectWindow.left, HanrectWindow.top, HanrectWindow.right - 120, HanrectWindow.bottom - 115 ) );
-		CRect rectLayout = m_pWndRoot->GetLayoutRect();
+		CRect rectLayout = g_WndMng.GetLayoutRect();
 		Move( (int)( rectLayout.Width() / 2 - m_rectWindow.Width() / 2 ), (int)( rectLayout.Height() * 0.65 ) );
 	}
 #endif	// __THROUGHPORTAL0810
@@ -312,7 +312,7 @@ void CWndLogin::OnInitialUpdate()
 		case LANG_FRE:
 		case LANG_GER:
 			{
-				CRect rectRoot = m_pWndRoot->GetLayoutRect();
+				CRect rectRoot = g_WndMng.GetLayoutRect();
 				CRect rectWindow = GetWindowRect( TRUE );
 				rectWindow.top = 400 * rectRoot.Height() / 768;
 				Move( rectWindow.TopLeft() );
@@ -591,7 +591,7 @@ void CWndSelectServer::OnInitialUpdate()
 
 	if( ::GetLanguage() == LANG_JAP )
 	{
-		CRect rect2 = m_pWndRoot->GetLayoutRect();
+		CRect rect2 = g_WndMng.GetLayoutRect();
 		
 		int width = (rect2.right-rect2.left) / 2;
 		
@@ -1553,7 +1553,7 @@ void CWndSelectChar::OnInitialUpdate()
 
 BOOL CWndSelectChar::Initialize(CWndBase* pWndParent,DWORD dwStyle)
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 590, 400 );
+	CRect rect = g_WndMng.MakeCenterRect( 590, 400 );
 	SetTitle( _T( "Select Character" ) );
 	return CWndNeuz::InitDialog( APP_SELECT_CHAR, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
@@ -2049,7 +2049,7 @@ void CWndCreateChar::SetSex( int nSex )
 
 BOOL CWndCreateChar::Initialize( CWndBase* pWndParent, DWORD dwStyle )
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 590, 400 );
+	CRect rect = g_WndMng.MakeCenterRect( 590, 400 );
 	return CWndNeuz::InitDialog( APP_CREATE_CHAR, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
 

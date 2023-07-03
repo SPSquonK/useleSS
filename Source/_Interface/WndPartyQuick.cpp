@@ -140,7 +140,7 @@ void CWndPartyQuick::OnInitialUpdate()
 	
 	SetActiveMember(g_Party.m_nSizeofMember);
 	
-	const CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	const CRect rectRoot = g_WndMng.GetLayoutRect();
 	const CPoint point( 30, (rectRoot.bottom - rectRoot.top) / 4);
 	Move(point);
 } 
