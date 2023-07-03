@@ -186,7 +186,7 @@ BOOL CWndPiercing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		case WIDC_OK:
 			if (!m_slots[0] || !m_slots[1]) return FALSE;
 
-			g_WndMng.OpenCustomBox("", new CPiercingMessageBox(m_slots.values));
+			g_WndMng.OpenCustomBox(new CPiercingMessageBox(m_slots.values));
 			break;
 		case WIDC_CANCEL:
 			Destroy();

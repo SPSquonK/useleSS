@@ -101,8 +101,7 @@ BOOL CWndGuildCombat1to1Selection::OnChildNotify( UINT message, UINT nID, LRESUL
 		case WIDC_BUTTON4: Manager().MoveDown(); return TRUE;
 		case WIDC_FINISH : OnClickFinish();      return TRUE;
 		case WIDC_RESET: {
-			CGuildCombat1to1SelectionResetConfirm * pBox = new CGuildCombat1to1SelectionResetConfirm;
-			g_WndMng.OpenCustomBox("", pBox);
+			g_WndMng.OpenCustomBox(new CGuildCombat1to1SelectionResetConfirm);
 			return TRUE;
 		}
 		case WIDC_CLOSE:

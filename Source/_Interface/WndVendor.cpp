@@ -304,8 +304,7 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				pWndEdit->m_string.GetTextFormat(strFormat);
 			}
 			
-			CWndVendorConfirm* pBox = new CWndVendorConfirm;
-			g_WndMng.OpenCustomBox( "", pBox );			
+			g_WndMng.OpenCustomBox(new CWndVendorConfirm);
 			pBox->SetVendorName( strFormat );
 			pBox->SetValue( prj.GetText( TID_GAME_VENDOR_START ) );
 			CWndButton* pWndButton	= (CWndButton*)GetDlgItem( WIDC_OK );
@@ -315,8 +314,7 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			if( g_pPlayer->m_vtInfo.IsVendorOpen() )
 			{
-				CWndVendorConfirm* pBox = new CWndVendorConfirm;
-				g_WndMng.OpenCustomBox( "", pBox );			
+				g_WndMng.OpenCustomBox(new CWndVendorConfirm);
 				pBox->SetValue( prj.GetText( TID_GAME_VENDOR_STOP ) );
 				return FALSE;
 			}

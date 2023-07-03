@@ -57,7 +57,7 @@ BOOL CWndTextFromItem::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult)
 		{
 			CWndTextQuest * pWndTextQuest = new CWndTextQuest;
 			pWndTextQuest->m_pItemBase = m_pItemBase;
-			g_WndMng.OpenCustomBox("", pWndTextQuest);
+			g_WndMng.OpenCustomBox(pWndTextQuest);
 			break;
 		}
 		case WIDC_CLOSE:

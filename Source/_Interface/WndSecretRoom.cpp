@@ -86,8 +86,7 @@ BOOL CWndSecretRoomSelection::OnChildNotify( UINT message, UINT nID, LRESULT* pL
 	}
 	else if( nID == WIDC_RESET )
 	{
-		CWndSecretRoomSelectionResetConfirm* pBox = new CWndSecretRoomSelectionResetConfirm;
-		g_WndMng.OpenCustomBox( "", pBox );
+		g_WndMng.OpenCustomBox(new CWndSecretRoomSelectionResetConfirm);
 	}
 	else if( nID == WIDC_FINISH )
 	{
@@ -256,7 +255,7 @@ BOOL CWndSecretRoomOffer::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 
 			CWndSecretRoomOfferMessageBox* pMsg = new CWndSecretRoomOfferMessageBox;
 
-			g_WndMng.OpenCustomBox( "", pMsg );
+			g_WndMng.OpenCustomBox( pMsg );
 
 			CString str;
 			if( m_dwReqGold == 0 )
@@ -373,7 +372,7 @@ BOOL CWndSecretRoomChangeTaxRate::OnChildNotify( UINT message, UINT nID, LRESULT
 			{
 				CWndSecretRoomChangeTaxRateMsgBox* pMsg = new CWndSecretRoomChangeTaxRateMsgBox;
 				CString strMsg;
-				g_WndMng.OpenCustomBox( "", pMsg );
+				g_WndMng.OpenCustomBox( pMsg );
 				strMsg.Format( prj.GetText(TID_GAME_SECRETROOM_CHANGETEX), m_nChangeSalesTax, m_nChangePurchaseTax );
 				pMsg->SetValue( strMsg,	m_nChangeSalesTax, m_nChangePurchaseTax, m_nCont );
 				

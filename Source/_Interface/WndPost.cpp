@@ -426,7 +426,7 @@ BOOL CWndPostSend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 
 			CWndPostSendMessageBox* pBox = new CWndPostSendMessageBox;
-			g_WndMng.OpenCustomBox( "", pBox );
+			g_WndMng.OpenCustomBox( pBox );
 				
 			CItemElem* pItemElem = g_pPlayer->m_Inventory.GetAtId( m_nItem );
 				

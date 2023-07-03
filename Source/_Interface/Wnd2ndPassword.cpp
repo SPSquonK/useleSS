@@ -119,7 +119,7 @@ BOOL CWnd2ndPassword::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					break;
 
 				int m_nSelectCharacter = pWndSelectChar->m_nSelectCharacter;
-				g_WndMng.OpenCustomBox( _T( prj.GetText(TID_DIAG_0064) ), new CWndConnectingBox );
+				g_WndMng.OpenCustomBox( new CWndConnectingBox );
 				if( g_DPlay.Connect( g_Neuz.m_lpCacheAddr, g_Neuz.m_uCachePort ) )
 				{						
 					CNetwork::GetInstance().OnEvent( CACHE_CONNECTED );

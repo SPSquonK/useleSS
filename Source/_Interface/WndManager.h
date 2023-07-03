@@ -676,7 +676,7 @@ public:
 	CWndInstantMsg* OpenInstantMsg( LPCTSTR lpszFrom );
 
 	// MessageBox
-	BOOL	OpenCustomBox( LPCTSTR strMessage, CWndCustomMessageBox * pWndMessageBox );
+	BOOL	OpenCustomBox( CWndCustomMessageBox * pWndMessageBox );
 	BOOL	OpenMessageBox( LPCTSTR strMessage, UINT nType = MB_OK );
 	BOOL	OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTitle, UINT nType = MB_OK );
 	BOOL    OpenMessageBoxUpper( LPCTSTR lpszMessage, UINT nType = MB_OK, BOOL bPostLogoutMsg = FALSE );

@@ -440,7 +440,6 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 			}
 		}
 		pWndSelectChar->SelectCharacter( pWndSelectChar->m_nSelectCharacter );
-//		g_WndMng.OpenCustomBox( _T( "접속할수 없는 계정입니다"), new CWndAllCharBlockBox );
 		// 모든 캐릭터가 블럭되어 있습니다.		
 	}
 }

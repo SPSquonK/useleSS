@@ -324,8 +324,8 @@ BOOL CWndQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						if( g_WndMng.m_pWndQuestDetail )
 							SAFE_DELETE( g_WndMng.m_pWndQuestDetail )
-						CWndRemoveQuest* pWndRemoveQuest = new CWndRemoveQuest(QuestId(nQuestID));
-						g_WndMng.OpenCustomBox( NULL, pWndRemoveQuest );
+
+						g_WndMng.OpenCustomBox(new CWndRemoveQuest(QuestId(nQuestID)));
 					}
 					break;
 				}

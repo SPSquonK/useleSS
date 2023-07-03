@@ -471,7 +471,7 @@ BOOL CWndLogin::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 					g_Neuz.SetAccountInfo( pAccount->GetString(), pPassword->GetString() );
 				g_dpCertified.SendCertify();
 
-				g_WndMng.OpenCustomBox( NULL, new CWndConnectingBox );
+				g_WndMng.OpenCustomBox( new CWndConnectingBox );
 				break;
 			}
 
@@ -814,7 +814,7 @@ BOOL CWndSelectServer::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				g_dpLoginClient.DeleteDPObject();	// 2004^04^19
 				break;
 			}
-			g_WndMng.OpenCustomBox( NULL, new CWndConnectingBox );
+			g_WndMng.OpenCustomBox( new CWndConnectingBox );
 
 			CWndListBox* pWndList	= (CWndListBox*)GetDlgItem( WIDC_CONTROL0 );
 			CListedServers::Server * pTServerDesc	= (CListedServers::Server *)pWndList->GetItemData( pWndList->GetCurSel() );
@@ -1671,7 +1671,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 			
 			if( g_Neuz.m_nCharacterBlock[m_nSelectCharacter] == 0 )
 			{
-				g_WndMng.OpenCustomBox( NULL, new CWndCharBlockBox );
+				g_WndMng.OpenCustomBox( new CWndCharBlockBox );
 			}
 			else
 			{
@@ -1700,8 +1700,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				}
 				else
 				{
-					g_WndMng.OpenCustomBox( _T( prj.GetText(TID_DIAG_0064) ), new CWndConnectingBox );
-					//g_WndMng.OpenCustomBox( _T( "로딩중입니다. 잠시만 기다려 주십시오." ), new CWndConnectingBox );
+					g_WndMng.OpenCustomBox( new CWndConnectingBox );
 
 					if( g_DPlay.Connect( g_Neuz.m_lpCacheAddr, g_Neuz.m_uCachePort ) )
 					{						
@@ -1776,7 +1775,7 @@ void CWndSelectChar::OnLButtonUp(UINT nFlags, CPoint point)
 		{
 			if( g_Neuz.m_nCharacterBlock[i] == 0 )
 			{
-				g_WndMng.OpenCustomBox( NULL, new CWndCharBlockBox );
+				g_WndMng.OpenCustomBox( new CWndCharBlockBox );
 					
 			}
 			else
@@ -2184,7 +2183,7 @@ BOOL CWndCreateChar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			break;
 		case 10002: // Accept
 			{
-			g_WndMng.OpenCustomBox( NULL, new CWndConnectingBox );
+			g_WndMng.OpenCustomBox( new CWndConnectingBox );
 			g_Neuz.m_dwTempMessage = 1;
 			g_Neuz.m_timerConnect.Set( 1 );
 			}

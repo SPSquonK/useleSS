@@ -4642,7 +4642,7 @@ BOOL CWndReWanted::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				CWantedMessageBox* pBox = new CWantedMessageBox;
 				pBox->m_nGold = nGold;
 				pBox->m_strMsg = strMsg;
-				g_WndMng.OpenCustomBox( "", pBox );
+				g_WndMng.OpenCustomBox( pBox );
 				Destroy();
 			}
 			else
@@ -5479,7 +5479,7 @@ BOOL CWndGuildCombatOffer::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 
 			CWndGuildCombatOfferMessageBox* pMsg = new CWndGuildCombatOfferMessageBox;
 
-				g_WndMng.OpenCustomBox( "", pMsg );
+				g_WndMng.OpenCustomBox( pMsg );
 
 				if( m_dwReqGold == 0 )
 				{
@@ -5835,8 +5835,7 @@ BOOL CWndGuildCombatSelection::OnChildNotify( UINT message, UINT nID, LRESULT* p
 		case WIDC_BUTTON3: Manager().MoveUp();    return TRUE;
 		case WIDC_BUTTON4: Manager().MoveDown();  return TRUE;
 		case WIDC_RESET: {
-			CGuildCombatSelectionClearMessageBox * pBox = new CGuildCombatSelectionClearMessageBox;
-			g_WndMng.OpenCustomBox("", pBox);
+			g_WndMng.OpenCustomBox(new CGuildCombatSelectionClearMessageBox());
 			break;
 		}
 		case WIDC_FINISH:  return ToBOOL(OnFinish());
@@ -9331,7 +9330,7 @@ BOOL CWndHeavenTower::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				CString strMsg;
 				CWndHeavenTowerEntranceConfirm* pWndEntranceConfirm = new CWndHeavenTowerEntranceConfirm;
 
-					g_WndMng.OpenCustomBox( "", pWndEntranceConfirm );
+					g_WndMng.OpenCustomBox( pWndEntranceConfirm );
 					
 					if(m_nChoiceNum != 5)
 					{

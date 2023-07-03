@@ -854,7 +854,7 @@ void CWndMgr::CloseMessageBox()
 	SAFE_DELETE( m_pWndMessageBox );
 	SAFE_DELETE( m_pWndMessageBoxUpper );
 }
-BOOL CWndMgr::OpenCustomBox( LPCTSTR lpszMessage, CWndCustomMessageBox * pWndMessageBox )
+BOOL CWndMgr::OpenCustomBox( CWndCustomMessageBox * pWndMessageBox )
 { 
 	SAFE_DELETE( m_pWndMessageBox );
 	m_pWndMessageBox = pWndMessageBox;
@@ -1112,7 +1112,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 		
 		if( pShortcut->m_dwId == APP_QUIT)
 		{
-			OpenCustomBox( NULL, new CWndQuit );
+			OpenCustomBox( new CWndQuit );
 		}
 		else
 		if( pShortcut->m_dwId == APP_LOGOUT)
@@ -1125,7 +1125,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 			}
 			else
 			{
-				OpenCustomBox( NULL, new CWndLogOut );
+				OpenCustomBox( new CWndLogOut );
 			}
 		}
 		else if(pShortcut->m_dwId == APP_PARTY)
