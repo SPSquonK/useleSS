@@ -359,7 +359,7 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 				if( !pWndGuildName )
 				{
 					pWndGuildName	= new CWndGuildName;
-					pWndGuildName->Initialize( &g_WndMng );
+					pWndGuildName->Initialize();
 				}
 				pWndGuildName->SetData();
 			}

@@ -210,7 +210,7 @@ void _test_func( std::vector< std::string >& arg )
 	if( !g_WndMng.m_pWndUpkeep )
 	{
 		g_WndMng.m_pWndUpkeep = new CWndGHUpkeep;
-		g_WndMng.m_pWndUpkeep->Initialize(&g_WndMng, APP_CONFIRM_BUY_);
+		g_WndMng.m_pWndUpkeep->Initialize();
 		
 	}
 }

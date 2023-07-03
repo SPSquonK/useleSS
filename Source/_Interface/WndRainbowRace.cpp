@@ -418,7 +418,7 @@ void CWndRainbowRaceMiniGame::OnLButtonUp( UINT nFlags, CPoint point )
 			if(m_pWndMiniGameInfo)
 			{
 				m_pWndMiniGameInfo->SetFileName(m_strMiniGameInfo[i]);
-				m_pWndMiniGameInfo->Initialize(NULL);
+				m_pWndMiniGameInfo->Initialize();
 			}
 		}
 	}
@@ -664,7 +664,7 @@ void CWndRainbowRaceMiniGameButton::OnLButtonUp( UINT nFlags, CPoint point )
 			{
 				g_WndMng.m_pWndRainbowRaceMiniGame = new CWndRainbowRaceMiniGame;
 				if(g_WndMng.m_pWndRainbowRaceMiniGame)
-					g_WndMng.m_pWndRainbowRaceMiniGame->Initialize(NULL);
+					g_WndMng.m_pWndRainbowRaceMiniGame->Initialize();
 			}
 		}
 	}
@@ -769,7 +769,7 @@ BOOL CWndRainbowRaceMiniGameButton::OnChildNotify( UINT message, UINT nID, LRESU
 		{
 			g_WndMng.m_pWndRainbowRaceMiniGame = new CWndRainbowRaceMiniGame;
 			if(g_WndMng.m_pWndRainbowRaceMiniGame)
-				g_WndMng.m_pWndRainbowRaceMiniGame->Initialize(NULL);
+				g_WndMng.m_pWndRainbowRaceMiniGame->Initialize();
 		}
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
@@ -950,7 +950,7 @@ BOOL CWndRRMiniGameKawiBawiBo::Process()
 				if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 				{
 					g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_GAWIBAWIBO);
-					g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+					g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 				}
 
 				Destroy();
@@ -1358,7 +1358,7 @@ BOOL CWndRRMiniGameDice::Process()
 				if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 				{
 					g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_DICEPLAY);
-					g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+					g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 				}
 
 				Destroy();
@@ -2364,7 +2364,7 @@ BOOL CWndRRMiniGameLadder::Process()
 			if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 			{
 				g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_LADDER);
-				g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+				g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 			}
 			Destroy();
 		}
@@ -2378,7 +2378,7 @@ BOOL CWndRRMiniGameLadder::Process()
 
 			m_pWndRRMiniGameLadderFail = new CWndRRMiniGameLadderFail;
 			if(m_pWndRRMiniGameLadderFail)
-				m_pWndRRMiniGameLadderFail->Initialize(NULL);
+				m_pWndRRMiniGameLadderFail->Initialize();
 		}
 	}
 	

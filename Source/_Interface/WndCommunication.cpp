@@ -345,7 +345,7 @@ void CWndChat::OnInitialUpdate()
 		
 		if( g_WndMng.m_pWndChatLog )
 		{
-			g_WndMng.m_pWndChatLog->Initialize( NULL );
+			g_WndMng.m_pWndChatLog->Initialize();
 			
 			CRect rectRoot = g_WndMng.GetLayoutRect();
 			CRect rect = GetWindowRect(TRUE);

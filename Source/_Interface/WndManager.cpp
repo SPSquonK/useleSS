@@ -1113,7 +1113,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 				{
 					SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
 					g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(true);
-					g_WndMng.m_pWndReSkillWarning->Initialize(NULL);
+					g_WndMng.m_pWndReSkillWarning->Initialize();
 				}
 				return;
 			}
@@ -1253,7 +1253,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 					SAFE_DELETE( g_WndMng.m_pWndEquipBindConfirm )
 						g_WndMng.m_pWndEquipBindConfirm = new CWndEquipBindConfirm( CWndEquipBindConfirm::EQUIP_DOUBLE_CLICK );
 					g_WndMng.m_pWndEquipBindConfirm->SetInformationDoubleClick(pItemBase, dwObjId );
-					g_WndMng.m_pWndEquipBindConfirm->Initialize( NULL );
+					g_WndMng.m_pWndEquipBindConfirm->Initialize();
 				}
 				else
 				{
@@ -1512,7 +1512,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 					CString strText;
 					strText.Format(prj.GetText(TID_GAME_PROPOSETO), ((CMover*)pFocus)->GetName());
 					g_WndMng.m_pWndCoupleMessage->SetMessageMod(strText, CWndCoupleMessage::CM_SENDPROPOSE, pFocus);
-					g_WndMng.m_pWndCoupleMessage->Initialize(NULL);
+					g_WndMng.m_pWndCoupleMessage->Initialize();
 				}
 			}
 			else
@@ -1850,7 +1850,7 @@ BOOL CWndMgr::Process()
 						for(int k=0; k<nGuildMemberCount; k++)
 							m_pWndSecretRoomQuick->SetGuildMember(CSecretRoomMng::GetInstance()->m_pSRCont->m_vecSecretRoomTender[nGuildIndex].vecLineUpMember[k]);
 
-						m_pWndSecretRoomQuick->Initialize(NULL);
+						m_pWndSecretRoomQuick->Initialize();
 					}
 				}
 			}

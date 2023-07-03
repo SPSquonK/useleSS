@@ -231,7 +231,7 @@ void CWndParty::OnLeave() {
 
 	if (leaver) {
 		g_WndMng.m_pWndPartyLeaveConfirm = new CWndPartyLeaveConfirm;
-		g_WndMng.m_pWndPartyLeaveConfirm->Initialize(NULL);
+		g_WndMng.m_pWndPartyLeaveConfirm->Initialize();
 		g_WndMng.m_pWndPartyLeaveConfirm->SetLeaveId(leaver.value());
 	}
 

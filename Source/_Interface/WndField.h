@@ -400,7 +400,7 @@ class CWndLogOutWaitting : public CWndNeuz
 public:
 	void	SetIsLogOut(BOOL bFlag) { m_bIsLogOut = bFlag; }
 	virtual BOOL Process ();
-	virtual BOOL Initialize( CWndBase* pWndParent );
+	virtual BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual	void OnInitialUpdate();
 };	
 

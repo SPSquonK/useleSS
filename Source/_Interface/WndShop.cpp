@@ -1487,7 +1487,7 @@ void CWndUseCouponConfirm::OnDestroy()
 				g_WndMng.CreateApplet( APP_INVENTORY );			
 				SAFE_DELETE( g_WndMng.m_pWndBeautyShop );
 				g_WndMng.m_pWndBeautyShop = new CWndBeautyShop;					
-				g_WndMng.m_pWndBeautyShop->Initialize( NULL );
+				g_WndMng.m_pWndBeautyShop->Initialize();
 				g_WndMng.m_pWndBeautyShop->UseHairCoupon(m_bUseCoupon);
 			}
 			else if(m_TargetWndId == APP_BEAUTY_SHOP_SKIN)
@@ -1495,7 +1495,7 @@ void CWndUseCouponConfirm::OnDestroy()
 				g_WndMng.CreateApplet( APP_INVENTORY );			
 				SAFE_DELETE( g_WndMng.m_pWndFaceShop );
 				g_WndMng.m_pWndFaceShop = new CWndFaceShop;										
-				g_WndMng.m_pWndFaceShop->Initialize( NULL );
+				g_WndMng.m_pWndFaceShop->Initialize();
 				g_WndMng.m_pWndFaceShop->UseFaceCoupon(m_bUseCoupon);
 			}	
 		}

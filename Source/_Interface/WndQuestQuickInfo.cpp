@@ -64,7 +64,7 @@ void CWndQITreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 				{
 					SAFE_DELETE( g_WndMng.m_pWndQuestDetail )
 					g_WndMng.m_pWndQuestDetail = new CWndQuestDetail( dwQuestID );
-					g_WndMng.m_pWndQuestDetail->Initialize( NULL );
+					g_WndMng.m_pWndQuestDetail->Initialize();
 					LPQUEST lpQuest = g_pPlayer->FindQuest( QuestId(dwQuestID) );
 					BOOL bComplete = dwQuestID != -1 && g_pPlayer->IsCompleteQuest( QuestId(dwQuestID) );
 					g_WndMng.m_pWndQuestDetail->UpdateQuestDetailText( dwQuestID, lpQuest, bComplete );

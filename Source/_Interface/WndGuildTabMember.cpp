@@ -379,7 +379,7 @@ BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBas
 						SAFE_DELETE( g_WndMng.m_pWndGuildNickName );
 						g_WndMng.m_pWndGuildNickName = new CWndGuildNickName;
 						g_WndMng.m_pWndGuildNickName->m_idPlayer = m_list[m_nSelect].idPlayer;
-						g_WndMng.m_pWndGuildNickName->Initialize( &g_WndMng );
+						g_WndMng.m_pWndGuildNickName->Initialize();
 					}
 				}
 				else

@@ -1394,7 +1394,7 @@ void CDPClient::OnAllAction( CAr & ar )
 			if( !g_WndMng.m_pWndChangeName )
 			{
 				g_WndMng.m_pWndChangeName		= new CWndChangeName;
-				g_WndMng.m_pWndChangeName->Initialize( &g_WndMng );
+				g_WndMng.m_pWndChangeName->Initialize();
 			}
 		}
 		else
@@ -1403,7 +1403,7 @@ void CDPClient::OnAllAction( CAr & ar )
 			if( !pWndGuildName )
 			{
 				pWndGuildName	= new CWndGuildName;
-				pWndGuildName->Initialize( &g_WndMng );
+				pWndGuildName->Initialize();
 			}
 			pWndGuildName->SetData( 0x7f );
 		}
@@ -1815,7 +1815,7 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 					if( NULL == g_WndMng.m_pWndRevival )		// 부활창 띄움
 					{
 						g_WndMng.m_pWndRevival	= new CWndRevival;
-						g_WndMng.m_pWndRevival->Initialize( &g_WndMng );
+						g_WndMng.m_pWndRevival->Initialize();
 
 						if( bBossDie )
 						{
@@ -2232,7 +2232,7 @@ void CDPClient::OnConfirmTrade( OBJID objid, CAr & ar ) {
 	}
 		
 	g_WndMng.m_pWndConfirmTrade = new CWndConfirmTrade;
-	g_WndMng.m_pWndConfirmTrade->Initialize( NULL );			
+	g_WndMng.m_pWndConfirmTrade->Initialize();			
 	g_WndMng.m_pWndConfirmTrade->OnSetName( pTrader->GetName(), objid );
 }
 
@@ -2448,7 +2448,7 @@ void CDPClient::OnTradeConsent() {
 void CDPClient::OnTradelastConfirm( void )
 {
 	g_WndMng.m_pWndTradeConfirm = new CWndTradeConfirm;
-	g_WndMng.m_pWndTradeConfirm->Initialize( NULL );
+	g_WndMng.m_pWndTradeConfirm->Initialize();
 
 	CWndTrade* pWndTrade	= (CWndTrade*)g_WndMng.GetApplet( APP_TRADE );
 	if( pWndTrade )
@@ -2477,7 +2477,7 @@ void CDPClient::OnOpenShopWnd( OBJID objid, CAr & ar )
 		g_pPlayer->m_vtInfo.SetOther( pVendor );
 
 		g_WndMng.CreateApplet( APP_INVENTORY );
-		g_WndMng.m_pWndShop->Initialize( NULL );
+		g_WndMng.m_pWndShop->Initialize();
 	}
 }
 
@@ -2629,7 +2629,7 @@ void CDPClient::OnBank( OBJID , CAr & ar )
 	if (nMode == Subsnapshot::Bank::ValidateBankAccess) {
 		g_WndMng.CreateApplet(APP_INVENTORY);
 		g_WndMng.m_pWndBank = new CWndBank;
-		g_WndMng.m_pWndBank->Initialize(&g_WndMng);
+		g_WndMng.m_pWndBank->Initialize();
 		return;
 	}
 
@@ -2639,21 +2639,21 @@ void CDPClient::OnBank( OBJID , CAr & ar )
 		case Subsnapshot::Bank::AskCurrentPassword:
 		case Subsnapshot::Bank::OkForNewPassword:
 			g_WndMng.m_pWndConfirmBank = new CWndConfirmBank(dwId);
-			g_WndMng.m_pWndConfirmBank->Initialize(NULL);
+			g_WndMng.m_pWndConfirmBank->Initialize();
 			break;
 		case Subsnapshot::Bank::InitialRequirePassword:
 			g_WndMng.m_pWndBankPassword = new CWndBankPassword(false, dwId);
-			g_WndMng.m_pWndBankPassword->Initialize(NULL);
+			g_WndMng.m_pWndBankPassword->Initialize();
 			break;
 		case Subsnapshot::Bank::InvalidNewPasswordQuery:
 			g_WndMng.m_pWndBankPassword = new CWndBankPassword(true, dwId);
-			g_WndMng.m_pWndBankPassword->Initialize(NULL);
+			g_WndMng.m_pWndBankPassword->Initialize();
 
 			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0028)));
 			break;
 		case Subsnapshot::Bank::InvalidCurrentPassword:
 			g_WndMng.m_pWndConfirmBank = new CWndConfirmBank(dwId);
-			g_WndMng.m_pWndConfirmBank->Initialize(NULL);
+			g_WndMng.m_pWndConfirmBank->Initialize();
 			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0028)));
 			break;
 	}
@@ -2679,7 +2679,7 @@ void CDPClient::OnGuildBankWindow( OBJID objid, CAr & ar )
 
 			g_WndMng.CreateApplet( APP_INVENTORY );
 			
-			g_WndMng.m_pWndGuildBank->Initialize(NULL);
+			g_WndMng.m_pWndGuildBank->Initialize();
 		}
 		break;
 	default:
@@ -5599,7 +5599,7 @@ void CDPClient::OnGCInWindow( CAr& ar )
 		CWndGuildCombat1to1Offer::CombatType::GCGuild
 	);
 
-	g_WndMng.m_pWndGuildCombatOffer->Initialize( NULL );				
+	g_WndMng.m_pWndGuildCombatOffer->Initialize();				
 
 	g_WndMng.m_pWndGuildCombatOffer->SetMinGold( dwMinPenya );
 		
@@ -5696,7 +5696,7 @@ void CDPClient::OnGCSelectPlayer( CAr& ar )
 			g_WndMng.m_pWndGuildCombatSelection = new CWndGuildCombatSelection;
 			if( g_WndMng.m_pWndGuildCombatSelection )
 			{
-				g_WndMng.m_pWndGuildCombatSelection->Initialize( NULL );	
+				g_WndMng.m_pWndGuildCombatSelection->Initialize();	
 				g_WndMng.m_pWndGuildCombatSelection->SetMemberSize(nMaxJoinMember, nMaxWarMember );
 			}
 			
@@ -5894,7 +5894,7 @@ void CDPClient::OnGCDiagMessage( CAr & ar )
 
 	if( g_WndMng.m_pWndGuildCombatInfoMessageBox2 )
 	{
-		g_WndMng.m_pWndGuildCombatInfoMessageBox2->Initialize(&g_WndMng);
+		g_WndMng.m_pWndGuildCombatInfoMessageBox2->Initialize();
 		g_WndMng.m_pWndGuildCombatInfoMessageBox2->SetString( strMessage );
 	}
 }
@@ -5908,7 +5908,7 @@ void CDPClient::OnGCTele( CAr & ar )
 	
 	if( g_WndMng.m_pWndGuildCombatInfoMessageBox )
 	{
-		g_WndMng.m_pWndGuildCombatInfoMessageBox->Initialize(&g_WndMng);
+		g_WndMng.m_pWndGuildCombatInfoMessageBox->Initialize();
 		g_WndMng.m_pWndGuildCombatInfoMessageBox->SetString( strMessage );
 	}
 }
@@ -7150,7 +7150,7 @@ void CDPClient::OnWantedName( CAr & ar )
 		SAFE_DELETE( g_WndMng.m_pReWanted );
 		g_WndMng.m_pReWanted = new CWndReWanted;
 		g_WndMng.m_pReWanted->SetWantedName( szName );
-		g_WndMng.m_pReWanted->Initialize( &g_WndMng );
+		g_WndMng.m_pReWanted->Initialize();
 	}
 	else
 	{
@@ -7176,7 +7176,7 @@ void CDPClient::OnWantedList(CAr & ar) {
 		g_WndMng.m_pWanted->InsertWanted(entry);
 	}
 
-	g_WndMng.m_pWanted->Initialize(&g_WndMng);
+	g_WndMng.m_pWanted->Initialize();
 }
 
 // Sender
@@ -7358,7 +7358,7 @@ void CDPClient::SendDoEquip( CItemElem* pItemElem, int nPart, BOOL bResult )
 			// 물어봐야 함
 			SAFE_DELETE( g_WndMng.m_pRemoveElem );
 			g_WndMng.m_pRemoveElem = new CWndRemoveElem;
-			g_WndMng.m_pRemoveElem->Initialize( &g_WndMng );
+			g_WndMng.m_pRemoveElem->Initialize();
 			g_WndMng.m_pRemoveElem->OnSetItem( 2, 0, 0, nPart, pItemElem );
 			return;
 		}
@@ -8256,7 +8256,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				// 물어봐야 함
 				SAFE_DELETE( g_WndMng.m_pRemoveElem );
 				g_WndMng.m_pRemoveElem = new CWndRemoveElem;
-				g_WndMng.m_pRemoveElem->Initialize( &g_WndMng );
+				g_WndMng.m_pRemoveElem->Initialize();
 				g_WndMng.m_pRemoveElem->OnSetItem( 1, dwItemId, objid, nPart, NULL );
 				return;
 			}
@@ -8312,7 +8312,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 		g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
+		g_WndMng.m_pWndCommItemDlg->Initialize();
 		g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_REGARDLESS_USE, dwId, objid );
 		return;
 	}
@@ -8321,7 +8321,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 		g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
+		g_WndMng.m_pWndCommItemDlg->Initialize();
 		g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_LV7OVER_NOTUSE, dwId, objid );
 		return;
 	}
@@ -8330,7 +8330,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 		g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
+		g_WndMng.m_pWndCommItemDlg->Initialize();
 		g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_LV10OVER_NOTUSE, dwId, objid );
 		return;
 	}
@@ -8347,7 +8347,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		{
 			g_WndMng.m_pWndUseCouponConfirm = new CWndUseCouponConfirm;
 			g_WndMng.m_pWndUseCouponConfirm->SetInfo(APP_BEAUTY_SHOP_EX, 0);
-			g_WndMng.m_pWndUseCouponConfirm->Initialize( NULL );
+			g_WndMng.m_pWndUseCouponConfirm->Initialize();
 		}
 		return;
 	}
@@ -8357,7 +8357,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		{
 			g_WndMng.m_pWndUseCouponConfirm = new CWndUseCouponConfirm;
 			g_WndMng.m_pWndUseCouponConfirm->SetInfo(APP_BEAUTY_SHOP_SKIN, 0);
-			g_WndMng.m_pWndUseCouponConfirm->Initialize( NULL );
+			g_WndMng.m_pWndUseCouponConfirm->Initialize();
 		}
 		return;
 	}
@@ -8366,7 +8366,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 		g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
+		g_WndMng.m_pWndCommItemDlg->Initialize();
 		g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_LV7OVER_NOTUSE, dwId, objid );
 		return;
 	}
@@ -8376,7 +8376,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( !g_WndMng.m_pWndChangeName )
 		{
 			g_WndMng.m_pWndChangeName		= new CWndChangeName;
-			g_WndMng.m_pWndChangeName->Initialize( &g_WndMng );
+			g_WndMng.m_pWndChangeName->Initialize();
 		}
 		g_WndMng.m_pWndChangeName->SetData( (WORD)( pItemBase->m_dwObjId ), 0 );
 		return;
@@ -8394,7 +8394,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( !pWndGuildName )
 		{
 			pWndGuildName	= new CWndGuildName;
-			pWndGuildName->Initialize( &g_WndMng );
+			pWndGuildName->Initialize();
 		}
 		pWndGuildName->SetData( (BYTE)( pItemBase->m_dwObjId ) );
 		return;
@@ -8412,7 +8412,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		SAFE_DELETE( g_WndMng.m_pFunnyCoinConfirm );
 		g_WndMng.m_pFunnyCoinConfirm = new CWndFunnyCoinConfirm;
 		g_WndMng.m_pFunnyCoinConfirm->SetInfo( dwId, pItemBase );
-		g_WndMng.m_pFunnyCoinConfirm->Initialize( &g_WndMng );
+		g_WndMng.m_pFunnyCoinConfirm->Initialize();
 		
 		return;
 	}
@@ -8457,7 +8457,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				return;
 
 			g_WndMng.m_pWndBeautyShop = new CWndBeautyShop;
-			g_WndMng.m_pWndBeautyShop->Initialize( NULL );
+			g_WndMng.m_pWndBeautyShop->Initialize();
 
 			return;
 		}
@@ -8480,19 +8480,19 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			case II_SYS_SYS_SCR_PET_TAMER_MIRACLE:
 				SAFE_DELETE( g_WndMng.m_pWndPetMiracle );
 				g_WndMng.m_pWndPetMiracle = new CWndPetMiracle;
-				g_WndMng.m_pWndPetMiracle->Initialize( &g_WndMng );
+				g_WndMng.m_pWndPetMiracle->Initialize();
 				g_WndMng.m_pWndPetMiracle->SetItem( dwId );
 				return;
 			case II_SYS_SYS_SCR_PET_TAMER_MISTAKE:
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
+				g_WndMng.m_pWndCommItemDlg->Initialize();
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_PET_MISTAKE_DESC, dwId, II_SYS_SYS_SCR_PET_TAMER_MISTAKE );
 				return;
 			case II_SYS_SYS_SCR_PET_HATCH:
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
+				g_WndMng.m_pWndCommItemDlg->Initialize();
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_PET_HATCH_DESC, dwId, objid );
 				return;	
 			case II_SYS_SYS_FEED_01:
@@ -8507,7 +8507,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				{
 					SAFE_DELETE( g_WndMng.m_pWndPetFoodMill );
 					g_WndMng.m_pWndPetFoodMill = new CWndPetFoodMill;
-					g_WndMng.m_pWndPetFoodMill->Initialize( &g_WndMng );
+					g_WndMng.m_pWndPetFoodMill->Initialize();
 					g_WndMng.m_pWndPetFoodMill->SetItem( dwId );
 				}
 				return;
@@ -8515,12 +8515,12 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				SAFE_DELETE( g_WndMng.m_pWndPetLifeConfirm );
 				g_WndMng.m_pWndPetLifeConfirm = new CWndPetLifeConfirm;
 				g_WndMng.m_pWndPetLifeConfirm->SetItem(dwId);
-				g_WndMng.m_pWndPetLifeConfirm->Initialize( &g_WndMng );				
+				g_WndMng.m_pWndPetLifeConfirm->Initialize();				
 				return;
 			case II_GEN_TOO_COL_NORMALBATTERY:
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
+				g_WndMng.m_pWndCommItemDlg->Initialize();
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_BETTERY_DESC, dwId, II_GEN_TOO_COL_NORMALBATTERY );
 				return;	
 			case II_GEN_TOO_COL_BATTERY001:
@@ -8528,7 +8528,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			case II_GEN_TOO_COL_GOLDBATTERY:
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
+				g_WndMng.m_pWndCommItemDlg->Initialize();
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_CACHE_BETTERY_DESC, dwId, pItemProp->dwID );
 				return;	
 			default:
@@ -8547,7 +8547,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			{
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
+				g_WndMng.m_pWndCommItemDlg->Initialize();
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_TICKET_DESC, dwId,  pItemProp->dwID );
 				return;
 			}
@@ -8574,7 +8574,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				*/
 				SAFE_DELETE( g_WndMng.m_pWndSelectCh );
 				g_WndMng.m_pWndSelectCh = new CWndSelectCh( dwItemId, nExpand);
-				g_WndMng.m_pWndSelectCh->Initialize(&g_WndMng);
+				g_WndMng.m_pWndSelectCh->Initialize();
 			}
 		}
 	}
@@ -8586,7 +8586,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( !pWndItemTransy )
 		{
 			pWndItemTransy	= new CWndItemTransy;
-			pWndItemTransy->Initialize( &g_WndMng );
+			pWndItemTransy->Initialize();
 			pWndItemTransy->Init( pItemBase );
 		}
 		return;
@@ -8614,7 +8614,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( !pWndSummonParty )
 		{
 			pWndSummonParty = new CWndSummonParty;
-			pWndSummonParty->Initialize( &g_WndMng );
+			pWndSummonParty->Initialize();
 		}
 		pWndSummonParty->SetData( (WORD)( pItemBase->m_dwObjId ), 0 );
 		return;
@@ -8645,7 +8645,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( !g_WndMng.m_pWndSealChar )
 		{
 			g_WndMng.m_pWndSealChar		= new CWndSealChar;
-			g_WndMng.m_pWndSealChar->Initialize( &g_WndMng );
+			g_WndMng.m_pWndSealChar->Initialize();
 		}
 		return;
 	}
@@ -8663,7 +8663,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		// 호출한다. dwData값에는 dwItemId을 넘기고, szInput은 이름 문자열을 넘긴다.
 		SAFE_DELETE( g_WndMng.m_pWndChangePetName );
 		g_WndMng.m_pWndChangePetName = new CWndChangePetName;
-		g_WndMng.m_pWndChangePetName->Initialize(&g_WndMng);
+		g_WndMng.m_pWndChangePetName->Initialize();
 		g_WndMng.m_pWndChangePetName->SetItemId(dwItemId);
 		return;
 	}
@@ -11695,7 +11695,7 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 				if( NULL == g_WndMng.m_pWndChangeName )
 				{
 					g_WndMng.m_pWndChangeName		= new CWndChangeName;
-					g_WndMng.m_pWndChangeName->Initialize( &g_WndMng );
+					g_WndMng.m_pWndChangeName->Initialize();
 				}
 				g_WndMng.m_pWndChangeName->SetData( 0xffff, 1 );
 				break;
@@ -11707,7 +11707,7 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 			if( !pWndGuildName )
 			{
 				pWndGuildName	= new CWndGuildName;
-				pWndGuildName->Initialize( &g_WndMng );
+				pWndGuildName->Initialize();
 			}
 			pWndGuildName->SetData( 0x7f );
 			break;
@@ -12801,7 +12801,7 @@ void CDPClient::OnQueryEquip(OBJID objid, CAr & ar) {
 
 	SAFE_DELETE(g_WndMng.m_pWndQueryEquip);
 	g_WndMng.m_pWndQueryEquip = new CWndQueryEquip(*pMover, std::move(aEquipInfoAdd));
-	g_WndMng.m_pWndQueryEquip->Initialize(&g_WndMng);
+	g_WndMng.m_pWndQueryEquip->Initialize();
 }
 
 void CDPClient::SendReturnScroll( int nSelect )
@@ -13005,7 +13005,7 @@ void CDPClient::OnSummonFriend( CAr & ar )
 	if( !pWndSummonFriend )
 	{
 		pWndSummonFriend	= new CWndSummonFriend;
-		pWndSummonFriend->Initialize( &g_WndMng );
+		pWndSummonFriend->Initialize();
 	}
 	pWndSummonFriend->SetData( (WORD)( pItemBase->m_dwObjId ), 0 );
 }
@@ -13025,7 +13025,7 @@ void CDPClient::OnSummonFriendConfirm( CAr & ar )
 		if( !pWndSummonFriendConfirm )
 		{
 			pWndSummonFriendConfirm	= new CWndSummonFriendMsg;
-			pWndSummonFriendConfirm->Initialize( &g_WndMng );
+			pWndSummonFriendConfirm->Initialize();
 		}
 		pWndSummonFriendConfirm->SetData( objid, dwData, szName, szWorldName );		
 	}
@@ -13044,7 +13044,7 @@ void CDPClient::OnSummonPartyConfirm( CAr & ar )
 		if( !pWndSummonPartyConfirm )
 		{
 			pWndSummonPartyConfirm = new CWndSummonPartyMsg;
-			pWndSummonPartyConfirm->Initialize( &g_WndMng );
+			pWndSummonPartyConfirm->Initialize();
 		}
 		pWndSummonPartyConfirm->SetData( objid, dwData, szWorldName );
 	}
@@ -13599,7 +13599,7 @@ void CDPClient::OnGC1to1TenderOpenWnd( CAr & ar )
 		CWndGuildCombat1to1Offer::CombatType::GC1to1
 	);
 
-	g_WndMng.m_pWndGuildCombat1to1Offer->Initialize(NULL);
+	g_WndMng.m_pWndGuildCombat1to1Offer->Initialize();
 	if( nPenya == 0 ) //한번도 입찰한 금액이 없을 경우
 	{
 		g_WndMng.m_pWndGuildCombat1to1Offer->SetReqGold( nPenya );
@@ -13630,7 +13630,7 @@ void CDPClient::OnGC1to1TenderView( CAr & ar )
 
 	if(g_WndMng.m_pWndGuildWarState)
 	{
-		g_WndMng.m_pWndGuildWarState->Initialize(NULL);
+		g_WndMng.m_pWndGuildWarState->Initialize();
 		g_WndMng.m_pWndGuildWarState->SetTime(t);
 		g_WndMng.m_pWndGuildWarState->SetRate(nRanking);
 		g_WndMng.m_pWndGuildWarState->SetGold(nPenya);
@@ -13698,7 +13698,7 @@ void CDPClient::OnGC1to1NowState( CAr & ar )
 	
 				if( g_WndMng.m_pWndGuildCombatInfoMessageBox )
 				{
-					g_WndMng.m_pWndGuildCombatInfoMessageBox->Initialize(&g_WndMng);
+					g_WndMng.m_pWndGuildCombatInfoMessageBox->Initialize();
 					CString strMsg;
 					strMsg.Format("%s", prj.GetText(TID_GAME_GUILDCOMBAT_1TO1_TELEPORT_MSG));
 					g_WndMng.m_pWndGuildCombatInfoMessageBox->SetString(strMsg);
@@ -13783,7 +13783,7 @@ void CDPClient::OnGC1to1MemberLineUpOpenWnd( CAr & ar )
 
 	SAFE_DELETE(g_WndMng.m_pWndGuildCombat1to1Selection);
 	g_WndMng.m_pWndGuildCombat1to1Selection = new CWndGuildCombat1to1Selection;
-	g_WndMng.m_pWndGuildCombat1to1Selection->Initialize( NULL );	
+	g_WndMng.m_pWndGuildCombat1to1Selection->Initialize();	
 
 	std::vector<u_long> selection;
 
@@ -14146,7 +14146,7 @@ void CDPClient::OnSecretRoomMngState( CAr & ar )
 
 				if( g_WndMng.m_pWndSecretRoomMsg )
 				{
-					g_WndMng.m_pWndSecretRoomMsg->Initialize(&g_WndMng);
+					g_WndMng.m_pWndSecretRoomMsg->Initialize();
 					CString strMsg;
 					strMsg.Format("%s", prj.GetText(TID_GAME_SECRETROOM_TELEPORT_MSG));
 					g_WndMng.m_pWndSecretRoomMsg->SetString(strMsg);
@@ -14401,7 +14401,7 @@ void CDPClient::OnSecretRoomTenderView( CAr & ar )
 
 	if(g_WndMng.m_pWndSecretRoomOfferState)
 	{
-		g_WndMng.m_pWndSecretRoomOfferState->Initialize(NULL);
+		g_WndMng.m_pWndSecretRoomOfferState->Initialize();
 		g_WndMng.m_pWndSecretRoomOfferState->SetTime(t);
 		g_WndMng.m_pWndSecretRoomOfferState->SetRate(nRanking);
 		g_WndMng.m_pWndSecretRoomOfferState->SetGold(nTenderPenya);
@@ -14446,7 +14446,7 @@ void CDPClient::OnTaxSetTaxRateOpenWnd( CAr & ar )
 	if(g_WndMng.m_pWndSecretRoomChangeTaxRate)
 	{
 		g_WndMng.m_pWndSecretRoomChangeTaxRate->SetDefaultTax(nMinTaxRate, nMaxTaxRate, nCont);
-		g_WndMng.m_pWndSecretRoomChangeTaxRate->Initialize(NULL);
+		g_WndMng.m_pWndSecretRoomChangeTaxRate->Initialize();
 	}
 }
 
@@ -14716,7 +14716,7 @@ void CDPClient::OnRainbowRacePrevRankingOpenWnd( CAr & ar )
 	if(g_WndMng.m_pWndRainbowRaceRanking)
 	{
 		g_WndMng.m_pWndRainbowRaceRanking->SetRankingPlayer(adwPlayerId);
-		g_WndMng.m_pWndRainbowRaceRanking->Initialize(NULL);
+		g_WndMng.m_pWndRainbowRaceRanking->Initialize();
 	}
 }
 
@@ -14733,7 +14733,7 @@ void CDPClient::OnRainbowRaceApplicationOpenWnd( CAr & ar )
 	if(g_WndMng.m_pWndRainbowRaceOffer)
 	{
 		g_WndMng.m_pWndRainbowRaceOffer->SetOfferCount(nNum);
-		g_WndMng.m_pWndRainbowRaceOffer->Initialize(NULL);
+		g_WndMng.m_pWndRainbowRaceOffer->Initialize();
 	}
 }
 
@@ -14767,7 +14767,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					g_WndMng.m_pWndRRMiniGameKawiBawiBo = new CWndRRMiniGameKawiBawiBo;
 
 					if(g_WndMng.m_pWndRRMiniGameKawiBawiBo)
-						g_WndMng.m_pWndRRMiniGameKawiBawiBo->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameKawiBawiBo->Initialize();
 				}
 				else 
 				{
@@ -14795,7 +14795,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					if(g_WndMng.m_pWndRRMiniGameDice)
 					{
 						g_WndMng.m_pWndRRMiniGameDice->SetTargetNumber(pMiniGamePacket->nParam1);
-						g_WndMng.m_pWndRRMiniGameDice->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameDice->Initialize();
 					}
 				}
 				else
@@ -14828,7 +14828,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 						for( int i=0; i<(int)( pPacket->vecszData.size() ); i++ )
 							strQuestion = pPacket->vecszData[i];
 						
-						g_WndMng.m_pWndRRMiniGameArithmetic->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameArithmetic->Initialize();
 						g_WndMng.m_pWndRRMiniGameArithmetic->SetNextQuestion(strQuestion.c_str(), pPacket->nParam1);
 					}
 				}
@@ -14868,7 +14868,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 					{
 						g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_ARITHMATIC);
-						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 					}
 
 					if(g_WndMng.m_pWndRRMiniGameArithmetic)
@@ -14888,7 +14888,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 
 					if(g_WndMng.m_pWndRRMiniGameStopWatch)
 					{
-						g_WndMng.m_pWndRRMiniGameStopWatch->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameStopWatch->Initialize();
 						g_WndMng.m_pWndRRMiniGameStopWatch->SetTargetTime(pPacket->nParam1);
 					}
 				}
@@ -14910,7 +14910,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 					{
 						g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_STOPWATCH);
-						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 					}
 
 					if(g_WndMng.m_pWndRRMiniGameStopWatch)
@@ -14930,7 +14930,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 
 					if(g_WndMng.m_pWndRRMiniGameTyping)
 					{
-						g_WndMng.m_pWndRRMiniGameTyping->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameTyping->Initialize();
 
 						std::string strQuestion;
 						for( int i=0; i<(int)( pPacket->vecszData.size() ); i++ )
@@ -14960,7 +14960,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 					{
 						g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_TYPING);
-						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 					}
 
 					if(g_WndMng.m_pWndRRMiniGameTyping)
@@ -14979,7 +14979,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					g_WndMng.m_pWndRRMiniGameCard = new CWndRRMiniGameCard;
 
 					if(g_WndMng.m_pWndRRMiniGameCard)
-						g_WndMng.m_pWndRRMiniGameCard->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameCard->Initialize();
 
 					std::string strQuestion = pPacket->vecszData[0];
 					g_WndMng.m_pWndRRMiniGameCard->SetQuestion(strQuestion.c_str());
@@ -15002,7 +15002,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 					{
 						g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_PAIRGAME);
-						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 					}
 
 					if(g_WndMng.m_pWndRRMiniGameCard)
@@ -15020,7 +15020,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					g_WndMng.m_pWndRRMiniGameLadder = new CWndRRMiniGameLadder;
 
 					if(g_WndMng.m_pWndRRMiniGameLadder)
-						g_WndMng.m_pWndRRMiniGameLadder->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameLadder->Initialize();
 				}
 				else if(pMiniGamePacket->nState == MP_FAIL)
 				{
@@ -15704,7 +15704,7 @@ void CDPClient::OnInviteCampusMember( CAr & ar )
 	if( g_WndMng.m_pWndCampusInvitationConfirm )
 		SAFE_DELETE( g_WndMng.m_pWndCampusInvitationConfirm );
 	g_WndMng.m_pWndCampusInvitationConfirm = new CWndCampusInvitationConfirm( idRequest, szRequest );
-	g_WndMng.m_pWndCampusInvitationConfirm->Initialize( NULL );
+	g_WndMng.m_pWndCampusInvitationConfirm->Initialize();
 }
 
 void CDPClient::OnUpdateCampus(CAr & ar) {
@@ -15766,7 +15766,7 @@ void CDPClient::OnSafeAwakening( CAr& ar )
 	if( !g_pPlayer ) return;
 	
 	g_WndMng.m_pWndSelectAwakeCase = new CWndSelectAwakeCase(byItemObjID, dwSerialNumber, n64NewRandomOption);
-	g_WndMng.m_pWndSelectAwakeCase->Initialize(&g_WndMng);
+	g_WndMng.m_pWndSelectAwakeCase->Initialize();
 }
 
 #endif //__PROTECT_AWAKE

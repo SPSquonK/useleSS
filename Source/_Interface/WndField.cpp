@@ -359,7 +359,7 @@ BOOL CWndQuestItemWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 			g_WndMng.m_pWndDropConfirm = new CWndDropConfirm;
 			g_WndMng.m_pWndDropConfirm->m_pItemElem = m_pItemElem;
 			g_WndMng.m_pWndDropConfirm->m_vPos = m_vPos;
-			g_WndMng.m_pWndDropConfirm->Initialize( NULL );
+			g_WndMng.m_pWndDropConfirm->Initialize();
 		}
 		else
 		{
@@ -367,7 +367,7 @@ BOOL CWndQuestItemWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 			g_WndMng.m_pWndDropItem = new CWndDropItem;
 			g_WndMng.m_pWndDropItem->m_pItemElem = m_pItemElem;
 			g_WndMng.m_pWndDropItem->m_vPos = m_vPos;
-			g_WndMng.m_pWndDropItem->Initialize( NULL );
+			g_WndMng.m_pWndDropItem->Initialize();
 		}
 		Destroy();
 	}
@@ -1757,7 +1757,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 						g_WndMng.m_pWndChangeAttribute = new CWndChangeAttribute;
 						g_WndMng.m_pWndChangeAttribute->SetChangeItem(pFocusItem);
-						g_WndMng.m_pWndChangeAttribute->Initialize(&g_WndMng);
+						g_WndMng.m_pWndChangeAttribute->Initialize();
 						bAble = FALSE;
 					}
 
@@ -1767,7 +1767,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						{
 							SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 							g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-							g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
+							g_WndMng.m_pWndCommItemDlg->Initialize();
 							g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_SKILLINIT, pFocusItem->m_dwObjId, dwObjId );
 						}
 						else
@@ -1792,7 +1792,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						SAFE_DELETE( g_WndMng.m_pWndRestateConfirm );
 						g_WndMng.m_pWndRestateConfirm = new CWndRestateConfirm(pFocusItem->m_dwItemId);
 						g_WndMng.m_pWndRestateConfirm->SetInformation(MAKELONG( ITYPE_ITEM, pFocusItem->m_dwObjId ), dwObjId, pFocusItem->GetProp()->dwParts);
-						g_WndMng.m_pWndRestateConfirm->Initialize(NULL);
+						g_WndMng.m_pWndRestateConfirm->Initialize();
 						bAble = FALSE;
 					}
 
@@ -1808,7 +1808,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 								{
 									SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 									g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-									g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
+									g_WndMng.m_pWndCommItemDlg->Initialize();
 									g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_DEPEN_USE, pFocusItem->m_dwObjId, dwObjId );
 								}
 								bAble = FALSE;
@@ -1819,7 +1819,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 //							{
 //								SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 //								g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-//								g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
+//								g_WndMng.m_pWndCommItemDlg->Initialize();
 //								g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_SKILLINIT, pFocusItem->m_dwObjId, dwObjId );
 //								bAble = FALSE;
 //							}
@@ -1830,7 +1830,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							} else {
 								SAFE_DELETE(g_WndMng.m_pWndCommItemDlg);
 								g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-								g_WndMng.m_pWndCommItemDlg->Initialize(&g_WndMng);
+								g_WndMng.m_pWndCommItemDlg->Initialize();
 								g_WndMng.m_pWndCommItemDlg->SetItem(TID_GAME_WARNINGCCLS, pProp->dwID, pFocusItem->m_dwObjId);
 								bAble = FALSE;
 							}
@@ -1891,7 +1891,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						SAFE_DELETE(g_WndMng.m_pWndEquipBindConfirm)
 						g_WndMng.m_pWndEquipBindConfirm = new CWndEquipBindConfirm(CWndEquipBindConfirm::EQUIP_DOUBLE_CLICK);
 						g_WndMng.m_pWndEquipBindConfirm->SetInformationDoubleClick(pFocusItem, dwObjId);
-						g_WndMng.m_pWndEquipBindConfirm->Initialize(NULL);
+						g_WndMng.m_pWndEquipBindConfirm->Initialize();
 					}
 					else
 					{
@@ -2109,7 +2109,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 					SAFE_DELETE( g_WndMng.m_pWndInvenRemoveItem );
 					g_WndMng.m_pWndInvenRemoveItem = new CWndInvenRemoveItem;
-					g_WndMng.m_pWndInvenRemoveItem->Initialize( &g_WndMng );
+					g_WndMng.m_pWndInvenRemoveItem->Initialize();
 					g_WndMng.m_pWndInvenRemoveItem->InitItem( pItemElem );
 					return TRUE;
 				}				
@@ -2139,7 +2139,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 						SAFE_DELETE(g_WndMng.m_pWndEquipBindConfirm)
 						g_WndMng.m_pWndEquipBindConfirm = new CWndEquipBindConfirm(CWndEquipBindConfirm::EQUIP_DRAG_AND_DROP);
 						g_WndMng.m_pWndEquipBindConfirm->SetInformationDragAndDrop(pItemElem);
-						g_WndMng.m_pWndEquipBindConfirm->Initialize(NULL);
+						g_WndMng.m_pWndEquipBindConfirm->Initialize();
 					}
 					else
 					{
@@ -2229,7 +2229,7 @@ CWndTradeGold * CWndTradeGold::CreateGeneric(
 	}
 
 	g_WndMng.m_pWndTradeGold = new CWndTradeGold();
-	g_WndMng.m_pWndTradeGold->Initialize(&g_WndMng);
+	g_WndMng.m_pWndTradeGold->Initialize();
 
 	g_WndMng.m_pWndTradeGold->SetInitialValue(initialQuantity);
 	g_WndMng.m_pWndTradeGold->m_source = source;
@@ -4237,7 +4237,7 @@ BOOL CWndLogOut::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					if( g_WndMng.m_pLogOutWaitting == NULL )
 					{
 						g_WndMng.m_pLogOutWaitting = new CWndLogOutWaitting;
-						g_WndMng.m_pLogOutWaitting->Initialize( NULL );
+						g_WndMng.m_pLogOutWaitting->Initialize();
 						g_WndMng.m_pLogOutWaitting->SetIsLogOut(TRUE);
 						SetVisible(FALSE);
 					}
@@ -4372,7 +4372,7 @@ BOOL CWndQuit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						g_WndMng.m_pLogOutWaitting = new CWndLogOutWaitting;
 #ifdef __FIX_WND_1109
-						g_WndMng.m_pLogOutWaitting->Initialize( NULL );	// ˬ
+						g_WndMng.m_pLogOutWaitting->Initialize();	// ˬ
 #else	// __FIX_WND_1109
 						g_WndMng.m_pLogOutWaitting->Initialize( this );	// ˬ
 #endif	// __FIX_WND_1109
@@ -10289,7 +10289,7 @@ BOOL CWndCoupleTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 					CString strText;
 					strText.Format(prj.GetText(TID_GAME_COUPLECANCEL), pData->szPlayer);
 					g_WndMng.m_pWndCoupleMessage->SetMessageMod(strText, CWndCoupleMessage::CM_CANCELCOUPLE);
-					g_WndMng.m_pWndCoupleMessage->Initialize(NULL);
+					g_WndMng.m_pWndCoupleMessage->Initialize();
 				}
 			}
 		}

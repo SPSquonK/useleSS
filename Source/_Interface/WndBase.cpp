@@ -1601,7 +1601,7 @@ CWndBase* CWndBase::GetWndBase()
 				{
 					SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
 					g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(true);
-					g_WndMng.m_pWndReSkillWarning->Initialize(NULL);
+					g_WndMng.m_pWndReSkillWarning->Initialize();
 				}
 				return NULL;
 			}

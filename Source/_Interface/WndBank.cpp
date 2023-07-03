@@ -287,7 +287,7 @@ BOOL CWndConfirmBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		}
 	} else if( nID == WIDC_CHANGE_PASS ) {
 		g_WndMng.m_pWndBankPassword = new CWndBankPassword(true, m_dwId);
-		g_WndMng.m_pWndBankPassword->Initialize( NULL );	
+		g_WndMng.m_pWndBankPassword->Initialize();	
 
 		Destroy();
 	} else if( nID == WIDC_CANCEL ) {

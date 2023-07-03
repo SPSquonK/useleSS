@@ -1520,7 +1520,7 @@ BOOL CWndPetFoodMill::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			
 			m_pWndFoodConfrim = new CWndFoodConfirm(2);
 			m_pWndFoodConfrim->m_pItemElem = pTempElem;
-			m_pWndFoodConfrim->Initialize(NULL);
+			m_pWndFoodConfrim->Initialize();
 		}
 	}
 

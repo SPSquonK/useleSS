@@ -152,7 +152,7 @@ BOOL CWndGHMainMenu::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			if( !g_WndMng.m_pWndUpkeep )
 			{
 				g_WndMng.m_pWndUpkeep = new CWndGHUpkeep;
-				g_WndMng.m_pWndUpkeep->Initialize(&g_WndMng);
+				g_WndMng.m_pWndUpkeep->Initialize();
 				
 			}else
 			{

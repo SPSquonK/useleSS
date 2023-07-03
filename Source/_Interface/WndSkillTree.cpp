@@ -1340,7 +1340,7 @@ BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) 
 					if (m_nCurrSkillPoint != g_pPlayer->m_nSkillPoint) {
 						SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
 						g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(false);
-						g_WndMng.m_pWndReSkillWarning->Initialize(NULL);
+						g_WndMng.m_pWndReSkillWarning->Initialize();
 					}
 				}
 				break;
@@ -1354,7 +1354,7 @@ BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) 
 			if (pWndBase == NULL) {
 				SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
 				g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(true);
-				g_WndMng.m_pWndReSkillWarning->Initialize(NULL);
+				g_WndMng.m_pWndReSkillWarning->Initialize();
 			}
 			return TRUE;
 		}

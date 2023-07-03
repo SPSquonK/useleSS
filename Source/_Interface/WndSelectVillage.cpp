@@ -31,7 +31,7 @@ BOOL CReturnScrollMsgBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 		{
 			SAFE_DELETE( g_WndMng.m_pWndSelectVillage );
 			g_WndMng.m_pWndSelectVillage = new CWndSelectVillage;
-			g_WndMng.m_pWndSelectVillage->Initialize( &g_WndMng );
+			g_WndMng.m_pWndSelectVillage->Initialize();
 			Destroy();
 		}
 		break;

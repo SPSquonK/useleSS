@@ -983,7 +983,7 @@ BOOL CWndCampus::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 						SAFE_DELETE( g_WndMng.m_pWndCampusSeveranceConfirm );
 					g_WndMng.m_pWndCampusSeveranceConfirm = new CWndCampusSeveranceConfirm( static_cast< u_long >( pstDisciplePlayer->m_dwPlayerId ), 
 																							pstDisciplePlayer->m_szName );
-					g_WndMng.m_pWndCampusSeveranceConfirm->Initialize( NULL );
+					g_WndMng.m_pWndCampusSeveranceConfirm->Initialize();
 				}
 			}
 			else if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) )
@@ -994,7 +994,7 @@ BOOL CWndCampus::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 						SAFE_DELETE( g_WndMng.m_pWndCampusSeveranceConfirm );
 					g_WndMng.m_pWndCampusSeveranceConfirm = new CWndCampusSeveranceConfirm( static_cast< u_long >( m_MasterPlayer.m_dwPlayerId ), 
 																							m_MasterPlayer.m_szName );
-					g_WndMng.m_pWndCampusSeveranceConfirm->Initialize( NULL );
+					g_WndMng.m_pWndCampusSeveranceConfirm->Initialize();
 				}
 			}
 			break;

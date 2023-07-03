@@ -350,7 +350,7 @@ BOOL CWndQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							SAFE_DELETE( g_WndMng.m_pWndQuestDetail )
 								g_WndMng.m_pWndQuestDetail = new CWndQuestDetail( nQuestID );
 							CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
-							pWndQuestDetail->Initialize( NULL );
+							pWndQuestDetail->Initialize();
 							if( pWndQuestDetail )
 								pWndQuestDetail->UpdateQuestText( TRUE );
 							CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
