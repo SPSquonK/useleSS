@@ -8,7 +8,7 @@
 
 void InitWebGlobalVar();
 
-class CWndWebBox : public CWndNeuz 
+class CWndWebBox final : public CWndNeuz 
 { 
 public: 
 	CRect    m_rectOldBackup;
@@ -16,7 +16,7 @@ public:
 	CWndWebBox(); 
 	~CWndWebBox(); 
 	
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -29,7 +29,7 @@ public:
 //	virtual void OnDestroy( void );
 };
 
-class CWndWebBox2 : public CWndNeuz 
+class CWndWebBox2 final : public CWndNeuz 
 { 
 public: 
 	CRect    m_rectOldBackup;
@@ -37,7 +37,7 @@ public:
 	CWndWebBox2(); 
 	~CWndWebBox2(); 
 	
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

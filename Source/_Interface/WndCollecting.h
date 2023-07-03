@@ -1,10 +1,9 @@
 #pragma once
 
-class CCollectingWnd : public CWndNeuz 
+class CCollectingWnd final : public CWndNeuz
 { 
 public: 
 	CCollectingWnd(); 
-	~CCollectingWnd() override = default;
 
 	bool		m_bIsCollecting;
 	
@@ -20,7 +19,7 @@ public:
 	virtual HRESULT RestoreDeviceObjects();
 	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual void OnDestroy();

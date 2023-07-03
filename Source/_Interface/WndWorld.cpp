@@ -4808,8 +4808,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if(g_WndMng.m_pWndSmeltSafety != NULL)
 					SAFE_DELETE(g_WndMng.m_pWndSmeltSafety);
 				g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_NORMAL);
-				if(g_WndMng.m_pWndSmeltSafety != NULL)
-					g_WndMng.m_pWndSmeltSafety->Initialize();
+				g_WndMng.m_pWndSmeltSafety->Initialize();
 				break;
 			}
 		case MMI_SMELT_SAFETY_ACCESSORY:
@@ -4823,8 +4822,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if(g_WndMng.m_pWndSmeltSafety != NULL)
 					SAFE_DELETE(g_WndMng.m_pWndSmeltSafety);
 				g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_ACCESSARY);
-				if(g_WndMng.m_pWndSmeltSafety != NULL)
-					g_WndMng.m_pWndSmeltSafety->Initialize();
+				g_WndMng.m_pWndSmeltSafety->Initialize();
 				break;
 			}
 		case MMI_SMELT_SAFETY_PIERCING:
@@ -4838,8 +4836,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if(g_WndMng.m_pWndSmeltSafety != NULL)
 					SAFE_DELETE(g_WndMng.m_pWndSmeltSafety);
 				g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_PIERCING);
-				if(g_WndMng.m_pWndSmeltSafety != NULL)
-					g_WndMng.m_pWndSmeltSafety->Initialize();
+				g_WndMng.m_pWndSmeltSafety->Initialize();
 				break;
 			}
 		case MMI_SMELT_SAFETY_ELEMENT:
@@ -4852,8 +4849,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if( g_WndMng.m_pWndSmeltSafety )
 					SAFE_DELETE( g_WndMng.m_pWndSmeltSafety );
 				g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety( CWndSmeltSafety::WND_ELEMENT );
-				if( g_WndMng.m_pWndSmeltSafety )
-					g_WndMng.m_pWndSmeltSafety->Initialize();
+				g_WndMng.m_pWndSmeltSafety->Initialize();
 				break;
 			}
 #ifdef __QUIZ

@@ -15,14 +15,14 @@ public:
 	void PaintTree(C2DRender * p2DRender, CPoint & pt, TreeElems & ptrArray) override;
 };
 //-----------------------------------------------------------------------------
-class CWndQuestQuickInfo : public CWndNeuz
+class CWndQuestQuickInfo final : public CWndNeuz
 {
 public:
 	CWndQuestQuickInfo( void );
 	virtual ~CWndQuestQuickInfo( void );
 
 public:
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual	void OnInitialUpdate( void );
 	virtual BOOL Process( void );
 	virtual	void PaintFrame( C2DRender* p2DRender );

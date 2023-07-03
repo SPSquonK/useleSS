@@ -206,7 +206,7 @@ namespace TimeSpanToString {
 	[[nodiscard]] CString DHMmSs(CTimeSpan timeSpan);
 }
 
-class CWndWorld : public CWndNeuz
+class CWndWorld final : public CWndNeuz
 {
 	BOOL m_bBGM;
 	FLOAT m_fHigh;
@@ -450,7 +450,7 @@ public:
 
 	virtual void OnDraw(C2DRender* p2DRender); 
 	virtual	void OnInitialUpdate();
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	// message
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	void OnSetCursor() override;

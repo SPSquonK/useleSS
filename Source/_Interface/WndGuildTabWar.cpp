@@ -101,10 +101,6 @@ void CWndGuildTabWar::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildTabWar::Initialize(CWndBase * pWndParent) {
-	return CWndNeuz::InitDialog(APP_GUILD_TABGUILDWAR, pWndParent, 0, CPoint(0, 0));
-}
-
 BOOL CWndGuildTabWar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	CGuild* pGuild = g_pPlayer->GetGuild();

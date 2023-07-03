@@ -4,16 +4,16 @@
 // Secret Room 
 //////////////////////////////////////////////////////////////////////////
 
-class CWndSecretRoomSelection : public CWndNeuz {
+class CWndSecretRoomSelection final : public CWndNeuz {
 public: 
-	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	BOOL	OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void	OnInitialUpdate() override;
 
 	void ResetLineup(std::span<const u_long> lineup = {});
 }; 
 
-class CWndSecretRoomOffer : public CWndNeuz
+class CWndSecretRoomOffer final : public CWndNeuz
 {
 protected:
 	DWORD			m_dwReqGold;
@@ -24,7 +24,7 @@ public:
 	CWndSecretRoomOffer();
 	virtual ~CWndSecretRoomOffer();
 	
-	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
@@ -39,7 +39,7 @@ public:
 	void			EnableAccept( BOOL bFlag );	
 }; 
 
-class CWndSecretRoomOfferState : public CWndNeuz 
+class CWndSecretRoomOfferState final : public CWndNeuz
 { 
 private: 
 	CTimeSpan		m_ct;
@@ -54,7 +54,7 @@ public:
 	int          GetSelectIndex( const CPoint& point );	
 	void		 Init( time_t lTime );
 	void		 InsertGuild( const char szGuild[], const char szName[], int nNum );	
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -71,13 +71,13 @@ public:
 	void	 	 SetTime( time_t tTime ) { m_tCurrentTime = 0; m_tEndTime = time_null() + tTime; }
 };
 
-class CWndSecretRoomBoard : public CWndNeuz
+class CWndSecretRoomBoard final : public CWndNeuz
 {
 public: 
 	CWndSecretRoomBoard();
 	virtual ~CWndSecretRoomBoard();
 	
-	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
@@ -90,7 +90,7 @@ public:
 
 #define MAX_SECRETROOM_MEMBER 11
 
-class CWndSecretRoomQuick : public CWndNeuz 
+class CWndSecretRoomQuick final : public CWndNeuz
 { 
 public:
 	std::array<int, MAX_SECRETROOM_MEMBER> m_StaticID;
@@ -110,7 +110,7 @@ public:
 	CWndSecretRoomQuick(); 
 	~CWndSecretRoomQuick(); 
 	
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -125,7 +125,7 @@ public:
 	void SortMemberList();
 };
 
-class CWndSecretRoomChangeTaxRate : public CWndNeuz 
+class CWndSecretRoomChangeTaxRate final : public CWndNeuz
 {
 public:
 	int m_nDefaultSalesTax;
@@ -141,7 +141,7 @@ public:
 	CWndSecretRoomChangeTaxRate();
 	virtual ~CWndSecretRoomChangeTaxRate(); 
 	
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate();
@@ -149,7 +149,7 @@ public:
 	void SetDefaultTax(int nMinTax, int nMaxTax, BYTE nCont);
 }; 
 
-class CWndSecretRoomCheckTaxRate : public CWndNeuz 
+class CWndSecretRoomCheckTaxRate final : public CWndNeuz
 { 
 public:
 	int m_nSalesTax;
@@ -160,7 +160,7 @@ public:
 	CWndSecretRoomCheckTaxRate();
 	virtual ~CWndSecretRoomCheckTaxRate(); 
 	
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate();
@@ -170,7 +170,7 @@ public:
 // Message Box Class
 //////////////////////////////////////////////////////////////////////////
 
-class CWndSecretRoomSelectionResetConfirm : public CWndMessageBox
+class CWndSecretRoomSelectionResetConfirm : public CWndCustomMessageBox
 { 
 public: 
 	CString m_strMsg;
@@ -179,7 +179,7 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-class CWndSecretRoomOfferMessageBox : public CWndMessageBox
+class CWndSecretRoomOfferMessageBox : public CWndCustomMessageBox
 { 
 public: 
 	DWORD m_nCost;
@@ -188,7 +188,7 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-class CWndSecretRoomInfoMsgBox : public CWndNeuz
+class CWndSecretRoomInfoMsgBox final : public CWndNeuz
 {
 public:
 	CWndSecretRoomInfoMsgBox();
@@ -196,11 +196,11 @@ public:
 	virtual ~CWndSecretRoomInfoMsgBox();
 	void	SetString( const CHAR* szChar );
 	virtual	void OnInitialUpdate();
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 };
 
-class CWndSecretRoomChangeTaxRateMsgBox : public CWndMessageBox
+class CWndSecretRoomChangeTaxRateMsgBox : public CWndCustomMessageBox
 { 
 public: 
 	int m_nSalesTax;
@@ -219,7 +219,7 @@ public:
 	CWndSecretRoomCancelConfirm();
 	virtual ~CWndSecretRoomCancelConfirm();
 	
-	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();

@@ -229,7 +229,7 @@ BOOL CWndGuildCombat1to1Offer::OnChildNotify( UINT message, UINT nID, LRESULT* p
 
 		CWndGuildCombat1to1OfferMessageBox* pMsg = new CWndGuildCombat1to1OfferMessageBox;
 
-		g_WndMng.OpenCustomBox( "", pMsg, this );
+		g_WndMng.OpenCustomBox( "", pMsg );
 		CString str;
 
 		if( m_dwReqGold == 0 )

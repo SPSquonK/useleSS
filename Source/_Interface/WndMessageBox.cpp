@@ -138,10 +138,6 @@ BOOL CWndMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
 
-BOOL CWndMessageBox::Initialize( CWndBase* pWndParent )
-{
-	return TRUE;
-}
 BOOL CWndMessageBox::Initialize( LPCTSTR lpszMessage, CWndBase* pWndParent, DWORD nType )
 {
 	if( g_WndMng.m_pWndWorld && g_WndMng.m_pWndWorld->GetMouseMode() == 1 )	// FPS모드일때
@@ -161,12 +157,10 @@ BOOL CWndMessageBox::Create( LPCTSTR lpszMessage, UINT nType, const RECT& rect, 
 }
 
 void CWndMessageBox::OnEnter(const UINT nChar) {
-	constexpr auto IsDisable = [](CWndMessageBox & self) {
-		const CWndButton * const pWndButton = self.GetDlgItem<CWndButton>(IDOK);
-		return pWndButton && pWndButton->IsWindowEnabled();
-	};
+	const CWndButton * const pWndButton = GetDlgItem<CWndButton>(IDOK);
+	const bool IsDisable = pWndButton && pWndButton->IsWindowEnabled();
 
-	if (IsDisable(*this)) {
+	if (IsDisable) {
 		Destroy();
 	}
 }
@@ -210,10 +204,7 @@ BOOL CWndMessageBoxUpper::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
-BOOL CWndMessageBoxUpper::Initialize( CWndBase* pWndParent )
-{
-	return TRUE;
-}
+
 BOOL CWndMessageBoxUpper::Initialize( LPCTSTR lpszMessage, CWndBase* pWndParent, DWORD nType, BOOL bPostLogoutMsg )
 {
 	m_bPostLogoutMsg = bPostLogoutMsg;

@@ -690,13 +690,10 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 
 					g_WndMng.m_pWndSmeltSafetyConfirm = new CWndSmeltSafetyConfirm(CWndSmeltSafetyConfirm::WND_ERROR1);
 
-					if(g_WndMng.m_pWndSmeltSafetyConfirm)
-					{
-						CWndBase::m_GlobalShortcut.Empty();
-						m_bDrag = FALSE;
-						g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
-						g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
-					}
+					CWndBase::m_GlobalShortcut.Empty();
+					m_bDrag = FALSE;
+					g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
+					g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
 				}
 				else if(!g_pPlayer->HasBuff(BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT3) && pWndInventory->m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_ORICHALCUM02 &&
 						m_pFocusItem->GetProp()->dwReferStat1 == WEAPON_ULTIMATE)
@@ -706,13 +703,10 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 
 					g_WndMng.m_pWndSmeltSafetyConfirm = new CWndSmeltSafetyConfirm(CWndSmeltSafetyConfirm::WND_ERROR2);
 
-					if(g_WndMng.m_pWndSmeltSafetyConfirm)
-					{
-						CWndBase::m_GlobalShortcut.Empty();
-						m_bDrag = FALSE;
-						g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
-						g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
-					}
+					CWndBase::m_GlobalShortcut.Empty();
+					m_bDrag = FALSE;
+					g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
+					g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
 				}
 				else if(!g_pPlayer->HasBuff(BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT4) && m_pFocusItem->GetAbilityOption() >= 3 && 
 						(pWndInventory->m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_MOONSTONE || pWndInventory->m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_MOONSTONE_1) &&
@@ -723,13 +717,10 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 
 					g_WndMng.m_pWndSmeltSafetyConfirm = new CWndSmeltSafetyConfirm(CWndSmeltSafetyConfirm::WND_ERROR3);
 
-					if(g_WndMng.m_pWndSmeltSafetyConfirm)
-					{
-						CWndBase::m_GlobalShortcut.Empty();
-						m_bDrag = FALSE;
-						g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
-						g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
-					}
+					CWndBase::m_GlobalShortcut.Empty();
+					m_bDrag = FALSE;
+					g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
+					g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
 				}
 				else if( g_pPlayer->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT ) == FALSE && 
 						 m_pFocusItem->GetResistAbilityOption() >= 3 && 
@@ -740,13 +731,11 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 						SAFE_DELETE( g_WndMng.m_pWndSmeltSafetyConfirm )
 
 					g_WndMng.m_pWndSmeltSafetyConfirm = new CWndSmeltSafetyConfirm( CWndSmeltSafetyConfirm::WND_ERROR1 );
-					if( g_WndMng.m_pWndSmeltSafetyConfirm )
-					{
-						CWndBase::m_GlobalShortcut.Empty();
-						m_bDrag = FALSE;
-						g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode( m_pFocusItem );
-						g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
-					}
+
+					CWndBase::m_GlobalShortcut.Empty();
+					m_bDrag = FALSE;
+					g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode( m_pFocusItem );
+					g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
 				}
 				else
 					pWndInventory->RunUpgrade(m_pFocusItem);

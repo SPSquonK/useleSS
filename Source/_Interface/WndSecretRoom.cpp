@@ -234,9 +234,7 @@ BOOL CWndSecretRoomOffer::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 		{
 			CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
 			
-			DWORD nCost;
-			CString str = pWndEdit->GetString();
-			nCost = atoi( str );
+			const DWORD nCost = atoi(pWndEdit->GetString());
 
 			if( m_dwReqGold != 0 )
 			{
@@ -257,22 +255,21 @@ BOOL CWndSecretRoomOffer::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 			}
 
 			CWndSecretRoomOfferMessageBox* pMsg = new CWndSecretRoomOfferMessageBox;
-			if( pMsg )
+
+			g_WndMng.OpenCustomBox( "", pMsg );
+
+			CString str;
+			if( m_dwReqGold == 0 )
 			{
-				g_WndMng.OpenCustomBox( "", pMsg, this );
-				CString str;
-
-				if( m_dwReqGold == 0 )
-				{
-					str.Format( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_REQUEST), 0, nCost ); //기존에 신청된 %d페냐에서 추가로 %d페냐를 신청하겠습니까?
-				}
-				else
-				{
-					str.Format( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_REQUEST), m_dwBackupGold, nCost-m_dwBackupGold ); //기존에 신청된 %d페냐에서 추가로 %d페냐를 신청하겠습니까?
-				}
-
-				pMsg->SetValue( str, nCost );
+				str.Format( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_REQUEST), 0, nCost ); //기존에 신청된 %d페냐에서 추가로 %d페냐를 신청하겠습니까?
 			}
+			else
+			{
+				str.Format( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_REQUEST), m_dwBackupGold, nCost-m_dwBackupGold ); //기존에 신청된 %d페냐에서 추가로 %d페냐를 신청하겠습니까?
+			}
+
+			pMsg->SetValue( str, nCost );
+			
 		}
 	}
 	else if( nID == WIDC_CLOSE )
@@ -375,13 +372,11 @@ BOOL CWndSecretRoomChangeTaxRate::OnChildNotify( UINT message, UINT nID, LRESULT
 		case WIDC_OK:
 			{
 				CWndSecretRoomChangeTaxRateMsgBox* pMsg = new CWndSecretRoomChangeTaxRateMsgBox;
-				if( pMsg )
-				{
-					CString strMsg;
-					g_WndMng.OpenCustomBox( "", pMsg, this );
-					strMsg.Format( prj.GetText(TID_GAME_SECRETROOM_CHANGETEX), m_nChangeSalesTax, m_nChangePurchaseTax );
-					pMsg->SetValue( strMsg,	m_nChangeSalesTax, m_nChangePurchaseTax, m_nCont );
-				}
+				CString strMsg;
+				g_WndMng.OpenCustomBox( "", pMsg );
+				strMsg.Format( prj.GetText(TID_GAME_SECRETROOM_CHANGETEX), m_nChangeSalesTax, m_nChangePurchaseTax );
+				pMsg->SetValue( strMsg,	m_nChangeSalesTax, m_nChangePurchaseTax, m_nCont );
+				
 			}
 			break;
 	}

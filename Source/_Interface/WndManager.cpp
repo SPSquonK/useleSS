@@ -854,37 +854,34 @@ void CWndMgr::CloseMessageBox()
 	SAFE_DELETE( m_pWndMessageBox );
 	SAFE_DELETE( m_pWndMessageBoxUpper );
 }
-BOOL CWndMgr::OpenCustomBox( LPCTSTR lpszMessage, CWndMessageBox* pWndMessageBox, CWndBase* pWndParent ) 
+BOOL CWndMgr::OpenCustomBox( LPCTSTR lpszMessage, CWndCustomMessageBox * pWndMessageBox )
 { 
 	SAFE_DELETE( m_pWndMessageBox );
 	m_pWndMessageBox = pWndMessageBox;
-	pWndParent = this;
 
-	if(pWndMessageBox->Initialize( pWndParent ) == FALSE)
+	if(pWndMessageBox->Initialize( this ) == FALSE)
 	{
 		SAFE_DELETE( m_pWndMessageBox );
 		return TRUE; 
 	}
 	return FALSE;
 }
-BOOL CWndMgr::OpenMessageBox( LPCTSTR lpszMessage, UINT nType, CWndBase* pWndParent ) 
+BOOL CWndMgr::OpenMessageBox( LPCTSTR lpszMessage, UINT nType ) 
 { 
 	SAFE_DELETE( m_pWndMessageBox );
 	m_pWndMessageBox = new CWndMessageBox;
-	pWndParent = this;
-	if( m_pWndMessageBox->Initialize( lpszMessage, pWndParent, nType ) == FALSE) 
+	if( m_pWndMessageBox->Initialize( lpszMessage, this, nType ) == FALSE) 
 	{
 		SAFE_DELETE( m_pWndMessageBox );
 		return TRUE; 
 	}
 	return FALSE;
 }
-BOOL CWndMgr::OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTitle, UINT nType, CWndBase* pWndParent )
+BOOL CWndMgr::OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTitle, UINT nType )
 {
 	SAFE_DELETE( m_pWndMessageBox );
 	m_pWndMessageBox = new CWndMessageBox;
-	pWndParent = this;
-	if( m_pWndMessageBox->Initialize( lpszMessage, pWndParent, nType ) == FALSE)
+	if( m_pWndMessageBox->Initialize( lpszMessage, this, nType ) == FALSE)
 	{
 		SAFE_DELETE( m_pWndMessageBox );
 		return TRUE;
@@ -895,11 +892,10 @@ BOOL CWndMgr::OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTi
 
 BOOL CWndMgr::OpenMessageBoxUpper( LPCTSTR lpszMessage, UINT nType, BOOL bPostLogoutMsg ) 
 { 
-	CWndBase* pWndParent = NULL;
 	SAFE_DELETE( m_pWndMessageBoxUpper );
 	m_pWndMessageBoxUpper = new CWndMessageBoxUpper;
-	pWndParent = this;
-	if( m_pWndMessageBoxUpper->Initialize( lpszMessage, pWndParent, nType, bPostLogoutMsg ) == FALSE) 
+
+	if( m_pWndMessageBoxUpper->Initialize( lpszMessage, this, nType, bPostLogoutMsg ) == FALSE)
 	{
 		SAFE_DELETE( m_pWndMessageBoxUpper );
 		return TRUE; 
@@ -1068,12 +1064,7 @@ CWndBase* CWndMgr::CreateApplet(const DWORD dwIdApplet) {
 	}
 
 	pWndBase = (*pAppletFunc->m_pFunc)();
-	if (!pWndBase) return pWndBase;
-
-	if (!pWndBase->Initialize(this)) {
-		SAFE_DELETE(pWndBase);
-		return pWndBase;
-	}
+	if (!pWndBase) return nullptr;
 
 	const auto itWndRegInfo = m_mapWndRegInfo.find(dwIdApplet);
 

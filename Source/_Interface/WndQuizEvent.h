@@ -11,13 +11,13 @@
 
 #ifdef __QUIZ
 
-class CWndQuizEventConfirm : public CWndNeuz
+class CWndQuizEventConfirm final : public CWndNeuz
 {
 public:
 	CWndQuizEventConfirm( BOOL bEnter );
 	virtual ~CWndQuizEventConfirm();
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual	void OnInitialUpdate();
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void OnDraw( C2DRender* p2DRender );
@@ -27,13 +27,13 @@ private:
 	BOOL m_bEnter;
 };
 
-class CWndQuizEventQuestionOX : public CWndNeuz
+class CWndQuizEventQuestionOX final : public CWndNeuz
 {
 public:
 	CWndQuizEventQuestionOX();
 	virtual ~CWndQuizEventQuestionOX();
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual	void OnInitialUpdate();
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void OnDraw( C2DRender* p2DRender );
@@ -44,13 +44,13 @@ private:
 	CTexture m_texChar;
 };
 
-class CWndQuizEventQuestion4C : public CWndNeuz
+class CWndQuizEventQuestion4C final : public CWndNeuz
 {
 public:
 	CWndQuizEventQuestion4C();
 	virtual ~CWndQuizEventQuestion4C();
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual	void OnInitialUpdate();
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void OnDraw( C2DRender* p2DRender );
@@ -61,13 +61,13 @@ private:
 	CTexture m_texChar;
 };
 
-class CWndQuizEventButton : public CWndNeuz 
+class CWndQuizEventButton final : public CWndNeuz
 {
 public:
 	CWndQuizEventButton();
 	virtual ~CWndQuizEventButton();
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual	void OnInitialUpdate();
 	virtual void PaintFrame( C2DRender* p2DRender );
 	virtual void OnDraw( C2DRender* p2DRender );

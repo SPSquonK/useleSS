@@ -676,9 +676,9 @@ public:
 	CWndInstantMsg* OpenInstantMsg( LPCTSTR lpszFrom );
 
 	// MessageBox
-	BOOL	OpenCustomBox( LPCTSTR strMessage, CWndMessageBox* pWndMessageBox, CWndBase* pWndParent = NULL );
-	BOOL	OpenMessageBox( LPCTSTR strMessage, UINT nType = MB_OK, CWndBase* pWndParent = NULL );
-	BOOL	OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTitle, UINT nType = MB_OK, CWndBase* pWndParent = NULL );
+	BOOL	OpenCustomBox( LPCTSTR strMessage, CWndCustomMessageBox * pWndMessageBox );
+	BOOL	OpenMessageBox( LPCTSTR strMessage, UINT nType = MB_OK );
+	BOOL	OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTitle, UINT nType = MB_OK );
 	BOOL    OpenMessageBoxUpper( LPCTSTR lpszMessage, UINT nType = MB_OK, BOOL bPostLogoutMsg = FALSE );
 		
 	void	CloseMessageBox();

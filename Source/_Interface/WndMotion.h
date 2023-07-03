@@ -36,12 +36,12 @@ public:
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 };
 
-class CWndMotion : public CWndNeuz 
+class CWndMotion final : public CWndNeuz
 { 
 public: 
 	CWndMotion1		m_wndMotion1;
 	CWndEmoticon    m_wndEmoticon;
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	void OnInitialUpdate() override;
 }; 

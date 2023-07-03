@@ -334,10 +334,6 @@ void CWndGuildTabInfo::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndGuildTabInfo::Initialize(CWndBase * pWndParent) {
-	return CWndNeuz::InitDialog(APP_GUILD_TABINFO, pWndParent, 0, CPoint(0, 0));
-}
-
 BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	CGuild* pGuild = g_pPlayer->GetGuild();
@@ -364,7 +360,7 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 				pWndGuildName->SetData();
 			}
 			else
-			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDNOTCHGNAME ), MB_OK, this );
+			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDNOTCHGNAME ), MB_OK );
 			
 		}
 		break;
@@ -379,18 +375,18 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 			if( g_pPlayer->m_idWar != WarIdNone )
 			{
 				// ÀüÀïÁß¿£ ·Î°í ¸ø¹Ù²Þ´Ù.
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDWARERRORLOGO), MB_OK, this );
+				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDWARERRORLOGO), MB_OK );
 				return FALSE;
 			}
 			if constexpr (!useless_params::CanChangeLogo) {
 				if (pGuild->m_dwLogo) {
-					g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDSTILLLOGO), MB_OK, this);
+					g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDSTILLLOGO), MB_OK );
 					return FALSE;
 				}
 			}
 			if( pGuild->m_nLevel < 2 )
 			{
-				g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDNOTLEVEL ), MB_OK, this );
+				g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDNOTLEVEL ), MB_OK );
 				return FALSE;
 			}
 
@@ -407,7 +403,7 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 			if( g_pPlayer->m_idWar != WarIdNone)
 			{
 				// ÀüÀïÁß¿£ ±æµå ¸ø»Ç°¸´Ï´Ù.
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDWARERRORDISBAND), MB_OK, this );
+				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDWARERRORDISBAND), MB_OK );
 				return FALSE;
 			} else
 
@@ -416,7 +412,7 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 				QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( QUEST_WARMON_LV1 );
 				if( pQuestProp )
 				{
-					g_WndMng.OpenMessageBox(prj.GetText( TID_GUILD_QUEST_LEAVEERROR ), MB_OK, this );
+					g_WndMng.OpenMessageBox(prj.GetText( TID_GUILD_QUEST_LEAVEERROR ), MB_OK );
 				}
 				return FALSE;
 			} 

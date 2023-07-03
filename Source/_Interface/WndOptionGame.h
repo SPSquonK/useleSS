@@ -1,13 +1,12 @@
 #ifndef __WNDOPTIONGAME__H
 #define __WNDOPTIONGAME__H
 
-class CWndOptionGame : public CWndNeuz 
+class CWndOptionGame final : public CWndNeuz
 { 
 public: 
 	CWndOptionGame(); 
 	~CWndOptionGame(); 
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

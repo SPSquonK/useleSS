@@ -53,7 +53,13 @@
 
 template <typename T> CWndNeuz * WindowBuilder()
 requires std::derived_from<T, CWndNeuz> {
-	return new T();
+	T * pWnd = new T();
+	if (pWnd->Initialize(&g_WndMng)) {
+		return pWnd;
+	} else {
+		delete pWnd;
+		return nullptr;
+	}
 }
 
 void CWndMgr::AddAllApplet() {

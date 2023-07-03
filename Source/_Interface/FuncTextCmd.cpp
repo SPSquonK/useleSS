@@ -3554,13 +3554,9 @@ BOOL TextCmd_RemoveAllBuff(CScanner &, CPlayer_ * pUser) {
 BOOL TextCmd_HeavenTower( CScanner& s )
 {
 #ifdef __CLIENT
-	if(g_WndMng.m_pWndHeavenTower)
-		SAFE_DELETE(g_WndMng.m_pWndHeavenTower);
-
+	SAFE_DELETE(g_WndMng.m_pWndHeavenTower);
 	g_WndMng.m_pWndHeavenTower = new CWndHeavenTower;
-
-	if(g_WndMng.m_pWndHeavenTower)
-		g_WndMng.m_pWndHeavenTower->Initialize();
+	g_WndMng.m_pWndHeavenTower->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -3568,13 +3564,9 @@ BOOL TextCmd_HeavenTower( CScanner& s )
 BOOL TextCmd_RemoveJewel( CScanner& s )
 {
 #ifdef __CLIENT
-	if(g_WndMng.m_pWndRemoveJewel)
-		SAFE_DELETE(g_WndMng.m_pWndRemoveJewel);
-
+	SAFE_DELETE(g_WndMng.m_pWndRemoveJewel);
 	g_WndMng.m_pWndRemoveJewel = new CWndRemoveJewel;
-
-	if(g_WndMng.m_pWndRemoveJewel)
-		g_WndMng.m_pWndRemoveJewel->Initialize();
+	g_WndMng.m_pWndRemoveJewel->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -4040,13 +4032,9 @@ BOOL TextCmd_RainbowRaceReqFininsh( CScanner& s )
 BOOL TextCmd_ChangeAttribute( CScanner& s )
 {
 #ifdef __CLIENT
-	if(g_WndMng.m_pWndChangeAttribute)
-		SAFE_DELETE(g_WndMng.m_pWndChangeAttribute);
-
+	SAFE_DELETE(g_WndMng.m_pWndChangeAttribute);
 	g_WndMng.m_pWndChangeAttribute = new CWndChangeAttribute;
-
-	if(g_WndMng.m_pWndChangeAttribute)
-		g_WndMng.m_pWndChangeAttribute->Initialize();
+	g_WndMng.m_pWndChangeAttribute->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }

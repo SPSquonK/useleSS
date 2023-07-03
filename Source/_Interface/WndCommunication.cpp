@@ -343,27 +343,25 @@ void CWndChat::OnInitialUpdate()
 	{
 		g_WndMng.m_pWndChatLog = new CWndChatLog;
 		
-		if( g_WndMng.m_pWndChatLog )
-		{
-			g_WndMng.m_pWndChatLog->Initialize();
+		g_WndMng.m_pWndChatLog->Initialize();
 			
-			CRect rectRoot = g_WndMng.GetLayoutRect();
-			CRect rect = GetWindowRect(TRUE);
-			CRect rect2 = g_WndMng.m_pWndChatLog->GetClientRect(TRUE);
+		CRect rectRoot = g_WndMng.GetLayoutRect();
+		CRect rect = GetWindowRect(TRUE);
+		CRect rect2 = g_WndMng.m_pWndChatLog->GetClientRect(TRUE);
 			
-			int x = 0;
-			int y = rect.top;
+		int x = 0;
+		int y = rect.top;
 			
-			if( (rect.right+rect2.Width()) < rectRoot.right )
-				x = rect.right;
-			else
-				x = (rect.left - rect2.Width() );
+		if( (rect.right+rect2.Width()) < rectRoot.right )
+			x = rect.right;
+		else
+			x = (rect.left - rect2.Width() );
 			
-			CPoint point( x, y );
-			g_WndMng.m_pWndChatLog->Move( point );
+		CPoint point( x, y );
+		g_WndMng.m_pWndChatLog->Move( point );
 
-			g_WndMng.m_pWndChatLog->SetVisible(FALSE);
-		}
+		g_WndMng.m_pWndChatLog->SetVisible(FALSE);
+		
 	}
 
 	if( g_WndMng.m_pWndChatLog )

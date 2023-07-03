@@ -2,7 +2,7 @@
 
 #include "resdata.h"
 
-class CWndTextQuest : public CWndMessageBox
+class CWndTextQuest : public CWndCustomMessageBox
 { 
 public: 
 	CItemElem * m_pItemBase;

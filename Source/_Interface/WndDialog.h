@@ -4,7 +4,7 @@
 #include <memory>
 #include "WndTListBox.hpp"
 
-class CWndDialog : public CWndNeuz 
+class CWndDialog final : public CWndNeuz 
 { 
 public:
 	static constexpr UINT WIDC_NewQuests = 901;
@@ -112,7 +112,7 @@ public:
 
 	virtual BOOL Process();
 	void OnSetCursor() override;
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 

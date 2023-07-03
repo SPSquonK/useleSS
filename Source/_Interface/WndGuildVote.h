@@ -5,7 +5,7 @@
 
 class CWndGuildVoteSeting;
 
-class CWndGuildVote : public CWndNeuz 
+class CWndGuildVote final : public CWndNeuz
 { 
 public: 
 	void SelChange( CGuild* pGuild, int nIndex );
@@ -21,7 +21,7 @@ public:
 	
 	void UpdateDataAll();
 	
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

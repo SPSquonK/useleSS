@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef __CLIENT
-class CWndMailRequestingBox : public CWndNeuz
+class CWndMailRequestingBox final : public CWndNeuz
 {
 public:
 	enum { REQUEST_BUTTON_WAITING_TIME = 5 };
@@ -12,7 +12,7 @@ public:
 	~CWndMailRequestingBox( void );
 
 public:
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual	void OnInitialUpdate( void );
 	BOOL Process( void );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );

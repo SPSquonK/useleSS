@@ -31,7 +31,7 @@ public:
 };
 
 
-class CWndRepairItem : public CWndNeuz 
+class CWndRepairItem final : public CWndNeuz
 { 
 public:
 	CWndStatic* pWndStaticCost;
@@ -46,7 +46,7 @@ public:
 	CWndRepairItem(); 
 	~CWndRepairItem(); 
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 	virtual	void OnDestroy( void );

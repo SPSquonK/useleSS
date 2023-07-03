@@ -24,7 +24,7 @@ public:
 	}
 };
 
-class CWndSummonAngel : public CWndNeuz { 
+class CWndSummonAngel final : public CWndNeuz {
 private:
 	static constexpr unsigned int MaxSlotPerItem = 10;
 	static constexpr UINT StartOffsetWidcSlots = 1500;
@@ -46,7 +46,7 @@ private:
 
 	
 public:
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;

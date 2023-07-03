@@ -5891,12 +5891,8 @@ void CDPClient::OnGCDiagMessage( CAr & ar )
 	
 	SAFE_DELETE( g_WndMng.m_pWndGuildCombatInfoMessageBox2);
 	g_WndMng.m_pWndGuildCombatInfoMessageBox2 = new CGuildCombatInfoMessageBox2;
-
-	if( g_WndMng.m_pWndGuildCombatInfoMessageBox2 )
-	{
-		g_WndMng.m_pWndGuildCombatInfoMessageBox2->Initialize();
-		g_WndMng.m_pWndGuildCombatInfoMessageBox2->SetString( strMessage );
-	}
+	g_WndMng.m_pWndGuildCombatInfoMessageBox2->Initialize();
+	g_WndMng.m_pWndGuildCombatInfoMessageBox2->SetString( strMessage );
 }
 void CDPClient::OnGCTele( CAr & ar )
 {
@@ -5905,12 +5901,8 @@ void CDPClient::OnGCTele( CAr & ar )
 
 	SAFE_DELETE( g_WndMng.m_pWndGuildCombatInfoMessageBox);
 	g_WndMng.m_pWndGuildCombatInfoMessageBox = new CGuildCombatInfoMessageBox(0);
-	
-	if( g_WndMng.m_pWndGuildCombatInfoMessageBox )
-	{
-		g_WndMng.m_pWndGuildCombatInfoMessageBox->Initialize();
-		g_WndMng.m_pWndGuildCombatInfoMessageBox->SetString( strMessage );
-	}
+	g_WndMng.m_pWndGuildCombatInfoMessageBox->Initialize();
+	g_WndMng.m_pWndGuildCombatInfoMessageBox->SetString( strMessage );
 }
 
 void CDPClient::OnIsRequest( CAr & ar )
@@ -13696,13 +13688,9 @@ void CDPClient::OnGC1to1NowState( CAr & ar )
 				SAFE_DELETE( g_WndMng.m_pWndGuildCombatInfoMessageBox );
 				g_WndMng.m_pWndGuildCombatInfoMessageBox = new CGuildCombatInfoMessageBox(1);
 	
-				if( g_WndMng.m_pWndGuildCombatInfoMessageBox )
-				{
-					g_WndMng.m_pWndGuildCombatInfoMessageBox->Initialize();
-					CString strMsg;
-					strMsg.Format("%s", prj.GetText(TID_GAME_GUILDCOMBAT_1TO1_TELEPORT_MSG));
-					g_WndMng.m_pWndGuildCombatInfoMessageBox->SetString(strMsg);
-				}
+				g_WndMng.m_pWndGuildCombatInfoMessageBox->Initialize();
+				LPCTSTR strMsg = prj.GetText(TID_GAME_GUILDCOMBAT_1TO1_TELEPORT_MSG);
+				g_WndMng.m_pWndGuildCombatInfoMessageBox->SetString(strMsg);
 
 				int nSize;
 				u_long nPlayerId;

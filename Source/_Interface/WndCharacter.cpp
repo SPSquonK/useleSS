@@ -738,11 +738,6 @@ void CWndHonor::RefreshList() {
 	}
 }
 
-BOOL CWndHonor::Initialize(CWndBase * pWndParent) {
-	// TODO: This function is never actually called, delete it
-	return CWndNeuz::InitDialog(APP_HONOR, pWndParent, 0, CPoint(0, 0));
-}
-
 BOOL CWndHonor::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	switch (nID) {
 		case WIDC_LISTBOX1: {

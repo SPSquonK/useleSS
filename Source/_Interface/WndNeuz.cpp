@@ -257,11 +257,11 @@ void CWndNeuz::AdditionalSkinTexture( LPWORD pDest, CSize size1, D3DFORMAT d3dFo
 	}
 
 }
-BOOL CWndNeuz::Initialize(CWndBase* pWndParent)
-{
-	CRect rect(0,0,300,300);
-	return CWndBase::Create(WBS_MOVE|/*WBS_MODAL|*/WBS_SOUND|WBS_CAPTION,rect,&g_WndMng,10);
+BOOL CWndNeuz::DefaultInitialize(CWndBase * pWndParent) {
+	CRect rect(0, 0, 300, 300);
+	return CWndBase::Create(WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, &g_WndMng, 10);
 }
+
 BOOL CWndNeuz::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
 	if( message == WNM_CLICKED )

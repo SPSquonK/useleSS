@@ -11,7 +11,7 @@ public:
 	CWndVendorBuy(CItemElem * pItemBase, int iIndex)
 		: m_pItemBase(pItemBase), m_iIndex(iIndex) {}
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void OnDraw( C2DRender* p2DRender );
 	virtual	void OnInitialUpdate();

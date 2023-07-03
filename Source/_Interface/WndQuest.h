@@ -11,7 +11,7 @@ public:
 	void OnLButtonDown(UINT nFlags, CPoint point) override;
 };
 
-class CWndRemoveQuest : public CWndMessageBox {
+class CWndRemoveQuest : public CWndCustomMessageBox {
 	QuestId m_nRemoveQuestId;
 public:
 	CWndRemoveQuest(const QuestId nRemoveQuestId) : m_nRemoveQuestId(nRemoveQuestId) {}
@@ -20,7 +20,7 @@ public:
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 };
 
-class CWndQuest : public CWndNeuz 
+class CWndQuest final : public CWndNeuz
 { 
 public: 
 	using TreeElems = boost::container::stable_vector<TREEELEM>;
@@ -39,7 +39,7 @@ public:
 	void TreeOpen();
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
 	CString MakeQuestString( CString& string, BOOL bCond ); 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -58,7 +58,7 @@ private:
 	CWndQuestTreeCtrl m_WndEvent;
 }; 
 
-class CWndQuestDetail : public CWndNeuz
+class CWndQuestDetail final : public CWndNeuz
 {
 public:
 	class CWndQConditionTreeCtrl : public CWndTreeCtrl {
@@ -69,7 +69,7 @@ public:
 	CWndQuestDetail( DWORD dwQuestID = -1 );
 
 public:
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual	void OnInitialUpdate( void );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE );

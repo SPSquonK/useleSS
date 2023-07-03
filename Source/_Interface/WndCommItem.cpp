@@ -787,7 +787,7 @@ bool CWndCommercialElem::IsRestrictionItem(CItemElem * pItemElem) {
 	}
 	
 	if (pItemElem->GetProp()->nLog >= 2) {
-		g_WndMng.OpenMessageBox(prj.GetText(TID_UPGRADE_ERROR_NOUNICK), MB_OK, this);
+		g_WndMng.OpenMessageBox(prj.GetText(TID_UPGRADE_ERROR_NOUNICK), MB_OK);
 		return false;
 	}
 

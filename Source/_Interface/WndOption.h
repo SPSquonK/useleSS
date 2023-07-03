@@ -11,27 +11,11 @@
 
 #include "WndOptionGame.h"	 // 게임 옵션
 
-class CWndOption : public CWndNeuz 
-{ 
-public: 
-	CWndOption(); 
-	~CWndOption(); 
-
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // Sound
 //
 
-class CWndOptSound : public CWndNeuz 
+class CWndOptSound final : public CWndNeuz 
 { 
 public: 
 	CTexture         m_Texture;
@@ -42,7 +26,7 @@ public:
 	CWndOptSound(); 
 	~CWndOptSound(); 
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -83,7 +67,6 @@ public:
 	BOOL			 m_bLButtonClick;
 	BOOL			 m_bLButtonClick2;
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -96,13 +79,13 @@ private:
 
 
 
-class CWndOptMyInfo : public CWndNeuz 
+class CWndOptMyInfo final : public CWndNeuz 
 { 
 public: 
 	CWndOptMyInfo(); 
 	~CWndOptMyInfo(); 
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -112,13 +95,13 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-class CWndOptWindow : public CWndNeuz 
+class CWndOptWindow final : public CWndNeuz 
 { 
 public: 
 	CWndOptWindow(); 
 	~CWndOptWindow(); 
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -129,14 +112,14 @@ public:
 }; 
 
 
-class CWndTotalOption : public CWndNeuz
+class CWndTotalOption final : public CWndNeuz
 {
 public:
 	CWndOptVideo		m_OptTabVideoSnd;
 	CWndOptionGame		m_OptTabGame;
 
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 };

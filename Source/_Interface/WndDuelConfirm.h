@@ -1,7 +1,7 @@
 #ifndef __WNDDUELCONFIRM__H
 #define __WNDDUELCONFIRM__H
 
-class CWndDuelConfirm : public CWndNeuz 
+class CWndDuelConfirm final : public CWndNeuz 
 { 
 public: 
 	char	m_szSrc[ MAX_NAME ];	// 듀얼 신청자이름
@@ -12,7 +12,7 @@ public:
 	CWndDuelConfirm(); 
 	~CWndDuelConfirm(); 
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -22,7 +22,7 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-class CWndDuelResult : public CWndNeuz 
+class CWndDuelResult final : public CWndNeuz 
 { 
 public: 
 	char	m_szSrc[ MAX_NAME ];	// 듀얼 신청자이름
@@ -33,7 +33,7 @@ public:
 	CWndDuelResult(); 
 	~CWndDuelResult(); 
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

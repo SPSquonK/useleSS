@@ -1,14 +1,14 @@
 #ifndef __WNDMAP__H
 #define __WNDMAP__H
 
-class CWndMap : public CWndNeuz 
+class CWndMap final : public CWndNeuz
 { 
 public: 
 	CHAR m_szMapFile[ 64 ];
 	CWndMap(); 
 	virtual ~CWndMap(); 
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

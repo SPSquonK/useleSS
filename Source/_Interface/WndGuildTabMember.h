@@ -20,7 +20,7 @@ struct MEMBERLIST
 	int nClass;				// 등급
 };
 
-class CWndGuildTabMember : public CWndNeuz 
+class CWndGuildTabMember final : public CWndNeuz
 { 
 	int		m_nCurrentList;			// 출력될 멤버리스트의 시작 인덱스.
 	int		m_nSelect;
@@ -43,7 +43,6 @@ public:
 
 	CRect	m_rectParent;			// 길드창의 좌상귀 좌표.
 	
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

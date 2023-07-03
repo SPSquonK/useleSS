@@ -2,7 +2,7 @@
 
 #include "WndSqKComponents.h"
 
-class CWndLvReqDown : public CWndNeuz {
+class CWndLvReqDown final : public CWndNeuz {
 public: 
 	class LeveledDownItemReceiver : public CWndItemReceiver {
 		bool CanReceiveItem(const CItemElem & itemElem, bool) override;
@@ -12,7 +12,7 @@ public:
 
 	LeveledDownItemReceiver m_receiver;
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override; 
 	void OnInitialUpdate() override; 
 	BOOL OnDropIcon(LPSHORTCUT pShortcut, CPoint point) override;

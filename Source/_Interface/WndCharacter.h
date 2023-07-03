@@ -78,7 +78,6 @@ private:
 public:
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
-	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void RefreshList();
@@ -91,12 +90,12 @@ public:
 public:
 	void SerializeRegInfo(CAr & ar, DWORD & dwVersion) override;
 	void OnInitialUpdate() override;
-	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 };
 
 class CWndStateConfirm final : public CWndNeuz {
 public:
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
 

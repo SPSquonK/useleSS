@@ -51,11 +51,6 @@ void CWndGuildTabApp::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndGuildTabApp::Initialize( CWndBase* pWndParent )
-{ 
-	return CWndNeuz::InitDialog( APP_GUILD_TABAPPELLATION, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-
 void CWndGuildTabApp::ForEachPower(
 	std::invocable<UINT, int, GuildPower> auto func
 ) {
@@ -240,13 +235,13 @@ BOOL CWndGuildPayConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 			else
 			{
 				pWndEdit->SetString( "" );
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDONLYNUMBER), MB_OK, this );
+				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDONLYNUMBER), MB_OK );
 			}
 		}
 		else
 		{
 			pWndEdit->SetString( "" );
-			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDONLYNUMBER), MB_OK, this );
+			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDONLYNUMBER), MB_OK );
 		}
 	}
 	else

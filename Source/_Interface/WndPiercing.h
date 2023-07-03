@@ -7,7 +7,6 @@ class CPiercingMessageBox;
 class CWndPiercing final : public CWndNeuz {
 public:
 	CSfx * m_pSfx = nullptr;
-	CPiercingMessageBox * m_pPiercingMessageBox = nullptr;
 
 	CWndComponentSlots<3> m_slots;
 	
@@ -16,7 +15,7 @@ public:
 	
 	virtual BOOL    OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
 	
-	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void	OnDraw( C2DRender* p2DRender ); 
 	virtual	void	OnInitialUpdate(); 
@@ -25,7 +24,7 @@ public:
 	virtual void	OnRButtonUp( UINT nFlags, CPoint point );
 }; 
 
-class CPiercingMessageBox final : public CWndMessageBox {
+class CPiercingMessageBox final : public CWndCustomMessageBox {
 public:
 	std::array<OBJID, 3> m_Objid;
 

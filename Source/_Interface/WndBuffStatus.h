@@ -5,7 +5,7 @@
 
 #include "WndWorld.h"
 
-class CWndBuffStatus : public CWndNeuz {
+class CWndBuffStatus final : public CWndNeuz {
 public:
 	size_t m_lastSeenSize = 0;
 
@@ -13,7 +13,7 @@ public:
 public:
 	CWndBuffStatus();
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
 	void OnLButtonUp(UINT nFlags, CPoint point) override;

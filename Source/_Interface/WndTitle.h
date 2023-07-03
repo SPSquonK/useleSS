@@ -9,7 +9,7 @@ DECLARE_WNDMESSAGEBOX( CWndAllCharBlockBox )
 #endif	// __NPKCRYPT
 #include "Wnd2ndPassword.h"
 
-class CWndLogin : public CWndNeuz
+class CWndLogin final : public CWndNeuz
 {
 	//CTexture   m_Texture;
 public:
@@ -34,7 +34,7 @@ public:
 	CWndLogin();
 	virtual ~CWndLogin();
 	virtual	void OnInitialUpdate();
-	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	virtual BOOL Process ();
 	// message
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
@@ -45,7 +45,7 @@ public:
 };
 
 #include "ListedServer.h"
-class CWndSelectServer : public CWndNeuz {
+class CWndSelectServer final : public CWndNeuz {
 public:
 	std::vector<CString> m_vecStrBanner;
 	DWORD		 m_dwChangeBannerTime;
@@ -57,7 +57,7 @@ public:
 	CWndSelectServer();
 	~CWndSelectServer() override;
 	void OnInitialUpdate() override;
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	static void DisplayChannels(CWndListBox & listBox, const std::span<CListedServers::Channel> & channels);
 
@@ -69,16 +69,16 @@ public:
 };
 
 
-class CWndDeleteChar : public CWndNeuz {
+class CWndDeleteChar final : public CWndNeuz {
 public:
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void DeletePlayer(int nSelect, LPCTSTR szNo);
 	virtual void AdditionalSkinTexture(LPWORD pDest, CSize sizeSurface, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4);
 };
 
 
-class CWndSelectChar : public CWndNeuz {
+class CWndSelectChar final : public CWndNeuz {
 public:
 	CWndText m_wndText1;
 	CWndText m_wndText2;
@@ -109,7 +109,7 @@ public:
 	BOOL Process() override;
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnLButtonUp(UINT nFlags, CPoint point) override;
 
@@ -124,7 +124,7 @@ private:
 };
 
 
-class CWndCreateChar : public CWndNeuz {
+class CWndCreateChar final : public CWndNeuz {
 public:
 	CWndButton   m_wndAccept;
 	CModelObject * m_pModel;
@@ -134,7 +134,7 @@ public:
 	~CWndCreateChar() override;
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 
 	void SetSex(int nSex);

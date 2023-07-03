@@ -3,7 +3,7 @@
 #include "WndTListBox.hpp"
 #include <unordered_map>
 
-class CWndAdminCreateItem : public CWndNeuz { 
+class CWndAdminCreateItem final : public CWndNeuz { 
 public:
 	struct ExtraItemProp {
 		std::vector<std::string> names;
@@ -30,7 +30,7 @@ public:
 
 	using ItemPropListBox = CWndTListBox<Item, Displayer>;
 		
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 

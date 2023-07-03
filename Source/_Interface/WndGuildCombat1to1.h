@@ -17,7 +17,7 @@ public:
 	void SetSelection(std::span<const u_long> playerIds);
 	void ResetSelection();
 
-	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	BOOL	OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void	OnInitialUpdate() override;
 
@@ -25,7 +25,7 @@ private:
 	void OnClickFinish();
 }; 
 
-class CWndGuildCombat1to1Offer : public CWndNeuz
+class CWndGuildCombat1to1Offer final : public CWndNeuz
 {
 protected:
 	DWORD			m_dwReqGold = 0;
@@ -40,7 +40,7 @@ public:
 	explicit CWndGuildCombat1to1Offer(CombatType nCombatType)
 		: m_nCombatType(nCombatType) {}
 	
-	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnInitialUpdate();
 	virtual void	PaintFrame( C2DRender* p2DRender );
@@ -55,7 +55,7 @@ public:
 // Message Box Class
 //////////////////////////////////////////////////////////////////////////
 
-class CGuildCombat1to1SelectionResetConfirm : public CWndMessageBox
+class CGuildCombat1to1SelectionResetConfirm : public CWndCustomMessageBox
 { 
 public: 
 	CString m_strMsg;
@@ -64,7 +64,7 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-class CWndGuildCombat1to1OfferMessageBox : public CWndMessageBox
+class CWndGuildCombat1to1OfferMessageBox : public CWndCustomMessageBox
 { 
 public: 
 	DWORD m_nCost;

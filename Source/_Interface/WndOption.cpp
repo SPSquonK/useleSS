@@ -74,210 +74,6 @@ BOOL CWndTotalOption::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-CWndOption::CWndOption() 
-{ 
-} 
-CWndOption::~CWndOption() 
-{ 
-} 
-void CWndOption::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndOption::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-
-	CWndButton* pWndAlpha = (CWndButton*)GetDlgItem( WIDC_CHECK1 );
-	pWndAlpha->SetCheck( g_Option.m_nWindowAlpha == 255 ? FALSE : TRUE);
-	CWndButton* pWndHelp = (CWndButton*)GetDlgItem( WIDC_CHECK2 );
-	pWndHelp->SetCheck( g_Option.m_nInstantHelp );
-	
-	CWndButton* pWndButton[ 4 ];
-
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_RADIO1 );
-	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_RADIO2 );
-	pWndButton[ 0 ]->SetGroup( TRUE );
-	pWndButton[ g_Option.m_nSlangWord ]->SetCheck( TRUE );
-
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_RADIO3 );
-	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_RADIO4 );
-	pWndButton[ 2 ] = (CWndButton*)GetDlgItem( WIDC_RADIO5 );
-	pWndButton[ 3 ] = (CWndButton*)GetDlgItem( WIDC_RADIO6 );
-	pWndButton[ 0 ]->SetGroup( TRUE );
-	pWndButton[ g_Option.m_nChatCommand ]->SetCheck( TRUE );
-
-	// 인터페이스 방식(구버전이 디폴트)
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_RADIO7 );
-	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_RADIO8 );
-#ifdef __Y_INTERFACE_VER3
-	pWndButton[ 2 ] = (CWndButton*)GetDlgItem( WIDC_RADIO12 );
-#endif //__Y_INTERFACE_VER3
-	pWndButton[ 0 ]->SetGroup( TRUE );
-	pWndButton[ g_Option.m_nInterface ]->SetCheck( TRUE );
-
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_RADIO9 );
-	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_RADIO10 );
-	pWndButton[ 2 ] = (CWndButton*)GetDlgItem( WIDC_RADIO11 );
-	pWndButton[ 0 ]->SetGroup( TRUE );
-	pWndButton[ *g_Option.m_pGuide ]->SetCheck( TRUE );
-
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_CHECK4 );
-	if(pWndButton[ 0 ])
-	pWndButton[ 0 ]->SetCheck( g_Option.m_bCameraLock );
-
-	// 비행시 롤링 효과.
-	CWndButton* pWndRoll = (CWndButton*)GetDlgItem( WIDC_CHECK3 );		
-	pWndRoll->SetCheck( g_Option.m_bRollEffect );
-
-	CWndButton* pWndZoom = (CWndButton*)GetDlgItem( WIDC_CHECK5 );		
-	pWndZoom->SetCheck(!g_Option.m_bZoomLimit);
-	
-	MoveParentCenter();
-} 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndOption::Initialize( CWndBase* pWndParent )
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_OPTION_ETC, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndOption::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = g_WndMng.GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndOption::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndOption::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndOption::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndOption::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndOption::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	CWndButton* pWndAlpha = (CWndButton*)GetDlgItem( WIDC_CHECK1 );
-	CWndButton* pWndHelp = (CWndButton*)GetDlgItem( WIDC_CHECK2 );
-	CWndButton* pWndRoll = (CWndButton*)GetDlgItem( WIDC_CHECK3 );
-	CWndButton* pWndCamearaLock = (CWndButton*)GetDlgItem( WIDC_CHECK4 );
-	CWndButton* pWndZoomLimit   = (CWndButton*)GetDlgItem( WIDC_CHECK5 );
-
-	switch( nID )
-	{
-	case WIDC_CHECK1: // 윈도 반투명 옵션 
-		if( pWndAlpha->GetCheck() )
-			CWndBase::m_nAlpha = g_Option.m_nWindowAlpha = 128;
-		else
-			CWndBase::m_nAlpha = g_Option.m_nWindowAlpha = 255;
-		break;
-	case WIDC_CHECK2: // 초보자 도움말 옵션 
-		if( pWndHelp->GetCheck() )
-			g_Option.m_nInstantHelp = TRUE;
-		else
-			g_Option.m_nInstantHelp = FALSE;
-		break;
-	case WIDC_CHECK3:	// 비행시 롤링 효과.
-		if( pWndRoll->GetCheck() )
-			g_Option.m_bRollEffect = TRUE;
-		else
-			g_Option.m_bRollEffect = FALSE;
-		break;
-	case WIDC_CHECK4:
-		{
-			if( pWndCamearaLock->GetCheck() )
-				g_Option.m_bCameraLock = TRUE;
-			else
-				g_Option.m_bCameraLock = FALSE;			
-		}
-		break;
-	case WIDC_CHECK5:
-		{
-			if( pWndZoomLimit->GetCheck() )
-				g_Option.m_bZoomLimit = FALSE;
-			else
-				g_Option.m_bZoomLimit = TRUE;			
-		}	
-		break;
-
-	case WIDC_RADIO1:
-		g_Option.m_nSlangWord = 0;
-		break;
-	case WIDC_RADIO2:
-		g_Option.m_nSlangWord = 1;
-		break;
-	case WIDC_RADIO3:
-		g_Option.m_nChatCommand = 0;
-		break;
-	case WIDC_RADIO4:
-		g_Option.m_nChatCommand = 1;
-		break;
-	case WIDC_RADIO5:
-		g_Option.m_nChatCommand = 2;
-		break;
-	case WIDC_RADIO6:
-		g_Option.m_nChatCommand = 3;
-		break;
-	case WIDC_RADIO7:	// 휠로 카메라 / 우클릭 스킬의 고전방식
-		g_Option.m_nInterface = 0;
-		break;
-	case WIDC_RADIO8:	// 우클릭 카메라 / 좌클릭+X 스킬의 신방식.
-		g_Option.m_nInterface = 1;
-		break;
-#ifdef __Y_INTERFACE_VER3
-	case WIDC_RADIO12:
-		g_Option.m_nInterface = 2;
-		break;
-#endif //__Y_INTERFACE_VER3
-	case WIDC_RADIO9:
-		*g_Option.m_pGuide = 0;
-		break;
-	case WIDC_RADIO10:
-		*g_Option.m_pGuide = 1;
-		break;
-	case WIDC_RADIO11:
-		*g_Option.m_pGuide = 2;
-		break;
-	case 10000:
-		{
-			CWndGuideSystem* pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
-			
-			if( pWndGuide )
-			{
-				pWndGuide->m_dwGuideLevel = *(g_Option.m_pGuide);
-				
-				if( pWndGuide->m_dwGuideLevel == 0 )
-				{
-					if( g_pPlayer )
-					{
-						pWndGuide->m_bVisible = TRUE;
-						pWndGuide->ChangeModel( g_pPlayer->GetJob() );
-						pWndGuide->SetAni( g_pPlayer->GetJob(), CWndGuideSystem::ANI_IDLE );
-					}
-				}
-				else
-				{
-					if(g_pPlayer)
-					{
-						pWndGuide->SetAni( g_pPlayer->GetJob(), CWndGuideSystem::ANI_BYTE );
-					}
-				}
-			}
-		}
-		break;
-	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
@@ -352,16 +148,7 @@ BOOL CWndOptSound::Initialize( CWndBase* pWndParent )
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_OPTEX_SOUND, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndOptSound::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = g_WndMng.GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
+
 BOOL CWndOptSound::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
 	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
@@ -709,12 +496,6 @@ void CWndOptVideo::OnInitialUpdate()
 		}
 	}
 } 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndOptVideo::Initialize( CWndBase* pWndParent )
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_OPTION_VIDEO, pWndParent, 0, CPoint( 0, 0 ) );
-} 
 
 void CWndOptVideo::OnLButtonUp( UINT nFlags, CPoint point ) 
 { 
@@ -949,7 +730,7 @@ BOOL CWndOptVideo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			if(pWndButton)
 			{
 				g_Option.m_bStartFullScreen = !(pWndButton->GetCheck());
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GAME_RESETTING), MB_OK, this );
+				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GAME_RESETTING), MB_OK );
 			}
 		}
 		break;

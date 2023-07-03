@@ -34,7 +34,7 @@ typedef struct GUIDE_STRUCT
 	};
 } GUIDE_STRUCT;
 
-class CWndGuideTextMgr : public CWndNeuz 
+class CWndGuideTextMgr final : public CWndNeuz 
 { 
 
 public: 
@@ -57,7 +57,7 @@ public:
 	~CWndGuideTextMgr(); 
 	
 	void UpDate();
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -65,10 +65,10 @@ public:
 	virtual	BOOL OnEraseBkgnd( C2DRender* p2DRender );
 }; 
 
-class CWndGuideSelection : public CWndNeuz 
+class CWndGuideSelection final : public CWndNeuz 
 {
 public:
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 };
@@ -103,14 +103,13 @@ struct CONDITION
 	};
 };
 
-class CWndInfoPang : public CWndNeuz 
+class CWndInfoPang final : public CWndNeuz
 {
 
 public:
-	CWndInfoPang() {}; 
 	virtual ~CWndInfoPang(); 
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -122,7 +121,7 @@ public:
 };
 
 
-class CWndGuideSystem : public CWndNeuz 
+class CWndGuideSystem final : public CWndNeuz 
 {
 public:
 	BOOL				 m_bIsLoad;
@@ -162,7 +161,7 @@ public:
 	void		 SendGuideMessage( int nMsg );
 	BOOL		 LoadGuide( LPCTSTR lpszFileName );
 		
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

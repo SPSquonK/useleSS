@@ -6,7 +6,7 @@
 // 작업 윈도 
 // 메뉴 버튼, 명령 아이콘, 단축 아이콘, 활성화 기능 등등
 //
-class CWndTaskBar : public CWndNeuz, public CTaskbar
+class CWndTaskBar final : public CWndNeuz, public CTaskbar
 {
 	DWORD m_dwHighAlpha;
 
@@ -55,7 +55,7 @@ public:
 //	virtual CItem* GetFocusItem() { return NULL; }
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	// message
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
 	virtual void OnSize(UINT nType, int cx, int cy);

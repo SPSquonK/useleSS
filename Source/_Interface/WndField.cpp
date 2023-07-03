@@ -1752,9 +1752,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					
 					if( pFocusItem->m_dwItemId == II_SYS_SYS_SCR_SOKCHANG )
 					{
-						if(g_WndMng.m_pWndChangeAttribute)
-							SAFE_DELETE(g_WndMng.m_pWndChangeAttribute);
-
+						SAFE_DELETE(g_WndMng.m_pWndChangeAttribute);
 						g_WndMng.m_pWndChangeAttribute = new CWndChangeAttribute;
 						g_WndMng.m_pWndChangeAttribute->SetChangeItem(pFocusItem);
 						g_WndMng.m_pWndChangeAttribute->Initialize();
@@ -4562,7 +4560,7 @@ BOOL CWndRevival::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 ///////////////////////////////////////////////////////////////////////////
 // CWantedMessageBox
 //////////////////////////////////////////////////////////////////////////////
-class CWantedMessageBox : public CWndMessageBox
+class CWantedMessageBox : public CWndCustomMessageBox
 { 
 public: 
 	int m_nGold;
@@ -5347,7 +5345,7 @@ void CWndInventory::UpdateParts()
 ///////////////////////////////////////////////////////////////////////////
 // CWndGuildCombatOfferMessageBox
 //////////////////////////////////////////////////////////////////////////////
-class CWndGuildCombatOfferMessageBox : public CWndMessageBox
+class CWndGuildCombatOfferMessageBox : public CWndCustomMessageBox
 { 
 public: 
 	DWORD m_nCost;
@@ -5480,10 +5478,8 @@ BOOL CWndGuildCombatOffer::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 
 
 			CWndGuildCombatOfferMessageBox* pMsg = new CWndGuildCombatOfferMessageBox;
-			if( pMsg )
-			{
-				g_WndMng.OpenCustomBox( "", pMsg, this );
-				CString str;
+
+				g_WndMng.OpenCustomBox( "", pMsg );
 
 				if( m_dwReqGold == 0 )
 				{
@@ -5495,7 +5491,7 @@ BOOL CWndGuildCombatOffer::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 				}
 
 				pMsg->SetValue( str, nCost );
-			}
+			
 		}
 		
 //		Destroy();
@@ -6969,11 +6965,7 @@ void CWndGuildCombatTabResultRate::OnInitialUpdate()
 
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
-} 
-BOOL CWndGuildCombatTabResultRate::Initialize( CWndBase* pWndParent )
-{ 
-	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_TAB_RESULT, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+}
 
 	
 /****************************************************
@@ -6985,10 +6977,6 @@ void CWndGuildCombatTabResultLog::OnInitialUpdate()
 
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
-} 
-BOOL CWndGuildCombatTabResultLog::Initialize( CWndBase* pWndParent )
-{ 
-	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_TAB_RESULT_LOG, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildCombatTabResultLog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -9342,9 +9330,8 @@ BOOL CWndHeavenTower::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 				CString strMsg;
 				CWndHeavenTowerEntranceConfirm* pWndEntranceConfirm = new CWndHeavenTowerEntranceConfirm;
-				if( pWndEntranceConfirm )
-				{
-					g_WndMng.OpenCustomBox( "", pWndEntranceConfirm, this );
+
+					g_WndMng.OpenCustomBox( "", pWndEntranceConfirm );
 					
 					if(m_nChoiceNum != 5)
 					{
@@ -9357,7 +9344,7 @@ BOOL CWndHeavenTower::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						pWndEntranceConfirm->SetValue( strMsg, m_nChoiceNum+1 );
 					}
 
-				}
+				
 			}
 			break;
 	}
@@ -10262,12 +10249,6 @@ void CWndCoupleTabInfo::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndCoupleTabInfo::Initialize( CWndBase* pWndParent )
-{ 
-	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( APP_COUPLE_TAB_INFO, pWndParent, 0, CPoint( 0, 0 ) );
-}
-
 BOOL CWndCoupleTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
 	if(nID == WIDC_BUTTON1)
@@ -10417,12 +10398,6 @@ void CWndCoupleTabSkill::OnInitialUpdate()
 
 	MoveParentCenter();
 } 
-
-BOOL CWndCoupleTabSkill::Initialize( CWndBase* pWndParent )
-{ 
-	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( APP_COUPLE_TAB_SKILL, pWndParent, 0, CPoint( 0, 0 ) );
-}
 
 BOOL CWndCoupleTabSkill::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 

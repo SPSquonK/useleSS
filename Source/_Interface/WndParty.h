@@ -2,7 +2,7 @@
 
 class CWndParty;
 
-class CWndPartyQuick : public CWndNeuz {
+class CWndPartyQuick final : public CWndNeuz {
 public:
 	static constexpr size_t MaxPartyMember = 8;
 
@@ -21,7 +21,7 @@ public:
 	CWndPartyQuick();
 	~CWndPartyQuick();
 
-	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
 	virtual void OnDraw(C2DRender * p2DRender);
 	virtual	void OnInitialUpdate();
@@ -35,23 +35,23 @@ public:
 	static CString FormatPlayerName(int level, DWORD dwJob, const char * name);
 };
 
-class CWndPartyConfirm : public CWndNeuz {
+class CWndPartyConfirm final : public CWndNeuz {
 public:
 	u_long m_uLeader = 0;
 	TCHAR m_szLeaderName[MAX_NAME];
 
 	CWndPartyConfirm(u_long uLeader, const TCHAR * szLeaderName);
 
-	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
 	virtual	void OnInitialUpdate();
 };
 
-class CWndPartyChangeName : public CWndNeuz {
+class CWndPartyChangeName final : public CWndNeuz {
 public:
 	TCHAR	m_sParty[33];
 
-	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
 	virtual	void OnInitialUpdate();
 
@@ -59,28 +59,28 @@ private:
 	void OnSendName();
 };
 
-class CWndPartyChangeTroup : public CWndNeuz {
+class CWndPartyChangeTroup final : public CWndNeuz {
 public:
 	CWndPartyChangeName * m_WndPartyChangeName = nullptr;
 	~CWndPartyChangeTroup();
 
-	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
 	virtual	void OnInitialUpdate();
 };
 
-class CWndPartyLeaveConfirm : public CWndNeuz {
+class CWndPartyLeaveConfirm final : public CWndNeuz {
 public:
 	u_long uLeaveId = 0;
 
 	void SetLeaveId(u_long uidPlayer);
 public:
-	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
 	virtual	void OnInitialUpdate();
 };
 
-class CWndPartyInfo : public CWndNeuz 
+class CWndPartyInfo final : public CWndNeuz
 { 
 public:
 	struct PlayerInfo {
@@ -103,7 +103,7 @@ public:
 	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
 	
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
@@ -113,7 +113,7 @@ private:
 	static PlayerInfo GetPlayerInfo(u_long playerId, CMover * pObjMember);
 }; 
 
-class CWndPartySkill : public CWndNeuz 
+class CWndPartySkill final : public CWndNeuz
 { 
 public: 
 	std::array<CTexture *, 10> m_atexSkill;
@@ -123,7 +123,7 @@ public:
 
 	virtual void OnMouseWndSurface( CPoint point );
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
@@ -134,7 +134,7 @@ private:
 	int GetCurrentlyHoveredSkill(CPoint point) /* const */;
 }; 
 
-class CWndParty : public CWndNeuz 
+class CWndParty final : public CWndNeuz 
 { 
 public:
 	CWndButton* m_pWndLeave          = nullptr;
@@ -151,7 +151,7 @@ public:
 	~CWndParty(); 
 
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

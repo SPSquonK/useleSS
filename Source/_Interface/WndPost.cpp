@@ -105,7 +105,7 @@ void CWndPost::CloseMailRequestingBox() {
 ///////////////////////////////////////////////////////////////////////////
 // CWndPostSendMessageBox
 //////////////////////////////////////////////////////////////////////////////
-class CWndPostSendMessageBox : public CWndMessageBox {
+class CWndPostSendMessageBox : public CWndCustomMessageBox {
 public: 
 	CWndText	m_wndText;
 	

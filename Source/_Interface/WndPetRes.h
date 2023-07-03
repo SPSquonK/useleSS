@@ -2,7 +2,7 @@
 #define __WNDPETRES__H
 
 #ifdef __JEFF_11
-class CWndPetRes : public CWndNeuz 
+class CWndPetRes final : public CWndNeuz
 { 
 public: 
 	CItemElem* m_pItemElem;
@@ -12,7 +12,7 @@ public:
 	CWndPetRes(); 
 	~CWndPetRes();
 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual void OnDestroy();
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 

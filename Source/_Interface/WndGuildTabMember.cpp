@@ -305,12 +305,7 @@ void CWndGuildTabMember::OnInitialUpdate()
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 } 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildTabMember::Initialize( CWndBase* pWndParent )
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_GUILD_TABMEMBER_EX, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+
 BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
 	if( nID == 1000 && dwMessage == 514 )	// Scroll Bar
@@ -361,7 +356,7 @@ BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBas
 					if(m_list[m_nSelect].bIsOnLine )
 						g_DPlay.SendChgMaster( pMover->m_idPlayer, m_list[m_nSelect].idPlayer );
 					else
-						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_NOTLOGIN ), MB_OK, this );
+						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_NOTLOGIN ), MB_OK );
 				}
 			}
 			break;
@@ -384,7 +379,7 @@ BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBas
 				}
 				else
 				{
-					g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDONLYMASTER ), MB_OK, this );
+					g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDONLYMASTER ), MB_OK );
 				}
 				
 			}
@@ -397,7 +392,7 @@ BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBas
 					QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( QUEST_WARMON_LV1 );
 					if( pQuestProp )
 					{
-						g_WndMng.OpenMessageBox( prj.GetText( TID_GUILD_QUEST_LEAVEERROR ), MB_OK, this );
+						g_WndMng.OpenMessageBox( prj.GetText( TID_GUILD_QUEST_LEAVEERROR ), MB_OK );
 					}
 					return FALSE;
 				}

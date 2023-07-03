@@ -51,17 +51,15 @@ public:
 	void ClearItem();
 	void AddItem(CItemElem * pItemContainer);
 
-protected:
-protected:
 };
 
-class CWndGuildMerit : public CWndNeuz { 
+class CWndGuildMerit final : public CWndNeuz {
 	CWndGuildMeritCtrl	m_wndctrlMerit;
 
 	bool m_hasItemContribution = false;
 	int  m_nPenya = 0;
 public: 
-	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
 
