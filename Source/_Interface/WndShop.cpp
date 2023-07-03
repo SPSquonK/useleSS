@@ -21,9 +21,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-BOOL CWndWarning::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndWarning::Initialize( CWndBase* pWndParent ) 
 { 
-	InitDialog( dwWndId, pWndParent, WBS_KEY, 0 );
+	InitDialog(APP_WARNING, pWndParent, WBS_KEY, 0 );
 	MoveParentCenter();
 
 	return TRUE;
@@ -38,7 +38,7 @@ BOOL CWndWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		parent->m_pWndConfirmSell = new CWndConfirmSell;
 		parent->m_pWndConfirmSell->m_pItemElem = m_pItemElem;
 		parent->m_pWndConfirmSell->m_pMover = m_pMover;
-		parent->m_pWndConfirmSell->Initialize( m_pParentWnd, APP_CONFIRM_SELL );
+		parent->m_pWndConfirmSell->Initialize( m_pParentWnd );
 		Destroy();
 	}
 	if( nID == WIDC_CANCEL )
@@ -133,7 +133,7 @@ void CWndConfirmSell::OnInitialUpdate()
 	
 	
 } 
-BOOL CWndConfirmSell::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndConfirmSell::Initialize( CWndBase* pWndParent ) 
 { 
 	InitDialog( APP_CONFIRM_SELL, pWndParent, WBS_KEY, 0 );
 	MoveParentCenter();
@@ -269,7 +269,7 @@ void CWndConfirmBuy::OnChangeBuyCount(std::int32_t dwBuy, bool allowZero) {
 	m_pStaticGold->SetTitle( szString );
 }
 
-BOOL CWndConfirmBuy::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndConfirmBuy::Initialize( CWndBase* pWndParent ) 
 { 
 	InitDialog( APP_CONFIRM_BUY_, pWndParent, 0, 0 );
 	MoveParentCenter();
@@ -514,7 +514,7 @@ void CWndShop::OnInitialUpdate()
 	Move( ptMove );
 } 
 
-BOOL CWndShop::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndShop::Initialize( CWndBase* pWndParent ) 
 { 
 	return InitDialog( APP_SHOP_, pWndParent, 0, 0 );
 } 
@@ -542,14 +542,14 @@ bool CWndShop::OnDropItemFromInventory(CItemElem * const pItemElem) {
 		m_pWndWarning = new CWndWarning;
 		m_pWndWarning->m_pItemElem = pItemElem;
 		m_pWndWarning->m_pMover = m_pMover;
-		m_pWndWarning->Initialize(this, APP_WARNING);
+		m_pWndWarning->Initialize(this);
 	} else {
 		SAFE_DELETE(m_pWndWarning);
 		SAFE_DELETE(m_pWndConfirmSell);
 		m_pWndConfirmSell = new CWndConfirmSell;
 		m_pWndConfirmSell->m_pItemElem = pItemElem;
 		m_pWndConfirmSell->m_pMover = m_pMover;
-		m_pWndConfirmSell->Initialize(this, APP_CONFIRM_SELL);
+		m_pWndConfirmSell->Initialize(this);
 	}
 
 	return true;
@@ -1121,7 +1121,7 @@ void CWndBeautyShop::OnInitialUpdate()
 	totalcost->AddWndStyle(WSS_MONEY);
 } 
 
-BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndBeautyShop::Initialize( CWndBase* pWndParent ) 
 { 
 	if( g_pPlayer == NULL )
 		return FALSE;
@@ -1487,7 +1487,7 @@ void CWndUseCouponConfirm::OnDestroy()
 				g_WndMng.CreateApplet( APP_INVENTORY );			
 				SAFE_DELETE( g_WndMng.m_pWndBeautyShop );
 				g_WndMng.m_pWndBeautyShop = new CWndBeautyShop;					
-				g_WndMng.m_pWndBeautyShop->Initialize( NULL, APP_BEAUTY_SHOP_EX );
+				g_WndMng.m_pWndBeautyShop->Initialize( NULL );
 				g_WndMng.m_pWndBeautyShop->UseHairCoupon(m_bUseCoupon);
 			}
 			else if(m_TargetWndId == APP_BEAUTY_SHOP_SKIN)
@@ -1495,7 +1495,7 @@ void CWndUseCouponConfirm::OnDestroy()
 				g_WndMng.CreateApplet( APP_INVENTORY );			
 				SAFE_DELETE( g_WndMng.m_pWndFaceShop );
 				g_WndMng.m_pWndFaceShop = new CWndFaceShop;										
-				g_WndMng.m_pWndFaceShop->Initialize( NULL, APP_BEAUTY_SHOP_EX );
+				g_WndMng.m_pWndFaceShop->Initialize( NULL );
 				g_WndMng.m_pWndFaceShop->UseFaceCoupon(m_bUseCoupon);
 			}	
 		}
@@ -1546,7 +1546,7 @@ void CWndUseCouponConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndUseCouponConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndUseCouponConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_BEAUTY_SHOP_EX_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1690,7 +1690,7 @@ void CWndBeautyShopConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndBeautyShopConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndBeautyShopConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_BEAUTY_SHOP_EX_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -2089,7 +2089,7 @@ void CWndFaceShop::OnInitialUpdate()
 	Move( ptMove );
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndFaceShop::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndFaceShop::Initialize( CWndBase* pWndParent )
 { 
 	if( g_pPlayer == NULL )
 		return FALSE;

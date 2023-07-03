@@ -30,9 +30,9 @@ void CWndTotalOption::OnInitialUpdate()
 	MoveParentCenter();	
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndTotalOption::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndTotalOption::Initialize( CWndBase* pWndParent ) 
 { 
-	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 0, 0 ) );
+	return CWndNeuz::InitDialog( APP_OPTIONEX, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndTotalOption::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -135,7 +135,7 @@ void CWndOption::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndOption::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndOption::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_OPTION_ETC, pWndParent, 0, CPoint( 0, 0 ) );
@@ -347,7 +347,7 @@ void CWndOptSound::OnInitialUpdate()
 
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndOptSound::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndOptSound::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_OPTEX_SOUND, pWndParent, 0, CPoint( 0, 0 ) );
@@ -710,7 +710,7 @@ void CWndOptVideo::OnInitialUpdate()
 	}
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndOptVideo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndOptVideo::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_OPTION_VIDEO, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1119,7 +1119,7 @@ void CWndOptWindow::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndOptWindow::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndOptWindow::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_OPTION_WINDOW, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1180,7 +1180,7 @@ void CWndOptMyInfo::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndOptMyInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndOptMyInfo::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_OPTION_MYINFO, pWndParent, 0, CPoint( 0, 0 ) );

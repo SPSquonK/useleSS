@@ -298,7 +298,7 @@ void CWndHousing::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndHousing::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndHousing::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_HOUSING, pWndParent, 0, CPoint( 0, 0 ) );
@@ -553,7 +553,7 @@ CWndGuildHousing::~CWndGuildHousing( )
 	SAFE_DELETE( m_pGHShowOne );
 }
 
-BOOL CWndGuildHousing::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildHousing::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GH_FURNITURE_STORAGE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1425,7 +1425,7 @@ CWndGHouseShowOneUnit::~CWndGHouseShowOneUnit( )
 {
 }
 
-BOOL CWndGHouseShowOneUnit::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGHouseShowOneUnit::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GH_SHOWONE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1518,7 +1518,7 @@ CWndGuildHouseBid::~CWndGuildHouseBid( )
 	_cBidDatas.clear();
 }
 
-BOOL CWndGuildHouseBid::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildHouseBid::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GH_BID, pWndParent, 0, CPoint( 0, 0 ) );

@@ -89,7 +89,7 @@ void CWndRankTab::OnInitialUpdate() {
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndRankTab::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndRankTab::Initialize(CWndBase * pWndParent) {
 	// TODO: this function is probably never called -> delete it
 	return CWndNeuz::InitDialog(m_appId, pWndParent, 0, CPoint(0, 0));
 }

@@ -18,7 +18,7 @@ public:
 	void SetReceive( const char* pchar );
 	void SetTitle( const char* pchar );	
 	void SetText( const char* pchar );	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -33,7 +33,7 @@ public:
 	
 	void	SetIndex( int nIndex ) { m_nMailIndex = nIndex; }
 	void	SetString(const char * string);
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 
@@ -53,7 +53,7 @@ public:
 	void ClearData();
 	
 	void SetValue( int nMailIndex );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -80,7 +80,7 @@ public:
 	virtual ~CWndPostReceive(); 
 
 	int          GetSelectIndex( const CPoint& point );	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
@@ -97,7 +97,7 @@ public:
 	
 	virtual ~CWndPost(); 
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 
@@ -116,7 +116,7 @@ protected:
 public: 
 	
 	void			SetValue( int nIndex ) { m_nIndex = nIndex; }
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnInitialUpdate();
 }; 

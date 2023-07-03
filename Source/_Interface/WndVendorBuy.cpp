@@ -50,7 +50,7 @@ void CWndVendorBuy::OnInitialUpdate()
 	MoveParentCenter();
 }
 
-BOOL CWndVendorBuy::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
+BOOL CWndVendorBuy::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_VENDOREX_BUY, pWndParent, 0, CPoint( 0, 0 ) );
 }

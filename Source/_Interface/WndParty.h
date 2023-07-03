@@ -21,7 +21,7 @@ public:
 	CWndPartyQuick();
 	~CWndPartyQuick();
 
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
 	virtual void OnDraw(C2DRender * p2DRender);
 	virtual	void OnInitialUpdate();
@@ -42,7 +42,7 @@ public:
 
 	CWndPartyConfirm(u_long uLeader, const TCHAR * szLeaderName);
 
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
 	virtual	void OnInitialUpdate();
 };
@@ -51,7 +51,7 @@ class CWndPartyChangeName : public CWndNeuz {
 public:
 	TCHAR	m_sParty[33];
 
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
 	virtual	void OnInitialUpdate();
 
@@ -64,7 +64,7 @@ public:
 	CWndPartyChangeName * m_WndPartyChangeName = nullptr;
 	~CWndPartyChangeTroup();
 
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
 	virtual	void OnInitialUpdate();
 };
@@ -75,7 +75,7 @@ public:
 
 	void SetLeaveId(u_long uidPlayer);
 public:
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
 	virtual	void OnInitialUpdate();
 };
@@ -103,7 +103,7 @@ public:
 	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
@@ -123,7 +123,7 @@ public:
 
 	virtual void OnMouseWndSurface( CPoint point );
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
@@ -151,7 +151,7 @@ public:
 	~CWndParty(); 
 
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

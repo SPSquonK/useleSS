@@ -35,7 +35,7 @@ void CWndSelectCh::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndSelectCh::Initialize( CWndBase* pWndParent, DWORD  ) 
+BOOL CWndSelectCh::Initialize( CWndBase* pWndParent ) 
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_SELECT_CHANNEL, pWndParent, 0, CPoint( 0, 0 ) );

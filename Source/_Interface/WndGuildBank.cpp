@@ -108,7 +108,7 @@ void CWndGuildBank::OnInitialUpdate()
 	pWndButtLog->SetVisible(TRUE);
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildBank::Initialize( CWndBase* pWndParent, DWORD ) 
+BOOL CWndGuildBank::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GUILD_BANK, pWndParent, 0, CPoint( 0, 0 ) );
@@ -320,7 +320,7 @@ void CWndGuildBankLog::OnInitialUpdate()
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildBankLog::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildBankLog::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GUILD_BANK_LOG, pWndParent, 0, CPoint( 0, 0 ) );

@@ -66,7 +66,7 @@ void CWndUpgradeBase::OnInitialUpdate()
 	m_nMaxCount = 0;
 } 
 
-BOOL CWndUpgradeBase::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndUpgradeBase::Initialize( CWndBase* pWndParent ) 
 {
 	return CWndNeuz::InitDialog( APP_TEST, pWndParent, 0, 0 );
 }

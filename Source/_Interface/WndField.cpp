@@ -155,7 +155,7 @@ void CWndDropItem::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndDropItem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndDropItem::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_DROP_ITEM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -212,7 +212,7 @@ void CWndDropConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndDropConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndDropConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_DROP_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -283,7 +283,7 @@ void CWndRandomScrollConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndRandomScrollConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRandomScrollConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_RANDOMSCROLL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -334,7 +334,7 @@ void CWndQuestItemWarning::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndQuestItemWarning::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndQuestItemWarning::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_QUEITMWARNING, pWndParent, 0, CPoint( 0, 0 ) );
@@ -359,7 +359,7 @@ BOOL CWndQuestItemWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 			g_WndMng.m_pWndDropConfirm = new CWndDropConfirm;
 			g_WndMng.m_pWndDropConfirm->m_pItemElem = m_pItemElem;
 			g_WndMng.m_pWndDropConfirm->m_vPos = m_vPos;
-			g_WndMng.m_pWndDropConfirm->Initialize( NULL, APP_DROP_CONFIRM );
+			g_WndMng.m_pWndDropConfirm->Initialize( NULL );
 		}
 		else
 		{
@@ -367,7 +367,7 @@ BOOL CWndQuestItemWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 			g_WndMng.m_pWndDropItem = new CWndDropItem;
 			g_WndMng.m_pWndDropItem->m_pItemElem = m_pItemElem;
 			g_WndMng.m_pWndDropItem->m_vPos = m_vPos;
-			g_WndMng.m_pWndDropItem->Initialize( NULL, APP_DROP_ITEM );
+			g_WndMng.m_pWndDropItem->Initialize( NULL );
 		}
 		Destroy();
 	}
@@ -712,7 +712,7 @@ void CWndQueryEquip::OnInitialUpdate()
 	MoveParentCenter();
 }
 
-BOOL CWndQueryEquip::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndQueryEquip::Initialize(CWndBase * pWndParent) {
 	m_InvenRect.fill(CRect());
 	return CWndNeuz::InitDialog(APP_QUERYEQUIP, pWndParent, 0, CPoint(792, 130));
 }
@@ -1211,9 +1211,9 @@ void CWndInventory::OnInitialUpdate()
 	CPoint point( rectRoot.right - rectWindow.Width(), 112 + 48 );
 	Move( point );
 }
-BOOL CWndInventory::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
+BOOL CWndInventory::Initialize(CWndBase * pWndParent) {
 	m_InvenRect.fill(CRect());
-	return CWndNeuz::InitDialog(dwWndId, pWndParent, 0, CPoint(792, 130));
+	return CWndNeuz::InitDialog(APP_INVENTORY, pWndParent, 0, CPoint(792, 130));
 }
 
 BOOL CWndInventory::Process()
@@ -1345,7 +1345,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							m_pWndConfirmBuy = new CWndConfirmBuy;
 							m_pWndConfirmBuy->m_pItemElem = (CItemElem*)lpShortcut->m_dwData;
 							m_pWndConfirmBuy->m_nBuyType = 1;
-							m_pWndConfirmBuy->Initialize( this, APP_CONFIRM_BUY_ );
+							m_pWndConfirmBuy->Initialize( this );
 							bForbid = FALSE;
 						}
 						else
@@ -1358,7 +1358,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							SAFE_DELETE( m_pWndConfirmBuy );
 							m_pWndConfirmBuy = new CWndConfirmBuy;
 							m_pWndConfirmBuy->m_pItemElem = (CItemElem*)lpShortcut->m_dwData;
-							m_pWndConfirmBuy->Initialize( this, APP_CONFIRM_BUY_ );
+							m_pWndConfirmBuy->Initialize( this );
 							bForbid = FALSE;
 						}
 						else
@@ -1377,7 +1377,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				{
 					SAFE_DELETE( pWndVendor->m_pWndVendorBuy );
 					pWndVendor->m_pWndVendorBuy		= new CWndVendorBuy( (CItemElem *)lpShortcut->m_dwData, lpShortcut->m_dwIndex/*nItem*/ );
-					pWndVendor->m_pWndVendorBuy->Initialize( pWndVendor, APP_VENDOR_BUY );
+					pWndVendor->m_pWndVendorBuy->Initialize( pWndVendor );
 				}
 				bForbid		= FALSE;
 			}
@@ -1757,7 +1757,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 						g_WndMng.m_pWndChangeAttribute = new CWndChangeAttribute;
 						g_WndMng.m_pWndChangeAttribute->SetChangeItem(pFocusItem);
-						g_WndMng.m_pWndChangeAttribute->Initialize(&g_WndMng, APP_COMMITEM_DIALOG);
+						g_WndMng.m_pWndChangeAttribute->Initialize(&g_WndMng);
 						bAble = FALSE;
 					}
 
@@ -1767,7 +1767,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						{
 							SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 							g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-							g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+							g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
 							g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_SKILLINIT, pFocusItem->m_dwObjId, dwObjId );
 						}
 						else
@@ -1808,7 +1808,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 								{
 									SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 									g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-									g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+									g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
 									g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_DEPEN_USE, pFocusItem->m_dwObjId, dwObjId );
 								}
 								bAble = FALSE;
@@ -1819,7 +1819,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 //							{
 //								SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 //								g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-//								g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+//								g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
 //								g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_SKILLINIT, pFocusItem->m_dwObjId, dwObjId );
 //								bAble = FALSE;
 //							}
@@ -1830,7 +1830,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							} else {
 								SAFE_DELETE(g_WndMng.m_pWndCommItemDlg);
 								g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-								g_WndMng.m_pWndCommItemDlg->Initialize(&g_WndMng, APP_COMMITEM_DIALOG);
+								g_WndMng.m_pWndCommItemDlg->Initialize(&g_WndMng);
 								g_WndMng.m_pWndCommItemDlg->SetItem(TID_GAME_WARNINGCCLS, pProp->dwID, pFocusItem->m_dwObjId);
 								bAble = FALSE;
 							}
@@ -2109,7 +2109,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 					SAFE_DELETE( g_WndMng.m_pWndInvenRemoveItem );
 					g_WndMng.m_pWndInvenRemoveItem = new CWndInvenRemoveItem;
-					g_WndMng.m_pWndInvenRemoveItem->Initialize( &g_WndMng, APP_INVEN_REMOVE_ITEM );
+					g_WndMng.m_pWndInvenRemoveItem->Initialize( &g_WndMng );
 					g_WndMng.m_pWndInvenRemoveItem->InitItem( pItemElem );
 					return TRUE;
 				}				
@@ -2229,7 +2229,7 @@ CWndTradeGold * CWndTradeGold::CreateGeneric(
 	}
 
 	g_WndMng.m_pWndTradeGold = new CWndTradeGold();
-	g_WndMng.m_pWndTradeGold->Initialize(&g_WndMng, APP_TRADE_GOLD);
+	g_WndMng.m_pWndTradeGold->Initialize(&g_WndMng);
 
 	g_WndMng.m_pWndTradeGold->SetInitialValue(initialQuantity);
 	g_WndMng.m_pWndTradeGold->m_source = source;
@@ -2245,7 +2245,7 @@ CWndTradeGold * CWndTradeGold::CreateGeneric(
 }
 
 
-BOOL CWndTradeGold::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndTradeGold::Initialize(CWndBase * pWndParent) {
 	return InitDialog(APP_TRADE_GOLD, pWndParent, WBS_MODAL, 0);
 }
 
@@ -2409,7 +2409,7 @@ void CWndConfirmTrade::OnInitialUpdate()
 	Move70();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndConfirmTrade::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndConfirmTrade::Initialize( CWndBase* pWndParent )
 { 
 	m_objid = 0;
 	// Daisy���� ������ ���ҽ��� ������ ����.
@@ -2470,7 +2470,7 @@ void CWndTradeConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndTradeConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndTradeConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_TRADE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -2593,7 +2593,7 @@ void CWndTrade::OnInitialUpdate()
 }
 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndTrade::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndTrade::Initialize( CWndBase* pWndParent )
 { 
 	CWorld* pWorld = g_WorldMng.Get();
 	CMover* pMover	= g_pPlayer->m_vtInfo.GetOther();
@@ -3172,7 +3172,7 @@ void CWndNavigator::OnInitialUpdate()
 	ResizeMiniMap();
 
 }
-BOOL CWndNavigator::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndNavigator::Initialize(CWndBase* pWndParent)
 {
 	CRect rectWindow = g_WndMng.GetWindowRect();
 	CRect rect( 0, 0, 115, 110 ); // 1024 768
@@ -3189,7 +3189,7 @@ BOOL CWndNavigator::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	m_GuildCombatTextureMask.LoadTexture( MakePath( DIR_WORLD_GUILDCOMBAT, "WdGuildWar_Mask.dds" ), 0  );
 	
 	SetTitle( GETTEXT( TID_APP_NAVIGATOR ) );
-	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
+	return CWndNeuz::InitDialog( APP_NAVIGATOR, pWndParent, 0, CPoint( 792, 130 ) );
 }
 void CWndNavigator::ResizeMiniMap()
 {
@@ -4052,7 +4052,7 @@ void CWndStatus::OnInitialUpdate()
 
 }
 
-BOOL CWndStatus::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndStatus::Initialize(CWndBase* pWndParent)
 {
 	return InitDialog( APP_STATUS1 );
 }
@@ -4188,7 +4188,7 @@ void CWndQuestItemInfo::OnInitialUpdate()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-BOOL CWndLogOut::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndLogOut::Initialize(CWndBase* pWndParent)
 {
 	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
@@ -4203,7 +4203,7 @@ BOOL CWndLogOut::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	// ������ �������� ������ �ϱ�
 	Move70();
 
-	return CWndMessageBox::Initialize( pWndParent, dwWndId );
+	return TRUE;
 }
 BOOL CWndLogOut::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
@@ -4314,7 +4314,7 @@ void CWndLogOutWaitting::OnInitialUpdate()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-BOOL CWndQuit::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndQuit::Initialize( CWndBase* pWndParent )
 {
 	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 	/*
@@ -4334,7 +4334,7 @@ BOOL CWndQuit::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 
 	m_bFlag = FALSE;
 	
-	return CWndMessageBox::Initialize( pWndParent, dwWndId );
+	return TRUE;
 }
 BOOL CWndQuit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
@@ -4478,7 +4478,7 @@ void CWndRevival::OnInitialUpdate()
 
 	Move70();
 } 
-BOOL CWndRevival::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndRevival::Initialize( CWndBase* pWndParent ) 
 { 
 	InitDialog( APP_REVIVAL, pWndParent, WBS_MODAL );
 
@@ -4568,11 +4568,11 @@ public:
 	int m_nGold;
 	CString m_strMsg;
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-BOOL CWantedMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWantedMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( prj.GetText(TID_PK_INPUT_TIMEWARN), 
 	                                   pWndParent, 
@@ -4618,7 +4618,7 @@ void CWndReWanted::OnInitialUpdate()
 	MoveParentCenter();	// ������ �߾����� �ű��? �κ�.
 } 
 
-BOOL CWndReWanted::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndReWanted::Initialize( CWndBase* ) 
 { 
 	InitDialog( APP_REWARD_INPUT );
 	return TRUE;
@@ -4702,7 +4702,7 @@ void CWndWantedConfirm::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndWantedConfirm::Initialize(CWndBase *, DWORD) {
+BOOL CWndWantedConfirm::Initialize(CWndBase *) {
 	InitDialog(APP_WANTED_CONFIRM, nullptr, WBS_MODAL);
 	return TRUE;
 }
@@ -4776,7 +4776,7 @@ void CWndWanted::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndWanted::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndWanted::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_WANTED, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -4813,7 +4813,7 @@ void CWndWanted::OnLButtonDblClk( UINT nFlags, CPoint point)
 	{
 		SAFE_DELETE(m_pWantedConfirm);
 		m_pWantedConfirm = new CWndWantedConfirm;
-		m_pWantedConfirm->Initialize( this, 0 );
+		m_pWantedConfirm->Initialize( this );
 
 		// ǥ���� �̸�, ���������? ����
 		m_pWantedConfirm->SetInfo( m_aList[m_nSelect].szName, (int)( m_aList[m_nSelect].nGold ) );
@@ -4903,7 +4903,7 @@ void CWndResurrectionConfirm::OnInitialUpdate()
 	m_wndTitleBar.SetVisible( FALSE );
 	Move70();
 } 
-BOOL CWndResurrectionConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndResurrectionConfirm::Initialize( CWndBase* pWndParent ) 
 { 
 	InitDialog( APP_RESURRECTION, nullptr, WBS_MODAL );
 	return TRUE;
@@ -4953,7 +4953,7 @@ void CWndCommItemDlg::SetItem( DWORD dwDefindText, DWORD dwObjId, DWORD dwCtrlId
 	m_dwCtrlId = dwCtrlId;
 } 
 
-BOOL CWndCommItemDlg::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndCommItemDlg::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_COMMITEM_DIALOG, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -5081,7 +5081,7 @@ void CWndChangeClass1::OnModifiedJob() {
 	}
 }
 
-BOOL CWndChangeClass1::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndChangeClass1::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_CHANGECLASS_1, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -5352,11 +5352,11 @@ class CWndGuildCombatOfferMessageBox : public CWndMessageBox
 public: 
 	DWORD m_nCost;
 	void	SetValue( CString str, DWORD nCost );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-BOOL CWndGuildCombatOfferMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndGuildCombatOfferMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( "", 
 		pWndParent, 
@@ -5418,7 +5418,7 @@ void CWndGuildCombatOffer::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildCombatOffer::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatOffer::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_OFFER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -5555,7 +5555,7 @@ void CWndGuildCombatBoard::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildCombatBoard::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatBoard::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_BOARD, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -5609,7 +5609,7 @@ void CGuildCombatInfoMessageBox::PaintFrame( C2DRender* p2DRender )
 	}
 }
 
-BOOL CGuildCombatInfoMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CGuildCombatInfoMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_MSG, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -5666,7 +5666,7 @@ void CGuildCombatInfoMessageBox2::OnInitialUpdate()
 	MoveParentCenter();	
 }
 
-BOOL CGuildCombatInfoMessageBox2::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CGuildCombatInfoMessageBox2::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_MSG2, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -5702,7 +5702,7 @@ void CGuildCombatInfoMessageBox2::SetString( CHAR* szChar  )
 
 
 // ���? ������ ���� ���� ����
-BOOL CGuildCombatSelectionClearMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CGuildCombatSelectionClearMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( prj.GetText(TID_GAME_GUILDCOMBAT_REMAKE_MAKEUP), //�����ۼ��� �ٽ� �Ͻðڽ��ϱ�?
 		pWndParent, 
@@ -5812,7 +5812,7 @@ void CWndGuildCombatSelection::OnInitialUpdate()
 	ReceiveLineup({}, 0);
 } 
 
-BOOL CWndGuildCombatSelection::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndGuildCombatSelection::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILDCOMBAT_SELECTION, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -5993,7 +5993,7 @@ void CWndGuildCombatState::InsertTitle( const char szTitle[] )
 	SetTitle( strTitle );
 }
 
-BOOL CWndGuildCombatState::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatState::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_1TO1_OFFERSTATE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6198,7 +6198,7 @@ void CWndGuildCombatJoinSelection::OnInitialUpdate()
 	m_wndTitleBar.SetVisible( FALSE );	
 } 
 
-BOOL CWndGuildCombatJoinSelection::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatJoinSelection::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_SELSTART, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6260,7 +6260,7 @@ void CWndGuildWarAppConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildWarAppConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildWarAppConfirm::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_CLOSE_EXISTING_CONNECTION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6329,7 +6329,7 @@ void CWndGuildWarCancelConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildWarCancelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildWarCancelConfirm::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_CANCEL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6409,7 +6409,7 @@ void CWndGuildWarJoinConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildWarJoinConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildWarJoinConfirm::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_CLOSE_EXISTING_CONNECTION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6490,7 +6490,7 @@ void CWndGuildWarState::InsertTitle( const char szTitle[] )
 	SetTitle( strTitle );
 }
 
-BOOL CWndGuildWarState::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildWarState::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILD_WAR_STATE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6680,7 +6680,7 @@ void CWndGuildCombatRanking::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildCombatRanking::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatRanking::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RANKING, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6909,7 +6909,7 @@ void CWndGuildCombatResult::OnInitialUpdate()
 	pWndList2->ResetContent();	
 	pWndText->ResetString();
 } 
-BOOL CWndGuildCombatResult::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatResult::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RESULT_POINT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6970,7 +6970,7 @@ void CWndGuildCombatTabResultRate::OnInitialUpdate()
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
 } 
-BOOL CWndGuildCombatTabResultRate::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatTabResultRate::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_TAB_RESULT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6986,7 +6986,7 @@ void CWndGuildCombatTabResultLog::OnInitialUpdate()
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
 } 
-BOOL CWndGuildCombatTabResultLog::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatTabResultLog::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_TAB_RESULT_LOG, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -7060,7 +7060,7 @@ void CWndGuildCombatRank_Person::OnInitialUpdate()
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
 } 
-BOOL CWndGuildCombatRank_Person::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatRank_Person::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RANK_P, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -7360,7 +7360,7 @@ void CWndGuildCombatRank_Class::OnInitialUpdate()
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
 } 
-BOOL CWndGuildCombatRank_Class::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatRank_Class::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RANKINGCLASS, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -7437,7 +7437,7 @@ void CWndFontEdit::OnInitialUpdate()
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
 } 
-BOOL CWndFontEdit::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndFontEdit::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_FONTEDIT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -7687,7 +7687,7 @@ void CWndMixJewel::OnInitialUpdate()
 }
 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndMixJewel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndMixJewel::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_MIXJEWEL, pWndParent, 0, CPoint( 0, 0 ) );
@@ -7817,7 +7817,7 @@ void CWndMixJewelConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndMixJewelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndMixJewelConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_MIXJEWEL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -7878,7 +7878,7 @@ void CWndExtraction::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndExtraction::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndExtraction::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_EXTRACTION, pWndParent, 0, CPoint( 0, 0 ) );
@@ -8030,7 +8030,7 @@ void CWndSmeltJewel::OnInitialUpdate()
 } 
 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndSmeltJewel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSmeltJewel::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_JEWEL, pWndParent, 0, CPoint( 0, 0 ) );
@@ -8549,7 +8549,7 @@ void CWndChangeWeapon::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndChangeWeapon::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndChangeWeapon::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_CHANGEWEAPON, pWndParent, 0, CPoint( 0, 0 ) );
@@ -8751,7 +8751,7 @@ void CWndRemoveJewelConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndRemoveJewelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRemoveJewelConfirm::Initialize( CWndBase* pWndParent )
 {
 	m_pInventory = (CWndInventory*)pWndParent;
 	// Daisy���� ������ ���ҽ��� ������ ����.
@@ -8842,7 +8842,7 @@ void CWndHeroSkillUp::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndHeroSkillUp::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndHeroSkillUp::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_HERO_SKILLUP, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -9001,7 +9001,7 @@ void CWndDialogEvent::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndDialogEvent::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndDialogEvent::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_DIALOG_EVENT, pWndParent, 0, CPoint( 0, 0 ) );
@@ -9301,7 +9301,7 @@ void CWndHeavenTower::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndHeavenTower::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndHeavenTower::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_HEAVEN_TOWER, pWndParent, 0, CPoint( 0, 0 ) );
@@ -9422,7 +9422,7 @@ void CWndHeavenTower::InitWnd()
 // CWndHeavenTowerEntranceConfirm Class
 //////////////////////////////////////////////////////////////////////////
 
-BOOL CWndHeavenTowerEntranceConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndHeavenTowerEntranceConfirm::Initialize( CWndBase* pWndParent )
 {
 	m_nFloor = 0;
 	return CWndMessageBox::Initialize( "", pWndParent, MB_OKCANCEL );	
@@ -9485,7 +9485,7 @@ void CWndRemoveAttribute::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndRemoveAttribute::Initialize( CWndBase* pWndParent, DWORD) 
+BOOL CWndRemoveAttribute::Initialize( CWndBase* pWndParent ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_REMOVE_ATTRIBUTE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -9545,7 +9545,7 @@ void CWndRemoveAttribute::CWndConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRemoveAttribute::CWndConfirm::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndRemoveAttribute::CWndConfirm::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_REMOVE_ATTRIBUTE_CONFIRM, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -9647,7 +9647,7 @@ void CWndRemovePiercing::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndRemovePiercing::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRemovePiercing::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_REMOVE_PIERCING_EX, pWndParent, 0, CPoint( 0, 0 ) );
@@ -9820,7 +9820,7 @@ void CWndRemoveJewel::OnInitialUpdate() {
 	MoveParentCenter();
 } 
 
-BOOL CWndRemoveJewel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRemoveJewel::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_REMOVE_JEWEL, pWndParent, 0, CPoint( 0, 0 ) );
@@ -9950,7 +9950,7 @@ void CWndChangeAttribute::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndChangeAttribute::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndChangeAttribute::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_CHANGE_ATTRIBUTE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -10153,7 +10153,7 @@ void CWndChangeAttribute::OnLButtonDblClk( UINT nFlags, CPoint point )
 //////////////////////////////////////////////////////////////////////////
 // Couple Message Window
 //////////////////////////////////////////////////////////////////////////
-BOOL CWndCoupleMessage::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndCoupleMessage::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( m_strText, pWndParent, MB_OKCANCEL );
 }
@@ -10262,7 +10262,7 @@ void CWndCoupleTabInfo::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndCoupleTabInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndCoupleTabInfo::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_COUPLE_TAB_INFO, pWndParent, 0, CPoint( 0, 0 ) );
@@ -10418,7 +10418,7 @@ void CWndCoupleTabSkill::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndCoupleTabSkill::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndCoupleTabSkill::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_COUPLE_TAB_SKILL, pWndParent, 0, CPoint( 0, 0 ) );
@@ -10532,7 +10532,7 @@ void CWndCoupleManager::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndCoupleManager::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndCoupleManager::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_COUPLE_MAIN, pWndParent, 0, CPoint( 0, 0 ) );
@@ -10581,7 +10581,7 @@ void CWndFunnyCoinConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndFunnyCoinConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndFunnyCoinConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_FUNNYCOIN_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -10671,7 +10671,7 @@ CWndSmeltSafety::~CWndSmeltSafety()
 }
 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndSmeltSafety::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
+BOOL CWndSmeltSafety::Initialize( CWndBase* pWndParent )
 {
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_SAFETY, pWndParent, 0, CPoint( 0, 0 ) );
@@ -12130,7 +12130,7 @@ CWndSmeltSafetyConfirm::~CWndSmeltSafetyConfirm()
 {
 }
 
-BOOL CWndSmeltSafetyConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndSmeltSafetyConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_SMELT_SAFETY_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -12211,7 +12211,7 @@ CWndEquipBindConfirm::~CWndEquipBindConfirm(void)
 {
 }
 
-BOOL CWndEquipBindConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndEquipBindConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_EQUIP_BIND_CONFIRM, pWndParent, WBS_MODAL | WBS_KEY, CPoint( 0, 0 ) );
 }
@@ -12320,7 +12320,7 @@ CWndRestateConfirm::~CWndRestateConfirm(void)
 {
 }
 
-BOOL CWndRestateConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndRestateConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_RESTATE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -12427,7 +12427,7 @@ CWndCampusInvitationConfirm::~CWndCampusInvitationConfirm( void )
 {
 }
 //-----------------------------------------------------------------------------
-BOOL CWndCampusInvitationConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndCampusInvitationConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_CONFIRM_ENTER, pWndParent, WBS_KEY, 0 );
 }
@@ -12493,7 +12493,7 @@ CWndCampusSeveranceConfirm::~CWndCampusSeveranceConfirm( void )
 {
 }
 //-----------------------------------------------------------------------------
-BOOL CWndCampusSeveranceConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndCampusSeveranceConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_CONFIRM_ENTER, pWndParent, WBS_KEY, 0 );
 }

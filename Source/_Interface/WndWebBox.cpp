@@ -36,7 +36,7 @@ CWndWebBox::~CWndWebBox()
 	ShowWindow( CWebBox::GetInstance()->m_hDlg, SW_HIDE );
 	CWebBox::GetInstance()->Close();	
 }
-BOOL CWndWebBox::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndWebBox::Initialize( CWndBase* pWndParent )
 {
 	if(g_WndMng.GetWndBase( APP_TRADE )) 
 	{
@@ -223,7 +223,7 @@ CWndWebBox2::~CWndWebBox2()
 	ShowWindow( CWebBox::GetInstance()->m_hDlg, SW_HIDE );
 	CWebBox::GetInstance()->Close();	
 }
-BOOL CWndWebBox2::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndWebBox2::Initialize( CWndBase* pWndParent )
 {	
 	CWndWebBox* pWndWebBox = (CWndWebBox*)g_WndMng.GetApplet( APP_WEBBOX );
 	if(pWndWebBox)

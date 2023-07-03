@@ -23,7 +23,7 @@ public:
 
 	void	SetVendor( CMover* pVendor );
 
-	virtual BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
 	void			ReloadItemList();
 	virtual BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void	OnDraw( C2DRender* p2DRender ); 
@@ -58,7 +58,7 @@ public:
 	void OnInputString();
 	
 	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -74,7 +74,7 @@ public:
 	CString m_strVendorName;
 	void	SetVendorName( CString str );
 	void	SetValue( CString str );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 

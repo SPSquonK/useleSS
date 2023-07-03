@@ -20,7 +20,7 @@ public:
 	~CWndBank() override;
 	void ReSetBank( void );
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -35,7 +35,7 @@ private:
 public: 
 	explicit CWndConfirmBank(OBJID dwId = NULL_ID) : m_dwId(dwId) {}
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override; 
 	virtual	void OnInitialUpdate() override;
 }; 
@@ -51,7 +51,7 @@ public:
 		, m_dwId(dwId) {
 	}
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 

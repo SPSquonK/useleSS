@@ -1394,7 +1394,7 @@ void CDPClient::OnAllAction( CAr & ar )
 			if( !g_WndMng.m_pWndChangeName )
 			{
 				g_WndMng.m_pWndChangeName		= new CWndChangeName;
-				g_WndMng.m_pWndChangeName->Initialize( &g_WndMng, 0 );
+				g_WndMng.m_pWndChangeName->Initialize( &g_WndMng );
 			}
 		}
 		else
@@ -1815,7 +1815,7 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 					if( NULL == g_WndMng.m_pWndRevival )		// ºÎÈ°Ã¢ ¶ç¿ò
 					{
 						g_WndMng.m_pWndRevival	= new CWndRevival;
-						g_WndMng.m_pWndRevival->Initialize( &g_WndMng, 0 );
+						g_WndMng.m_pWndRevival->Initialize( &g_WndMng );
 
 						if( bBossDie )
 						{
@@ -2232,7 +2232,7 @@ void CDPClient::OnConfirmTrade( OBJID objid, CAr & ar ) {
 	}
 		
 	g_WndMng.m_pWndConfirmTrade = new CWndConfirmTrade;
-	g_WndMng.m_pWndConfirmTrade->Initialize( NULL, APP_CONFIRM_TRADE );			
+	g_WndMng.m_pWndConfirmTrade->Initialize( NULL );			
 	g_WndMng.m_pWndConfirmTrade->OnSetName( pTrader->GetName(), objid );
 }
 
@@ -2448,7 +2448,7 @@ void CDPClient::OnTradeConsent() {
 void CDPClient::OnTradelastConfirm( void )
 {
 	g_WndMng.m_pWndTradeConfirm = new CWndTradeConfirm;
-	g_WndMng.m_pWndTradeConfirm->Initialize( NULL, APP_TRADE_CONFIRM );
+	g_WndMng.m_pWndTradeConfirm->Initialize( NULL );
 
 	CWndTrade* pWndTrade	= (CWndTrade*)g_WndMng.GetApplet( APP_TRADE );
 	if( pWndTrade )
@@ -2477,7 +2477,7 @@ void CDPClient::OnOpenShopWnd( OBJID objid, CAr & ar )
 		g_pPlayer->m_vtInfo.SetOther( pVendor );
 
 		g_WndMng.CreateApplet( APP_INVENTORY );
-		g_WndMng.m_pWndShop->Initialize( NULL, APP_SHOP_ );
+		g_WndMng.m_pWndShop->Initialize( NULL );
 	}
 }
 
@@ -2629,7 +2629,7 @@ void CDPClient::OnBank( OBJID , CAr & ar )
 	if (nMode == Subsnapshot::Bank::ValidateBankAccess) {
 		g_WndMng.CreateApplet(APP_INVENTORY);
 		g_WndMng.m_pWndBank = new CWndBank;
-		g_WndMng.m_pWndBank->Initialize(&g_WndMng, APP_COMMON_BANK);
+		g_WndMng.m_pWndBank->Initialize(&g_WndMng);
 		return;
 	}
 
@@ -2679,7 +2679,7 @@ void CDPClient::OnGuildBankWindow( OBJID objid, CAr & ar )
 
 			g_WndMng.CreateApplet( APP_INVENTORY );
 			
-			g_WndMng.m_pWndGuildBank->Initialize(NULL, APP_GUILD_BANK);
+			g_WndMng.m_pWndGuildBank->Initialize(NULL);
 		}
 		break;
 	default:
@@ -7150,7 +7150,7 @@ void CDPClient::OnWantedName( CAr & ar )
 		SAFE_DELETE( g_WndMng.m_pReWanted );
 		g_WndMng.m_pReWanted = new CWndReWanted;
 		g_WndMng.m_pReWanted->SetWantedName( szName );
-		g_WndMng.m_pReWanted->Initialize( &g_WndMng, APP_REWARD_INPUT );
+		g_WndMng.m_pReWanted->Initialize( &g_WndMng );
 	}
 	else
 	{
@@ -7176,7 +7176,7 @@ void CDPClient::OnWantedList(CAr & ar) {
 		g_WndMng.m_pWanted->InsertWanted(entry);
 	}
 
-	g_WndMng.m_pWanted->Initialize(&g_WndMng, APP_WANTED);
+	g_WndMng.m_pWanted->Initialize(&g_WndMng);
 }
 
 // Sender
@@ -7358,7 +7358,7 @@ void CDPClient::SendDoEquip( CItemElem* pItemElem, int nPart, BOOL bResult )
 			// ¹°¾îºÁ¾ß ÇÔ
 			SAFE_DELETE( g_WndMng.m_pRemoveElem );
 			g_WndMng.m_pRemoveElem = new CWndRemoveElem;
-			g_WndMng.m_pRemoveElem->Initialize( &g_WndMng, APP_REMOVE_ELEM );
+			g_WndMng.m_pRemoveElem->Initialize( &g_WndMng );
 			g_WndMng.m_pRemoveElem->OnSetItem( 2, 0, 0, nPart, pItemElem );
 			return;
 		}
@@ -8256,7 +8256,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				// ¹°¾îºÁ¾ß ÇÔ
 				SAFE_DELETE( g_WndMng.m_pRemoveElem );
 				g_WndMng.m_pRemoveElem = new CWndRemoveElem;
-				g_WndMng.m_pRemoveElem->Initialize( &g_WndMng, APP_REMOVE_ELEM );
+				g_WndMng.m_pRemoveElem->Initialize( &g_WndMng );
 				g_WndMng.m_pRemoveElem->OnSetItem( 1, dwItemId, objid, nPart, NULL );
 				return;
 			}
@@ -8312,7 +8312,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 		g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
 		g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_REGARDLESS_USE, dwId, objid );
 		return;
 	}
@@ -8321,7 +8321,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 		g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
 		g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_LV7OVER_NOTUSE, dwId, objid );
 		return;
 	}
@@ -8330,7 +8330,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 		g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
 		g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_LV10OVER_NOTUSE, dwId, objid );
 		return;
 	}
@@ -8366,7 +8366,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 		g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
 		g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_LV7OVER_NOTUSE, dwId, objid );
 		return;
 	}
@@ -8376,7 +8376,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( !g_WndMng.m_pWndChangeName )
 		{
 			g_WndMng.m_pWndChangeName		= new CWndChangeName;
-			g_WndMng.m_pWndChangeName->Initialize( &g_WndMng, 0 );
+			g_WndMng.m_pWndChangeName->Initialize( &g_WndMng );
 		}
 		g_WndMng.m_pWndChangeName->SetData( (WORD)( pItemBase->m_dwObjId ), 0 );
 		return;
@@ -8412,7 +8412,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		SAFE_DELETE( g_WndMng.m_pFunnyCoinConfirm );
 		g_WndMng.m_pFunnyCoinConfirm = new CWndFunnyCoinConfirm;
 		g_WndMng.m_pFunnyCoinConfirm->SetInfo( dwId, pItemBase );
-		g_WndMng.m_pFunnyCoinConfirm->Initialize( &g_WndMng, APP_FUNNYCOIN_CONFIRM );
+		g_WndMng.m_pFunnyCoinConfirm->Initialize( &g_WndMng );
 		
 		return;
 	}
@@ -8457,7 +8457,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				return;
 
 			g_WndMng.m_pWndBeautyShop = new CWndBeautyShop;
-			g_WndMng.m_pWndBeautyShop->Initialize( NULL, APP_BEAUTY_SHOP_EX );
+			g_WndMng.m_pWndBeautyShop->Initialize( NULL );
 
 			return;
 		}
@@ -8486,13 +8486,13 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			case II_SYS_SYS_SCR_PET_TAMER_MISTAKE:
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_PET_MISTAKE_DESC, dwId, II_SYS_SYS_SCR_PET_TAMER_MISTAKE );
 				return;
 			case II_SYS_SYS_SCR_PET_HATCH:
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_PET_HATCH_DESC, dwId, objid );
 				return;	
 			case II_SYS_SYS_FEED_01:
@@ -8507,7 +8507,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				{
 					SAFE_DELETE( g_WndMng.m_pWndPetFoodMill );
 					g_WndMng.m_pWndPetFoodMill = new CWndPetFoodMill;
-					g_WndMng.m_pWndPetFoodMill->Initialize( &g_WndMng, APP_PET_FOOD );
+					g_WndMng.m_pWndPetFoodMill->Initialize( &g_WndMng );
 					g_WndMng.m_pWndPetFoodMill->SetItem( dwId );
 				}
 				return;
@@ -8515,12 +8515,12 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				SAFE_DELETE( g_WndMng.m_pWndPetLifeConfirm );
 				g_WndMng.m_pWndPetLifeConfirm = new CWndPetLifeConfirm;
 				g_WndMng.m_pWndPetLifeConfirm->SetItem(dwId);
-				g_WndMng.m_pWndPetLifeConfirm->Initialize( &g_WndMng, APP_MESSAGEBOX );				
+				g_WndMng.m_pWndPetLifeConfirm->Initialize( &g_WndMng );				
 				return;
 			case II_GEN_TOO_COL_NORMALBATTERY:
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_BETTERY_DESC, dwId, II_GEN_TOO_COL_NORMALBATTERY );
 				return;	
 			case II_GEN_TOO_COL_BATTERY001:
@@ -8528,7 +8528,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			case II_GEN_TOO_COL_GOLDBATTERY:
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_CACHE_BETTERY_DESC, dwId, pItemProp->dwID );
 				return;	
 			default:
@@ -8547,7 +8547,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			{
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng );
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_TICKET_DESC, dwId,  pItemProp->dwID );
 				return;
 			}
@@ -8645,7 +8645,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( !g_WndMng.m_pWndSealChar )
 		{
 			g_WndMng.m_pWndSealChar		= new CWndSealChar;
-			g_WndMng.m_pWndSealChar->Initialize( &g_WndMng, 0 );
+			g_WndMng.m_pWndSealChar->Initialize( &g_WndMng );
 		}
 		return;
 	}
@@ -11695,7 +11695,7 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 				if( NULL == g_WndMng.m_pWndChangeName )
 				{
 					g_WndMng.m_pWndChangeName		= new CWndChangeName;
-					g_WndMng.m_pWndChangeName->Initialize( &g_WndMng, 0 );
+					g_WndMng.m_pWndChangeName->Initialize( &g_WndMng );
 				}
 				g_WndMng.m_pWndChangeName->SetData( 0xffff, 1 );
 				break;
@@ -15766,7 +15766,7 @@ void CDPClient::OnSafeAwakening( CAr& ar )
 	if( !g_pPlayer ) return;
 	
 	g_WndMng.m_pWndSelectAwakeCase = new CWndSelectAwakeCase(byItemObjID, dwSerialNumber, n64NewRandomOption);
-	g_WndMng.m_pWndSelectAwakeCase->Initialize(&g_WndMng, APP_AWAKE_SELECTCASE);
+	g_WndMng.m_pWndSelectAwakeCase->Initialize(&g_WndMng);
 }
 
 #endif //__PROTECT_AWAKE

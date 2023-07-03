@@ -8,7 +8,7 @@ class CWndSummonFriendMsg : public CWndNeuz
 public: 
 	
 	void	SetData( OBJID objid, DWORD dwData, char* szName, char* szWorldName );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 
@@ -19,7 +19,7 @@ private:
 	DWORD	m_dwData;
 public: 
 	void	SetData( WORD wId, WORD wReset );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 
@@ -29,7 +29,7 @@ class CWndSummonPartyMsg : public CWndNeuz
 	CTexture			m_Texture;
 public:
 	void	SetData( OBJID objid, DWORD dwData, const char* szWorldName );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -43,7 +43,7 @@ private:
 public: 
 
 	void	SetData( WORD wId, WORD wReset );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 };
@@ -51,7 +51,7 @@ public:
 class CWndSummonPartyUse : public CWndNeuz 
 { 
 public: 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 

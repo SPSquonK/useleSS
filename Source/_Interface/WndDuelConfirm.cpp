@@ -51,7 +51,7 @@ void CWndDuelConfirm::OnInitialUpdate()
 	Move70();	
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndDuelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndDuelConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_DUEL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -355,7 +355,7 @@ void CWndDuelResult::OnInitialUpdate()
 	Move70();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndDuelResult::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndDuelResult::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_DUEL_RESULT, pWndParent, 0, CPoint( 0, 0 ) );

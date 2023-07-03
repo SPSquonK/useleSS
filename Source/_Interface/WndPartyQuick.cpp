@@ -145,7 +145,7 @@ void CWndPartyQuick::OnInitialUpdate()
 	Move(point);
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPartyQuick::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndPartyQuick::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	if(g_Party.GetSizeofMember() < 2) //시작과 함께 열릴 경우 Quick창은 열지 않도록 한다. Party정보가 없어 세팅 불가.

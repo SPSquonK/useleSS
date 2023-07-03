@@ -23,7 +23,7 @@ void CWndMap::OnInitialUpdate()
 
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndMap::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndMap::Initialize( CWndBase* pWndParent )
 { 
 	CWorldMap* pWorldMap = CWorldMap::GetInstance();
 

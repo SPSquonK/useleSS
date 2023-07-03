@@ -27,7 +27,7 @@ void CWndQuizEventConfirm::OnDraw( C2DRender* p2DRender )
 {
 }
 
-BOOL CWndQuizEventConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndQuizEventConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_QUIZ_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -81,7 +81,7 @@ CWndQuizEventQuestionOX::~CWndQuizEventQuestionOX()
 {
 }
 
-BOOL CWndQuizEventQuestionOX::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndQuizEventQuestionOX::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_QUIZ_QUESTION_OX, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -163,7 +163,7 @@ CWndQuizEventQuestion4C::~CWndQuizEventQuestion4C()
 {
 }
 
-BOOL CWndQuizEventQuestion4C::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndQuizEventQuestion4C::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_QUIZ_QUESTION_4C, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -398,7 +398,7 @@ BOOL CWndQuizEventButton::Process()
 	return TRUE;
 }
 
-BOOL CWndQuizEventButton::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndQuizEventButton::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_QUIZ_BUTTON, pWndParent, WBS_NOFOCUS, CPoint( 0, 0 ) );

@@ -7,7 +7,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-BOOL CWndSkill_16::Initialize(CWndBase * pWndParent, DWORD nType) {
+BOOL CWndSkill_16::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_SKILL_V16, pWndParent, WBS_KEY, 0);
 }
 

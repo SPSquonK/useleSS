@@ -306,7 +306,7 @@ void CWndGuildTabMember::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildTabMember::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildTabMember::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GUILD_TABMEMBER_EX, pWndParent, 0, CPoint( 0, 0 ) );
@@ -379,7 +379,7 @@ BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBas
 						SAFE_DELETE( g_WndMng.m_pWndGuildNickName );
 						g_WndMng.m_pWndGuildNickName = new CWndGuildNickName;
 						g_WndMng.m_pWndGuildNickName->m_idPlayer = m_list[m_nSelect].idPlayer;
-						g_WndMng.m_pWndGuildNickName->Initialize( &g_WndMng, APP_GUILD_NICKNAME );
+						g_WndMng.m_pWndGuildNickName->Initialize( &g_WndMng );
 					}
 				}
 				else

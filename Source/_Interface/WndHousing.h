@@ -42,7 +42,7 @@ public:
 	virtual ~CWndHousing(); 
 	
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -67,7 +67,7 @@ public:
 	CWndGHouseShowOneUnit( );
 	virtual ~CWndGHouseShowOneUnit( );
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 
@@ -93,7 +93,7 @@ public:
 	CWndGuildHousing( );
 	virtual ~CWndGuildHousing( );
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
@@ -163,7 +163,7 @@ public:
 	CWndGuildHouseBid( );
 	virtual ~CWndGuildHouseBid( );
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 

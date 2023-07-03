@@ -12,7 +12,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-BOOL CReturnScrollMsgBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CReturnScrollMsgBox::Initialize( CWndBase* pWndParent )
 {
 	// 아이템 사용 후 4시간 안에 저장된 위치로 돌아오지 않으면 아이템의 효력은 
 	//사라집니다. 아이템을 사용하시겠습니까?
@@ -31,7 +31,7 @@ BOOL CReturnScrollMsgBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 		{
 			SAFE_DELETE( g_WndMng.m_pWndSelectVillage );
 			g_WndMng.m_pWndSelectVillage = new CWndSelectVillage;
-			g_WndMng.m_pWndSelectVillage->Initialize( &g_WndMng, 0 );
+			g_WndMng.m_pWndSelectVillage->Initialize( &g_WndMng );
 			Destroy();
 		}
 		break;
@@ -66,7 +66,7 @@ void CWndSelectVillage::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndSelectVillage::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSelectVillage::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_COMM_SELECTVIL, pWndParent, 0, CPoint( 0, 0 ) );
 } 

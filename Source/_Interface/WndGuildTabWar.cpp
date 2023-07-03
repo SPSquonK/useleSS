@@ -101,7 +101,7 @@ void CWndGuildTabWar::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildTabWar::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndGuildTabWar::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_TABGUILDWAR, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -191,7 +191,7 @@ void CWndGuildWarRequest::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndGuildWarRequest::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndGuildWarRequest::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_WARREQUEST, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -223,7 +223,7 @@ void CWndGuildWarPeaceConfirm::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndGuildWarPeaceConfirm::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndGuildWarPeaceConfirm::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_WARPEACECONFIRM, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -253,7 +253,7 @@ void CWndGuildWarPeace::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndGuildWarPeace::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndGuildWarPeace::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_WARPEACE, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -282,7 +282,7 @@ void CWndGuildWarGiveUp::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndGuildWarGiveUp::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndGuildWarGiveUp::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_WARGIVEUP, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -326,7 +326,7 @@ void CWndGuildWarDecl::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndGuildWarDecl::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndGuildWarDecl::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_WAR, pWndParent, 0, CPoint(0, 0));
 }
 

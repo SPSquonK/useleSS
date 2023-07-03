@@ -2892,12 +2892,12 @@ void CWndWorld::OnInitialUpdate()
 
 }
 
-BOOL CWndWorld::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndWorld::Initialize( CWndBase* pWndParent )
 {
 	CRect rectWindow = g_WndMng.GetWindowRect();
 	CRect rect( 100,100,500,400 );
 	SetTitle( _T( "World" ) );
-	return CWndNeuz::Create(WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_THICKFRAME|WBS_MANAGER|WBS_MAXIMIZEBOX,rect,pWndParent,dwWndId);
+	return CWndNeuz::Create(WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_THICKFRAME|WBS_MANAGER|WBS_MAXIMIZEBOX,rect,pWndParent,APP_WORLD);
 }
 BOOL CWndWorld::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 { 
@@ -3342,7 +3342,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				SAFE_DELETE( g_WndMng.m_pWndLvReqDown );
 				g_WndMng.m_pWndLvReqDown = new CWndLvReqDown;
 				//g_WndMng.m_pWndLvReqDown->Initialize();
-				g_WndMng.m_pWndLvReqDown->Initialize( &g_WndMng, APP_LVREQDOWN );
+				g_WndMng.m_pWndLvReqDown->Initialize( &g_WndMng );
 			}
 			break;
 
@@ -3358,7 +3358,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				SAFE_DELETE( g_WndMng.m_pWndAwakening );
 				g_WndMng.m_pWndAwakening = new CWndAwakening;
 				//g_WndMng.m_pWndAwakening->Initialize();	
-				g_WndMng.m_pWndAwakening->Initialize( &g_WndMng, APP_AWAKENING );
+				g_WndMng.m_pWndAwakening->Initialize( &g_WndMng );
 			}
 			break;
 
@@ -3374,7 +3374,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				SAFE_DELETE( g_WndMng.m_pWndBlessingCancel );
 				g_WndMng.m_pWndBlessingCancel = new CWndBlessingCancel;
 				//g_WndMng.m_pWndAwakening->Initialize();	
-				g_WndMng.m_pWndBlessingCancel->Initialize( &g_WndMng, APP_CANCEL_BLESSING );
+				g_WndMng.m_pWndBlessingCancel->Initialize( &g_WndMng );
 			}
 			break;
 #ifdef __JEFF_11
@@ -3390,7 +3390,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				SAFE_DELETE(g_WndMng.m_pPetRes);
 				g_WndMng.m_pPetRes = new CWndPetRes;
 				//g_WndMng.m_pPetRes->Initialize();
-				g_WndMng.m_pPetRes->Initialize( &g_WndMng, APP_PET_RES );
+				g_WndMng.m_pPetRes->Initialize( &g_WndMng );
 			}
 			break;
 #endif
@@ -3623,7 +3623,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.CreateApplet( APP_INVENTORY );			
 					SAFE_DELETE( g_WndMng.m_pWndBeautyShop );
 					g_WndMng.m_pWndBeautyShop = new CWndBeautyShop;
-					g_WndMng.m_pWndBeautyShop->Initialize( NULL, APP_BEAUTY_SHOP_EX );
+					g_WndMng.m_pWndBeautyShop->Initialize( NULL );
 				}
 			}
 			break;
@@ -3691,7 +3691,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.CreateApplet( APP_INVENTORY );
 					SAFE_DELETE( g_WndMng.m_pWndFaceShop );
 					g_WndMng.m_pWndFaceShop = new CWndFaceShop;
-					g_WndMng.m_pWndFaceShop->Initialize( NULL, APP_BEAUTY_SHOP_SKIN );
+					g_WndMng.m_pWndFaceShop->Initialize( NULL );
 				}
 			}
 			break;
@@ -4065,7 +4065,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			SAFE_DELETE( g_WndMng.m_pWndDialog );
 			g_WndMng.m_pWndDialog = new CWndDialog;
 			g_WndMng.m_pWndDialog->m_idMover = ((CMover*)pFocusObj)->GetId();
-			g_WndMng.m_pWndDialog->Initialize( &g_WndMng, APP_DIALOG_EX );
+			g_WndMng.m_pWndDialog->Initialize( &g_WndMng );
 			break;
 	case MMI_LORD_STATE:
 		SAFE_DELETE( g_WndMng.m_pWndLordState );
@@ -4291,7 +4291,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					break;
 				}
 				g_WndMng.m_pWndRepairItem = new CWndRepairItem;
-				g_WndMng.m_pWndRepairItem->Initialize( &g_WndMng, APP_REPAIR );
+				g_WndMng.m_pWndRepairItem->Initialize( &g_WndMng );
 				break;
 			}
 		case MMI_BANKING:
@@ -4447,7 +4447,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			{
 				SAFE_DELETE( g_WndMng.m_pWndRankGuild );
 				g_WndMng.m_pWndRankGuild = new CWndRankGuild;
-				g_WndMng.m_pWndRankGuild->Initialize( &g_WndMng, APP_RANK_GUILD );
+				g_WndMng.m_pWndRankGuild->Initialize( &g_WndMng );
 				
 				g_DPlay.SendGuildRank( CGuildRank::Instance.m_Version );
 				break;
@@ -4456,7 +4456,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			{
 				SAFE_DELETE( g_WndMng.m_pWndRankWar );
 				g_WndMng.m_pWndRankWar = new CWndRankWar;
-				g_WndMng.m_pWndRankWar->Initialize( &g_WndMng, APP_RANK_WAR );
+				g_WndMng.m_pWndRankWar->Initialize( &g_WndMng );
 				g_DPlay.SendGuildRank( CGuildRank::Instance.m_Version );
 				break;
 			}
@@ -4464,7 +4464,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			{
 				SAFE_DELETE( g_WndMng.m_pWndRankInfo );
 				g_WndMng.m_pWndRankInfo = new CWndRankInfo;
-				g_WndMng.m_pWndRankInfo->Initialize( &g_WndMng, APP_RANK_INFO );
+				g_WndMng.m_pWndRankInfo->Initialize( &g_WndMng );
 				g_DPlay.SendGuildRank( CGuildRank::Instance.m_Version );
 				break;
 			}
@@ -4556,7 +4556,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					break;
 				SAFE_DELETE( g_WndMng.m_pWndPiercing );
 				g_WndMng.m_pWndPiercing = new CWndPiercing;
-				g_WndMng.m_pWndPiercing->Initialize( &g_WndMng, APP_PIERCING );
+				g_WndMng.m_pWndPiercing->Initialize( &g_WndMng );
 			}
 			break;
 		case MMI_UPGRADE:
@@ -4602,7 +4602,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					break;
 				SAFE_DELETE( g_WndMng.m_pWndUpgradeBase );
 				g_WndMng.m_pWndUpgradeBase = new CWndUpgradeBase;
-				g_WndMng.m_pWndUpgradeBase->Initialize( &g_WndMng, APP_TEST );
+				g_WndMng.m_pWndUpgradeBase->Initialize( &g_WndMng );
 			}
 			break;
 		case MMI_CHANGEELEM:
@@ -4661,7 +4661,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 
 				SAFE_DELETE( g_WndMng.m_pWndCommerialElem );
 				g_WndMng.m_pWndCommerialElem = new CWndCommercialElem;
-				g_WndMng.m_pWndCommerialElem->Initialize( &g_WndMng, APP_COMMERCIAL_ELEM );
+				g_WndMng.m_pWndCommerialElem->Initialize( &g_WndMng );
 				
 			}
 			break;
@@ -4909,7 +4909,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if( !g_WndMng.m_pWndUpkeep )
 				{
 					g_WndMng.m_pWndUpkeep = new CWndGHUpkeep;
-					g_WndMng.m_pWndUpkeep->Initialize( &g_WndMng, APP_CONFIRM_BUY_);	//gmpbigsun( 2010_05_12 ) : 종료버그수정 , 이녀석의 부모가 월드mng여서 접속종료하다 뻗음.
+					g_WndMng.m_pWndUpkeep->Initialize( &g_WndMng );	//gmpbigsun( 2010_05_12 ) : 종료버그수정 , 이녀석의 부모가 월드mng여서 접속종료하다 뻗음.
 					
 				}
 			}
@@ -6475,7 +6475,7 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					g_WndMng.m_pWndQuestItemWarning = new CWndQuestItemWarning;
 					g_WndMng.m_pWndQuestItemWarning->m_pItemElem = pItemElem;
 					g_WndMng.m_pWndQuestItemWarning->m_vPos = vPos;
-					g_WndMng.m_pWndQuestItemWarning->Initialize( NULL, APP_QUEITMWARNING );
+					g_WndMng.m_pWndQuestItemWarning->Initialize( NULL );
 				}
 				else
 				{
@@ -6484,7 +6484,7 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 						g_WndMng.m_pWndDropConfirm = new CWndDropConfirm;
 						g_WndMng.m_pWndDropConfirm->m_pItemElem = pItemElem;
 						g_WndMng.m_pWndDropConfirm->m_vPos = vPos;
-						g_WndMng.m_pWndDropConfirm->Initialize( NULL, APP_DROP_CONFIRM );
+						g_WndMng.m_pWndDropConfirm->Initialize( NULL );
 						
 						if( g_eLocal.GetState( EVE_DROPITEMREMOVE ) )
 						{
@@ -6498,7 +6498,7 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 						g_WndMng.m_pWndDropItem = new CWndDropItem;
 						g_WndMng.m_pWndDropItem->m_pItemElem = pItemElem;
 						g_WndMng.m_pWndDropItem->m_vPos = vPos;
-						g_WndMng.m_pWndDropItem->Initialize( NULL, APP_DROP_ITEM );
+						g_WndMng.m_pWndDropItem->Initialize( NULL );
 
 						if( g_eLocal.GetState( EVE_DROPITEMREMOVE ) )
 						{

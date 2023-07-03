@@ -53,7 +53,7 @@ void CWndRepairItem::OnInitialUpdate()
 	Move( ptMove );
 } 
 
-BOOL CWndRepairItem::Initialize( CWndBase* pWndParent, DWORD ) 
+BOOL CWndRepairItem::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_REPAIR, pWndParent, 0, CPoint( 0, 0 ) );
 } 

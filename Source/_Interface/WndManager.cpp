@@ -1070,7 +1070,7 @@ CWndBase* CWndMgr::CreateApplet(const DWORD dwIdApplet) {
 	pWndBase = (*pAppletFunc->m_pFunc)();
 	if (!pWndBase) return pWndBase;
 
-	if (!pWndBase->Initialize(this, dwIdApplet)) {
+	if (!pWndBase->Initialize(this)) {
 		SAFE_DELETE(pWndBase);
 		return pWndBase;
 	}
@@ -1727,7 +1727,7 @@ BOOL CWndMgr::Process()
 				if( m_pWndRevival == NULL )
 				{
 					m_pWndRevival = new CWndRevival;
-					m_pWndRevival->Initialize( this, 0 );
+					m_pWndRevival->Initialize( this );
 				}
 			}
 			else

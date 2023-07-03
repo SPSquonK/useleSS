@@ -33,7 +33,7 @@ void CWndPetAwakCancel::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPetAwakCancel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndPetAwakCancel::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_PET_AWAK_CANCEL, pWndParent, 0, CPoint( 0, 0 ) );
@@ -703,7 +703,7 @@ void CWndPetStatus::SetExtension(BOOL eflag)
 	SetWndRect(rect);
 }
 
-BOOL CWndPetStatus::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndPetStatus::Initialize(CWndBase* pWndParent)
 {
 	return InitDialog( APP_PET_STATUS );
 }
@@ -939,7 +939,7 @@ void CWndFoodConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndFoodConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndFoodConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_PET_ITEM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1195,7 +1195,7 @@ void CWndPetMiracle::OnInitialUpdate()
 		Destroy();
 } 
 
-BOOL CWndPetMiracle::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndPetMiracle::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_PET_MIRACLE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1454,7 +1454,7 @@ void CWndPetFoodMill::OnInitialUpdate()
 	MoveParentCenter();
 }
 
-BOOL CWndPetFoodMill::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndPetFoodMill::Initialize(CWndBase* pWndParent)
 {
 	return InitDialog( APP_PET_FOODMILL );
 }
@@ -1612,7 +1612,7 @@ void CWndPetLifeConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPetLifeConfirm::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndPetLifeConfirm::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_MESSAGEBOX, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -1697,7 +1697,7 @@ void CWndPetTransEggs::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPetTransEggs::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndPetTransEggs::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_PET_TRANS_EGGS, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1957,7 +1957,7 @@ void CWndBuffPetStatus::OnInitialUpdate()
 	m_pTexPetStatusBg = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "BuffpetStatusBg .tga"), 0xffff00ff, TRUE );
 }
 
-BOOL CWndBuffPetStatus::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndBuffPetStatus::Initialize(CWndBase* pWndParent)
 {
 	return CWndNeuz::InitDialog( APP_BUFFPET_STATUS, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -2415,7 +2415,7 @@ BOOL CWndBuffPetStatus::DoModal_ConfirmQuestion( DWORD dwItemId, OBJID dwObjid, 
 	m_pWndConfirmVis->m_eSection = eSection;
 	m_pWndConfirmVis->m_dwItemIndex = dwIndex;
 	
-	m_pWndConfirmVis->Initialize( this, APP_CONFIRM_ENTER );
+	m_pWndConfirmVis->Initialize( this );
 		
 	return TRUE;
 }
@@ -2623,7 +2623,7 @@ void CWndConfirmVis::OnInitialUpdate()
 	pEdit->SetFocus( );
 } 
 
-BOOL CWndConfirmVis::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndConfirmVis::Initialize( CWndBase* pWndParent ) 
 { 
 	InitDialog( APP_CONFIRM_ENTER, pWndParent, WBS_KEY, 0);
 	MoveParentCenter();

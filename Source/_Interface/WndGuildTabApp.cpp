@@ -51,7 +51,7 @@ void CWndGuildTabApp::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndGuildTabApp::Initialize( CWndBase* pWndParent, DWORD ) 
+BOOL CWndGuildTabApp::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILD_TABAPPELLATION, pWndParent, 0, CPoint( 0, 0 ) );
 } 

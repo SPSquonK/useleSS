@@ -78,7 +78,8 @@ public:
 	BOOL IsFullMax() { return m_bFullMax; }
 	virtual	void PaintFrame( C2DRender* p2DRender );
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL,DWORD dwStyle = 0 );
+	virtual BOOL Initialize(CWndBase * pWndParent, DWORD dwStyle) final = delete;
+	virtual BOOL Initialize(CWndBase * pWndParent = nullptr);
 	// message
 	virtual BOOL OnChildNotify( UINT message,UINT nID,LRESULT* pLResult );
 	virtual void OnSize( UINT nType, int cx, int cy );

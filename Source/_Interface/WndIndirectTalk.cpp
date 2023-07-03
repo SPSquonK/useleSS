@@ -32,7 +32,7 @@ void CWndIndirectTalk::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndIndirectTalk::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndIndirectTalk::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_ADMIN_INDIRECT_TALK, pWndParent, 0, CPoint(0, 0));
 }
 

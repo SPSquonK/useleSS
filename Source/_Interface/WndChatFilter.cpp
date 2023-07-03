@@ -63,7 +63,7 @@ void CWndChatFilter::SetButtonStatus() {
 	}
 }
 
-BOOL CWndChatFilter::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndChatFilter::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_CHAT_FILTER, pWndParent, WBS_MODAL, CPoint(0, 0));
 }
 

@@ -17,7 +17,7 @@ public:
 	CWndQuizEventConfirm( BOOL bEnter );
 	virtual ~CWndQuizEventConfirm();
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual	void OnInitialUpdate();
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void OnDraw( C2DRender* p2DRender );
@@ -33,7 +33,7 @@ public:
 	CWndQuizEventQuestionOX();
 	virtual ~CWndQuizEventQuestionOX();
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual	void OnInitialUpdate();
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void OnDraw( C2DRender* p2DRender );
@@ -50,7 +50,7 @@ public:
 	CWndQuizEventQuestion4C();
 	virtual ~CWndQuizEventQuestion4C();
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual	void OnInitialUpdate();
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void OnDraw( C2DRender* p2DRender );
@@ -67,7 +67,7 @@ public:
 	CWndQuizEventButton();
 	virtual ~CWndQuizEventButton();
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual	void OnInitialUpdate();
 	virtual void PaintFrame( C2DRender* p2DRender );
 	virtual void OnDraw( C2DRender* p2DRender );

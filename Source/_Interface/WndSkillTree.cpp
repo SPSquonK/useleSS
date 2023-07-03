@@ -30,7 +30,7 @@ void CWndReSkillWarning::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndReSkillWarning::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndReSkillWarning::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_QUEITMWARNING, pWndParent, WBS_MODAL, CPoint(0, 0));
 }
 
@@ -1309,9 +1309,9 @@ void CWndSkillTreeEx::OnInitialUpdate() {
 	CPoint point(x, y);
 	Move(point);
 }
-BOOL CWndSkillTreeEx::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
+BOOL CWndSkillTreeEx::Initialize(CWndBase * pWndParent) {
 	CRect rectWindow = g_WndMng.GetWindowRect();
-	return CWndNeuz::InitDialog(dwWndId, pWndParent, 0, CPoint(792, 130));
+	return CWndNeuz::InitDialog(APP_SKILL3, pWndParent, 0, CPoint(792, 130));
 }
 BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	if (m_focusedSkill && g_pPlayer->m_nSkillPoint > 0) {

@@ -941,7 +941,7 @@ void CWndGuildCtrlEx::SetWndRect( CRect rectWnd, BOOL bOnSize )
 }
 
 //-----------------------------------------------------------------------------
-BOOL CWndCampus::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndCampus::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_MESSENGER_TAB_CAMPUS, pWndParent, 0, CPoint( 0, 0 ) );
 }

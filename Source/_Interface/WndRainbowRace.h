@@ -10,7 +10,7 @@ public:
 public: 
 	CWndRainbowRaceOffer();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 
@@ -20,7 +20,7 @@ public:
 class CWndRainbowRaceInfo : public CWndNeuz 
 {
 public: 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 };
@@ -28,7 +28,7 @@ public:
 class CWndRainbowRaceRule : public CWndNeuz 
 {
 public: 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 };
@@ -42,7 +42,7 @@ public:
 	CWndRainbowRaceRanking(); 
 	virtual ~CWndRainbowRaceRanking();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 	virtual void OnDraw(C2DRender* p2DRender);
@@ -53,7 +53,7 @@ public:
 class CWndRainbowRacePrize : public CWndNeuz 
 {
 public: 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 };
@@ -67,7 +67,7 @@ public:
 	CWndRainbowRaceMiniGameInfo(); 
 	virtual ~CWndRainbowRaceMiniGameInfo();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 
@@ -90,7 +90,7 @@ public:
 	CWndRainbowRaceMiniGameButton(); 
 	virtual ~CWndRainbowRaceMiniGameButton();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 //	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 	virtual void PaintFrame( C2DRender* p2DRender );
@@ -125,7 +125,7 @@ public:
 	CWndRainbowRaceMiniGame(); 
 	virtual ~CWndRainbowRaceMiniGame();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 	virtual void OnDraw(C2DRender* p2DRender);
@@ -144,7 +144,7 @@ class CWndRainbowRaceMiniGameEnd : public CWndMessageBox
 public: 
 	int m_nGameID;
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void OnDestroy();
 
@@ -179,7 +179,7 @@ public:
 	CWndRRMiniGameKawiBawiBo(); 
 	virtual ~CWndRRMiniGameKawiBawiBo();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender );
 	virtual	void OnInitialUpdate(); 
@@ -211,7 +211,7 @@ public:
 	CWndRRMiniGameDice(); 
 	virtual ~CWndRRMiniGameDice();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 	virtual void OnDraw( C2DRender* p2DRender );
@@ -225,7 +225,7 @@ public:
 class CWndRRMiniGameArithmeticTimeOver : public CWndMessageBox
 { 
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void OnDestroy();
 };
@@ -243,7 +243,7 @@ public:
 	CWndRRMiniGameArithmetic(); 
 	virtual ~CWndRRMiniGameArithmetic();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 
@@ -266,7 +266,7 @@ public:
 	CWndRRMiniGameStopWatch(); 
 	~CWndRRMiniGameStopWatch() override = default;
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 	virtual void OnDraw(C2DRender* p2DRender);
@@ -284,7 +284,7 @@ public:
 	int m_TypingStaticID[3];
 
 public: 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 
@@ -315,7 +315,7 @@ public:
 	CWndRRMiniGameCard(); 
 	virtual ~CWndRRMiniGameCard();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 	virtual void OnDraw(C2DRender* p2DRender);
@@ -332,7 +332,7 @@ public:
 class CWndRRMiniGameLadderFail : public CWndMessageBox
 { 
 public: 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void OnDestroy();
 };
@@ -375,7 +375,7 @@ public:
 	CWndRRMiniGameLadder(); 
 	virtual ~CWndRRMiniGameLadder();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 	virtual void OnDraw(C2DRender* p2DRender);

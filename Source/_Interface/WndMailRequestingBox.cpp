@@ -17,7 +17,7 @@ CWndMailRequestingBox::~CWndMailRequestingBox( void )
 {
 }
 //-----------------------------------------------------------------------------
-BOOL CWndMailRequestingBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndMailRequestingBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_REQUESTING_POST, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
 }

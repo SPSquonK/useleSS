@@ -39,7 +39,7 @@ public:
 
 	void  PutString( LPCTSTR lpszString, DWORD dwColor = 0xffffffff, DWORD dwPStyle = 0x00000001 ); //CObj* pObj );
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	// message
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnSize(UINT nType, int cx, int cy);
@@ -89,7 +89,7 @@ public:
 //	virtual CItem* GetFocusItem() { return NULL; }
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	// message
 	void SetChannel();
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE);

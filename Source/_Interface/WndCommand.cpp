@@ -87,7 +87,7 @@ void CWndCommand::OnInitialUpdate()
 } 
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndCommand::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndCommand::Initialize( CWndBase* pWndParent )
 { 
 	CRect rectWindow = g_WndMng.GetWindowRect();
 	CRect rect( 0, 0, 150, 200 );

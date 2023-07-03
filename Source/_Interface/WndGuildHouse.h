@@ -18,7 +18,7 @@ public:
 	CWndGHMainMenu( );
 	virtual ~CWndGHMainMenu( );
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual	void OnInitialUpdate();
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
 //	virtual void OnMouseWndSurface( CPoint point );
@@ -48,7 +48,7 @@ public:
 	CWndGHTeleporter( );
 	virtual ~CWndGHTeleporter( );
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual	void OnInitialUpdate(); 
 //	virtual void OnMouseWndSurface( CPoint point );
 
@@ -93,7 +93,7 @@ public:
 	CWndGHUpkeep(); 
 	virtual ~CWndGHUpkeep(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

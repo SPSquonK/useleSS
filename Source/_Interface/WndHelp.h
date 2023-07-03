@@ -10,7 +10,7 @@ class CWndHelp : public CWndNeuz {
 public:
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 };
 
@@ -22,7 +22,7 @@ class CWndHelpFAQ : public CWndNeuz {
 
 public:
 	void OnInitialUpdate() override;
-	BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult) override;
 };
 
@@ -33,7 +33,7 @@ class CWndHelpTip : public CWndNeuz {
 	bool LoadTips();
 
 public: 
-	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
 	void OnInitialUpdate() override;
 }; 
@@ -44,7 +44,7 @@ class CWndHelpInstant : public CWndNeuz {
 public:
 	CWndHelpInstant(CString helpKey) : m_strHelpKey(std::move(helpKey)) {}
 
-	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
 	void OnInitialUpdate() override;
 }; 

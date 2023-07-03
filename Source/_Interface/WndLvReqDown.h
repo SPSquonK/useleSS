@@ -12,7 +12,7 @@ public:
 
 	LeveledDownItemReceiver m_receiver;
 
-	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override; 
 	void OnInitialUpdate() override; 
 	BOOL OnDropIcon(LPSHORTCUT pShortcut, CPoint point) override;

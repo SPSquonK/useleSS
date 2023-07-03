@@ -25,7 +25,7 @@ void CWndPostItemWarning::SetString(const char* string) {
 	}
 }
 
-BOOL CWndPostItemWarning::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndPostItemWarning::Initialize(CWndBase * pWndParent) {
 	LPWNDAPPLET lpWndApplet = m_resMng.GetAt(APP_QUEITMWARNING);
 	CRect rect{ CPoint(0, 0), lpWndApplet->size };
 
@@ -80,7 +80,7 @@ void CWndPost::OnInitialUpdate()
 	m_pWndMailRequestingBox->Initialize();
 }
 
-BOOL CWndPost::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndPost::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_POST, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -116,11 +116,11 @@ public:
 	char		m_szTitle[MAX_MAILTITLE];	
 	char		m_szText[MAX_MAILTEXT];		
 	void		SetValue( BYTE nItem, short nItemNum, const char* lpszReceiver, int nGold, const char* lpszTitle, const char* lpszText );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-BOOL CWndPostSendMessageBox::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndPostSendMessageBox::Initialize(CWndBase * pWndParent) {
 	CString str;
 	str.Format(prj.GetText(TID_MAIL_SEND_CONFIRM), MAX_KEEP_MAX_DAY);
 
@@ -271,7 +271,7 @@ void CWndPostSend::OnInitialUpdate()
 	pWndCombo->SetFocus();
 }
 
-BOOL CWndPostSend::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndPostSend::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_POST_SEND, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -543,7 +543,7 @@ void CWndPostRead::OnInitialUpdate()
 } 
 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndPostRead::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndPostRead::Initialize( CWndBase* pWndParent ) 
 { 
 	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( APP_POST_READ );
 	CRect rect = CRect( 0, 0, lpWndApplet->size.cx, lpWndApplet->size.cy );
@@ -698,7 +698,7 @@ void CWndPostRead::MailReceiveItem()
 			m_bDrag = FALSE;
 //			SAFE_DELETE(m_pWndPostItemWarning);
 			m_pWndPostItemWarning = new CWndPostItemWarning;
-			m_pWndPostItemWarning->Initialize( this, 0 );
+			m_pWndPostItemWarning->Initialize( this );
 			m_pWndPostItemWarning->SetIndex( pMail->m_nMail );
 
 			FLOAT fPay = pMail->m_pItemElem->GetCost() * fCustody;
@@ -831,7 +831,7 @@ void CWndPostDeleteConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndPostDeleteConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndPostDeleteConfirm::Initialize( CWndBase* pWndParent )
 { 
 	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( APP_POST_DELETE_CONFIRM );
 	CRect rect = CRect( 0, 0, lpWndApplet->size.cx, lpWndApplet->size.cy );
@@ -1153,7 +1153,7 @@ void CWndPostReceive::OnInitialUpdate()
 	
 } 
 
-BOOL CWndPostReceive::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndPostReceive::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_POST_RECEIVE, pWndParent, 0, CPoint(0, 0));
 }
 

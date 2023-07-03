@@ -21,7 +21,7 @@ void CWndBuffStatus::OnInitialUpdate() {
 	Move(point);
 }
 
-BOOL CWndBuffStatus::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndBuffStatus::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_BUFF_STATUS, pWndParent, WBS_NOFOCUS, CPoint(0, 0));
 }
 

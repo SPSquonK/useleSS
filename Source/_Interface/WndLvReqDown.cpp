@@ -22,7 +22,7 @@ void CWndLvReqDown::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndLvReqDown::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndLvReqDown::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_LVREQDOWN, pWndParent, 0, CPoint(0, 0));
 }
 

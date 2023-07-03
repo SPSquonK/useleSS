@@ -17,7 +17,7 @@ public:
 	void SetSelection(std::span<const u_long> playerIds);
 	void ResetSelection();
 
-	BOOL	Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	BOOL	OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void	OnInitialUpdate() override;
 
@@ -40,7 +40,7 @@ public:
 	explicit CWndGuildCombat1to1Offer(CombatType nCombatType)
 		: m_nCombatType(nCombatType) {}
 	
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnInitialUpdate();
 	virtual void	PaintFrame( C2DRender* p2DRender );
@@ -60,7 +60,7 @@ class CGuildCombat1to1SelectionResetConfirm : public CWndMessageBox
 public: 
 	CString m_strMsg;
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
@@ -69,6 +69,6 @@ class CWndGuildCombat1to1OfferMessageBox : public CWndMessageBox
 public: 
 	DWORD m_nCost;
 	void	SetValue( CString str, DWORD nCost );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 

@@ -91,7 +91,7 @@ void CWndDebugInfo::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndDebugInfo::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndDebugInfo::Initialize(CWndBase* pWndParent)
 {
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_DEBUGINFO, pWndParent, 0, CPoint( 0, 0 ) );

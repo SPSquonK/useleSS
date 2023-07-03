@@ -16,7 +16,7 @@ public:
 	
 	virtual BOOL    OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
 	
-	virtual BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
 	virtual BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void	OnDraw( C2DRender* p2DRender ); 
 	virtual	void	OnInitialUpdate(); 
@@ -30,6 +30,6 @@ public:
 	std::array<OBJID, 3> m_Objid;
 
 	explicit CPiercingMessageBox(const std::array<CWndComponentSlot, 3> & slots);
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 };

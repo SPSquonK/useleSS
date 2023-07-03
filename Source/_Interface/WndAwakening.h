@@ -14,7 +14,7 @@ private:
 	CAwakenableItemReceiver m_receiver;
 
 public:
-	BOOL Initialize(CWndBase * pWndParent, DWORD) override;
+	BOOL Initialize(CWndBase * pWndParent) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
 }; 
@@ -25,7 +25,7 @@ public:
 
 	CWndSelectAwakeCase(BYTE byObjID, DWORD dwSerialNum, __int64 n64NewOption);
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

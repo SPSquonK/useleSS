@@ -450,7 +450,7 @@ public:
 
 	virtual void OnDraw(C2DRender* p2DRender); 
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	// message
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	void OnSetCursor() override;

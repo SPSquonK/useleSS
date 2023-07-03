@@ -984,7 +984,7 @@ void CWndCandList::OnInitialUpdate()
 	SetWndRect( CRect( 0, 0, 150, nNum * ( GetFontHeight() + 3 ) + 8 ) );
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndCandList::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndCandList::Initialize( CWndBase* pWndParent )
 { 
 	SetTitle( _T( "World" ) );
 	CRect rect( 0, 0, 150, 200 );
@@ -1057,7 +1057,7 @@ void CWndHCandList::UpdateCandList(CPoint windowPos)
 	rect.OffsetRect( windowPos.x, windowPos.y - rect.Height() );
 	SetWndRect( rect );
 }
-BOOL CWndHCandList::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndHCandList::Initialize( CWndBase* pWndParent )
 {
 	CRect rect( 0, 0, 100, 100 );
 	CWndBase::Create( WBS_TOPMOST | WBS_NOFRAME, rect, pWndParent, APP_COMMAND );
@@ -1119,7 +1119,7 @@ void CReadingList::UpdateReading(CPoint windowPos)
 	rect.OffsetRect( windowPos.x, windowPos.y - rect.Height() );
 	SetWndRect( rect );
 }
-BOOL CReadingList::Initialize( CWndBase* pWndParent, DWORD nType)
+BOOL CReadingList::Initialize( CWndBase* pWndParent )
 {
 	CRect rect( 0, 0, 100, 100 );
 	CWndBase::Create( WBS_TOPMOST | WBS_NOFRAME, rect, pWndParent, APP_COMMAND );

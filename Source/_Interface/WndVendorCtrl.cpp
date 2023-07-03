@@ -354,7 +354,7 @@ void CWndVendorCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
 			CWndVendor* pWndVendor	= (CWndVendor*)GetParentWnd();
 			SAFE_DELETE( pWndVendor->m_pWndVendorBuy );
 			pWndVendor->m_pWndVendorBuy		= new CWndVendorBuy( pItemBase, nItem );
-			pWndVendor->m_pWndVendorBuy->Initialize( pWndVendor, APP_VENDOR_BUY );
+			pWndVendor->m_pWndVendorBuy->Initialize( pWndVendor );
 		}
 	}
 }

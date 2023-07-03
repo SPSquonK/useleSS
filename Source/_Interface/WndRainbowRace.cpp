@@ -40,7 +40,7 @@ void CWndRainbowRaceOffer::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRainbowRaceOffer::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceOffer::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_OFFER, pWndParent, 0, CPoint( 0, 0 ) );
@@ -75,7 +75,7 @@ void CWndRainbowRaceInfo::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRainbowRaceInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceInfo::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_INFO, pWndParent, 0, CPoint( 0, 0 ) );
@@ -105,7 +105,7 @@ void CWndRainbowRaceRule::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRainbowRaceRule::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceRule::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_RULE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -143,7 +143,7 @@ void CWndRainbowRaceRanking::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRainbowRaceRanking::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceRanking::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_RANKING, pWndParent, 0, CPoint( 0, 0 ) );
@@ -216,7 +216,7 @@ void CWndRainbowRacePrize::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRainbowRacePrize::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRacePrize::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_PRIZE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -355,7 +355,7 @@ void CWndRainbowRaceMiniGame::OnInitialUpdate()
 	}
 } 
 
-BOOL CWndRainbowRaceMiniGame::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceMiniGame::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_MINIGAME, pWndParent, 0, CPoint( 0, 0 ) );
@@ -562,7 +562,7 @@ void CWndRainbowRaceMiniGameInfo::OnInitialUpdate()
 	}
 } 
 
-BOOL CWndRainbowRaceMiniGameInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceMiniGameInfo::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_MINIGAME_INFO, pWndParent, 0, CPoint( 0, 0 ) );
@@ -721,7 +721,7 @@ BOOL CWndRainbowRaceMiniGameButton::Process()
 	return TRUE;
 }
 
-BOOL CWndRainbowRaceMiniGameButton::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceMiniGameButton::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_BUTTON, pWndParent, WBS_NOFOCUS, CPoint( 0, 0 ) );
@@ -786,7 +786,7 @@ void CWndRainbowRaceMiniGameEnd::OnDestroy()
 	CRainbowRace::GetInstance()->m_bCheckEnd = TRUE;
 }
 
-BOOL CWndRainbowRaceMiniGameEnd::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndRainbowRaceMiniGameEnd::Initialize( CWndBase* pWndParent )
 {
 	CString strTemp;
 	int nTextId;
@@ -1052,7 +1052,7 @@ void CWndRRMiniGameKawiBawiBo::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRRMiniGameKawiBawiBo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameKawiBawiBo::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_KAWIBAWIBO, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1168,7 +1168,7 @@ HRESULT CWndRRMiniGameDice::DeleteDeviceObjects()
 	return CWndNeuz::DeleteDeviceObjects();
 }
 
-BOOL CWndRRMiniGameDice::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameDice::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_DICE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1428,7 +1428,7 @@ void CWndRRMiniGameArithmetic::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRRMiniGameArithmetic::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameArithmetic::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_ARITHMETIC, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1507,7 +1507,7 @@ void CWndRRMiniGameArithmeticTimeOver::OnDestroy()
 	CRainbowRace::GetInstance()->SendMinigamePacket( RMG_MAX, MP_FAIL, 0 );
 }
 
-BOOL CWndRRMiniGameArithmeticTimeOver::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndRRMiniGameArithmeticTimeOver::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( prj.GetText(TID_GAME_REMOVE_ARITHMETIC_TIMEOVER), pWndParent, MB_OK );
 }
@@ -1558,7 +1558,7 @@ HRESULT CWndRRMiniGameStopWatch::DeleteDeviceObjects()
 	return CWndNeuz::DeleteDeviceObjects();
 }
 
-BOOL CWndRRMiniGameStopWatch::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameStopWatch::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_STOPWATCH, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1699,7 +1699,7 @@ void CWndRRMiniGameTyping::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRRMiniGameTyping::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameTyping::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_TYPING, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1817,7 +1817,7 @@ HRESULT CWndRRMiniGameCard::DeleteDeviceObjects()
 	return CWndNeuz::DeleteDeviceObjects();
 }
 
-BOOL CWndRRMiniGameCard::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameCard::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_CARD, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1949,10 +1949,9 @@ void CWndRRMiniGameLadderFail::OnDestroy()
 		g_WndMng.m_pWndRRMiniGameLadder->Reset();
 }
 
-BOOL CWndRRMiniGameLadderFail::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndRRMiniGameLadderFail::Initialize( CWndBase* pWndParent )
 {
-	CString strTemp;
-	strTemp.Format(prj.GetText(TID_GAME_RRMINIGAME_LADDER_FAIL));
+	LPCTSTR strTemp = prj.GetText(TID_GAME_RRMINIGAME_LADDER_FAIL);
 
 	return CWndMessageBox::Initialize( strTemp, pWndParent, MB_OK );
 }
@@ -2056,7 +2055,7 @@ void CWndRRMiniGameLadder::OnInitialUpdate()
 	Reset();
 } 
 
-BOOL CWndRRMiniGameLadder::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameLadder::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_LADDER, pWndParent, 0, CPoint( 0, 0 ) );

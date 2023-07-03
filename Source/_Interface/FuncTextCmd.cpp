@@ -309,7 +309,7 @@ BOOL	TextCmd_MakePetFeed( CScanner & s )
 	{
 		SAFE_DELETE( g_WndMng.m_pWndPetFoodMill );
 		g_WndMng.m_pWndPetFoodMill = new CWndPetFoodMill;
-		g_WndMng.m_pWndPetFoodMill->Initialize( &g_WndMng, APP_PET_FOOD );
+		g_WndMng.m_pWndPetFoodMill->Initialize( &g_WndMng );
 		return FALSE;
 	}
 #endif	// __CLIENT
@@ -1250,7 +1250,7 @@ BOOL TextCmd_ResistItem(CScanner & scanner, CPlayer_ * pUser) {
 	{
 		SAFE_DELETE( g_WndMng.m_pWndUpgradeBase );
 		g_WndMng.m_pWndUpgradeBase = new CWndUpgradeBase;
-		g_WndMng.m_pWndUpgradeBase->Initialize( &g_WndMng, APP_TEST );
+		g_WndMng.m_pWndUpgradeBase->Initialize( &g_WndMng );
 		return FALSE;
 	}
 
@@ -1315,7 +1315,7 @@ BOOL TextCmd_CommercialElem( CScanner& )
 #ifdef __CLIENT
 	SAFE_DELETE( g_WndMng.m_pWndCommerialElem );
 	g_WndMng.m_pWndCommerialElem = new CWndCommercialElem;
-	g_WndMng.m_pWndCommerialElem->Initialize( &g_WndMng, APP_COMMERCIAL_ELEM );
+	g_WndMng.m_pWndCommerialElem->Initialize( &g_WndMng );
 #endif // __CLIENT
 	return FALSE;
 }
@@ -3460,7 +3460,7 @@ BOOL TextCmd_RemoveAttribute( CScanner& scanner )
 	{
 		SAFE_DELETE( g_WndMng.m_pWndUpgradeBase );
 		g_WndMng.m_pWndUpgradeBase = new CWndUpgradeBase;
-		g_WndMng.m_pWndUpgradeBase->Initialize( &g_WndMng, APP_TEST );
+		g_WndMng.m_pWndUpgradeBase->Initialize( &g_WndMng );
 		return FALSE;
 	}
 	
@@ -4194,7 +4194,7 @@ BOOL TextCmd_GuildHouseUpkeep( CScanner & s )
 	if( !g_WndMng.m_pWndUpkeep )
 	{
 		g_WndMng.m_pWndUpkeep = new CWndGHUpkeep;
-		g_WndMng.m_pWndUpkeep->Initialize( &g_WndMng, APP_CONFIRM_BUY_ );
+		g_WndMng.m_pWndUpkeep->Initialize( &g_WndMng );
 	}
 	else
 	{

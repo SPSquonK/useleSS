@@ -135,7 +135,7 @@ public:
 	~CWndCandList(); 
 	void UpdateCandList(CPoint windowPos);
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	virtual BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
@@ -149,7 +149,7 @@ class CWndHCandList : public CWndBase
 public:
 	void UpdateCandList(CPoint windowPos);
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	virtual BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual void PaintFrame(C2DRender* p2DRender);
 	virtual void OnDraw( C2DRender* p2DRender ); 
 
@@ -162,7 +162,7 @@ class CReadingList : public CWndBase
 public:
 	void UpdateReading(CPoint windowPos);
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	virtual BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual void PaintFrame(C2DRender* p2DRender);
 	virtual void OnDraw( C2DRender* p2DRender ); 
 

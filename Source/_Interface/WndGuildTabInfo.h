@@ -42,7 +42,7 @@ public:
 	std::unique_ptr<CWndGuildDisMiss> m_pwndGuildDisMiss;
 	
 	void UpdateData();
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;

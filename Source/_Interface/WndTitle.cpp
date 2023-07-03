@@ -42,7 +42,7 @@ BOOL GetIePath( LPSTR lpPath )
 	return TRUE;
 }
 
-BOOL CWndConnectingBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
+BOOL CWndConnectingBox::Initialize( CWndBase* pWndParent  ) 
 {
 	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
@@ -50,14 +50,14 @@ BOOL CWndConnectingBox::Initialize( CWndBase* pWndParent, DWORD nType  )
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0064) ) );
 	
 	m_wndText.ResetString();
-	return CWndMessageBox::Initialize( pWndParent, 0 );
+	return TRUE;
 }
 BOOL CWndConnectingBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
 	return TRUE;
 }
 
-BOOL CWndCharBlockBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
+BOOL CWndCharBlockBox::Initialize( CWndBase* pWndParent  ) 
 {
 	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
@@ -65,13 +65,13 @@ BOOL CWndCharBlockBox::Initialize( CWndBase* pWndParent, DWORD nType  )
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0073) ) );
 
 	m_wndText.ResetString();
-	return CWndMessageBox::Initialize( pWndParent, 0 );
+	return TRUE;
 }
 BOOL CWndCharBlockBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
 	return CWndMessageBox::OnChildNotify( message, nID, pLResult );
 }
-BOOL CWndAllCharBlockBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
+BOOL CWndAllCharBlockBox::Initialize( CWndBase* pWndParent  ) 
 {
     CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
@@ -79,7 +79,7 @@ BOOL CWndAllCharBlockBox::Initialize( CWndBase* pWndParent, DWORD nType  )
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0074) ) );
 
 	m_wndText.ResetString();
-	return CWndMessageBox::Initialize( pWndParent, 0 );
+	return TRUE;
 }
 BOOL CWndAllCharBlockBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
@@ -355,7 +355,7 @@ void CWndLogin::OnInitialUpdate()
 	g_Neuz.m_dwTimeOutDis = 0xffffffff;
 	m_bDisconnect = FALSE;
 }
-BOOL CWndLogin::Initialize(CWndBase* pWndParent,DWORD dwStyle)
+BOOL CWndLogin::Initialize(CWndBase* pWndParent)
 {
 	return CWndNeuz::InitDialog( APP_LOGIN, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
@@ -663,7 +663,7 @@ BOOL CWndSelectServer::Process()
 	
 	return TRUE;
 }
-BOOL CWndSelectServer::Initialize(CWndBase* pWndParent,DWORD dwStyle)
+BOOL CWndSelectServer::Initialize(CWndBase* pWndParent)
 {
 	return CWndNeuz::InitDialog( APP_SELECT_SERVER, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
@@ -917,7 +917,7 @@ void CWndDeleteChar::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3D
 	CWndNeuz::AdditionalSkinTexture( pDest, sizeSurface, d3dFormat );
 }
 
-BOOL CWndDeleteChar::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndDeleteChar::Initialize( CWndBase* pWndParent ) 
 { 
 	InitDialog( APP_DELETE_CHAR, nullptr, WBS_MODAL );
 	CWndEdit *WndEdit   = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
@@ -1551,7 +1551,7 @@ void CWndSelectChar::OnInitialUpdate()
 	MoveParentCenter();
 }
 
-BOOL CWndSelectChar::Initialize(CWndBase* pWndParent,DWORD dwStyle)
+BOOL CWndSelectChar::Initialize(CWndBase* pWndParent)
 {
 	CRect rect = g_WndMng.MakeCenterRect( 590, 400 );
 	SetTitle( _T( "Select Character" ) );
@@ -1645,7 +1645,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 			{
 				SAFE_DELETE( m_pWndDeleteChar );
 				m_pWndDeleteChar = new CWndDeleteChar;
-				m_pWndDeleteChar->Initialize( this, APP_DELETE_CHAR );
+				m_pWndDeleteChar->Initialize( this );
 			}
 			break;
 		case WIDC_ACCEPT: // Accept
@@ -1690,7 +1690,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 					if( m_pWnd2ndPassword )
 						SAFE_DELETE( m_pWnd2ndPassword );
 					m_pWnd2ndPassword = new CWnd2ndPassword();
-					m_pWnd2ndPassword->Initialize( this, APP_2ND_PASSWORD_NUMBERPAD );
+					m_pWnd2ndPassword->Initialize( this );
 					m_pWnd2ndPassword->SetInformation( g_dpLoginClient.GetNumberPad(), m_nSelectCharacter );
 #ifdef __CON_AUTO_LOGIN
 					for( int i = 0; i < 4; ++i )
@@ -2047,7 +2047,7 @@ void CWndCreateChar::SetSex( int nSex )
 	CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 }
 
-BOOL CWndCreateChar::Initialize( CWndBase* pWndParent, DWORD dwStyle )
+BOOL CWndCreateChar::Initialize( CWndBase* pWndParent )
 {
 	CRect rect = g_WndMng.MakeCenterRect( 590, 400 );
 	return CWndNeuz::InitDialog( APP_CREATE_CHAR, pWndParent, WBS_KEY, CPoint( 0, 0 ) );

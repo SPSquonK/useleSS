@@ -23,7 +23,7 @@ public:
 	virtual BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	virtual void OnDraw(C2DRender * p2DRender);
 	virtual	void OnInitialUpdate();
 
@@ -95,7 +95,7 @@ class CWndRankGuild : public CWndNeuz {
 public:
 	CWndTabCtrlManager m_tabManager;
 
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	virtual	void OnInitialUpdate();
 };
 
@@ -116,7 +116,7 @@ class CWndRankInfo : public CWndNeuz {
 public:
 	CWndTabCtrlManager m_tabManager;
 
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	virtual	void OnInitialUpdate();
 };
 
@@ -143,7 +143,7 @@ class CWndRankWar : public CWndNeuz {
 public:
 	CWndTabCtrlManager m_tabManager;
 
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	virtual	void OnInitialUpdate();
 };
 

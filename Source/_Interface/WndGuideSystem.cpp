@@ -41,7 +41,7 @@ CWndGuideSystem::~CWndGuideSystem()
 	SAFE_DELETE(m_pWndTutorialView);
 }
 
-BOOL CWndGuideSystem::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndGuideSystem::Initialize( CWndBase* pWndParent )
 {	
 	return CWndNeuz::InitDialog( APP_GUIDE, pWndParent, WBS_TOPMOST, CPoint( 0, 0 ) );
 }
@@ -258,7 +258,7 @@ void CWndInfoPang::OnDraw( C2DRender* p2DRender )
 } 
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndInfoPang::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndInfoPang::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	CWndNeuz::InitDialog( APP_INFOPANG, pWndParent, 0, CPoint( 0, 0 ) );
@@ -848,7 +848,7 @@ void CWndGuideTextMgr::OnInitialUpdate()
 	m_pTextureBG = m_textureMng.AddTexture( MakePath( DIR_THEME, "GuideBG.tga" ), 0, TRUE );
 } 
 
-BOOL CWndGuideTextMgr::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuideTextMgr::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUIDE_TEXT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -1038,7 +1038,7 @@ void CWndGuideTextMgr::UpDate()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-BOOL CWndGuideSelection::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndGuideSelection::Initialize( CWndBase* pWndParent )
 {	
 	return CWndNeuz::InitDialog( APP_GUIDE_SELECTION, pWndParent, 0, CPoint( 0, 0 ) );
 }

@@ -9,7 +9,7 @@ public:
 	~CWnd2ndPassword( void );
 
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual	void OnInitialUpdate( void );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 

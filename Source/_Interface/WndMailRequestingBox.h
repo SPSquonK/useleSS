@@ -12,7 +12,7 @@ public:
 	~CWndMailRequestingBox( void );
 
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual	void OnInitialUpdate( void );
 	BOOL Process( void );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );

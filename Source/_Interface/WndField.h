@@ -61,7 +61,7 @@ public:
 	CWndDropItem() = default;
 	~CWndDropItem() override = default;
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual BOOL Process( void );
 	virtual void OnDraw( C2DRender* p2DRender ); 
@@ -77,7 +77,7 @@ public:
 	CWndDropConfirm() = default;
 	~CWndDropConfirm() override = default;
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual BOOL Process( void );
 	virtual	void OnInitialUpdate(); 
@@ -92,7 +92,7 @@ public:
 public: 
 	~CWndRandomScrollConfirm() override = default;
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 
@@ -105,7 +105,7 @@ public:
 
 	~CWndQuestItemWarning() override = default;
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 
@@ -188,7 +188,7 @@ public:
 	virtual void OnMouseWndSurface( CPoint point );
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	// message
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
@@ -233,7 +233,7 @@ public:
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual void OnMouseWndSurface( CPoint point );
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual void OnMouseMove (UINT nFlags, CPoint point);
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
@@ -300,7 +300,7 @@ public:
 	
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	// message
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE );
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
@@ -362,7 +362,7 @@ public:
 	virtual ~CWndStatus();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	// message
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual void OnSize(UINT nType, int cx, int cy);
@@ -379,7 +379,7 @@ class CWndQuit : public CWndMessageBox
 {
 	BOOL	m_bFlag;	
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 };	
 class CWndLogOut : public CWndMessageBox
@@ -387,7 +387,7 @@ class CWndLogOut : public CWndMessageBox
 public:
 	CWndLogOut() { }
 	virtual ~CWndLogOut() { }
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	// message
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 };	
@@ -410,7 +410,7 @@ public:
 	std::function<void(int)> m_onValidation;
 	std::function<void()> m_onCancel;
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	BOOL Process() override;
 	void OnInitialUpdate() override;
@@ -460,7 +460,7 @@ public:
 
 	void OnSetName( const char* szName, OBJID objid );
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 
@@ -472,7 +472,7 @@ public:
 	CWndTradeConfirm(); 
 	virtual ~CWndTradeConfirm(); 
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -488,7 +488,7 @@ public:
 	~CWndTrade() override;
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 
 
@@ -505,7 +505,7 @@ public:
 	CWndButton* m_pLodeStar  = nullptr;
 	CWndButton* m_pRevival   = nullptr;
 	CWndButton* m_pShop      = nullptr;
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -521,7 +521,7 @@ public:
 	BOOL         CheckWantedInfo( int nGold, LPCTSTR szMsg );
 	void		 SetWantedName( LPCTSTR szWanted );
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 
@@ -529,7 +529,7 @@ public:
 class CWndResurrectionConfirm : public CWndNeuz 
 { 
 public: 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 
@@ -539,7 +539,7 @@ class CWndWantedConfirm final : public CWndNeuz {
 	char	 m_szName[MAX_NAME] = "";
 public: 
 	void		 SetInfo( const char szName[], const int nGold );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 
@@ -569,7 +569,7 @@ public:
 	
 	int          GetSelectIndex( const CPoint& point );	
 	void InsertWanted(const WANTED_ENTRY & entry);
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
@@ -585,7 +585,7 @@ public:
 	DWORD			m_dwCtrlId = NULL_ID;
 	void			SetItem( DWORD dwDefindText, DWORD dwObjId, DWORD dwCtrlId );
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 
@@ -606,7 +606,7 @@ public:
 
 	static void OpenWindow(std::optional<OBJID> scrollPos);
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
 
@@ -633,7 +633,7 @@ protected:
 	DWORD			m_dwBackupGold = 0;
 
 public: 
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnInitialUpdate();
 	void			SetGold( DWORD nCost );
@@ -652,7 +652,7 @@ public:
 public: 
 	CWndGuildCombatBoard(int m_nCombatType);
 	
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
@@ -665,7 +665,7 @@ class CGuildCombatSelectionClearMessageBox : public CWndMessageBox
 public: 
 	CString m_strMsg;
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
@@ -677,7 +677,7 @@ public:
 	CGuildCombatInfoMessageBox(int nCombatType);
 	void	SetString( const CHAR* szChar );
 	virtual	void OnInitialUpdate();
-	virtual	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void PaintFrame( C2DRender* p2DRender );
 }; 
@@ -687,7 +687,7 @@ class CGuildCombatInfoMessageBox2 : public CWndNeuz
 public: 
 	void	SetString( CHAR* szChar );
 	virtual	void OnInitialUpdate();
-	virtual	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
@@ -699,7 +699,7 @@ private:
 	CTexture m_TexDefender;
 	
 public: 
-	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
+	BOOL	Initialize( CWndBase* pWndParent = NULL ) override;
 	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
 	void	OnDraw( C2DRender* p2DRender ) override;
 	void	OnInitialUpdate() override;
@@ -734,7 +734,7 @@ public:
 	int          GetSelectIndex( const CPoint& point );	
 	void		 Init( time_t lTime );
 	void		 InsertGuild( const char szGuild[], const char szName[], int nNum );	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -760,7 +760,7 @@ protected:
 	DWORD  m_dwOldTime = 0xffffffff;
 	
 public: 
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL	Initialize(CWndBase * pWndParent = nullptr) override;
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
@@ -775,7 +775,7 @@ class CWndGuildWarAppConfirm : public CWndNeuz
 protected:
 	CWndText	m_wndText;
 public: 
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnInitialUpdate();
 }; 
@@ -787,7 +787,7 @@ protected:
 public:
 	CWndGuildWarCancelConfirm(int nCombatType);
 	
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnInitialUpdate();
 	virtual void	PaintFrame( C2DRender* p2DRender );
@@ -801,7 +801,7 @@ protected:
 public:
 	CWndGuildWarJoinConfirm(int nCombatType);
 	
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnInitialUpdate();
 	virtual void	PaintFrame( C2DRender* p2DRender );
@@ -823,7 +823,7 @@ public:
 	int          GetSelectIndex( const CPoint& point );	
 	void		 Init( time_t lTime );
 	void		 InsertGuild( const char szGuild[], const char szName[], int nNum );	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -861,7 +861,7 @@ public:
 	int          GetSelectIndex( const CPoint& point );	
 	void		 Init( time_t lTime );
 	void		 InsertGuild( const char szGuild[], int nWinCount );	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -881,14 +881,14 @@ public:
 class CWndGuildCombatTabResultRate : public CWndNeuz 
 { 
 public: 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual	void OnInitialUpdate(); 
 }; 
 // 길드 결과 로그 - 개인
 class CWndGuildCombatTabResultLog : public CWndNeuz 
 { 
 public: 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 
@@ -906,7 +906,7 @@ public:
 	CWndGuildCombatTabResultRate   m_WndGuildCombatTabResultRate;
 	CWndGuildCombatTabResultLog    m_WndGuildCombatTabResultLog;
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -955,7 +955,7 @@ public:
 
 	void		 InsertRank( int nJob, u_long uidPlayer, int nPoint );
 	int          GetSelectIndex( const CPoint& point );	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -985,7 +985,7 @@ public:
 	void						DivisionList();
 	void						UpdatePlayer( int nJob, u_long idPlayer );
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -1014,7 +1014,7 @@ public:
 	virtual ~CWndFontEdit(); 
 	
 	void	ReSetBar( FLOAT r, FLOAT g, FLOAT b );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -1036,7 +1036,7 @@ public:
 	virtual ~CWndMixJewelConfirm(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -1093,7 +1093,7 @@ public:
 	std::unique_ptr<CWndMixJewelConfirm> m_pConfirm = nullptr;
 public: 
 
-	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
 	void OnInitialUpdate() override;
 	void OnDestroy() override;
@@ -1130,7 +1130,7 @@ private:
 	Receiver m_receiver;
 
 public: 
-	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override; 
 	void OnInitialUpdate() override; 
 	
@@ -1166,7 +1166,7 @@ public:
 	CWndSmeltJewel(); 
 	~CWndSmeltJewel();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -1217,7 +1217,7 @@ public:
 public:
 	CWndChangeWeapon(int nType);
 	
-	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override; 
 	void OnInitialUpdate() override; 
 	
@@ -1240,7 +1240,7 @@ public:
 	virtual ~CWndRemoveJewelConfirm(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -1283,7 +1283,7 @@ private:
 public:
 	CWndHeroSkillUp();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -1316,7 +1316,7 @@ public:
 	virtual ~CWndDialogEvent(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL,DWORD dwWndId = 0 ); 
+	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -1349,7 +1349,7 @@ public:
 	virtual ~CWndHeavenTower(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL,DWORD dwWndId = 0 ); 
+	BOOL Initialize( CWndBase * pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -1365,7 +1365,7 @@ public:
 
 public:
 	void	SetValue( CString str, DWORD nFloor );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
@@ -1382,7 +1382,7 @@ public:
 
 	class CWndConfirm : public CWndNeuz {
 	public:
-		BOOL Initialize(CWndBase * pWndParent, DWORD _ = MB_OK) override;
+		BOOL Initialize(CWndBase * pWndParent) override;
 		BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 		void OnInitialUpdate() override;
 	};
@@ -1394,7 +1394,7 @@ public:
 public: 
 	~CWndRemoveAttribute() override; 
 	
-	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override; 
 	void OnInitialUpdate() override; 
 	
@@ -1418,7 +1418,7 @@ public:
 	
 public: 
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -1462,7 +1462,7 @@ private:
 public: 
 	CWndRemoveJewel(); 
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
 	void OnDraw( C2DRender* p2DRender ) override;
 	void OnInitialUpdate() override;
@@ -1491,7 +1491,7 @@ public:
 	CWndChangeAttribute(); 
 	virtual ~CWndChangeAttribute();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 	virtual void OnDraw(C2DRender* p2DRender);
@@ -1516,7 +1516,7 @@ public:
 	CObj* m_pTargetObj;
 
 public:	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 
 public:
@@ -1536,7 +1536,7 @@ public:
 	CWndCoupleTabInfo(); 
 	virtual ~CWndCoupleTabInfo();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 	virtual void OnDraw(C2DRender* p2DRender);
@@ -1551,7 +1551,7 @@ public:
 	CTexture* m_pSkillBgTexture = nullptr;
 
 public: 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 	virtual void OnDraw(C2DRender* p2DRender);
@@ -1566,7 +1566,7 @@ public:
 	CWndCoupleManager(); 
 	virtual ~CWndCoupleManager();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate();
 };
@@ -1582,7 +1582,7 @@ public:
 	CWndFunnyCoinConfirm(); 
 	virtual ~CWndFunnyCoinConfirm(); 
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 	void SetInfo(DWORD dwItemId, CItemElem* pItemElem);
@@ -1631,7 +1631,7 @@ public:
 	CWndSmeltSafety(WndMode eWndMode);
 	virtual ~CWndSmeltSafety();
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual	void OnInitialUpdate();
 	virtual BOOL Process();
 	virtual void OnDraw(C2DRender* p2DRender);
@@ -1683,7 +1683,7 @@ public:
 	virtual ~CWndSmeltSafetyConfirm();
 
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual	void OnInitialUpdate();
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual void OnDestroy( void );
@@ -1702,7 +1702,7 @@ public:
 	virtual ~CWndEquipBindConfirm(void);
 
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual	void OnInitialUpdate( void );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 
@@ -1727,7 +1727,7 @@ public:
 	virtual ~CWndRestateConfirm(void);
 
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual	void OnInitialUpdate( void );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 
@@ -1748,7 +1748,7 @@ public:
 	virtual ~CWndCampusInvitationConfirm( void );
 
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual	void OnInitialUpdate( void );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 
@@ -1764,7 +1764,7 @@ public:
 	virtual ~CWndCampusSeveranceConfirm( void );
 
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual	void OnInitialUpdate( void );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 

@@ -55,7 +55,7 @@ public:
 //	virtual CItem* GetFocusItem() { return NULL; }
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	// message
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
 	virtual void OnSize(UINT nType, int cx, int cy);
@@ -94,7 +94,7 @@ public:
 	virtual void PaintFrame(C2DRender* p2DRender);
 	virtual BOOL OnEraseBkgnd(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
+	virtual BOOL Initialize( CWndBase* pWndParent = nullptr );
 	// message
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);

@@ -23,7 +23,7 @@ public:
 	virtual	BOOL Process();
 //	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize );
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -45,7 +45,7 @@ public:
 	void AddMessage( LPCTSTR lpszFrom, LPCTSTR lpszMessage );
 	void AddPostMessage( LPCTSTR lpszSendName );
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -64,7 +64,7 @@ public:
 	void AddMessage( LPCTSTR lpszFrom, LPCTSTR lpszMessage );
 
 	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnSize( UINT nType, int cx, int cy ); 
@@ -79,14 +79,14 @@ public:
 	CWndText* m_pWndText;
 	CWndEdit* m_pEdit;
 public: 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 
 
 class CWndMessengerNote : public CWndNeuz {
 public:
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	virtual	void OnInitialUpdate();
 };
 

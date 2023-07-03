@@ -45,7 +45,7 @@ void CWndGuildCombat1to1Selection::OnInitialUpdate()
 	ResetSelection();
 } 
 
-BOOL CWndGuildCombat1to1Selection::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombat1to1Selection::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_1TO1_SELECTION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -189,7 +189,7 @@ void CWndGuildCombat1to1Offer::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildCombat1to1Offer::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndGuildCombat1to1Offer::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILDCOMBAT_1TO1_OFFER, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -256,7 +256,7 @@ BOOL CWndGuildCombat1to1Offer::OnChildNotify( UINT message, UINT nID, LRESULT* p
 // 1:1 길드 대전 참가자 구성 확인 창
 //////////////////////////////////////////////////////////////////////////
 
-BOOL CGuildCombat1to1SelectionResetConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CGuildCombat1to1SelectionResetConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_REMAKE_MAKEUP), //명단작성을 다시 하시겠습니까?
 		pWndParent, 
@@ -288,7 +288,7 @@ BOOL CGuildCombat1to1SelectionResetConfirm::OnChildNotify( UINT message, UINT nI
 // 1:1 길드 대전 입찰 확인 창
 //////////////////////////////////////////////////////////////////////////
 
-BOOL CWndGuildCombat1to1OfferMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndGuildCombat1to1OfferMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( "", 
 		pWndParent, 

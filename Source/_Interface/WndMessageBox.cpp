@@ -138,7 +138,7 @@ BOOL CWndMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
 
-BOOL CWndMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return TRUE;
 }
@@ -210,7 +210,7 @@ BOOL CWndMessageBoxUpper::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
-BOOL CWndMessageBoxUpper::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndMessageBoxUpper::Initialize( CWndBase* pWndParent )
 {
 	return TRUE;
 }

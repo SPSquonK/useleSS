@@ -235,7 +235,7 @@ void CWndMessengerEx::OnInitialUpdate()
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndMessengerEx::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndMessengerEx::Initialize( CWndBase* pWndParent )
 { 
 	if( g_eLocal.GetState( EVE_SCHOOL ) )
 		return FALSE;
@@ -359,7 +359,7 @@ void CWndInstantMsg::OnInitialUpdate()
 	//MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndInstantMsg::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndInstantMsg::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_INSTANTMSG, pWndParent, WBS_NOFOCUS, CPoint( 0, 0 ) );
@@ -465,7 +465,7 @@ void CWndMessage::InitSize(void) {
 	MoveParentCenter();
 }
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndMessage::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndMessage::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_MESSAGE, pWndParent, WBS_THICKFRAME, CPoint(0, 0));
 }
 
@@ -566,7 +566,7 @@ void CWndMessageNote::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndMessageNote::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndMessageNote::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_MESSAGE_NOTE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -616,7 +616,7 @@ void CWndMessengerNote::OnInitialUpdate() {
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndMessengerNote::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndMessengerNote::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_MESSENGER_NOTE, pWndParent, 0, CPoint(0, 0));
 }
 

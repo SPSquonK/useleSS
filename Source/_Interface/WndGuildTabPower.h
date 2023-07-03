@@ -6,7 +6,7 @@
 /// Tab window added to the guild window (set permissions for the guild house)
 class CWndGuildTabPower final : public CWndNeuz {
 public:
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	void OnInitialUpdate() override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 

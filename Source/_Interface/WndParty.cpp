@@ -130,7 +130,7 @@ void CWndParty::OnInitialUpdate()
 } 
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndParty::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndParty::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_PARTY, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -231,7 +231,7 @@ void CWndParty::OnLeave() {
 
 	if (leaver) {
 		g_WndMng.m_pWndPartyLeaveConfirm = new CWndPartyLeaveConfirm;
-		g_WndMng.m_pWndPartyLeaveConfirm->Initialize(NULL, APP_PARTYLEAVE_CONFIRM);
+		g_WndMng.m_pWndPartyLeaveConfirm->Initialize(NULL);
 		g_WndMng.m_pWndPartyLeaveConfirm->SetLeaveId(leaver.value());
 	}
 
@@ -439,7 +439,7 @@ void CWndPartyInfo::OnInitialUpdate()
 } 
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPartyInfo::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndPartyInfo::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_PARTY_INFO, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -597,7 +597,7 @@ void CWndPartySkill::OnInitialUpdate() {
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPartySkill::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndPartySkill::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_PARTY_SKILL, pWndParent, 0, CPoint(0, 0));
 }
 

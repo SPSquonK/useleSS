@@ -257,13 +257,10 @@ void CWndNeuz::AdditionalSkinTexture( LPWORD pDest, CSize size1, D3DFORMAT d3dFo
 	}
 
 }
-BOOL CWndNeuz::Initialize(CWndBase* pWndParent,DWORD dwStyle)
+BOOL CWndNeuz::Initialize(CWndBase* pWndParent)
 {
 	CRect rect(0,0,300,300);
-	//m_strMessage = lpszMessage;
-	//m_nType = nType;
-	//SetTitle("메지시 윈도");
-	return CWndBase::Create(dwStyle | WBS_MOVE|/*WBS_MODAL|*/WBS_SOUND|WBS_CAPTION,rect,&g_WndMng,10);
+	return CWndBase::Create(WBS_MOVE|/*WBS_MODAL|*/WBS_SOUND|WBS_CAPTION,rect,&g_WndMng,10);
 }
 BOOL CWndNeuz::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {

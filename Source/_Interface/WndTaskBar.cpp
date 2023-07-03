@@ -728,7 +728,7 @@ HRESULT CWndTaskBar::RestoreDeviceObjects()
 	return 0;
 }
 
-BOOL CWndTaskBar::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndTaskBar::Initialize(CWndBase* pWndParent)
 {
 	CRect rect = g_Neuz.GetDeviceRect();
 	//m_rectLayout = rect;
@@ -1890,7 +1890,7 @@ CWndButton* CWndTaskMenu::MakeButton( CWndMenu* pWndMenu, UINT nIDNewItem,	LPCTS
 	return pWndButton;
 }
 
-BOOL CWndTaskMenu::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndTaskMenu::Initialize(CWndBase*)
 {
 	CreateMenu( &g_WndMng );
 	SetVisible(TRUE);

@@ -20,7 +20,7 @@ CWnd2ndPassword::~CWnd2ndPassword( void )
 {
 }
 //-----------------------------------------------------------------------------
-BOOL CWnd2ndPassword::Initialize( CWndBase* pWndParent, DWORD dwType )
+BOOL CWnd2ndPassword::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_2ND_PASSWORD_NUMBERPAD, pWndParent, WBS_MODAL | WBS_KEY, CPoint( 0, 0 ) );
 }

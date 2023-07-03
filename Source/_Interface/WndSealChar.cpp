@@ -18,7 +18,7 @@ void CWndSealChar::OnInitialUpdate() {
 	Move70();
 }
 
-BOOL CWndSealChar::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndSealChar::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_SEAL_CHAR, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -56,7 +56,7 @@ void CWndSealCharSelect::OnInitialUpdate() {
 	Move70();
 }
 
-BOOL CWndSealCharSelect::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndSealCharSelect::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_SEAL_CHAR_SELECT, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -118,7 +118,7 @@ void CWndSealCharSend::OnInitialUpdate() {
 	Move70();
 }
 
-BOOL CWndSealCharSend::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndSealCharSend::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_SEAL_CHAR_SEND, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -163,7 +163,7 @@ void CWndSealCharSet::OnInitialUpdate() {
 	Move70();
 }
 
-BOOL CWndSealCharSet::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndSealCharSet::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_SEAL_CHAR_SET, pWndParent, 0, CPoint(0, 0));
 }
 

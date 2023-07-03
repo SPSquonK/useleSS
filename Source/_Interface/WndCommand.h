@@ -6,7 +6,7 @@ public:
 
 	~CWndCommand() override = default;
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	virtual BOOL Initialize(CWndBase * pWndParent = NULL);
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
 	void OnLButtonUp(UINT nFlags, CPoint point) override;

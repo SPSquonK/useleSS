@@ -186,7 +186,7 @@ void CWndKawiBawiBoGame::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndKawiBawiBoGame::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndKawiBawiBoGame::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_MINIGAME_KAWIBAWIBO, pWndParent, 0, CPoint( 0, 0 ) );
@@ -451,7 +451,7 @@ void CWndKawiBawiBoGameWin::OnInitialUpdate()
 	pText->AddString(prj.GetText( TID_GAME_KAWIBAWIBO_GUID2 ), 0xffff0000);
 } 
 
-BOOL CWndKawiBawiBoGameWin::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndKawiBawiBoGameWin::Initialize( CWndBase* pWndParent )
 { 
 	m_pWndGame  = (CWndKawiBawiBoGame*)pWndParent;	
 	// Daisy에서 설정한 리소스로 윈도를 연다.
@@ -570,7 +570,7 @@ void CWndKawiBawiBoGameConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndKawiBawiBoGameConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndKawiBawiBoGameConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_MESSAGEBOX, pWndParent, 0, CPoint( 0, 0 ) );
@@ -796,7 +796,7 @@ void CWndFindWordGame::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndFindWordGame::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndFindWordGame::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_MINIGAME_WORD, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1100,7 +1100,7 @@ void CWndDiceGame::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndDiceGame::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndDiceGame::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_MINIGAME_DICE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1394,7 +1394,7 @@ void CWndDiceGameTender::SetMinMaxPenya(int nMinPenya, int nMaxPenya)
 	m_nMaxPenya = nMaxPenya;
 }
 
-BOOL CWndDiceGameTender::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndDiceGameTender::Initialize( CWndBase* pWndParent )
 { 
 	m_pDiceGame = (CWndDiceGame*)pWndParent;
 	// Daisy에서 설정한 리소스로 윈도를 연다.
@@ -1824,7 +1824,7 @@ void CWndPuzzleGame::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndPuzzleGame::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndPuzzleGame::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_MINIGAME_PUZZLE, pWndParent, 0, CPoint( 0, 0 ) );

@@ -88,7 +88,7 @@ void CWndRegVend::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRegVend::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
+BOOL CWndRegVend::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_VENDOREX_SELL, pWndParent, 0, CPoint( 0, 0 ) );
 }

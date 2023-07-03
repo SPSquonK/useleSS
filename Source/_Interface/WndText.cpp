@@ -5,7 +5,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-BOOL CWndTextQuest::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
+BOOL CWndTextQuest::Initialize(CWndBase * pWndParent) {
 	return CWndMessageBox::Initialize("퀘스트를 진행하시겠습니까?", pWndParent, MB_OKCANCEL);
 }
 

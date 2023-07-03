@@ -28,7 +28,7 @@ void CWndSecretRoomSelection::OnInitialUpdate() {
 	ResetLineup({});
 }
 
-BOOL CWndSecretRoomSelection::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndSecretRoomSelection::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_SECRETROOM_SELECTION, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -191,7 +191,7 @@ void CWndSecretRoomOffer::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndSecretRoomOffer::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomOffer::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_SECRETROOM_OFFER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -335,7 +335,7 @@ void CWndSecretRoomChangeTaxRate::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndSecretRoomChangeTaxRate::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomChangeTaxRate::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_SECRETROOM_TAXRATE_CHANGE, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -498,7 +498,7 @@ void CWndSecretRoomCheckTaxRate::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndSecretRoomCheckTaxRate::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomCheckTaxRate::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_SECRETROOM_TAXRATE_CHECK, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -515,7 +515,7 @@ BOOL CWndSecretRoomCheckTaxRate::OnChildNotify( UINT message, UINT nID, LRESULT*
 // 비밀의 방 참가자 구성 확인 창
 //////////////////////////////////////////////////////////////////////////
 
-BOOL CWndSecretRoomSelectionResetConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndSecretRoomSelectionResetConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( prj.GetText(TID_GAME_SECRETROOM_REMAKE_MAKEUP), //명단작성을 다시 하시겠습니까?
 		pWndParent, 
@@ -574,7 +574,7 @@ void CWndSecretRoomOfferState::InsertTitle( const char szTitle[] )
 	SetTitle( strTitle );
 }
 
-BOOL CWndSecretRoomOfferState::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomOfferState::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_SECRETROOM_OFFERSTATE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -708,7 +708,7 @@ void CWndSecretRoomOfferState::SetGold( int nGold )
 // 비밀의 방 입찰 확인 창
 //////////////////////////////////////////////////////////////////////////
 
-BOOL CWndSecretRoomOfferMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndSecretRoomOfferMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( "", pWndParent, MB_OKCANCEL );	
 }
@@ -747,7 +747,7 @@ CWndSecretRoomInfoMsgBox::~CWndSecretRoomInfoMsgBox()
 {
 }
 
-BOOL CWndSecretRoomInfoMsgBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndSecretRoomInfoMsgBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_SECRETROOM_MSG, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -792,7 +792,7 @@ void CWndSecretRoomInfoMsgBox::OnInitialUpdate() {
 // 비밀의 방 세율 변경 확인 창
 //////////////////////////////////////////////////////////////////////////
 
-BOOL CWndSecretRoomChangeTaxRateMsgBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndSecretRoomChangeTaxRateMsgBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( "", pWndParent, MB_OKCANCEL );	
 }
@@ -851,7 +851,7 @@ void CWndSecretRoomCancelConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndSecretRoomCancelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomCancelConfirm::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_SECRETROOM_CANCEL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -908,7 +908,7 @@ void CWndSecretRoomBoard::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndSecretRoomBoard::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomBoard::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_SECRETROOM_BOARD, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -1136,7 +1136,7 @@ void CWndSecretRoomQuick::OnInitialUpdate()
 } 
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndSecretRoomQuick::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomQuick::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_SECRETROOM_QUICK, pWndParent, 0, CPoint( 0, 0 ) );

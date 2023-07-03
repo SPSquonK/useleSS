@@ -185,7 +185,7 @@ CWndQuestQuickInfo::~CWndQuestQuickInfo( void )
 	DeleteTree();
 }
 //-----------------------------------------------------------------------------
-BOOL CWndQuestQuickInfo::Initialize( CWndBase* pWndParent, DWORD dwType )
+BOOL CWndQuestQuickInfo::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_QUEST_QUICK_INFO, pWndParent, WBS_MANAGER, CPoint( 0, 0 ) );
 }

@@ -3,7 +3,7 @@
 #include "AppDefine.h"
 #include "DPClient.h"
 
-BOOL CWndGuildTabPower::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndGuildTabPower::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_TAPPOWER, pWndParent, 0, CPoint(0, 0));
 }
 

@@ -34,7 +34,7 @@ public:
 	CWndLogin();
 	virtual ~CWndLogin();
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwStyle = 0);
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	virtual BOOL Process ();
 	// message
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
@@ -57,7 +57,7 @@ public:
 	CWndSelectServer();
 	~CWndSelectServer() override;
 	void OnInitialUpdate() override;
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	static void DisplayChannels(CWndListBox & listBox, const std::span<CListedServers::Channel> & channels);
 
@@ -71,7 +71,7 @@ public:
 
 class CWndDeleteChar : public CWndNeuz {
 public:
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void DeletePlayer(int nSelect, LPCTSTR szNo);
 	virtual void AdditionalSkinTexture(LPWORD pDest, CSize sizeSurface, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4);
@@ -109,7 +109,7 @@ public:
 	BOOL Process() override;
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnLButtonUp(UINT nFlags, CPoint point) override;
 
@@ -134,7 +134,7 @@ public:
 	~CWndCreateChar() override;
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 
 	void SetSex(int nSex);

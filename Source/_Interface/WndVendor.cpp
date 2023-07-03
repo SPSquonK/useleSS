@@ -178,7 +178,7 @@ BOOL CWndVendor::Process()
 	return TRUE;
 }
 
-BOOL CWndVendor::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndVendor::Initialize( CWndBase* pWndParent ) 
 {
 	if( g_eLocal.GetState( EVE_SCHOOL ) )
 		return FALSE;
@@ -476,7 +476,7 @@ void CWndVendorMessage::InitSize( void )
 	MoveParentCenter();
 }
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndVendorMessage::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndVendorMessage::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_VENDOREX_CHAT, pWndParent, 0, CPoint( 0, 0 ) );
@@ -624,7 +624,7 @@ void CWndVendorConfirm::SetValue( CString str )
 {
 	m_wndText.SetString( str );
 }
-BOOL CWndVendorConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndVendorConfirm::Initialize( CWndBase* pWndParent )
 { 
 	return  CWndMessageBox::Initialize( "", pWndParent, MB_OKCANCEL );	
 } 

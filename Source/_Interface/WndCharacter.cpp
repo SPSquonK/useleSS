@@ -738,7 +738,7 @@ void CWndHonor::RefreshList() {
 	}
 }
 
-BOOL CWndHonor::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndHonor::Initialize(CWndBase * pWndParent) {
 	// TODO: This function is never actually called, delete it
 	return CWndNeuz::InitDialog(APP_HONOR, pWndParent, 0, CPoint(0, 0));
 }
@@ -798,8 +798,8 @@ void CWndCharacter::OnInitialUpdate() {
 	lpTapCtrl->SetCurSel(0);
 }
 
-BOOL CWndCharacter::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
-	return CWndNeuz::InitDialog(dwWndId, pWndParent, 0, CPoint(0, 0));
+BOOL CWndCharacter::Initialize(CWndBase * pWndParent) {
+	return CWndNeuz::InitDialog(APP_CHARACTER3, pWndParent, 0, CPoint(0, 0));
 }
 
 
@@ -825,7 +825,7 @@ void CWndStateConfirm::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndStateConfirm::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndStateConfirm::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_STATE_CONFIRM, pWndParent, 0, CPoint(0, 0));
 }
 

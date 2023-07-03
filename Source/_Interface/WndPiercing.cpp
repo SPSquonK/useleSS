@@ -16,7 +16,7 @@ CPiercingMessageBox::CPiercingMessageBox(const std::array<CWndComponentSlot, 3> 
 	m_Objid[2] = slots[2] ? slots[2].m_item->m_dwObjId : NULL_ID;
 }
 
-BOOL CPiercingMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CPiercingMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( prj.GetText(TID_PIERCING_ERROR_NOTICE), 
 		pWndParent, 
@@ -113,7 +113,7 @@ void CWndPiercing::OnInitialUpdate()
 	}
 } 
 
-BOOL CWndPiercing::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndPiercing::Initialize( CWndBase* pWndParent ) 
 {
 	return CWndNeuz::InitDialog( APP_PIERCING, pWndParent, 0, 0 );
 }

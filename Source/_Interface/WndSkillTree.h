@@ -107,7 +107,7 @@ public:
 	virtual BOOL Process();
 	virtual void OnDraw(C2DRender * p2DRender);
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0);
+	virtual BOOL Initialize(CWndBase * pWndParent = nullptr);
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 	virtual void OnMouseWndSurface(CPoint point);
 	// message
@@ -130,7 +130,7 @@ public:
 	virtual ~CWndReSkillWarning();
 
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0);
+	virtual BOOL Initialize(CWndBase * pWndParent = NULL);
 	virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
 	virtual void OnDestroy();
 };
@@ -145,7 +145,7 @@ public:
 	CWndSkill_16() = default;
 	~CWndSkill_16() override = default;
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	void OnInitialUpdate() override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	BOOL Process() override;

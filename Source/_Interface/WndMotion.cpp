@@ -24,7 +24,7 @@ void CWndMotion::OnInitialUpdate() {
 	Move(rectRoot.TopLeft());
 }
 
-BOOL CWndMotion::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndMotion::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_MOTION, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -59,12 +59,6 @@ void CWndMotion1::OnInitialUpdate()
 	CRect rectWindow = GetWindowRect();
 	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
 	Move( point );
-}
-BOOL CWndMotion1::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = g_WndMng.GetWindowRect();
-	CRect rect( 240, 0, 240 + 330, 255 - 135 ); 
-	return CWndBase::Create(WBS_THICKFRAME|WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
 }
 void CWndMotion1::OnSize(UINT nType, int cx, int cy)
 {
@@ -226,13 +220,6 @@ void CWndEmoticon::OnInitialUpdate()
 
 	CWndBase::OnInitialUpdate();
 }
-BOOL CWndEmoticon::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = g_WndMng.GetWindowRect();
-	CRect rect( 240, 0, 240 + 330, 255 - 135 ); 
-	return CWndBase::Create(WBS_THICKFRAME|WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
-}
-
 void CWndEmoticon::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	if( m_pSelectTexture )

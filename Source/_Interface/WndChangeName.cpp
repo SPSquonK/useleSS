@@ -42,7 +42,7 @@ void CWndChangeName::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndChangeName::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndChangeName::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_CHANGENAME, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -136,7 +136,7 @@ void CWndChangePetName::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndChangePetName::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndChangePetName::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_CHANGENAME, pWndParent, 0, CPoint( 0, 0 ) );
 } 
