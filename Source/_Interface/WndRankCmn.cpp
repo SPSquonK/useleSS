@@ -88,12 +88,6 @@ void CWndRankTab::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndRankTab::Initialize(CWndBase * pWndParent) {
-	// TODO: this function is probably never called -> delete it
-	return CWndNeuz::InitDialog(m_appId, pWndParent, 0, CPoint(0, 0));
-}
-
 void CWndRankTab::OnMouseMove(UINT nFlags, CPoint point) {
 	if (nFlags & MK_LBUTTON) {
 		int		nDistY = (m_nMyOld - point.y) / 5;		// 과거 좌표와의 차이.

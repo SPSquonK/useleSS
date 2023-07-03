@@ -23,7 +23,6 @@ public:
 	virtual BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 
-	virtual BOOL Initialize(CWndBase * pWndParent = nullptr) final;
 	virtual void OnDraw(C2DRender * p2DRender);
 	virtual	void OnInitialUpdate();
 
