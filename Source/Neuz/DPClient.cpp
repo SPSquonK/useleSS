@@ -2386,32 +2386,13 @@ void CDPClient::OnTradeCancel( OBJID objid, CAr & ar )
 	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 }
 
-void CDPClient::OnTradelastConfirmOk( OBJID objid, CAr & ar )
-{
-	if( objid == g_pPlayer->GetId() )
-	{
-		CWndTradeConfirm* pWndTradeConfirm = (CWndTradeConfirm*)g_WndMng.GetWndBase( APP_TRADE_CONFIRM );
-		if( pWndTradeConfirm )
-		{
-			pWndTradeConfirm->bMsg = TRUE;
-			//CString str = "승인을 할동안 기다려 주십시요";
-			CString str = prj.GetText(TID_GAME_WAITCOMFIRM);
-			CWndStatic* pWndStatic = (CWndStatic*)pWndTradeConfirm->GetDlgItem( WIDC_STATIC1 );
-			pWndStatic->SetTitle( str );
-			CWndButton * pWndButtonOk = (CWndButton*)pWndTradeConfirm->GetDlgItem( WIDC_YES );
-			pWndButtonOk->SetVisible( FALSE );
-			CWndButton * pWndButtonNO = (CWndButton*)pWndTradeConfirm->GetDlgItem( WIDC_NO );
-			pWndButtonNO->SetVisible( FALSE );
+void CDPClient::OnTradelastConfirmOk(OBJID objid, CAr &) {
+	if (objid == g_pPlayer->GetId()) {
+		if (CWndTradeConfirm * pWndTradeConfirm = g_WndMng.GetWndBase<CWndTradeConfirm>(APP_TRADE_CONFIRM)) {
+			pWndTradeConfirm->OnTradelastConfirmOk();
 		}
-	}
-	else
-	{
-		if( g_pPlayer->m_vtInfo.GetOther() )
-		{
-			CString str;
-			str.Format( prj.GetText(TID_GAME_FINALCOMFIRM), g_pPlayer->m_vtInfo.GetOther()->GetName() );
-			g_WndMng.PutString( str, NULL, prj.GetTextColor( TID_GAME_TRADEACCPET ) );
-		}
+	} else if (g_pPlayer->m_vtInfo.GetOther()) {
+		g_WndMng.PutString(TID_GAME_FINALCOMFIRM, g_pPlayer->m_vtInfo.GetOther()->GetName());
 	}
 }
 

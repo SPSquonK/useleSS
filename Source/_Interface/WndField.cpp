@@ -2441,56 +2441,41 @@ BOOL CWndConfirmTrade::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndTradeConfirm::CWndTradeConfirm() 
-{ 
-} 
-CWndTradeConfirm::~CWndTradeConfirm() 
-{ 
-} 
-void CWndTradeConfirm::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndTradeConfirm::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// ���⿡ �ڵ��ϼ���
-	CWndButton * pWndButtonOk = (CWndButton*)GetDlgItem( WIDC_YES );
-	pWndButtonOk->SetVisible( TRUE );
-	CWndButton * pWndButtonNO = (CWndButton*)GetDlgItem( WIDC_NO );
-	pWndButtonNO->SetVisible( TRUE );
+void CWndTradeConfirm::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 
-	bMsg = FALSE;
+	GetDlgItem<CWndButton>(WIDC_YES)->SetVisible(TRUE);
+	GetDlgItem<CWndButton>(WIDC_NO)->SetVisible(TRUE);
+	GetDlgItem(WIDC_STATIC1)->SetTitle(prj.GetText(TID_DIAG_0083));
 
-	CWndStatic* pWndStatic = (CWndStatic*)GetDlgItem( WIDC_STATIC1 );
-	pWndStatic->SetTitle( prj.GetText( TID_DIAG_0083 ) );
-					
-	// ������ �߾����� �ű��? �κ�.
+	bMsg = false;
+
 	MoveParentCenter();
-} 
-// ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndTradeConfirm::Initialize( CWndBase* pWndParent )
-{ 
-	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( APP_TRADE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+}
 
-BOOL CWndTradeConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( bMsg )
-	{
-		return( TRUE );
-	}
+BOOL CWndTradeConfirm::Initialize(CWndBase * pWndParent) {
+	return CWndNeuz::InitDialog(APP_TRADE_CONFIRM, pWndParent, 0, CPoint(0, 0));
+}
 
-	if( nID == WIDC_NO || nID == WTBID_CLOSE ) // ���? 
-	{
+BOOL CWndTradeConfirm::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (bMsg) return TRUE;
+
+	if (nID == WIDC_NO || nID == WTBID_CLOSE) {
 		g_DPlay.SendTradeCancel();
-	}
-	else if ( nID == WIDC_YES )
-	{
+	} else if (nID == WIDC_YES) {
 		g_DPlay.SendPacket<PACKETTYPE_TRADECONFIRM>();
 	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
+
+void CWndTradeConfirm::OnTradelastConfirmOk() {
+	bMsg = true;
+
+	GetDlgItem(WIDC_YES)->SetVisible(FALSE);
+	GetDlgItem(WIDC_NO)->SetVisible(FALSE);
+	GetDlgItem(WIDC_STATIC1)->SetTitle(prj.GetText(TID_GAME_WAITCOMFIRM));
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2601,11 +2586,10 @@ BOOL CWndTrade::Initialize( CWndBase* pWndParent )
 
 BOOL CWndTrade::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
-	CWndTradeConfirm* pWndTradeConfirm = (CWndTradeConfirm*)g_WndMng.GetWndBase( APP_TRADE_CONFIRM );
-	if( pWndTradeConfirm )
-	{
-		return( TRUE );
+	if (g_WndMng.GetWndBase(APP_TRADE_CONFIRM)) {
+		return TRUE;
 	}
+
 	if( message == WIN_ITEMDROP && ( nID == 10001 || nID == 10002 ) )
 	{
 		SHORTCUT & shortcut = reinterpret_cast<SHORTCUT &>(*pLResult);

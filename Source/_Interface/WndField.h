@@ -460,18 +460,16 @@ public:
 	virtual	void OnInitialUpdate(); 
 }; 
 
-class CWndTradeConfirm final : public CWndNeuz
-{ 
+class CWndTradeConfirm final : public CWndNeuz {
+	bool bMsg = false;
 public: 
-	BOOL bMsg;
-	CWndTradeConfirm(); 
-	virtual ~CWndTradeConfirm(); 
-	
-	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-}; 
+
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+
+	void OnTradelastConfirmOk();
+};
 
 class CWndTrade final : public CWndNeuz {
 public:
