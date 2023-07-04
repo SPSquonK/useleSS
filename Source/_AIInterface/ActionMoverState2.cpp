@@ -140,15 +140,9 @@ void CActionMover::PresupposePos2( D3DXVECTOR3* pv, D3DXVECTOR3* pvd, float* pf,
 
 void CreateFlyParticle( CMover *pMover, float fAngX, int nType )
 {
-	FLOAT fAngXZ, fAngH, fDist, fSpeed;
-	D3DXVECTOR3 vVel;
 	D3DXVECTOR3 vPos = pMover->GetPos();
 	if( nType == 0 )
 		vPos.y += 0.8f;
-	
-	fAngXZ = pMover->GetAngle();
-	fAngXZ += 180.0f; 
-	fAngXZ = D3DXToRadian( fAngXZ );
 	
 	vPos.x += (xRandom(100) / 100.0f) - 0.50f;
 	vPos.y += (xRandom(100) / 100.0f) - 0.50f;
@@ -156,19 +150,15 @@ void CreateFlyParticle( CMover *pMover, float fAngX, int nType )
 	
 	for( int i = 0; i < 2; i ++ )
 	{
-		fAngXZ = (float)(-45.0f + xRandomF(90));
+		float fAngXZ = (float)(-45.0f + xRandomF(90));
 		fAngXZ += pMover->GetAngle();
 		fAngXZ += 180.0f;
 		
-		fAngXZ = D3DXToRadian( fAngXZ );
-		fAngH = (float)(fAngX + xRandomF(10));
-		fAngH = D3DXToRadian( fAngH );
-		fSpeed = xRandomF(0.02f);
-		
-		fDist = cosf(-fAngH) * fSpeed;
-		vVel.x = sinf(fAngXZ) * fDist;
-		vVel.z = -cosf(fAngXZ) * fDist;
-		vVel.y = -sinf(-fAngH) * fSpeed;
+		const float fAngH = fAngX + xRandomF(10);
+		const float fSpeed = xRandomF(0.02f);
+
+		const D3DXVECTOR3 vVel = AngleToVector(fAngXZ, fAngH, fSpeed);
+
 		if( nType == 1 ) // 근두운용.
 			g_ParticleMng.CreateParticle( 10 + xRandom(3), vPos, vVel, g_pPlayer->GetPos().y + 0.5f );
 		else
@@ -228,17 +218,17 @@ void CActionMover::ProcessFlyParticle( float fLenSq )
 							m_pTail = (CTailEffectBelt*)g_TailEffectMng.AddEffect( g_Neuz.m_pd3dDevice, "etc_Tail1.bmp", 1 );
 						}
 					}
-					D3DXVECTOR3	vPos1, vPos2;
+
 					D3DXVECTOR3	vLocal;
 					FLOAT		fAngXZ = pMover->GetAngle();
 					FLOAT		fAngH  = pMover->GetAngleX();
 					
-					AngleToVectorXZ( &vLocal, fAngXZ, -1.0f );
+					vLocal = AngleToVectorXZ( fAngXZ, -1.0f );
 
 					fAngXZ -= 90.0f;
 					if( fAngXZ < 0 )
 						fAngXZ += 360.0f;
-					AngleToVector( &vPos1, fAngXZ, -fAngH, 0.5f );
+					D3DXVECTOR3 vPos1 = AngleToVector( fAngXZ, -fAngH, 0.5f );
 					vPos1 += pMover->GetPos();
 
 					vPos1 += vLocal;
@@ -246,12 +236,12 @@ void CActionMover::ProcessFlyParticle( float fLenSq )
 					fAngXZ = pMover->GetAngle();
 					fAngH  = pMover->GetAngleX();
 					
-					AngleToVectorXZ( &vLocal, fAngXZ, -1.0f );
+					vLocal = AngleToVectorXZ( fAngXZ, -1.0f );
 
 					fAngXZ += 90.0f;
 					if( fAngXZ > 360.0f )
 						fAngXZ -= 360.0f;
-					AngleToVector( &vPos2, fAngXZ, -fAngH, 0.5f );
+					D3DXVECTOR3 vPos2 = AngleToVector( fAngXZ, -fAngH, 0.5f );
 					vPos2 += pMover->GetPos();
 					vPos2 += vLocal;
 						

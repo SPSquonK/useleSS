@@ -8345,69 +8345,41 @@ float CMover::GetRideFrameSpeed( void )
 #ifdef __CLIENT
 void CMover::CreateAngelParticle( D3DXVECTOR3 vPos )
 {
-	FLOAT fAngXZ, fAngH, fDist, fSpeed;
-	D3DXVECTOR3 vVel;
-		
-	fAngXZ = GetAngle();
-	fAngXZ += 180.0f; 
-	fAngXZ = D3DXToRadian( fAngXZ );
-	
 	vPos.y += 1.1f;
 
 	for( int j = 0; j < 2; j ++ )
 	{
 		vPos.y -= 0.03f;
 
-		{
-			fAngXZ = (float)(-45.0f + xRandomF(90));
-			fAngXZ += GetAngle();
-			fAngXZ += 180.0f;
+		float fAngXZ = (float)(-45.0f + xRandomF(90));
+		fAngXZ += GetAngle();
+		fAngXZ += 180.0f;
 			
-			fAngXZ = D3DXToRadian( fAngXZ );
-			fAngH = (float)(GetAngleX() + xRandomF(-30) + xRandomF(30) );
-			fAngH = D3DXToRadian( fAngH );
-			fSpeed = xRandomF(0.02f);
-			
-			fDist = cosf(-fAngH) * fSpeed;
-			vVel.x = sinf(fAngXZ) * fDist;
-			vVel.z = -cosf(fAngXZ) * fDist;
-			vVel.y = -sinf(-fAngH) * fSpeed;		
+		const float fAngH = GetAngleX() + xRandomF(-30) + xRandomF(30);
+		const float fSpeed = xRandomF(0.02f);
 
-			g_ParticleMng.CreateParticle( m_dwAngelKind + xRandom(3), vPos, vVel, GetPos().y + 0.5f );
-		}	
+		const D3DXVECTOR3 vVel = AngleToVector(fAngXZ, fAngH, fSpeed);
+
+		g_ParticleMng.CreateParticle( m_dwAngelKind + xRandom(3), vPos, vVel, GetPos().y + 0.5f );
 	}
 }
 
 void CMover::CreatePetParticle( D3DXVECTOR3 vPos )
 {
-	FLOAT fAngXZ, fAngH, fDist, fSpeed;
-	D3DXVECTOR3 vVel;
-	
-	fAngXZ = GetAngle();
-	fAngXZ += 180.0f; 
-	fAngXZ = D3DXToRadian( fAngXZ );
-	
 	for( int j = 0; j < 4; j ++ )
 	{
 		vPos.y -= 0.03f;
 		
-		{
-			fAngXZ = (float)(-45.0f + xRandomF(360));
-			fAngXZ += GetAngle();
-			fAngXZ += 180.0f;
+		FLOAT fAngXZ = (float)(-45.0f + xRandomF(360));
+		fAngXZ += GetAngle();
+		fAngXZ += 180.0f;
 			
-			fAngXZ = D3DXToRadian( fAngXZ );
-			fAngH = (float)(GetAngleX() + xRandomF(-130) + xRandomF(130) );
-			fAngH = D3DXToRadian( fAngH );
-			fSpeed = xRandomF(0.015f);
-			
-			fDist = cosf(-fAngH) * fSpeed;
-			vVel.x = sinf(fAngXZ) * fDist;
-			vVel.z = -cosf(fAngXZ) * fDist;
-			vVel.y = -sinf(-fAngH) * fSpeed;
+		const float fAngH = GetAngleX() + xRandomF(-130) + xRandomF(130);
+		const float fSpeed = xRandomF(0.015f);
+
+		const D3DXVECTOR3 vVel = AngleToVector(fAngXZ, fAngH, fSpeed);
 		
-			g_ParticleMng.CreateParticle( 13 + xRandom(11), vPos, vVel, GetPos().y + 0.5f );
-		}	
+		g_ParticleMng.CreateParticle( 13 + xRandom(11), vPos, vVel, GetPos().y + 0.5f );
 	}
 }
 

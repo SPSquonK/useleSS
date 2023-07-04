@@ -970,8 +970,8 @@ BOOL CInstanceDungeonHelper::EnteranceDungeon( CUser* pUser, DWORD dwWorldId )
 			return TRUE;
 		else
 		{
-			float fPushPower = 0.5f;
-			AngleToVectorXZ( &pUser->m_pActMover->m_vDeltaE, pUser->GetAngle() + 180.0f, fPushPower );
+			static constexpr float fPushPower = 0.5f;
+			pUser->m_pActMover->m_vDeltaE = AngleToVectorXZ( pUser->GetAngle() + 180.0f, fPushPower );
 			pUser->Replace( pUser->GetWorld()->GetID(), pUser->GetPos() + pUser->m_pActMover->m_vDeltaE, REPLACE_NORMAL, pUser->GetLayer() );
 			g_UserMng.AddPushPower( pUser, pUser->GetPos(), pUser->GetAngle(), pUser->GetAngle() + 180.0f, fPushPower );
 		}

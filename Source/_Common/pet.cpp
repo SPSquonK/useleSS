@@ -442,34 +442,30 @@ BOOL CAIEgg::MoveProcessIdle( const AIMSG & msg )
 	if( m_nState == PETSTATE_IDLE )
 	{
 		FLOAT fAngXZ	= pOwner->GetAngle();
-		FLOAT fAngH		= pOwner->GetAngleX();
+		const FLOAT fAngH		= pOwner->GetAngleX();
 
-		D3DXVECTOR3 vPos;
-//		AngleToVector( &vPos, fAngXZ, -fAngH, 1.0f );
-//		vPos	+= pOwner->GetPos();
-		vPos	= pOwner->GetPos();
+		D3DXVECTOR3 vPos	= pOwner->GetPos();
 		vPos.y	= pOwner->GetWorld()->GetLandHeight( pOwner->GetPos() );
 
-		D3DXVECTOR3 vPos1, vPos2;
 		fAngXZ	= pOwner->GetAngle();
-		fAngH  = pOwner->GetAngleX();
+
 		fAngXZ -= 90.0f;
 		if( fAngXZ < 0 )
 			fAngXZ += 360.0f;
-		AngleToVector( &vPos1, fAngXZ, -fAngH, 1.0f );
+		D3DXVECTOR3 vPos1 = AngleToVector( fAngXZ, -fAngH, 1.0f );
 		vPos1 += vPos;
 		fAngXZ	= pOwner->GetAngle();
-		fAngH  = pOwner->GetAngleX();
+
 		fAngXZ += 90.0f;
 		if( fAngXZ > 360.0f )
 			fAngXZ -= 360.0f;
-		AngleToVector( &vPos2, fAngXZ, -fAngH, 1.0f );
+		D3DXVECTOR3 vPos2 = AngleToVector( fAngXZ, -fAngH, 1.0f );
 		vPos2	+= vPos;
 		
-		D3DXVECTOR3 v1	= vPos1 - pMover->GetPos();
-		D3DXVECTOR3 v2	= vPos2 - pMover->GetPos();
-		double d1	= (double)D3DXVec3LengthSq( &v1 );
-		double d2	= (double)D3DXVec3LengthSq( &v2 );
+		const D3DXVECTOR3 v1	= vPos1 - pMover->GetPos();
+		const D3DXVECTOR3 v2	= vPos2 - pMover->GetPos();
+		const float d1	= D3DXVec3LengthSq( &v1 );
+		const float d2	= D3DXVec3LengthSq( &v2 );
 		if( d1 < d2 )
 			vPos	= vPos1;
 		else

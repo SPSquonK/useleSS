@@ -212,9 +212,9 @@ void CCommonCtrl::_ProcessWall( void )
 						// 第肺 剐府扁 贸府.
 						if( pTarget->IsRank( RANK_MIDBOSS ) == FALSE )
 						{
-							FLOAT fPushAngle = pTarget->GetAngle() + 180.0f;
-							FLOAT fPower = 0.825f;
-							AngleToVectorXZ( &pTarget->m_pActMover->m_vDeltaE, fPushAngle, fPower );
+							const FLOAT fPushAngle = pTarget->GetAngle() + 180.0f;
+							static constexpr FLOAT fPower = 0.825f;
+							pTarget->m_pActMover->m_vDeltaE = AngleToVectorXZ( fPushAngle, fPower );
 							g_UserMng.AddPushPower( pTarget, pTarget->GetPos(), pTarget->GetAngle(), fPushAngle, fPower );
 						}
 					}
@@ -249,9 +249,9 @@ void CCommonCtrl::_ProcessWall( void )
 							DestroyWall();
 
 						// 第肺 剐府扁 贸府.
-						FLOAT fPushAngle = pTarget->GetAngle() + 180.0f;
-						FLOAT fPower = 0.825f;
-						AngleToVectorXZ( &pTarget->m_pActMover->m_vDeltaE, fPushAngle, fPower );
+						const FLOAT fPushAngle = pTarget->GetAngle() + 180.0f;
+						const FLOAT fPower = 0.825f;
+						pTarget->m_pActMover->m_vDeltaE = AngleToVectorXZ( fPushAngle, fPower );
 						g_UserMng.AddPushPower( pTarget, pTarget->GetPos(), pTarget->GetAngle(), fPushAngle, fPower );
 					}
 				}

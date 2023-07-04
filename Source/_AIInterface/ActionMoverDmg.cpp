@@ -75,7 +75,7 @@ DWORD CActionMover::OnDamageMsgC( DWORD dwMsg, CMover* pAttacker, DWORD dwAtkFla
 		}
 		else
 		{
-			AngleToVectorXZ( &vLocal, pAttacker->GetAngle(), 1.0f );
+			vLocal = AngleToVectorXZ( pAttacker->GetAngle(), 1.0f );
 			vLocal += pMover->GetPos();		//gmpbigsun : 피격자 일반 effect 09_12_17
 			vLocal.y += 1.0f;			// 2006/6/20 xuzhu
 		}

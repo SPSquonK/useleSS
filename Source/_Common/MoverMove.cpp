@@ -120,20 +120,16 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 					// 강탈 스킬은 뒤에서 사용가능(일단 클라에서 판정하자~)
 					if( pSkill->GetProp() && pSkill->GetProp()->dwAtkStyle == AS_BACK )
 					{						
-						D3DXVECTOR3 v3Pos;
-						D3DXVECTOR3 v3PosSrc;
-						D3DXVECTOR3 v3PosDest;
-						
 						// 방향벡터 1
-						v3PosSrc = pObj->GetPos() - GetPos();
+						D3DXVECTOR3 v3PosSrc = pObj->GetPos() - GetPos();
 						D3DXVec3Normalize( &v3PosSrc, &v3PosSrc );
 						
 						// 방향벡터 2
-						AngleToVectorXZ( &v3Pos, pObj->GetAngle(), 3.0f );
-						v3PosDest = (pObj->GetPos()+v3Pos) - pObj->GetPos();
+						const D3DXVECTOR3 v3Pos = AngleToVectorXZ( pObj->GetAngle(), 3.0f );
+						D3DXVECTOR3 v3PosDest = (pObj->GetPos()+v3Pos) - pObj->GetPos();
 						D3DXVec3Normalize( &v3PosDest, &v3PosDest );
 						
-						FLOAT fDir = D3DXVec3Dot( &v3PosSrc, &v3PosDest );
+						const FLOAT fDir = D3DXVec3Dot( &v3PosSrc, &v3PosDest );
 
 						// 뒤가 아니면 스킬 사용 불가!
 						if( fDir < 0.3f )
@@ -347,8 +343,7 @@ void CMover::ProcessMove()
 				D3DXVECTOR3 kDir = vPos - vDestPos ;
 				D3DXVec3Normalize( &kDir, &kDir );
 
-				D3DXVECTOR3 kMyDir;
-				AngleToVectorXZ( &kMyDir, GetAngle(), 1.0f );
+				D3DXVECTOR3 kMyDir = AngleToVectorXZ( GetAngle(), 1.0f );
 				D3DXVec3Normalize( &kMyDir, &kMyDir );
 
 				float fAngle = D3DXVec3Dot( &kDir, &kMyDir );

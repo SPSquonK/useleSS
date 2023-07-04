@@ -567,7 +567,7 @@ BOOL CMover::OnMagicSkill( int nType, int nCount )
 		pModel->m_SparkInfo.m_nCnt = 0;
 		pModel->m_SparkInfo.m_fLerp= 1.0f;
 		
-		AngleToVectorXZ( &pModel->m_SparkInfo.m_v3SparkDir, GetAngle(), -1.0f );
+		pModel->m_SparkInfo.m_v3SparkDir = AngleToVectorXZ( GetAngle(), -1.0f );
 	}
 #endif //defined(__CLIENT)
 
@@ -758,7 +758,7 @@ BOOL	CMover::OnAttackMagic()
 		pModel->m_SparkInfo.m_nCnt = 0;
 		pModel->m_SparkInfo.m_fLerp= 1.0f;
 		
-		AngleToVectorXZ( &pModel->m_SparkInfo.m_v3SparkDir, GetAngle(), -1.0f );
+		pModel->m_SparkInfo.m_v3SparkDir = AngleToVectorXZ( GetAngle(), -1.0f );
 	}
 #endif // __WORLDSERVER
 	return TRUE;
@@ -1079,7 +1079,7 @@ void	CMover::OnAttackMelee_Krrr( DWORD dwState, CMover *pHitObj )
 				PLAYSND( SND_PC_BOSS_SUMMONS );
 		#endif //__CLIENT
 				
-				AngleToVectorXZ( &vLocal, GetAngle(), 5.0f );	// 때리는방향 5미터앞.
+				vLocal = AngleToVectorXZ( GetAngle(), 5.0f );	// 때리는방향 5미터앞.
 				vLocal += GetPos();
 
 				FLOAT fHeight = GetWorld()->GetLandHeight( vLocal.x, vLocal.z );

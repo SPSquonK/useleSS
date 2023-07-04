@@ -149,7 +149,7 @@ void CActionShip::ProcessState( DWORD dwState, float fSpeed )
 		pShip->m_vAcc = D3DXVECTOR3( 0, 0, 0 );		// 대기상태에선 추진력이 없음.
 		break;
 	case OBJSTA_FMOVE:	// 전진중
-		AngleToVectorXZ( &pShip->m_vAcc, fAng, 0.001f );		// fAng방향으로 추진력발생.
+		pShip->m_vAcc = AngleToVectorXZ( fAng, 0.001f );		// fAng방향으로 추진력발생.
 		break;
 	case OBJSTA_LTURN:	// 왼쪽턴중
 		pShip->m_fAccAng += 0.01f;

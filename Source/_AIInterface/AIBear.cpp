@@ -339,18 +339,12 @@ BOOL CAIBear::MoveProcessRage()
 
 			g_DPCoreClient.SendCaption( prj.GetText(TID_GAME_BOSS_MUSHMOOT_MSG_01), pTarget->GetWorld()->GetID() );	
 
-			D3DXVECTOR3 vLocal;
 			D3DXVECTOR3 vPos = pTarget->GetPos();
-
-			AngleToVectorXZ( &vLocal, pTarget->GetAngle(), 2.0f );
-			vPos+=vLocal;
-
+			vPos+= AngleToVectorXZ(pTarget->GetAngle(), 2.0f);
 			SummonMonster( MI_SMALL_MUSHPOIE, vPos );
 			
 			vPos = pTarget->GetPos();
-			AngleToVectorXZ( &vLocal, pTarget->GetAngle(), -2.0f );
-			vPos+=vLocal;
-			
+			vPos+= AngleToVectorXZ(pTarget->GetAngle(), -2.0f);
 			SummonMonster( MI_SMALL_MUSHPOIE, vPos );	
 		}
 	}

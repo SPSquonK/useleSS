@@ -645,11 +645,10 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 				}
 
 				D3DXMATRIX mLadolf = mRide;
-				D3DXVECTOR3 vLocal;
 
-				FLOAT fAngXZ = GetAngle();
-				FLOAT fAngH  = GetAngleX();
-				AngleToVector( &vLocal, fAngXZ, -fAngH-10.0f, 1.4f );
+				const FLOAT fAngXZ = GetAngle();
+				const FLOAT fAngH  = GetAngleX();
+				const D3DXVECTOR3 vLocal = AngleToVector( fAngXZ, -fAngH-10.0f, 1.4f );
 
 				// 날기 시작 - 가속중
 				if( m_pActMover->GetStateFlag() & OBJSTAF_ACC )

@@ -320,10 +320,9 @@ void RandomMoving( DWORD dt )
 	dwDelta += dt;
 	if( dwDelta > 5000 && g_pPlayer )
 	{
-		D3DXVECTOR3 kDir;
 		float fAngle = float( rand() % 361 );
 		float fSpeed = float( rand() % 30 );
-		AngleToVectorXZ( &kDir, fAngle, fSpeed );
+		D3DXVECTOR3 kDir = AngleToVectorXZ( fAngle, fSpeed );
 
 		D3DXVECTOR3 kPos = g_pPlayer->GetPos( );
 		kPos += kDir;

@@ -780,9 +780,8 @@ int		CWndWorld::ControlFlying( DWORD dwMessage, CPoint point )
 
 					if( pWeapon->dwItemKind3 == IK3_WAND )
 					{
-						D3DXVECTOR3 vFront, vTarget;
-						AngleToVector( &vFront, g_pPlayer->GetAngle(), -g_pPlayer->GetAngleX(), 1.0f );
-						vTarget = pObj->GetPos() - g_pPlayer->GetPos();
+						const D3DXVECTOR3 vFront = AngleToVector( g_pPlayer->GetAngle(), -g_pPlayer->GetAngleX(), 1.0f );
+						D3DXVECTOR3 vTarget = pObj->GetPos() - g_pPlayer->GetPos();
 						D3DXVec3Normalize( &vTarget, &vTarget );		// 타겟쪽으로의 벡터의 유닛벡터.
 						FLOAT fDot = D3DXVec3Dot( &vFront, &vTarget );
 						if( fDot >= cosf(D3DXToRadian(60.0f)) )	// 타겟이 내가 보는 방향의 +-30도 안에 있으면 발사할수 있다.

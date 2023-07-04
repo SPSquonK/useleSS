@@ -609,7 +609,7 @@ int CSfxItemWandAtkAir::SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex,
 //
 void CSfxItemWandAtkAir::ShootSfx( float fAngXZ, float fAngY, float fSpeed )
 {
-	AngleToVector( &m_vDelta, fAngXZ, fAngY, fSpeed );		// 초기 발사힘.	- 완드가 향하고 있는 방향으로 쎄게 방출.
+	m_vDelta = AngleToVector( fAngXZ, fAngY, fSpeed );		// 초기 발사힘.	- 완드가 향하고 있는 방향으로 쎄게 방출.
 }
 
 	
@@ -638,14 +638,13 @@ void CSfxItemWandAtkAir::Process()
 		D3DXVECTOR3 vDistXZ = vDist;
 		vDistXZ.y = 0;		// XZ평면의 순수 길이를 구하기 위해.
 
-		FLOAT fAngXZ = D3DXToDegree( atan2( vDist.x, -vDist.z ) );		// 목표방향쪽으로의 XZ각도 구함.
-		FLOAT fDistXZ = D3DXVec3Length( &vDistXZ );				// 목표방향쪽으로의 XZ평면에서의 길이.
+		const FLOAT fAngXZ = D3DXToDegree( atan2( vDist.x, -vDist.z ) );		// 목표방향쪽으로의 XZ각도 구함.
+		const FLOAT fDistXZ = D3DXVec3Length( &vDistXZ );				// 목표방향쪽으로의 XZ평면에서의 길이.
 		FLOAT fAngH  = D3DXToDegree( atan2( fDistXZ, vDist.y ) );		// 목표방향쪽으로의 높이 각도.
 
 		fAngH -= 90.0f;
 		fAngH = -fAngH;
-		D3DXVECTOR3	vAcc;
-		AngleToVector( &vAcc, fAngXZ, fAngH, 0.007f );		// 실시간으로 목표쪽으로 향하는 힘.
+		const D3DXVECTOR3	vAcc = AngleToVector( fAngXZ, fAngH, 0.007f );		// 실시간으로 목표쪽으로 향하는 힘.
 		
 		FLOAT fSpeedSq = D3DXVec3LengthSq( &m_vDelta );		// 디버깅용.  현재 발사체의 속도를 산출.
 		if( fSpeedSq < (0.45f * 0.45f) )
@@ -1019,14 +1018,13 @@ void CSfxItemRangeAtk1::Process()
 			m_pTail = (CTailEffectBelt*)g_TailEffectMng.AddEffect( g_Neuz.m_pd3dDevice, "etc_Tail2.bmp", 2, 0.35f );
 		}
 		
-		D3DXVECTOR3	vPos1, vPos2;
 		FLOAT		fAngXZ = GetAngle();
 		FLOAT		fAngH  = GetAngleX();
 		
 		fAngXZ -= 90.0f;
 		if( fAngXZ < 0 )
 			fAngXZ += 360.0f;
-		AngleToVector( &vPos1, fAngXZ, -fAngH, 0.05f );
+		D3DXVECTOR3 vPos1 = AngleToVector( fAngXZ, -fAngH, 0.05f );
 		vPos1 += GetPos();
 		
 		fAngXZ = GetAngle();
@@ -1035,7 +1033,7 @@ void CSfxItemRangeAtk1::Process()
 		fAngXZ += 90.0f;
 		if( fAngXZ > 360.0f )
 			fAngXZ -= 360.0f;
-		AngleToVector( &vPos2, fAngXZ, -fAngH, 0.05f );
+		D3DXVECTOR3 vPos2 = AngleToVector( fAngXZ, -fAngH, 0.05f );
 		vPos2 += GetPos();
 
 		if( m_pTail )
@@ -1145,50 +1143,40 @@ void CSfxItemYoyoAtk::MakePath(int nType)
 	D3DXVECTOR3		aNewPos[7];
 
 	m_v3SrcPos = GetPos();
-	D3DXVECTOR3 vLocal;
 	
 	// 5미터 앞 위치구함
-	AngleToVectorXZ( &vLocal, 0, fLength );
-	aNewPos[0] = vLocal;
+	aNewPos[0] = AngleToVectorXZ( 0, fLength );
 	aNewPos[0].y -= 0.2f;
 	
-	AngleToVectorXZ( &vLocal, 0, fLength+0.5f );
-	aNewPos[1] = vLocal;
+	aNewPos[1] = AngleToVectorXZ( 0, fLength+0.5f );
 	aNewPos[1].y -= 0.2f;
 
-	AngleToVectorXZ( &vLocal, 0, fLength+1.0f );
-	aNewPos[2] = vLocal;
+	aNewPos[2] = AngleToVectorXZ( 0, fLength+1.0f );
 	aNewPos[2].y -= 0.1f;
 
 	// 끝점
-	AngleToVectorXZ( &vLocal, 0, fLength+1.2f );
-	aNewPos[3] = vLocal;
+	aNewPos[3] = AngleToVectorXZ( 0, fLength+1.2f );
 
 	// 뒤돌아가기
-	AngleToVectorXZ( &vLocal, 0, fLength+1.0f );
-	aNewPos[4] = vLocal;
+	aNewPos[4] = AngleToVectorXZ( 0, fLength+1.0f );
 	aNewPos[4].y += 0.1f;
 	
-	AngleToVectorXZ( &vLocal, 0, fLength+0.5f );
-	aNewPos[5] = vLocal;
+	aNewPos[5] = AngleToVectorXZ( 0, fLength+0.5f );
 	aNewPos[5].y += 0.2f;
 	
-	AngleToVectorXZ( &vLocal, 0, fLength );
-	aNewPos[6] = vLocal;
+	aNewPos[6] = AngleToVectorXZ( 0, fLength );
 	aNewPos[6].y += 0.2f;
 
-	D3DXVECTOR3 vSlp;
-	int		a, b, c, d;
-	int		nMaxVertex = 7;
+	static constexpr int nMaxVertex = 7;
 
 	m_nMaxSpline = 0;
 	for( int i = 0; i < nMaxVertex-1; i ++ )
 	{
 		// i ~ i+1사이를 보간한다.  
-		a = i - 1;		if( a < 0 )	a = 0;
-		b = i;
-		c = i+1;
-		d = i+2;		if( d >= nMaxVertex )	d = nMaxVertex - 1;
+		int a = i - 1;		if( a < 0 )	a = 0;
+		int b = i;
+		int c = i+1;
+		int d = i+2;		if( d >= nMaxVertex )	d = nMaxVertex - 1;
 		for( int j = 0; j < MAX_SF_SLERP+1; j ++ )
 		{
 			if( m_nMaxSpline >= 30 )
@@ -1197,7 +1185,7 @@ void CSfxItemYoyoAtk::MakePath(int nType)
 				//ADDERRORMSG( szErr );
 				break;
 			}
-			vSlp = SplineSlerp( &aNewPos[a], &aNewPos[b], &aNewPos[c], &aNewPos[d], (float)j / MAX_SF_SLERP );
+			D3DXVECTOR3 vSlp = SplineSlerp( &aNewPos[a], &aNewPos[b], &aNewPos[c], &aNewPos[d], (float)j / MAX_SF_SLERP );
 			m_aSpline[ m_nMaxSpline ] = vSlp;
 			m_nMaxSpline ++;
 		}
@@ -1209,10 +1197,9 @@ void CSfxItemYoyoAtk::MakePath(int nType)
 	D3DXVECTOR3 vAxis;
 	D3DXQUATERNION   qRot;
 	
-	FLOAT       fTheta;
 	D3DXVec3Normalize( &vDestNor, &vDestNor );
 	D3DXVec3Cross( &vAxis, &vDir, &vDestNor );
-	fTheta = D3DXVec3Dot( &vDir, &vDestNor );
+	const FLOAT fTheta = D3DXVec3Dot( &vDir, &vDestNor );
 	D3DXQuaternionRotationAxis( &qRot, &vAxis, acosf( fTheta ) );
 	
 	D3DXMATRIX mRot;
@@ -1437,14 +1424,13 @@ void CSfxItemRangeAtk_JunkBow::Process()
 			}
 		}
 		
-		D3DXVECTOR3	vPos1, vPos2;
 		FLOAT		fAngXZ = GetAngle();
 		FLOAT		fAngH  = GetAngleX();
 		
 		fAngXZ -= 90.0f;
 		if( fAngXZ < 0 )
 			fAngXZ += 360.0f;
-		AngleToVector( &vPos1, fAngXZ, -fAngH, 0.05f );
+		D3DXVECTOR3 vPos1 = AngleToVector( fAngXZ, -fAngH, 0.05f );
 		vPos1 += GetPos();
 		
 		fAngXZ = GetAngle();
@@ -1453,7 +1439,7 @@ void CSfxItemRangeAtk_JunkBow::Process()
 		fAngXZ += 90.0f;
 		if( fAngXZ > 360.0f )
 			fAngXZ -= 360.0f;
-		AngleToVector( &vPos2, fAngXZ, -fAngH, 0.05f );
+		D3DXVECTOR3 vPos2 = AngleToVector( fAngXZ, -fAngH, 0.05f );
 		vPos2 += GetPos();
 
 		vPos1.y -= 0.5f;
@@ -1731,7 +1717,7 @@ void CSfxAtkStraight::ShootSfx( float fAngXZ, float fAngH, float fSpeed, DWORD d
 	m_pSfxObj->m_vPos = GetPos();		// sfx모델의 위치를 세팅.
 	m_dwExplosion = dwExplosion;
 
-	AngleToVector( &m_vDelta, fAngXZ, fAngH, fSpeed );		// 이동량 vDelta를 구함.
+	m_vDelta = AngleToVector( fAngXZ, fAngH, fSpeed );		// 이동량 vDelta를 구함.
 
 	// 마법객체 방향벡터로 모델 방향 돌리기~~~
 	D3DXVECTOR3 vDir      = D3DXVECTOR3( 0.0f, 0.0f, 1.0f );
@@ -1739,10 +1725,9 @@ void CSfxAtkStraight::ShootSfx( float fAngXZ, float fAngH, float fSpeed, DWORD d
 	D3DXVECTOR3 vAxis;
 	D3DXQUATERNION   qRot;
 	
-	FLOAT       fTheta;
 	D3DXVec3Normalize( &vDestNor, &vDestNor );
 	D3DXVec3Cross( &vAxis, &vDir, &vDestNor );
-	fTheta = D3DXVec3Dot( &vDir, &vDestNor );
+	const FLOAT fTheta = D3DXVec3Dot( &vDir, &vDestNor );
 	D3DXQuaternionRotationAxis( &qRot, &vAxis, acosf( fTheta ) );
 	
 	D3DXVECTOR3 vYPW;
@@ -2516,7 +2501,7 @@ void CSfxSkillMagStrongWind::Process()
 			{
 				// 데미지플라이 중엔 
 					if( (pObjDest->m_pActMover->GetState() & OBJSTA_DMG_FLY_ALL) == 0 )
-						AngleToVectorXZ( &pObjDest->m_pActMover->m_vDeltaE, m_fAngle, fDmgPower );	
+						pObjDest->m_pActMover->m_vDeltaE = AngleToVectorXZ( m_fAngle, fDmgPower );
 			}
 		}
 		if(m_SfxObj2.Process()) {

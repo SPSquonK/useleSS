@@ -180,7 +180,7 @@ void CShipLoop::Process()
 #endif	
 	{
 		fAng += m_fDeltaAng;		// 왼쪽으로 계속 회전
-		AngleToVectorXZ( &m_vAcc, fAng, 0.05f );		// fAng방향으로 추진력발생.
+		m_vAcc = AngleToVectorXZ( fAng, 0.05f );		// fAng방향으로 추진력발생.
 		vDeltaAccu += m_vAcc;		// 서버 15프레임에서만 사용되는 것으로 4번을 누적함.
 	}
 	

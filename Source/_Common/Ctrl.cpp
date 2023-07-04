@@ -847,7 +847,7 @@ void CCtrl::CreateSkillSfx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 					}
 					else
 					{
-						AngleToVectorXZ( &vLocal, GetAngle(), 1.3f );	// 때리는방향 1미터앞.
+						vLocal = AngleToVectorXZ( GetAngle(), 1.3f );	// 때리는방향 1미터앞.
 						vLocal += GetPos();
 						vLocal.y += 1.0f;
 					}
@@ -902,7 +902,7 @@ void CCtrl::CreateSkillSfx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 					}
 					else
 					{
-						AngleToVectorXZ( &vLocal, GetAngle(), 1.3f );	// 때리는방향 1미터앞.
+						vLocal = AngleToVectorXZ( GetAngle(), 1.3f );	// 때리는방향 1미터앞.
 						vLocal += GetPos();		// GetPos()를 this에서 pTarget으로 바꿨다. 2006/6/20 xuzhu.
 						vLocal.y += 1.0f;
 					}
@@ -1175,8 +1175,8 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 
 					if( dwDmgShift != NULL_ID && pTarget->GetProp()->dwClass != RANK_SUPER && pTarget->GetProp()->dwClass != RANK_MIDBOSS )
 					{
-						FLOAT fAngle = GetDegree( pTarget->GetPos(), pSrc->GetPos() );	// 시전자와 타겟의 각도를 구함
-						AngleToVectorXZ( &pTarget->m_pActMover->m_vDeltaE, fAngle, 0.85f );
+						const FLOAT fAngle = GetDegree( pTarget->GetPos(), pSrc->GetPos() );	// 시전자와 타겟의 각도를 구함
+						pTarget->m_pActMover->m_vDeltaE = AngleToVectorXZ( fAngle, 0.85f );
 						g_UserMng.AddPushPower( pTarget, pTarget->GetPos(), pTarget->GetAngle(), fAngle, 0.85f );
 					}
 					
@@ -1186,24 +1186,23 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 						if( pAddSkillProp && pAddSkillProp->nDestData1[2] != NULL_ID )
 						{
 							// 당겨질 거리
-							FLOAT fPullingLen = (FLOAT)pAddSkillProp->nDestData1[2] * 0.001f; 
+							const FLOAT fPullingLen = (FLOAT)pAddSkillProp->nDestData1[2] * 0.001f; 
 							
 							// 타겟과의 거리
-							D3DXVECTOR3 v3Len = pTarget->GetPos() - pSrc->GetPos();
+							const D3DXVECTOR3 v3Len = pTarget->GetPos() - pSrc->GetPos();
 							FLOAT fTotalLen = D3DXVec3LengthSq( &v3Len ) * 0.1f;
-							{
-								if( fTotalLen > ((CMover*)this)->GetAttackRange( AR_HRANGE ) )
-									fTotalLen = ((CMover*)this)->GetAttackRange( AR_HRANGE );
+							
+							if( fTotalLen > ((CMover*)this)->GetAttackRange( AR_HRANGE ) )
+								fTotalLen = ((CMover*)this)->GetAttackRange( AR_HRANGE );
 
-								// 거리에 따라 댕겨지는 힘이 다르게 적용됨
-								FLOAT fDest = fTotalLen / ((CMover*)this)->GetAttackRange( AR_HRANGE );
-								{
-									// 실제땡겨질 거리 계산
-									FLOAT fAngle = GetDegree( pTarget->GetPos(), pSrc->GetPos() );	// 시전자와 타겟의 각도를 구함
-									AngleToVectorXZ( &pTarget->m_pActMover->m_vDeltaE, fAngle, fPullingLen * -fDest);
-									g_UserMng.AddPushPower( pTarget, pTarget->GetPos(), pTarget->GetAngle(), fAngle, fPullingLen * -fDest );
-								}
-							}
+							// 거리에 따라 댕겨지는 힘이 다르게 적용됨
+							const FLOAT fDest = fTotalLen / ((CMover*)this)->GetAttackRange( AR_HRANGE );
+								
+							// 실제땡겨질 거리 계산
+							const FLOAT fAngle = GetDegree( pTarget->GetPos(), pSrc->GetPos() );	// 시전자와 타겟의 각도를 구함
+							pTarget->m_pActMover->m_vDeltaE = AngleToVectorXZ( fAngle, fPullingLen * -fDest);
+							g_UserMng.AddPushPower( pTarget, pTarget->GetPos(), pTarget->GetAngle(), fAngle, fPullingLen * -fDest );
+							
 						}
 					}
 				}

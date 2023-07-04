@@ -12404,7 +12404,7 @@ void	CDPClient::OnPushPower( OBJID objid, CAr & ar )
 	{
 		//pMover->SetPos( vPos );			// 동기화땜에 서버랑 좌표를 일단 맞춤.
 		pMover->SetAngle( fAngle );
-		AngleToVectorXZ( &pMover->m_pActMover->m_vDeltaE, fPushAngle, fPower );	// 밀리는 힘 설정.
+		pMover->m_pActMover->m_vDeltaE = AngleToVectorXZ( fPushAngle, fPower );	// 밀리는 힘 설정.
 	}
 }
 
