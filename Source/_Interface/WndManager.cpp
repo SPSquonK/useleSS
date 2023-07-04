@@ -1479,7 +1479,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 						g_pPlayer->CMD_SetMagicAttack( pFocusObj->GetId(), 0 );
 					}
 					else
-						((CWndWorld *)g_WndMng.m_pWndWorld)->m_bAutoAttack = TRUE;
+						g_WndMng.m_pWndWorld->m_bAutoAttack = TRUE;
 				}
 				else
 				{

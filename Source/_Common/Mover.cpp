@@ -4775,7 +4775,7 @@ BOOL CMover::IsAttackAble( CObj *pObj )
 						{
 							bAble	= IsPKAttackAble( pMover );
 							if( bAble )
-								( (CWndWorld *)g_WndMng.m_pWndWorld )->SetLastTarget( pMover->GetId() );
+								g_WndMng.m_pWndWorld->SetLastTarget( pMover->GetId() );
 						}
 					}
 
@@ -4820,7 +4820,7 @@ BOOL CMover::IsAttackAble( CObj *pObj )
 		
 	#ifdef __CLIENT
 		if( !bAble )
-			( (CWndWorld *)g_WndMng.m_pWndWorld )->m_bAutoAttack	= FALSE;
+			g_WndMng.m_pWndWorld->m_bAutoAttack	= FALSE;
 	#endif
 	}
 	return bAble;
@@ -4874,7 +4874,7 @@ BOOL CMover::IsAttackAbleNPC( CMover* pNPC )
 #ifdef __CLIENT
 	if( bAble == TRUE )
 		if( GetAsyncKeyState(VK_CONTROL) & 0x8000 )	// NPC에게 공격키를 누르고 있을때 클릭하면 자동공격.
-			((CWndWorld *)g_WndMng.m_pWndWorld)->m_bAutoAttack = TRUE;
+			g_WndMng.m_pWndWorld->m_bAutoAttack = TRUE;
 #endif // Client
 				
 	return bAble;
@@ -6384,7 +6384,7 @@ BOOL CMover::IsBullet( const ItemProp* pItemProp )
 			{
 #ifdef __CLIENT
 				g_WndMng.PutString( prj.GetText( dwTip ), NULL, prj.GetTextColor( dwTip ) );
-				( (CWndWorld *)g_WndMng.m_pWndWorld )->m_bAutoAttack	= FALSE;
+				g_WndMng.m_pWndWorld->m_bAutoAttack	= FALSE;
 #endif // __CLIENT
 #ifdef __WORLDSERVER
 				((CUser*)this)->AddDefinedText( dwTip, "" );

@@ -43,7 +43,7 @@ void CCamera::Transform( CWorld* pWorld )
 		if( g_pPlayer && g_Option.m_bRollEffect )
 		{
 			D3DXMATRIX mRot;
-			FLOAT	fRollAng = ((CWndWorld *)g_WndMng.m_pWndWorld)->m_fRollAng;
+			FLOAT	fRollAng = g_WndMng.m_pWndWorld->m_fRollAng;
 			D3DXMatrixRotationYawPitchRoll( &mRot, D3DXToRadian(-g_pPlayer->GetAngle()), 0/*D3DXToRadian(g_pPlayer->GetAngleX())*/, D3DXToRadian(fRollAng) );
 			D3DXVec3TransformCoord( &vUp, &vUp, &mRot );
 		}

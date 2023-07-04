@@ -1716,19 +1716,19 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 		{
 			pMover->GetWorld()->SetObjFocus( NULL );
 			SAFE_DELETE( g_WndMng.m_pWndDuelConfirm );
-			( (CWndWorld *)g_WndMng.m_pWndWorld )->SetLastTarget( NULL_ID );
+			g_WndMng.m_pWndWorld->SetLastTarget( NULL_ID );
 		}
 		else if( pAttacker && g_pPlayer == pAttacker )
 		{
 			CObj* pTempObj = NULL;
-			if(( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj != NULL)
-				pTempObj = ( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj;
+			if(g_WndMng.m_pWndWorld->m_pNextTargetObj != NULL)
+				pTempObj = g_WndMng.m_pWndWorld->m_pNextTargetObj;
 			pAttacker->GetWorld()->SetObjFocus( NULL );
-			( (CWndWorld *)g_WndMng.m_pWndWorld )->SetLastTarget( NULL_ID );
+			g_WndMng.m_pWndWorld->SetLastTarget( NULL_ID );
 			if(pTempObj != NULL)
 			{
-				( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj = pTempObj;
-				( (CWndWorld *)g_WndMng.m_pWndWorld )->SetNextTarget();
+				g_WndMng.m_pWndWorld->m_pNextTargetObj = pTempObj;
+				g_WndMng.m_pWndWorld->SetNextTarget();
 			}
 		}
 		
@@ -1739,15 +1739,15 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 			pMover->m_pAngel = NULL;
 			pMover->m_pAngelFlag = FALSE;
 		}
-		if((CObj*)pMover == ( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj)
+		if((CObj*)pMover == g_WndMng.m_pWndWorld->m_pNextTargetObj)
 		{
-			if(( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj == ( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pRenderTargetObj)
+			if(g_WndMng.m_pWndWorld->m_pNextTargetObj == g_WndMng.m_pWndWorld->m_pRenderTargetObj)
 			{
-				( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj = NULL;
-				( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pRenderTargetObj = g_WorldMng()->GetObjFocus();
+				g_WndMng.m_pWndWorld->m_pNextTargetObj = NULL;
+				g_WndMng.m_pWndWorld->m_pRenderTargetObj = g_WorldMng()->GetObjFocus();
 			}
 			else
-				( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj = NULL;
+				g_WndMng.m_pWndWorld->m_pNextTargetObj = NULL;
 		}
 //		if( IsValidObj( (CObj*)pAttacker ) )
 		// pAttacker가 없을수도있다.
