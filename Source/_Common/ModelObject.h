@@ -8,7 +8,7 @@
 #include "ModelGlobal.h"
 #include <optional>
 #ifdef __ATTACH_MODEL
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #endif //__ATTACH_MODEL
 
 #define		MAX_SF_SLERP		3		// 키와키 사이를 몇단계로 보간할 것인가
@@ -99,12 +99,6 @@ struct O3D_ELEMENT
 
 #define		MAX_ELEMENT		21
 
-#ifdef __ATTACH_MODEL
-class CModelObject;
-typedef	boost::shared_ptr<CModelObject>	SpModelObject;
-typedef	map<int, SpModelObject> MapSpModelObject;
-#endif //__ATTACH_MODEL
-
 // 애니메이션 개체. 게임내 오브젝트의 최소단위.
 // 모션이 여기에 포함되어 있기때문에 바이페드든 일반이든 애니메이션을 시킨다면
 // 반드시 이것으로 생성시켜서 쓸것.
@@ -142,7 +136,7 @@ public:
 
 #ifdef __ATTACH_MODEL
 private:
-	MapSpModelObject	m_mapAttachModel;
+	std::map<int, std::shared_ptr<CModelObject>>	m_mapAttachModel;
 #endif //__ATTACH_MODEL
 
 private:

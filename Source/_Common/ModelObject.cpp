@@ -142,23 +142,17 @@ void CModelObject::Destroy( void )
 void CModelObject::SetAttachModel(int nEventIndex, CModelObject* pModelObject)
 {
 	if(nEventIndex < MAX_MDL_EVENT)
-		m_mapAttachModel.insert(map<int, SpModelObject>::value_type(nEventIndex, SpModelObject(pModelObject)));
+		m_mapAttachModel.emplace(nEventIndex, pModelObject);
 }
 
 void CModelObject::SetDetachModel(int nEventIndex)
 {
-	map<int, SpModelObject>::iterator iter = m_mapAttachModel.find(nEventIndex);
-	if(iter != m_mapAttachModel.end())
-		m_mapAttachModel.erase(iter);
+	m_mapAttachModel.erase(nEventIndex);
 }
 
-void CModelObject::InitAttachModelDeviceObjects()
-{
-	for(map<int, SpModelObject>::const_iterator i=m_mapAttachModel.begin(); i!=m_mapAttachModel.end(); ++i)
-	{
-		SpModelObject pModelObject = i->second;
-		if(pModelObject.get() != NULL)
-		{
+void CModelObject::InitAttachModelDeviceObjects() {
+	for (const auto & [nEventIndex, pModelObject] : m_mapAttachModel) {
+		if (pModelObject) {
 			pModelObject->InitDeviceObjects();
 		}
 	}
@@ -166,35 +160,24 @@ void CModelObject::InitAttachModelDeviceObjects()
 
 void CModelObject::RestoreAttachModelDeviceObjects()
 {
-	for(map<int, SpModelObject>::const_iterator i=m_mapAttachModel.begin(); i!=m_mapAttachModel.end(); ++i)
-	{
-		SpModelObject pModelObject = i->second;
-		if(pModelObject.get() != NULL)
-		{
+	for (const auto & [nEventIndex, pModelObject] : m_mapAttachModel) {
+		if (pModelObject) {
 			pModelObject->RestoreDeviceObjects();
 		}
 	}
 }
 
-void CModelObject::InvalidateAttachModelDeviceObjects()
-{
-	for(map<int, SpModelObject>::const_iterator i=m_mapAttachModel.begin(); i!=m_mapAttachModel.end(); ++i)
-	{
-		SpModelObject pModelObject = i->second;
-		if(pModelObject.get() != NULL)
-		{
+void CModelObject::InvalidateAttachModelDeviceObjects() {
+	for (const auto & [nEventIndex, pModelObject] : m_mapAttachModel) {
+		if (pModelObject) {
 			pModelObject->InvalidateDeviceObjects();
 		}
 	}
 }
 
-void CModelObject::DeleteAttachModelDeviceObjects()
-{
-	for(map<int, SpModelObject>::const_iterator i=m_mapAttachModel.begin(); i!=m_mapAttachModel.end(); ++i)
-	{
-		SpModelObject pModelObject = i->second;
-		if(pModelObject.get() != NULL)
-		{
+void CModelObject::DeleteAttachModelDeviceObjects() {
+	for (const auto & [nEventIndex, pModelObject] : m_mapAttachModel) {
+		if (pModelObject) {
 			pModelObject->DeleteDeviceObjects();
 		}
 	}
@@ -202,12 +185,8 @@ void CModelObject::DeleteAttachModelDeviceObjects()
 
 void CModelObject::RenderAttachModel(const D3DXMATRIX *mWorld)
 {
-	for(map<int, SpModelObject>::const_iterator i=m_mapAttachModel.begin(); i!=m_mapAttachModel.end(); ++i)
-	{
-		int nEventIndex = i->first;
-		SpModelObject pModelObject = i->second;
-		if(pModelObject.get() != NULL)
-		{
+	for (const auto & [nEventIndex, pModelObject] : m_mapAttachModel) {
+		if (pModelObject) {
 			D3DXVECTOR3 vecAttachModel;
 			GetEventPos(&vecAttachModel, nEventIndex);
 			D3DXVec3TransformCoord(&vecAttachModel, &vecAttachModel, mWorld);
@@ -226,11 +205,7 @@ void CModelObject::RenderAttachModel(const D3DXMATRIX *mWorld)
 			
 			vYPW.x += D3DXToRadian(-90.0f);
 			vYPW.y += D3DXToRadian(90.0f);
-			//vYPW.z += D3DXToRadian(90.0f);
 			D3DXMatrixRotationYawPitchRoll(&matRot,vYPW.y,vYPW.x,vYPW.z);
-			//D3DXMatrixRotationX( &matRot, vYPW.x );
-			//D3DXMatrixRotationY( &matRot, vYPW.y );
-			//D3DXMatrixRotationZ( &matRot, vYPW.z );
 
 			D3DXMATRIX matAttachModelWorld = matRot * matAttachModel * (*mWorld);
 			matAttachModelWorld._41 = vecAttachModel.x;
@@ -251,16 +226,6 @@ int CModelObject::RenderAttachModelElem(const D3DXMATRIX *mWorld)
 #ifdef	__WORLDSERVER
 	return 1;
 #else
-	CObject3D	*pObject3D;
-	O3D_ELEMENT	*pElem;
-	int		i;
-	int		nNextFrame;
-	D3DXMATRIX	m1;
-
-#ifndef __CLIENT						// 게임클라이언트가 아닐때...
-	if( IsEmptyElement() == TRUE )		// 모델이 로드가 안되어 있으면 걍 리턴
-		return 1;
-#endif
 
 #ifdef	_DEBUG
 	if( m_mUpdateBone && g_pSkiningVS == NULL )
@@ -287,7 +252,7 @@ int CModelObject::RenderAttachModelElem(const D3DXMATRIX *mWorld)
 			if( nMaxBone > MAX_VS_BONE )	
 				Error( "CModelObject::Render : overflow bone count - %d", nMaxBone );
 
-			for( i = 0; i < nMaxBone; i ++ )	// MAX_VS_BONE개 이하	
+			for( int i = 0; i < nMaxBone; i ++ )	// MAX_VS_BONE개 이하	
 			{
 				mWorldTranspose = pmBonesInv[i] * pmBones[i];				
 				D3DXMatrixTranspose( &mWorldTranspose, &mWorldTranspose );		// 매트릭스를 돌린다음.
@@ -317,21 +282,21 @@ int CModelObject::RenderAttachModelElem(const D3DXMATRIX *mWorld)
 		m_pd3dDevice->SetVertexShaderConstantF( 94, (float*)&s_fAmbient, 1 );
 	}
 
-	nNextFrame = GetNextFrame();
+	int nNextFrame = GetNextFrame();
 	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( 0 ) );
 
 	D3DXVECTOR3 vec3LightBackup = D3DXVECTOR3( s_vLight[0], s_vLight[1], s_vLight[2] );
 	D3DXVECTOR4 vec4Diffuse = D3DXVECTOR4( s_fDiffuse[0], s_fDiffuse[1], s_fDiffuse[2], s_fDiffuse[3] );;
 	
 	// 엘리먼트엔 스킨,일반,모핑 심지어는 파티클까지도 포함될수있다.
-	pElem = &m_Element[0];
-	pObject3D = pElem->m_pObject3D;
+	O3D_ELEMENT * pElem = &m_Element[0];
+	CObject3D * pObject3D = pElem->m_pObject3D;
 
 	if(pElem != NULL && pObject3D != NULL && !(pElem->m_nEffect & XE_HIDE))
 	{
 		pObject3D->m_nNoTexture = 0; // m_nNoTexture;
 		pObject3D->m_nNoEffect = m_nNoEffect;
-		m1 = *mWorld;
+		const D3DXMATRIX m1 = *mWorld;
 
 		if( m_pBone )
 			pObject3D->SetExternBone( m_mUpdateBone, m_pBaseBoneInv );	// 외장본이 있다면 그것을 넘겨준다.
@@ -355,13 +320,9 @@ int CModelObject::RenderAttachModelElem(const D3DXMATRIX *mWorld)
 #endif // !__WORLDSERVER
 }
 
-void CModelObject::FrameMoveAttachModel(D3DXVECTOR3 *pvSndPos, float fSpeed)
-{
-	for(map<int, SpModelObject>::const_iterator i=m_mapAttachModel.begin(); i!=m_mapAttachModel.end(); ++i)
-	{
-		SpModelObject pModelObject = i->second;
-		if(pModelObject.get() != NULL)
-		{
+void CModelObject::FrameMoveAttachModel(D3DXVECTOR3 * pvSndPos, float fSpeed) {
+	for (const auto & [nEventIndex, pModelObject] : m_mapAttachModel) {
+		if (pModelObject) {
 			pModelObject->FrameMove(pvSndPos, fSpeed);
 		}
 	}
