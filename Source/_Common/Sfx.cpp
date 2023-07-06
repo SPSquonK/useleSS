@@ -1072,32 +1072,6 @@ void CSfxItemRangeAtk1::Render( )
 	m_pSfxObj->Render2( );
 }
 
-// 요요생성
-D3DXVECTOR3	CSfxItemYoyoAtk::SplineSlerp( D3DXVECTOR3 *v1, D3DXVECTOR3 *v2, D3DXVECTOR3 *v3, D3DXVECTOR3 *v4, float fSlerp )
-{
-	D3DXVECTOR3		vResult;
-	
-	float	t = fSlerp;
-	float	t2 = t * t;
-	float	t3 = t2 * t;
-	
-	D3DXVECTOR3		m0, m1;
-	const float alpha = 0.0f;
-	
-	m0 = ((1 - alpha) / 2.0f) * 
-		((*v2 - *v1) + *v3 - *v2);
-	m1 = ((1 - alpha) / 2.0f) *
-		((*v3 - *v2) + *v4 - *v3);
-	
-	vResult = (((2 * t3) - (3 * t2) + 1) * *v2) +
-		((t3 - (2 * t2) + t) * m0) + 
-		((t3 - t2) * m1) +
-		(((-2 * t3) + (3 * t2)) *
-		*v3 );
-	
-	return vResult;
-}
-
 #define MAX_DELAY    10
 CSfxItemYoyoAtk::CSfxItemYoyoAtk() : CSfxShoot()
 {

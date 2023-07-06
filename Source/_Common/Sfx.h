@@ -600,6 +600,8 @@ public:
 #endif	// __WORLDSERVER
 };
 
+D3DXVECTOR3	SplineSlerp(D3DXVECTOR3 * v1, D3DXVECTOR3 * v2, D3DXVECTOR3 * v3, D3DXVECTOR3 * v4, float fSlerp);
+
 class CSfxItemYoyoAtk : public CSfxShoot
 {
 public:
@@ -629,7 +631,6 @@ public:
 	FLOAT m_fRadiusXZ;		// 타겟의 XZ평면의 반지름.
 
 	void  MakePath(int nType);
-	D3DXVECTOR3	SplineSlerp( D3DXVECTOR3 *v1, D3DXVECTOR3 *v2, D3DXVECTOR3 *v3, D3DXVECTOR3 *v4, float fSlerp );
 	
 	CSfxItemYoyoAtk();
 	virtual ~CSfxItemYoyoAtk();
