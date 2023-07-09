@@ -2229,9 +2229,9 @@ CPoint CWndText::OffsetToPoint( DWORD dwSetOffset )
 void CWndText::DrawCaret(C2DRender* p2DRender)
 {
 }
-LONG CWndText::GetOffset(CPoint point)
+LONG CWndText::GetOffset(const CPoint point)
 {
-	int dwMaxHeight = GetFontHeight();
+	const int dwMaxHeight = GetFontHeight();
 	CPoint pt = point;
 	pt.y /= dwMaxHeight;
 	pt.y += m_wndScrollBar.GetScrollPos();
@@ -2245,11 +2245,13 @@ LONG CWndText::GetOffset(CPoint point)
 
 	DWORD dwOffset1 = m_string.GetLineOffset( pt.y );
 	DWORD dwOffset2 = m_string.GetLineOffset( pt.y + 1);
-	DWORD dwBegin = 0;
 	const char* begin = m_string;
 	const char* end = begin + dwOffset2;
 	const char* iter = begin + dwOffset1;
 
+	if (pt.x < 0) return dwOffset1;
+
+	DWORD dwBegin = 0;
 	while(*iter && iter < end) {
 
 		if( *iter == '\r' || *iter == '\n')
@@ -2276,13 +2278,8 @@ LONG CWndText::GetOffset(CPoint point)
 			m_pFont->GetTextExtent(temp, &size, wCodePage);
 		}
 
-		if( (int)( dwBegin+size.cx ) > pt.x)
-		{
-
-			if(pt.x-dwBegin < (dwBegin+size.cx)-pt.x)
-				return iter-begin;
-			else 
-				return next-begin;
+		if (dwBegin + size.cx > pt.x) {
+			return next - begin;
 		}
 
 		dwBegin += size.cx;
