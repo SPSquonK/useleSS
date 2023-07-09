@@ -311,6 +311,7 @@ public:
 
 
 	void			Process();
+	void DeleteObjects();
 	static DWORD	GetDiffuseColor() { return D3DCOLOR_ARGB( 255,(int)(m_lightFogSky.Diffuse.r * 255),(int)(m_lightFogSky.Diffuse.g * 255),(int)(m_lightFogSky.Diffuse.b * 255) ); }
 	static DWORD	GetAmbientColor() { return D3DCOLOR_ARGB( 255,(int)(m_lightFogSky.Ambient.r * 255),(int)(m_lightFogSky.Ambient.g * 255),(int)(m_lightFogSky.Ambient.b * 255) ); }
 	[[nodiscard]] std::pair<int, int> WorldPosToLand(D3DXVECTOR3 vPos) const;

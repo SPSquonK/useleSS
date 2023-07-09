@@ -792,42 +792,7 @@ void CWorld::Process()
 	}
 #endif //__BS_SAFE_WORLD_DELETE
 
-	// 오브젝트 Delete ( DeleteObj가 호출된 오브젝트들)
-	for (CObj * pObj : m_aDeleteObjs) {
-		if( !pObj )
-		{
-			Error( "m_apDeleteObjs %d is NULL", i );
-			continue;
-		}
-	
-		if( m_pObjFocus == pObj )
-			SetObjFocus( NULL );
-
-		CWndWorld* pWndWorld	= (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-		if( pWndWorld )
-		{
-			if(pWndWorld->m_pSelectRenderObj == pObj)
-				pWndWorld->m_pSelectRenderObj = NULL;
-			else if(pWndWorld->m_pNextTargetObj == pObj)
-				pWndWorld->m_pNextTargetObj = NULL;
-		}
-
-		if( CObj::m_pObjHighlight == pObj )
-			CObj::m_pObjHighlight = NULL;
-		// 화면에 출력되고 있는 오브젝트인가.
- 		if( pObj->m_ppViewPtr )					//sun : (가끔)pObj->m_ppViewPtr이 이미 지워진 상태다 문제가 많군 제길
- 		{										//오브젝트 삭제과정에 문제가 있다. 어디선가 꼬이고 있다 추적하기에 시간과 의욕이 없다.
- 			// 그렇다면 화면 출력 배열에서 자신을 삭제 
- 			*pObj->m_ppViewPtr = NULL;	
- 			pObj->m_ppViewPtr = NULL;
- 		}
-
-		RemoveObjLink( pObj );
-		RemoveObjArray( pObj );
-		SAFE_DELETE( pObj );
-	}
-
-	m_aDeleteObjs.clear();  //gmpbigsun: Clara died as m_nDeleteObjs and m_apDeleteObjs were twisted.. Safety is the best!
+	DeleteObjects();
 
 	if( m_pCamera )
 	{
@@ -863,6 +828,44 @@ void CWorld::Process()
 
 }
 #endif	// not __WORLDSERVER
+
+#ifdef __CLIENT
+void CWorld::DeleteObjects() {
+	size_t i = 0;
+	for (CObj * pObj : m_aDeleteObjs) {
+		++i;
+		if (!pObj) {
+			Error("m_apDeleteObjs %zu is NULL", i - 1);
+			continue;
+		}
+
+		if (m_pObjFocus == pObj)
+			SetObjFocus(NULL);
+
+		CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
+		if (pWndWorld) {
+			if (pWndWorld->m_pSelectRenderObj == pObj)
+				pWndWorld->m_pSelectRenderObj = NULL;
+			else if (pWndWorld->m_pNextTargetObj == pObj)
+				pWndWorld->m_pNextTargetObj = NULL;
+		}
+
+		if (CObj::m_pObjHighlight == pObj)
+			CObj::m_pObjHighlight = NULL;
+			
+		if (pObj->m_ppViewPtr) {
+			*pObj->m_ppViewPtr = NULL;
+			pObj->m_ppViewPtr = NULL;
+		}
+
+		RemoveObjLink(pObj);
+		RemoveObjArray(pObj);
+		SAFE_DELETE(pObj);
+	}
+
+	m_aDeleteObjs.clear();
+}
+#endif
 
 // 
 // GetHeight(D3DXVECTOR vecPos)
