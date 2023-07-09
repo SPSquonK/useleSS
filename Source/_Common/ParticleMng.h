@@ -44,35 +44,30 @@ public:
 
 	void Create( DWORD dwFlush, DWORD dwDiscard, int nType );
 	
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName );
-	HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT InitDeviceObjects( LPCTSTR szFileName );
+	HRESULT RestoreDeviceObjects( );
   HRESULT InvalidateDeviceObjects();
 	
 	HRESULT CreateParticle( int nType, const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vVel, FLOAT fGroundY );
 	HRESULT Update( void );
 		
-  HRESULT Render( LPDIRECT3DDEVICE9 pd3dDevice );
+  HRESULT Render( );
 
 	[[nodiscard]] static std::pair<float, const char *> GetParticleTypeInfo(int nType);
 };
 
 class CParticleMng final {
 	static constexpr int MAX_PARTICLE_TYPE = 32; // 최대 파티클 종류.
-	LPDIRECT3DDEVICE9 m_pd3dDevice;
 	CParticles m_Particles[ MAX_PARTICLE_TYPE ];
 
 public:
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) {
-		m_pd3dDevice = pd3dDevice;
-		return S_OK;
-	}
-	HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT RestoreDeviceObjects( );
   HRESULT InvalidateDeviceObjects();
 
 	CParticles * CreateParticle( int nType, const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vVel, FLOAT fGroundY );
 		
 	void	Process();
-	void	Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	void	Render( );
 };
 
 extern CParticleMng	g_ParticleMng;

@@ -676,9 +676,9 @@ public:
 	CWndInstantMsg* OpenInstantMsg( LPCTSTR lpszFrom );
 
 	// MessageBox
-	BOOL	OpenCustomBox( LPCTSTR strMessage, CWndMessageBox* pWndMessageBox, CWndBase* pWndParent = NULL );
-	BOOL	OpenMessageBox( LPCTSTR strMessage, UINT nType = MB_OK, CWndBase* pWndParent = NULL );
-	BOOL	OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTitle, UINT nType = MB_OK, CWndBase* pWndParent = NULL );
+	BOOL	OpenCustomBox( CWndCustomMessageBox * pWndMessageBox );
+	BOOL	OpenMessageBox( LPCTSTR strMessage, UINT nType = MB_OK );
+	BOOL	OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTitle, UINT nType = MB_OK );
 	BOOL    OpenMessageBoxUpper( LPCTSTR lpszMessage, UINT nType = MB_OK, BOOL bPostLogoutMsg = FALSE );
 		
 	void	CloseMessageBox();
@@ -743,6 +743,8 @@ protected:
 
 extern std::vector<CWndBase *> m_wndOrder;
 extern CWndMgr          g_WndMng; // 윈도 매니저 클래스 
+
+inline bool CWndBase::IsWndRoot() const { return this == &g_WndMng; }
 
 extern void RenderEnchant( C2DRender* p2DRender, CPoint pt );
 extern void RenderRadar( C2DRender* p2DRender, CPoint pt, DWORD dwValue, DWORD dwDivisor );

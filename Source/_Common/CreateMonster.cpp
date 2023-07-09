@@ -182,7 +182,7 @@ void CCreateMonster::CreateMonster( CUser* pUser, DWORD dwObjId, D3DXVECTOR3 vPo
 			return;
 		}
 
-		CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+		CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 		if( NULL == pObj )	return;	// ASSERT( pObj );
 		pObj->SetPos( vPos );
 		pObj->InitMotion( MTI_STAND );

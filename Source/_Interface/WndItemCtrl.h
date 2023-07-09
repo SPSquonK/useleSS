@@ -52,7 +52,7 @@ public:
 	virtual	void PaintFrame(C2DRender* p2DRender);
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point = 0 );
-	virtual BOOL OnSetCursor ( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	void OnSetCursor() override;
 	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
 	
 protected:

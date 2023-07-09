@@ -79,13 +79,13 @@ void CWndBank::OnInitialUpdate()
 	CPoint ptInventory = rectInventory.TopLeft();
 	CPoint ptMove;
 
-	if( ptInventory.x > m_pWndRoot->GetWndRect().Width() / 2 )
+	if( ptInventory.x > g_WndMng.GetWndRect().Width() / 2 )
 		ptMove = ptInventory - CPoint( (int)( rectInventory.Width() * 2.525 ), 0 );
 	else
 		ptMove = ptInventory + CPoint( rectInventory.Width(), 0 );
 	Move( ptMove );
 
-	m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "WndCommonBankNotUse.tga" ), 0xffff00ff );
+	m_pTexture = m_textureMng.AddTexture( MakePath( DIR_THEME, "WndCommonBankNotUse.tga" ), 0xffff00ff );
 } 
 
 void CWndBank::ReSetBank() {
@@ -111,7 +111,7 @@ void CWndBank::ReSetBank() {
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndBank::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndBank::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	if( g_pPlayer == NULL )
@@ -263,7 +263,7 @@ void CWndConfirmBank::OnInitialUpdate() {
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndConfirmBank::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndConfirmBank::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_CONFIRM_BANK, pWndParent, 0, CPoint( 0, 0 ) );
@@ -287,7 +287,7 @@ BOOL CWndConfirmBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		}
 	} else if( nID == WIDC_CHANGE_PASS ) {
 		g_WndMng.m_pWndBankPassword = new CWndBankPassword(true, m_dwId);
-		g_WndMng.m_pWndBankPassword->Initialize( NULL );	
+		g_WndMng.m_pWndBankPassword->Initialize();	
 
 		Destroy();
 	} else if( nID == WIDC_CANCEL ) {
@@ -331,7 +331,7 @@ void CWndBankPassword::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndBankPassword::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndBankPassword::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_BANK_PASSWORD, pWndParent, 0, CPoint( 0, 0 ) );

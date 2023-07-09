@@ -8,7 +8,7 @@ private:
 public: 
 	CWndSelectCh(int nItemId, unsigned int nChCount); 
 
-	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
 	void OnInitialUpdate() override;
 };

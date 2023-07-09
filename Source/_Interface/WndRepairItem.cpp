@@ -46,14 +46,14 @@ void CWndRepairItem::OnInitialUpdate()
 	CPoint ptInventory = rectInventory.TopLeft();
 	CPoint ptMove;
 	
-	if( ptInventory.x > m_pWndRoot->GetWndRect().Width() / 2 )
+	if( ptInventory.x > g_WndMng.GetWndRect().Width() / 2 )
 		ptMove = ptInventory - CPoint( rectInventory.Width(), 0 );
 	else
 		ptMove = ptInventory + CPoint( rectInventory.Width(), 0 );
 	Move( ptMove );
 } 
 
-BOOL CWndRepairItem::Initialize( CWndBase* pWndParent, DWORD ) 
+BOOL CWndRepairItem::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_REPAIR, pWndParent, 0, CPoint( 0, 0 ) );
 } 

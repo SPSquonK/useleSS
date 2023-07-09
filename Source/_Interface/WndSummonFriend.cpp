@@ -28,7 +28,7 @@ void CWndSummonFriendMsg::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndSummonFriendMsg::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSummonFriendMsg::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_MESSAGEBOX_SUMMONFRINED, pWndParent, 0, CPoint( 0, 0 ) );
@@ -92,7 +92,7 @@ void CWndSummonFriend::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndSummonFriend::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSummonFriend::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_SUMMON_FRIEND, pWndParent, 0, CPoint( 0, 0 ) );
@@ -174,13 +174,13 @@ void CWndSummonPartyMsg::OnInitialUpdate()
 	// 여기에 코딩하세요
 	ItemProp* pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_PARTYSUMMON );
 	if( pItemProp )
-		m_Texture.LoadTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
+		m_Texture.LoadTexture(MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
 
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndSummonPartyMsg::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSummonPartyMsg::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_MESSAGEBOX_SUMMONPARTY, pWndParent, 0, CPoint( 0, 0 ) );
@@ -229,7 +229,7 @@ void CWndSummonParty::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndSummonParty::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSummonParty::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_SUMMON_PARTY, pWndParent, 0, CPoint( 0, 0 ) );
@@ -300,7 +300,7 @@ void CWndSummonPartyUse::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndSummonPartyUse::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSummonPartyUse::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_SUMMON_PARTY_USE, pWndParent, 0, CPoint( 0, 0 ) );

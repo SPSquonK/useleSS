@@ -41,7 +41,7 @@ void CWndGuildTabApp::OnDraw( C2DRender* p2DRender )
 	pCustom = GetWndCtrl( WIDC_CUSTOM5 );
 	pWndWorld->m_texMsgIcon.MakeVertex( p2DRender, pCustom->rect.TopLeft(), 43 + 4 + ( 6 * 1 ), &pVertices, 0xffffffff );
 	
-	pWndWorld->m_texMsgIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
+	pWndWorld->m_texMsgIcon.Render( pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
 
 } 
 
@@ -50,11 +50,6 @@ void CWndGuildTabApp::OnInitialUpdate() {
 	UpdateData();
 	MoveParentCenter();
 }
-
-BOOL CWndGuildTabApp::Initialize( CWndBase* pWndParent, DWORD ) 
-{ 
-	return CWndNeuz::InitDialog( APP_GUILD_TABAPPELLATION, pWndParent, 0, CPoint( 0, 0 ) );
-} 
 
 void CWndGuildTabApp::ForEachPower(
 	std::invocable<UINT, int, GuildPower> auto func
@@ -240,13 +235,13 @@ BOOL CWndGuildPayConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 			else
 			{
 				pWndEdit->SetString( "" );
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDONLYNUMBER), MB_OK, this );
+				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDONLYNUMBER), MB_OK );
 			}
 		}
 		else
 		{
 			pWndEdit->SetString( "" );
-			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDONLYNUMBER), MB_OK, this );
+			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDONLYNUMBER), MB_OK );
 		}
 	}
 	else

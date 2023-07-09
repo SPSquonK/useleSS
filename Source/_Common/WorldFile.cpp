@@ -289,7 +289,7 @@ BOOL CWorld::LoadObject()
 
 		D3DXVECTOR3 vPos = pObj->GetPos();
 		pObj->SetPos( vPos );
-		pObj->SetIndex( NULL, pObj->m_dwIndex );
+		pObj->SetIndex( pObj->m_dwIndex );
 		if( pObj->GetType() == OT_MOVER )
 			pObj->InitMotion( ((CMover *)pObj)->m_dwMotion );
 		pObj->UpdateLocalMatrix();
@@ -315,31 +315,31 @@ BOOL CWorld::LoadObject()
 #ifdef __IAOBJ0622	
 	if( GetID() == WI_WORLD_MADRIGAL )	// 마드리갈 읽을때 테스트비공정띄우기
 	{
-		CObj *pObj	= CreateObj( D3DDEVICE, OT_SHIP, 4 );
+		CObj *pObj	= CreateObj( OT_SHIP, 4 );
 		D3DXVECTOR3 vPos = D3DXVECTOR3( 6997.2f, 124.2f, 3243.7f );
 		pObj->SetPos( vPos );
 		pObj->SetAngle( 180.0f );
 		ADDOBJ( pObj, TRUE, nLayer );
 
-		CObj *pObj2	= CreateObj( D3DDEVICE, OT_SHIP, 4 );
+		CObj *pObj2	= CreateObj( OT_SHIP, 4 );
 		D3DXVECTOR3 vPos2 = D3DXVECTOR3( 7508.74f, 90.2f, 3168.28f );
 		pObj2->SetPos( vPos2 );
 		pObj2->SetAngle( 180.0f );
 		ADDOBJ( pObj2, TRUE, nLayer );
 
-		CObj *pObj3	= CreateObj( D3DDEVICE, OT_SHIP, 1 );
+		CObj *pObj3	= CreateObj( OT_SHIP, 1 );
 		D3DXVECTOR3 vPos3 = D3DXVECTOR3( 7528.74f, 90.2f, 3178.28f );
 		pObj3->SetPos( vPos3 );
 		pObj3->SetAngle( 180.0f );
 		ADDOBJ( pObj3, TRUE, nLayer );
 
-		CObj *pObj4	= CreateObj( D3DDEVICE, OT_SHIP, 2 );
+		CObj *pObj4	= CreateObj( OT_SHIP, 2 );
 		D3DXVECTOR3 vPos4 = D3DXVECTOR3( 7558.74f, 90.2f, 3188.28f );
 		pObj4->SetPos( vPos4 );
 		pObj4->SetAngle( 180.0f );
 		ADDOBJ( pObj4, TRUE, nLayer );
 
-		CObj *pObj5	= CreateObj( D3DDEVICE, OT_SHIP, 3 );
+		CObj *pObj5	= CreateObj( OT_SHIP, 3 );
 		D3DXVECTOR3 vPos5 = D3DXVECTOR3( 7598.74f, 90.2f, 3198.28f );
 		pObj5->SetPos( vPos5 );
 		pObj5->SetAngle( 180.0f );
@@ -839,7 +839,7 @@ BOOL CWorld::ReadWorld()
 					if( pBkgnd->m_dwIndex <= 10 )
 						pBkgnd->SetAngle( (float)( rand() % 360 ) );
 
-					pBkgnd->SetIndex( D3DDEVICE, pBkgnd->m_dwIndex );
+					pBkgnd->SetIndex( pBkgnd->m_dwIndex );
 
 					if( pBkgnd->GetType() != OT_OBJ )
 					{
@@ -926,13 +926,13 @@ BOOL CWorld::ReadWorld( D3DXVECTOR3 vPos, BOOL bEraseOldLand  )
 					pLand = new CLandscape;
 					pLand->m_nWorldX = j * MAP_SIZE;
 					pLand->m_nWorldY = i * MAP_SIZE;
-					pLand->InitDeviceObjects( m_pd3dDevice, this );
+					pLand->InitDeviceObjects( this );
 					if( pLand->LoadLandscape( strLandTemp, j, i ) == FALSE )
 					{
 						safe_delete( pLand );
 						continue;
 					}
-					pLand->RestoreDeviceObjects( m_pd3dDevice );
+					pLand->RestoreDeviceObjects( );
 
 					m_apLand[ i * m_nLandWidth + j] = pLand;
 

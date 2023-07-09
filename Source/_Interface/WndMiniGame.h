@@ -5,7 +5,7 @@
 
 class CWndKawiBawiBoGameWin;
 
-class CWndKawiBawiBoGame : public CWndNeuz 
+class CWndKawiBawiBoGame final : public CWndNeuz
 {
 	enum MyPosition {KAWI, BAWI, BO};
 public:
@@ -37,7 +37,7 @@ public:
 	virtual ~CWndKawiBawiBoGame();
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -54,7 +54,7 @@ public:
 	void EnableAllBtn();
 }; 
 
-class CWndKawiBawiBoGameWin : public CWndNeuz 
+class CWndKawiBawiBoGameWin final : public CWndNeuz
 {
 public:
 	CWndKawiBawiBoGame* m_pWndGame;
@@ -69,7 +69,7 @@ public:
 	virtual ~CWndKawiBawiBoGameWin(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -82,7 +82,7 @@ public:
 	void SetInfo(int nItemCount, int nNextItemCount, DWORD dwItemId, DWORD dwNextItemId, int nWinningCount, int nWinningMaxCount);
 }; 
 
-class CWndKawiBawiBoGameConfirm : public CWndNeuz 
+class CWndKawiBawiBoGameConfirm final : public CWndNeuz
 {	
 public:
 	CWndButton m_wndButton1;
@@ -96,7 +96,7 @@ public:
 	~CWndKawiBawiBoGameConfirm();
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -106,7 +106,7 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-class CWndFindWordGame : public CWndNeuz 
+class CWndFindWordGame final : public CWndNeuz
 {
 public:
 	int m_nPublic;				//힌트로 주어지는 글자의 위치
@@ -126,7 +126,7 @@ public:
 	virtual ~CWndFindWordGame(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -149,7 +149,7 @@ public:
 class CWndDiceGameTender;
 class CWndDiceGameMessage;
 
-class CWndDiceGame : public CWndNeuz 
+class CWndDiceGame final : public CWndNeuz
 {
 	enum DiceNum {DICE_ONE, DICE_TWO, DICE_THREE, DICE_FOUR, DICE_FIVE, DICE_SIX};
 public:
@@ -190,7 +190,7 @@ public:
 	virtual ~CWndDiceGame(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK); 
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -209,7 +209,7 @@ public:
 	void ResetPenya();
 }; 
 
-class CWndDiceGameTender : public CWndNeuz 
+class CWndDiceGameTender final : public CWndNeuz
 {
 public:
 	CWndDiceGame* m_pDiceGame;
@@ -223,7 +223,7 @@ public:
 	virtual ~CWndDiceGameTender(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -249,7 +249,7 @@ public:
 	~CWndDiceGameMessage();
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( LPCTSTR lpszMessage, CWndBase* pWndParent, DWORD nType = MB_OK );
+	BOOL Initialize( LPCTSTR lpszMessage, CWndBase* pWndParent, DWORD nType = MB_OK );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -259,7 +259,7 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 };
 
-class CWndPuzzleGame : public CWndNeuz 
+class CWndPuzzleGame final : public CWndNeuz
 {
 public:
 	DWORD m_itemID[9];			//각 글자의 Object ID
@@ -276,7 +276,7 @@ public:
 	virtual ~CWndPuzzleGame(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

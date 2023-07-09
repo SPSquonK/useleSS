@@ -3,7 +3,7 @@
 #include "clord.h"
 
 
-class CWndLordConfirm : public CWndNeuz 
+class CWndLordConfirm final : public CWndNeuz
 { 
 private:
 	CString		m_pPledge;
@@ -11,7 +11,7 @@ public:
 	CWndLordConfirm(CString strStr) {m_pPledge = strStr;}; 
 	~CWndLordConfirm() {}; 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -21,7 +21,7 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-class CWndLordPledge : public CWndNeuz 
+class CWndLordPledge final : public CWndNeuz
 { 
 private:
 	SPC					m_pRanker;
@@ -34,7 +34,7 @@ public:
 	~CWndLordPledge(); 
 	
 	void SetPledge(LPCTSTR strPledge);
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -45,7 +45,7 @@ public:
 	BOOL SetRanker(int nRank);
 }; 
 
-class CWndLordState : public CWndNeuz 
+class CWndLordState final : public CWndNeuz
 { 
 private:
 	DWORD				m_tmRefresh;
@@ -58,7 +58,7 @@ public:
 	CWndLordState(); 
 	~CWndLordState(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -71,13 +71,13 @@ public:
 
 
 
-class CWndLordTender : public CWndNeuz 
+class CWndLordTender final : public CWndNeuz
 { 
 public: 
 	CWndLordTender(); 
 	~CWndLordTender(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -88,7 +88,7 @@ public:
 	void	RefreshDeposit();
 }; 
 
-class CWndLordVote : public CWndNeuz 
+class CWndLordVote final : public CWndNeuz
 { 
 private:
 	DWORD				m_tmRefresh;
@@ -97,7 +97,7 @@ public:
 	CWndLordVote(); 
 	~CWndLordVote(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -108,7 +108,7 @@ public:
 	virtual BOOL Process();
 }; 
 
-class CWndLordEvent : public CWndNeuz 
+class CWndLordEvent final : public CWndNeuz
 { 
 private:
 	int m_nEEvent;	// 사용자가 선택한 경험치 이벤트 인덱스, 초기값 0
@@ -117,7 +117,7 @@ public:
 	CWndLordEvent(); 
 	~CWndLordEvent(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -127,7 +127,7 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-class CWndLordSkill : public CWndNeuz 
+class CWndLordSkill final : public CWndNeuz
 { 
 private:
 	BOOL          m_bDrag;
@@ -138,7 +138,7 @@ public:
 	CWndLordSkill(); 
 	~CWndLordSkill(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -153,17 +153,16 @@ public:
 #define LORDSKILL_RECALL	6
 #define LORDSKILL_TELEPORT	7
 
-class CWndLordSkillConfirm : public CWndNeuz 
+class CWndLordSkillConfirm final : public CWndNeuz
 { 
 private:
 	int m_nType;
 
 public: 
 	CWndLordSkillConfirm() {m_nType = 0;}; 
-	~CWndLordSkillConfirm() {}; 
 	CWndLordSkillConfirm(int nType) {m_nType = nType;};
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -171,14 +170,11 @@ public:
 	virtual void OnSize( UINT nType, int cx, int cy ); 
 };
 
-class CWndLordInfo : public CWndNeuz 
+class CWndLordInfo final : public CWndNeuz
 { 
 
 public: 
-	CWndLordInfo()  {}; 
-	~CWndLordInfo() {}; 
-
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -186,14 +182,11 @@ public:
 	virtual void OnSize( UINT nType, int cx, int cy ); 
 };
 
-class CWndLordRPInfo : public CWndNeuz 
+class CWndLordRPInfo final : public CWndNeuz
 { 
 
 public: 
-	CWndLordRPInfo()  {}; 
-	~CWndLordRPInfo() {}; 
-
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

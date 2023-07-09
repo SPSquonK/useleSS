@@ -1,7 +1,7 @@
 #ifndef __WNDCREDIT__H
 #define __WNDCREDIT__H
 
-class CWndCredit : public CWndNeuz 
+class CWndCredit final : public CWndNeuz 
 { 
 public: 
 	float   m_fOldMusicVolume;
@@ -29,7 +29,7 @@ public:
 	CD3DFont* m_pFont;
 
 	virtual	BOOL Process();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -43,13 +43,13 @@ public:
 	
 }; 
 
-class CWndAbout : public CWndNeuz 
+class CWndAbout final : public CWndNeuz 
 { 
 public: 
 	CD3DFont* m_pFont;
 	CWndAbout();
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual HRESULT InitDeviceObjects();

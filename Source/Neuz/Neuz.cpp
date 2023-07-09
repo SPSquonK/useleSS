@@ -279,7 +279,7 @@ HRESULT CNeuzApp::RestoreDeviceObjects()
 		m_pEffect->OnResetDevice();
 
 	
-	if( FAILED( LoadTextureFromRes( m_pd3dDevice, MakePath( DIR_MODELTEX, "Env.dds" ), &m_pEnvTex ) ) )
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_MODELTEX, "Env.dds" ), &m_pEnvTex ) ) )
 	{
 		Error( "Env.dds 텍스쳐 못읽음" );
 	}
@@ -288,7 +288,7 @@ HRESULT CNeuzApp::RestoreDeviceObjects()
     if( ( m_dwCreateFlags & D3DCREATE_SOFTWARE_VERTEXPROCESSING ) || ( m_dwCreateFlags & D3DCREATE_MIXED_VERTEXPROCESSING ) ||
         m_d3dCaps.VertexShaderVersion >= D3DVS_VERSION(1,1) )
     {
-		CreateSkinningVS( m_pd3dDevice, _T("skining2.vsh") );
+		CreateSkinningVS( _T("skining2.vsh") );
     }
 	
 	if( m_d3dCaps.RasterCaps & D3DPRASTERCAPS_DEPTHBIAS )	// d3d9.0에 새로 추가된 기능인데 이걸 지원못하는 카드가 있다. 그래서 이렇게 검사한다.
@@ -312,8 +312,8 @@ HRESULT CNeuzApp::RestoreDeviceObjects()
 			//MessageBox( GetSafeHwnd(), "Disable shadows because there is not enough texture memory available.", "Warning", MB_OK  );
 		} else
 		{
-//			CreateShadowMap( m_pd3dDevice, m_d3dpp.BackBufferFormat );
-			BOOL bSuccess = CreateShadowMap( m_pd3dDevice, D3DFMT_R5G6B5 );
+//			CreateShadowMap( m_d3dpp.BackBufferFormat );
+			BOOL bSuccess = CreateShadowMap( D3DFMT_R5G6B5 );
 			if( bSuccess == FALSE )
 			{	
 				// 실패하면 비됴메모리 부족이라 판단하고 옵션 강제로 낮춤.
@@ -328,24 +328,24 @@ HRESULT CNeuzApp::RestoreDeviceObjects()
 	if( g_Option.m_nBloom == 1 )
 	{
 		if( m_d3dCaps.PixelShaderVersion >= D3DPS_VERSION(1,1) )
-			g_Glare.Create( m_pd3dDevice, D3DFMT_R5G6B5, g_Option.m_nResWidth, g_Option.m_nResHeight - 48 );
+			g_Glare.Create( D3DFMT_R5G6B5, g_Option.m_nResWidth, g_Option.m_nResHeight - 48 );
 		else
 			g_Option.m_nBloom = 0;
 	}
 
-	g_ParticleMng.RestoreDeviceObjects( m_pd3dDevice );
-	g_TailEffectMng.RestoreDeviceObjects( m_pd3dDevice );
+	g_ParticleMng.RestoreDeviceObjects( );
+	g_TailEffectMng.RestoreDeviceObjects( );
 
     // Initialize the particle system
 //	HRESULT hr;
 
 	extern LPDIRECT3DTEXTURE9 g_pReflectMap;
-	if( FAILED( LoadTextureFromRes( m_pd3dDevice, MakePath( DIR_MODELTEX, "etc_reflect.tga" ), &g_pReflectMap ) ) )
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_MODELTEX, "etc_reflect.tga" ), &g_pReflectMap ) ) )
 	{
 		Error( "etc_Reflect.tga 텍스쳐 못읽음" );
 	}
 
-	g_ModelGlobal.RestoreDeviceObjects( m_pd3dDevice );
+	g_ModelGlobal.RestoreDeviceObjects( );
 
 	m_pd3dDevice->SetRenderState( D3DRS_SHADEMODE,   D3DSHADE_GOURAUD ); 
 	CWndBase::m_Theme.RestoreDeviceObjects();
@@ -355,18 +355,16 @@ HRESULT CNeuzApp::RestoreDeviceObjects()
 	{
 		m_2DRender.RestoreDeviceObjects(&m_d3dsdBackBuffer);
 		if( g_WorldMng.Get() )
-			g_WorldMng.Get()->RestoreDeviceObjects( m_pd3dDevice );
-		CWorld::StaticRestoreDeviceObjects( m_pd3dDevice );
-		prj.m_modelMng.RestoreDeviceObjects(m_pd3dDevice);
+			g_WorldMng.Get()->RestoreDeviceObjects( );
+		CWorld::StaticRestoreDeviceObjects( );
+		prj.m_modelMng.RestoreDeviceObjects();
 	}
 	if( g_pBipedMesh )
 		g_pBipedMesh->RestoreDeviceObjects();	
 
 	g_SfxMng.RestoreDeviceObjects();
 	g_SfxMeshMng.RestoreDeviceObjects();
-	
-	g_DialogMsg.RestoreDeviceObjects();
-	
+		
 	CWorldMap* pWorldMap = CWorldMap::GetInstance();
 	pWorldMap->RestoreDeviceObjects(); 
 
@@ -388,8 +386,8 @@ HRESULT CNeuzApp::InvalidateDeviceObjects()
 	pWorldMap->InvalidateDeviceObjects(); 
 
 	g_Glare.DeleteDeviceObjects();
-	DeleteShadowMap( m_pd3dDevice );
-	DeleteVertexShader( m_pd3dDevice );
+	DeleteShadowMap( );
+	DeleteVertexShader( );
 	CWndBase::m_Theme.InvalidateDeviceObjects();
 	if( g_WorldMng.Get() )
 		g_WorldMng.Get()->InvalidateDeviceObjects();
@@ -409,9 +407,7 @@ HRESULT CNeuzApp::InvalidateDeviceObjects()
 	g_ParticleMng.InvalidateDeviceObjects();
 	g_TailEffectMng.InvalidateDeviceObjects();
 
-	g_ModelGlobal.InvalidateDeviceObjects( m_pd3dDevice );
-
-	g_DialogMsg.InvalidateDeviceObjects();
+	g_ModelGlobal.InvalidateDeviceObjects( );
 	
 	return S_OK;
 }
@@ -678,7 +674,7 @@ HRESULT CNeuzApp::Render()
 	{
 		_PROFILE("Make Shadow Map");
 		CHECK1();
-		void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, std::span<CObj *> pList );
+		void RenderShadowMap( std::span<CObj *> pList );
 		if( g_pPlayer )
 		{
 			CWorld *pWorld = g_pPlayer->GetWorld();
@@ -686,7 +682,7 @@ HRESULT CNeuzApp::Render()
 			{
 
 		if( pWorld->GetID() != WI_WORLD_MINIROOM ) // 7.28기획요청 : 하우징 그림자 제거
-			RenderShadowMap( m_pd3dDevice, pWorld->m_objCull );
+			RenderShadowMap( pWorld->m_objCull );
 
 			}
 
@@ -701,15 +697,15 @@ HRESULT CNeuzApp::Render()
 		CWorld* pWorld = g_WorldMng.Get();
 		if( pWorld && g_pPlayer && g_Glare.m_bActive )
 		{
-			pWorld->Projection( m_pd3dDevice, g_Glare.m_Src.m_nWidth, g_Glare.m_Src.m_nHeight );
+			pWorld->Projection( g_Glare.m_Src.m_nWidth, g_Glare.m_Src.m_nHeight );
 			pWorld->SetCamera( &m_camera );
 			g_Glare.m_Src.BeginScene();
 			DWORD dwColor = CWorld::GetDiffuseColor();
-			m_2DRender.m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, dwColor /*D3DCOLOR_ARGB( 255, 255, 255, 255 )*/, 1.0f, 0 ) ;
-			pWorld->RenderBase( m_pd3dDevice, g_WndMng.m_Theme.m_pFontWorld );		// 지형과 오브젝트를 미리 렌더링 해둠.
+			m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, dwColor /*D3DCOLOR_ARGB( 255, 255, 255, 255 )*/, 1.0f, 0 ) ;
+			pWorld->RenderBase( g_WndMng.m_Theme.m_pFontWorld );		// 지형과 오브젝트를 미리 렌더링 해둠.
 			g_Glare.m_Src.EndScene();
 
-			g_Glare.Blur( m_pd3dDevice );		// m_Src를 m_Surface[0]에 블러함.		
+			g_Glare.Blur( );		// m_Src를 m_Surface[0]에 블러함.		
 		}
 	}
 
@@ -749,9 +745,9 @@ HRESULT CNeuzApp::Render()
 		// 드래그 아이템 
 		if(	CWndBase::m_GlobalShortcut.IsEmpty() == FALSE )
 		{
-			GET_CLIENT_POINT( GetSafeHwnd(), point );
+			CPoint point = CWndBase::GetClientPoint();
 			if( CWndBase::m_GlobalShortcut.m_pTexture )
-				CWndBase::m_GlobalShortcut.m_pTexture->Render( &m_2DRender, CPoint( point.x - 16, point.y - 16 ) );
+				CWndBase::m_GlobalShortcut.m_pTexture->Render( &m_2DRender, point - CPoint( 16, 16 ) );
 			else
 			{
 				int nHeight = m_2DRender.m_pFont->GetMaxHeight() / 2;
@@ -828,7 +824,7 @@ HRESULT CNeuzApp::Render()
 #ifdef __CLIENT
 		if( ::GetLanguage() == LANG_KOR )
 		{
-			g_WndMng.m_pTheme->RenderGameGradeMark( &m_2DRender, static_cast< DWORD >( m_nGameGradeMarkAlpha ) );
+			m_Theme.RenderGameGradeMark( &m_2DRender, static_cast< DWORD >( m_nGameGradeMarkAlpha ) );
 		}
 #endif // __CLIENT
 #endif // __GAME_GRADE_SYSTEM
@@ -965,35 +961,33 @@ HRESULT CNeuzApp::FrameMove()
 	g_dpCertified.ReceiveMessage();
 	CHECK2( "Receive" );
 
-	if( m_dwTempMessage )
-	{
-		CWndBase* pWndBase;
-		if( m_timerConnect.TimeOut() )
-		{
+	bool skipWorldProcess = false;
+	if (m_dwTempMessage) {
+		if (m_timerConnect.TimeOut()) {
 			m_dwTempMessage = 0;
-			pWndBase = g_WndMng.GetWndBase( APP_SELECT_CHAR );
-			if( pWndBase )
-			{
-				((CWndSelectChar*)pWndBase)->Connected();
-				goto NEXT;
+
+			if (CWndSelectChar * pWndBase = g_WndMng.GetWndBase<CWndSelectChar>(APP_SELECT_CHAR)) {
+				pWndBase->Connected();
+				skipWorldProcess = true;
 			}
 		}
 	}
 
-	if( g_pBipedMesh )
-		g_pBipedMesh->FrameMove();
+	if (!skipWorldProcess) {
+		if (g_pBipedMesh)
+			g_pBipedMesh->FrameMove();
 
-	g_WndMng.Process(); // 실제적인 월드와 캐릭터 컨트롤 인터페이스는 CWndWorld::Process가 처리함 
-	
-	// 위치 바꾸지 마시오!! ata3k
-	// 키보드 업했을때 반응하기 위해 클리어 시켜준다....
-	if( g_nOldVirtKey != 0 )
-		g_bKeyTable[ g_nOldVirtKey ] = FALSE;	
+		g_WndMng.Process(); // 실제적인 월드와 캐릭터 컨트롤 인터페이스는 CWndWorld::Process가 처리함 
 
-NEXT:
+		// 위치 바꾸지 마시오!! ata3k
+		// 키보드 업했을때 반응하기 위해 클리어 시켜준다....
+		if (g_nOldVirtKey != 0)
+			g_bKeyTable[g_nOldVirtKey] = FALSE;
+	}
+
 	if( g_WndMng.IsTitle() == TRUE )
 		CWndBase::m_Theme.FrameMove();
-	GET_CLIENT_POINT( GetSafeHwnd(), point );
+	CPoint point = CWndBase::GetClientPoint();
 	g_toolTip.Process( point, &m_2DRender );
 	g_toolTipSub1.Process( point, &m_2DRender );
 	g_toolTipSub2.Process( point, &m_2DRender );
@@ -1480,49 +1474,41 @@ HRESULT CNeuzApp::InitDeviceObjects()
 
 	m_pd3dDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
-	prj.m_modelMng.InitDeviceObjects( m_pd3dDevice );
-	prj.m_terrainMng.InitDeviceObjects( m_pd3dDevice );
-
-	CWorld::StaticInitDeviceObjects( m_pd3dDevice );
+	CWorld::StaticInitDeviceObjects( );
 	
-	g_DamageNumMng.LoadTexture( m_pd3dDevice );		// 데미지 이펙트 
+	g_DamageNumMng.LoadTexture( );		// 데미지 이펙트 
 
-	g_SfxMng.InitDeviceObjects(m_pd3dDevice);
-	g_SfxMeshMng.InitDeviceObjects(m_pd3dDevice);
-
-	g_Shadow.InitDeviceObjects( m_pd3dDevice );
+	g_Shadow.InitDeviceObjects( );
 	g_Shadow.LoadElement( "Shadow.o3d" );
 
-	g_ParticleMng.InitDeviceObjects( m_pd3dDevice );
-
-	m_TextureGauge[0].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauMagChargeBG.TGA" ), 0xffff00ff, TRUE );
-	m_TextureGauge[1].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauMagChargeHead.TGA" ), 0xffff00ff, TRUE );
-	m_TextureGauge[2].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauMagChargeBody.TGA" ), 0xffff00ff, TRUE );
-	m_TextureGauge[3].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauMagChargeBody2.tga" ), 0xffff00ff, TRUE );
-	m_TextureGauge[4].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauMagChargeTail.TGA" ), 0xffff00ff, TRUE );
+	m_TextureGauge[0].LoadTexture( MakePath( DIR_THEME, "GauMagChargeBG.TGA" ), 0xffff00ff, TRUE );
+	m_TextureGauge[1].LoadTexture( MakePath( DIR_THEME, "GauMagChargeHead.TGA" ), 0xffff00ff, TRUE );
+	m_TextureGauge[2].LoadTexture( MakePath( DIR_THEME, "GauMagChargeBody.TGA" ), 0xffff00ff, TRUE );
+	m_TextureGauge[3].LoadTexture( MakePath( DIR_THEME, "GauMagChargeBody2.tga" ), 0xffff00ff, TRUE );
+	m_TextureGauge[4].LoadTexture( MakePath( DIR_THEME, "GauMagChargeTail.TGA" ), 0xffff00ff, TRUE );
 	
-	m_TextureHPGauge[0].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauPartyHpBG.TGA" ), 0xffff00ff, TRUE );
-	m_TextureHPGauge[1].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauPartyHp.TGA" ), 0xffff00ff, TRUE );
-	m_TextureHPGauge[2].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauPartyHp_Dbf.TGA" ), 0xffff00ff, TRUE );
-	m_TextureTurboGauge[0].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAccelBG.TGA" ), 0xffff00ff, TRUE );
-	m_TextureTurboGauge[1].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAccelInner.TGA" ), 0xffff00ff, TRUE );
-	m_TextureCastingGauge[0].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAccelBG.TGA" ), 0xffff00ff, TRUE );
-	m_TextureCastingGauge[1].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAccelInner.TGA" ), 0xffff00ff, TRUE );
+	m_TextureHPGauge[0].LoadTexture( MakePath( DIR_THEME, "GauPartyHpBG.TGA" ), 0xffff00ff, TRUE );
+	m_TextureHPGauge[1].LoadTexture( MakePath( DIR_THEME, "GauPartyHp.TGA" ), 0xffff00ff, TRUE );
+	m_TextureHPGauge[2].LoadTexture( MakePath( DIR_THEME, "GauPartyHp_Dbf.TGA" ), 0xffff00ff, TRUE );
+	m_TextureTurboGauge[0].LoadTexture( MakePath( DIR_THEME, "GauAccelBG.TGA" ), 0xffff00ff, TRUE );
+	m_TextureTurboGauge[1].LoadTexture( MakePath( DIR_THEME, "GauAccelInner.TGA" ), 0xffff00ff, TRUE );
+	m_TextureCastingGauge[0].LoadTexture( MakePath( DIR_THEME, "GauAccelBG.TGA" ), 0xffff00ff, TRUE );
+	m_TextureCastingGauge[1].LoadTexture( MakePath( DIR_THEME, "GauAccelInner.TGA" ), 0xffff00ff, TRUE );
 
-	m_pMasterIcon[0] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Expert1.dds"), 0xffff00ff );
-	m_pMasterIcon[1] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Expert2.dds"), 0xffff00ff );
-	m_pMasterIcon[2] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Expert3.dds"), 0xffff00ff );
-	m_pMasterIcon[3] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Expert4.dds"), 0xffff00ff );
-	m_pMasterIcon[4] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Expert5.dds"), 0xffff00ff );
-	m_pMasterIcon[5] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Expert6.dds"), 0xffff00ff );
-	m_pHeroIcon		 = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_Hero.dds"), 0xffff00ff );
+	m_pMasterIcon[0] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Expert1.dds"), 0xffff00ff );
+	m_pMasterIcon[1] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Expert2.dds"), 0xffff00ff );
+	m_pMasterIcon[2] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Expert3.dds"), 0xffff00ff );
+	m_pMasterIcon[3] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Expert4.dds"), 0xffff00ff );
+	m_pMasterIcon[4] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Expert5.dds"), 0xffff00ff );
+	m_pMasterIcon[5] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Expert6.dds"), 0xffff00ff );
+	m_pHeroIcon		 = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_Hero.dds"), 0xffff00ff );
 
-	m_TexCltGauge[0].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAccelBG.TGA" ), 0xffff00ff, TRUE );
-	m_TexCltGauge[1].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAccelInner.TGA" ), 0xffff00ff, TRUE );
-	//m_TexCltGauge[2].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauPartyHp_Dbf.TGA" ), 0xffff00ff, TRUE );
+	m_TexCltGauge[0].LoadTexture( MakePath( DIR_THEME, "GauAccelBG.TGA" ), 0xffff00ff, TRUE );
+	m_TexCltGauge[1].LoadTexture( MakePath( DIR_THEME, "GauAccelInner.TGA" ), 0xffff00ff, TRUE );
+	//m_TexCltGauge[2].LoadTexture( MakePath( DIR_THEME, "GauPartyHp_Dbf.TGA" ), 0xffff00ff, TRUE );
 	
-	m_TextureAngelGauge[0].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAngelExpBG.TGA" ), 0xffff00ff, TRUE );
-	m_TextureAngelGauge[1].LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "GauAngelExp.TGA" ), 0xffff00ff, TRUE );
+	m_TextureAngelGauge[0].LoadTexture( MakePath( DIR_THEME, "GauAngelExpBG.TGA" ), 0xffff00ff, TRUE );
+	m_TextureAngelGauge[1].LoadTexture( MakePath( DIR_THEME, "GauAngelExp.TGA" ), 0xffff00ff, TRUE );
 
 	m_dwPVPTime = GetTickCount();
 	m_nTexAlpha		= 255;
@@ -1568,23 +1554,21 @@ HRESULT CNeuzApp::InitDeviceObjects()
 #endif //__YENV	
 
 	// 테마 세팅 
-	CWndBase::m_Theme.LoadTheme( m_pd3dDevice, "Default.thm" );
-	CWndBase::m_Theme.InitDeviceObjects( m_pd3dDevice );
+	CWndBase::m_Theme.LoadTheme( "Default.thm" );
+	CWndBase::m_Theme.InitDeviceObjects( );
 
 	// CWndBase 세팅 
-	g_WndMng.m_pApp = this;
-	g_WndMng.m_pTheme = &CWndBase::m_Theme;
+	g_WndMng.m_isCreated = true;
 	g_WndMng.m_pFont = CWndBase::m_Theme.m_pFontText;
 	g_WndMng.Initialize();
 	g_WndMng.InitDeviceObjects();
 	CWndBase::m_hWnd = GetSafeHwnd();
-	CWndBase::SetForbidTexture( m_pd3dDevice, MakePath( DIR_ICON, "icon_forbid.dds" ) );
+	CWndBase::SetForbidTexture( MakePath( DIR_ICON, "icon_forbid.dds" ) );
 
 	// 다이얼로그 메시지 세팅 
-	g_DialogMsg.InitDeviceObjects( m_pd3dDevice );
+	g_DialogMsg.InitDeviceObjects( );
 
 	// 2DRender 세팅 
-	m_2DRender.InitDeviceObjects( m_pd3dDevice );
 	m_2DRender.m_pFont = CWndBase::m_Theme.m_pFontText;
 	g_WndMng.OpenTitle( TRUE );
 
@@ -1593,10 +1577,8 @@ HRESULT CNeuzApp::InitDeviceObjects()
 	SetFrameSkip( FALSE );
 #endif
 
-	m_texQuestEmoticon.LoadScript( m_pd3dDevice, MakePath( DIR_ICON, "icon_QuestEmoticon.inc" ) );
-	m_TexturePackPVP.LoadScript( m_pd3dDevice, MakePath( DIR_SFX, "CountFight.inc" ) );
-
-	TexturePool::Get()->Init( m_pd3dDevice );
+	m_texQuestEmoticon.LoadScript( MakePath( DIR_ICON, "icon_QuestEmoticon.inc" ) );
+	m_TexturePackPVP.LoadScript( MakePath( DIR_SFX, "CountFight.inc" ) );
 
 	PlayMusic( BGM_TITLE, 0 );
 

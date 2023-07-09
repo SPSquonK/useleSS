@@ -18,7 +18,7 @@ void CWndSealChar::OnInitialUpdate() {
 	Move70();
 }
 
-BOOL CWndSealChar::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndSealChar::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_SEAL_CHAR, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -37,7 +37,7 @@ BOOL CWndSealChar::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 void CWndSealCharSelect::OpenOrResetWindow(std::vector<Target> targets) {
 	if (!g_WndMng.m_pWndSealCharSelect) {
 		g_WndMng.m_pWndSealCharSelect = new CWndSealCharSelect(std::move(targets));
-		g_WndMng.m_pWndSealCharSelect->Initialize(&g_WndMng);
+		g_WndMng.m_pWndSealCharSelect->Initialize();
 	} else {
 		g_WndMng.m_pWndSealCharSelect->m_targets = std::move(targets);
 		g_WndMng.m_pWndSealCharSelect->UpdateRadioButtons();
@@ -56,7 +56,7 @@ void CWndSealCharSelect::OnInitialUpdate() {
 	Move70();
 }
 
-BOOL CWndSealCharSelect::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndSealCharSelect::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_SEAL_CHAR_SELECT, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -107,7 +107,7 @@ void CWndSealCharSend::OpenOrResetWindow(const CWndSealCharSelect::Target & targ
 	CWndSealCharSend *& pWndCWndSealCharSend = g_WndMng.m_pWndSealCharSend;
 	if (!pWndCWndSealCharSend) {
 		pWndCWndSealCharSend = new CWndSealCharSend;
-		pWndCWndSealCharSend->Initialize(&g_WndMng);
+		pWndCWndSealCharSend->Initialize();
 	}
 
 	pWndCWndSealCharSend->UpdateTarget(target);
@@ -118,7 +118,7 @@ void CWndSealCharSend::OnInitialUpdate() {
 	Move70();
 }
 
-BOOL CWndSealCharSend::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndSealCharSend::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_SEAL_CHAR_SEND, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -147,7 +147,7 @@ void CWndSealCharSend::UpdateTarget(const CWndSealCharSelect::Target & target) {
 void CWndSealCharSet::OpenOrResetWindow(DWORD scrollPosition) {
 	if (!g_WndMng.m_pWndSealCharSet) {
 		g_WndMng.m_pWndSealCharSet = new CWndSealCharSet;
-		g_WndMng.m_pWndSealCharSet->Initialize(&g_WndMng);
+		g_WndMng.m_pWndSealCharSet->Initialize();
 	}
 
 	g_WndMng.m_pWndSealCharSet->m_scrollPos = scrollPosition;
@@ -163,7 +163,7 @@ void CWndSealCharSet::OnInitialUpdate() {
 	Move70();
 }
 
-BOOL CWndSealCharSet::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndSealCharSet::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_SEAL_CHAR_SET, pWndParent, 0, CPoint(0, 0));
 }
 

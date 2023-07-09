@@ -50,7 +50,7 @@ void CWndVendorBuy::OnInitialUpdate()
 	MoveParentCenter();
 }
 
-BOOL CWndVendorBuy::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
+BOOL CWndVendorBuy::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_VENDOREX_BUY, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -161,7 +161,7 @@ BOOL CWndVendorBuy::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			nBufNum = m_pItemBase->GetExtra();
 		if( g_pPlayer->GetGold() < m_pItemBase->m_nCost * nBufNum )
 		{
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_GAME_LACKMONEY)), MB_OK, this );
+			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_GAME_LACKMONEY)), MB_OK );
 			return TRUE;			
 		}
 		g_DPlay.SendBuyPVendorItem( pWndVendor->m_pVendor->GetId(), m_iIndex, m_pItemBase->m_dwItemId, nNum );

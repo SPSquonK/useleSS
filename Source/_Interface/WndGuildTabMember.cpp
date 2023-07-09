@@ -228,7 +228,7 @@ void CWndGuildTabMember::OnDraw( C2DRender* p2DRender )
 		sy += MEMBER_LIST_HEIGHT;
 	}
 
-	pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
+	pWndWorld->m_texPlayerDataIcon.Render( pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
 	
 } 
 void CWndGuildTabMember::OnInitialUpdate() 
@@ -257,45 +257,45 @@ void CWndGuildTabMember::OnInitialUpdate()
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabMLevel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabMLevel.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabMLevel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabMLevel.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_JOB);
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabJob.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabJob.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabJob.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabJob.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_LEVEL);
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabLevel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabLevel.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabLevel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabLevel.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_NAME);
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabChar.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabChar.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabChar.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabChar.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_ALIAS);
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabAlias.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabAlias.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildMemberTabAlias.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildMemberTabAlias.bmp" ), 0xffff00ff );
 	}
 
 	UpdateData();
@@ -305,12 +305,7 @@ void CWndGuildTabMember::OnInitialUpdate()
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 } 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildTabMember::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_GUILD_TABMEMBER_EX, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+
 BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
 	if( nID == 1000 && dwMessage == 514 )	// Scroll Bar
@@ -361,7 +356,7 @@ BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBas
 					if(m_list[m_nSelect].bIsOnLine )
 						g_DPlay.SendChgMaster( pMover->m_idPlayer, m_list[m_nSelect].idPlayer );
 					else
-						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_NOTLOGIN ), MB_OK, this );
+						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_NOTLOGIN ), MB_OK );
 				}
 			}
 			break;
@@ -379,12 +374,12 @@ BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBas
 						SAFE_DELETE( g_WndMng.m_pWndGuildNickName );
 						g_WndMng.m_pWndGuildNickName = new CWndGuildNickName;
 						g_WndMng.m_pWndGuildNickName->m_idPlayer = m_list[m_nSelect].idPlayer;
-						g_WndMng.m_pWndGuildNickName->Initialize( &g_WndMng, APP_GUILD_NICKNAME );
+						g_WndMng.m_pWndGuildNickName->Initialize();
 					}
 				}
 				else
 				{
-					g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDONLYMASTER ), MB_OK, this );
+					g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDONLYMASTER ), MB_OK );
 				}
 				
 			}
@@ -397,7 +392,7 @@ BOOL CWndGuildTabMember::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBas
 					QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( QUEST_WARMON_LV1 );
 					if( pQuestProp )
 					{
-						g_WndMng.OpenMessageBox( prj.GetText( TID_GUILD_QUEST_LEAVEERROR ), MB_OK, this );
+						g_WndMng.OpenMessageBox( prj.GetText( TID_GUILD_QUEST_LEAVEERROR ), MB_OK );
 					}
 					return FALSE;
 				}

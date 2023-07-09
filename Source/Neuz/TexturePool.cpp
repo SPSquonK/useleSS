@@ -40,11 +40,9 @@ IDirect3DTexture9* TexturePool::GetTexture( const std::string& dir, const std::s
 
 	//create texture!
 
-	assert( _pMyDevice );
-
 	std::string fullname = dir + filename;
 	IDirect3DTexture9* pNewTex = NULL;
-	if( FAILED( LoadTextureFromRes( _pMyDevice, fullname.c_str(), &pNewTex ) ) )
+	if( FAILED( LoadTextureFromRes( fullname.c_str(), &pNewTex ) ) )
 	{
 		assert( 0 && "cannot find texture name" );
 		return NULL;

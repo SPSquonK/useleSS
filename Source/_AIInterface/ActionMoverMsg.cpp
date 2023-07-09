@@ -1065,7 +1065,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 				CMover* pObj = new CMover;
 				D3DXVECTOR3 vPos = pMover->GetPos();
 				pObj->SetPos( vPos );
-				pObj->SetIndex( g_Neuz.m_pd3dDevice, MI_AIBATT1, TRUE );
+				pObj->SetIndex( MI_AIBATT1, TRUE );
 				pObj->SetMotion( 0 );
 				g_WorldMng.Get()->AddObj( pObj, TRUE ); 
 			}

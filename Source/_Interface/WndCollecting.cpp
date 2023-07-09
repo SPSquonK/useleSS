@@ -67,8 +67,8 @@ void CCollectingWnd::OnDraw( C2DRender* p2DRender )
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
 
-			m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, D3DCOLOR_ARGB( 128, 0, 0, 255 ), m_pVBGauge, m_pTexGauFillNormal );
-			m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, m_pTexGauEmptyNormal );	
+			m_Theme.MakeGaugeVertex( &rectTemp, D3DCOLOR_ARGB( 128, 0, 0, 255 ), m_pVBGauge, m_pTexGauFillNormal );
+			m_Theme.RenderGauge( m_pVBGauge, m_pTexGauEmptyNormal );	
 		}
 	}
 	
@@ -88,7 +88,7 @@ HRESULT CCollectingWnd::RestoreDeviceObjects()
 {
 	CWndBase::RestoreDeviceObjects();
 	if(!m_pVBGauge)
-	m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
+	m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
 	
 	return S_OK;
 }
@@ -130,10 +130,10 @@ void CCollectingWnd::OnInitialUpdate()
 		m_LevelRect		= lpWndCtrl2->rect;
 		
 		if(!m_pVBGauge)
-			m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
+			m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
 
-		m_pTexGauEmptyNormal = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff );
-		m_pTexGauFillNormal  = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff );
+		m_pTexGauEmptyNormal = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff );
+		m_pTexGauFillNormal  = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff );
 
 		wsprintf(m_pbufText, "%d / %d (%d%%)", nBtryRemain, nMax, nRatio * 100);
 		
@@ -148,20 +148,20 @@ void CCollectingWnd::OnInitialUpdate()
 		CWndStatic * pLevel = (CWndStatic *)GetDlgItem(WIDC_STATIC3);
 		pLevel->SetTitle(szTemp);
 
-		m_pTexBatt  = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "Icon_ColBattery.tga" )), 0xffff00ff );
-		m_pTexLevel = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, _T( "Icon_ColLevel.tga" )), 0xffff00ff );
+		m_pTexBatt  = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, _T( "Icon_ColBattery.tga" )), 0xffff00ff );
+		m_pTexLevel = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, _T( "Icon_ColLevel.tga" )), 0xffff00ff );
 		
 	}
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
 	Move( point );
 	
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CCollectingWnd::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CCollectingWnd::Initialize( CWndBase* pWndParent )
 { 
 		// Daisy에서 설정한 리소스로 윈도를 연다.
 		return CWndNeuz::InitDialog( APP_COLLECTING, pWndParent, 0, CPoint( 0, 0 ) );
@@ -193,11 +193,11 @@ void CCollectingWnd::SetButtonCaption(bool bIsStart) {
 	CWndBase * pWndButton = GetDlgItem(WIDC_BUTTON1);
 
 	if (bIsStart) {
-		pWndButton->SetTexture(m_pParentWnd->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtStop.bmp")), TRUE);
+		pWndButton->SetTexture(MakePath(DIR_THEME, _T("ButtStop.bmp")), TRUE);
 	} else if (::GetLanguage() == LANG_FRE) {
-		pWndButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("ButOk2.bmp")), TRUE);
+		pWndButton->SetTexture(MakePath(DIR_THEME, _T("ButOk2.bmp")), TRUE);
 	} else {
-		pWndButton->SetTexture(m_pParentWnd->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtStart.bmp")), TRUE);
+		pWndButton->SetTexture(MakePath(DIR_THEME, _T("ButtStart.bmp")), TRUE);
 	}
 }
 

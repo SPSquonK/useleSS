@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-class CWndHelp : public CWndNeuz {
+class CWndHelp final : public CWndNeuz {
 	CString m_strKeyword;
 
 	void ChangeDisplayedHelp(TREEELEM & treeElem);
@@ -10,11 +10,11 @@ class CWndHelp : public CWndNeuz {
 public:
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 };
 
-class CWndHelpFAQ : public CWndNeuz {
+class CWndHelpFAQ final : public CWndNeuz {
 	std::unordered_map<std::string, std::string> m_mapFAQ;
 
 	bool LoadFAQ(LPCTSTR lpszFileName);
@@ -22,29 +22,29 @@ class CWndHelpFAQ : public CWndNeuz {
 
 public:
 	void OnInitialUpdate() override;
-	BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult) override;
 };
 
-class CWndHelpTip : public CWndNeuz {
+class CWndHelpTip final : public CWndNeuz {
 	std::vector<CString> m_aString;
 	size_t m_current = 0;
 
 	bool LoadTips();
 
 public: 
-	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
 	void OnInitialUpdate() override;
 }; 
 
-class CWndHelpInstant : public CWndNeuz {
+class CWndHelpInstant final : public CWndNeuz {
 	CString m_strHelpKey;
 
 public:
 	CWndHelpInstant(CString helpKey) : m_strHelpKey(std::move(helpKey)) {}
 
-	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
 	void OnInitialUpdate() override;
 }; 

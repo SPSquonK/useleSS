@@ -4,14 +4,14 @@
 #ifdef __YS_CHATTING_BLOCKING_SYSTEM
 #ifdef __CLIENT
 
-class CWndChattingBlockingList : public CWndNeuz
+class CWndChattingBlockingList final : public CWndNeuz
 {
 public:
 	CWndChattingBlockingList( void );
 	~CWndChattingBlockingList( void );
 
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual	void OnInitialUpdate( void );
 
 public:

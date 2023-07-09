@@ -89,7 +89,7 @@ void CWndItemReceiver::ChangeShadowTexture(const ItemProp * itemProp, std::optio
 		opacity = 50;
 	}
 	
-	CTexture * texture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, itemProp->szIcon), 0xffff00ff);
+	CTexture * texture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_ITEM, itemProp->szIcon), 0xffff00ff);
 	if (!texture) return;
 
 	if (!opacity) { // By construction, m_shadow is not nullopt

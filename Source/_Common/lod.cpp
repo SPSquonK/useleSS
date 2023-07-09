@@ -85,10 +85,10 @@ void CPatch::Init( int heightX, int heightY, int worldX, int worldY, FLOAT *hMap
 	CalculateBound();
 }
 
-void CPatch::Render(LPDIRECT3DDEVICE9 pd3dDevice,int X,int Y)
+void CPatch::Render(int X,int Y)
 {
-	if( pd3dDevice ) 
-	{
+	if (pd3dDevice.IsMissing()) return;
+	
 		DWORD nBaseVertexIndex = ((PATCH_SIZE+1)*(PATCH_SIZE+1)) * (Y*NUM_PATCHES_PER_SIDE+X);
 		pd3dDevice->SetIndices( g_pIB );
 		if( CWorld::m_bViewLODTerrain ) 
@@ -122,7 +122,7 @@ void CPatch::Render(LPDIRECT3DDEVICE9 pd3dDevice,int X,int Y)
 		{
 			pd3dDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, nBaseVertexIndex, 0, (PATCH_SIZE+1)*(PATCH_SIZE+1),0, 128 );
 		}
-	}
+	
 }
 
 void CPatch::CalculateBound()
@@ -226,7 +226,6 @@ void CPatch::CalculateLevel()
 CLandscape::CLandscape()
 {
 	m_dwVersion = 0;
-	m_pd3dDevice = NULL;
 	m_pHeightMap = NULL;
 	m_pVB=NULL;
 	m_pWorld = NULL;
@@ -315,9 +314,8 @@ CLandscape::~CLandscape()
 //
 // 디바이스 관련
 //
-HRESULT CLandscape::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWorld )
+HRESULT CLandscape::InitDeviceObjects( CWorld* pWorld )
 {
-	m_pd3dDevice = pd3dDevice;
 	m_pWorld = pWorld;
 
 	FreeTerrain();
@@ -327,12 +325,12 @@ HRESULT CLandscape::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWo
 	return S_OK;
 }
 
-HRESULT CLandscape::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
+HRESULT CLandscape::RestoreDeviceObjects()
 {
 	if( m_pVB ) 
 		return S_OK;
 
-	if(pd3dDevice) 
+	if(!pd3dDevice.IsMissing()) 
 		pd3dDevice->CreateVertexBuffer( (PATCH_SIZE+1) * (PATCH_SIZE+1) * (NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE) *sizeof(D3DLANDSCAPEVERTEX),
 										  D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &m_pVB , NULL);
 	
@@ -839,14 +837,14 @@ void CLandscape::RenderPatches()
 								nBlendStatus=0;
 							}
 						}
-						patch->Render(m_pd3dDevice,X,Y);
+						patch->Render(X,Y);
 					}
 				
 			}
 		}
 	}
 }
-HRESULT CLandscape::Render(LPDIRECT3DDEVICE9 pd3dDevice,BOOL bLod)
+HRESULT CLandscape::Render(BOOL bLod)
 {
 	/*
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE);
@@ -912,7 +910,7 @@ HRESULT CLandscape::Render(LPDIRECT3DDEVICE9 pd3dDevice,BOOL bLod)
 	
 }
 //////////////////////////////////////////////////////////////
-HRESULT CLandscape::RenderWater( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CLandscape::RenderWater( )
 {
 //	return S_OK;
 	D3DXMATRIX mat,matView,matProj;
@@ -1302,7 +1300,7 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 		}
 
 		//pObj->m_vPos += D3DXVECTOR3( 1024, 0, 0 );
-		if( pObj->SetIndex( m_pd3dDevice, pObj->m_dwIndex ) == TRUE)
+		if( pObj->SetIndex( pObj->m_dwIndex ) == TRUE)
 		{
 			if( ::GetLanguage() == LANG_JAP && pObj->m_dwIndex == 360 )
 			{
@@ -1344,7 +1342,7 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 				pObj->m_vPos.z += yy * LANDREALSCALE;
 			}
 			//pObj->m_vPos += D3DXVECTOR3( 1024, 0, 0 );
-			if( pObj->SetIndex( m_pd3dDevice, pObj->m_dwIndex ) == TRUE )
+			if( pObj->SetIndex( pObj->m_dwIndex ) == TRUE )
 			{
 				InsertObjLink( pObj );
 				AddObjArray( pObj );
@@ -1357,7 +1355,7 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 	CString strDDSName = lpszFileName;
 	strDDSName = strDDSName.Left( strDDSName.GetLength() - 3 );
 	strDDSName += "dds";
-	m_texMiniMap.LoadTexture( m_pd3dDevice, strDDSName, 0, FALSE );
+	m_texMiniMap.LoadTexture( strDDSName, 0, FALSE );
 	return TRUE;
 }
 //
@@ -1504,7 +1502,7 @@ CLandLayer* CLandscape::NewLayer( WORD nTex )
 	);
 	if (it != m_aLayer.end()) return &*it;
 
-	CLandLayer * pLayer = &m_aLayer.emplace_back(m_pd3dDevice, nTex);
+	CLandLayer * pLayer = &m_aLayer.emplace_back(nTex);
 
 	if( m_aLayer.empty() ) 
 	{
@@ -1563,14 +1561,14 @@ FLOAT CLandscape::GetHeightMap( int nOffset )
 }
 
 
-CLandLayer::CLandLayer(LPDIRECT3DDEVICE9 pd3dDevice,WORD nTex) 
+CLandLayer::CLandLayer(WORD nTex) 
 {
 	m_pLightMap = NULL;
 	m_bVisible = TRUE;
 	m_nTex = nTex;
 
-	if( pd3dDevice ) 
-	{
+	if (pd3dDevice.IsMissing())  return;
+	
 
 		pd3dDevice->CreateTexture( MAP_SIZE, MAP_SIZE, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED,
 										   &m_pLightMap, NULL );
@@ -1585,7 +1583,7 @@ CLandLayer::CLandLayer(LPDIRECT3DDEVICE9 pd3dDevice,WORD nTex)
 
 		for( int i = 0; i < NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE; i++ ) 
 			m_aPatchEnable[ i ]=FALSE;
-	}
+	
 }
 
 CLandLayer::CLandLayer(CLandLayer && other) noexcept {

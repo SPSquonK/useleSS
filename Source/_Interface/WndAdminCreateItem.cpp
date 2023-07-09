@@ -240,7 +240,7 @@ void CWndAdminCreateItem::BoundListBoxOfComboBoxSize(
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndAdminCreateItem::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndAdminCreateItem::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_ADMIN_CREATEITEM, pWndParent, 0, CPoint(0, 0));
 }
 

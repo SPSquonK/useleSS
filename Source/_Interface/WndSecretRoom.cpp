@@ -28,7 +28,7 @@ void CWndSecretRoomSelection::OnInitialUpdate() {
 	ResetLineup({});
 }
 
-BOOL CWndSecretRoomSelection::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndSecretRoomSelection::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_SECRETROOM_SELECTION, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -86,8 +86,7 @@ BOOL CWndSecretRoomSelection::OnChildNotify( UINT message, UINT nID, LRESULT* pL
 	}
 	else if( nID == WIDC_RESET )
 	{
-		CWndSecretRoomSelectionResetConfirm* pBox = new CWndSecretRoomSelectionResetConfirm;
-		g_WndMng.OpenCustomBox( "", pBox );
+		g_WndMng.OpenCustomBox(new CWndSecretRoomSelectionResetConfirm);
 	}
 	else if( nID == WIDC_FINISH )
 	{
@@ -191,7 +190,7 @@ void CWndSecretRoomOffer::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndSecretRoomOffer::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomOffer::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_SECRETROOM_OFFER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -234,9 +233,7 @@ BOOL CWndSecretRoomOffer::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 		{
 			CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
 			
-			DWORD nCost;
-			CString str = pWndEdit->GetString();
-			nCost = atoi( str );
+			const DWORD nCost = atoi(pWndEdit->GetString());
 
 			if( m_dwReqGold != 0 )
 			{
@@ -257,22 +254,21 @@ BOOL CWndSecretRoomOffer::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 			}
 
 			CWndSecretRoomOfferMessageBox* pMsg = new CWndSecretRoomOfferMessageBox;
-			if( pMsg )
+
+			g_WndMng.OpenCustomBox( pMsg );
+
+			CString str;
+			if( m_dwReqGold == 0 )
 			{
-				g_WndMng.OpenCustomBox( "", pMsg, this );
-				CString str;
-
-				if( m_dwReqGold == 0 )
-				{
-					str.Format( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_REQUEST), 0, nCost ); //기존에 신청된 %d페냐에서 추가로 %d페냐를 신청하겠습니까?
-				}
-				else
-				{
-					str.Format( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_REQUEST), m_dwBackupGold, nCost-m_dwBackupGold ); //기존에 신청된 %d페냐에서 추가로 %d페냐를 신청하겠습니까?
-				}
-
-				pMsg->SetValue( str, nCost );
+				str.Format( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_REQUEST), 0, nCost ); //기존에 신청된 %d페냐에서 추가로 %d페냐를 신청하겠습니까?
 			}
+			else
+			{
+				str.Format( prj.GetText(TID_GAME_GUILDCOMBAT1TO1_MORE_REQUEST), m_dwBackupGold, nCost-m_dwBackupGold ); //기존에 신청된 %d페냐에서 추가로 %d페냐를 신청하겠습니까?
+			}
+
+			pMsg->SetValue( str, nCost );
+			
 		}
 	}
 	else if( nID == WIDC_CLOSE )
@@ -335,7 +331,7 @@ void CWndSecretRoomChangeTaxRate::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndSecretRoomChangeTaxRate::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomChangeTaxRate::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_SECRETROOM_TAXRATE_CHANGE, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -375,13 +371,11 @@ BOOL CWndSecretRoomChangeTaxRate::OnChildNotify( UINT message, UINT nID, LRESULT
 		case WIDC_OK:
 			{
 				CWndSecretRoomChangeTaxRateMsgBox* pMsg = new CWndSecretRoomChangeTaxRateMsgBox;
-				if( pMsg )
-				{
-					CString strMsg;
-					g_WndMng.OpenCustomBox( "", pMsg, this );
-					strMsg.Format( prj.GetText(TID_GAME_SECRETROOM_CHANGETEX), m_nChangeSalesTax, m_nChangePurchaseTax );
-					pMsg->SetValue( strMsg,	m_nChangeSalesTax, m_nChangePurchaseTax, m_nCont );
-				}
+				CString strMsg;
+				g_WndMng.OpenCustomBox( pMsg );
+				strMsg.Format( prj.GetText(TID_GAME_SECRETROOM_CHANGETEX), m_nChangeSalesTax, m_nChangePurchaseTax );
+				pMsg->SetValue( strMsg,	m_nChangeSalesTax, m_nChangePurchaseTax, m_nCont );
+				
 			}
 			break;
 	}
@@ -498,7 +492,7 @@ void CWndSecretRoomCheckTaxRate::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndSecretRoomCheckTaxRate::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomCheckTaxRate::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_SECRETROOM_TAXRATE_CHECK, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -515,7 +509,7 @@ BOOL CWndSecretRoomCheckTaxRate::OnChildNotify( UINT message, UINT nID, LRESULT*
 // 비밀의 방 참가자 구성 확인 창
 //////////////////////////////////////////////////////////////////////////
 
-BOOL CWndSecretRoomSelectionResetConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndSecretRoomSelectionResetConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( prj.GetText(TID_GAME_SECRETROOM_REMAKE_MAKEUP), //명단작성을 다시 하시겠습니까?
 		pWndParent, 
@@ -574,7 +568,7 @@ void CWndSecretRoomOfferState::InsertTitle( const char szTitle[] )
 	SetTitle( strTitle );
 }
 
-BOOL CWndSecretRoomOfferState::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomOfferState::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_SECRETROOM_OFFERSTATE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -708,7 +702,7 @@ void CWndSecretRoomOfferState::SetGold( int nGold )
 // 비밀의 방 입찰 확인 창
 //////////////////////////////////////////////////////////////////////////
 
-BOOL CWndSecretRoomOfferMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndSecretRoomOfferMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( "", pWndParent, MB_OKCANCEL );	
 }
@@ -747,7 +741,7 @@ CWndSecretRoomInfoMsgBox::~CWndSecretRoomInfoMsgBox()
 {
 }
 
-BOOL CWndSecretRoomInfoMsgBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndSecretRoomInfoMsgBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_SECRETROOM_MSG, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -792,7 +786,7 @@ void CWndSecretRoomInfoMsgBox::OnInitialUpdate() {
 // 비밀의 방 세율 변경 확인 창
 //////////////////////////////////////////////////////////////////////////
 
-BOOL CWndSecretRoomChangeTaxRateMsgBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndSecretRoomChangeTaxRateMsgBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( "", pWndParent, MB_OKCANCEL );	
 }
@@ -851,7 +845,7 @@ void CWndSecretRoomCancelConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndSecretRoomCancelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomCancelConfirm::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_SECRETROOM_CANCEL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -908,7 +902,7 @@ void CWndSecretRoomBoard::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndSecretRoomBoard::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomBoard::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_SECRETROOM_BOARD, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -1005,7 +999,7 @@ HRESULT CWndSecretRoomQuick::RestoreDeviceObjects()
 {
 	CWndBase::RestoreDeviceObjects();
 	if( m_pVBGauge == NULL )
-		return m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
+		return m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
 	return S_OK;
 }
 HRESULT CWndSecretRoomQuick::InvalidateDeviceObjects() {
@@ -1110,8 +1104,8 @@ void CWndSecretRoomQuick::OnDraw( C2DRender* p2DRender )
 			rectTemp.right = rectTemp.left + nWidth;
 			if( rect.right < rectTemp.right )
 				rectTemp.right = rect.right;
-			m_pTheme->RenderGauge( p2DRender, &rect, 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
-			m_pTheme->RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
+			m_Theme.RenderGauge( p2DRender, &rect, 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
+			m_Theme.RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
 		}
 	}
 } 
@@ -1123,20 +1117,20 @@ void CWndSecretRoomQuick::OnInitialUpdate()
 	for (int i = 0; i < MAX_SECRETROOM_MEMBER; i++)
 		m_pWndMemberStatic[i] = GetDlgItem<CWndStatic>(m_StaticID[i]);
 
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauFillSmall.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauFillSmall.bmp" ), 0xffff00ff, TRUE );
 	
 	SetActiveMember(m_MemberCount);
 	SortMemberList();
 	
-	const CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	const CRect rectRoot = g_WndMng.GetLayoutRect();
 	const CRect rectWindow = GetWindowRect();
 	const CPoint point( rectRoot.right - rectWindow.Width(), 112 + 48 );
 	Move( point );
 } 
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndSecretRoomQuick::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSecretRoomQuick::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_SECRETROOM_QUICK, pWndParent, 0, CPoint( 0, 0 ) );

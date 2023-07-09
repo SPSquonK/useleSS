@@ -62,35 +62,6 @@ VOID D3DUtil_InitLight( D3DLIGHT9& light, D3DLIGHTTYPE ltType,
 
 
 //-----------------------------------------------------------------------------
-// Name: D3DUtil_CreateTexture()
-// Desc: Helper function to create a texture. It checks the root path first,
-//       then tries the DXSDK media path (as specified in the system registry).
-//-----------------------------------------------------------------------------
-HRESULT D3DUtil_CreateTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR strTexture,
-                               LPDIRECT3DTEXTURE9* ppTexture, D3DFORMAT d3dFormat )
-{
-#ifdef __WORLDSERVER	
-	return S_OK;
-#else
-    HRESULT hr;
-    TCHAR strPath[MAX_PATH];
-
-    // Get the path to the texture
-    if( FAILED( hr = DXUtil_FindMediaFileCb( strPath, sizeof(strPath), (TCHAR*)strTexture ) ) )
-        return hr;
-
-    // Create the texture using D3DX
-    return D3DXCreateTextureFromFileEx( pd3dDevice, strPath, 
-                D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, d3dFormat, 
-                D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
-                D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 0, NULL, NULL, ppTexture );
-#endif // not WORLDSERVER
-}
-
-
-
-
-//-----------------------------------------------------------------------------
 // Name: D3DUtil_GetCubeMapViewMatrix()
 // Desc: Returns a view matrix for rendering to a face of a cubemap.
 //-----------------------------------------------------------------------------

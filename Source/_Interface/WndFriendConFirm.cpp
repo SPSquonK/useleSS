@@ -30,7 +30,7 @@ void CWndFriendConFirm::OnInitialUpdate()
 	Move70();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndFriendConFirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndFriendConFirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_FRIEND_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -69,7 +69,7 @@ void CWndAddFriend::OnInitialUpdate() {
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndAddFriend::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndAddFriend::Initialize(CWndBase * pWndParent) {
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog(APP_ADDFRIEND, pWndParent, 0, CPoint(0, 0));
 }

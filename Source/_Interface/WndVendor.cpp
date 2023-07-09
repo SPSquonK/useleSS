@@ -128,7 +128,7 @@ void CWndVendor::OnInitialUpdate()
 	CRect rcVendor = GetWindowRect( TRUE );
 	CPoint ptInventory	= rcInventory.TopLeft();
 	CPoint point;
-	if( ptInventory.x > m_pWndRoot->GetWndRect().Width() / 2 )
+	if( ptInventory.x > g_WndMng.GetWndRect().Width() / 2 )
 		point	= ptInventory - CPoint( rcVendor.Width(), 0 );
 	else
 		point	= ptInventory + CPoint( rcInventory.Width(), 0 );
@@ -178,7 +178,7 @@ BOOL CWndVendor::Process()
 	return TRUE;
 }
 
-BOOL CWndVendor::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndVendor::Initialize( CWndBase* pWndParent ) 
 {
 	if( g_eLocal.GetState( EVE_SCHOOL ) )
 		return FALSE;
@@ -279,7 +279,7 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			
 			if( nGold <= 0 || 2100000000 <= nGold )
 			{
-				g_WndMng.OpenMessageBox( _T(prj.GetText(TID_GAME_VENDOR_MAX_ALL_GOLD)), MB_OK, this );
+				g_WndMng.OpenMessageBox( _T(prj.GetText(TID_GAME_VENDOR_MAX_ALL_GOLD)), MB_OK );
 				return TRUE;
 			}
 
@@ -304,8 +304,8 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				pWndEdit->m_string.GetTextFormat(strFormat);
 			}
 			
-			CWndVendorConfirm* pBox = new CWndVendorConfirm;
-			g_WndMng.OpenCustomBox( "", pBox );			
+			CWndVendorConfirm * pBox = new CWndVendorConfirm;
+			g_WndMng.OpenCustomBox(pBox);
 			pBox->SetVendorName( strFormat );
 			pBox->SetValue( prj.GetText( TID_GAME_VENDOR_START ) );
 			CWndButton* pWndButton	= (CWndButton*)GetDlgItem( WIDC_OK );
@@ -315,8 +315,8 @@ BOOL CWndVendor::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			if( g_pPlayer->m_vtInfo.IsVendorOpen() )
 			{
-				CWndVendorConfirm* pBox = new CWndVendorConfirm;
-				g_WndMng.OpenCustomBox( "", pBox );			
+				CWndVendorConfirm * pBox = new CWndVendorConfirm;
+				g_WndMng.OpenCustomBox(pBox);
 				pBox->SetValue( prj.GetText( TID_GAME_VENDOR_STOP ) );
 				return FALSE;
 			}
@@ -476,7 +476,7 @@ void CWndVendorMessage::InitSize( void )
 	MoveParentCenter();
 }
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndVendorMessage::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndVendorMessage::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_VENDOREX_CHAT, pWndParent, 0, CPoint( 0, 0 ) );
@@ -624,7 +624,7 @@ void CWndVendorConfirm::SetValue( CString str )
 {
 	m_wndText.SetString( str );
 }
-BOOL CWndVendorConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndVendorConfirm::Initialize( CWndBase* pWndParent )
 { 
 	return  CWndMessageBox::Initialize( "", pWndParent, MB_OKCANCEL );	
 } 

@@ -18,21 +18,21 @@ CDialogMsg::~CDialogMsg()
 	ClearAllMessage();
 }
 
-HRESULT CDialogMsg::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CDialogMsg::InitDeviceObjects( )
 {
-	m_texPack_ex[0].LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texDialogBox.inc" ) ) );
-	m_texPack_ex[1].LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texDialogBoxParty.inc" ) ) );
-	m_texPack_ex[2].LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texDialogBoxGuild.inc" ) ) );
+	m_texPack_ex[0].LoadScript( MakePath( DIR_THEME, _T( "texDialogBox.inc" ) ) );
+	m_texPack_ex[1].LoadScript( MakePath( DIR_THEME, _T( "texDialogBoxParty.inc" ) ) );
+	m_texPack_ex[2].LoadScript( MakePath( DIR_THEME, _T( "texDialogBoxGuild.inc" ) ) );
 	
-	m_texEmoticon.LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texDialogEmoticon.inc" ) ) );
+	m_texEmoticon.LoadScript( MakePath( DIR_THEME, _T( "texDialogEmoticon.inc" ) ) );
 
 
-	m_texEmoticonUser.LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texChatEmoticon.inc" ) ) );
+	m_texEmoticonUser.LoadScript( MakePath( DIR_THEME, _T( "texChatEmoticon.inc" ) ) );
 	LoadEmotion();
 
-	m_pTex[0] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "texDialogBox_left.tga" ), 0xffff00ff );
-	m_pTex[1] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "texDialogBox_center.TGA" ), 0xffff00ff );
-	m_pTex[2] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "texDialogBox_right.tga" ), 0xffff00ff );
+	m_pTex[0] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "texDialogBox_left.tga" ), 0xffff00ff );
+	m_pTex[1] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "texDialogBox_center.TGA" ), 0xffff00ff );
+	m_pTex[2] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "texDialogBox_right.tga" ), 0xffff00ff );
 	
 	RemoveDeleteObjMsg();
 	
@@ -47,15 +47,6 @@ HRESULT CDialogMsg::DeleteDeviceObjects()
 	m_texEmoticon.DeleteDeviceObjects();
 	m_texEmoticonUser.DeleteDeviceObjects();
 	
-	return S_OK;
-}
-HRESULT CDialogMsg::RestoreDeviceObjects()
-{
-	return S_OK;
-}
-
-HRESULT CDialogMsg::InvalidateDeviceObjects()
-{
 	return S_OK;
 }
 
@@ -100,9 +91,7 @@ void CDialogMsg::RemoveDeleteObjMsg() {
 void CDialogMsg::Render( C2DRender* p2DRender )
 {
 	CSize size;	
-	
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-	
+		
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSU, 1 );
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV, 1 );
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_POINT );		
@@ -139,7 +128,7 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 
 
 		D3DXVECTOR3 vOut = pObj->ProjectWorldCoordToScreenCoord(
-			pd3dDevice, std::nullopt,
+			std::nullopt,
 			CObj::PWCTSC_DoNotResetWorldTransform | CObj::PWCTSC_UntouchedViewport
 		);
 
@@ -199,7 +188,7 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 					const size_t nlen = _tcsclen(lpStr);
 					const char * buffer = GetTextDialogShout(nlen);
 
-					CTexture * pShoutTex = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, buffer ), 0xffff00ff );
+					CTexture * pShoutTex = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, buffer ), 0xffff00ff );
 					if( pShoutTex )
 					{
 						p2DRender->RenderTextureEx( CPoint( (int)( x-20 ), (int)( y-20 ) ), CPoint( (int)( fWidth+50.0f ), (int)( fHeight+40.0f ) ), pShoutTex, nAlpha, 1.0f, 1.0f, FALSE );
@@ -319,7 +308,7 @@ g_ShoutChat:
 		// 월드 좌표를 스크린 좌표로 프로젝션 한다.
 
 		D3DXVECTOR3 vOut = pObj->ProjectWorldCoordToScreenCoord(
-			pd3dDevice, std::nullopt,
+			std::nullopt,
 			CObj::PWCTSC_DoNotResetWorldTransform | CObj::PWCTSC_UntouchedViewport
 		);
 

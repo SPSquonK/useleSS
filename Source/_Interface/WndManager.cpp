@@ -561,13 +561,13 @@ void CWndMgr::OnInitialUpdate()
 	for( int i=0; i<128; i++ )
 	{
 		sprintf( filename, "Icon_CoolTime_%.3d.tga", i );
-		g_pCoolTexArry[i] = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, filename ), 0xffff00ff );
+		g_pCoolTexArry[i] = m_textureMng.AddTexture(  MakePath( DIR_ICON, filename ), 0xffff00ff );
 	}
 
 	for( int i=0; i<11; i++ )
 	{
 		sprintf( filename, "Icon_ImgIncAni_%.2d.tga", i );
-		g_pEnchantTexArry[i] = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, filename ), 0xffffffff );
+		g_pEnchantTexArry[i] = m_textureMng.AddTexture(  MakePath( DIR_ICON, filename ), 0xffffffff );
 	}	
 }
 
@@ -854,37 +854,34 @@ void CWndMgr::CloseMessageBox()
 	SAFE_DELETE( m_pWndMessageBox );
 	SAFE_DELETE( m_pWndMessageBoxUpper );
 }
-BOOL CWndMgr::OpenCustomBox( LPCTSTR lpszMessage, CWndMessageBox* pWndMessageBox, CWndBase* pWndParent ) 
+BOOL CWndMgr::OpenCustomBox( CWndCustomMessageBox * pWndMessageBox )
 { 
 	SAFE_DELETE( m_pWndMessageBox );
 	m_pWndMessageBox = pWndMessageBox;
-	pWndParent = this;
 
-	if(pWndMessageBox->Initialize( pWndParent ) == FALSE)
+	if(pWndMessageBox->Initialize( this ) == FALSE)
 	{
 		SAFE_DELETE( m_pWndMessageBox );
 		return TRUE; 
 	}
 	return FALSE;
 }
-BOOL CWndMgr::OpenMessageBox( LPCTSTR lpszMessage, UINT nType, CWndBase* pWndParent ) 
+BOOL CWndMgr::OpenMessageBox( LPCTSTR lpszMessage, UINT nType ) 
 { 
 	SAFE_DELETE( m_pWndMessageBox );
 	m_pWndMessageBox = new CWndMessageBox;
-	pWndParent = this;
-	if( m_pWndMessageBox->Initialize( lpszMessage, pWndParent, nType ) == FALSE) 
+	if( m_pWndMessageBox->Initialize( lpszMessage, this, nType ) == FALSE) 
 	{
 		SAFE_DELETE( m_pWndMessageBox );
 		return TRUE; 
 	}
 	return FALSE;
 }
-BOOL CWndMgr::OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTitle, UINT nType, CWndBase* pWndParent )
+BOOL CWndMgr::OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTitle, UINT nType )
 {
 	SAFE_DELETE( m_pWndMessageBox );
 	m_pWndMessageBox = new CWndMessageBox;
-	pWndParent = this;
-	if( m_pWndMessageBox->Initialize( lpszMessage, pWndParent, nType ) == FALSE)
+	if( m_pWndMessageBox->Initialize( lpszMessage, this, nType ) == FALSE)
 	{
 		SAFE_DELETE( m_pWndMessageBox );
 		return TRUE;
@@ -895,11 +892,10 @@ BOOL CWndMgr::OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTi
 
 BOOL CWndMgr::OpenMessageBoxUpper( LPCTSTR lpszMessage, UINT nType, BOOL bPostLogoutMsg ) 
 { 
-	CWndBase* pWndParent = NULL;
 	SAFE_DELETE( m_pWndMessageBoxUpper );
 	m_pWndMessageBoxUpper = new CWndMessageBoxUpper;
-	pWndParent = this;
-	if( m_pWndMessageBoxUpper->Initialize( lpszMessage, pWndParent, nType, bPostLogoutMsg ) == FALSE) 
+
+	if( m_pWndMessageBoxUpper->Initialize( lpszMessage, this, nType, bPostLogoutMsg ) == FALSE)
 	{
 		SAFE_DELETE( m_pWndMessageBoxUpper );
 		return TRUE; 
@@ -987,7 +983,7 @@ HRESULT CWndMgr::RestoreDeviceObjects()
 	CWndBase::RestoreDeviceObjects();
 	
 #ifdef __YDEBUG
-	m_texture.RestoreDeviceObjects(m_pApp->m_pd3dDevice);
+	m_texture.RestoreDeviceObjects();
 #endif //__YDEBUG
 	
 	return 0;
@@ -1068,12 +1064,7 @@ CWndBase* CWndMgr::CreateApplet(const DWORD dwIdApplet) {
 	}
 
 	pWndBase = (*pAppletFunc->m_pFunc)();
-	if (!pWndBase) return pWndBase;
-
-	if (!pWndBase->Initialize(this, dwIdApplet)) {
-		SAFE_DELETE(pWndBase);
-		return pWndBase;
-	}
+	if (!pWndBase) return nullptr;
 
 	const auto itWndRegInfo = m_mapWndRegInfo.find(dwIdApplet);
 
@@ -1113,7 +1104,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 				{
 					SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
 					g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(true);
-					g_WndMng.m_pWndReSkillWarning->Initialize(NULL);
+					g_WndMng.m_pWndReSkillWarning->Initialize();
 				}
 				return;
 			}
@@ -1121,7 +1112,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 		
 		if( pShortcut->m_dwId == APP_QUIT)
 		{
-			OpenCustomBox( NULL, new CWndQuit );
+			OpenCustomBox( new CWndQuit );
 		}
 		else
 		if( pShortcut->m_dwId == APP_LOGOUT)
@@ -1134,7 +1125,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 			}
 			else
 			{
-				OpenCustomBox( NULL, new CWndLogOut );
+				OpenCustomBox( new CWndLogOut );
 			}
 		}
 		else if(pShortcut->m_dwId == APP_PARTY)
@@ -1253,7 +1244,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 					SAFE_DELETE( g_WndMng.m_pWndEquipBindConfirm )
 						g_WndMng.m_pWndEquipBindConfirm = new CWndEquipBindConfirm( CWndEquipBindConfirm::EQUIP_DOUBLE_CLICK );
 					g_WndMng.m_pWndEquipBindConfirm->SetInformationDoubleClick(pItemBase, dwObjId );
-					g_WndMng.m_pWndEquipBindConfirm->Initialize( NULL );
+					g_WndMng.m_pWndEquipBindConfirm->Initialize();
 				}
 				else
 				{
@@ -1488,7 +1479,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 						g_pPlayer->CMD_SetMagicAttack( pFocusObj->GetId(), 0 );
 					}
 					else
-						((CWndWorld *)g_WndMng.m_pWndWorld)->m_bAutoAttack = TRUE;
+						g_WndMng.m_pWndWorld->m_bAutoAttack = TRUE;
 				}
 				else
 				{
@@ -1512,7 +1503,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 					CString strText;
 					strText.Format(prj.GetText(TID_GAME_PROPOSETO), ((CMover*)pFocus)->GetName());
 					g_WndMng.m_pWndCoupleMessage->SetMessageMod(strText, CWndCoupleMessage::CM_SENDPROPOSE, pFocus);
-					g_WndMng.m_pWndCoupleMessage->Initialize(NULL);
+					g_WndMng.m_pWndCoupleMessage->Initialize();
 				}
 			}
 			else
@@ -1641,7 +1632,7 @@ BOOL CWndMgr::WndMessageBoxToTitle(CString strMessage)
 */
 BOOL CWndMgr::OnEraseBkgnd( C2DRender* p2DRender )
 {
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   FALSE );
+	D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE,   FALSE );
 	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetApplet( APP_WORLD );
 #ifdef __GAME_GRADE_SYSTEM
 	static DWORD dwTimeGameGradeScreen = g_tmCurrent + SEC( 3 );
@@ -1654,7 +1645,7 @@ BOOL CWndMgr::OnEraseBkgnd( C2DRender* p2DRender )
 			pWndLogin->EnableWindow( FALSE );
 		}
 
-		m_pTheme->RenderGameGradeScreen( &g_Neuz.m_2DRender );
+		m_Theme.RenderGameGradeScreen( &g_Neuz.m_2DRender );
 	}
 	else if( pWndWorld == NULL && m_bTitle )
 	{
@@ -1665,20 +1656,20 @@ BOOL CWndMgr::OnEraseBkgnd( C2DRender* p2DRender )
 			pWndLogin->EnableWindow( TRUE );
 		}
 
-			m_pTheme->RenderDesktop( &g_Neuz.m_2DRender );
+		m_Theme.RenderDesktop( &g_Neuz.m_2DRender );
 
 	}
 #else // __GAME_GRADE_SYSTEM
 	// 월드가 없거나 풀화면이 아닐 때
 	if( pWndWorld == NULL && m_bTitle ) //|| pWndWorld->m_nWinSize != WSIZE_MAX )
 	{
-			m_pTheme->RenderDesktop( &g_Neuz.m_2DRender );
+		m_Theme.RenderDesktop( &g_Neuz.m_2DRender );
 	}
 #endif // __GAME_GRADE_SYSTEM
 	else
-		m_pApp->m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 0, 0, 0 ), 1.0f, 0 ) ;
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+		m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 0, 0, 0 ), 1.0f, 0 ) ;
+	D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+	D3DDEVICE->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	return TRUE;
 }
 BOOL CWndMgr::Process()
@@ -1727,7 +1718,7 @@ BOOL CWndMgr::Process()
 				if( m_pWndRevival == NULL )
 				{
 					m_pWndRevival = new CWndRevival;
-					m_pWndRevival->Initialize( this, 0 );
+					m_pWndRevival->Initialize( this );
 				}
 			}
 			else
@@ -1850,7 +1841,7 @@ BOOL CWndMgr::Process()
 						for(int k=0; k<nGuildMemberCount; k++)
 							m_pWndSecretRoomQuick->SetGuildMember(CSecretRoomMng::GetInstance()->m_pSRCont->m_vecSecretRoomTender[nGuildIndex].vecLineUpMember[k]);
 
-						m_pWndSecretRoomQuick->Initialize(NULL);
+						m_pWndSecretRoomQuick->Initialize();
 					}
 				}
 			}
@@ -2052,10 +2043,10 @@ void CWndMgr::SetPlayer( CMover* pMover )
 		// 문제가 없다. CWndWorld는 매시지 처리기이기 때문에 미처 행렬들이
 		// 세팅되기도 전에 우선된 매시지에서 행렬을 사용할 우려가 있다.(PickObject 따위들)
 		//CWndWorld* pWndWorld = (CWndWorld*)GetWndBase( APP_WORLD );
-		//pWndWorld->Projection( D3DDEVICE );
+		//pWndWorld->Projection( );
 		g_Neuz.m_camera.Reset();
-		g_Neuz.m_camera.Process( D3DDEVICE );
-		g_Neuz.m_camera.Transform( D3DDEVICE, g_WorldMng.Get() );
+		g_Neuz.m_camera.Process( );
+		g_Neuz.m_camera.Transform( g_WorldMng.Get() );
 
 		//gmpbigsun: g_pPlayer가 이제 막 세팅됨, 길드하우스 
 		// 클라 LandScape는 실제로 ReadWorld가 실행될때 값이 채워진다. ( 서버로 패킷수신시 업데이트 됨 ), 그전에 보이는것들에 대해 문제가 발생하므로
@@ -2732,7 +2723,7 @@ BOOL CWndMgr::SaveJPG( LPCTSTR lpszName )
 	CSize size = m_p2DRender->m_pFont->GetTextExtent( lpString );
 	g_Neuz.m_2DRender.TextOut(rect.right - size.cx - 20, rect.bottom - 70, lpString);
 
-	m_pApp->m_pd3dDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pDestSurface );
+	m_pd3dDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pDestSurface );
 	BOOL bResult = D3DXSaveSurfaceToFile(lpszName, D3DXIFF_JPG, pDestSurface, NULL, NULL );
 	pDestSurface->Release();
 
@@ -2746,10 +2737,10 @@ BOOL CWndMgr::SaveBitmap( LPCTSTR lpszName )
 	memset( lpData, 255, g_Option.m_nResWidth * g_Option.m_nResHeight * 4 );
 	
 	IDirect3DSurface9* pDestSurface;
-	m_pApp->m_pd3dDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pDestSurface );
+	m_pd3dDevice->GetBackBuffer( 0, 0, D3DBACKBUFFER_TYPE_MONO, &pDestSurface );
 
 	D3DLOCKED_RECT lockedRect;
-	CRect rectIn ( 0, 0, m_pApp->m_d3dsdBackBuffer.Width, m_pApp->m_d3dsdBackBuffer.Height );//cb.bih.biWidth, abs(cb.bih.biHeight) );
+	CRect rectIn ( 0, 0, g_Neuz.m_d3dsdBackBuffer.Width, g_Neuz.m_d3dsdBackBuffer.Height );//cb.bih.biWidth, abs(cb.bih.biHeight) );
 	HRESULT hr = pDestSurface->LockRect( &lockedRect, NULL, 0 ) ;
 	if( hr == D3D_OK )// Lock
 	{

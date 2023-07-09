@@ -6,12 +6,12 @@ public:
 	BOOL OnDropIcon(LPSHORTCUT pShortcut, CPoint point = 0) override;
 };
 
-class CWndConfirmBuy : public CWndNeuz
+class CWndConfirmBuy final : public CWndNeuz
 {
 public:
 	[[nodiscard]] static std::uint32_t GetBuyLimitForItem(const ItemProp & itemProp);
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnDraw(C2DRender * p2DRender) override;
 
@@ -32,17 +32,17 @@ public:
 	int				   m_nBuyType    = 0;
 };
 
-class CWndWarning : public CWndNeuz
+class CWndWarning final : public CWndNeuz
 {
 public:
 	CMover * m_pMover = nullptr;
 	CItemElem * m_pItemElem = nullptr;
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 };
 
-class CWndConfirmSell : public CWndNeuz 
+class CWndConfirmSell final : public CWndNeuz 
 { 
 public: 
 	CMover* m_pMover = nullptr;
@@ -51,14 +51,14 @@ public:
 	CWndStatic* m_pStatic = nullptr;
 	CWndStatic* m_pStaticGold = nullptr;
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual BOOL Process( void );
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 }; 
 
-class CWndShop : public CWndNeuz 
+class CWndShop final : public CWndNeuz 
 { 
 public:
 	CWndConfirmSell * m_pWndConfirmSell = nullptr;
@@ -71,7 +71,7 @@ public:
 	CWndItemCtrlVendor m_wndItemCtrl[ MAX_VENDOR_INVENTORY_TAB ];
 	~CWndShop() override;
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -85,7 +85,7 @@ private:
 class CWndBeautyShopConfirm;
 class CWndUseCouponConfirm;
 
-class CWndBeautyShop : public CWndNeuz 
+class CWndBeautyShop final : public CWndNeuz 
 { 
 public:
 	CTexture         m_Texture;
@@ -125,7 +125,7 @@ public:
 	virtual HRESULT DeleteDeviceObjects();
 	
 	virtual void OnMouseWndSurface( CPoint point );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -143,7 +143,7 @@ public:
 }; 
 
 
-class CWndUseCouponConfirm : public CWndNeuz 
+class CWndUseCouponConfirm final : public CWndNeuz 
 {	
 public:
 	BOOL  m_bUseCoupon;
@@ -155,7 +155,7 @@ public:
 	virtual ~CWndUseCouponConfirm(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -167,7 +167,7 @@ public:
 	void SetInfo(DWORD targetWndId, int flag);
 }; 
 
-class CWndBeautyShopConfirm : public CWndNeuz 
+class CWndBeautyShopConfirm final : public CWndNeuz 
 {
 public:
 	int m_ParentId;
@@ -177,7 +177,7 @@ public:
 	virtual ~CWndBeautyShopConfirm(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -187,7 +187,7 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-class CWndFaceShop : public CWndNeuz
+class CWndFaceShop final : public CWndNeuz
 {
 public:
 	static constexpr int MaxFriendlyFace = MAX_DEFAULT_HEAD;
@@ -226,7 +226,7 @@ public:
 	CWndFaceShop(); 
 	~CWndFaceShop();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

@@ -42,7 +42,7 @@ extern float s_fFogEnd;
 
 
 #ifndef	__WORLDSERVER
-HRESULT		CreateSkinningVS( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
+HRESULT		CreateSkinningVS( LPCTSTR szFileName )
 {
 	HRESULT hr;
     LPD3DXBUFFER pCode;
@@ -90,7 +90,7 @@ HRESULT		CreateSkinningVS( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
 	return S_OK;
 }
 
-HRESULT		CreateShadowVS( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
+HRESULT		CreateShadowVS( LPCTSTR szFileName )
 {
 	HRESULT hr;
     LPD3DXBUFFER pCode;
@@ -137,7 +137,7 @@ HRESULT		CreateShadowVS( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
 }
 
 
-void	DeleteVertexShader( LPDIRECT3DDEVICE9 pd3dDevice )
+void	DeleteVertexShader( )
 {
     if( g_pSkiningVS )
         SAFE_RELEASE( g_pSkiningVS );
@@ -151,7 +151,7 @@ void	DeleteVertexShader( LPDIRECT3DDEVICE9 pd3dDevice )
 
 LPDIRECT3DVERTEXBUFFER9		g_pd3d_ShadowVB;
 
-HRESULT		CreateShadowMask( LPDIRECT3DDEVICE9 pd3dDevice, int nWidth, int nHeight )
+HRESULT		CreateShadowMask( int nWidth, int nHeight )
 {
 	HRESULT	hr;
 
@@ -178,7 +178,7 @@ HRESULT		CreateShadowMask( LPDIRECT3DDEVICE9 pd3dDevice, int nWidth, int nHeight
 	return S_OK;
 }
 
-void	RenderShadowMask( LPDIRECT3DDEVICE9 pd3dDevice )
+void	RenderShadowMask( )
 {
 	pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 
@@ -288,7 +288,7 @@ int CObject3DMng::DeleteObject3D( CObject3D *pObject3D )
 //
 //
 //
-CObject3D		*CObject3DMng :: LoadObject3D( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
+CObject3D		*CObject3DMng :: LoadObject3D( LPCTSTR szFileName )
 {
 	char sFile[MAX_PATH]	= { 0,};
 	strcpy( sFile, szFileName );
@@ -301,7 +301,7 @@ CObject3D		*CObject3DMng :: LoadObject3D( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR 
 		return i->second;
 	}
 	CObject3D* pObject3D	= new CObject3D;
-	pObject3D->InitDeviceObjects( pd3dDevice );
+	pObject3D->InitDeviceObjects( );
 	if( pObject3D->LoadObject( szFileName ) == FAIL )
 	{
 		SAFE_DELETE( pObject3D );
@@ -642,7 +642,7 @@ HRESULT	CObject3D :: CreateDeviceBuffer( GMOBJECT *pObject, LPDIRECT3DVERTEXBUFF
 			{
 				LPCTSTR szError = Error( "1 %s Object3D 버텍스 버퍼 생성 실패(%s) : m_nMaxVB=%d, nVertexSize=%d, dwFVF=%d, dwUsage=%d, pool=%d %08x", 
 																		  m_szFileName, DXGetErrorString9(hr), pObject->m_nMaxVB, 
-																		  nVertexSize, dwFVF, dwUsage, (int)pool, (int)m_pd3dDevice );
+																		  nVertexSize, dwFVF, dwUsage, (int)pool, (void *) g_Neuz.m_pd3dDevice );
 				//ADDERRORMSG( szError );
 				// Object3D관리자를 통해 메쉬를 로딩한 후 그 포인터를 받아온다.
 				if( FAILED( hr = m_pd3dDevice->TestCooperativeLevel() ) )		// 디바이스가 허접하면 에러남김.
@@ -677,7 +677,7 @@ HRESULT	CObject3D :: CreateDeviceBuffer( GMOBJECT *pObject, LPDIRECT3DVERTEXBUFF
 			{
 				LPCTSTR szError = Error( "2 %s Object3D 버텍스 버퍼 생성 실패(%s) : m_nMaxVB=%d, nVertexSize=%d, dwFVF=%d, dwUsage=%d, pool=%d %08x", 
 																		  m_szFileName, DXGetErrorString9(hr), pObject->m_nMaxVB, 
-																		  nVertexSize, dwFVF, dwUsage, (int)pool, (int)m_pd3dDevice );
+																		  nVertexSize, dwFVF, dwUsage, (int)pool, (void *) g_Neuz.m_pd3dDevice );
 				//ADDERRORMSG( szError );
 				if( FAILED( hr = m_pd3dDevice->TestCooperativeLevel() ) )		// 디바이스가 허접하면 에러남김.
 				{
@@ -1216,7 +1216,7 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 			strcpy( pObject->m_MaterialAry[i].strBitMapFileName, szBitmap );
 		#if	!defined(__WORLDSERVER)
 			if( !IsEmpty(szBitmap) )
-				mMaterialAry[i] = g_TextureMng.AddMaterial( m_pd3dDevice, &mMaterial, szBitmap );
+				mMaterialAry[i] = g_TextureMng.AddMaterial( &mMaterial, szBitmap );
 		#endif
 		}
 	}
@@ -1277,7 +1277,7 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 							
 						if( IsEmpty(szTexture) == FALSE )
 						{
-							 CreateNormalMap( pObject->m_Type, m_pd3dDevice, &(pObject->m_pNormalTexture[i]), szTexture );
+							 CreateNormalMap( pObject->m_Type, &(pObject->m_pNormalTexture[i]), szTexture );
 						}
 					}
 
@@ -1300,7 +1300,7 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 						{
 					#ifdef _DEBUG
 							if( (_access( MakePath( DIR_MODELTEX, szTexture ), 0 )) != -1 )
-								LoadTextureFromRes( m_pd3dDevice, MakePath( DIR_MODELTEX, szTexture ), &(pObject->m_pNoSpecTexture[i] ) );
+								LoadTextureFromRes( MakePath( DIR_MODELTEX, szTexture ), &(pObject->m_pNoSpecTexture[i] ) );
 					#else //_DEBUG
 							char szSerchPath[MAX_PATH];
 							GetCurrentDirectory( sizeof( szSerchPath ), szSerchPath );
@@ -1314,7 +1314,7 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 							
 							if( CResFile::m_mapResource.Lookup( szFileName, (void*&) lpRes ) )
 							{								
-								LoadTextureFromRes( m_pd3dDevice, MakePath( DIR_MODELTEX, szTexture ), &(pObject->m_pNoSpecTexture[i] ) );
+								LoadTextureFromRes( MakePath( DIR_MODELTEX, szTexture ), &(pObject->m_pNoSpecTexture[i] ) );
 							}							
 					#endif //_DEBUG
 						}
@@ -1391,7 +1391,7 @@ void	CObject3D::ChangeTexture( LPCTSTR szSrc, LPCTSTR szDest )
 				{
 					MATERIAL	*pMtrl;
 					D3DMATERIAL9	mMtrl;
-					pMtrl = g_TextureMng.AddMaterial( m_pd3dDevice, &mMtrl, szDest );		// szDest로 읽어서
+					pMtrl = g_TextureMng.AddMaterial( &mMtrl, szDest );		// szDest로 읽어서
 					pObject->m_pMtrlBlkTexture[j] = pMtrl->m_pTexture;	// 그놈으로 대체시키고
 					strcpy( pObject->m_MaterialAry[ nID ].strBitMapFileName, szDest );	// 파일명 바꿔놓는다.
 				}
@@ -2271,7 +2271,7 @@ void	CObject3D::SetTexture( LPCTSTR szTexture )
 	MATERIAL	*pMtrl;
 	D3DMATERIAL9	mMtrl;
 
-	pMtrl = g_TextureMng.AddMaterial( m_pd3dDevice, &mMtrl, szTexture );
+	pMtrl = g_TextureMng.AddMaterial( &mMtrl, szTexture );
 	m_Group[0].m_pObject[0].m_pMtrlBlkTexture[0] = pMtrl->m_pTexture;
 #endif
 }
@@ -2309,7 +2309,7 @@ void	CObject3D::LoadTextureEx( int nNumEx, GMOBJECT *pObj, MATERIAL *pmMaterial[
 		lstrcat( szTexture, szFileExt );
 
 		if( !IsEmpty(szTexture) )
-			pmMaterial[i] = g_TextureMng.AddMaterial( m_pd3dDevice, &mMaterial, szTexture );
+			pmMaterial[i] = g_TextureMng.AddMaterial( &mMaterial, szTexture );
 	}
 #endif // !__WORLDSERVER
 }
@@ -2523,7 +2523,6 @@ HRESULT		CObject3D::SetVertexBuffer( GMOBJECT *pObj )
 //
 HRESULT CObject3D::SendVertexBuffer( GMOBJECT *pObj, LPDIRECT3DVERTEXBUFFER9 pd3d_VB )
 {
-	LPDIRECT3DDEVICE9 pd3dDevice = m_pd3dDevice;
 	HRESULT	hr;
 	VOID*	pVertices;
 	int		nMax;
@@ -2553,7 +2552,6 @@ HRESULT CObject3D::SendVertexBuffer( GMOBJECT *pObj, LPDIRECT3DVERTEXBUFFER9 pd3
 //
 HRESULT CObject3D::SendIndexBuffer( GMOBJECT *pObj )
 {
-	LPDIRECT3DDEVICE9 pd3dDevice = m_pd3dDevice;
 	VOID*	pVertices;
 	int		nMax;
 
@@ -2831,7 +2829,7 @@ void CObject3D::ResetState( MATERIAL_BLOCK* pBlock,  int nEffect, DWORD dwBlendF
 //	스킨형태의 오브젝트 렌더러
 //  단독으로는 동작하지 못한다.
 //
-void	CObject3D::RenderSkin( LPDIRECT3DDEVICE9 pd3dDevice, LPDIRECT3DVERTEXBUFFER9 pd3d_VB, GMOBJECT *pObj, const D3DXMATRIX *mWorld, int nEffect, DWORD dwBlendFactor )
+void	CObject3D::RenderSkin( LPDIRECT3DVERTEXBUFFER9 pd3d_VB, GMOBJECT *pObj, const D3DXMATRIX *mWorld, int nEffect, DWORD dwBlendFactor )
 {
 	//---- 그대! 스킨오브젝트만 화면에 안나오는가! 그러면 CModelObject::Render()의 설명을 읽어보고 확인해보아라!
 	if( g_bUsableVS == FALSE )		// 버텍스쉐이더 1.1을 지원못하면
@@ -3145,7 +3143,7 @@ void	CObject3D::RenderSkin( LPDIRECT3DDEVICE9 pd3dDevice, LPDIRECT3DVERTEXBUFFER
 // mUpdate : 각 오브젝트가 Animate되고난 후, 최종 매트릭스의 리스트.
 // mWorld : 기준 매트릭스.
 //
-void	CObject3D::RenderNormal( LPDIRECT3DDEVICE9 pd3dDevice, GMOBJECT *pObj, const D3DXMATRIX *mWorld, int nEffect, int nBlendFactor )
+void	CObject3D::RenderNormal( GMOBJECT *pObj, const D3DXMATRIX *mWorld, int nEffect, int nBlendFactor )
 {
 	MATERIAL_BLOCK	*pBlock;
 	int		nMaxMtrl, nMaxVB;
@@ -3378,7 +3376,7 @@ void	CObject3D::RenderNormal( LPDIRECT3DDEVICE9 pd3dDevice, GMOBJECT *pObj, cons
 
 #if 0
 // 충돌메시의 렌더.
-void	CObject3D::RenderCollObject( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld )
+void	CObject3D::RenderCollObject( const D3DXMATRIX *mWorld )
 {
 	GMOBJECT *pObj = &m_CollObject;
 	int nEffect = 0;
@@ -3563,7 +3561,7 @@ void	CObject3D::SetShader( const D3DXMATRIX *mWorld )
 //
 //
 //
-void	CObject3D::Render( LPDIRECT3DDEVICE9 pd3dDevice, LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB, FLOAT fFrameCurrent, int nNextFrame, const D3DXMATRIX *mWorld, int nEffect, DWORD dwBlendFactor )
+void	CObject3D::Render( LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB, FLOAT fFrameCurrent, int nNextFrame, const D3DXMATRIX *mWorld, int nEffect, DWORD dwBlendFactor )
 {
 	int			i;
 	int			nMax = m_pGroup->m_nMaxObject;
@@ -3599,11 +3597,11 @@ void	CObject3D::Render( LPDIRECT3DDEVICE9 pd3dDevice, LPDIRECT3DVERTEXBUFFER9 *p
 			if( ppd3d_VB == NULL )
 				Error( "CObject3D::Render : %s 스킨오브젝트인데 ppd3d_VB가 없다.", m_szFileName );
 
-			RenderSkin( pd3dDevice, ppd3d_VB[i], pObj, mWorld, nEffect, dwBlendFactor );
+			RenderSkin( ppd3d_VB[i], pObj, mWorld, nEffect, dwBlendFactor );
 
 #ifdef __BS_EFFECT_LUA
 			if( m_dwEffect_EX & XE_MTE )
-				RenderSkin( pd3dDevice, ppd3d_VB[i], pObj, mWorld, XE_MTE, dwBlendFactor );
+				RenderSkin( ppd3d_VB[i], pObj, mWorld, XE_MTE, dwBlendFactor );
 #endif //__BS_EFFECT_LUA
 
 		} else
@@ -3611,7 +3609,7 @@ void	CObject3D::Render( LPDIRECT3DDEVICE9 pd3dDevice, LPDIRECT3DVERTEXBUFFER9 *p
 			m1 = m_pGroup->_mUpdate[i] * *mWorld;
 			if( pObj->m_bLight && s_bNight == FALSE )	// 라이트 오브젝트는 낮엔 렌더링 되지 않음.
 				continue;
-			RenderNormal( pd3dDevice, pObj, &m1, nEffect, dwBlendFactor );
+			RenderNormal( pObj, &m1, nEffect, dwBlendFactor );
 		}
 	}
 	if( m_nNoTexture == 0 )
@@ -3893,7 +3891,7 @@ HRESULT CObject3D::ExtractBuffers( int nType, LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB,
 	return S_OK;
 }
 
-LPDIRECT3DTEXTURE9 CObject3D::CreateNormalMap( int nType, LPDIRECT3DDEVICE9 m_pd3dDevice, LPDIRECT3DTEXTURE9* pTexture, LPCTSTR strFileName, LPCTSTR szPath )
+LPDIRECT3DTEXTURE9 CObject3D::CreateNormalMap( int nType, LPDIRECT3DTEXTURE9* pTexture, LPCTSTR strFileName, LPCTSTR szPath )
 {
 	HRESULT hr;
 	
@@ -3958,7 +3956,7 @@ LPDIRECT3DTEXTURE9 CObject3D::CreateNormalMap( int nType, LPDIRECT3DDEVICE9 m_pd
 
 #ifndef __YENV_WITHOUT_BUMP
 	{
-		LoadTextureFromRes( m_pd3dDevice, MakePath( DIR_MODELTEX, strFileName ), pTexture );
+		LoadTextureFromRes( MakePath( DIR_MODELTEX, strFileName ), pTexture );
 	}
 #endif //__YENV_WITHOUT_BUMP	
 

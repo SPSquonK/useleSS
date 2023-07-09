@@ -4,7 +4,7 @@
 #include <optional>
 #include <string_view>
 
-class CWndEquipmentSex : public CWndNeuz {
+class CWndEquipmentSex final : public CWndNeuz {
 public:
 	enum class Mode {
 		None, Vanilla, Detected, Unattributed
@@ -42,7 +42,7 @@ private:
 	void AddQuantity(UINT widgetId, size_t size);
 
 public:
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
 };

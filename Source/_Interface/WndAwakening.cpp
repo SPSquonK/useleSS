@@ -24,7 +24,7 @@ void CWndAwakening::OnInitialUpdate()
 	CWndButton* pButton = GetDlgItem<CWndButton>(WIDC_BUTTON1);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 
@@ -37,7 +37,7 @@ void CWndAwakening::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndAwakening::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndAwakening::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_AWAKENING, pWndParent, 0, CPoint( 0, 0 ) );
@@ -97,7 +97,7 @@ CWndSelectAwakeCase::CWndSelectAwakeCase(BYTE byObjID, DWORD dwSerialNum, __int6
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndSelectAwakeCase::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSelectAwakeCase::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_AWAKE_SELECTCASE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -111,10 +111,10 @@ void CWndSelectAwakeCase::OnInitialUpdate()
 
 	const ItemProp * pProp = prj.GetItemProp( m_dwItemIndex );
 	if (pProp) {
-		m_pTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, pProp->szIcon), 0xffff00ff);
+		m_pTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_ITEM, pProp->szIcon), 0xffff00ff);
 	}
 	
-	m_pTexGuage = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "Wndguage.tga"   ), 0xffff00ff );
+	m_pTexGuage = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "Wndguage.tga"   ), 0xffff00ff );
 	if (!m_pTexGuage) {
 		Error("CWndSelectAwakeCase::OnInitialUpdate m_pTexGuage(Wndguage.tga) is NULL");
 	}
@@ -184,7 +184,7 @@ void CWndSelectAwakeCase::OnDraw( C2DRender* p2DRender )
 	rect.right = LONG(( rect.left + (AWAKE_KEEP_TIME - m_dwDeltaTime) / 100 ) * 0.6f) ;		//귀찮으니 걍 바의 길이를 최대초로...
 	rect.bottom = rect.top + 20;
 
-	m_pTheme->RenderGauge(p2DRender, &rect, 0xffffffff, m_pVertexBufferGauge, m_pTexGuage);
+	m_Theme.RenderGauge(p2DRender, &rect, 0xffffffff, m_pVertexBufferGauge, m_pTexGuage);
 
 	// draw icon
 	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_STATIC1 );
@@ -245,7 +245,7 @@ HRESULT CWndSelectAwakeCase::RestoreDeviceObjects()
 {
 	CWndBase::RestoreDeviceObjects();
 	if( m_pVertexBufferGauge == NULL )
-		m_pApp->m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, 
+		m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, 
 												 D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, 
 												 D3DFVF_TEXTUREVERTEX2, 
 												 D3DPOOL_DEFAULT, 

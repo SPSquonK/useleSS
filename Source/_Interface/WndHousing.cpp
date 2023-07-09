@@ -298,7 +298,7 @@ void CWndHousing::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndHousing::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndHousing::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_HOUSING, pWndParent, 0, CPoint( 0, 0 ) );
@@ -307,7 +307,7 @@ BOOL CWndHousing::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
   직접 윈도를 열때 사용 
 BOOL CWndHousing::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+	CRect rectWindow = g_WndMng.GetWindowRect(); 
 	CRect rect( 50 ,50, 300, 300 ); 
 	SetTitle( _T( "title" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
@@ -553,7 +553,7 @@ CWndGuildHousing::~CWndGuildHousing( )
 	SAFE_DELETE( m_pGHShowOne );
 }
 
-BOOL CWndGuildHousing::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildHousing::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GH_FURNITURE_STORAGE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -634,8 +634,8 @@ void CWndGuildHousing::OnInitialUpdate()
 	pStatic = (CWndStatic *)GetDlgItem( WIDC_STATIC5 );
 	pStatic->SetVisible( FALSE );
 
-	m_texUp.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvUp.bmp" ), 0xffff00ff );
-	m_texDown.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvDn.bmp" ), 0xffff00ff );
+	m_texUp.LoadTexture( MakePath( DIR_THEME, "LvUp.bmp" ), 0xffff00ff );
+	m_texDown.LoadTexture( MakePath( DIR_THEME, "LvDn.bmp" ), 0xffff00ff );
 	
 } 
 
@@ -704,7 +704,7 @@ void CWndGuildHousing::OnDraw( C2DRender* p2DRender )
 		//	if( IsSection( GS_TELEPORTER ) )
 		//		p2DRender->TextOut( pCustom->rect.left + 55, pCustom->rect.top + 20 + ( nIndex )*nListFontHeight, "1Lv", 0xffcc11cc );
 
-			CTexture* pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
+			CTexture* pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
 			if( pTexture )
 				p2DRender->RenderTexture( pt, pTexture );
 		
@@ -901,7 +901,7 @@ void CWndGuildHousing::UpdateIRButton( )
 				// 해체하는 이미지 ( 설치가 되어있으므로 )
 				
 				//sunTODO: 확정 이미지 나오면 교체요망 
-				pBtn->SetTexture( D3DDEVICE, MakePath( DIR_THEME, "Buttlockerinstall.BMP" ), TRUE );
+				pBtn->SetTexture( MakePath( DIR_THEME, "Buttlockerinstall.BMP" ), TRUE );
 				pBtn->SetToolTip( GETTEXT(TID_TOOLTIP_GUILDHOUSE_BUTT_DISMANTLE) );		//가구가 해체됩니다.
 			}
 			else									
@@ -909,7 +909,7 @@ void CWndGuildHousing::UpdateIRButton( )
 				// 설치하는 이미지 ( 해체가 되어있으므로 )
 				
 				//sunTODO: 확정 이미지 나오면 교체요망
-				pBtn->SetTexture( D3DDEVICE, MakePath( DIR_THEME, "Buttlockerdismantle.BMP" ), TRUE );
+				pBtn->SetTexture( MakePath( DIR_THEME, "Buttlockerdismantle.BMP" ), TRUE );
 				pBtn->SetToolTip( GETTEXT(TID_TOOLTIP_GUILDHOUSE_BUTT_INSTALL) );		//가구가 설치됩니다.
 			}
 		}
@@ -1425,7 +1425,7 @@ CWndGHouseShowOneUnit::~CWndGHouseShowOneUnit( )
 {
 }
 
-BOOL CWndGHouseShowOneUnit::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGHouseShowOneUnit::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GH_SHOWONE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1436,7 +1436,7 @@ void CWndGHouseShowOneUnit::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate(); 
 
 	// 윈도를 중앙, 탑으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point( (int)( rectRoot.right * 0.5f - rectWindow.Width() * 0.5f ), 0 );
 	Move( point );
@@ -1454,7 +1454,7 @@ void CWndGHouseShowOneUnit::OnDraw( C2DRender* p2DRender )
  	if( !pProp )
 		return;
  
- 	CTexture* pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
+ 	CTexture* pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
  	if( pTexture )
  		p2DRender->RenderTexture( pt, pTexture );
  
@@ -1518,7 +1518,7 @@ CWndGuildHouseBid::~CWndGuildHouseBid( )
 	_cBidDatas.clear();
 }
 
-BOOL CWndGuildHouseBid::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildHouseBid::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GH_BID, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1540,7 +1540,7 @@ void CWndGuildHouseBid::OnInitialUpdate()
 	}
 
 	// 윈도를 중앙, 탑으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point( (int)( rectRoot.right * 0.5f - rectWindow.Width() * 0.5f ), 0 );
 	Move( point );

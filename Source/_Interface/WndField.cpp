@@ -61,7 +61,7 @@ extern DWORD FULLSCREEN_HEIGHT;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void ResetRenderState(IDirect3DDevice9 * const pd3dDevice) {
+static void ResetRenderState() {
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
@@ -155,7 +155,7 @@ void CWndDropItem::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndDropItem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndDropItem::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_DROP_ITEM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -212,7 +212,7 @@ void CWndDropConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndDropConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndDropConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_DROP_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -283,7 +283,7 @@ void CWndRandomScrollConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndRandomScrollConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRandomScrollConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_RANDOMSCROLL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -292,7 +292,7 @@ BOOL CWndRandomScrollConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*
   ���� ������ ���� ���? 
 BOOL CWndRandomScrollConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+	CRect rectWindow = g_WndMng.GetWindowRect(); 
 	CRect rect( 50 ,50, 300, 300 ); 
 	SetTitle( _T( "title" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
@@ -334,7 +334,7 @@ void CWndQuestItemWarning::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndQuestItemWarning::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndQuestItemWarning::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_QUEITMWARNING, pWndParent, 0, CPoint( 0, 0 ) );
@@ -343,7 +343,7 @@ BOOL CWndQuestItemWarning::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 ���� ������ ���� ���? 
 BOOL CWndQuestItemWarning::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+CRect rectWindow = g_WndMng.GetWindowRect(); 
 CRect rect( 50 ,50, 300, 300 ); 
 SetTitle( _T( "title" ) ); 
 return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
@@ -359,7 +359,7 @@ BOOL CWndQuestItemWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 			g_WndMng.m_pWndDropConfirm = new CWndDropConfirm;
 			g_WndMng.m_pWndDropConfirm->m_pItemElem = m_pItemElem;
 			g_WndMng.m_pWndDropConfirm->m_vPos = m_vPos;
-			g_WndMng.m_pWndDropConfirm->Initialize( NULL, APP_DROP_CONFIRM );
+			g_WndMng.m_pWndDropConfirm->Initialize();
 		}
 		else
 		{
@@ -367,7 +367,7 @@ BOOL CWndQuestItemWarning::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 			g_WndMng.m_pWndDropItem = new CWndDropItem;
 			g_WndMng.m_pWndDropItem->m_pItemElem = m_pItemElem;
 			g_WndMng.m_pWndDropItem->m_vPos = m_vPos;
-			g_WndMng.m_pWndDropItem->Initialize( NULL, APP_DROP_ITEM );
+			g_WndMng.m_pWndDropItem->Initialize();
 		}
 		Destroy();
 	}
@@ -400,7 +400,7 @@ void CWndGold::OnMouseMove(UINT nFlags, CPoint point)
 }
 void CWndGold::OnInitialUpdate()
 {
-	m_texture.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_ITEM, "itm_GolGolSeed.dds" ), 0xffff00ff );
+	m_texture.LoadTexture( MakePath( DIR_ITEM, "itm_GolGolSeed.dds" ), 0xffff00ff );
 }
 
 //////////////////////////////////////////////
@@ -414,11 +414,11 @@ CWndQueryEquip::CWndQueryEquip(CMover & mover, std::unique_ptr<std::array<CItemE
 
 	const int nMover = (mover.GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
 	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>(
-			g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE
+			OT_MOVER, nMover, TRUE
 		);
 	m_pModel->LoadMotionId(MTI_STAND);
 	CMover::UpdateParts(mover.GetSex(), mover.m_skin, mover.m_aEquipInfo, m_pModel.get(), NULL);
-	m_pModel->InitDeviceObjects(g_Neuz.GetDevice());
+	m_pModel->InitDeviceObjects();
 
 	// Set Equip Info add
 	m_aEquipInfoAdd = std::move(aEquipInfoAdd);
@@ -472,8 +472,6 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 	if( IsInvalidObj(pMover) )
 		return ;
 	
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-
 	// ����Ʈ ���� 
 	D3DVIEWPORT9 viewport;
 
@@ -529,7 +527,7 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 	if( m_pModel == NULL )
 		return;
 
-	ResetRenderState(pd3dDevice);
+	ResetRenderState();
 
 	pd3dDevice->SetRenderState( D3DRS_AMBIENT,  D3DCOLOR_ARGB( 255, 255,255,255) );
 	
@@ -671,7 +669,7 @@ void CWndQueryEquip::OnDraw(C2DRender* p2DRender)
 		m_pModel->GetObject3D(PARTS_HAIR)->m_fAmbient[2] = pMover->m_fHairColorB;
 			
 		m_pModel->SetGroup( 0 );	
-		m_pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+		m_pModel->Render( &matWorld );
 	}
 
 	return;
@@ -714,7 +712,7 @@ void CWndQueryEquip::OnInitialUpdate()
 	MoveParentCenter();
 }
 
-BOOL CWndQueryEquip::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndQueryEquip::Initialize(CWndBase * pWndParent) {
 	m_InvenRect.fill(CRect());
 	return CWndNeuz::InitDialog(APP_QUERYEQUIP, pWndParent, 0, CPoint(792, 130));
 }
@@ -907,8 +905,6 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 	if( !pMover )
 		return;
 
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-
 	// ����Ʈ ���� 
 	D3DVIEWPORT9 viewport;
 
@@ -1014,7 +1010,7 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 	if( g_pPlayer == NULL || m_pModel == NULL )
 		return;
 
-	ResetRenderState(pd3dDevice);
+	ResetRenderState();
 
 	pd3dDevice->SetRenderState( D3DRS_AMBIENT,  D3DCOLOR_ARGB( 255, 255,255,255) );
 	
@@ -1162,7 +1158,7 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 			}
 		}
 		
-		m_pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+		m_pModel->Render( &matWorld );
 	}
 
 	return;
@@ -1171,10 +1167,10 @@ void CWndInventory::OnDraw(C2DRender* p2DRender)
 void CWndInventory::UpDateModel()
 {
 	const int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( OT_MOVER, nMover, TRUE );
 	m_pModel->LoadMotionId(MTI_STAND);
 	UpdateParts();
-	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );	
+	m_pModel->InitDeviceObjects();	
 }
 
 
@@ -1208,16 +1204,16 @@ void CWndInventory::OnInitialUpdate()
 	m_bIsUpgradeMode = FALSE;
 	m_dwEnchantWaitTime = 0xffffffff;
 
-	m_TexRemoveItem = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndInventoryGarbage.dds" ), 0xffff00ff );
+	m_TexRemoveItem = m_textureMng.AddTexture( MakePath( DIR_THEME, "WndInventoryGarbage.dds" ), 0xffff00ff );
 	
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point( rectRoot.right - rectWindow.Width(), 112 + 48 );
 	Move( point );
 }
-BOOL CWndInventory::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
+BOOL CWndInventory::Initialize(CWndBase * pWndParent) {
 	m_InvenRect.fill(CRect());
-	return CWndNeuz::InitDialog(dwWndId, pWndParent, 0, CPoint(792, 130));
+	return CWndNeuz::InitDialog(APP_INVENTORY, pWndParent, 0, CPoint(792, 130));
 }
 
 BOOL CWndInventory::Process()
@@ -1349,7 +1345,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							m_pWndConfirmBuy = new CWndConfirmBuy;
 							m_pWndConfirmBuy->m_pItemElem = (CItemElem*)lpShortcut->m_dwData;
 							m_pWndConfirmBuy->m_nBuyType = 1;
-							m_pWndConfirmBuy->Initialize( this, APP_CONFIRM_BUY_ );
+							m_pWndConfirmBuy->Initialize( this );
 							bForbid = FALSE;
 						}
 						else
@@ -1362,7 +1358,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							SAFE_DELETE( m_pWndConfirmBuy );
 							m_pWndConfirmBuy = new CWndConfirmBuy;
 							m_pWndConfirmBuy->m_pItemElem = (CItemElem*)lpShortcut->m_dwData;
-							m_pWndConfirmBuy->Initialize( this, APP_CONFIRM_BUY_ );
+							m_pWndConfirmBuy->Initialize( this );
 							bForbid = FALSE;
 						}
 						else
@@ -1381,7 +1377,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				{
 					SAFE_DELETE( pWndVendor->m_pWndVendorBuy );
 					pWndVendor->m_pWndVendorBuy		= new CWndVendorBuy( (CItemElem *)lpShortcut->m_dwData, lpShortcut->m_dwIndex/*nItem*/ );
-					pWndVendor->m_pWndVendorBuy->Initialize( pWndVendor, APP_VENDOR_BUY );
+					pWndVendor->m_pWndVendorBuy->Initialize( pWndVendor );
 				}
 				bForbid		= FALSE;
 			}
@@ -1734,7 +1730,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						m_pUpgradeMaterialItem = pFocusItem;	
 
 						if((g_pPlayer->IsMode( TRANSPARENT_MODE ) ) == 0)
-							m_pSfxUpgrade = CreateSfx( g_Neuz.m_pd3dDevice, XI_INT_INCHANT, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1 );
+							m_pSfxUpgrade = CreateSfx( XI_INT_INCHANT, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1 );
 					}
 					
 					if( pProp->dwItemKind1 == IK1_RIDE )	// �����? �������� Ż���ΰ�.
@@ -1756,12 +1752,10 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					
 					if( pFocusItem->m_dwItemId == II_SYS_SYS_SCR_SOKCHANG )
 					{
-						if(g_WndMng.m_pWndChangeAttribute)
-							SAFE_DELETE(g_WndMng.m_pWndChangeAttribute);
-
+						SAFE_DELETE(g_WndMng.m_pWndChangeAttribute);
 						g_WndMng.m_pWndChangeAttribute = new CWndChangeAttribute;
 						g_WndMng.m_pWndChangeAttribute->SetChangeItem(pFocusItem);
-						g_WndMng.m_pWndChangeAttribute->Initialize(&g_WndMng, APP_COMMITEM_DIALOG);
+						g_WndMng.m_pWndChangeAttribute->Initialize();
 						bAble = FALSE;
 					}
 
@@ -1771,7 +1765,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						{
 							SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 							g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-							g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+							g_WndMng.m_pWndCommItemDlg->Initialize();
 							g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_SKILLINIT, pFocusItem->m_dwObjId, dwObjId );
 						}
 						else
@@ -1796,7 +1790,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						SAFE_DELETE( g_WndMng.m_pWndRestateConfirm );
 						g_WndMng.m_pWndRestateConfirm = new CWndRestateConfirm(pFocusItem->m_dwItemId);
 						g_WndMng.m_pWndRestateConfirm->SetInformation(MAKELONG( ITYPE_ITEM, pFocusItem->m_dwObjId ), dwObjId, pFocusItem->GetProp()->dwParts);
-						g_WndMng.m_pWndRestateConfirm->Initialize(NULL);
+						g_WndMng.m_pWndRestateConfirm->Initialize();
 						bAble = FALSE;
 					}
 
@@ -1812,7 +1806,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 								{
 									SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 									g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-									g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+									g_WndMng.m_pWndCommItemDlg->Initialize();
 									g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_DEPEN_USE, pFocusItem->m_dwObjId, dwObjId );
 								}
 								bAble = FALSE;
@@ -1823,7 +1817,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 //							{
 //								SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 //								g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-//								g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+//								g_WndMng.m_pWndCommItemDlg->Initialize();
 //								g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_SKILLINIT, pFocusItem->m_dwObjId, dwObjId );
 //								bAble = FALSE;
 //							}
@@ -1834,7 +1828,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							} else {
 								SAFE_DELETE(g_WndMng.m_pWndCommItemDlg);
 								g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-								g_WndMng.m_pWndCommItemDlg->Initialize(&g_WndMng, APP_COMMITEM_DIALOG);
+								g_WndMng.m_pWndCommItemDlg->Initialize();
 								g_WndMng.m_pWndCommItemDlg->SetItem(TID_GAME_WARNINGCCLS, pProp->dwID, pFocusItem->m_dwObjId);
 								bAble = FALSE;
 							}
@@ -1895,7 +1889,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						SAFE_DELETE(g_WndMng.m_pWndEquipBindConfirm)
 						g_WndMng.m_pWndEquipBindConfirm = new CWndEquipBindConfirm(CWndEquipBindConfirm::EQUIP_DOUBLE_CLICK);
 						g_WndMng.m_pWndEquipBindConfirm->SetInformationDoubleClick(pFocusItem, dwObjId);
-						g_WndMng.m_pWndEquipBindConfirm->Initialize(NULL);
+						g_WndMng.m_pWndEquipBindConfirm->Initialize();
 					}
 					else
 					{
@@ -2012,11 +2006,8 @@ void CWndInventory::OnRButtonDown(UINT nFlags, CPoint point)
 	BaseMouseCursor();
 }
 
-BOOL CWndInventory::OnSetCursor ( CWndBase* pWndBase, UINT nHitTest, UINT message )
-{
+void CWndInventory::OnSetCursor() {
 	SetEnchantCursor();
-
-	return TRUE;
 }
 
 void CWndInventory::SetEnchantCursor() {
@@ -2116,7 +2107,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 					SAFE_DELETE( g_WndMng.m_pWndInvenRemoveItem );
 					g_WndMng.m_pWndInvenRemoveItem = new CWndInvenRemoveItem;
-					g_WndMng.m_pWndInvenRemoveItem->Initialize( &g_WndMng, APP_INVEN_REMOVE_ITEM );
+					g_WndMng.m_pWndInvenRemoveItem->Initialize();
 					g_WndMng.m_pWndInvenRemoveItem->InitItem( pItemElem );
 					return TRUE;
 				}				
@@ -2146,7 +2137,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 						SAFE_DELETE(g_WndMng.m_pWndEquipBindConfirm)
 						g_WndMng.m_pWndEquipBindConfirm = new CWndEquipBindConfirm(CWndEquipBindConfirm::EQUIP_DRAG_AND_DROP);
 						g_WndMng.m_pWndEquipBindConfirm->SetInformationDragAndDrop(pItemElem);
-						g_WndMng.m_pWndEquipBindConfirm->Initialize(NULL);
+						g_WndMng.m_pWndEquipBindConfirm->Initialize();
 					}
 					else
 					{
@@ -2236,7 +2227,7 @@ CWndTradeGold * CWndTradeGold::CreateGeneric(
 	}
 
 	g_WndMng.m_pWndTradeGold = new CWndTradeGold();
-	g_WndMng.m_pWndTradeGold->Initialize(&g_WndMng, APP_TRADE_GOLD);
+	g_WndMng.m_pWndTradeGold->Initialize();
 
 	g_WndMng.m_pWndTradeGold->SetInitialValue(initialQuantity);
 	g_WndMng.m_pWndTradeGold->m_source = source;
@@ -2252,7 +2243,7 @@ CWndTradeGold * CWndTradeGold::CreateGeneric(
 }
 
 
-BOOL CWndTradeGold::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndTradeGold::Initialize(CWndBase * pWndParent) {
 	return InitDialog(APP_TRADE_GOLD, pWndParent, WBS_MODAL, 0);
 }
 
@@ -2416,7 +2407,7 @@ void CWndConfirmTrade::OnInitialUpdate()
 	Move70();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndConfirmTrade::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndConfirmTrade::Initialize( CWndBase* pWndParent )
 { 
 	m_objid = 0;
 	// Daisy���� ������ ���ҽ��� ������ ����.
@@ -2450,56 +2441,41 @@ BOOL CWndConfirmTrade::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-CWndTradeConfirm::CWndTradeConfirm() 
-{ 
-} 
-CWndTradeConfirm::~CWndTradeConfirm() 
-{ 
-} 
-void CWndTradeConfirm::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndTradeConfirm::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// ���⿡ �ڵ��ϼ���
-	CWndButton * pWndButtonOk = (CWndButton*)GetDlgItem( WIDC_YES );
-	pWndButtonOk->SetVisible( TRUE );
-	CWndButton * pWndButtonNO = (CWndButton*)GetDlgItem( WIDC_NO );
-	pWndButtonNO->SetVisible( TRUE );
+void CWndTradeConfirm::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 
-	bMsg = FALSE;
+	GetDlgItem<CWndButton>(WIDC_YES)->SetVisible(TRUE);
+	GetDlgItem<CWndButton>(WIDC_NO)->SetVisible(TRUE);
+	GetDlgItem(WIDC_STATIC1)->SetTitle(prj.GetText(TID_DIAG_0083));
 
-	CWndStatic* pWndStatic = (CWndStatic*)GetDlgItem( WIDC_STATIC1 );
-	pWndStatic->SetTitle( prj.GetText( TID_DIAG_0083 ) );
-					
-	// ������ �߾����� �ű��? �κ�.
+	bMsg = false;
+
 	MoveParentCenter();
-} 
-// ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndTradeConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( APP_TRADE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+}
 
-BOOL CWndTradeConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( bMsg )
-	{
-		return( TRUE );
-	}
+BOOL CWndTradeConfirm::Initialize(CWndBase * pWndParent) {
+	return CWndNeuz::InitDialog(APP_TRADE_CONFIRM, pWndParent, 0, CPoint(0, 0));
+}
 
-	if( nID == WIDC_NO || nID == WTBID_CLOSE ) // ���? 
-	{
+BOOL CWndTradeConfirm::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (bMsg) return TRUE;
+
+	if (nID == WIDC_NO || nID == WTBID_CLOSE) {
 		g_DPlay.SendTradeCancel();
-	}
-	else if ( nID == WIDC_YES )
-	{
+	} else if (nID == WIDC_YES) {
 		g_DPlay.SendPacket<PACKETTYPE_TRADECONFIRM>();
 	}
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
+
+void CWndTradeConfirm::OnTradelastConfirmOk() {
+	bMsg = true;
+
+	GetDlgItem(WIDC_YES)->SetVisible(FALSE);
+	GetDlgItem(WIDC_NO)->SetVisible(FALSE);
+	GetDlgItem(WIDC_STATIC1)->SetTitle(prj.GetText(TID_GAME_WAITCOMFIRM));
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2600,7 +2576,7 @@ void CWndTrade::OnInitialUpdate()
 }
 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndTrade::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndTrade::Initialize( CWndBase* pWndParent )
 { 
 	CWorld* pWorld = g_WorldMng.Get();
 	CMover* pMover	= g_pPlayer->m_vtInfo.GetOther();
@@ -2610,11 +2586,10 @@ BOOL CWndTrade::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
 
 BOOL CWndTrade::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
-	CWndTradeConfirm* pWndTradeConfirm = (CWndTradeConfirm*)g_WndMng.GetWndBase( APP_TRADE_CONFIRM );
-	if( pWndTradeConfirm )
-	{
-		return( TRUE );
+	if (g_WndMng.GetWndBase(APP_TRADE_CONFIRM)) {
+		return TRUE;
 	}
+
 	if( message == WIN_ITEMDROP && ( nID == 10001 || nID == 10002 ) )
 	{
 		SHORTCUT & shortcut = reinterpret_cast<SHORTCUT &>(*pLResult);
@@ -2690,7 +2665,6 @@ void CWndNavigator::SetRegionName( const TCHAR *tszName )
 BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 {
 	if( g_pPlayer == NULL ) return TRUE;
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 	CWorld* pWorld	= g_WorldMng();
 	CRect rect = GetClientRect();
 
@@ -2940,7 +2914,7 @@ BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 				m_texNavObjs.MakeVertex( p2DRender, point, 5, &pVertices );
 			}
 		}
-		m_texNavObjs.Render( m_pApp->m_pd3dDevice, vertex, ( (int) pVertices - (int) vertex ) / sizeof( TEXTUREVERTEX ) );
+		m_texNavObjs.Render( vertex, ( (int) pVertices - (int) vertex ) / sizeof( TEXTUREVERTEX ) );
 
 		D3DXVECTOR3& rDestinationArrow = g_WndMng.m_pWndWorld->m_vDestinationArrow;
 		if( rDestinationArrow != D3DXVECTOR3( -1.0F, 0.0F, -1.0F ) )
@@ -3021,7 +2995,7 @@ BOOL CWndNavigator::OnEraseBkgnd(C2DRender* p2DRender)
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_POINT );		
 
 	// ȭ��ǥ ���? 
-	m_billArrow.Render( pd3dDevice );
+	m_billArrow.Render( );
 
 	return TRUE;
 }
@@ -3144,16 +3118,16 @@ void CWndNavigator::OnInitialUpdate()
 	m_wndZoomIn.Create ( "+", 0, CRect( rectClient.left,  54, rectClient.left + 16,  54 + 16 ), this, 100005 );
 	m_wndZoomOut.Create( "-", 0, CRect( rectClient.left,  70, rectClient.left + 16,  70 + 16 ), this, 100006 );
 
-	m_wndPlace.SetTexture( D3DDEVICE, MakePath( DIR_THEME, "ButtNavLeft.tga" ), TRUE );
+	m_wndPlace.SetTexture( MakePath( DIR_THEME, "ButtNavLeft.tga" ), TRUE );
 	m_wndPlace.FitTextureSize();
-	m_wndZoomIn.SetTexture( D3DDEVICE, MakePath( DIR_THEME, "ButtNavZoomIn.tga" ), TRUE );
+	m_wndZoomIn.SetTexture( MakePath( DIR_THEME, "ButtNavZoomIn.tga" ), TRUE );
 	m_wndZoomIn.FitTextureSize();
-	m_wndZoomOut.SetTexture( D3DDEVICE, MakePath( DIR_THEME, "ButtNavZoomOut.tga" ), TRUE );
+	m_wndZoomOut.SetTexture( MakePath( DIR_THEME, "ButtNavZoomOut.tga" ), TRUE );
 	m_wndZoomOut.FitTextureSize();
 
-	m_texDunFog.LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "NavDunFog.tga" ), 0 , 1 );
+	m_texDunFog.LoadTexture( MakePath( DIR_THEME, "NavDunFog.tga" ), 0 , 1 );
 
-	m_pDestinationPositionTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "ButtDestination.bmp"), 0xffff00ff );
+	m_pDestinationPositionTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtDestination.bmp"), 0xffff00ff );
 
 	m_wndMenuPlace.CreateMenu( this );	
 	m_wndMenuPlace.AddButton(0, prj.GetText(TID_GAME_PLAYER));
@@ -3172,7 +3146,7 @@ void CWndNavigator::OnInitialUpdate()
 	m_size = CSize( 256, 256) ;//MINIMAP_SIZE, MINIMAP_SIZE );
 	m_nSizeCnt = 0;
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point( rectRoot.right - rectWindow.Width(), rectRoot.top );
 	Move( point );
@@ -3180,24 +3154,24 @@ void CWndNavigator::OnInitialUpdate()
 	ResizeMiniMap();
 
 }
-BOOL CWndNavigator::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndNavigator::Initialize(CWndBase* pWndParent)
 {
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
+	CRect rectWindow = g_WndMng.GetWindowRect();
 	CRect rect( 0, 0, 115, 110 ); // 1024 768
 
-	m_texNavObjs.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME,"Navigator.inc") );
-	m_texArrow.LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME,"ImgNavArrow.bmp"), 0xffff00ff );
-	m_texNavPos.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "NavPosition.inc") );
+	m_texNavObjs.LoadScript( MakePath( DIR_THEME,"Navigator.inc") );
+	m_texArrow.LoadTexture( MakePath( DIR_THEME,"ImgNavArrow.bmp"), 0xffff00ff );
+	m_texNavPos.LoadScript( MakePath( DIR_THEME, "NavPosition.inc") );
 	ZeroMemory( &m_billboard, sizeof( m_billboard ) );
 	m_billboard.rect.SetRect( 0, 0, m_texArrow.m_size.cx, m_texArrow.m_size.cy );
 	m_billboard.ptCenter = CPoint( m_texArrow.m_size.cx / 2, m_texArrow.m_size.cy / 2 );
-	m_billArrow.InitDeviceObjects( g_Neuz.m_pd3dDevice, &m_billboard, &m_texArrow );
+	m_billArrow.InitDeviceObjects( &m_billboard, &m_texArrow );
 	m_billArrow.RestoreDeviceObjects();
 
-	m_GuildCombatTextureMask.LoadTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_WORLD_GUILDCOMBAT, "WdGuildWar_Mask.dds" ), 0  );
+	m_GuildCombatTextureMask.LoadTexture( MakePath( DIR_WORLD_GUILDCOMBAT, "WdGuildWar_Mask.dds" ), 0  );
 	
 	SetTitle( GETTEXT( TID_APP_NAVIGATOR ) );
-	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 792, 130 ) );
+	return CWndNeuz::InitDialog( APP_NAVIGATOR, pWndParent, 0, CPoint( 792, 130 ) );
 }
 void CWndNavigator::ResizeMiniMap()
 {
@@ -3248,7 +3222,7 @@ BOOL CWndNavigator::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 		{
 			case 100000: // ���? ã��
 				{
-					CRect rectRootLayout = m_pWndRoot->GetLayoutRect();
+					CRect rectRootLayout = g_WndMng.GetLayoutRect();
 					int nMenuPlaceLeft = rect.left - m_wndMenuPlace.GetWindowRect().Width();
 					if( nMenuPlaceLeft < rectRootLayout.left )
 						m_wndMenuPlace.Move( CPoint( rect.right, rect.top ) );
@@ -3379,7 +3353,7 @@ void CWndNavigator::OnRButtonDown(UINT nFlags, CPoint point)
 	if(hasTarget)
 	{
 		CRect rect = GetWindowRect( TRUE );
-		CRect rectRootLayout = m_pWndRoot->GetLayoutRect();
+		CRect rectRootLayout = g_WndMng.GetLayoutRect();
 		int nMenuMoverLeft = rect.left - m_wndMenuMover.GetWindowRect().Width();
 		if( nMenuMoverLeft < rectRootLayout.left )
 			m_wndMenuMover.Move( CPoint( rect.right, rect.top ) );
@@ -3526,7 +3500,7 @@ void CWndStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBHPGauge = m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, 0x64ff0000, m_pVBHPGauge, &m_texGauFillNormal );
+			m_bVBHPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x64ff0000, m_pVBHPGauge, &m_texGauFillNormal );
 		}
 		//else m_bVBHPGauge = TRUE;
 		// MP
@@ -3538,7 +3512,7 @@ void CWndStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBMPGauge = m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, 0x640000ff, m_pVBMPGauge, &m_texGauFillNormal );
+			m_bVBMPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x640000ff, m_pVBMPGauge, &m_texGauFillNormal );
 		}
 		//else m_bVBMPGauge = TRUE;
 		// FP
@@ -3550,7 +3524,7 @@ void CWndStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBFPGauge = m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, 0x6400ff00, m_pVBFPGauge, &m_texGauFillNormal );
+			m_bVBFPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x6400ff00, m_pVBFPGauge, &m_texGauFillNormal );
 		}
 	//lse m_bVBFPGauge = TRUE;
 		//nWidth	= ( ( hyper ) nWidthClient * pMover->GetExp1() ) / pMover->GetMaxExp1();
@@ -3564,7 +3538,7 @@ void CWndStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBEXPGauge = m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, 0x847070ff, m_pVBEXPGauge, &m_texGauFillSmall );
+			m_bVBEXPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x847070ff, m_pVBEXPGauge, &m_texGauFillSmall );
 		}
 
 		if( m_nPXPWidth != GuildHouse->m_nExtraExp )
@@ -3577,7 +3551,7 @@ void CWndStatus::MakeGaugeVertex()
 				m_nPXPWidth = 9;
 			rectTemp.right = rectTemp.left + m_nPXPWidth;
 			ClientToScreen( rectTemp );
-			m_bVBAEXPGauge = m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, 0x84e6ce19, m_pVBAEXPGauge, &m_texGauFillSmall );
+			m_bVBAEXPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x84e6ce19, m_pVBAEXPGauge, &m_texGauFillSmall );
 		}
 	}
 }
@@ -3612,13 +3586,13 @@ void CWndStatus::PaintFrame( C2DRender* p2DRender )
 	}
 	else
 	{
-		m_pTheme->RenderWndBaseFrame( p2DRender, &rect );
+		m_Theme.RenderWndBaseFrame( p2DRender, &rect );
 		if( IsWndStyle( WBS_CAPTION ) )
 		{
 			// Ÿ��Ʋ �� 
 			rect.bottom = 21;
 			{
-				m_pTheme->RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
+				m_Theme.RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
 			}
 		}
 	}
@@ -3651,18 +3625,15 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 
 		if( m_bVBHPGauge )
 		{
-//#ifdef __VCRITICAL
-				m_bHPVisible = TRUE;
-//#else
-//			m_bHPVisible = TRUE;
-//#endif
+			m_bHPVisible = TRUE;
+
 			if( m_bHPVisible )
-				m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBHPGauge, &m_texGauFillNormal );
+				m_Theme.RenderGauge( m_pVBHPGauge, &m_texGauFillNormal );
 		}
 		if( m_bVBMPGauge )
-			m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBMPGauge, &m_texGauFillNormal );
+			m_Theme.RenderGauge( m_pVBMPGauge, &m_texGauFillNormal );
 		if( m_bVBFPGauge )
-			m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBFPGauge, &m_texGauFillNormal );
+			m_Theme.RenderGauge( m_pVBFPGauge, &m_texGauFillNormal );
 		if( g_pPlayer->IsAfterDeath() )
 			m_bExpVisible = !m_bExpVisible;
 		else
@@ -3670,7 +3641,7 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 
 		if( m_bVBEXPGauge )
 		{
-			m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBEXPGauge, &m_texGauFillSmall );
+			m_Theme.RenderGauge( m_pVBEXPGauge, &m_texGauFillSmall );
 		}
 		if( m_bExpVisible )
 		{
@@ -3678,7 +3649,7 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 #if __VER < 8 // #ifndef __SKILL_WITHOUT_EXP
 			if( m_bVBPXPGauge )
 			{
-				m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBPXPGauge, &m_texGauFillSmall );
+				m_Theme.RenderGauge( m_pVBPXPGauge, &m_texGauFillSmall );
 
 			}
 #endif // __VER < 8
@@ -3686,7 +3657,7 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 		}
 
 		if( m_bVBAEXPGauge )
-			m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBAEXPGauge, &m_texGauFillSmall );
+			m_Theme.RenderGauge( m_pVBAEXPGauge, &m_texGauFillSmall );
 		
 
 
@@ -3706,7 +3677,7 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 	if( m_nDisplay != 0 )
 	{
 		DWORD dwColor = D3DCOLOR_ARGB(255, 255, 255, 255 );
-		//p2DRender->SetFont( m_pTheme->m_pFontWndTitle );
+		//p2DRender->SetFont( m_Theme.m_pFontWndTitle );
 
 		char cbufHp[16] = {0,};
 		char cbufMp[16] = {0,};
@@ -3788,11 +3759,9 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
 		p2DRender->TextOut( x - (int)(nCharEXP*5.8f), lpAExp->rect.top - 0, cbufExp, dwColor, 0xff000000 );
 	}
 
-
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 	pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER, 0xffa08080, 1.0f, 0 ) ;
 
-	ResetRenderState(pd3dDevice);
+	ResetRenderState();
 
 	// ����Ʈ ���� 
 	D3DVIEWPORT9 viewport = BuildViewport(p2DRender, lpFace);
@@ -3988,7 +3957,7 @@ void CWndStatus::OnDraw(C2DRender* p2DRender)
  	SetDiffuse( 1.0f, 1.0f, 1.0f );
  	SetAmbient( 1.0f, 1.0f, 1.0f );
 
-		g_pBipedMesh->Render(pd3dDevice,&matWorld);
+		g_pBipedMesh->Render(&matWorld);
 
 		SetDiffuse( 0.0f, 0.0f, 0.0f );
 		SetAmbient( 1.0f, 1.0f, 1.0f );
@@ -4005,11 +3974,11 @@ HRESULT CWndStatus::RestoreDeviceObjects()
 	CWndBase::RestoreDeviceObjects();
 	if( m_pVBHPGauge == NULL )
 	{
-		m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBHPGauge, NULL );
-		m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBMPGauge, NULL );
-		m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBFPGauge, NULL );
-		m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBEXPGauge, NULL );
-		m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBAEXPGauge, NULL );
+		m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBHPGauge, NULL );
+		m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBMPGauge, NULL );
+		m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBFPGauge, NULL );
+		m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBEXPGauge, NULL );
+		m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBAEXPGauge, NULL );
 		m_nHPWidth = -1;
 		m_nMPWidth = -1;
 		m_nFPWidth = -1;
@@ -4041,11 +4010,11 @@ void CWndStatus::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate();
 	
 	RestoreDeviceObjects();
-	//m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( DRAWVERTEX ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texGauEmptySmall.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillSmall.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
+
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptySmall.LoadTexture( MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillSmall.LoadTexture( MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
 	
 	//m_texGauEmptySmall  
 	//m_texGauFillNormal  
@@ -4055,17 +4024,17 @@ void CWndStatus::OnInitialUpdate()
 	if( g_pBipedMesh == NULL )
 	{
 		int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-		g_pBipedMesh = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+		g_pBipedMesh = (CModelObject*)prj.m_modelMng.LoadModel( OT_MOVER, nMover, TRUE );
 		g_pBipedMesh->LoadMotionId(MTI_STAND);
 		CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin, g_pPlayer->m_aEquipInfo, g_pBipedMesh, &g_pPlayer->m_Inventory );
 	}
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CPoint point( rectRoot.left, rectRoot.top );
 	Move( point );
 
 }
 
-BOOL CWndStatus::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndStatus::Initialize(CWndBase* pWndParent)
 {
 	return InitDialog( APP_STATUS1 );
 }
@@ -4116,7 +4085,7 @@ BOOL CWndStatus::OnEraseBkgnd(C2DRender* p2DRender)
 	return CWndBase::OnEraseBkgnd( p2DRender );
 	//oint pt = m_rectClient.TopLeft() - m_rectWindow.TopLeft();
 	CRect rect = GetClientRect();
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
+	D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
 
 
 	//p2DRender->RenderFillRect( rect, D3DCOLOR_ARGB( 255, 70, 70, 170 ) );
@@ -4201,9 +4170,9 @@ void CWndQuestItemInfo::OnInitialUpdate()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-BOOL CWndLogOut::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndLogOut::Initialize(CWndBase* pWndParent)
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
 	Create( _T( prj.GetText(TID_DIAG_0068) ), MB_OKCANCEL, rect, APP_MESSAGEBOX );//dwWndId );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0069) ) );
@@ -4216,7 +4185,7 @@ BOOL CWndLogOut::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	// ������ �������� ������ �ϱ�
 	Move70();
 
-	return CWndMessageBox::Initialize( pWndParent, dwWndId );
+	return TRUE;
 }
 BOOL CWndLogOut::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
@@ -4250,7 +4219,7 @@ BOOL CWndLogOut::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					if( g_WndMng.m_pLogOutWaitting == NULL )
 					{
 						g_WndMng.m_pLogOutWaitting = new CWndLogOutWaitting;
-						g_WndMng.m_pLogOutWaitting->Initialize( NULL );
+						g_WndMng.m_pLogOutWaitting->Initialize();
 						g_WndMng.m_pLogOutWaitting->SetIsLogOut(TRUE);
 						SetVisible(FALSE);
 					}
@@ -4327,9 +4296,9 @@ void CWndLogOutWaitting::OnInitialUpdate()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-BOOL CWndQuit::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndQuit::Initialize( CWndBase* pWndParent )
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 	/*
 	Create( _T( "�Ž��� �ڽ�" ), MB_OKCANCEL, rect, APP_MESSAGEBOX );//dwWndId );
 	m_wndText.SetString( _T( "���α׷��� �����Ͻðڽ��ϱ�?" ) );
@@ -4347,7 +4316,7 @@ BOOL CWndQuit::Initialize( CWndBase* pWndParent, DWORD dwWndId )
 
 	m_bFlag = FALSE;
 	
-	return CWndMessageBox::Initialize( pWndParent, dwWndId );
+	return TRUE;
 }
 BOOL CWndQuit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
@@ -4385,7 +4354,7 @@ BOOL CWndQuit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						g_WndMng.m_pLogOutWaitting = new CWndLogOutWaitting;
 #ifdef __FIX_WND_1109
-						g_WndMng.m_pLogOutWaitting->Initialize( NULL );	// ˬ
+						g_WndMng.m_pLogOutWaitting->Initialize();	// ˬ
 #else	// __FIX_WND_1109
 						g_WndMng.m_pLogOutWaitting->Initialize( this );	// ˬ
 #endif	// __FIX_WND_1109
@@ -4491,7 +4460,7 @@ void CWndRevival::OnInitialUpdate()
 
 	Move70();
 } 
-BOOL CWndRevival::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndRevival::Initialize( CWndBase* pWndParent ) 
 { 
 	InitDialog( APP_REVIVAL, pWndParent, WBS_MODAL );
 
@@ -4575,17 +4544,17 @@ BOOL CWndRevival::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 ///////////////////////////////////////////////////////////////////////////
 // CWantedMessageBox
 //////////////////////////////////////////////////////////////////////////////
-class CWantedMessageBox : public CWndMessageBox
+class CWantedMessageBox : public CWndCustomMessageBox
 { 
 public: 
 	int m_nGold;
 	CString m_strMsg;
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-BOOL CWantedMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWantedMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( prj.GetText(TID_PK_INPUT_TIMEWARN), 
 	                                   pWndParent, 
@@ -4631,7 +4600,7 @@ void CWndReWanted::OnInitialUpdate()
 	MoveParentCenter();	// ������ �߾����� �ű��? �κ�.
 } 
 
-BOOL CWndReWanted::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndReWanted::Initialize( CWndBase* ) 
 { 
 	InitDialog( APP_REWARD_INPUT );
 	return TRUE;
@@ -4657,7 +4626,7 @@ BOOL CWndReWanted::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				CWantedMessageBox* pBox = new CWantedMessageBox;
 				pBox->m_nGold = nGold;
 				pBox->m_strMsg = strMsg;
-				g_WndMng.OpenCustomBox( "", pBox );
+				g_WndMng.OpenCustomBox( pBox );
 				Destroy();
 			}
 			else
@@ -4715,7 +4684,7 @@ void CWndWantedConfirm::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndWantedConfirm::Initialize(CWndBase *, DWORD) {
+BOOL CWndWantedConfirm::Initialize(CWndBase *) {
 	InitDialog(APP_WANTED_CONFIRM, nullptr, WBS_MODAL);
 	return TRUE;
 }
@@ -4789,7 +4758,7 @@ void CWndWanted::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndWanted::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndWanted::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_WANTED, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -4826,7 +4795,7 @@ void CWndWanted::OnLButtonDblClk( UINT nFlags, CPoint point)
 	{
 		SAFE_DELETE(m_pWantedConfirm);
 		m_pWantedConfirm = new CWndWantedConfirm;
-		m_pWantedConfirm->Initialize( this, 0 );
+		m_pWantedConfirm->Initialize( this );
 
 		// ǥ���� �̸�, ���������? ����
 		m_pWantedConfirm->SetInfo( m_aList[m_nSelect].szName, (int)( m_aList[m_nSelect].nGold ) );
@@ -4916,7 +4885,7 @@ void CWndResurrectionConfirm::OnInitialUpdate()
 	m_wndTitleBar.SetVisible( FALSE );
 	Move70();
 } 
-BOOL CWndResurrectionConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndResurrectionConfirm::Initialize( CWndBase* pWndParent ) 
 { 
 	InitDialog( APP_RESURRECTION, nullptr, WBS_MODAL );
 	return TRUE;
@@ -4966,7 +4935,7 @@ void CWndCommItemDlg::SetItem( DWORD dwDefindText, DWORD dwObjId, DWORD dwCtrlId
 	m_dwCtrlId = dwCtrlId;
 } 
 
-BOOL CWndCommItemDlg::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndCommItemDlg::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_COMMITEM_DIALOG, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -5094,7 +5063,7 @@ void CWndChangeClass1::OnModifiedJob() {
 	}
 }
 
-BOOL CWndChangeClass1::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndChangeClass1::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_CHANGECLASS_1, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -5360,16 +5329,16 @@ void CWndInventory::UpdateParts()
 ///////////////////////////////////////////////////////////////////////////
 // CWndGuildCombatOfferMessageBox
 //////////////////////////////////////////////////////////////////////////////
-class CWndGuildCombatOfferMessageBox : public CWndMessageBox
+class CWndGuildCombatOfferMessageBox : public CWndCustomMessageBox
 { 
 public: 
 	DWORD m_nCost;
 	void	SetValue( CString str, DWORD nCost );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-BOOL CWndGuildCombatOfferMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndGuildCombatOfferMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( "", 
 		pWndParent, 
@@ -5431,7 +5400,7 @@ void CWndGuildCombatOffer::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildCombatOffer::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatOffer::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_OFFER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -5493,10 +5462,8 @@ BOOL CWndGuildCombatOffer::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 
 
 			CWndGuildCombatOfferMessageBox* pMsg = new CWndGuildCombatOfferMessageBox;
-			if( pMsg )
-			{
-				g_WndMng.OpenCustomBox( "", pMsg, this );
-				CString str;
+
+				g_WndMng.OpenCustomBox( pMsg );
 
 				if( m_dwReqGold == 0 )
 				{
@@ -5508,7 +5475,7 @@ BOOL CWndGuildCombatOffer::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 				}
 
 				pMsg->SetValue( str, nCost );
-			}
+			
 		}
 		
 //		Destroy();
@@ -5568,7 +5535,7 @@ void CWndGuildCombatBoard::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildCombatBoard::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatBoard::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_BOARD, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -5622,7 +5589,7 @@ void CGuildCombatInfoMessageBox::PaintFrame( C2DRender* p2DRender )
 	}
 }
 
-BOOL CGuildCombatInfoMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CGuildCombatInfoMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_MSG, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -5679,7 +5646,7 @@ void CGuildCombatInfoMessageBox2::OnInitialUpdate()
 	MoveParentCenter();	
 }
 
-BOOL CGuildCombatInfoMessageBox2::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CGuildCombatInfoMessageBox2::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_MSG2, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -5715,7 +5682,7 @@ void CGuildCombatInfoMessageBox2::SetString( CHAR* szChar  )
 
 
 // ���? ������ ���� ���� ����
-BOOL CGuildCombatSelectionClearMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CGuildCombatSelectionClearMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( prj.GetText(TID_GAME_GUILDCOMBAT_REMAKE_MAKEUP), //�����ۼ��� �ٽ� �Ͻðڽ��ϱ�?
 		pWndParent, 
@@ -5825,7 +5792,7 @@ void CWndGuildCombatSelection::OnInitialUpdate()
 	ReceiveLineup({}, 0);
 } 
 
-BOOL CWndGuildCombatSelection::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndGuildCombatSelection::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILDCOMBAT_SELECTION, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -5852,8 +5819,7 @@ BOOL CWndGuildCombatSelection::OnChildNotify( UINT message, UINT nID, LRESULT* p
 		case WIDC_BUTTON3: Manager().MoveUp();    return TRUE;
 		case WIDC_BUTTON4: Manager().MoveDown();  return TRUE;
 		case WIDC_RESET: {
-			CGuildCombatSelectionClearMessageBox * pBox = new CGuildCombatSelectionClearMessageBox;
-			g_WndMng.OpenCustomBox("", pBox);
+			g_WndMng.OpenCustomBox(new CGuildCombatSelectionClearMessageBox());
 			break;
 		}
 		case WIDC_FINISH:  return ToBOOL(OnFinish());
@@ -6006,7 +5972,7 @@ void CWndGuildCombatState::InsertTitle( const char szTitle[] )
 	SetTitle( strTitle );
 }
 
-BOOL CWndGuildCombatState::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatState::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_1TO1_OFFERSTATE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6211,7 +6177,7 @@ void CWndGuildCombatJoinSelection::OnInitialUpdate()
 	m_wndTitleBar.SetVisible( FALSE );	
 } 
 
-BOOL CWndGuildCombatJoinSelection::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatJoinSelection::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_SELSTART, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6273,7 +6239,7 @@ void CWndGuildWarAppConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildWarAppConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildWarAppConfirm::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_CLOSE_EXISTING_CONNECTION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6342,7 +6308,7 @@ void CWndGuildWarCancelConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildWarCancelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildWarCancelConfirm::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_CANCEL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6422,7 +6388,7 @@ void CWndGuildWarJoinConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildWarJoinConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildWarJoinConfirm::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_CLOSE_EXISTING_CONNECTION, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6503,7 +6469,7 @@ void CWndGuildWarState::InsertTitle( const char szTitle[] )
 	SetTitle( strTitle );
 }
 
-BOOL CWndGuildWarState::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildWarState::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILD_WAR_STATE, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6693,7 +6659,7 @@ void CWndGuildCombatRanking::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndGuildCombatRanking::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatRanking::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RANKING, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6922,7 +6888,7 @@ void CWndGuildCombatResult::OnInitialUpdate()
 	pWndList2->ResetContent();	
 	pWndText->ResetString();
 } 
-BOOL CWndGuildCombatResult::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatResult::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RESULT_POINT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -6982,11 +6948,7 @@ void CWndGuildCombatTabResultRate::OnInitialUpdate()
 
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
-} 
-BOOL CWndGuildCombatTabResultRate::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_TAB_RESULT, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+}
 
 	
 /****************************************************
@@ -6998,10 +6960,6 @@ void CWndGuildCombatTabResultLog::OnInitialUpdate()
 
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
-} 
-BOOL CWndGuildCombatTabResultLog::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_TAB_RESULT_LOG, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndGuildCombatTabResultLog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -7073,7 +7031,7 @@ void CWndGuildCombatRank_Person::OnInitialUpdate()
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
 } 
-BOOL CWndGuildCombatRank_Person::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatRank_Person::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RANK_P, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -7373,7 +7331,7 @@ void CWndGuildCombatRank_Class::OnInitialUpdate()
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
 } 
-BOOL CWndGuildCombatRank_Class::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildCombatRank_Class::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RANKINGCLASS, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -7420,7 +7378,7 @@ void CWndFontEdit::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 
-	m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "yellowbuttten.tga" ), 0xffff00ff, TRUE );
+	m_pTexture = m_textureMng.AddTexture( MakePath( DIR_THEME, "yellowbuttten.tga" ), 0xffff00ff, TRUE );
 
 	m_ColorRect[0].left   = 38;
 	m_ColorRect[0].top    = 46;
@@ -7450,7 +7408,7 @@ void CWndFontEdit::OnInitialUpdate()
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
 } 
-BOOL CWndFontEdit::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndFontEdit::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_FONTEDIT, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -7688,7 +7646,7 @@ void CWndMixJewel::OnInitialUpdate()
 	CWndButton* pButton = GetDlgItem<CWndButton>(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 
@@ -7700,7 +7658,7 @@ void CWndMixJewel::OnInitialUpdate()
 }
 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndMixJewel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndMixJewel::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_MIXJEWEL, pWndParent, 0, CPoint( 0, 0 ) );
@@ -7814,7 +7772,7 @@ void CWndMixJewelConfirm::OnDraw( C2DRender* p2DRender )
 	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
 	if(pItemProp != NULL)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
 	}
@@ -7830,7 +7788,7 @@ void CWndMixJewelConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndMixJewelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndMixJewelConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_MIXJEWEL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -7882,7 +7840,7 @@ void CWndExtraction::OnInitialUpdate()
 	CWndButton * pButton = GetDlgItem<CWndButton>(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 
@@ -7891,7 +7849,7 @@ void CWndExtraction::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndExtraction::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndExtraction::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_EXTRACTION, pWndParent, 0, CPoint( 0, 0 ) );
@@ -8032,7 +7990,7 @@ void CWndSmeltJewel::OnInitialUpdate()
 
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 
@@ -8043,7 +8001,7 @@ void CWndSmeltJewel::OnInitialUpdate()
 } 
 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndSmeltJewel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndSmeltJewel::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_JEWEL, pWndParent, 0, CPoint( 0, 0 ) );
@@ -8133,9 +8091,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 	if( m_pItemElem == NULL )
 		return;
 
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-
-	ResetRenderState(pd3dDevice);
+	ResetRenderState();
 
 	pd3dDevice->SetRenderState( D3DRS_AMBIENT,  D3DCOLOR_ARGB( 255,255,255,255 ) );
 	
@@ -8279,7 +8235,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 		}
 	}
 */
-	m_pMainItem->Render( p2DRender->m_pd3dDevice, &matWorld );
+	m_pMainItem->Render( &matWorld );
 
 	viewport.X      = p2DRender->m_ptOrigin.x;
 	viewport.Y      = p2DRender->m_ptOrigin.y;
@@ -8306,7 +8262,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 				{
 					if(i != m_nUsableSlot) //���� ���� ���������� ��ĥ���� ����.
 					{
-						pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndDisableBlue.bmp"), 0xffff00ff );
+						pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndDisableBlue.bmp"), 0xffff00ff );
 						if(pTexture != NULL)
 							pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
 						//p2DRender->RenderFillRect( pWndCtrl->rect, 0x609370db );
@@ -8315,7 +8271,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 					pItemProp = prj.GetItemProp( m_dwJewel[i] );
 					if(pItemProp != NULL)
 					{
-						pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+						pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 						if(pTexture != NULL)
 							pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
 					}
@@ -8324,7 +8280,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 				{
 					if(i != m_nUsableSlot) //�ո� ���� �� ������ ���� �� �ִ� ù��° ���Ը� ���� �������� ȸ������.
 					{
-						pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndDisableBlack.bmp"), 0xffff00ff );
+						pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndDisableBlack.bmp"), 0xffff00ff );
 						if(pTexture != NULL)
 							pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
 						//p2DRender->RenderFillRect( pWndCtrl->rect, 0xa0a8a8a8 );
@@ -8333,7 +8289,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 			}
 			else //�� �ո� ����
 			{
-				pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndDisableRed.bmp"), 0xffff00ff );
+				pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndDisableRed.bmp"), 0xffff00ff );
 				if(pTexture != NULL)
 					pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
 				//p2DRender->RenderFillRect( pWndCtrl->rect, 0xa0ff0000 );
@@ -8378,8 +8334,8 @@ BOOL CWndSmeltJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			if(m_pItemElem != NULL)
 				m_pItemElem->SetExtra(pItemElem->GetExtra()+1);
 			
-			m_pMainItem = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_ITEM, m_pItemElem->m_dwItemId );
-			m_pMainItem->InitDeviceObjects( g_Neuz.GetDevice() );
+			m_pMainItem = (CModelObject*)prj.m_modelMng.LoadModel( OT_ITEM, m_pItemElem->m_dwItemId );
+			m_pMainItem->InitDeviceObjects( );
 		}
 	} 
 	
@@ -8548,7 +8504,7 @@ void CWndChangeWeapon::OnInitialUpdate()
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 	
@@ -8564,7 +8520,7 @@ void CWndChangeWeapon::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndChangeWeapon::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndChangeWeapon::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_CHANGEWEAPON, pWndParent, 0, CPoint( 0, 0 ) );
@@ -8766,7 +8722,7 @@ void CWndRemoveJewelConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndRemoveJewelConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRemoveJewelConfirm::Initialize( CWndBase* pWndParent )
 {
 	m_pInventory = (CWndInventory*)pWndParent;
 	// Daisy���� ������ ���ҽ��� ������ ����.
@@ -8857,7 +8813,7 @@ void CWndHeroSkillUp::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndHeroSkillUp::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndHeroSkillUp::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_HERO_SKILLUP, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -9016,7 +8972,7 @@ void CWndDialogEvent::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndDialogEvent::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndDialogEvent::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_DIALOG_EVENT, pWndParent, 0, CPoint( 0, 0 ) );
@@ -9316,7 +9272,7 @@ void CWndHeavenTower::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndHeavenTower::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndHeavenTower::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_HEAVEN_TOWER, pWndParent, 0, CPoint( 0, 0 ) );
@@ -9357,9 +9313,8 @@ BOOL CWndHeavenTower::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 				CString strMsg;
 				CWndHeavenTowerEntranceConfirm* pWndEntranceConfirm = new CWndHeavenTowerEntranceConfirm;
-				if( pWndEntranceConfirm )
-				{
-					g_WndMng.OpenCustomBox( "", pWndEntranceConfirm, this );
+
+					g_WndMng.OpenCustomBox( pWndEntranceConfirm );
 					
 					if(m_nChoiceNum != 5)
 					{
@@ -9372,7 +9327,7 @@ BOOL CWndHeavenTower::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						pWndEntranceConfirm->SetValue( strMsg, m_nChoiceNum+1 );
 					}
 
-				}
+				
 			}
 			break;
 	}
@@ -9437,7 +9392,7 @@ void CWndHeavenTower::InitWnd()
 // CWndHeavenTowerEntranceConfirm Class
 //////////////////////////////////////////////////////////////////////////
 
-BOOL CWndHeavenTowerEntranceConfirm::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndHeavenTowerEntranceConfirm::Initialize( CWndBase* pWndParent )
 {
 	m_nFloor = 0;
 	return CWndMessageBox::Initialize( "", pWndParent, MB_OKCANCEL );	
@@ -9488,7 +9443,7 @@ void CWndRemoveAttribute::OnInitialUpdate()
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 
@@ -9500,7 +9455,7 @@ void CWndRemoveAttribute::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndRemoveAttribute::Initialize( CWndBase* pWndParent, DWORD) 
+BOOL CWndRemoveAttribute::Initialize( CWndBase* pWndParent ) 
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_REMOVE_ATTRIBUTE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -9560,7 +9515,7 @@ void CWndRemoveAttribute::CWndConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRemoveAttribute::CWndConfirm::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndRemoveAttribute::CWndConfirm::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_REMOVE_ATTRIBUTE_CONFIRM, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -9649,7 +9604,7 @@ void CWndRemovePiercing::OnInitialUpdate()
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 	
@@ -9662,7 +9617,7 @@ void CWndRemovePiercing::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndRemovePiercing::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRemovePiercing::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_REMOVE_PIERCING_EX, pWndParent, 0, CPoint( 0, 0 ) );
@@ -9815,7 +9770,7 @@ void CWndRemoveJewel::OnInitialUpdate() {
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 	
@@ -9835,7 +9790,7 @@ void CWndRemoveJewel::OnInitialUpdate() {
 	MoveParentCenter();
 } 
 
-BOOL CWndRemoveJewel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRemoveJewel::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_REMOVE_JEWEL, pWndParent, 0, CPoint( 0, 0 ) );
@@ -9965,7 +9920,7 @@ void CWndChangeAttribute::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndChangeAttribute::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndChangeAttribute::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_CHANGE_ATTRIBUTE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -10054,30 +10009,26 @@ void CWndChangeAttribute::OnLButtonUp( UINT nFlags, CPoint point )
 	}
 }
 
-BOOL CWndChangeAttribute::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
+void CWndChangeAttribute::OnSetCursor()
 {
-	CRect rect;
-	LPWNDCTRL lpWndCtrl;
-	BOOL bOnTitle = FALSE;
-	CPoint point = GetMousePoint();
+	bool bOnTitle = false;
+	const CPoint point = GetMousePoint();
 
 	for(int i=0; i<5; i++) 
 	{
-		lpWndCtrl = GetWndCtrl( m_nAttributeStaticID[i] );
-		rect = lpWndCtrl->rect;
-		if( rect.PtInRect( point ) )
-			bOnTitle = TRUE;
+		LPWNDCTRL lpWndCtrl = GetWndCtrl( m_nAttributeStaticID[i] );
+		CRect rect = lpWndCtrl->rect;
+		if (rect.PtInRect(point)) {
+			bOnTitle = true;
+		}
 	}
 
-	if(bOnTitle)
-		SetMouseCursor( CUR_SELECT );
-	else
-	{
-		SetMouseCursor( CUR_BASE );
-		CWndBase::OnSetCursor( pWndBase, nHitTest, message );
+	if (bOnTitle) {
+		SetMouseCursor(CUR_SELECT);
+	} else {
+		SetMouseCursor(CUR_BASE);
+		CWndBase::OnSetCursor();
 	}
-
-	return TRUE;
 }
 
 void CWndChangeAttribute::SetChangeItem( CItemElem* pItemElem )
@@ -10140,7 +10091,7 @@ BOOL CWndChangeAttribute::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			if(pTempElem && CItemElem::IsEleRefineryAble(pItemProp) && pTempElem->m_nResistAbilityOption > 0)
 			{
 				m_pItemElem = pTempElem;
-				m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+				m_pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 				m_pItemElem->SetExtra(m_pItemElem->GetExtra()+1);
 			}
 			else
@@ -10172,7 +10123,7 @@ void CWndChangeAttribute::OnLButtonDblClk( UINT nFlags, CPoint point )
 //////////////////////////////////////////////////////////////////////////
 // Couple Message Window
 //////////////////////////////////////////////////////////////////////////
-BOOL CWndCoupleMessage::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndCoupleMessage::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( m_strText, pWndParent, MB_OKCANCEL );
 }
@@ -10246,7 +10197,7 @@ HRESULT CWndCoupleTabInfo::RestoreDeviceObjects()
 {
 	CWndBase::RestoreDeviceObjects();
 	if( m_pVBGauge == NULL )
-		return m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
+		return m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
 	return S_OK;
 }
 HRESULT CWndCoupleTabInfo::InvalidateDeviceObjects()
@@ -10266,26 +10217,20 @@ void CWndCoupleTabInfo::OnInitialUpdate()
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// ���⿡ �ڵ��ϼ���
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauFillNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauFillNormal.bmp" ), 0xffff00ff, TRUE );
 
 	CWndButton* pWndButton = (CWndButton*)GetDlgItem(WIDC_BUTTON1);
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtBreakUp.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtBreakUp.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtBreakUp.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtBreakUp.bmp" ), 0xffff00ff );
 	}
 
 	MoveParentCenter();
 } 
-
-BOOL CWndCoupleTabInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( APP_COUPLE_TAB_INFO, pWndParent, 0, CPoint( 0, 0 ) );
-}
 
 BOOL CWndCoupleTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
@@ -10308,7 +10253,7 @@ BOOL CWndCoupleTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 					CString strText;
 					strText.Format(prj.GetText(TID_GAME_COUPLECANCEL), pData->szPlayer);
 					g_WndMng.m_pWndCoupleMessage->SetMessageMod(strText, CWndCoupleMessage::CM_CANCELCOUPLE);
-					g_WndMng.m_pWndCoupleMessage->Initialize(NULL);
+					g_WndMng.m_pWndCoupleMessage->Initialize();
 				}
 			}
 		}
@@ -10373,7 +10318,7 @@ void CWndCoupleTabInfo::OnDraw(C2DRender* p2DRender)
 					pWndWorld->m_texPlayerDataIcon.MakeVertex(p2DRender, ptJobType, nMasterIndex, &pVertices, 0xffffffff);
 				}
 
-				pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
+				pWndWorld->m_texPlayerDataIcon.Render( pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
 			}
 		}
 
@@ -10411,8 +10356,8 @@ void CWndCoupleTabInfo::OnDraw(C2DRender* p2DRender)
 
 	if(m_pVBGauge)
 	{
-		m_pTheme->RenderGauge( p2DRender, &rect, 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
-		m_pTheme->RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
+		m_Theme.RenderGauge( p2DRender, &rect, 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
+		m_Theme.RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
 	}
 
 	SAFE_DELETE_ARRAY( pVertex );
@@ -10432,16 +10377,10 @@ void CWndCoupleTabSkill::OnInitialUpdate()
 		_T("CoupleSkillInfo.inc")
 	);
 
-	m_pSkillBgTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "Bg_Couple_Skill.tga"), 0xffff00ff );
+	m_pSkillBgTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "Bg_Couple_Skill.tga"), 0xffff00ff );
 
 	MoveParentCenter();
 } 
-
-BOOL CWndCoupleTabSkill::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( APP_COUPLE_TAB_SKILL, pWndParent, 0, CPoint( 0, 0 ) );
-}
 
 BOOL CWndCoupleTabSkill::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -10482,7 +10421,7 @@ void CWndCoupleTabSkill::OnDraw(C2DRender* p2DRender)
 				ItemProp* pItemProp = prj.GetItemProp( vSkillKinds[i] );
 				if(pItemProp)
 				{
-					CTexture* pTex = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pItemProp->szIcon), 0xffff00ff );
+					CTexture* pTex = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, pItemProp->szIcon), 0xffff00ff );
 
 					if(pTex)
 						p2DRender->RenderTexture( point, pTex );
@@ -10551,7 +10490,7 @@ void CWndCoupleManager::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndCoupleManager::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndCoupleManager::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_COUPLE_MAIN, pWndParent, 0, CPoint( 0, 0 ) );
@@ -10600,7 +10539,7 @@ void CWndFunnyCoinConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndFunnyCoinConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndFunnyCoinConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_FUNNYCOIN_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -10690,7 +10629,7 @@ CWndSmeltSafety::~CWndSmeltSafety()
 }
 
 // ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndSmeltSafety::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
+BOOL CWndSmeltSafety::Initialize( CWndBase* pWndParent )
 {
 	// Daisy���� ������ ���ҽ��� ������ ����.
 	return CWndNeuz::InitDialog( APP_SMELT_SAFETY, pWndParent, 0, CPoint( 0, 0 ) );
@@ -10860,9 +10799,9 @@ void CWndSmeltSafety::OnInitialUpdate()
 	assert(pWndInventory != NULL);
 	pWndInventory->m_wndItemCtrl.SetDieFlag(TRUE);
 
-	m_pNowGaugeTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "SafetyGauge.bmp"), 0xffff00ff);
-	m_pSuccessTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "SafetySuccess.bmp"), 0xffff00ff);
-	m_pFailureTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "SafetyFailure.bmp"), 0xffff00ff);
+	m_pNowGaugeTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_THEME, "SafetyGauge.bmp"), 0xffff00ff);
+	m_pSuccessTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_THEME, "SafetySuccess.bmp"), 0xffff00ff);
+	m_pFailureTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_THEME, "SafetyFailure.bmp"), 0xffff00ff);
 
 	MoveParentCenter();
 }
@@ -11007,11 +10946,11 @@ void CWndSmeltSafety::OnDraw(C2DRender* p2DRender)
 		rectStaticTemp.BottomRight().x = lpStatic->rect.right + nExtensionPixel;
 		if(m_bResultStatic[i] != false)
 		{
-			m_pTheme->RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferSuccessImage, m_pSuccessTexture);
+			m_Theme.RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferSuccessImage, m_pSuccessTexture);
 		}
 		else
 		{
-			m_pTheme->RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferSuccessImage, m_pFailureTexture);
+			m_Theme.RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferSuccessImage, m_pFailureTexture);
 		}
 	}
 
@@ -11027,7 +10966,7 @@ void CWndSmeltSafety::OnDraw(C2DRender* p2DRender)
 		nGaugeWidth = nGaugeWidth < lpStatic->rect.right ? nGaugeWidth : lpStatic->rect.right;
 		rectStaticTemp.BottomRight().x = nGaugeWidth + nExtensionPixel;
 		assert(m_pVertexBufferGauge != NULL);
-		m_pTheme->RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferGauge, m_pNowGaugeTexture);
+		m_Theme.RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferGauge, m_pNowGaugeTexture);
 	}
 }
 
@@ -11347,7 +11286,7 @@ HRESULT CWndSmeltSafety::RestoreDeviceObjects()
 {
 	CWndBase::RestoreDeviceObjects();
 	if( m_pVertexBufferGauge == NULL )
-		m_pApp->m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, 
+		m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, 
 												 D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, 
 												 D3DFVF_TEXTUREVERTEX2, 
 												 D3DPOOL_DEFAULT, 
@@ -11356,7 +11295,7 @@ HRESULT CWndSmeltSafety::RestoreDeviceObjects()
 	assert(m_pVertexBufferGauge != NULL);
 
 	if( m_pVertexBufferSuccessImage == NULL )
-		m_pApp->m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, 
+		m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, 
 												 D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, 
 												 D3DFVF_TEXTUREVERTEX2, 
 												 D3DPOOL_DEFAULT, 
@@ -11365,7 +11304,7 @@ HRESULT CWndSmeltSafety::RestoreDeviceObjects()
 	assert(m_pVertexBufferSuccessImage != NULL);
 
 	if( m_pVertexBufferFailureImage == NULL )
-		m_pApp->m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, 
+		m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, 
 												 D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, 
 												 D3DFVF_TEXTUREVERTEX2, 
 												 D3DPOOL_DEFAULT, 
@@ -11469,7 +11408,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 			m_pItemElem->SetExtra(m_pItemElem->GetExtra() + 1);
 
 			assert(pItemProp != NULL);
-			m_pItemTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+			m_pItemTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 
 			CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem(WIDC_EDIT_MAX_GRADE);
 			assert(pWndEdit != NULL);
@@ -11828,7 +11767,7 @@ void CWndSmeltSafety::DrawListItem(C2DRender* p2DRender)
 		if( m_eWndMode != WND_ELEMENT || pItemProp )
 		{
 			assert(pItemProp != NULL);
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
+			pTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
 			assert(pTexture != NULL);
 			nAlphaBlend = (m_Material[i].isUse != FALSE) ? NORMAL_ALPHA : TRANSLUCENT_ALPHA;
 			pTexture->Render( p2DRender, CPoint( m_Material[i].wndCtrl->rect.left, m_Material[i].wndCtrl->rect.top ), nAlphaBlend );
@@ -11859,7 +11798,7 @@ void CWndSmeltSafety::DrawListItem(C2DRender* p2DRender)
 			}
 		}
 		assert(pItemProp != NULL);
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
+		pTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
 		assert(pTexture != NULL);
 		nAlphaBlend = (m_Scroll1[i].isUse != FALSE) ? NORMAL_ALPHA : TRANSLUCENT_ALPHA;
 		pTexture->Render( p2DRender, CPoint( m_Scroll1[i].wndCtrl->rect.left, m_Scroll1[i].wndCtrl->rect.top ), nAlphaBlend );
@@ -11869,7 +11808,7 @@ void CWndSmeltSafety::DrawListItem(C2DRender* p2DRender)
 			assert(m_Scroll2[i].wndCtrl != NULL);
 			pItemProp = prj.GetItemProp(II_SYS_SYS_SCR_SMELTING);
 			assert(pItemProp != NULL);
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
+			pTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
 			assert(pTexture != NULL);
 			nAlphaBlend = (m_Scroll2[i].isUse != FALSE) ? NORMAL_ALPHA : TRANSLUCENT_ALPHA;
 			pTexture->Render( p2DRender, CPoint( m_Scroll2[i].wndCtrl->rect.left, m_Scroll2[i].wndCtrl->rect.top ), nAlphaBlend );
@@ -11879,7 +11818,7 @@ void CWndSmeltSafety::DrawListItem(C2DRender* p2DRender)
 			assert( m_Scroll2[ i ].wndCtrl != NULL );
 			pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_SMELTING2 );
 			assert( pItemProp != NULL );
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
+			pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
 			assert( pTexture != NULL );
 			nAlphaBlend = ( m_Scroll2[ i ].isUse != FALSE ) ? NORMAL_ALPHA : TRANSLUCENT_ALPHA;
 			pTexture->Render( p2DRender, CPoint( m_Scroll2[ i ].wndCtrl->rect.left, m_Scroll2[ i ].wndCtrl->rect.top ), nAlphaBlend );
@@ -12149,7 +12088,7 @@ CWndSmeltSafetyConfirm::~CWndSmeltSafetyConfirm()
 {
 }
 
-BOOL CWndSmeltSafetyConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndSmeltSafetyConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_SMELT_SAFETY_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -12230,7 +12169,7 @@ CWndEquipBindConfirm::~CWndEquipBindConfirm(void)
 {
 }
 
-BOOL CWndEquipBindConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndEquipBindConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_EQUIP_BIND_CONFIRM, pWndParent, WBS_MODAL | WBS_KEY, CPoint( 0, 0 ) );
 }
@@ -12339,7 +12278,7 @@ CWndRestateConfirm::~CWndRestateConfirm(void)
 {
 }
 
-BOOL CWndRestateConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndRestateConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_RESTATE_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -12446,7 +12385,7 @@ CWndCampusInvitationConfirm::~CWndCampusInvitationConfirm( void )
 {
 }
 //-----------------------------------------------------------------------------
-BOOL CWndCampusInvitationConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndCampusInvitationConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_CONFIRM_ENTER, pWndParent, WBS_KEY, 0 );
 }
@@ -12512,7 +12451,7 @@ CWndCampusSeveranceConfirm::~CWndCampusSeveranceConfirm( void )
 {
 }
 //-----------------------------------------------------------------------------
-BOOL CWndCampusSeveranceConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndCampusSeveranceConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_CONFIRM_ENTER, pWndParent, WBS_KEY, 0 );
 }

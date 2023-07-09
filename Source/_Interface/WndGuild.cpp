@@ -56,7 +56,7 @@ void CWndGuild::OnInitialUpdate() {
 	m_WndGuildTabMember.m_rectParent = GetWindowRect(TRUE);
 }
 
-BOOL CWndGuild::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndGuild::Initialize(CWndBase * pWndParent) {
 	if (g_eLocal.GetState(EVE_SCHOOL))
 		return FALSE;
 
@@ -89,7 +89,7 @@ void CWndGuildConfirm::OnInitialUpdate() {
 	Move70();
 }
 
-BOOL CWndGuildConfirm::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndGuildConfirm::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_INVATE, pWndParent, 0, CPoint(0, 0));
 }
 

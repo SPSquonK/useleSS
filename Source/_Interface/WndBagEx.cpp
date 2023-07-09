@@ -122,15 +122,15 @@ void CWndBagEx::OnInitialUpdate()
 	m_RectItemCtrl[1] = pTab1->m_rectClient;
 	m_RectItemCtrl[2] = pTab2->m_rectClient;
 
-	m_pTexNouse = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "InventoryBagEff.tga" ), 0xffff00ff );
-	m_pTexIco	= m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "Itm_SysSysScrBagBag01.bmp" ), 0xffff00ff );;
-	m_pTexIco_empty = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "Itm_SysSysScrBagBag02.bmp" ), 0xffff00ff );;
+	m_pTexNouse = m_textureMng.AddTexture( MakePath( DIR_THEME, "InventoryBagEff.tga" ), 0xffff00ff );
+	m_pTexIco	= m_textureMng.AddTexture( MakePath( DIR_THEME, "Itm_SysSysScrBagBag01.bmp" ), 0xffff00ff );;
+	m_pTexIco_empty = m_textureMng.AddTexture( MakePath( DIR_THEME, "Itm_SysSysScrBagBag02.bmp" ), 0xffff00ff );;
 
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndBagEx::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndBagEx::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_BAG_EX, pWndParent, 0, CPoint( 0, 0 ) );

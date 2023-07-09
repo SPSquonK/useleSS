@@ -19,7 +19,7 @@ public:
 	HRESULT SetFloat( D3DXHANDLE hParameter, FLOAT f ) { return m_pEffect->SetFloat( hParameter, f ); }
 	
 	
-	HRESULT		LoadEffect( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName );
+	HRESULT		LoadEffect( LPCTSTR szFileName );
 	void		DeleteDeviceObjects( void );
 		
 	

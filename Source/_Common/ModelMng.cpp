@@ -125,7 +125,7 @@ void MODELELEM::MakeMotionName( TCHAR* pszMotionName, DWORD dwMotion ) const {
 	_tcscat( pszMotionName, ".ani" );
 }
 
-CModel * CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts )
+CModel * CModelMng::LoadModel( int nType, int nIndex, BOOL bParts )
 {
 	MODELELEM * lpModelElem = GetModelElem( nType, nIndex );
 	if (lpModelElem == NULL) {
@@ -135,7 +135,7 @@ CModel * CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nInd
 
 	TCHAR szFileName[ MAX_PATH ];
 	MakeModelName( szFileName, nType, nIndex );
-	return LoadModel( pd3dDevice, szFileName, lpModelElem, nType, bParts ).ptr; 
+	return LoadModel( szFileName, lpModelElem, nType, bParts ).ptr; 
 }
 
 
@@ -173,7 +173,7 @@ requires (sqktd::IsOneOf<T,
 	/* not owned */ CModelObject * ,
 	sqktd::maybe_owned_ptr<CModelObject>
 >)
-T CModelMng::LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts) {
+T CModelMng::LoadModel(int nType, int nIndex, BOOL bParts) {
 	MODELELEM * lpModelElem = GetModelElem(nType, nIndex);
 	if (lpModelElem == NULL) {
 		Error("CModelMng::loadModel mdlObj/mdlDyna - objtype=%d index=%d bpart=%d has no information.", nType, nIndex, bParts);
@@ -182,7 +182,7 @@ T CModelMng::LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL
 
 	TCHAR szFileName[MAX_PATH];
 	MakeModelName(szFileName, nType, nIndex);
-	ModelPtrInfo info = LoadModel(pd3dDevice, szFileName, lpModelElem, nType, bParts);
+	ModelPtrInfo info = LoadModel(szFileName, lpModelElem, nType, bParts);
 
 	if (info.ptr == nullptr) return T(nullptr);
 
@@ -224,13 +224,13 @@ T CModelMng::LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL
 }
 
 #ifdef __CLIENT
-template std::unique_ptr<CSfxModel>           CModelMng::LoadModel<std::unique_ptr<CSfxModel>          >(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts);
+template std::unique_ptr<CSfxModel>           CModelMng::LoadModel<std::unique_ptr<CSfxModel>          >(int nType, int nIndex, BOOL bParts);
 #endif
-template std::unique_ptr<CModelObject>        CModelMng::LoadModel<std::unique_ptr<CModelObject>       >(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts);
-template CModelObject *                       CModelMng::LoadModel<CModelObject *                      >(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts);
-template sqktd::maybe_owned_ptr<CModelObject> CModelMng::LoadModel<sqktd::maybe_owned_ptr<CModelObject>>(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts);
+template std::unique_ptr<CModelObject>        CModelMng::LoadModel<std::unique_ptr<CModelObject>       >(int nType, int nIndex, BOOL bParts);
+template CModelObject *                       CModelMng::LoadModel<CModelObject *                      >(int nType, int nIndex, BOOL bParts);
+template sqktd::maybe_owned_ptr<CModelObject> CModelMng::LoadModel<sqktd::maybe_owned_ptr<CModelObject>>(int nType, int nIndex, BOOL bParts);
 
-CModelMng::ModelPtrInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts )
+CModelMng::ModelPtrInfo CModelMng::LoadModel( TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts )
 {
 	const int nModelType = lpModelElem->m_dwModelType;
 
@@ -268,7 +268,7 @@ CModelMng::ModelPtrInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHA
 			CModelObject * pModel = new CModelObject;
 			pModel->SetModelType( nModelType );
 			pModel->m_pModelElem = lpModelElem;
-			HRESULT hr = pModel->InitDeviceObjects( pd3dDevice );
+			HRESULT hr = pModel->InitDeviceObjects();
 			hr = pModel->LoadModel( lpszFileName );
 			if( hr == SUCCESS )
 			{
@@ -288,7 +288,7 @@ CModelMng::ModelPtrInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHA
 		case MODELTYPE_ANIMATED_MESH: {
 			CModelObject * pModel = new CModelObject;
 			pModel->SetModelType(nModelType);
-			pModel->InitDeviceObjects(pd3dDevice);
+			pModel->InitDeviceObjects();
 			pModel->m_pModelElem = lpModelElem;
 			pModel->m_pModelElem->m_bUsed = TRUE;
 			TCHAR szFileName[MAX_PATH];
@@ -324,11 +324,7 @@ CModelMng::ModelPtrInfo CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHA
 	}
 }
 
-HRESULT CModelMng::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
-	return S_OK;
-}
-
-HRESULT CModelMng::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
+HRESULT CModelMng::RestoreDeviceObjects() {
 	for (auto & pModel : m_mapFileToMesh | std::views::values) {
 		pModel->RestoreDeviceObjects();
 	}

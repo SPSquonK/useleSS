@@ -364,7 +364,7 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 		pMover->m_dwIndex = dwIndex;
 		g_Neuz.m_apPlayer[slot]	= pMover;
 
-		//g_Neuz.m_apPlayer[slot]	= (CMover*)CreateObj( g_Neuz.m_pd3dDevice, OT_MOVER, dwIndex, FALSE );
+		//g_Neuz.m_apPlayer[slot]	= (CMover*)CreateObj( OT_MOVER, dwIndex, FALSE );
 		g_Neuz.m_apPlayer[slot]->m_bPlayer	= TRUE;
 		g_Neuz.m_apPlayer[slot]->InitProp();
 
@@ -440,7 +440,6 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 			}
 		}
 		pWndSelectChar->SelectCharacter( pWndSelectChar->m_nSelectCharacter );
-//		g_WndMng.OpenCustomBox( _T( "접속할수 없는 계정입니다"), new CWndAllCharBlockBox );
 		// 모든 캐릭터가 블럭되어 있습니다.		
 	}
 }

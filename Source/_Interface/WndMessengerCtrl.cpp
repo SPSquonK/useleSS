@@ -342,7 +342,7 @@ void CWndFriendCtrlEx::OnDraw( C2DRender* p2DRender )
 		pt.y += m_nFontHeight;
 	}
 
-	pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
+	pWndWorld->m_texPlayerDataIcon.Render( pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
 	SAFE_DELETE_ARRAY( pVertex );
 }
 
@@ -774,7 +774,7 @@ void CWndGuildCtrlEx::OnDraw( C2DRender* p2DRender )
 		pt.y += m_nFontHeight;
 	}
 
-	pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
+	pWndWorld->m_texPlayerDataIcon.Render( pVertex, ( (int) pVertices - (int) pVertex ) / sizeof( TEXTUREVERTEX2 ) );
 	SAFE_DELETE_ARRAY( pVertex );
 }
 
@@ -941,7 +941,7 @@ void CWndGuildCtrlEx::SetWndRect( CRect rectWnd, BOOL bOnSize )
 }
 
 //-----------------------------------------------------------------------------
-BOOL CWndCampus::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndCampus::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_MESSENGER_TAB_CAMPUS, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -983,7 +983,7 @@ BOOL CWndCampus::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 						SAFE_DELETE( g_WndMng.m_pWndCampusSeveranceConfirm );
 					g_WndMng.m_pWndCampusSeveranceConfirm = new CWndCampusSeveranceConfirm( static_cast< u_long >( pstDisciplePlayer->m_dwPlayerId ), 
 																							pstDisciplePlayer->m_szName );
-					g_WndMng.m_pWndCampusSeveranceConfirm->Initialize( NULL );
+					g_WndMng.m_pWndCampusSeveranceConfirm->Initialize();
 				}
 			}
 			else if( pCampus->IsPupil( g_pPlayer->m_idPlayer ) )
@@ -994,7 +994,7 @@ BOOL CWndCampus::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 						SAFE_DELETE( g_WndMng.m_pWndCampusSeveranceConfirm );
 					g_WndMng.m_pWndCampusSeveranceConfirm = new CWndCampusSeveranceConfirm( static_cast< u_long >( m_MasterPlayer.m_dwPlayerId ), 
 																							m_MasterPlayer.m_szName );
-					g_WndMng.m_pWndCampusSeveranceConfirm->Initialize( NULL );
+					g_WndMng.m_pWndCampusSeveranceConfirm->Initialize();
 				}
 			}
 			break;

@@ -30,31 +30,31 @@ CWndWebBox::~CWndWebBox()
 {
 	CRect rect = g_Neuz.GetDeviceRect();
 	rect.top = rect.bottom - TASKBAR_HEIGHT;
-	CWndTaskBar::m_pWndRoot->m_rectLayout = m_rectOldBackup;
+	g_WndMng.m_rectLayout = m_rectOldBackup;
 	SetWndRect( m_rectOldBackup );
 	
 	ShowWindow( CWebBox::GetInstance()->m_hDlg, SW_HIDE );
 	CWebBox::GetInstance()->Close();	
 }
-BOOL CWndWebBox::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndWebBox::Initialize( CWndBase* pWndParent )
 {
 	if(g_WndMng.GetWndBase( APP_TRADE )) 
 	{
-		m_rectOldBackup = CWndTaskBar::m_pWndRoot->m_rectLayout;
+		m_rectOldBackup = g_WndMng.m_rectLayout;
 		Destroy();
 		return FALSE;
 	}
 #ifdef __LINK_PORTAL
 	if(!g_bBuddyFlag)
 	{
-		m_rectOldBackup = CWndTaskBar::m_pWndRoot->m_rectLayout;
+		m_rectOldBackup = g_WndMng.m_rectLayout;
 		Destroy();
 		return FALSE;
 	}
 #endif //__LINK_PORTAL
 
 #if defined(__INTERNALSERVER) || defined(__TESTSERVER)
-	m_rectOldBackup = CWndTaskBar::m_pWndRoot->m_rectLayout;
+	m_rectOldBackup = g_WndMng.m_rectLayout;
 	g_WndMng.PutString( prj.GetText(TID_GAME_NOTCHARGEDSERVER), NULL, prj.GetTextColor(TID_GAME_NOTCHARGEDSERVER) );
 	Destroy();
 	return FALSE;
@@ -62,7 +62,7 @@ BOOL CWndWebBox::Initialize( CWndBase* pWndParent, DWORD nType )
 
 
 #if defined(__INTERNALSERVER)
-	m_rectOldBackup = CWndTaskBar::m_pWndRoot->m_rectLayout;
+	m_rectOldBackup = g_WndMng.m_rectLayout;
 	g_WndMng.PutString( prj.GetText(TID_GAME_NOTCHARGEDSERVER), NULL, prj.GetTextColor(TID_GAME_NOTCHARGEDSERVER) );
 	Destroy();
 	return FALSE;
@@ -72,7 +72,7 @@ BOOL CWndWebBox::Initialize( CWndBase* pWndParent, DWORD nType )
 #ifdef __MAINSERVER
 	if( g_eLocal.GetState( EVE_SCHOOL ) )
 	{
-		m_rectOldBackup = CWndTaskBar::m_pWndRoot->m_rectLayout;
+		m_rectOldBackup = g_WndMng.m_rectLayout;
 		Destroy();
 		return FALSE;
 	}
@@ -100,7 +100,7 @@ BOOL CWndWebBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 		CRect rect = g_Neuz.GetDeviceRect();
 		rect.top = rect.bottom - TASKBAR_HEIGHT;
-		CWndTaskBar::m_pWndRoot->m_rectLayout = m_rectOldBackup;
+		g_WndMng.m_rectLayout = m_rectOldBackup;
 		SetWndRect( m_rectOldBackup );
 
 		ShowWindow( CWebBox::GetInstance()->m_hDlg, SW_HIDE );		
@@ -125,10 +125,10 @@ void CWndWebBox::OnInitialUpdate()
 	DelWndStyle(WBS_MOVE);
 	AddWndStyle(WBS_TOPMOST);
 	
-	m_rectOldBackup = CWndTaskBar::m_pWndRoot->m_rectLayout;
+	m_rectOldBackup = g_WndMng.m_rectLayout;
 
 	CRect rect = g_Neuz.GetDeviceRect();
-	CWndTaskBar::m_pWndRoot->m_rectLayout = rect;
+	g_WndMng.m_rectLayout = rect;
 
 	LPWNDCTRL pCustom = NULL;
 	pCustom = GetWndCtrl( WIDC_CUSTOM1 );
@@ -217,13 +217,13 @@ CWndWebBox2::~CWndWebBox2()
 {
 	CRect rect = g_Neuz.GetDeviceRect();
 	rect.top = rect.bottom - TASKBAR_HEIGHT;
-	CWndTaskBar::m_pWndRoot->m_rectLayout = m_rectOldBackup;
+	g_WndMng.m_rectLayout = m_rectOldBackup;
 	SetWndRect( m_rectOldBackup );
 	
 	ShowWindow( CWebBox::GetInstance()->m_hDlg, SW_HIDE );
 	CWebBox::GetInstance()->Close();	
 }
-BOOL CWndWebBox2::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndWebBox2::Initialize( CWndBase* pWndParent )
 {	
 	CWndWebBox* pWndWebBox = (CWndWebBox*)g_WndMng.GetApplet( APP_WEBBOX );
 	if(pWndWebBox)
@@ -241,7 +241,7 @@ BOOL CWndWebBox2::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 		CRect rect = g_Neuz.GetDeviceRect();
 		rect.top = rect.bottom - TASKBAR_HEIGHT;
-		CWndTaskBar::m_pWndRoot->m_rectLayout = m_rectOldBackup;
+		g_WndMng.m_rectLayout = m_rectOldBackup;
 		SetWndRect( m_rectOldBackup );
 
 		ShowWindow( CWebBox::GetInstance()->m_hDlg, SW_HIDE );		
@@ -266,10 +266,10 @@ void CWndWebBox2::OnInitialUpdate()
 	DelWndStyle(WBS_MOVE);
 	AddWndStyle(WBS_TOPMOST);
 	
-	m_rectOldBackup = CWndTaskBar::m_pWndRoot->m_rectLayout;
+	m_rectOldBackup = g_WndMng.m_rectLayout;
 
 	CRect rect = g_Neuz.GetDeviceRect();
-	CWndTaskBar::m_pWndRoot->m_rectLayout = rect;
+	g_WndMng.m_rectLayout = rect;
 
 	LPWNDCTRL pCustom = NULL;
 	pCustom = GetWndCtrl( WIDC_CUSTOM1 );

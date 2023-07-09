@@ -757,11 +757,11 @@ public:
 	static	float	GetItemEnduranceInfluence( int nEndurance );	
 	static	int		GetItemEnduranceWeight( int nEndurance );	
 
-	virtual	BOOL	SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwIndex, BOOL bInitProp = FALSE, BOOL bDestParam = TRUE );
+	virtual	BOOL	SetIndex( DWORD dwIndex, BOOL bInitProp = FALSE, BOOL bDestParam = TRUE );
 	virtual BOOL	Read( CFileIO* pFile );
 	virtual void	Process();
 	virtual	void	Serialize( CAr & ar ); // 시리얼라이즈 ; 네트웍 상태에서 서버와 클라이언트, 클라이언트 서버가 주고받을 패킷 내용 
-	virtual	CModel* LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex );
+	virtual	CModel* LoadModel( DWORD dwType, DWORD dwIndex );
 	virtual void	InitProp( BOOL bInitAI = TRUE );		// 객체를 프로퍼티 내용으로 초기화 	
 //	virtual int		OnActCollecting();				// User만 사용되는 것이므로 CUser가서 찾을것.
 	virtual int		SendDamage( DWORD dwAtkFlag, OBJID idAttacker, int nParam = 0, BOOL bTarget = TRUE ) { return m_pActMover->SendDamage( dwAtkFlag, idAttacker, nParam, bTarget );  }
@@ -892,8 +892,8 @@ public:
 	void			RemoveAllQuest();
 	void			RemoveCompleteQuest();
 	BOOL            IsDisguise();
-	BOOL			NoDisguise( LPDIRECT3DDEVICE9 pd3dDevice = NULL );
-	BOOL			Disguise( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwMoverIndex );
+	BOOL			NoDisguise( );
+	BOOL			Disguise( DWORD dwMoverIndex );
 	DWORD			IsAuthorization( DWORD dwAuthorization ) { return dwAuthorization == m_dwAuthorization; }
 	DWORD			IsAuthHigher( DWORD dwAuthorization ) { return dwAuthorization <= m_dwAuthorization; }
 	void			UpdateParam();		
@@ -1345,7 +1345,7 @@ public:
 #endif // __WORLDSERVER
 
 #ifdef __CLIENT
-	virtual void	Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void	Render( );
 
 	void			InitInterpolation();
 	void			Interpolate();
@@ -1364,23 +1364,23 @@ public:
 	[[nodiscard]] LPCTSTR GetJobString() const;						// 직업 이름 얻기 
 	void			DialogOut( LPCTSTR lpszText );		// 말풍선에 의한 대사 출력
 	BOOL			DoFakeEquip( const EQUIP_INFO & rEquipInfo, BOOL bEquip, int nPart, CModelObject* pModel = NULL ); // for Fake
-	void			RenderGauge( LPDIRECT3DDEVICE9 pd3dDevice, int nValue );
-	void			RenderTurboGauge( LPDIRECT3DDEVICE9 pd3dDevice, DWORD nColor, int nValue, int nMaxValue );
+	void			RenderGauge( int nValue );
+	void			RenderTurboGauge( DWORD nColor, int nValue, int nMaxValue );
 	void			SetRenderPartsEffect( int nParts );
-	void			RenderPartsEffect( LPDIRECT3DDEVICE9 pd3dDevice );
-	void			RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor = 0xffffffff );
-	void			RenderHP(LPDIRECT3DDEVICE9 pd3dDevice);
-	void			RenderCltGauge(LPDIRECT3DDEVICE9 pd3dDevice);
-	void			RenderChrState(LPDIRECT3DDEVICE9 pd3dDevice);
+	void			RenderPartsEffect( );
+	void			RenderName( CD3DFont* pFont, DWORD dwColor = 0xffffffff );
+	void			RenderHP();
+	void			RenderCltGauge();
+	void			RenderChrState();
 	void			RenderFlag( int nType );
-	void			RenderCasting( LPDIRECT3DDEVICE9 pd3dDevice );
-	void			RenderCtrlCasting( LPDIRECT3DDEVICE9 pd3dDevice );
-	void			RenderSkillCasting( LPDIRECT3DDEVICE9 pd3dDevice );
-	void			RenderPVPCount( LPDIRECT3DDEVICE9 pd3dDevice );
-	void			RenderQuestEmoticon( LPDIRECT3DDEVICE9 pd3dDevice );
-	void			RenderGuildNameLogo( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor );
+	void			RenderCasting( );
+	void			RenderCtrlCasting( );
+	void			RenderSkillCasting( );
+	void			RenderPVPCount( );
+	void			RenderQuestEmoticon( );
+	void			RenderGuildNameLogo( CD3DFont* pFont, DWORD dwColor );
 	
-	void			RenderAngelStatus(LPDIRECT3DDEVICE9 pd3dDevice);
+	void			RenderAngelStatus();
 #endif	// __CLIENT
 
 

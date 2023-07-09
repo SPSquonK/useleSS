@@ -267,7 +267,7 @@ void	CActionMover::ProcessState1( CMover* pMover,  DWORD dwState, float fSpeed )
 					
 					ItemProp* pItemProp = prj.GetPartySkill( ST_STRETCHING );
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -795,7 +795,7 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 				#ifdef __CLIENT
 					if( GetMover()->IsActiveMover() )
 					{
-						if( (pMover->GetLevel() >= nReqLevel) && ((m_dwCtrlMsg & CTRLMSG_LDOWN) || ((CWndWorld *)g_WndMng.m_pWndWorld)->m_bAutoAttack) )	// 직업레벨 X이상이면 다음연타가능
+						if( (pMover->GetLevel() >= nReqLevel) && ((m_dwCtrlMsg & CTRLMSG_LDOWN) || g_WndMng.m_pWndWorld->m_bAutoAttack) )	// 직업레벨 X이상이면 다음연타가능
 						{
 							const ItemProp* pItemProp = pMover->GetActiveHandItemProp();
 							if( pItemProp && pItemProp->dwItemKind3 == IK3_YOYO )
@@ -839,7 +839,7 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 					if( (pMover->m_dwFlag & MVRF_LASERCHARGE) == 0 )	// 레이저충전 이펙트가 아직 생성 안되었음.
 					{
 						// 이마에서 기 모으기 이펙트.
-						CSfx *pSfx = CreateSfx( D3DDEVICE, XI_NPCSP1DIRAMP, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
+						CSfx *pSfx = CreateSfx( XI_NPCSP1DIRAMP, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
 						if( pSfx )
 						{
 							pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
@@ -864,7 +864,7 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 					if( (pMover->m_dwFlag & MVRF_LASERCHARGE) == 0 )	// 레이저충전 이펙트가 아직 생성 안되었음.
 					{
 						// 이마에서 기 모으기 이펙트.
-						CSfxMushmootCharge *pSfx = (CSfxMushmootCharge*)CreateSfx( D3DDEVICE, XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
+						CSfxMushmootCharge *pSfx = (CSfxMushmootCharge*)CreateSfx( XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
 						if( pSfx )
 						{
 							pSfx->m_nEventPos = 0;
@@ -880,28 +880,28 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 					{
 						CSfxMushmootCharge *pSfx = NULL;
 						// 이마에서 기 모으기 이펙트.
-						pSfx = (CSfxMushmootCharge*)CreateSfx( D3DDEVICE, XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
+						pSfx = (CSfxMushmootCharge*)CreateSfx( XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
 						if( pSfx )
 						{
 							pSfx->m_nEventPos = 1;
 							pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 							pMover->m_dwFlag |= MVRF_LASERCHARGE;
 						}
-						pSfx = (CSfxMushmootCharge*)CreateSfx( D3DDEVICE, XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
+						pSfx = (CSfxMushmootCharge*)CreateSfx( XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
 						if( pSfx )
 						{
 							pSfx->m_nEventPos = 2;
 							pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 							pMover->m_dwFlag |= MVRF_LASERCHARGE;
 						}
-						pSfx = (CSfxMushmootCharge*)CreateSfx( D3DDEVICE, XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
+						pSfx = (CSfxMushmootCharge*)CreateSfx( XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
 						if( pSfx )
 						{
 							pSfx->m_nEventPos = 3;
 							pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 							pMover->m_dwFlag |= MVRF_LASERCHARGE;
 						}
-						pSfx = (CSfxMushmootCharge*)CreateSfx( D3DDEVICE, XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
+						pSfx = (CSfxMushmootCharge*)CreateSfx( XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
 						if( pSfx )
 						{
 							pSfx->m_nEventPos = 4;
@@ -1025,14 +1025,14 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 				if( pMover->m_dwMotion == MTI_ATK1 )
 				{
 					pModel->GetHandPos( &vPos, PARTS_RWEAPON, pMover->GetMatrixWorld() );
-					pSfx = CreateSfxYoYo( D3DDEVICE, dwSfxObj, vPos, pMover->GetId(), vPosDest );	
+					pSfx = CreateSfxYoYo( dwSfxObj, vPos, pMover->GetId(), vPosDest );	
 					((CSfxItemYoyoAtk*)pSfx)->MakePath(PARTS_RWEAPON);					
 				}
 				else
 				if( pMover->m_dwMotion == MTI_ATK2 )
 				{
 					pModel->GetHandPos( &vPos, PARTS_LWEAPON, pMover->GetMatrixWorld() );
-					pSfx = CreateSfxYoYo( D3DDEVICE, dwSfxObj, vPos, pMover->GetId(), vPosDest );	
+					pSfx = CreateSfxYoYo( dwSfxObj, vPos, pMover->GetId(), vPosDest );	
 					((CSfxItemYoyoAtk*)pSfx)->MakePath(PARTS_LWEAPON);
 				}
 			}

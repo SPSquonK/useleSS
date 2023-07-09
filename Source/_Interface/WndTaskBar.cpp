@@ -76,7 +76,7 @@ void CWndTaskBar::SetTaskBarTexture( SHORTCUT & shortcut )
 		AppletFunc* pAppletFunc = g_WndMng.GetAppletFunc( shortcut.m_dwId );
 		if( pAppletFunc )
 		{
-			shortcut.m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, pAppletFunc->m_pszIconName ), 0xffff00ff );
+			shortcut.m_pTexture = m_textureMng.AddTexture(  MakePath( DIR_ICON, pAppletFunc->m_pszIconName ), 0xffff00ff );
 		} else
 		{
 #ifndef __BS_CONSOLE
@@ -92,13 +92,13 @@ void CWndTaskBar::SetTaskBarTexture( SHORTCUT & shortcut )
 	}
 	else if (shortcut.m_dwShortcut == ShortcutType::PartySkill) {
 		ItemProp * pProp = prj.GetPartySkill(shortcut.m_dwId);
-		if (pProp) shortcut.m_pTexture = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff);
+		if (pProp) shortcut.m_pTexture = m_textureMng.AddTexture(MakePath(DIR_ICON, pProp->szIcon/*pItemBase->GetProp()->szIcon*/), 0xffff00ff);
 	}
 	else if ( shortcut.m_dwShortcut == ShortcutType::Skill)
 	{
 		ItemProp* pSkillProp = prj.m_aPropSkill.GetAt(shortcut.m_dwId);
 		if( pSkillProp )
-			shortcut.m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pSkillProp->szIcon ), 0xffff00ff );
+			shortcut.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pSkillProp->szIcon ), 0xffff00ff );
 	}
 	else if ( shortcut.m_dwShortcut == ShortcutType::Lord)
 	{
@@ -111,13 +111,13 @@ void CWndTaskBar::SetTaskBarTexture( SHORTCUT & shortcut )
 		MotionProp* pMotionProp = prj.GetMotionProp( shortcut.m_dwId );
 		if(pMotionProp)			//061206 ma	8차에 들어갈 모션관리를 위해 버전 추가	propMotion.txt
 		{
-			pMotionProp->pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pMotionProp->szIconName ), 0xffff00ff );
+			pMotionProp->pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pMotionProp->szIconName ), 0xffff00ff );
 			shortcut.m_pTexture = pMotionProp->pTexture;
 		}
 	}
 	else if( shortcut.m_dwShortcut == ShortcutType::Chat)
 	{
-		shortcut.m_pTexture	= m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "icon_MacroChat.dds" ), 0xffff00ff );
+		shortcut.m_pTexture	= m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_MacroChat.dds" ), 0xffff00ff );
 	}
 	else if( shortcut.m_dwShortcut == ShortcutType::Emoticon)
 	{
@@ -483,8 +483,8 @@ void CWndTaskBar::OnDraw( C2DRender* p2DRender )
 			else 
 				nAP2Size = (m_nActionPoint * SKILL_SIZE) / LV2MAXAP;
 			
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, FALSE );
+			D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+			D3DDEVICE->SetRenderState( D3DRS_ALPHATESTENABLE, FALSE );
 			point.x += nAP2Size;
 			nAP2Size = (SKILL_SIZE * 4) - nAP2Size;
 			p2DRender->RenderFillRect( CRect(point.x, point.y,  point.x + nAP2Size, point.y + SKILL_SIZE + 2), 
@@ -665,34 +665,34 @@ void CWndTaskBar::OnInitialUpdate()
 
 	{
 		rect = g_Neuz.GetDeviceRect();
-		m_pWndRoot->m_rectLayout = rect;
+		g_WndMng.m_rectLayout = rect;
 		switch( m_nPosition )
 		{
 		case TASKBAR_TOP:
 			rect.bottom = TASKBAR_HEIGHT;
-			m_pWndRoot->m_rectLayout.top = rect.bottom;
+			g_WndMng.m_rectLayout.top = rect.bottom;
 			break;
 		case TASKBAR_BOTTOM:
 			rect.top = rect.bottom - TASKBAR_HEIGHT;
-			m_pWndRoot->m_rectLayout.bottom = rect.top;
+			g_WndMng.m_rectLayout.bottom = rect.top;
 			break;
 		case TASKBAR_LEFT:
 			rect.right = TASKBAR_HEIGHT;
-			m_pWndRoot->m_rectLayout.left = rect.right;
+			g_WndMng.m_rectLayout.left = rect.right;
 			break;
 		case TASKBAR_RIGHT:
 			rect.left = rect.right - TASKBAR_HEIGHT;
-			m_pWndRoot->m_rectLayout.right = rect.left;
+			g_WndMng.m_rectLayout.right = rect.left;
 			break;
 		}
 		SetWndRect( rect );
 	}
-	m_texPack.LoadScript( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "hotkey.inc" ) );
+	m_texPack.LoadScript( MakePath( DIR_THEME, "hotkey.inc" ) );
 
 	m_menuShortcut.CreateMenu( this );	
 	m_menuShortcut.AddButton( 0 ,_T( "삭제" ) );
 
-	m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice,  MakePath( DIR_ICON, "icon_ActionSkill.dds" ), 0xffff00ff );
+	m_pTexture = m_textureMng.AddTexture(  MakePath( DIR_ICON, "icon_ActionSkill.dds" ), 0xffff00ff );
 	m_aSlotSkill.m_dwShortcut = ShortcutType::SkillFun;
 	m_aSlotSkill.m_pTexture   = m_pTexture;
 }
@@ -722,13 +722,13 @@ HRESULT CWndTaskBar::RestoreDeviceObjects()
 	CWndBase::RestoreDeviceObjects();
 	
 #ifdef __YDEBUG
-	m_texPack.RestoreDeviceObjects(m_pApp->m_pd3dDevice);
+	m_texPack.RestoreDeviceObjects();
 #endif //__YDEBUG
 	
 	return 0;
 }
 
-BOOL CWndTaskBar::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndTaskBar::Initialize(CWndBase* pWndParent)
 {
 	CRect rect = g_Neuz.GetDeviceRect();
 	//m_rectLayout = rect;
@@ -737,11 +737,11 @@ BOOL CWndTaskBar::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 	{
 	case TASKBAR_TOP:
 		rect.bottom = TASKBAR_HEIGHT;
-		m_pWndRoot->m_rectLayout.top = rect.bottom;
+		g_WndMng.m_rectLayout.top = rect.bottom;
 		break;
 	case TASKBAR_BOTTOM:
 		rect.top = rect.bottom - TASKBAR_HEIGHT;
-		m_pWndRoot->m_rectLayout.bottom = rect.top;
+		g_WndMng.m_rectLayout.bottom = rect.top;
 		break;
 	case TASKBAR_LEFT:
 		break;
@@ -749,7 +749,7 @@ BOOL CWndTaskBar::Initialize(CWndBase* pWndParent,DWORD dwWndId)
 		break;
 	}
 	*/
-	//m_pWndRoot->SetWndRect( rectRoot );
+	//g_WndMng.SetWndRect( rectRoot );
 
 //CMainFrame
 	//rect.top = rect.bottom;
@@ -1163,7 +1163,7 @@ BOOL CWndTaskBar::SetSkillQueue( int nIndex, const DWORD skillId, CTexture* pTex
 	if( pTexture == NULL )
 	{
 		LPSKILL lpSkill = g_pPlayer->GetSkill( skillId );
-		pShortcut->m_pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, lpSkill->GetProp()->szIcon), 0xff000000, FALSE );
+		pShortcut->m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, lpSkill->GetProp()->szIcon), 0xff000000, FALSE );
 	}
 	else pShortcut->m_pTexture = pTexture;
 
@@ -1750,7 +1750,7 @@ BOOL CWndTaskMenu::Process()
 				pWndButton.m_pWndMenu->Move( CPoint( rcButton.right, rcButton.top ) );
 				// 그런데 그 메뉴가 화면을 벗어났다면 위치를 수정 
 				const CRect rcMenu = pWndButton.m_pWndMenu->GetScreenRect();
-				const CRect rcLayout = m_pWndRoot->GetLayoutRect();
+				const CRect rcLayout = g_WndMng.GetLayoutRect();
 				CPoint pt = rcMenu.TopLeft();
 				if (rcMenu.right > rcLayout.right) {
 					pt.x = rcButton.left - rcMenu.Width();
@@ -1844,7 +1844,7 @@ void CWndTaskMenu::OnInitialUpdate()
 	AddApplet(APP_LOGOUT  , TID_APP_LOGOUT);
 	AddApplet(APP_QUIT    , TID_APP_QUIT);
 
-	CWndBase::SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "WndTaskMenu.tga" ) ), TRUE );
+	CWndBase::SetTexture( MakePath( DIR_THEME, _T( "WndTaskMenu.tga" ) ), TRUE );
 
 	CRect nextRectSurface(10, 50, m_pTexture->m_size.cx - 20, 50 + 20);
 
@@ -1862,7 +1862,7 @@ void CWndTaskMenu::AddApplet(DWORD appId, DWORD textId) {
 
 CWndTaskMenu::FolderAdder CWndTaskMenu::AddFolder(DWORD textId) {
 	CWndButton * menuButton = MakeButton(this, 0, prj.GetText(textId));
-	menuButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_Folder.dds")));
+	menuButton->SetTexture(MakePath(DIR_ICON, _T("icon_Folder.dds")));
 
 	CWndMenu * menu = new CWndMenu;
 	menu->CreateMenu(this);
@@ -1885,12 +1885,12 @@ CWndButton* CWndTaskMenu::MakeButton( CWndMenu* pWndMenu, UINT nIDNewItem,	LPCTS
 	}
 	pWndButton->m_strToolTip = string;
 	pWndButton->m_shortcut.m_dwShortcut = ShortcutType::Applet; 
-	pWndButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, g_WndMng.GetAppletFunc(pWndButton->GetWndId())->m_pszIconName));
+	pWndButton->SetTexture(MakePath(DIR_ICON, g_WndMng.GetAppletFunc(pWndButton->GetWndId())->m_pszIconName));
 	
 	return pWndButton;
 }
 
-BOOL CWndTaskMenu::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndTaskMenu::Initialize(CWndBase*)
 {
 	CreateMenu( &g_WndMng );
 	SetVisible(TRUE);

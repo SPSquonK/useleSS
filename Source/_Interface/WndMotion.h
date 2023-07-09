@@ -11,7 +11,6 @@ public:
 	CWndMotion1();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
 	// message
 	virtual BOOL Process();
 	virtual void OnSize(UINT nType, int cx, int cy);
@@ -30,7 +29,6 @@ class CWndEmoticon : public CWndBase
 public:
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
 	// message
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
 	virtual void OnLButtonDown(UINT nFlags, CPoint point);
@@ -38,12 +36,12 @@ public:
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 };
 
-class CWndMotion : public CWndNeuz 
+class CWndMotion final : public CWndNeuz
 { 
 public: 
 	CWndMotion1		m_wndMotion1;
 	CWndEmoticon    m_wndEmoticon;
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	void OnInitialUpdate() override;
 }; 

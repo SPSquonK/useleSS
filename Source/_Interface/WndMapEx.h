@@ -16,7 +16,7 @@ public:
 	~CWndMapEx( void );
 
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual	void OnInitialUpdate( void );
 	virtual	BOOL Process( void );
 	virtual void OnDraw( C2DRender* p2DRender );

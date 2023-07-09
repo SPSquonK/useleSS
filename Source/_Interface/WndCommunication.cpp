@@ -114,8 +114,8 @@ void CWndMacroChat::OnMouseMove(UINT nFlags, CPoint point)
 }
 void CWndMacroChat::OnInitialUpdate()
 {
-	m_pTexMacro = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_ICON, "icon_MacroChat.dds" ), 0xffff00ff );
-	m_texMacroChat.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "wndButtMacroChat.bmp" ), 0xffff00ff );
+	m_pTexMacro = m_textureMng.AddTexture( MakePath( DIR_ICON, "icon_MacroChat.dds" ), 0xffff00ff );
+	m_texMacroChat.LoadTexture( MakePath( DIR_THEME, "wndButtMacroChat.bmp" ), 0xffff00ff );
 }
 
 BOOL CWndTextChat::IsPickupSpace(CPoint) {
@@ -257,7 +257,7 @@ void CWndChat::OnInitialUpdate()
 	m_wndMacroChat.AddWndStyle( WBS_NODRAWFRAME );
 
 	lpWndCtrl = GetWndCtrl( WIDC_EDIT );
-	m_wndEdit.Create( g_Neuz.GetSafeHwnd(), WBS_NODRAWFRAME, lpWndCtrl->rect, this, WIDC_EDIT );
+	m_wndEdit.Create( WBS_NODRAWFRAME, lpWndCtrl->rect, this, WIDC_EDIT );
 	m_wndText.Create( WBS_NOFRAME | WBS_NODRAWFRAME | WBS_VSCROLL, lpWndText->rect, this, WIDC_TEXT );
 	CWndText* pWndText = (CWndText*)GetDlgItem( WIDC_TEXT );
 	CWndEdit* pWndHead = (CWndEdit*)GetDlgItem( WIDC_HEAD );
@@ -328,7 +328,7 @@ void CWndChat::OnInitialUpdate()
 	pWndLock->SetCheck( m_bChatLock );
 	CWndButton* pWndMoveLock = (CWndButton*)GetDlgItem( WIDC_MOVELOCK );
 	pWndMoveLock->SetCheck( m_bMoveLock );
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rect = GetWindowRect();
 	int nWidth  = rect.Width(); 
 	int nHeight = rect.Height(); 
@@ -343,27 +343,25 @@ void CWndChat::OnInitialUpdate()
 	{
 		g_WndMng.m_pWndChatLog = new CWndChatLog;
 		
-		if( g_WndMng.m_pWndChatLog )
-		{
-			g_WndMng.m_pWndChatLog->Initialize( NULL, APP_CHAT_LOG );
+		g_WndMng.m_pWndChatLog->Initialize();
 			
-			CRect rectRoot = m_pWndRoot->GetLayoutRect();
-			CRect rect = GetWindowRect(TRUE);
-			CRect rect2 = g_WndMng.m_pWndChatLog->GetClientRect(TRUE);
+		CRect rectRoot = g_WndMng.GetLayoutRect();
+		CRect rect = GetWindowRect(TRUE);
+		CRect rect2 = g_WndMng.m_pWndChatLog->GetClientRect(TRUE);
 			
-			int x = 0;
-			int y = rect.top;
+		int x = 0;
+		int y = rect.top;
 			
-			if( (rect.right+rect2.Width()) < rectRoot.right )
-				x = rect.right;
-			else
-				x = (rect.left - rect2.Width() );
+		if( (rect.right+rect2.Width()) < rectRoot.right )
+			x = rect.right;
+		else
+			x = (rect.left - rect2.Width() );
 			
-			CPoint point( x, y );
-			g_WndMng.m_pWndChatLog->Move( point );
+		CPoint point( x, y );
+		g_WndMng.m_pWndChatLog->Move( point );
 
-			g_WndMng.m_pWndChatLog->SetVisible(FALSE);
-		}
+		g_WndMng.m_pWndChatLog->SetVisible(FALSE);
+		
 	}
 
 	if( g_WndMng.m_pWndChatLog )
@@ -422,12 +420,12 @@ void CWndChat::OnSetFocus(CWndBase* pOldWnd)
 void CWndChat::OnKillFocus(CWndBase* pNewWnd)
 {
 }
-BOOL CWndChat::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndChat::Initialize(CWndBase* pWndParent)
 {
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
+	CRect rectWindow = g_WndMng.GetWindowRect();
 	CRect rect( 154, rectWindow.Height() - 100, 154 + rectWindow.Width() - 300, rectWindow.Height() );
 	SetTitle( GETTEXT( TID_APP_COMMUNICATION_CHAT ) );
-	return CWndNeuz::InitDialog( dwWndId, pWndParent, WBS_KEY| WBS_THICKFRAME, CPoint( 792, 130 ) );
+	return CWndNeuz::InitDialog( APP_COMMUNICATION_CHAT, pWndParent, WBS_KEY| WBS_THICKFRAME, CPoint( 792, 130 ) );
 }
 
 /*
@@ -514,7 +512,7 @@ BOOL CWndChat::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				{
 					if( bChatLog )
 					{
-						CRect rectRoot = m_pWndRoot->GetLayoutRect();
+						CRect rectRoot = g_WndMng.GetLayoutRect();
 						CRect rect = GetWindowRect(TRUE);
 						CRect rect2 = g_WndMng.m_pWndChatLog->GetClientRect(TRUE);
 						
@@ -1139,7 +1137,7 @@ void CWndChatLog::OnInitialUpdate()
 
 	pWndText->m_nLineSpace = 2;
 
-	const CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	const CRect rectRoot = g_WndMng.GetLayoutRect();
 	const CRect rect = GetWindowRect();
 	const int nHeight = rect.Height(); 
 	const int y = rectRoot.bottom - nHeight;	
@@ -1157,12 +1155,12 @@ BOOL CWndChatLog::Process() {
 void CWndChatLog::OnKillFocus(CWndBase* pNewWnd)
 {
 }
-BOOL CWndChatLog::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndChatLog::Initialize(CWndBase* pWndParent)
 {
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
+	CRect rectWindow = g_WndMng.GetWindowRect();
 	CRect rect( 154, rectWindow.Height() - 100, 154 + rectWindow.Width() - 300, rectWindow.Height() );
 	SetTitle( GETTEXT( TID_APP_COMMUNICATION_CHAT ) );
-	return CWndNeuz::InitDialog( dwWndId, pWndParent, WBS_THICKFRAME, CPoint( 792, 130 ) );
+	return CWndNeuz::InitDialog( APP_CHAT_LOG, pWndParent, WBS_THICKFRAME, CPoint( 792, 130 ) );
 }
 
 BOOL CWndChatLog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 

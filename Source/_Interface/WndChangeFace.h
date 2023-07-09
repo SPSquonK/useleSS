@@ -2,14 +2,14 @@
 
 #include "WndSqKComponents.h"
 
-class CWndChangeFace : public CWndNeuz 
+class CWndChangeFace final : public CWndNeuz 
 { 
 public: 
 	int m_nSelectFace;
 	CWndChangeFace(); 
 	~CWndChangeFace(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -19,7 +19,7 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-class CWndChangeSex : public CWndNeuz 
+class CWndChangeSex final : public CWndNeuz 
 { 
 private:
 	DWORD	m_dwItemId;
@@ -33,7 +33,7 @@ public:
 	int m_nSelectFace;
 	CWndChangeSex(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -42,7 +42,7 @@ private:
 	void UpdateModelParts();
 }; 
 
-class CWndItemTransy : public CWndNeuz 
+class CWndItemTransy final : public CWndNeuz 
 { 
 public:
 	static constexpr UINT WIDC_Receiver = 501;
@@ -58,7 +58,7 @@ public:
 
 	void Init( CItemElem* pItemElem );
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnDestroy( void );

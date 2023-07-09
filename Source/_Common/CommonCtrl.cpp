@@ -551,7 +551,7 @@ void CCommonCtrl::_CreateTrapSkill()
 }
 
 
-void CCommonCtrl::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CCommonCtrl::Render( )
 {
 #ifdef __CLIENT
 	if( GetIndex() == CI_PSYCHICWALL )		// 轿捞疟岿老版快 蝶肺 贸府 - 老窜 东户.
@@ -560,8 +560,8 @@ void CCommonCtrl::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		m_pSfxModel->m_vRotate.y = GetAngle();
 		m_pSfxModel->m_vScale = GetScale();
 		m_pSfxModel->m_matScale = m_matScale;
-		//m_pSfxModel->Render( pd3dDevice, NULL );
-		m_pSfxModel->RenderZ( pd3dDevice, NULL );
+		//m_pSfxModel->Render( NULL );
+		m_pSfxModel->RenderZ( NULL );
 		return;
 	}
 		
@@ -572,15 +572,15 @@ void CCommonCtrl::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		AddAngle( 1.0f );
 	}
 	
-	CObj::Render( pd3dDevice );
+	CObj::Render( );
 #endif// __CLIENT
 }
 
-void CCommonCtrl::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor )
+void CCommonCtrl::RenderName( CD3DFont* pFont, DWORD dwColor )
 {
 #ifndef __WORLDSERVER
 	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(
-		pd3dDevice, std::nullopt,
+		std::nullopt,
 		PWCTSC_DoNotResetWorldTransform | PWCTSC_UntouchedViewport
 	);
 
@@ -612,7 +612,7 @@ void CCommonCtrl::SetActionPlay()
 		{
 			if( pCtrlProp && pCtrlProp->dwSfxCtrl != -1 )
 			{
-				CreateSfx( g_Neuz.m_pd3dDevice, pCtrlProp->dwSfxCtrl, GetPos() );
+				CreateSfx( pCtrlProp->dwSfxCtrl, GetPos() );
 			}
 		}
 	}
@@ -660,7 +660,7 @@ void CCommonCtrl::DropItem() {
 		pItem->m_dwDropTime		= timeGetTime();
 
 		pItem->m_bDropMob	= FALSE;
-		pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
+		pItem->SetIndex( pItem->m_pItemBase->m_dwItemId );
 			
 		D3DXVECTOR3	v3Pos = GetPos();
 		v3Pos.x += static_cast<float>(xRandom(30) - 15) * 0.1f;
@@ -696,7 +696,7 @@ void CCommonCtrl::DropNPC()
 
 		for( j=0; j<(int)( dwBaseMob ); j++ )
 		{
-			CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+			CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 			if( NULL == pObj )	
 				return;
 
@@ -723,7 +723,7 @@ void CCommonCtrl::DropNPC()
 		// 急傍 各 积己
 		for( j=0; j<(int)( m_CtrlElem.m_dwMonActAttack[i] ); j++ )
 		{
-			CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+			CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 			if( NULL == pObj )	
 				return;
 			

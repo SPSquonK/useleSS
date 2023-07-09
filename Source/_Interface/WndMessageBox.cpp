@@ -57,20 +57,20 @@ static void SetupWindowsStyleDialog(
 			break;
 		case MB_OK:
 			buttons[0].Create("OK", 0, rect1_1, self, IDOK);
-			buttons[0].SetTexture(self->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "ButtOk.tga"));
+			buttons[0].SetTexture(MakePath(DIR_THEME, "ButtOk.tga"));
 			buttons[0].FitTextureSize();
 			break;
 		case MB_CANCEL:
 			buttons[0].Create("CANCEL", 0, rect1_1, self, IDCANCEL);
-			buttons[0].SetTexture(self->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "ButtCancel.tga"));
+			buttons[0].SetTexture(MakePath(DIR_THEME, "ButtCancel.tga"));
 			buttons[0].FitTextureSize();
 			break;
 		case MB_OKCANCEL:
 			buttons[0].Create("OK", 0, rect2_1, self, IDOK);
-			buttons[0].SetTexture(self->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "ButtOk.tga"));
+			buttons[0].SetTexture(MakePath(DIR_THEME, "ButtOk.tga"));
 			buttons[0].FitTextureSize();
 			buttons[1].Create("CANCEL", 0, rect2_2, self, IDCANCEL);
-			buttons[1].SetTexture(self->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "ButtCancel.tga"));
+			buttons[1].SetTexture(MakePath(DIR_THEME, "ButtCancel.tga"));
 			buttons[1].FitTextureSize();
 			break;
 		case MB_RETRYCANCEL:
@@ -133,15 +133,11 @@ BOOL CWndMessageBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			Destroy(); 
 			break;
 	}
-	if( GetParentWnd() != m_pWndRoot )
+	if( GetParentWnd() != &g_WndMng )
 		GetParentWnd()->OnCommand( nID, message, this );
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
 
-BOOL CWndMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	return TRUE;
-}
 BOOL CWndMessageBox::Initialize( LPCTSTR lpszMessage, CWndBase* pWndParent, DWORD nType )
 {
 	if( g_WndMng.m_pWndWorld && g_WndMng.m_pWndWorld->GetMouseMode() == 1 )	// FPS모드일때
@@ -161,12 +157,10 @@ BOOL CWndMessageBox::Create( LPCTSTR lpszMessage, UINT nType, const RECT& rect, 
 }
 
 void CWndMessageBox::OnEnter(const UINT nChar) {
-	constexpr auto IsDisable = [](CWndMessageBox & self) {
-		const CWndButton * const pWndButton = self.GetDlgItem<CWndButton>(IDOK);
-		return pWndButton && pWndButton->IsWindowEnabled();
-	};
+	const CWndButton * const pWndButton = GetDlgItem<CWndButton>(IDOK);
+	const bool IsDisable = pWndButton && pWndButton->IsWindowEnabled();
 
-	if (IsDisable(*this)) {
+	if (IsDisable) {
 		Destroy();
 	}
 }
@@ -205,19 +199,16 @@ BOOL CWndMessageBoxUpper::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 	if( nID == 10000 )
 		return TRUE;
 
-	if( GetParentWnd() != m_pWndRoot )
+	if( GetParentWnd() != &g_WndMng )
 		GetParentWnd()->OnCommand( nID, message, this );
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
-BOOL CWndMessageBoxUpper::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	return TRUE;
-}
+
 BOOL CWndMessageBoxUpper::Initialize( LPCTSTR lpszMessage, CWndBase* pWndParent, DWORD nType, BOOL bPostLogoutMsg )
 {
 	m_bPostLogoutMsg = bPostLogoutMsg;
-	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 	//Create( _T( "매시지 박스" ), nType, rect, APP_MESSAGEBOX );
 	if( g_WndMng.m_pWndWorld && g_WndMng.m_pWndWorld->GetMouseMode() == 1 )	// FPS모드일때
 	{

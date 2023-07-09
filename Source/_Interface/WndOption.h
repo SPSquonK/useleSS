@@ -11,27 +11,11 @@
 
 #include "WndOptionGame.h"	 // 게임 옵션
 
-class CWndOption : public CWndNeuz 
-{ 
-public: 
-	CWndOption(); 
-	~CWndOption(); 
-
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-}; 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // Sound
 //
 
-class CWndOptSound : public CWndNeuz 
+class CWndOptSound final : public CWndNeuz 
 { 
 public: 
 	CTexture         m_Texture;
@@ -42,7 +26,7 @@ public:
 	CWndOptSound(); 
 	~CWndOptSound(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -56,9 +40,6 @@ public:
 	void GetRangeSlider( DWORD dwWndId, int& nStep, CPoint point );
 	int GetSliderStep( DWORD dwWndId, int &nStep, CPoint point );
 	CPoint GetStepPos( int nStep, int nWidth, int nDivision );
-
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
 	
 }; 
 class CWndOptVideo : public CWndNeuz 
@@ -86,29 +67,25 @@ public:
 	BOOL			 m_bLButtonClick;
 	BOOL			 m_bLButtonClick2;
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
-
 private:
 	void RenderSlider(C2DRender * p2DRender, UINT widgetCtrlId, int value, int max);
 }; 
 
 
 
-class CWndOptMyInfo : public CWndNeuz 
+class CWndOptMyInfo final : public CWndNeuz 
 { 
 public: 
 	CWndOptMyInfo(); 
 	~CWndOptMyInfo(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -118,13 +95,13 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-class CWndOptWindow : public CWndNeuz 
+class CWndOptWindow final : public CWndNeuz 
 { 
 public: 
 	CWndOptWindow(); 
 	~CWndOptWindow(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -135,14 +112,14 @@ public:
 }; 
 
 
-class CWndTotalOption : public CWndNeuz
+class CWndTotalOption final : public CWndNeuz
 {
 public:
 	CWndOptVideo		m_OptTabVideoSnd;
 	CWndOptionGame		m_OptTabGame;
 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 };

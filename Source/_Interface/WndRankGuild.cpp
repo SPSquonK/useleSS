@@ -82,6 +82,6 @@ void CWndRankGuild::OnInitialUpdate() {
   MoveParentCenter();
 }
 
-BOOL CWndRankGuild::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndRankGuild::Initialize(CWndBase * pWndParent) {
   return CWndNeuz::InitDialog(APP_RANK_GUILD, pWndParent, 0, CPoint(0, 0));
 }

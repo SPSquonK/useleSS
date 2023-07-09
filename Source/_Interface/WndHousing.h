@@ -26,7 +26,7 @@ struct HOUSING_ITEM
 };
 
 
-class CWndHousing : public CWndNeuz 
+class CWndHousing final : public CWndNeuz
 {
 private:
 	// 서버에서 주는 정보
@@ -42,7 +42,7 @@ public:
 	virtual ~CWndHousing(); 
 	
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -60,14 +60,14 @@ public:
 
 
 
-class CWndGHouseShowOneUnit : public CWndNeuz			
+class CWndGHouseShowOneUnit final : public CWndNeuz
 {
 	// 설치 재설치중 대상정보를 출력해주는 ...
 public:
 	CWndGHouseShowOneUnit( );
 	virtual ~CWndGHouseShowOneUnit( );
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 
@@ -80,7 +80,7 @@ protected:
 
 static const int GH_MAX_VIEW_CAPACITY = 7;	//리스트에서 보여줄 최대 허용량
 
-class CWndGuildHousing : public CWndNeuz
+class CWndGuildHousing final : public CWndNeuz
 {
 public:
 	enum GH_SECTION		// 구분 ( 해당 속성만 리스트에서 보여준다. )
@@ -93,7 +93,7 @@ public:
 	CWndGuildHousing( );
 	virtual ~CWndGuildHousing( );
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
@@ -163,7 +163,7 @@ public:
 	CWndGuildHouseBid( );
 	virtual ~CWndGuildHouseBid( );
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override; 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 

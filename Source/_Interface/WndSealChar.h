@@ -2,7 +2,7 @@
 
 class CWndSealChar final : public CWndNeuz {
 public:
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
 };
@@ -16,7 +16,7 @@ public:
 	};
 
 	static void OpenOrResetWindow(std::vector<Target> targets);
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
 
@@ -35,7 +35,7 @@ public:
 
 	CWndSealCharSelect::Target m_target;
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
 
@@ -49,7 +49,7 @@ public:
 	static void OpenOrResetWindow(DWORD scrollPosition);
 	DWORD m_scrollPos = 0;
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
 private:

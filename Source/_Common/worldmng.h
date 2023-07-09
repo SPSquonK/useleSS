@@ -53,8 +53,8 @@ public:
 	void	Free();
 	CWorld*		operator () () {	return	m_currentWorld.get(); }
 	CWorld*		Get()	{	return	m_currentWorld.get(); }
-	CWorld*		Open( LPDIRECT3DDEVICE9 pd3dDevice, LPCSTR lpszWorld );
-	CWorld*		Open( LPDIRECT3DDEVICE9 pd3dDevice, OBJID idWorld );
+	CWorld*		Open( LPCSTR lpszWorld );
+	CWorld*		Open( OBJID idWorld );
 	void DestroyCurrentWorld();
 #endif	// __WOLDSERVER	--------------------------------------------------------
 

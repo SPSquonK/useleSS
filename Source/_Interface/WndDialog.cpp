@@ -21,10 +21,8 @@ CWndDialog::~CWndDialog() {
 		pWndQuest->Update();
 	}
 } 
-BOOL CWndDialog::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
-{
-	return TRUE;
-}
+void CWndDialog::OnSetCursor() {}
+
 BOOL CWndDialog::Process() 
 {
 	CMover* pMover = prj.GetMover( m_idMover );
@@ -209,8 +207,8 @@ void CWndDialog::OnInitialUpdate()
 	m_newQuestListBox.SetLineSpace(QUEST_LIST_LINE_SPACE);
 	m_newQuestListBox.SetVisible( FALSE );
 
-	m_newQuestListBox.displayer.m_pNewQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperGreen.tga")), 0xffffffff);
-	m_newQuestListBox.displayer.m_pExpectedQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperRed.tga")), 0xffffffff);
+	m_newQuestListBox.displayer.m_pNewQuestListIconTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, _T("QuestUiPaperGreen.tga")), 0xffffffff);
+	m_newQuestListBox.displayer.m_pExpectedQuestListIconTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, _T("QuestUiPaperRed.tga")), 0xffffffff);
 	m_newQuestListBox.displayer.xOffset = m_newQuestListBox.displayer.m_pNewQuestListIconTexture->m_size.cx;
 
 
@@ -219,8 +217,8 @@ void CWndDialog::OnInitialUpdate()
 	m_currentQuestListBox.SetLineSpace(QUEST_LIST_LINE_SPACE);
 	m_currentQuestListBox.SetVisible( FALSE );
 
-	m_currentQuestListBox.displayer.m_pCurrentQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperGray.tga")), 0xffffffff);
-	m_currentQuestListBox.displayer.m_pCompleteQuestListIconTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, _T("QuestUiPaperYellow.tga")), 0xffffffff);
+	m_currentQuestListBox.displayer.m_pCurrentQuestListIconTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, _T("QuestUiPaperGray.tga")), 0xffffffff);
+	m_currentQuestListBox.displayer.m_pCompleteQuestListIconTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, _T("QuestUiPaperYellow.tga")), 0xffffffff);
 	m_currentQuestListBox.displayer.xOffset = m_currentQuestListBox.displayer.m_pCurrentQuestListIconTexture->m_size.cx;
 
 
@@ -234,7 +232,7 @@ void CWndDialog::OnInitialUpdate()
 	if( lpCharacter )
 	{
 		m_texChar.DeleteDeviceObjects();
-		m_texChar.LoadTexture( g_Neuz.m_pd3dDevice, MakePath( "char\\",lpCharacter->m_szChar ), 0xffff00ff, TRUE );
+		m_texChar.LoadTexture( MakePath( "char\\",lpCharacter->m_szChar ), 0xffff00ff, TRUE );
 		if( lpCharacter->m_dwMusicId )
 			PlayMusic( lpCharacter->m_dwMusicId, 1 );
 	}
@@ -247,7 +245,7 @@ void CWndDialog::OnInitialUpdate()
 
 	UpdateButtonEnable();
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rect = GetWindowRect();
 	int nWidth  = rect.Width(); 
 	int nHeight = rect.Height(); 
@@ -260,7 +258,7 @@ void CWndDialog::OnInitialUpdate()
 	if( pWndQuest ) pWndQuest->Update();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndDialog::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndDialog::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_DIALOG_EX, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
@@ -792,7 +790,7 @@ void CWndDialog::MakeAnswerButton()
 			{
 				m_apWndAnswer[ j ] = std::make_unique<CWndAnswer>();
 				m_apWndAnswer[ j ]->Create( "", WBS_CHILD, rect, this, nWndId );
-				m_apWndAnswer[ j ]->SetTexture( D3DDEVICE, MakePath( DIR_THEME, strTexture ), 1 );
+				m_apWndAnswer[ j ]->SetTexture( MakePath( DIR_THEME, strTexture ), 1 );
 				m_apWndAnswer[ j ]->FitTextureSize();
 				m_apWndAnswer[ j ]->m_pWordButton = pWordButton;
 				j++;

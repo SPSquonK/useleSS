@@ -2179,7 +2179,7 @@ void CDPCoreClient::OnCWWantedReward( CAr & ar, DPID, DPID, DPID )
 
 		CItem* pItem			= new CItem;
 		pItem->m_pItemBase		= pItemElem;
-		pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+		pItem->SetIndex( pItemElem->m_dwItemId );
 		pItem->SetPos( vPos );
 		pItem->SetAngle( (float)xRandom( 360 ) );
 		pWorld->ADDOBJ( pItem, TRUE, nLayer );

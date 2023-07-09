@@ -5,7 +5,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-BOOL CWndTextQuest::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
+BOOL CWndTextQuest::Initialize(CWndBase * pWndParent) {
 	return CWndMessageBox::Initialize("퀘스트를 진행하시겠습니까?", pWndParent, MB_OKCANCEL);
 }
 
@@ -57,7 +57,7 @@ BOOL CWndTextFromItem::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult)
 		{
 			CWndTextQuest * pWndTextQuest = new CWndTextQuest;
 			pWndTextQuest->m_pItemBase = m_pItemBase;
-			g_WndMng.OpenCustomBox("", pWndTextQuest);
+			g_WndMng.OpenCustomBox(pWndTextQuest);
 			break;
 		}
 		case WIDC_CLOSE:

@@ -123,8 +123,8 @@ void CWndGuildSetLogo::OnDraw(C2DRender * p2DRender) {
 		p2DRender->RenderRect(rect, D3DCOLOR_XRGB(255, 0, 255));
 	}
 
-	p2DRender->m_pd3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
-	p2DRender->m_pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+	D3DDEVICE->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+	D3DDEVICE->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
 
 	if (CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD)) {
 		for (int i = 0; i < CUSTOM_LOGO_MAX - 7; i++) {
@@ -132,8 +132,8 @@ void CWndGuildSetLogo::OnDraw(C2DRender * p2DRender) {
 		}
 	}
 
-	p2DRender->m_pd3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	p2DRender->m_pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	D3DDEVICE->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	D3DDEVICE->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 }
 
 void CWndGuildSetLogo::OnInitialUpdate() 
@@ -259,13 +259,13 @@ void CWndGuildTabInfo::OnDraw( C2DRender* p2DRender )
 
 			CPoint point = lpWndCtrl->rect.TopLeft();
 
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ONE );
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ZERO );
+			D3DDEVICE->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ONE );
+			D3DDEVICE->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ZERO );
 			
 			pWndWorld->m_pTextureLogo[pGuild->m_dwLogo-1].Render( &g_Neuz.m_2DRender, point, 255 );
 
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+			D3DDEVICE->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
+			D3DDEVICE->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 			
 		}
 	}
@@ -334,10 +334,6 @@ void CWndGuildTabInfo::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndGuildTabInfo::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
-	return CWndNeuz::InitDialog(APP_GUILD_TABINFO, pWndParent, 0, CPoint(0, 0));
-}
-
 BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	CGuild* pGuild = g_pPlayer->GetGuild();
@@ -359,12 +355,12 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 				if( !pWndGuildName )
 				{
 					pWndGuildName	= new CWndGuildName;
-					pWndGuildName->Initialize( &g_WndMng );
+					pWndGuildName->Initialize();
 				}
 				pWndGuildName->SetData();
 			}
 			else
-			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDNOTCHGNAME ), MB_OK, this );
+			g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDNOTCHGNAME ), MB_OK );
 			
 		}
 		break;
@@ -379,18 +375,18 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 			if( g_pPlayer->m_idWar != WarIdNone )
 			{
 				// ÀüÀïÁß¿£ ·Î°í ¸ø¹Ù²Þ´Ù.
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDWARERRORLOGO), MB_OK, this );
+				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDWARERRORLOGO), MB_OK );
 				return FALSE;
 			}
 			if constexpr (!useless_params::CanChangeLogo) {
 				if (pGuild->m_dwLogo) {
-					g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDSTILLLOGO), MB_OK, this);
+					g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_GUILDSTILLLOGO), MB_OK );
 					return FALSE;
 				}
 			}
 			if( pGuild->m_nLevel < 2 )
 			{
-				g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDNOTLEVEL ), MB_OK, this );
+				g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDNOTLEVEL ), MB_OK );
 				return FALSE;
 			}
 
@@ -407,7 +403,7 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 			if( g_pPlayer->m_idWar != WarIdNone)
 			{
 				// ÀüÀïÁß¿£ ±æµå ¸ø»Ç°¸´Ï´Ù.
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDWARERRORDISBAND), MB_OK, this );
+				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GUILDWARERRORDISBAND), MB_OK );
 				return FALSE;
 			} else
 
@@ -416,7 +412,7 @@ BOOL CWndGuildTabInfo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult 
 				QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( QUEST_WARMON_LV1 );
 				if( pQuestProp )
 				{
-					g_WndMng.OpenMessageBox(prj.GetText( TID_GUILD_QUEST_LEAVEERROR ), MB_OK, this );
+					g_WndMng.OpenMessageBox(prj.GetText( TID_GUILD_QUEST_LEAVEERROR ), MB_OK );
 				}
 				return FALSE;
 			} 

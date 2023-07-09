@@ -115,7 +115,7 @@ void CWndLordState::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndLordState::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndLordState::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_LORD_STATE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -124,7 +124,7 @@ BOOL CWndLordState::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
   직접 윈도를 열때 사용 
 BOOL CWndLordState::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+	CRect rectWindow = g_WndMng.GetWindowRect(); 
 	CRect rect( 50 ,50, 300, 300 ); 
 	SetTitle( _T( "title" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
@@ -206,7 +206,7 @@ void CWndLordPledge::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndLordPledge::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndLordPledge::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_LORD_PLEDGE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -221,7 +221,7 @@ void CWndLordPledge::SetPledge(LPCTSTR strPledge)
   직접 윈도를 열때 사용 
 BOOL CWndLordState::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+	CRect rectWindow = g_WndMng.GetWindowRect(); 
 	CRect rect( 50 ,50, 300, 300 ); 
 	SetTitle( _T( "title" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
@@ -370,7 +370,7 @@ void CWndLordTender::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndLordTender::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndLordTender::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_LORD_TENDER, pWndParent, 0, CPoint( 0, 0 ) );
@@ -379,7 +379,7 @@ BOOL CWndLordTender::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
   직접 윈도를 열때 사용 
 BOOL CWndLordState::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+	CRect rectWindow = g_WndMng.GetWindowRect(); 
 	CRect rect( 50 ,50, 300, 300 ); 
 	SetTitle( _T( "title" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
@@ -487,7 +487,7 @@ void CWndLordVote::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndLordVote::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndLordVote::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_LORD_VOTE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -496,7 +496,7 @@ BOOL CWndLordVote::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
   직접 윈도를 열때 사용 
 BOOL CWndLordState::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+	CRect rectWindow = g_WndMng.GetWindowRect(); 
 	CRect rect( 50 ,50, 300, 300 ); 
 	SetTitle( _T( "title" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
@@ -575,7 +575,7 @@ CWndLordEvent::~CWndLordEvent()
 
 }
 
-BOOL CWndLordEvent::Initialize( CWndBase* pWndParent, DWORD nType)
+BOOL CWndLordEvent::Initialize( CWndBase* pWndParent )
 {
 	if(!CCLord::Instance()->IsLord(g_pPlayer->m_idPlayer))
 	{
@@ -694,7 +694,7 @@ CWndLordSkill::~CWndLordSkill()
 
 }
 
-BOOL CWndLordSkill::Initialize( CWndBase* pWndParent, DWORD nType)
+BOOL CWndLordSkill::Initialize( CWndBase* pWndParent )
 {
 	if(!CCLord::Instance()->IsLord(g_pPlayer->m_idPlayer))
 	{
@@ -828,7 +828,7 @@ void CWndLordSkill::OnMouseWndSurface( CPoint point )
 }
 
 // CWndLordConfirm
-BOOL CWndLordConfirm::Initialize( CWndBase* pWndParent, DWORD nType)
+BOOL CWndLordConfirm::Initialize( CWndBase* pWndParent )
 {
 
 	return CWndNeuz::InitDialog( APP_LORD_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -892,7 +892,7 @@ void CWndLordConfirm::OnLButtonDown( UINT nFlags, CPoint point )
 
 
 // CWndLordSkillConfirm
-BOOL CWndLordSkillConfirm::Initialize( CWndBase* pWndParent, DWORD nType)
+BOOL CWndLordSkillConfirm::Initialize( CWndBase* pWndParent )
 {
 
 	return CWndNeuz::InitDialog( APP_LORD_SKILL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -956,7 +956,7 @@ void CWndLordSkillConfirm::OnSize( UINT nType, int cx, int cy )
 
 
 // CWndLordInfo
-BOOL CWndLordInfo::Initialize( CWndBase* pWndParent, DWORD nType)
+BOOL CWndLordInfo::Initialize( CWndBase* pWndParent )
 {
 
 	return CWndNeuz::InitDialog( APP_LORD_INFO, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1061,7 +1061,7 @@ void CWndLordInfo::OnSize( UINT nType, int cx, int cy )
 }
 
 // CWndLordRPInfo
-BOOL CWndLordRPInfo::Initialize( CWndBase* pWndParent, DWORD nType)
+BOOL CWndLordRPInfo::Initialize( CWndBase* pWndParent )
 {
 
 	return CWndNeuz::InitDialog( APP_LORD_INFO2, pWndParent, 0, CPoint( 0, 0 ) );

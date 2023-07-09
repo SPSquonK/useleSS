@@ -82,7 +82,7 @@ void CWndGuildVote::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildVote::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildVote::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GUILD_VOTE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -91,7 +91,7 @@ BOOL CWndGuildVote::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 { 
 	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
 } 
-void CWndGuildVote::OnSize( UINT nType, int cx, int cy ) \
+void CWndGuildVote::OnSize( UINT nType, int cx, int cy )
 { 
 	CWndNeuz::OnSize( nType, cx, cy ); 
 } 
@@ -124,7 +124,7 @@ BOOL CWndGuildVote::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			{
 				if(	pGuild->IsMaster( g_pPlayer->m_idPlayer ) == FALSE )
 				{
-					g_WndMng.OpenMessageBox( "길드마스터만 설정할수 있습니다.", MB_OK, this );
+					g_WndMng.OpenMessageBox( "길드마스터만 설정할수 있습니다.", MB_OK );
 					break;
 				}
 
@@ -143,7 +143,7 @@ BOOL CWndGuildVote::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 				if( pCombo->GetCurSel() == -1 )
 				{
-					g_WndMng.OpenMessageBox( "종류를 고르세요.", MB_OK, this );
+					g_WndMng.OpenMessageBox( "종류를 고르세요.", MB_OK );
 					return FALSE;
 				}
 				
@@ -158,7 +158,7 @@ BOOL CWndGuildVote::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						{
 							if( (*it)->IsCompleted() )
 							{
-								g_WndMng.OpenMessageBox( "투표가 완료된 사항입니다.", MB_OK, this );
+								g_WndMng.OpenMessageBox( "투표가 완료된 사항입니다.", MB_OK );
 								return FALSE;
 							}
 						}
@@ -356,12 +356,12 @@ BOOL CWndGuildVoteSeting::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 							{
 								if( (*it)->IsCompleted() )
 								{
-									g_WndMng.OpenMessageBox( "투표가 완료된 사항입니다.", MB_OK, this );
+									g_WndMng.OpenMessageBox( "투표가 완료된 사항입니다.", MB_OK );
 									return FALSE;
 								}
 								else
 								{
-									g_WndMng.OpenMessageBox( "이미 진행중입니다.", MB_OK, this );
+									g_WndMng.OpenMessageBox( "이미 진행중입니다.", MB_OK );
 									return FALSE;
 								}
 								
@@ -377,7 +377,7 @@ BOOL CWndGuildVoteSeting::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 
 				if( strlen( pEdit1->GetString() ) <= 0 || strlen( pEdit2->GetString() ) <= 0 )
 				{
-					g_WndMng.OpenMessageBox( "투표제목과 내용은 필수 입력 사항입니다.", MB_OK, this );
+					g_WndMng.OpenMessageBox( "투표제목과 내용은 필수 입력 사항입니다.", MB_OK );
 					break;
 				}
 
@@ -399,7 +399,7 @@ BOOL CWndGuildVoteSeting::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 				{
 					if( nChk < 1 )
 					{
-						g_WndMng.OpenMessageBox( "투표 항목은 최소한 2개 이상이어야 합니다.", MB_OK, this );
+						g_WndMng.OpenMessageBox( "투표 항목은 최소한 2개 이상이어야 합니다.", MB_OK );
 						break;
 					}
 
@@ -407,7 +407,7 @@ BOOL CWndGuildVoteSeting::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 					{
 						if( strlen( pEdit[i]->GetString() ) <= 0 )
 						{
-							g_WndMng.OpenMessageBox( "중간에 빈 내용이 있습니다.", MB_OK, this );
+							g_WndMng.OpenMessageBox( "중간에 빈 내용이 있습니다.", MB_OK );
 							return FALSE;
 						}
 					}
@@ -415,7 +415,7 @@ BOOL CWndGuildVoteSeting::OnChildNotify( UINT message, UINT nID, LRESULT* pLResu
 				}
 				else
 				{
-					g_WndMng.OpenMessageBox( "투표 항목은 최소한 2개 이상이어야 합니다.", MB_OK, this );
+					g_WndMng.OpenMessageBox( "투표 항목은 최소한 2개 이상이어야 합니다.", MB_OK );
 					break;
 				}
 

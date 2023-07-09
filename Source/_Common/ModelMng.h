@@ -82,7 +82,7 @@ public:
 	void MakeModelName( TCHAR* pszModelName, DWORD dwType, DWORD dwIndex );
 	void MakePartsName( TCHAR* pszPartsName, LPCTSTR lpszRootName, DWORD dwIndex, int nSex = SEX_SEXLESS );
 
-	CModel * LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts = FALSE);
+	CModel * LoadModel(int nType, int nIndex, BOOL bParts = FALSE);
 
 	template<typename T>
 	requires (sqktd::IsOneOf<T,
@@ -93,7 +93,7 @@ public:
 		/* not owned */ CModelObject * ,
 		sqktd::maybe_owned_ptr<CModelObject>
 	>)
-	T LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts = FALSE);
+	T LoadModel(int nType, int nIndex, BOOL bParts = FALSE);
 
 	BOOL LoadScript( LPCTSTR lpszFileName );
 
@@ -103,8 +103,7 @@ public:
 	void DestroyUnusedModels();
 
 	// D3DX initialization related
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
-	HRESULT RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
+	HRESULT RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
 
@@ -116,5 +115,5 @@ private:
 		bool isOwned;
 	};
 
-	ModelPtrInfo LoadModel(LPDIRECT3DDEVICE9 pd3dDevice, TCHAR * lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts);
+	ModelPtrInfo LoadModel(TCHAR * lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts);
 };

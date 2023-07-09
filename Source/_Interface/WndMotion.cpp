@@ -20,11 +20,11 @@ void CWndMotion::OnInitialUpdate() {
 
 	lpTapCtrl->SetButtonLength(130);
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	Move(rectRoot.TopLeft());
 }
 
-BOOL CWndMotion::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndMotion::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_MOTION, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -52,19 +52,13 @@ void CWndMotion1::OnInitialUpdate()
 
 	for (MotionProp & pMotionProp : prj.m_aPropMotion) {
 		m_motionArray.emplace_back(&pMotionProp);
-		pMotionProp.pTexture = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, pMotionProp.szIconName ), 0xffff00ff );
+		pMotionProp.pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pMotionProp.szIconName ), 0xffff00ff );
 	}
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point( rectRoot.right - rectWindow.Width(), 110 );
 	Move( point );
-}
-BOOL CWndMotion1::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	CRect rect( 240, 0, 240 + 330, 255 - 135 ); 
-	return CWndBase::Create(WBS_THICKFRAME|WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
 }
 void CWndMotion1::OnSize(UINT nType, int cx, int cy)
 {
@@ -226,13 +220,6 @@ void CWndEmoticon::OnInitialUpdate()
 
 	CWndBase::OnInitialUpdate();
 }
-BOOL CWndEmoticon::Initialize( CWndBase* pWndParent, DWORD dwWndId )
-{
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	CRect rect( 240, 0, 240 + 330, 255 - 135 ); 
-	return CWndBase::Create(WBS_THICKFRAME|WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_EXTENSION,rect,pWndParent,dwWndId);
-}
-
 void CWndEmoticon::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	if( m_pSelectTexture )

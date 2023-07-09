@@ -44,9 +44,7 @@ public:
 	void AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLog = TRUE, DWORD dwColor = D3DCOLOR_ARGB(  255, 255, 255, 255 ) );
 
     // Initializing and destroying device-dependent objects
-    HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
     HRESULT DeleteDeviceObjects();
-    HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();
 };
 
@@ -70,9 +68,7 @@ public:
 	void Process();
 	void Render( CPoint ptBegin, C2DRender* p2DRender );
 	void SetTime( int nTime, CD3DFontAPI* pFont );
-    HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
     HRESULT DeleteDeviceObjects();
-    HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();
 };
 
@@ -210,7 +206,7 @@ namespace TimeSpanToString {
 	[[nodiscard]] CString DHMmSs(CTimeSpan timeSpan);
 }
 
-class CWndWorld : public CWndNeuz
+class CWndWorld final : public CWndNeuz
 {
 	BOOL m_bBGM;
 	FLOAT m_fHigh;
@@ -308,7 +304,7 @@ public:
 	BOOL UseSkillToFocusObj( CCtrl* pFocusObj );
 	void GetBoundRect( CObj* pObj, CRect* pRect );
 
-	void RenderArrow_Text( LPDIRECT3DDEVICE9 pDevice, const D3DXVECTOR3& vDest, const D3DXMATRIX& mat );	//gmpbigsun : refactoring
+	void RenderArrow_Text( const D3DXVECTOR3& vDest, const D3DXMATRIX& mat );	//gmpbigsun : refactoring
 	
 	WndWorld::FlyTargets m_flyTarget;
 
@@ -402,7 +398,7 @@ public:
 	}
 	int	GetMouseMode( void ) { return m_nMouseMode; }
 
-	void Projection( LPDIRECT3DDEVICE9 pd3dDevice );
+	void Projection( );
 
 	CObj* PickObj( POINT point, BOOL bOnlyNPC = FALSE );
 	CObj* SelectObj( POINT point );
@@ -454,10 +450,10 @@ public:
 
 	virtual void OnDraw(C2DRender* p2DRender); 
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	// message
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	void OnSetCursor() override;
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
 	virtual void OnSize(UINT nType, int cx, int cy);
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);

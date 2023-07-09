@@ -11,7 +11,6 @@ void	CGraphic3D :: Init( void )
 {
 	int		i;
 
-	m_pd3dDevice = NULL;
 	memset( m_aVertex, 0, sizeof(FVF_3DVERTEX) * MAX_3DVERTEX );
 
 	for( i = 0; i < MAX_3DVERTEX; i ++ )

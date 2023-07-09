@@ -24,9 +24,6 @@
 #define D3DCOLOR_TEMP(a,b,g,r) \
     ((D3DCOLOR)((((a)&0xff)<<24)|(((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff))) 
 
-// 클라이언트의 좌표 얻기 
-#define GET_CLIENT_POINT( hwnd, pt ) CPoint pt; ::GetCursorPos( &pt ); ::ScreenToClient( hwnd, &pt );
-
 class C2DRender;
 
 #include "ResManager.h"
@@ -89,8 +86,7 @@ static CWndBase* m_pWndCapture;
 public:
 static CResManager m_resMng;
 	static CTileMapManager m_strWndTileMap;
-	CD3DApplication* m_pApp;
-	CTheme*   m_pTheme;
+	bool m_isCreated;
 	CWndBase* m_pParentWnd;
 	std::vector<CWndBase *> m_wndArray;
 	UINT      m_nIdWnd;
@@ -131,7 +127,6 @@ static CResManager m_resMng;
 static BOOL           m_bCling          ;
 static BOOL           m_bEdit           ;
 static BOOL           m_bFullWnd        ;
-static CWndBase*      m_pWndRoot        ;
 static CWndBase*      m_pWndFocus       ; // 다이얼로그 윈도 포커스 
 static CWndBase*      m_pCurFocus       ; // 다이얼로그, 차일드 중 최종 현재 포커스 
 
@@ -148,7 +143,7 @@ static CWndBase*      m_pWndOnSetCursor;
 static int            m_nAlpha;
 static CTheme         m_Theme;
 
-	static BOOL SetForbidTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName );
+	static BOOL SetForbidTexture( LPCTSTR lpszFileName );
 	static void SetForbid( BOOL bForbid );
 	static BOOL IsForbid() { return m_pTexForbid && m_bForbid; }
 
@@ -177,7 +172,7 @@ static SHORTCUT       m_GlobalShortcut;
 	}
 	
 	BOOL Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID);
-	void SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName, BOOL bMyLoader = FALSE );
+	void SetTexture( LPCTSTR lpszFileName, BOOL bMyLoader = FALSE );
 
 	static void RemoveDestroyWnd();
 	void MoveParentCenter(); // 윈도를 부모 윈도의 중앙으로 옮긴다.
@@ -202,7 +197,7 @@ static SHORTCUT       m_GlobalShortcut;
 	CRect GetWindowRect( BOOL bParent = FALSE );
 	CRect GetLayoutRect( BOOL bParent = FALSE );
 	CRect GetWndRect() { return m_rectWindow; }
-	[[nodiscard]] bool IsWndRoot() const { return this == m_pWndRoot; }
+	[[nodiscard]] bool IsWndRoot() const;
 	[[nodiscard]] static bool IsOpenModalWnd() { return m_pWndFocus && m_pWndFocus->IsWndStyle(WBS_MODAL); }
 	CWndBase* GetFocusChild() { return m_pWndFocusChild; }
 	[[nodiscard]] static CWndBase * GetFocusWnd() { return m_pWndFocus; }
@@ -284,7 +279,7 @@ public:
 	virtual	void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
 	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
-	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	virtual void OnSetCursor();
 	// message
 //Protected:
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
@@ -334,6 +329,8 @@ public:
 	void RenderWnd();
 	
 friend class CWndButton;
+public:
+	[[nodiscard]] static CPoint GetClientPoint();
 };
 
 template<std::derived_from<CWndBase> CWndClass>

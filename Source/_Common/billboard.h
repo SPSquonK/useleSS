@@ -40,10 +40,10 @@ public:
 	~CBillboard();
 
 	CTexture* GetTexture(void) { return m_pTexture; }
-	virtual BOOL Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmatWorld = NULL );
+	virtual BOOL Render( const D3DXMATRIX* pmatWorld = NULL );
 	virtual void FrameMove() { }
 	// dx 초기화 관련 
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPBILLBOARD lpBillboard, CTexture* pTexture );
+	HRESULT InitDeviceObjects( LPBILLBOARD lpBillboard, CTexture* pTexture );
 	HRESULT RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();

@@ -4,7 +4,6 @@
 #include "..\_Common\ParticleMng.h"
 #include "Vector3Helper.h"
 
-LPDIRECT3DDEVICE9 CSfxMng::m_pd3dDevice;
 LPDIRECT3DVERTEXBUFFER9 CSfxMng::m_pSfxVB;
 CSfxTexture g_SfxTex;
 CSfxMng g_SfxMng;
@@ -163,10 +162,10 @@ void CSfxPartBill::Render2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAngle, D
 		SfxKeyFrame* pFirstKey=GetNextKey(0);
 		if(nFrame<pFirstKey->nFrame) return;
 		int nTexFrame= (m_nTexFrame*(nFrame-pFirstKey->nFrame)/m_nTexLoop)%m_nTexFrame; // 이 프레임에서 출력할 텍스쳐 번호
-		CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(GetTextureName(m_strTex,nTexFrame)));
+		m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(GetTextureName(m_strTex,nTexFrame)));
 	}
 	else 
-		CSfxMng::m_pd3dDevice->SetTexture( 0, g_SfxTex.Tex( m_strTex ) );
+		m_pd3dDevice->SetTexture( 0, g_SfxTex.Tex( m_strTex ) );
 
 	const auto maybeKey = GetComputedKey(nFrame);
 	if (!maybeKey) return;
@@ -239,12 +238,12 @@ void CSfxPartBill::Render2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAngle, D
 	switch(m_nAlphaType) { // 알파의 용도에 따라 렌더 스테이트를 바꿔준다
 	case SFXPARTALPHATYPE_BLEND: // 블렌드이면
 		{ // 반투명 설정으로...
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 			break;
 		}
 	case SFXPARTALPHATYPE_GLOW: // 글로우면
 		{ // 무조건 더하는걸로...
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
 			break;
 		}
 	}
@@ -252,12 +251,12 @@ void CSfxPartBill::Render2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAngle, D
 	// 다른 part들도 기본적으로 이와 비슷하게 처리한다.
 
 //	D3DXMATRIX matWorld;
-//	CSfxMng::m_pd3dDevice->GetTransform(D3DTS_WORLD,&matWorld);
-	CSfxMng::m_pd3dDevice->SetTransform(D3DTS_WORLD,&matTemp1);
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha<<24 | 0x404040 );
+//	m_pd3dDevice->GetTransform(D3DTS_WORLD,&matWorld);
+	m_pd3dDevice->SetTransform(D3DTS_WORLD,&matTemp1);
+	m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha<<24 | 0x404040 );
 
-	CSfxMng::m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLEFAN, 0, 2); // 이제 설정 다했으니 그려야지
-//	CSfxMng::m_pd3dDevice->SetTransform(D3DTS_WORLD,&matWorld);
+	m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLEFAN, 0, 2); // 이제 설정 다했으니 그려야지
+//	m_pd3dDevice->SetTransform(D3DTS_WORLD,&matWorld);
 #endif //__CLIENT
 }
 
@@ -269,10 +268,10 @@ void CSfxPartBill::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3DXVECT
 		SfxKeyFrame* pFirstKey=GetNextKey(0);
 		if(nFrame<pFirstKey->nFrame) return;
 		int nTexFrame= (m_nTexFrame*(nFrame-pFirstKey->nFrame)/m_nTexLoop)%m_nTexFrame; // 이 프레임에서 출력할 텍스쳐 번호
-		CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(GetTextureName(m_strTex,nTexFrame)));
+		m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(GetTextureName(m_strTex,nTexFrame)));
 	}
 	else 
-		CSfxMng::m_pd3dDevice->SetTexture( 0, g_SfxTex.Tex( m_strTex ) );
+		m_pd3dDevice->SetTexture( 0, g_SfxTex.Tex( m_strTex ) );
 
 	const auto maybeKey = GetComputedKey(nFrame);
 	if (!maybeKey) return;
@@ -336,12 +335,12 @@ void CSfxPartBill::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3DXVECT
 	switch(m_nAlphaType) { // 알파의 용도에 따라 렌더 스테이트를 바꿔준다
 	case SFXPARTALPHATYPE_BLEND: // 블렌드이면
 		{ // 반투명 설정으로...
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 			break;
 		}
 	case SFXPARTALPHATYPE_GLOW: // 글로우면
 		{ // 무조건 더하는걸로...
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
 			break;
 		}
 	}
@@ -349,12 +348,12 @@ void CSfxPartBill::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3DXVECT
 	// 다른 part들도 기본적으로 이와 비슷하게 처리한다.
 
 //	D3DXMATRIX matWorld;
-//	CSfxMng::m_pd3dDevice->GetTransform(D3DTS_WORLD,&matWorld);
-	CSfxMng::m_pd3dDevice->SetTransform(D3DTS_WORLD,&matTemp1);
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha<<24 | 0x404040 );
+//	m_pd3dDevice->GetTransform(D3DTS_WORLD,&matWorld);
+	m_pd3dDevice->SetTransform(D3DTS_WORLD,&matTemp1);
+	m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha<<24 | 0x404040 );
 
-	CSfxMng::m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLEFAN, 0, 2); // 이제 설정 다했으니 그려야지
-//	CSfxMng::m_pd3dDevice->SetTransform(D3DTS_WORLD,&matWorld);
+	m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLEFAN, 0, 2); // 이제 설정 다했으니 그려야지
+//	m_pd3dDevice->SetTransform(D3DTS_WORLD,&matWorld);
 }
 #endif
 
@@ -490,7 +489,7 @@ CSfxPartParticle::~CSfxPartParticle()
 #ifndef __WORLDSERVER
 void CSfxPartParticle::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3DXVECTOR3 vScale )
 {
-	CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(m_strTex));
+	m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(m_strTex));
 
 	const auto maybeKey = GetComputedKey(nFrame);
 	if (!maybeKey) return;
@@ -550,22 +549,22 @@ void CSfxPartParticle::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3DX
 	{
 	case SFXPARTALPHATYPE_BLEND:
 		{
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 			break;
 		}
 	case SFXPARTALPHATYPE_GLOW:
 		{
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
 			break;
 		}
 	}
 //	D3DXMATRIX matWorld;
-//	CSfxMng::m_pd3dDevice->GetTransform(D3DTS_WORLD,&matWorld);
-	CSfxMng::m_pd3dDevice->SetTransform(D3DTS_WORLD,&matTemp1);
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha<<24 | 0x404040 );
+//	m_pd3dDevice->GetTransform(D3DTS_WORLD,&matWorld);
+	m_pd3dDevice->SetTransform(D3DTS_WORLD,&matTemp1);
+	m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha<<24 | 0x404040 );
 
-	CSfxMng::m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLEFAN, 0, 2);
-//	CSfxMng::m_pd3dDevice->SetTransform(D3DTS_WORLD,&matWorld);
+	m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLEFAN, 0, 2);
+//	m_pd3dDevice->SetTransform(D3DTS_WORLD,&matWorld);
 }
 #endif // __WORLDSERVER
 
@@ -944,20 +943,20 @@ void CSfxPartMesh::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3DXVECT
 	switch(m_nAlphaType) {
 	case SFXPARTALPHATYPE_BLEND:
 		{
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 			break;
 		}
 	case SFXPARTALPHATYPE_GLOW:
 		{
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
 			break;
 		}
 	}
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha<<24 | 0x404040 );
-	CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZENABLE,TRUE);
-	CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
-	CSfxMng::m_pd3dDevice->SetTransform(D3DTS_WORLD,&matTemp1);
+	m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha<<24 | 0x404040 );
+	m_pd3dDevice->SetRenderState(D3DRS_ZENABLE,TRUE);
+	m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+	m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
+	m_pd3dDevice->SetTransform(D3DTS_WORLD,&matTemp1);
 	CModelObject* pMesh=g_SfxMeshMng.Mesh(m_strTex);
 	
 	if(pMesh) 
@@ -980,29 +979,29 @@ void CSfxPartMesh::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3DXVECT
 		if(m_nAlphaType == SFXPARTALPHATYPE_BLEND)
 		{
 			pMesh->m_nNoEffect = 0;
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, TRUE );
+			m_pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, TRUE );
 		}
 
-		pMesh->Render(CSfxMng::m_pd3dDevice,&matTemp1);
+		pMesh->Render(&matTemp1);
 
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha<<24 | 0x404040 );
-		CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZENABLE,TRUE);
-		CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, FALSE );
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE );
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR );
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
+		m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha<<24 | 0x404040 );
+		m_pd3dDevice->SetRenderState(D3DRS_ZENABLE,TRUE);
+		m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+		m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
+		m_pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, FALSE );
+		m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+		m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
+		m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE );
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR );
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 	}
-	//CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZENABLE,FALSE);
-	//CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+	//m_pd3dDevice->SetRenderState(D3DRS_ZENABLE,FALSE);
+	//m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
+	m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 }
 #endif // __WORLDSERVER
 CSfxPartCustomMesh::CSfxPartCustomMesh()
@@ -1108,9 +1107,9 @@ void CSfxPartCustomMesh::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3
 		SfxKeyFrame* pFirstKey=GetNextKey(0);
 		if(nFrame<pFirstKey->nFrame) return;
 		int nTexFrame= (m_nTexFrame*(nFrame-pFirstKey->nFrame)/m_nTexLoop)%m_nTexFrame; // 이 프레임에서 출력할 텍스쳐 번호
-		CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(GetTextureName(m_strTex,nTexFrame)));
+		m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(GetTextureName(m_strTex,nTexFrame)));
 	}
-	else CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(m_strTex));
+	else m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(m_strTex));
 
 	const auto maybeKey = GetComputedKey(nFrame);
 	if (!maybeKey) return;
@@ -1179,12 +1178,12 @@ void CSfxPartCustomMesh::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3
 	{
 	case SFXPARTALPHATYPE_BLEND:
 		{
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 			break;
 		}
 	case SFXPARTALPHATYPE_GLOW:
 		{
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
 			break;
 		}
 	}
@@ -1221,14 +1220,14 @@ void CSfxPartCustomMesh::Render( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, D3
 		}
 	}
 
-//	CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
-	CSfxMng::m_pd3dDevice->SetTransform( D3DTS_WORLD, &matTemp1 );
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha << 24 | 0x404040 );
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CW );
-	CSfxMng::m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLESTRIP, m_nPoints * 4, pVertices, sizeof( D3DSFXVERTEX ) );
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
-	CSfxMng::m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLESTRIP, m_nPoints * 4, pVertices, sizeof( D3DSFXVERTEX ) );
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+//	m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
+	m_pd3dDevice->SetTransform( D3DTS_WORLD, &matTemp1 );
+	m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha << 24 | 0x404040 );
+	m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CW );
+	m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLESTRIP, m_nPoints * 4, pVertices, sizeof( D3DSFXVERTEX ) );
+	m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
+	m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLESTRIP, m_nPoints * 4, pVertices, sizeof( D3DSFXVERTEX ) );
+	m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	safe_delete_array( pVertices );
 }
 #endif
@@ -1241,9 +1240,9 @@ void CSfxPartCustomMesh::Render2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 		SfxKeyFrame* pFirstKey=GetNextKey(0);
 		if(nFrame<pFirstKey->nFrame) return;
 		int nTexFrame= (m_nTexFrame*(nFrame-pFirstKey->nFrame)/m_nTexLoop)%m_nTexFrame; // 이 프레임에서 출력할 텍스쳐 번호
-		CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(GetTextureName(m_strTex,nTexFrame)));
+		m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(GetTextureName(m_strTex,nTexFrame)));
 	}
-	else CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(m_strTex));
+	else m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(m_strTex));
 
 	const auto maybeKey = GetComputedKey(nFrame);
 	if (!maybeKey) return;
@@ -1306,12 +1305,12 @@ void CSfxPartCustomMesh::Render2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 	{
 	case SFXPARTALPHATYPE_BLEND:
 		{
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 			break;
 		}
 	case SFXPARTALPHATYPE_GLOW:
 		{
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
 			break;
 		}
 	}
@@ -1347,13 +1346,13 @@ void CSfxPartCustomMesh::Render2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 		}
 	}
 
-	CSfxMng::m_pd3dDevice->SetTransform( D3DTS_WORLD, &matTemp1 );
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha << 24 | 0x404040 );
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CW );
-	CSfxMng::m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLESTRIP, m_nPoints * 4, pVertices, sizeof( D3DSFXVERTEX ) );
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
-	CSfxMng::m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLESTRIP, m_nPoints * 4, pVertices, sizeof( D3DSFXVERTEX ) );
-	CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+	m_pd3dDevice->SetTransform( D3DTS_WORLD, &matTemp1 );
+	m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, Key.nAlpha << 24 | 0x404040 );
+	m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CW );
+	m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLESTRIP, m_nPoints * 4, pVertices, sizeof( D3DSFXVERTEX ) );
+	m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
+	m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLESTRIP, m_nPoints * 4, pVertices, sizeof( D3DSFXVERTEX ) );
+	m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	safe_delete_array( pVertices );
 #endif //__CLIENT
 }
@@ -1503,11 +1502,7 @@ CSfxBase* CSfxMng::GetSfxBase( std::string_view strSfxName )
 		return NULL;
 	}
 }
-HRESULT CSfxMng::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
-{
-	m_pd3dDevice=pd3dDevice;
-	return S_OK;
-}
+
 HRESULT CSfxMng::RestoreDeviceObjects()
 {
 	m_pd3dDevice->CreateVertexBuffer( sizeof(D3DSFXVERTEX)*4, D3DUSAGE_WRITEONLY, D3DFVF_D3DSFXVERTEX, D3DPOOL_SYSTEMMEM, &m_pSfxVB, NULL );
@@ -1672,25 +1667,25 @@ void CSfxModel::SetSfx( DWORD dwIndex )
 	m_BB.m_vPos[7] = D3DXVECTOR3( -1.0f, 0.0f,  1.0f );
 }
 
-BOOL CSfxModel::Render2( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld )
+BOOL CSfxModel::Render2( const D3DXMATRIX* pmWorld )
 {
 #ifdef __CLIENT
 	if(m_pSfxBase) 
 	{
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,		D3DTOP_SELECTARG1);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1,	D3DTA_TEXTURE);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,		D3DTOP_MODULATE);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1,	D3DTA_TEXTURE);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2,	D3DTA_TFACTOR);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 1, D3DTSS_COLOROP,		D3DTOP_DISABLE);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,		D3DTOP_DISABLE);
+		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,		D3DTOP_SELECTARG1);
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1,	D3DTA_TEXTURE);
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,		D3DTOP_MODULATE);
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1,	D3DTA_TEXTURE);
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2,	D3DTA_TFACTOR);
+		m_pd3dDevice->SetTextureStageState( 1, D3DTSS_COLOROP,		D3DTOP_DISABLE);
+		m_pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,		D3DTOP_DISABLE);
 		
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE);
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+		m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE);
+		m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 		
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
-		CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
+		m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
+		m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
 		
 		for( size_t i = 0 ; i < m_pSfxBase->m_aParts.size(); ++i ) 
 		{
@@ -1703,32 +1698,32 @@ BOOL CSfxModel::Render2( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 			{
 			case SFXPARTTYPE_BILL:
 				{
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
 					
-					CSfxMng::m_pd3dDevice->SetVertexShader( NULL );
-					CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
-					CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
-					CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
+					m_pd3dDevice->SetVertexShader( NULL );
+					m_pd3dDevice->SetVertexDeclaration( NULL );
+					m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
+					m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
 
 					pSfxPart->Render2( m_vPos, m_nCurFrame, m_vRotate, m_vScale );
 
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 				}
 				break;
 			case SFXPARTTYPE_PARTICLE:
 				{
 					//  파티클이 프로세스 안되었으면 아직 생성되지 않았다.
 					// m_apPart는 생성된 파티클들의 배열들.
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
 					if( i < m_apParticles.size() )
 					{
-						CSfxMng::m_pd3dDevice->SetVertexShader( NULL );
-						CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
-						CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
-						CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
+						m_pd3dDevice->SetVertexShader( NULL );
+						m_pd3dDevice->SetVertexDeclaration( NULL );
+						m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
+						m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
 						RenderParticles2( m_vPos, m_nCurFrame, m_vRotate, (CSfxPartParticle*)pSfxPart.get(), m_apParticles[ i ], m_vScale);
 					}
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 				}
 				break;
 			case SFXPARTTYPE_MESH:
@@ -1738,18 +1733,18 @@ BOOL CSfxModel::Render2( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 				break;
 			case SFXPARTTYPE_CUSTOMMESH:
 				{
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
-					CSfxMng::m_pd3dDevice->SetVertexShader( NULL );
-					CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
-					CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
+					m_pd3dDevice->SetVertexShader( NULL );
+					m_pd3dDevice->SetVertexDeclaration( NULL );
+					m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
 					pSfxPart->Render2( m_vPos, m_nCurFrame, m_vRotate, m_vScale );
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 				}
 				break;
 			}
 		}
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
-		CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
+		m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 	}
 #endif //__CLIENT
 	return TRUE;
@@ -1761,7 +1756,7 @@ void CSfxModel::RenderParticles2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 	// 똑같은 sfx가 여러개 나올수도 있는데 각 파티클들의 데이터를 공유할 수 없기 때문이다.
 
 	// 기본 world 매트릭스의 계산 등은 빌보드part의 그것과 크게 다르지 않다.
-	CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(pPartParticle->m_strTex));
+	m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(pPartParticle->m_strTex));
 
 	const auto maybeKey = pPartParticle->GetComputedKey(nFrame, true);
 	if (!maybeKey) return;
@@ -1809,12 +1804,12 @@ void CSfxModel::RenderParticles2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 	{
 	case SFXPARTALPHATYPE_BLEND:
 		{
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 			break;
 		}
 	case SFXPARTALPHATYPE_GLOW:
 		{
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
 			break;
 		}
 	}
@@ -1843,7 +1838,7 @@ void CSfxModel::RenderParticles2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 			CString tempTexName = GetTextureName(pPartParticle->m_strTex,nTexFrame);
 			if(TexName != tempTexName)
 			{
-				CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(tempTexName));
+				m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(tempTexName));
 				TexName = tempTexName;
 			}
 		}
@@ -1851,7 +1846,7 @@ void CSfxModel::RenderParticles2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 		{
 			if(TexName != pPartParticle->m_strTex)
 			{
-				CSfxMng::m_pd3dDevice->SetTexture( 0, g_SfxTex.Tex( pPartParticle->m_strTex ) );
+				m_pd3dDevice->SetTexture( 0, g_SfxTex.Tex( pPartParticle->m_strTex ) );
 				TexName = pPartParticle->m_strTex;
 			}
 		}
@@ -1909,7 +1904,7 @@ void CSfxModel::RenderParticles2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 //		matTemp1 = matScale * matTemp * matTrans;
 //#endif
 
-		CSfxMng::m_pd3dDevice->SetTransform( D3DTS_WORLD, &matTemp1 );
+		m_pd3dDevice->SetTransform( D3DTS_WORLD, &matTemp1 );
 
 		// 설정된 파라미터와 현재 frame에 따라 알파값 계산
 		int nTempAlpha=0;
@@ -1926,33 +1921,33 @@ void CSfxModel::RenderParticles2( D3DXVECTOR3 vPos, WORD nFrame, D3DXVECTOR3 fAn
 		{ // 둘 다 아니면 알파값 유지중이다
 			nTempAlpha=Key.nAlpha;
 		}
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, nTempAlpha<<24 | 0x404040 );
+		m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, nTempAlpha<<24 | 0x404040 );
 
-		CSfxMng::m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLEFAN, 0, 2);
+		m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLEFAN, 0, 2);
 	}
 #endif //__CLIENT
 }
 
 #ifndef __WORLDSERVER
 //void CSfxModel::Render(void)
-BOOL CSfxModel::RenderZ( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld )
+BOOL CSfxModel::RenderZ( const D3DXMATRIX* pmWorld )
 {
 	if(m_pSfxBase) 
 	{
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,		D3DTOP_SELECTARG1);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1,	D3DTA_TEXTURE);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,		D3DTOP_MODULATE);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1,	D3DTA_TEXTURE);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2,	D3DTA_TFACTOR);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 1, D3DTSS_COLOROP,		D3DTOP_DISABLE);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,		D3DTOP_DISABLE);
+		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,		D3DTOP_SELECTARG1);
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1,	D3DTA_TEXTURE);
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,		D3DTOP_MODULATE);
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1,	D3DTA_TEXTURE);
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2,	D3DTA_TFACTOR);
+		m_pd3dDevice->SetTextureStageState( 1, D3DTSS_COLOROP,		D3DTOP_DISABLE);
+		m_pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,		D3DTOP_DISABLE);
 
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE);
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+		m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE);
+		m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
-		CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
+		m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
+		m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
 
 		for( size_t i = 0 ; i < m_pSfxBase->m_aParts.size(); ++i ) 
 		{
@@ -1964,13 +1959,13 @@ BOOL CSfxModel::RenderZ( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 			{
 			case SFXPARTTYPE_BILL:
 				{
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
-					CSfxMng::m_pd3dDevice->SetVertexShader( NULL );
-					CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
-					CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
-					CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
+					m_pd3dDevice->SetVertexShader( NULL );
+					m_pd3dDevice->SetVertexDeclaration( NULL );
+					m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
+					m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
 					pSfxPart->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 				}
 				break;
 			case SFXPARTTYPE_PARTICLE:
@@ -1978,18 +1973,18 @@ BOOL CSfxModel::RenderZ( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 					//  파티클이 프로세스 안되었으면 아직 생성되지 않았다.
 					// m_apPart는 생성된 파티클들의 배열들.
 					
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
 					
 					if( i < m_apParticles.size() )
 					{
-						CSfxMng::m_pd3dDevice->SetVertexShader( NULL );
-						CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
-						CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
-						CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
+						m_pd3dDevice->SetVertexShader( NULL );
+						m_pd3dDevice->SetVertexDeclaration( NULL );
+						m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
+						m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
 						RenderParticles( m_vPos, m_nCurFrame, m_vRotate.y, (CSfxPartParticle*)pSfxPart.get(), m_apParticles[ i ], m_vScale);
 					}
 
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 					
 				}
 				break;
@@ -2000,38 +1995,38 @@ BOOL CSfxModel::RenderZ( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld
 				break;
 			case SFXPARTTYPE_CUSTOMMESH:
 				{
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
-					CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+					m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
 					pSfxPart->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
 					
 				}
 				break;
 			}
 		}
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
-		CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
+		m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 	}
 	return TRUE;
 }
 
-BOOL CSfxModel::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld )
+BOOL CSfxModel::Render( const D3DXMATRIX* pmWorld )
 {
 	if(m_pSfxBase) 
 	{
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,		D3DTOP_SELECTARG1);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1,	D3DTA_TEXTURE);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,		D3DTOP_MODULATE);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1,	D3DTA_TEXTURE);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2,	D3DTA_TFACTOR);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 1, D3DTSS_COLOROP,		D3DTOP_DISABLE);
-		CSfxMng::m_pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,		D3DTOP_DISABLE);
+		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,		D3DTOP_SELECTARG1);
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1,	D3DTA_TEXTURE);
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,		D3DTOP_MODULATE);
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1,	D3DTA_TEXTURE);
+		m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2,	D3DTA_TFACTOR);
+		m_pd3dDevice->SetTextureStageState( 1, D3DTSS_COLOROP,		D3DTOP_DISABLE);
+		m_pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,		D3DTOP_DISABLE);
 
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE);
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+		m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE);
+		m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
-		CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
+		m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
+		m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
 		
 		for( size_t i = 0 ; i < m_pSfxBase->m_aParts.size(); ++i ) 
 		{
@@ -2043,13 +2038,13 @@ BOOL CSfxModel::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld 
 			{
 			case SFXPARTTYPE_BILL:
 				{
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
-					CSfxMng::m_pd3dDevice->SetVertexShader( NULL );
-					CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
-					CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
-					CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
+					m_pd3dDevice->SetVertexShader( NULL );
+					m_pd3dDevice->SetVertexDeclaration( NULL );
+					m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
+					m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
 					pSfxPart->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 				}
 				break;
 			case SFXPARTTYPE_PARTICLE:
@@ -2057,18 +2052,18 @@ BOOL CSfxModel::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld 
 					//  파티클이 프로세스 안되었으면 아직 생성되지 않았다.
 					// m_apPart는 생성된 파티클들의 배열들.
 					
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
 					
 					if( i < m_apParticles.size() )
 					{
-						CSfxMng::m_pd3dDevice->SetVertexShader( NULL );
-						CSfxMng::m_pd3dDevice->SetVertexDeclaration( NULL );
-						CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
-						CSfxMng::m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
+						m_pd3dDevice->SetVertexShader( NULL );
+						m_pd3dDevice->SetVertexDeclaration( NULL );
+						m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
+						m_pd3dDevice->SetStreamSource( 0, CSfxMng::m_pSfxVB, 0, sizeof( D3DSFXVERTEX ) );
 						RenderParticles( m_vPos, m_nCurFrame, m_vRotate.y, (CSfxPartParticle*)pSfxPart.get(), m_apParticles[ i ], m_vScale);
 					}
 
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 					
 				}
 				break;
@@ -2079,16 +2074,16 @@ BOOL CSfxModel::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld 
 				break;
 			case SFXPARTTYPE_CUSTOMMESH:
 				{
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
-					CSfxMng::m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);
+					m_pd3dDevice->SetFVF( D3DFVF_D3DSFXVERTEX );
 					pSfxPart->Render( m_vPos, m_nCurFrame, m_vRotate.y, m_vScale );
-					CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+					m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 				}
 				break;
 			}
 		}
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
-		CSfxMng::m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
+		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
+		m_pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
 	}
 	return TRUE;
 }
@@ -2099,7 +2094,7 @@ void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CS
 	// 똑같은 sfx가 여러개 나올수도 있는데 각 파티클들의 데이터를 공유할 수 없기 때문이다.
 
 	// 기본 world 매트릭스의 계산 등은 빌보드part의 그것과 크게 다르지 않다.
-	//CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(pPartParticle->m_strTex));
+	//m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(pPartParticle->m_strTex));
 
 	const auto maybeKey = pPartParticle->GetComputedKey(nFrame, true);
 	if (!maybeKey) return;
@@ -2143,12 +2138,12 @@ void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CS
 	{
 	case SFXPARTALPHATYPE_BLEND:
 		{
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 			break;
 		}
 	case SFXPARTALPHATYPE_GLOW:
 		{
-			CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+			m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
 			break;
 		}
 	}
@@ -2173,7 +2168,7 @@ void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CS
 			CString tempTexName = GetTextureName(pPartParticle->m_strTex,nTexFrame);
 			if(TexName != tempTexName)
 			{
-				CSfxMng::m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(tempTexName));
+				m_pd3dDevice->SetTexture(0,g_SfxTex.Tex(tempTexName));
 				TexName = tempTexName;
 			}
 		}
@@ -2181,7 +2176,7 @@ void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CS
 		{
 			if(TexName != pPartParticle->m_strTex)
 			{
-				CSfxMng::m_pd3dDevice->SetTexture( 0, g_SfxTex.Tex( pPartParticle->m_strTex ) );
+				m_pd3dDevice->SetTexture( 0, g_SfxTex.Tex( pPartParticle->m_strTex ) );
 				TexName = pPartParticle->m_strTex;
 			}
 		}
@@ -2235,7 +2230,7 @@ void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CS
 		//D3DXMatrixScaling( &mScale, vScale.x, vScale.y, vScale.z );
 		//D3DXMatrixMultiply( &matScale, &matScale, &mScale );
 		
-		CSfxMng::m_pd3dDevice->SetTransform( D3DTS_WORLD, &matTemp1 );
+		m_pd3dDevice->SetTransform( D3DTS_WORLD, &matTemp1 );
 
 		// 설정된 파라미터와 현재 frame에 따라 알파값 계산
 		int nTempAlpha=0;
@@ -2252,9 +2247,9 @@ void CSfxModel::RenderParticles( D3DXVECTOR3 vPos, WORD nFrame, FLOAT fAngle, CS
 		{ // 둘 다 아니면 알파값 유지중이다
 			nTempAlpha=Key.nAlpha;
 		}
-		CSfxMng::m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, nTempAlpha<<24 | 0x404040 );
+		m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, nTempAlpha<<24 | 0x404040 );
 
-		CSfxMng::m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLEFAN, 0, 2);
+		m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLEFAN, 0, 2);
 	}
 }
 #endif 
@@ -2444,7 +2439,7 @@ LPDIRECT3DTEXTURE9 CSfxTexture::Tex(const CString & str) {
 	if (it != m_aTextures.end()) return it->second.get();
 
 	LPDIRECT3DTEXTURE9 pTex;
-	HRESULT hr = LoadTextureFromRes(CSfxMng::m_pd3dDevice, _T(MakePath(DIR_SFXTEX, str.GetString())),
+	HRESULT hr = LoadTextureFromRes(_T(MakePath(DIR_SFXTEX, str.GetString())),
 		D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_A1R5G5B5,
 		D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE | D3DX_FILTER_MIRROR,
 		D3DX_FILTER_TRIANGLE | D3DX_FILTER_MIRROR, 0, NULL, NULL, &pTex);
@@ -2470,7 +2465,7 @@ CModelObject * CSfxMeshMng::Mesh(const CString & str) {
 
 	// Load the mesh
 	CModelObject * pMesh = new CModelObject;
-	pMesh->InitDeviceObjects(m_pd3dDevice);
+	pMesh->InitDeviceObjects();
 
 	const int nTex = g_Option.m_nTextureQuality;
 	g_Option.m_nTextureQuality = 0;
@@ -2483,11 +2478,6 @@ CModelObject * CSfxMeshMng::Mesh(const CString & str) {
 	m_aMeshs.emplace(str, std::unique_ptr<CModelObject>(pMesh));
 
 	return pMesh;
-}
-
-HRESULT CSfxMeshMng::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
-	m_pd3dDevice = pd3dDevice;
-	return S_OK;
 }
 
 HRESULT CSfxMeshMng::RestoreDeviceObjects() {
@@ -2571,8 +2561,8 @@ bool SfxModelSet::Update() {
 	return true;
 }
 
-void SfxModelSet::Render(LPDIRECT3DDEVICE9 pd3dDevice) {
-	_pModel->Render(pd3dDevice);
+void SfxModelSet::Render() {
+	_pModel->Render();
 }
 
 
@@ -2718,10 +2708,10 @@ void CSfxModelMng::Update( )
 	}
 }
 
-void CSfxModelMng::Render(LPDIRECT3DDEVICE9 pd3dDevice) {
+void CSfxModelMng::Render() {
 	for (auto & cSMS : _cDatas | std::views::values) {
 		for (SfxModelSet & pSfx : cSMS) {
-			pSfx.Render(pd3dDevice);
+			pSfx.Render();
 		}
 	}
 }

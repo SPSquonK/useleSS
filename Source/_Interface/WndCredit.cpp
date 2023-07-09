@@ -168,7 +168,7 @@ HRESULT CWndCredit::InitDeviceObjects()
 	m_pFont->m_nOutLine = 2;
 	m_pFont->m_dwColor = 0xffffffff;
 	m_pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 0, 0, 0);
-	m_pFont->InitDeviceObjects( m_pApp->m_pd3dDevice );
+	m_pFont->InitDeviceObjects( );
 	return CWndNeuz::InitDeviceObjects();
 }
 HRESULT CWndCredit::RestoreDeviceObjects()
@@ -291,7 +291,7 @@ void CWndCredit::OnInitialUpdate()
 			string.Format( "shotCredit%02d.dds", i );
 			//string = "shotCredit20.dds";
 			
-			m_aTexScreenShot[ i ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, string ), 0xffff00ff );
+			m_aTexScreenShot[ i ].LoadTexture( MakePath( DIR_THEME, string ), 0xffff00ff );
 			
 			m_aTexScreenShot[ i ].m_size = CSize( 598 + 76, 337 );
 		}
@@ -316,7 +316,7 @@ void CWndCredit::OnInitialUpdate()
 } 
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndCredit::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndCredit::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_CREDIT, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
@@ -373,7 +373,7 @@ void CWndAbout::OnInitialUpdate()
 	if(m_resMng.GetAt(GetWndId()))
 	{
 		const char * strName = "WndAboutFlyff.tga";
-		SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, strName ), TRUE );
+		SetTexture( MakePath( DIR_THEME, strName ), TRUE );
 	}
 	
 
@@ -381,7 +381,7 @@ void CWndAbout::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndAbout::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndAbout::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_ABOUT, pWndParent, 0, CPoint( 0, 0 ) );
@@ -401,7 +401,7 @@ HRESULT CWndAbout::InitDeviceObjects()
 	m_pFont->m_nOutLine = 1;
 	m_pFont->m_dwColor = 0xffffffff;
 	m_pFont->m_dwBgColor = D3DCOLOR_ARGB( 255, 255, 32, 32);
-	m_pFont->InitDeviceObjects( m_pApp->m_pd3dDevice );
+	m_pFont->InitDeviceObjects( );
 
 	return CWndNeuz::InitDeviceObjects();
 }

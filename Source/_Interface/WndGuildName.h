@@ -2,7 +2,7 @@
 
 #include <expected>
 
-class CWndGuildName : public CWndNeuz 
+class CWndGuildName final : public CWndNeuz 
 { 
 public: 
 	CWndGuildName(); 
@@ -10,14 +10,14 @@ public:
 	BYTE	m_nId;
 	void	SetData( BYTE nId = 0xff )	{	m_nId	= nId;	}
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 }; 
 
 
-class CWndGuildNickName : public CWndNeuz 
+class CWndGuildNickName final : public CWndNeuz 
 { 
 public: 
 	u_long m_idPlayer;
@@ -25,7 +25,7 @@ public:
 public:
 	CWndGuildNickName(); 
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 

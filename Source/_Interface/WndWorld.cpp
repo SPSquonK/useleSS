@@ -98,19 +98,13 @@ void CCaption::Process()
 		}
 	}
 }
-HRESULT CCaption::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
-{
-	return S_OK;
-}
+
 HRESULT CCaption::DeleteDeviceObjects()
 {
 	RemoveAll();
 	return S_OK;
 }
-HRESULT CCaption::RestoreDeviceObjects()
-{
-	return S_OK;
-}
+
 HRESULT CCaption::InvalidateDeviceObjects()
 {
 	RemoveAll();
@@ -188,8 +182,6 @@ void CCaption::AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLo
 		return;
 	}
 
-	LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
-
 	// 여분을 만들자 
 	size.cx += 16 + 64; 
 	size.cy += 16;
@@ -216,7 +208,7 @@ void CCaption::AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLo
 	if( hr == D3D_OK )
 	{
 		AdjustSize( &size );
-		if( lpCaption->m_texture.CreateTexture( pd3dDevice, size.cx, size.cy, 0, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT ) )
+		if( lpCaption->m_texture.CreateTexture( size.cx, size.cy, 0, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT ) )
 		{
 			IDirect3DSurface9* pOldSurface;
 			IDirect3DSurface9* pOldSurfaceZ;
@@ -240,19 +232,13 @@ void CCaption::AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLo
 		}
 	}
 }
-HRESULT CCapTime::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
-{
-	return S_OK;
-}
+
 HRESULT CCapTime::DeleteDeviceObjects()
 {
 	m_texture.DeleteDeviceObjects();
 	return S_OK;
 }
-HRESULT CCapTime::RestoreDeviceObjects()
-{
-	return S_OK;
-}
+
 HRESULT CCapTime::InvalidateDeviceObjects()
 {
 	m_texture.DeleteDeviceObjects();
@@ -357,9 +343,6 @@ void CCapTime::SetTime( int nTime, CD3DFontAPI* pFont )
 		return;	
 	}
 
-
-	LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
-
 	m_pFont = pFont;
 	m_size.cx += 16;// + 64; 
 	m_size.cy += 16;
@@ -387,7 +370,7 @@ void CCapTime::SetTime( int nTime, CD3DFontAPI* pFont )
 	{
 		CSize size = m_size;
 		AdjustSize( &size );
-		if( m_texture.CreateTexture( pd3dDevice, size.cx, size.cy, 0, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT ) )
+		if( m_texture.CreateTexture( size.cx, size.cy, 0, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT ) )
 		{
 			IDirect3DSurface9* pOldSurface;
 			IDirect3DSurface9* pOldSurfaceZ;
@@ -712,9 +695,9 @@ void CWndWorld::OnDraw( C2DRender* p2DRender )
 		D3DXMatrixScaling( &matWorld, 0.1f, 0.1f, 0.1f );
 		//matWorld *= g_pPlayer->GetMatrixTrans();
 
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ZENABLE,      TRUE );
+		D3DDEVICE->SetRenderState( D3DRS_ZENABLE,      TRUE );
 
-		g_Cloth.Render(p2DRender->m_pd3dDevice, &matWorld );
+		g_Cloth.Render(&matWorld );
 	}
 #endif
 	
@@ -735,17 +718,17 @@ void CWndWorld::OnDraw( C2DRender* p2DRender )
 */
 }
 /*
-void CWndWorld::ProjectionAndView( LPDIRECT3DDEVICE9 pd3dDevice )
+void CWndWorld::ProjectionAndView()
 {
-	Projection( D3DDEVICE );
-	g_Neuz.m_camera.Process( D3DDEVICE );
-	g_Neuz.m_camera.Transform( D3DDEVICE, g_WorldMng() );
+	Projection();
+	g_Neuz.m_camera.Process();
+	g_Neuz.m_camera.Transform( g_WorldMng() );
 }
 */
-void CWndWorld::Projection( LPDIRECT3DDEVICE9 pd3dDevice )
+void CWndWorld::Projection()
 {
 	// Frame Window와 관련된 Viewport 세팅 
-	CRect rectRoot = m_pWndRoot->GetWindowRect();
+	CRect rectRoot = g_WndMng.GetWindowRect();
 	D3DVIEWPORT9 viewport;
 	viewport.X      = 0;
 	viewport.Y      = 0;
@@ -775,7 +758,7 @@ void CWndWorld::Projection( LPDIRECT3DDEVICE9 pd3dDevice )
 		//m_pd3dDevice->SetViewport(&viewport);
 	}
 	// 프로젝션 
-	g_WorldMng.Get()->Projection( pd3dDevice, viewport.Width, viewport.Height );
+	g_WorldMng.Get()->Projection( viewport.Width, viewport.Height );
 }
 
 BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
@@ -783,17 +766,15 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 	_PROFILE("CWndWorld::OnEraseBkgnd()");
 	CHECK1();
 
-	Projection( D3DDEVICE );
+	Projection( );
 	// CNeuzApp:Render()에도 Clear가 있어 중복되므로 지웠음. -XuZhu-
-	//p2DRender->m_pd3dDevice->Clear(0, NULL,  D3DCLEAR_TARGET, CWorld::m_dwBgColor, 1.0f, 0 ) ;
+	//D3DDEVICE->Clear(0, NULL,  D3DCLEAR_TARGET, CWorld::m_dwBgColor, 1.0f, 0 ) ;
 	//if( m_nWinSize != WSIZE_MAX )
-		//p2DRender->m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 90, 146, 222 ), 1.0f, 0 ) ;
+		//D3DDEVICE->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, D3DCOLOR_ARGB( 255, 90, 146, 222 ), 1.0f, 0 ) ;
 	DWORD dwColor = CWorld::GetDiffuseColor();
-	p2DRender->m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, dwColor /*D3DCOLOR_ARGB( 255, 255, 255, 255 )*/, 1.0f, 0 ) ;
+	m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, dwColor /*D3DCOLOR_ARGB( 255, 255, 255, 255 )*/, 1.0f, 0 ) ;
 
 	if( g_pPlayer == NULL )		return FALSE;
-
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 
 	CWorld* pWorld = g_WorldMng.Get();
 	// 필드 출력 
@@ -808,7 +789,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 			pModel->SetEffect( i, XE_HIGHLIGHT_OBJ );
 	}	
 */			
-	pWorld->Render( pd3dDevice, m_Theme.m_pFontWorld );
+	pWorld->Render( m_Theme.m_pFontWorld );
 	CHECK2("Render World" );
 
 	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
@@ -894,14 +875,14 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		else if( m_bLButtonDown == FALSE || m_bSelectTarget == FALSE)	
 			nPower = 0;					// 그리지 않는다.
 
-		g_pPlayer->RenderGauge( pd3dDevice, nPower );	// 0-4
+		g_pPlayer->RenderGauge( nPower );	// 0-4
 	}
 
 	// 비행시 터보게이지
 	if( g_pPlayer->IsFly() )
 	{
 		// 최대 12초 가속을 기준으로한 가속 게이지.
-		g_pPlayer->RenderTurboGauge( pd3dDevice, 0xff0000ff, g_pPlayer->m_tmAccFuel, 12 * 1000 );
+		g_pPlayer->RenderTurboGauge( 0xff0000ff, g_pPlayer->m_tmAccFuel, 12 * 1000 );
 	}
 	
 	D3DXVECTOR3 v3CameraDir, v3PartyMemberDir;
@@ -925,7 +906,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		if( D3DXVec3Dot( &v3CameraDir, &v3PartyMemberDir ) < 0.0f )
 			continue;
 		
-		pMover->RenderHP( g_Neuz.m_pd3dDevice );
+		pMover->RenderHP( );
 	}
 	
 	if( IsValidObj(g_pPlayer) )
@@ -934,12 +915,12 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		{
 			_PROFILE("Render Player HP, Casting, Gauge, ...");
 
-			g_pPlayer->RenderHP( g_Neuz.m_pd3dDevice );
-			g_pPlayer->RenderCasting( g_Neuz.m_pd3dDevice );
-			g_pPlayer->RenderPVPCount( g_Neuz.m_pd3dDevice );
-			g_pPlayer->RenderCtrlCasting( g_Neuz.m_pd3dDevice );
-			g_pPlayer->RenderSkillCasting( g_Neuz.m_pd3dDevice );
-			g_pPlayer->RenderCltGauge( g_Neuz.m_pd3dDevice );
+			g_pPlayer->RenderHP( );
+			g_pPlayer->RenderCasting( );
+			g_pPlayer->RenderPVPCount( );
+			g_pPlayer->RenderCtrlCasting( );
+			g_pPlayer->RenderSkillCasting( );
+			g_pPlayer->RenderCltGauge( );
 		}
 	}
 	
@@ -961,7 +942,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 		RenderAltimeter();
 
 	CRect rectClient = GetClientRect();
-	g_Neuz.m_camera.Transform( g_Neuz.m_pd3dDevice, g_WorldMng.Get() );
+	g_Neuz.m_camera.Transform( g_WorldMng.Get() );
 
 #ifdef __CLIENT
 	// 머리위에 뜨는 데미지 숫자를 위해 게임화면 뷰표트를 받아둠.
@@ -985,10 +966,10 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 
 	RenderWantedArrow();
 
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
+	m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
+	m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+	m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+	m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
 
 	// LIGHT / FOG가 꺼진상태에서 드로우 되어야 한다,.
 	// 비행중 사경반경이내에 들어오는 플레이어들은 사각테두리가 쳐진다.
@@ -1727,7 +1708,6 @@ void CWndWorld::RenderArrow()
 		return; // 플레이어가 없으면 렌더 안한다
 	D3DXVECTOR3 vSrc = g_pPlayer->GetPos();
 	D3DXVECTOR3 vDest( 0.0F, 0.0F, 0.0F );
-	LPDIRECT3DDEVICE9 pd3dDevice = m_pApp->m_pd3dDevice;
 
 	int nBlend = 255;
 	if( m_vDestinationArrow == D3DXVECTOR3( -1.0F, 0.0F, -1.0F ) || g_pPlayer->GetWorld()->GetID() != WI_WORLD_MADRIGAL )
@@ -1768,14 +1748,14 @@ void CWndWorld::RenderArrow()
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 
 	m_meshArrow.SetBlendFactor( nBlend );
-	m_meshArrow.Render( pd3dDevice, &matWorld );
+	m_meshArrow.Render( &matWorld );
 
 	if( m_bSetQuestNPCDest )
-		RenderArrow_Text( pd3dDevice, vDest, matWorld);		//gmpbisgun : refactoring 2009_10_20
+		RenderArrow_Text( vDest, matWorld);		//gmpbisgun : refactoring 2009_10_20
 
 }
 
-void CWndWorld::RenderArrow_Text( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3& vDest, const D3DXMATRIX& matWorld  )
+void CWndWorld::RenderArrow_Text( const D3DXVECTOR3& vDest, const D3DXMATRIX& matWorld  )
 {
 	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
 	D3DXVECTOR3 vOut, vPos, vPosHeight;
@@ -1832,11 +1812,11 @@ void CWndWorld::RenderArrow_Text( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR
 	}
 }
 
-BOOL CWndWorld::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
+void CWndWorld::OnSetCursor()
 {
 	DWORD dwCursor = 0xffffffff;
 #ifdef __VRCAMERA
-	if( m_bRButtonDown &&/* m_bCameraMode &&*/ g_WorldMng()->GetObjFocus() != CObj::m_pObjHighlight )
+	if( m_bRButtonDown && g_WorldMng()->GetObjFocus() != CObj::m_pObjHighlight )
 #else
 	if( m_bMButtonDown )
 #endif
@@ -1920,15 +1900,13 @@ BOOL CWndWorld::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 		
 	}
 	if( dwCursor == 0xffffffff )
-		CWndNeuz::OnSetCursor( pWndBase, nHitTest, message );
+		CWndNeuz::OnSetCursor();
 	else
 		SetMouseCursor( dwCursor );
-	return TRUE;
 }
 void CWndWorld::GetBoundRect( CObj* pObj, CRect* pRect )
 {
 	CWorld* pWorld	= g_WorldMng.Get();
-	LPDIRECT3DDEVICE9 pd3dDevice = g_Neuz.m_pd3dDevice;
 	CModel* pModel = pObj->m_pModel;
 	D3DXVECTOR3 vMin, vMax, vPos;
 
@@ -2041,10 +2019,10 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 
 					ClientToScreen( rect );
 					ClientToScreen( rectTemp );
-					m_Theme.MakeGaugeVertex( p2DRender->m_pd3dDevice, &rect, D3DCOLOR_ARGB( 200, 255, 255, 255 ), m_pVBGauge, &m_texGauEmptyNormal );
-					m_Theme.RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, &m_texGauEmptyNormal );
-					m_Theme.MakeGaugeVertex( p2DRender->m_pd3dDevice, &rectTemp, D3DCOLOR_ARGB( 128, 255, 15, 15 ), m_pVBGauge, &m_texGauEmptyNormal );
-					m_Theme.RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.MakeGaugeVertex( &rect, D3DCOLOR_ARGB( 200, 255, 255, 255 ), m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.RenderGauge( m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.MakeGaugeVertex( &rectTemp, D3DCOLOR_ARGB( 128, 255, 15, 15 ), m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.RenderGauge( m_pVBGauge, &m_texGauEmptyNormal );
 					
 					//p2DRender->RenderTexture( CPoint( nPos-60, 7 ), &m_texTargetGauge );
 					
@@ -2200,10 +2178,10 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 					rectTemp.right = rectTemp.left + nWidth;
 					ClientToScreen( rect );
 					ClientToScreen( rectTemp );
-					m_Theme.MakeGaugeVertex( p2DRender->m_pd3dDevice, &rect, D3DCOLOR_ARGB( 200, 255, 255, 255 ), m_pVBGauge, &m_texGauEmptyNormal );
-					m_Theme.RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, &m_texGauEmptyNormal );
-					m_Theme.MakeGaugeVertex( p2DRender->m_pd3dDevice, &rectTemp, D3DCOLOR_ARGB( 128, 255, 15, 15 ), m_pVBGauge, &m_texGauEmptyNormal );
-					m_Theme.RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.MakeGaugeVertex( &rect, D3DCOLOR_ARGB( 200, 255, 255, 255 ), m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.RenderGauge( m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.MakeGaugeVertex( &rectTemp, D3DCOLOR_ARGB( 128, 255, 15, 15 ), m_pVBGauge, &m_texGauEmptyNormal );
+					m_Theme.RenderGauge( m_pVBGauge, &m_texGauEmptyNormal );
 
 					CD3DFont* pOldFont = p2DRender->GetFont();
 					p2DRender->SetFont( m_Theme.m_pFontWorld );
@@ -2648,52 +2626,52 @@ void CWndWorld::OnInitialUpdate()
 			m_pFontAPICaption->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPICaption->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
 			m_pFontAPICaption->m_dwFlags = D3DFONT_FILTERED;
-			m_pFontAPICaption->InitDeviceObjects( m_pApp->m_pd3dDevice );
+			m_pFontAPICaption->InitDeviceObjects( );
 
 			m_pFontAPITitle	= MakeFont( strFont, rectClient.Width() / plfCaption.nDivCaption );
 			m_pFontAPITitle->m_nOutLine = 2;
 			m_pFontAPITitle->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPITitle->m_dwBgColor = D3DCOLOR_ARGB( 255, 40, 100, 220 );
 			m_pFontAPITitle->m_dwFlags = D3DFONT_FILTERED;
-			m_pFontAPITitle->InitDeviceObjects( m_pApp->m_pd3dDevice );
+			m_pFontAPITitle->InitDeviceObjects( );
 
 			m_pFontAPITime	= MakeFont( plfCaption.szFontSecond, rectClient.Width() / 40 );
 			m_pFontAPITime->m_nOutLine = 2;
 			m_pFontAPITime->m_dwColor = D3DCOLOR_ARGB( 255, 255, 255, 255);
 			m_pFontAPITime->m_dwBgColor = D3DCOLOR_ARGB( 255, 220, 100, 40 );
 			m_pFontAPITime->m_dwFlags = D3DFONT_FILTERED;
-			m_pFontAPITime->InitDeviceObjects( m_pApp->m_pd3dDevice );
+			m_pFontAPITime->InitDeviceObjects( );
 		}
 	}
 
 	m_wndMenuMover.CreateMenu( this );	
 
-	m_texTarget.LoadScript( D3DDEVICE, MakePath( DIR_ICON, "icon_target.inc" ) );
-	m_texTargetFly.LoadScript( D3DDEVICE, MakePath( DIR_ICON, "icon_FlightTargetB.inc" ) );			// 비행모드시 타겟 4귀퉁이.		sun!!
-	m_texTargetArrow.LoadScript( D3DDEVICE, MakePath( DIR_ICON, "icon_FlightTargetArrow.inc" ) );	// 비행모드시 타겟방향을 가르키는 화살표
+	m_texTarget.LoadScript( MakePath( DIR_ICON, "icon_target.inc" ) );
+	m_texTargetFly.LoadScript( MakePath( DIR_ICON, "icon_FlightTargetB.inc" ) );			// 비행모드시 타겟 4귀퉁이.		sun!!
+	m_texTargetArrow.LoadScript( MakePath( DIR_ICON, "icon_FlightTargetArrow.inc" ) );	// 비행모드시 타겟방향을 가르키는 화살표
 	m_texTargetArrow.GetAt(0)->m_ptCenter.x += 32;
 	m_texTargetArrow.GetAt(0)->m_ptCenter.y += 32;
-	m_texGauFlight.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "Theme_GauFlight.inc" ) );		// 비행모드시 게이지 인터페이스
-	m_texFontDigital.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "Theme_FontDigital1.inc" ) );		// 디지탈모양의 폰트.
+	m_texGauFlight.LoadScript( MakePath( DIR_THEME, "Theme_GauFlight.inc" ) );		// 비행모드시 게이지 인터페이스
+	m_texFontDigital.LoadScript( MakePath( DIR_THEME, "Theme_FontDigital1.inc" ) );		// 디지탈모양의 폰트.
 	
-	//m_texFlaris.LoadTexture( D3DDEVICE, MakePath( DIR_EFFECT, "WelcomeToFlaris.tga" ), 0xff000000 );
+	//m_texFlaris.LoadTexture( MakePath( DIR_EFFECT, "WelcomeToFlaris.tga" ), 0xff000000 );
 	//m_texFlaris.m_ptCenter = CPoint( m_texFlaris.m_size.cx / 2, m_texFlaris.m_size.cy / 2 );
 
-	m_meshArrow.InitDeviceObjects( m_pApp->m_pd3dDevice );
+	m_meshArrow.InitDeviceObjects( );
 	m_meshArrow.LoadModel( "etc_arrow.o3d" );
 
-	m_meshArrowWanted.InitDeviceObjects( m_pApp->m_pd3dDevice );
+	m_meshArrowWanted.InitDeviceObjects( );
 	m_meshArrowWanted.LoadModel( "arrow.o3d" );
 	m_bRenderArrowWanted = FALSE;
 	m_dwRenderArrowTime  = 0;
 	
 	RestoreDeviceObjects();
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texLvUp.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvUp.bmp" ), 0xffff00ff, TRUE );
-	m_texLvDn.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvDn.bmp" ), 0xffff00ff, TRUE );
-	m_texLvUp2.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvUp2.bmp" ), 0xffff00ff, TRUE );
-	m_texLvDn2.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "LvDn2.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texLvUp.LoadTexture( MakePath( DIR_THEME, "LvUp.bmp" ), 0xffff00ff, TRUE );
+	m_texLvDn.LoadTexture( MakePath( DIR_THEME, "LvDn.bmp" ), 0xffff00ff, TRUE );
+	m_texLvUp2.LoadTexture( MakePath( DIR_THEME, "LvUp2.bmp" ), 0xffff00ff, TRUE );
+	m_texLvDn2.LoadTexture( MakePath( DIR_THEME, "LvDn2.bmp" ), 0xffff00ff, TRUE );
 
 
 	for (const AddSkillProp & pAddSkill : prj.m_aPropAddSkill) {
@@ -2705,7 +2683,7 @@ void CWndWorld::OnInitialUpdate()
 				if( pItem )
 				{
 					BUFFSKILL buffskill;
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItem->szIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pItem->szIcon ), 0xffff00ff );
 
 					m_pBuffTexture[0].emplace(pItem->dwID, buffskill);
 				}
@@ -2717,7 +2695,7 @@ void CWndWorld::OnInitialUpdate()
 			if( pItemProp.dwSkillTime != -1 )
 			{
 				BUFFSKILL buffskill;
-				buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, pItemProp.szIcon ), 0xffff00ff );
+				buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, pItemProp.szIcon ), 0xffff00ff );
 				m_pBuffTexture[1].emplace(pItemProp.dwID, buffskill);
 			}
 	}
@@ -2740,24 +2718,24 @@ void CWndWorld::OnInitialUpdate()
 				if( pItemProp.dwItemKind3 == IK3_EGG && pItemProp.dwID != II_PET_EGG )
 				{
 					strIcon.Replace( ".", "_00." );
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
 					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 0 ), buffskill );
 					strIcon.Replace( "0.", "1." );
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
 					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 1 ), buffskill );
 					strIcon.Replace( "1.", "2." );
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
 					m_pBuffTexture[2].emplace( MAKELONG( (WORD)pItemProp.dwID, 2 ), buffskill );
 				}
 				else
 				{
 #ifdef __DST_GIFTBOX
 					if(pItemProp.dwDestParam[0] == DST_GIFTBOX || pItemProp.dwDestParam[1] == DST_GIFTBOX || pItemProp.dwDestParam[2] == DST_GIFTBOX)
-						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ICON, "Skill_TroGiftbox02.dds" ), 0xffff00ff );
+						buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ICON, "Skill_TroGiftbox02.dds" ), 0xffff00ff );
 					else
-						buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
+						buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
 #else //__DST_GIFTBOX
-					buffskill.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
+					buffskill.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp.szIcon ), 0xffff00ff );
 #endif //__DST_GIFTBOX
 					m_pBuffTexture[2].emplace( pItemProp.dwID, buffskill );
 				}
@@ -2800,7 +2778,7 @@ void CWndWorld::OnInitialUpdate()
 	{
 		str.Format( "Icon_CloakSLogo%02d.jpg", i+1 );
 		
-		if( !m_pTextureLogo[i].LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_ICON, str ), D3DCOLOR_XRGB(0,0,0), FALSE ) )
+		if( !m_pTextureLogo[i].LoadTexture( MakePath( DIR_ICON, str ), D3DCOLOR_XRGB(0,0,0), FALSE ) )
 		{
 			Error( "길드 로고 텍스쳐 로딩 실패 : %s", str );
 		}
@@ -2821,18 +2799,18 @@ void CWndWorld::OnInitialUpdate()
 	}
 #endif
 	
-	m_texMsgIcon.LoadScript( m_pApp->m_pd3dDevice, "icon\\icon_IconMessenger.inc" );
+	m_texMsgIcon.LoadScript( "icon\\icon_IconMessenger.inc" );
 	
-	m_texAttrIcon.LoadScript( m_pApp->m_pd3dDevice, "icon\\Icon_MonElemantkind.inc" );
+	m_texAttrIcon.LoadScript( "icon\\Icon_MonElemantkind.inc" );
 	
-	m_texPlayerDataIcon.LoadScript( m_pApp->m_pd3dDevice, "icon\\icon_PlayerData.inc" );
+	m_texPlayerDataIcon.LoadScript( "icon\\icon_PlayerData.inc" );
 	for( int j = 0 ; j < SM_MAX ; ++j )
 	{
 		if( j != SM_RESIST_ATTACK_LEFT && j != SM_RESIST_ATTACK_RIGHT && j != SM_RESIST_DEFENSE )
 		{
 			ItemProp* pItem = prj.GetItemProp( g_AddSMMode.dwSMItemID[j] );
 			if( pItem )
-				m_dwSMItemTexture[j] = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItem->szIcon ), 0xffff00ff );
+				m_dwSMItemTexture[j] = m_textureMng.AddTexture( MakePath( DIR_ITEM, pItem->szIcon ), 0xffff00ff );
 		}
 	}
 
@@ -2854,14 +2832,14 @@ void CWndWorld::OnInitialUpdate()
 		pItem = prj.GetItemProp( dwArry[kk] );
 
 		if( pItem )
-			m_dwSMResistItemTexture[kk] = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_ITEM, pItem->szIcon ), 0xffff00ff );	
+			m_dwSMResistItemTexture[kk] = m_textureMng.AddTexture( MakePath( DIR_ITEM, pItem->szIcon ), 0xffff00ff );	
 	}
 	
 	m_wndTitleBar.SetVisible( FALSE );
 
 	g_DialogMsg.ClearVendorObjMsg();
 	
-	Projection( D3DDEVICE );
+	Projection( );
 
 	SAFE_DELETE(m_pWndGuideSystem);
 	m_pWndGuideSystem = new CWndGuideSystem;
@@ -2904,8 +2882,8 @@ void CWndWorld::OnInitialUpdate()
 	m_bViewMap = FALSE;	
 	CWorldMap* pWorldMap = CWorldMap::GetInstance();
 	pWorldMap->Init(); 
-	m_TexGuildWinner.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "TexGuildCombatWinner.bmp" ), 0xffff00ff );
-	m_TexGuildBest.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "TexGuildCombatBest.bmp" ), 0xffff00ff );
+	m_TexGuildWinner.LoadTexture( MakePath( DIR_THEME, "TexGuildCombatWinner.bmp" ), 0xffff00ff );
+	m_TexGuildBest.LoadTexture( MakePath( DIR_THEME, "TexGuildCombatBest.bmp" ), 0xffff00ff );
 	InitEyeFlash();
 
 #ifdef __Y_CAMERA_SLOW_8
@@ -2914,12 +2892,12 @@ void CWndWorld::OnInitialUpdate()
 
 }
 
-BOOL CWndWorld::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndWorld::Initialize( CWndBase* pWndParent )
 {
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
+	CRect rectWindow = g_WndMng.GetWindowRect();
 	CRect rect( 100,100,500,400 );
 	SetTitle( _T( "World" ) );
-	return CWndNeuz::Create(WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_THICKFRAME|WBS_MANAGER|WBS_MAXIMIZEBOX,rect,pWndParent,dwWndId);
+	return CWndNeuz::Create(WBS_MOVE|WBS_SOUND|WBS_CAPTION|WBS_THICKFRAME|WBS_MANAGER|WBS_MAXIMIZEBOX,rect,pWndParent,APP_WORLD);
 }
 BOOL CWndWorld::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 { 
@@ -2965,7 +2943,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				CWndGuildWarCancelConfirm* pWndGuildCombat = new CWndGuildWarCancelConfirm(0);
 
 				if(pWndGuildCombat)
-					pWndGuildCombat->Initialize( NULL );
+					pWndGuildCombat->Initialize();
 			}
 			break;
 		// 입장하기
@@ -2974,7 +2952,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				CWndGuildWarJoinConfirm* pWndGuildCombat = new CWndGuildWarJoinConfirm(0);
 				
 				if(pWndGuildCombat)
-					pWndGuildCombat->Initialize( NULL );
+					pWndGuildCombat->Initialize();
 			}
 			break;
 		// 랭킹
@@ -3146,7 +3124,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				CWndGuildWarCancelConfirm* pWndGuildCombat = new CWndGuildWarCancelConfirm(1);
 
 				if(pWndGuildCombat)
-					pWndGuildCombat->Initialize( NULL );
+					pWndGuildCombat->Initialize();
 			}
 			break;
 		case MMI_GUILDCOMBAT_1TO1_OFFERSTATE:
@@ -3160,7 +3138,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				CWndGuildWarJoinConfirm* pWndGuildCombat = new CWndGuildWarJoinConfirm(1);
 				
 				if(pWndGuildCombat)
-					pWndGuildCombat->Initialize( NULL );
+					pWndGuildCombat->Initialize();
 			}
 			break;
 		case MMI_GUILDCOMBAT_1TO1_GUIDE_TEX:
@@ -3293,7 +3271,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				CWndSecretRoomCancelConfirm* pWndSecretRoomCancelConfirm = new CWndSecretRoomCancelConfirm;
 
 				if(pWndSecretRoomCancelConfirm)
-					pWndSecretRoomCancelConfirm->Initialize( NULL );
+					pWndSecretRoomCancelConfirm->Initialize();
 			}
 			break;
 		case MMI_SECRET_OFFERSTATE:
@@ -3343,7 +3321,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndSecretRoomCheckTaxRate = new CWndSecretRoomCheckTaxRate;
 
 				if(g_WndMng.m_pWndSecretRoomCheckTaxRate)
-					g_WndMng.m_pWndSecretRoomCheckTaxRate->Initialize(NULL);
+					g_WndMng.m_pWndSecretRoomCheckTaxRate->Initialize();
 			}
 			break;
 		case MMI_SECRET_ENTRANCE_1:
@@ -3364,7 +3342,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				SAFE_DELETE( g_WndMng.m_pWndLvReqDown );
 				g_WndMng.m_pWndLvReqDown = new CWndLvReqDown;
 				//g_WndMng.m_pWndLvReqDown->Initialize();
-				g_WndMng.m_pWndLvReqDown->Initialize( &g_WndMng, APP_LVREQDOWN );
+				g_WndMng.m_pWndLvReqDown->Initialize();
 			}
 			break;
 
@@ -3380,7 +3358,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				SAFE_DELETE( g_WndMng.m_pWndAwakening );
 				g_WndMng.m_pWndAwakening = new CWndAwakening;
 				//g_WndMng.m_pWndAwakening->Initialize();	
-				g_WndMng.m_pWndAwakening->Initialize( &g_WndMng, APP_AWAKENING );
+				g_WndMng.m_pWndAwakening->Initialize();
 			}
 			break;
 
@@ -3396,7 +3374,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				SAFE_DELETE( g_WndMng.m_pWndBlessingCancel );
 				g_WndMng.m_pWndBlessingCancel = new CWndBlessingCancel;
 				//g_WndMng.m_pWndAwakening->Initialize();	
-				g_WndMng.m_pWndBlessingCancel->Initialize( &g_WndMng, APP_CANCEL_BLESSING );
+				g_WndMng.m_pWndBlessingCancel->Initialize();
 			}
 			break;
 #ifdef __JEFF_11
@@ -3412,7 +3390,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				SAFE_DELETE(g_WndMng.m_pPetRes);
 				g_WndMng.m_pPetRes = new CWndPetRes;
 				//g_WndMng.m_pPetRes->Initialize();
-				g_WndMng.m_pPetRes->Initialize( &g_WndMng, APP_PET_RES );
+				g_WndMng.m_pPetRes->Initialize();
 			}
 			break;
 #endif
@@ -3429,7 +3407,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndRainbowRaceInfo = new CWndRainbowRaceInfo;
 
 				if(g_WndMng.m_pWndRainbowRaceInfo)
-					g_WndMng.m_pWndRainbowRaceInfo->Initialize(NULL);
+					g_WndMng.m_pWndRainbowRaceInfo->Initialize();
 			}
 			break;
 		case MMI_LORD_RAINBOWRULE:
@@ -3440,7 +3418,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndRainbowRaceRule = new CWndRainbowRaceRule;
 
 				if(g_WndMng.m_pWndRainbowRaceRule)
-					g_WndMng.m_pWndRainbowRaceRule->Initialize(NULL);
+					g_WndMng.m_pWndRainbowRaceRule->Initialize();
 			}
 			break;
 		case MMI_LORD_RAINBOWTOPTEN:
@@ -3456,7 +3434,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndRainbowRacePrize = new CWndRainbowRacePrize;
 
 				if(g_WndMng.m_pWndRainbowRacePrize)
-					g_WndMng.m_pWndRainbowRacePrize->Initialize(NULL);
+					g_WndMng.m_pWndRainbowRacePrize->Initialize();
 			}
 			break;
 		case MMI_LORD_RAINBOWEND:
@@ -3578,7 +3556,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				
 				SAFE_DELETE( g_WndMng.m_pWndPost );
 				g_WndMng.m_pWndPost = new CWndPost;
-				g_WndMng.m_pWndPost->Initialize( NULL );	
+				g_WndMng.m_pWndPost->Initialize();	
 			}
 			break;
 		case MMI_BEAUTYSHOP:
@@ -3645,7 +3623,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.CreateApplet( APP_INVENTORY );			
 					SAFE_DELETE( g_WndMng.m_pWndBeautyShop );
 					g_WndMng.m_pWndBeautyShop = new CWndBeautyShop;
-					g_WndMng.m_pWndBeautyShop->Initialize( NULL, APP_BEAUTY_SHOP_EX );
+					g_WndMng.m_pWndBeautyShop->Initialize();
 				}
 			}
 			break;
@@ -3713,7 +3691,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					g_WndMng.CreateApplet( APP_INVENTORY );
 					SAFE_DELETE( g_WndMng.m_pWndFaceShop );
 					g_WndMng.m_pWndFaceShop = new CWndFaceShop;
-					g_WndMng.m_pWndFaceShop->Initialize( NULL, APP_BEAUTY_SHOP_SKIN );
+					g_WndMng.m_pWndFaceShop->Initialize();
 				}
 			}
 			break;
@@ -4087,47 +4065,47 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			SAFE_DELETE( g_WndMng.m_pWndDialog );
 			g_WndMng.m_pWndDialog = new CWndDialog;
 			g_WndMng.m_pWndDialog->m_idMover = ((CMover*)pFocusObj)->GetId();
-			g_WndMng.m_pWndDialog->Initialize( &g_WndMng, APP_DIALOG_EX );
+			g_WndMng.m_pWndDialog->Initialize();
 			break;
 	case MMI_LORD_STATE:
 		SAFE_DELETE( g_WndMng.m_pWndLordState );
 		g_WndMng.m_pWndLordState = new CWndLordState;
-		g_WndMng.m_pWndLordState->Initialize(&g_WndMng);
+		g_WndMng.m_pWndLordState->Initialize();
 		break;
 	case MMI_LORD_TENDER:
 		SAFE_DELETE( g_WndMng.m_pWndLordTender );
 		g_WndMng.m_pWndLordTender = new CWndLordTender;
-		g_WndMng.m_pWndLordTender->Initialize(&g_WndMng);
+		g_WndMng.m_pWndLordTender->Initialize();
 		break;
 	case MMI_LORD_VOTE:
 		SAFE_DELETE( g_WndMng.m_pWndLordVote );
 		g_WndMng.m_pWndLordVote = new CWndLordVote;
-		g_WndMng.m_pWndLordVote->Initialize(&g_WndMng);
+		g_WndMng.m_pWndLordVote->Initialize();
 		break;
 	case MMI_LORD_EVENT:
 		SAFE_DELETE( g_WndMng.m_pWndLordEvent );
 		g_WndMng.m_pWndLordEvent = new CWndLordEvent;
-		g_WndMng.m_pWndLordEvent->Initialize(&g_WndMng);
+		g_WndMng.m_pWndLordEvent->Initialize();
 		break;
 	case MMI_LORD_INFO:
 		SAFE_DELETE( g_WndMng.m_pWndLordInfo );
 		g_WndMng.m_pWndLordInfo = new CWndLordInfo;
-		g_WndMng.m_pWndLordInfo->Initialize(&g_WndMng);
+		g_WndMng.m_pWndLordInfo->Initialize();
 		break;
 	case MMI_LORD_RPINFO:
 		SAFE_DELETE( g_WndMng.m_pWndLordRPInfo );
 		g_WndMng.m_pWndLordRPInfo = new CWndLordRPInfo;
-		g_WndMng.m_pWndLordRPInfo->Initialize(&g_WndMng);
+		g_WndMng.m_pWndLordRPInfo->Initialize();
 		break;
 	case MMI_VISIT_FRIEND:
 		SAFE_DELETE( g_WndMng.m_pWndRoomList );
 		g_WndMng.m_pWndRoomList = new CWndRoomList;
-		g_WndMng.m_pWndRoomList->Initialize(&g_WndMng);
+		g_WndMng.m_pWndRoomList->Initialize();
 		break;
 	case MMI_RETURNTO_WORLD:
 		SAFE_DELETE( g_WndMng.m_pWndQuitRoom );
 		g_WndMng.m_pWndQuitRoom = new CWndQuitRoom;
-		g_WndMng.m_pWndQuitRoom->Initialize(&g_WndMng);
+		g_WndMng.m_pWndQuitRoom->Initialize();
 		break;
 	case MMI_VISIT_MYROOM:
 		if(g_pPlayer)
@@ -4136,7 +4114,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 	case MMI_PET_AWAK_CANCEL:
 		SAFE_DELETE( g_WndMng.m_pWndPetAwakCancel );
 		g_WndMng.m_pWndPetAwakCancel = new CWndPetAwakCancel;
-		g_WndMng.m_pWndPetAwakCancel->Initialize(&g_WndMng);
+		g_WndMng.m_pWndPetAwakCancel->Initialize();
 		break;
 	case MMI_RENAME_CANCEL:
 		g_DPlay.SendClearPetName();
@@ -4313,7 +4291,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					break;
 				}
 				g_WndMng.m_pWndRepairItem = new CWndRepairItem;
-				g_WndMng.m_pWndRepairItem->Initialize( &g_WndMng, APP_REPAIR );
+				g_WndMng.m_pWndRepairItem->Initialize();
 				break;
 			}
 		case MMI_BANKING:
@@ -4469,7 +4447,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			{
 				SAFE_DELETE( g_WndMng.m_pWndRankGuild );
 				g_WndMng.m_pWndRankGuild = new CWndRankGuild;
-				g_WndMng.m_pWndRankGuild->Initialize( &g_WndMng, APP_RANK_GUILD );
+				g_WndMng.m_pWndRankGuild->Initialize();
 				
 				g_DPlay.SendGuildRank( CGuildRank::Instance.m_Version );
 				break;
@@ -4478,7 +4456,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			{
 				SAFE_DELETE( g_WndMng.m_pWndRankWar );
 				g_WndMng.m_pWndRankWar = new CWndRankWar;
-				g_WndMng.m_pWndRankWar->Initialize( &g_WndMng, APP_RANK_WAR );
+				g_WndMng.m_pWndRankWar->Initialize();
 				g_DPlay.SendGuildRank( CGuildRank::Instance.m_Version );
 				break;
 			}
@@ -4486,7 +4464,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			{
 				SAFE_DELETE( g_WndMng.m_pWndRankInfo );
 				g_WndMng.m_pWndRankInfo = new CWndRankInfo;
-				g_WndMng.m_pWndRankInfo->Initialize( &g_WndMng, APP_RANK_INFO );
+				g_WndMng.m_pWndRankInfo->Initialize();
 				g_DPlay.SendGuildRank( CGuildRank::Instance.m_Version );
 				break;
 			}
@@ -4578,7 +4556,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					break;
 				SAFE_DELETE( g_WndMng.m_pWndPiercing );
 				g_WndMng.m_pWndPiercing = new CWndPiercing;
-				g_WndMng.m_pWndPiercing->Initialize( &g_WndMng, APP_PIERCING );
+				g_WndMng.m_pWndPiercing->Initialize();
 			}
 			break;
 		case MMI_UPGRADE:
@@ -4624,7 +4602,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 					break;
 				SAFE_DELETE( g_WndMng.m_pWndUpgradeBase );
 				g_WndMng.m_pWndUpgradeBase = new CWndUpgradeBase;
-				g_WndMng.m_pWndUpgradeBase->Initialize( &g_WndMng, APP_TEST );
+				g_WndMng.m_pWndUpgradeBase->Initialize();
 			}
 			break;
 		case MMI_CHANGEELEM:
@@ -4683,7 +4661,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 
 				SAFE_DELETE( g_WndMng.m_pWndCommerialElem );
 				g_WndMng.m_pWndCommerialElem = new CWndCommercialElem;
-				g_WndMng.m_pWndCommerialElem->Initialize( &g_WndMng, APP_COMMERCIAL_ELEM );
+				g_WndMng.m_pWndCommerialElem->Initialize();
 				
 			}
 			break;
@@ -4775,7 +4753,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if( !pWndItemTransy )
 				{
 					pWndItemTransy = new CWndItemTransy;
-					pWndItemTransy->Initialize( &g_WndMng );
+					pWndItemTransy->Initialize();
 					pWndItemTransy->Init( nullptr );
 				}
 			}
@@ -4830,8 +4808,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if(g_WndMng.m_pWndSmeltSafety != NULL)
 					SAFE_DELETE(g_WndMng.m_pWndSmeltSafety);
 				g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_NORMAL);
-				if(g_WndMng.m_pWndSmeltSafety != NULL)
-					g_WndMng.m_pWndSmeltSafety->Initialize(NULL);
+				g_WndMng.m_pWndSmeltSafety->Initialize();
 				break;
 			}
 		case MMI_SMELT_SAFETY_ACCESSORY:
@@ -4845,8 +4822,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if(g_WndMng.m_pWndSmeltSafety != NULL)
 					SAFE_DELETE(g_WndMng.m_pWndSmeltSafety);
 				g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_ACCESSARY);
-				if(g_WndMng.m_pWndSmeltSafety != NULL)
-					g_WndMng.m_pWndSmeltSafety->Initialize(NULL);
+				g_WndMng.m_pWndSmeltSafety->Initialize();
 				break;
 			}
 		case MMI_SMELT_SAFETY_PIERCING:
@@ -4860,8 +4836,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if(g_WndMng.m_pWndSmeltSafety != NULL)
 					SAFE_DELETE(g_WndMng.m_pWndSmeltSafety);
 				g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_PIERCING);
-				if(g_WndMng.m_pWndSmeltSafety != NULL)
-					g_WndMng.m_pWndSmeltSafety->Initialize(NULL);
+				g_WndMng.m_pWndSmeltSafety->Initialize();
 				break;
 			}
 		case MMI_SMELT_SAFETY_ELEMENT:
@@ -4874,8 +4849,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if( g_WndMng.m_pWndSmeltSafety )
 					SAFE_DELETE( g_WndMng.m_pWndSmeltSafety );
 				g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety( CWndSmeltSafety::WND_ELEMENT );
-				if( g_WndMng.m_pWndSmeltSafety )
-					g_WndMng.m_pWndSmeltSafety->Initialize( NULL );
+				g_WndMng.m_pWndSmeltSafety->Initialize();
 				break;
 			}
 #ifdef __QUIZ
@@ -4885,7 +4859,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndQuizEventConfirm = new CWndQuizEventConfirm( TRUE );
 				if( g_WndMng.m_pWndQuizEventConfirm )
 				{
-					g_WndMng.m_pWndQuizEventConfirm->Initialize(&g_WndMng);
+					g_WndMng.m_pWndQuizEventConfirm->Initialize();
 					g_WndMng.m_pWndQuizEventConfirm->SetString( _T( prj.GetText( TID_GAME_QUIZ_TELEPORT_QUIZ_IN ) ) );
 				}
 				break;
@@ -4904,7 +4878,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				g_WndMng.m_pWndQuizEventConfirm = new CWndQuizEventConfirm( FALSE );
 				if( g_WndMng.m_pWndQuizEventConfirm )
 				{
-					g_WndMng.m_pWndQuizEventConfirm->Initialize(&g_WndMng);
+					g_WndMng.m_pWndQuizEventConfirm->Initialize();
 					g_WndMng.m_pWndQuizEventConfirm->SetString( _T( prj.GetText( TID_GAME_QUIZ_TELEPORT_QUIZ_OUT ) ) );
 				}
 				break;
@@ -4931,7 +4905,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if( !g_WndMng.m_pWndUpkeep )
 				{
 					g_WndMng.m_pWndUpkeep = new CWndGHUpkeep;
-					g_WndMng.m_pWndUpkeep->Initialize( &g_WndMng, APP_CONFIRM_BUY_);	//gmpbigsun( 2010_05_12 ) : 종료버그수정 , 이녀석의 부모가 월드mng여서 접속종료하다 뻗음.
+					g_WndMng.m_pWndUpkeep->Initialize();	//gmpbigsun( 2010_05_12 ) : 종료버그수정 , 이녀석의 부모가 월드mng여서 접속종료하다 뻗음.
 					
 				}
 			}
@@ -4971,7 +4945,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if( g_WndMng.m_pWndCampusSeveranceConfirm )
 					SAFE_DELETE( g_WndMng.m_pWndCampusSeveranceConfirm );
 				g_WndMng.m_pWndCampusSeveranceConfirm = new CWndCampusSeveranceConfirm( pFocusMover->m_idPlayer, pFocusMover->GetName() );
-				g_WndMng.m_pWndCampusSeveranceConfirm->Initialize( NULL );
+				g_WndMng.m_pWndCampusSeveranceConfirm->Initialize();
 				break;
 			}
 
@@ -5974,7 +5948,7 @@ void CWndWorld::OnLButtonDblClk( UINT nFlags, CPoint point)
 		if( !pWndSummonPartyUse )
 		{
 			pWndSummonPartyUse = new CWndSummonPartyUse;
-			pWndSummonPartyUse->Initialize( &g_WndMng );
+			pWndSummonPartyUse->Initialize();
 		}
 	}		
 	if( GetBuffIconRect( II_SYS_SYS_SCR_PET_FEED_POCKET, point ) )	// II_SYS_SYS_SCR_PET_FEED_POCKET 버프 더블 클릭
@@ -6497,7 +6471,7 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					g_WndMng.m_pWndQuestItemWarning = new CWndQuestItemWarning;
 					g_WndMng.m_pWndQuestItemWarning->m_pItemElem = pItemElem;
 					g_WndMng.m_pWndQuestItemWarning->m_vPos = vPos;
-					g_WndMng.m_pWndQuestItemWarning->Initialize( NULL, APP_QUEITMWARNING );
+					g_WndMng.m_pWndQuestItemWarning->Initialize();
 				}
 				else
 				{
@@ -6506,7 +6480,7 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 						g_WndMng.m_pWndDropConfirm = new CWndDropConfirm;
 						g_WndMng.m_pWndDropConfirm->m_pItemElem = pItemElem;
 						g_WndMng.m_pWndDropConfirm->m_vPos = vPos;
-						g_WndMng.m_pWndDropConfirm->Initialize( NULL, APP_DROP_CONFIRM );
+						g_WndMng.m_pWndDropConfirm->Initialize();
 						
 						if( g_eLocal.GetState( EVE_DROPITEMREMOVE ) )
 						{
@@ -6520,7 +6494,7 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 						g_WndMng.m_pWndDropItem = new CWndDropItem;
 						g_WndMng.m_pWndDropItem->m_pItemElem = pItemElem;
 						g_WndMng.m_pWndDropItem->m_vPos = vPos;
-						g_WndMng.m_pWndDropItem->Initialize( NULL, APP_DROP_ITEM );
+						g_WndMng.m_pWndDropItem->Initialize();
 
 						if( g_eLocal.GetState( EVE_DROPITEMREMOVE ) )
 						{
@@ -7113,7 +7087,7 @@ BOOL CWndWorld::Process()
 			g_Caption1.AddCaption( "Happy New Year", m_pFontAPITitle );
 			D3DXVECTOR3	vPos	= g_pPlayer->GetPos();
 			vPos.y	+= 2.0f;
-			CreateSfx( g_Neuz.m_pd3dDevice, XI_NAT_MAGICBOMB01, vPos, NULL_ID );	// g_pPlayer->GetId() );
+			CreateSfx( XI_NAT_MAGICBOMB01, vPos, NULL_ID );	// g_pPlayer->GetId() );
 		}
 		else
 		{
@@ -7199,7 +7173,7 @@ BOOL CWndWorld::Process()
 			g_WndMng.m_pWndRainbowRaceMiniGameButton = new CWndRainbowRaceMiniGameButton;
 			
 			if(g_WndMng.m_pWndRainbowRaceMiniGameButton)
-				g_WndMng.m_pWndRainbowRaceMiniGameButton->Initialize(NULL);
+				g_WndMng.m_pWndRainbowRaceMiniGameButton->Initialize();
 		}
 		else
 		{			
@@ -7274,7 +7248,7 @@ HRESULT CWndWorld::RestoreDeviceObjects()
 {
 	CWndBase::RestoreDeviceObjects();
 	if( m_pVBGauge == NULL )
-		return m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
+		return m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
 	m_meshArrow.RestoreDeviceObjects();
 
 	m_meshArrowWanted.RestoreDeviceObjects();
@@ -7286,14 +7260,14 @@ HRESULT CWndWorld::RestoreDeviceObjects()
 		m_pFontAPITime->RestoreDeviceObjects();
 	
 #ifdef __YDEBUG
-	m_texTarget.RestoreDeviceObjects(m_pApp->m_pd3dDevice);		// 지상에서의 4귀퉁이 타겟그림
-	m_texTargetFly.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행중에서의 4귀퉁이 타겟그림.
-	m_texTargetArrow.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 타겟이 화면을 벗어났을때 화살표방향표시.
-	m_texGauFlight.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행 게이지 인터페이스.
+	m_texTarget.RestoreDeviceObjects();		// 지상에서의 4귀퉁이 타겟그림
+	m_texTargetFly.RestoreDeviceObjects();	// 비행중에서의 4귀퉁이 타겟그림.
+	m_texTargetArrow.RestoreDeviceObjects();	// 타겟이 화면을 벗어났을때 화살표방향표시.
+	m_texGauFlight.RestoreDeviceObjects();	// 비행 게이지 인터페이스.
 
-	m_texMsgIcon.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행 게이지 인터페이스.
-	m_texAttrIcon.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행 게이지 인터페이스.
-	m_texFontDigital.RestoreDeviceObjects(m_pApp->m_pd3dDevice);	// 비행 게이지 인터페이스.
+	m_texMsgIcon.RestoreDeviceObjects();	// 비행 게이지 인터페이스.
+	m_texAttrIcon.RestoreDeviceObjects();	// 비행 게이지 인터페이스.
+	m_texFontDigital.RestoreDeviceObjects();	// 비행 게이지 인터페이스.
 #endif //__YDEBUG	
 
 	return S_OK;
@@ -8359,10 +8333,10 @@ void CWndWorld::RenderCasting(C2DRender *p2DRender)
 				rectTemp.right = rectTemp.left + nWidth;
 				ClientToScreen( rect );
 				ClientToScreen( rectTemp );
-				m_Theme.MakeGaugeVertex( p2DRender->m_pd3dDevice, &rect, D3DCOLOR_ARGB( 200, 255, 255, 255 ), m_pVBGauge, &m_texGauEmptyNormal );
-				m_Theme.RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, &m_texGauEmptyNormal );
-				m_Theme.MakeGaugeVertex( p2DRender->m_pd3dDevice, &rectTemp, D3DCOLOR_ARGB( 128, 255, 15, 15 ), m_pVBGauge, &m_texGauEmptyNormal );
-				m_Theme.RenderGauge( p2DRender->m_pd3dDevice, m_pVBGauge, &m_texGauEmptyNormal );
+				m_Theme.MakeGaugeVertex( &rect, D3DCOLOR_ARGB( 200, 255, 255, 255 ), m_pVBGauge, &m_texGauEmptyNormal );
+				m_Theme.RenderGauge( m_pVBGauge, &m_texGauEmptyNormal );
+				m_Theme.MakeGaugeVertex( &rectTemp, D3DCOLOR_ARGB( 128, 255, 15, 15 ), m_pVBGauge, &m_texGauEmptyNormal );
+				m_Theme.RenderGauge( m_pVBGauge, &m_texGauEmptyNormal );
 			}
 		}
 	}
@@ -8606,8 +8580,6 @@ void CWndWorld::RenderWantedArrow()
 		D3DXVECTOR3 vSrc = g_pPlayer->GetPos();
 		D3DXVECTOR3 vDest = m_v3Dest;
 
-		LPDIRECT3DDEVICE9 pd3dDevice = m_pApp->m_pd3dDevice;
-
 		pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   FALSE );
 		pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, FALSE );
 		pd3dDevice->SetRenderState( D3DRS_CULLMODE,   D3DCULL_NONE );
@@ -8635,7 +8607,7 @@ void CWndWorld::RenderWantedArrow()
 		pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 
 		m_meshArrowWanted.SetBlendFactor( 128 );
-		m_meshArrowWanted.Render( pd3dDevice, &matWorld );
+		m_meshArrowWanted.Render( &matWorld );
 	}
 	else
 	{
@@ -8755,7 +8727,7 @@ void CAdvMgr::AddAdvButton(const DWORD dwid) {
 
 	button.m_pwndButton = std::make_unique<CWndButton>();
 	button.m_pwndButton->Create("", 0, CRect(CPoint(0, 0), CSize(25, 25)), m_pParentWnd, m_nIndex + 2000);
-	button.m_pwndButton->SetTexture(m_pParentWnd->m_pApp->m_pd3dDevice, MakePath(DIR_THEME, _T("ButtAdvPlus.bmp")), TRUE);
+	button.m_pwndButton->SetTexture(MakePath(DIR_THEME, _T("ButtAdvPlus.bmp")), TRUE);
 
 	button.m_dwRunWindow = dwid;
 	m_nIndex++;		
@@ -8814,7 +8786,7 @@ void CWndWorld::InitEyeFlash()
 		for( int i=0; i<MAX_HEAD; i++ )
 		{
 			_stprintf( lpszTemp, PARTSMESH_HEAD( nSex ), i + 1 );
-			pObject3D = g_Object3DMng.LoadObject3D( g_Neuz.m_pd3dDevice, lpszTemp );
+			pObject3D = g_Object3DMng.LoadObject3D( lpszTemp );
 			pGmObj = pObject3D->GetGMOBJECT();
 			str1 = pGmObj->m_MaterialAry[0].strBitMapFileName;
 			CMover::m_pTextureEye[nSex][i] = *(pGmObj->m_pMtrlBlkTexture);
@@ -8822,7 +8794,7 @@ void CWndWorld::InitEyeFlash()
 			strTexture += "_Flash";
 			strTexture += str1.Right(4);
 
-			pMtrl = g_TextureMng.AddMaterial( g_Neuz.m_pd3dDevice, &mMtrl, strTexture );
+			pMtrl = g_TextureMng.AddMaterial( &mMtrl, strTexture );
 			CMover::m_pTextureEyeFlash[nSex][i] = pMtrl->m_pTexture;
 		}
 	}

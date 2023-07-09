@@ -44,7 +44,7 @@ void CWndVendorCtrl::OnInitialUpdate( void )
 	CRect rect	= GetWindowRect();
 	rect.left	= rect.right - 15;
 	
-	m_pTex = m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndPosMark.tga" ), 0xffff00ff );
+	m_pTex = m_textureMng.AddTexture( MakePath( DIR_THEME, "WndPosMark.tga" ), 0xffff00ff );
 }
 
 CString CWndVendorCtrl::GetNumberFormatSelling( LPCTSTR szNumber )
@@ -354,7 +354,7 @@ void CWndVendorCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
 			CWndVendor* pWndVendor	= (CWndVendor*)GetParentWnd();
 			SAFE_DELETE( pWndVendor->m_pWndVendorBuy );
 			pWndVendor->m_pWndVendorBuy		= new CWndVendorBuy( pItemBase, nItem );
-			pWndVendor->m_pWndVendorBuy->Initialize( pWndVendor, APP_VENDOR_BUY );
+			pWndVendor->m_pWndVendorBuy->Initialize( pWndVendor );
 		}
 	}
 }

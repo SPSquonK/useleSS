@@ -1,13 +1,12 @@
 #ifndef __WNDOPTIONGAME__H
 #define __WNDOPTIONGAME__H
 
-class CWndOptionGame : public CWndNeuz 
+class CWndOptionGame final : public CWndNeuz
 { 
 public: 
 	CWndOptionGame(); 
 	~CWndOptionGame(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -26,8 +25,5 @@ public:
 	void GetRangeSlider( DWORD dwWndId, int& nStep, CPoint point );
 	int GetSliderStep( DWORD dwWndId, int &nStep, CPoint point );
 	CPoint GetStepPos( int nStep, int nWidth, int nDivision );
-
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
 }; 
 #endif

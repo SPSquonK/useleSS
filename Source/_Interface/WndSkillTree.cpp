@@ -30,7 +30,7 @@ void CWndReSkillWarning::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndReSkillWarning::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndReSkillWarning::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_QUEITMWARNING, pWndParent, WBS_MODAL, CPoint(0, 0));
 }
 
@@ -461,14 +461,14 @@ void CWndSkillTreeCommon::ResetSkills() {
 		const ItemProp * pSkillProp = skill.GetProp();
 		if (!pSkillProp) continue;
 
-		CTexture * texture = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pSkillProp->szIcon), 0xffff00ff);
+		CTexture * texture = m_textureMng.AddTexture(MakePath(DIR_ICON, pSkillProp->szIcon), 0xffff00ff);
 		if (!texture) continue;
 
 		m_pTexSkill.emplace(skill.dwSkill, texture);
 	}
 
 	m_kTexLevel.DeleteDeviceObjects();
-	m_kTexLevel.LoadScript(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
+	m_kTexLevel.LoadScript(MakePath(DIR_ICON, _T("icon_IconSkillLevel.inc")));
 }
 
 void CWndSkillTreeCommon::OnSkillPointUp() {
@@ -787,7 +787,7 @@ void CWndSkillTreeEx::SetActiveSlot(int nSlot, BOOL bFlag) {
 HRESULT CWndSkillTreeEx::RestoreDeviceObjects() {
 	CWndBase::RestoreDeviceObjects();
 	if (m_pVBGauge == NULL)
-		return m_pApp->m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL);
+		return m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL);
 	return S_OK;
 }
 HRESULT CWndSkillTreeEx::InvalidateDeviceObjects() {
@@ -941,7 +941,7 @@ BOOL CWndSkillTreeEx::Process() {
 
 			SetWndRect(rect);
 
-			CRect rectRoot = m_pWndRoot->GetLayoutRect();
+			CRect rectRoot = g_WndMng.GetLayoutRect();
 			int x = rectRoot.right - rect.Width();
 			int y = rectRoot.bottom - rect.Height();
 
@@ -967,7 +967,7 @@ BOOL CWndSkillTreeEx::Process() {
 
 			SetWndRect(rect);
 
-			CRect rectRoot = m_pWndRoot->GetLayoutRect();
+			CRect rectRoot = g_WndMng.GetLayoutRect();
 			int x = rectRoot.right - rect.Width();
 			int y = rectRoot.bottom - rect.Height();
 
@@ -1121,7 +1121,7 @@ void CWndSkillTreeEx::OnDraw(C2DRender * p2DRender) {
 			rect.OffsetRect(0, m_nTopDownGap);
 			point = rect.TopLeft();
 			point.y -= 2;
-			CTexture * pTexture = CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, m_strHeroSkilBg), 0xffff00ff);
+			CTexture * pTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, m_strHeroSkilBg), 0xffff00ff);
 			if (pTexture)
 				pTexture->Render(p2DRender, point, CPoint(27, 27));
 		}
@@ -1247,17 +1247,17 @@ void CWndSkillTreeEx::OnInitialUpdate() {
 
 	RestoreDeviceObjects();
 
-	m_texGauEmptyNormal.LoadTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "GauEmptyNormal.bmp"), 0xffff00ff, TRUE);
-	m_texGauFillNormal.LoadTexture(m_pApp->m_pd3dDevice, MakePath(DIR_THEME, "GauFillNormal.bmp"), 0xffff00ff, TRUE);
+	m_texGauEmptyNormal.LoadTexture(MakePath(DIR_THEME, "GauEmptyNormal.bmp"), 0xffff00ff, TRUE);
+	m_texGauFillNormal.LoadTexture(MakePath(DIR_THEME, "GauFillNormal.bmp"), 0xffff00ff, TRUE);
 
-	m_aSkillLevel[0] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "ButtSkillLevelHold01.tga"), 0xffff00ff);
-	m_aSkillLevel[1] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "ButtSkillLevelup01.tga"), 0xffff00ff);
-	m_aSkillLevel[2] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "ButtSkillLevelHold02.tga"), 0xffff00ff);
+	m_aSkillLevel[0] = m_textureMng.AddTexture(MakePath(DIR_THEME, "ButtSkillLevelHold01.tga"), 0xffff00ff);
+	m_aSkillLevel[1] = m_textureMng.AddTexture(MakePath(DIR_THEME, "ButtSkillLevelup01.tga"), 0xffff00ff);
+	m_aSkillLevel[2] = m_textureMng.AddTexture(MakePath(DIR_THEME, "ButtSkillLevelHold02.tga"), 0xffff00ff);
 
 	InitItem();
 
-	m_atexTopDown[0] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "LvUp.bmp"), 0xffff00ff);
-	m_atexTopDown[1] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_THEME, "LvDn.bmp"), 0xffff00ff);
+	m_atexTopDown[0] = m_textureMng.AddTexture(MakePath(DIR_THEME, "LvUp.bmp"), 0xffff00ff);
+	m_atexTopDown[1] = m_textureMng.AddTexture(MakePath(DIR_THEME, "LvDn.bmp"), 0xffff00ff);
 
 	m_nTopDownGap = 0;
 	m_bSlot[0] = TRUE;
@@ -1301,7 +1301,7 @@ void CWndSkillTreeEx::OnInitialUpdate() {
 		SetWndRect(rect);
 	}
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rect = GetWindowRect();
 	int x = rectRoot.right - rect.Width();
 	int y = rectRoot.bottom - rect.Height();
@@ -1309,9 +1309,9 @@ void CWndSkillTreeEx::OnInitialUpdate() {
 	CPoint point(x, y);
 	Move(point);
 }
-BOOL CWndSkillTreeEx::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
-	CRect rectWindow = m_pWndRoot->GetWindowRect();
-	return CWndNeuz::InitDialog(dwWndId, pWndParent, 0, CPoint(792, 130));
+BOOL CWndSkillTreeEx::Initialize(CWndBase * pWndParent) {
+	CRect rectWindow = g_WndMng.GetWindowRect();
+	return CWndNeuz::InitDialog(APP_SKILL3, pWndParent, 0, CPoint(792, 130));
 }
 BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 	if (m_focusedSkill && g_pPlayer->m_nSkillPoint > 0) {
@@ -1340,7 +1340,7 @@ BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) 
 					if (m_nCurrSkillPoint != g_pPlayer->m_nSkillPoint) {
 						SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
 						g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(false);
-						g_WndMng.m_pWndReSkillWarning->Initialize(NULL);
+						g_WndMng.m_pWndReSkillWarning->Initialize();
 					}
 				}
 				break;
@@ -1354,7 +1354,7 @@ BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) 
 			if (pWndBase == NULL) {
 				SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
 				g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(true);
-				g_WndMng.m_pWndReSkillWarning->Initialize(NULL);
+				g_WndMng.m_pWndReSkillWarning->Initialize();
 			}
 			return TRUE;
 		}
@@ -1385,7 +1385,7 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 			SetActiveSlot(1, FALSE);
 			if (FULLSCREEN_HEIGHT == 600 && m_bLegend) {
 				SetActiveSlot(2, TRUE);
-				CRect rectRoot = m_pWndRoot->GetLayoutRect();
+				CRect rectRoot = g_WndMng.GetLayoutRect();
 				CRect rect = GetWindowRect();
 				int x = this->m_rectWindow.left;
 				int y = rectRoot.bottom - rect.Height();
@@ -1397,7 +1397,7 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 			SetActiveSlot(1, TRUE);
 			if (FULLSCREEN_HEIGHT == 600 && m_bLegend) {
 				SetActiveSlot(2, FALSE);
-				CRect rectRoot = m_pWndRoot->GetLayoutRect();
+				CRect rectRoot = g_WndMng.GetLayoutRect();
 				CRect rect = GetWindowRect();
 				int x = this->m_rectWindow.left;
 				int y = rectRoot.bottom - rect.Height();
@@ -1415,7 +1415,7 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 			SetActiveSlot(2, FALSE);
 			if (FULLSCREEN_HEIGHT == 600 && m_bLegend) {
 				SetActiveSlot(1, TRUE);
-				CRect rectRoot = m_pWndRoot->GetLayoutRect();
+				CRect rectRoot = g_WndMng.GetLayoutRect();
 				CRect rect = GetWindowRect();
 				int x = this->m_rectWindow.left;
 				int y = rectRoot.bottom - rect.Height();
@@ -1427,7 +1427,7 @@ void CWndSkillTreeEx::OnLButtonDown(UINT nFlags, CPoint point) {
 			SetActiveSlot(2, TRUE);
 			if (FULLSCREEN_HEIGHT == 600 && m_bLegend) {
 				SetActiveSlot(1, FALSE);
-				CRect rectRoot = m_pWndRoot->GetLayoutRect();
+				CRect rectRoot = g_WndMng.GetLayoutRect();
 				CRect rect = GetWindowRect();
 				int x = this->m_rectWindow.left;
 				int y = rectRoot.bottom - rect.Height();

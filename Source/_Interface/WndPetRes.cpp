@@ -54,7 +54,7 @@ void CWndPetRes::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPetRes::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndPetRes::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_PET_RES, pWndParent, 0, CPoint( 0, 0 ) );
@@ -63,7 +63,7 @@ BOOL CWndPetRes::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
   직접 윈도를 열때 사용 
 BOOL CWndPetRes::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+	CRect rectWindow = g_WndMng.GetWindowRect(); 
 	CRect rect( 50 ,50, 300, 300 ); 
 	SetTitle( _T( "title" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
@@ -176,7 +176,7 @@ BOOL CWndPetRes::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	if(m_pEItemProp != NULL)
 	{
 		m_pTexture = m_pItemElem->m_pTexture;
-		//m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
+		//m_pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, m_pEItemProp->szIcon), 0xffff00ff );
 	}	
 
 	return TRUE;

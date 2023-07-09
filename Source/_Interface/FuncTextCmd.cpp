@@ -309,7 +309,7 @@ BOOL	TextCmd_MakePetFeed( CScanner & s )
 	{
 		SAFE_DELETE( g_WndMng.m_pWndPetFoodMill );
 		g_WndMng.m_pWndPetFoodMill = new CWndPetFoodMill;
-		g_WndMng.m_pWndPetFoodMill->Initialize( &g_WndMng, APP_PET_FOOD );
+		g_WndMng.m_pWndPetFoodMill->Initialize();
 		return FALSE;
 	}
 #endif	// __CLIENT
@@ -566,7 +566,7 @@ BOOL TextCmd_PickupPetAwakeningCancel( CScanner & )
 #ifdef __CLIENT
 	SAFE_DELETE( g_WndMng.m_pWndPetAwakCancel );
 	g_WndMng.m_pWndPetAwakCancel = new CWndPetAwakCancel;
-	g_WndMng.m_pWndPetAwakCancel->Initialize(&g_WndMng);
+	g_WndMng.m_pWndPetAwakCancel->Initialize();
 #endif	// __CLIENT
 	return TRUE;
 }
@@ -1250,7 +1250,7 @@ BOOL TextCmd_ResistItem(CScanner & scanner, CPlayer_ * pUser) {
 	{
 		SAFE_DELETE( g_WndMng.m_pWndUpgradeBase );
 		g_WndMng.m_pWndUpgradeBase = new CWndUpgradeBase;
-		g_WndMng.m_pWndUpgradeBase->Initialize( &g_WndMng, APP_TEST );
+		g_WndMng.m_pWndUpgradeBase->Initialize();
 		return FALSE;
 	}
 
@@ -1315,7 +1315,7 @@ BOOL TextCmd_CommercialElem( CScanner& )
 #ifdef __CLIENT
 	SAFE_DELETE( g_WndMng.m_pWndCommerialElem );
 	g_WndMng.m_pWndCommerialElem = new CWndCommercialElem;
-	g_WndMng.m_pWndCommerialElem->Initialize( &g_WndMng, APP_COMMERCIAL_ELEM );
+	g_WndMng.m_pWndCommerialElem->Initialize();
 #endif // __CLIENT
 	return FALSE;
 }
@@ -2165,7 +2165,7 @@ BOOL TextCmd_CreateChar(CScanner & scanner, CPlayer_ * pUser) {
 		BOOL bActiveAttack = scanner.GetNumber();
 		for( DWORD dw = 0; dw < dwNum; dw++ )
 		{
-			CMover* pMover = (CMover*)CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+			CMover* pMover = (CMover*)CreateObj( OT_MOVER, pMoverProp->dwID );
 			if( NULL == pMover ) return FALSE; // ASSERT( pObj );
 			strcpy( pMover->m_szCharacterKey, strName );
 			pMover->InitNPCProperty();
@@ -2192,7 +2192,7 @@ BOOL TextCmd_CreateCtrl(CScanner & s, CPlayer_ * pUser) {
 	if( dwID == 0 )
 		return FALSE;
 
-	CCtrl* pCtrl	= (CCtrl*)CreateObj( D3DDEVICE, OT_CTRL, dwID );
+	CCtrl* pCtrl	= (CCtrl*)CreateObj( OT_CTRL, dwID );
 	if( !pCtrl )
 		return FALSE;
 
@@ -2412,7 +2412,7 @@ BOOL TextCmd_CreateNPC(CScanner & scanner, CPlayer_ * pUser) {
 		BOOL bActiveAttack = scanner.GetNumber();
 		for( DWORD dw = 0; dw < dwNum; dw++ )
 		{
-			CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+			CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 			if( NULL == pObj )	
 				return FALSE;	
 			pObj->SetPos( vPos );
@@ -2532,7 +2532,7 @@ BOOL TextCmd_Undying2(CScanner &, CPlayer_ * pUser) {
 
 BOOL TextCmd_NoDisguise(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
-	pUser->NoDisguise( NULL );
+	pUser->NoDisguise( );
 	g_UserMng.AddNoDisguise( pUser );
 #endif // __WORLDSERVER
 	return TRUE;
@@ -2541,7 +2541,7 @@ BOOL TextCmd_NoDisguise(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 BOOL DoDisguise( CUser* pUser, DWORD dwIndex )
 {
-	pUser->Disguise( NULL, dwIndex );
+	pUser->Disguise( dwIndex );
 	g_UserMng.AddDisguise( pUser, dwIndex );
 	return TRUE;
 }
@@ -3460,7 +3460,7 @@ BOOL TextCmd_RemoveAttribute( CScanner& scanner )
 	{
 		SAFE_DELETE( g_WndMng.m_pWndUpgradeBase );
 		g_WndMng.m_pWndUpgradeBase = new CWndUpgradeBase;
-		g_WndMng.m_pWndUpgradeBase->Initialize( &g_WndMng, APP_TEST );
+		g_WndMng.m_pWndUpgradeBase->Initialize();
 		return FALSE;
 	}
 	
@@ -3554,13 +3554,9 @@ BOOL TextCmd_RemoveAllBuff(CScanner &, CPlayer_ * pUser) {
 BOOL TextCmd_HeavenTower( CScanner& s )
 {
 #ifdef __CLIENT
-	if(g_WndMng.m_pWndHeavenTower)
-		SAFE_DELETE(g_WndMng.m_pWndHeavenTower);
-
+	SAFE_DELETE(g_WndMng.m_pWndHeavenTower);
 	g_WndMng.m_pWndHeavenTower = new CWndHeavenTower;
-
-	if(g_WndMng.m_pWndHeavenTower)
-		g_WndMng.m_pWndHeavenTower->Initialize(NULL);
+	g_WndMng.m_pWndHeavenTower->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -3568,13 +3564,9 @@ BOOL TextCmd_HeavenTower( CScanner& s )
 BOOL TextCmd_RemoveJewel( CScanner& s )
 {
 #ifdef __CLIENT
-	if(g_WndMng.m_pWndRemoveJewel)
-		SAFE_DELETE(g_WndMng.m_pWndRemoveJewel);
-
+	SAFE_DELETE(g_WndMng.m_pWndRemoveJewel);
 	g_WndMng.m_pWndRemoveJewel = new CWndRemoveJewel;
-
-	if(g_WndMng.m_pWndRemoveJewel)
-		g_WndMng.m_pWndRemoveJewel->Initialize(NULL);
+	g_WndMng.m_pWndRemoveJewel->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -3590,7 +3582,7 @@ BOOL TextCmd_TransEggs( CScanner& s )
 	g_WndMng.m_pWndPetTransEggs = new CWndPetTransEggs;
 
 	if(g_WndMng.m_pWndPetTransEggs)
-		g_WndMng.m_pWndPetTransEggs->Initialize(NULL);
+		g_WndMng.m_pWndPetTransEggs->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -3691,7 +3683,7 @@ BOOL TextCmd_SecretRoomTenderView( CScanner& s )
 
 	if(g_WndMng.m_pWndSecretRoomCheckTaxRate)
 	{
-		g_WndMng.m_pWndSecretRoomCheckTaxRate->Initialize(NULL);
+		g_WndMng.m_pWndSecretRoomCheckTaxRate->Initialize();
 	}
 #endif // __CLIENT
 	return TRUE;
@@ -3931,7 +3923,7 @@ BOOL TextCmd_RainbowRaceInfo( CScanner& s )
 	g_WndMng.m_pWndRainbowRaceInfo = new CWndRainbowRaceInfo;
 
 	if(g_WndMng.m_pWndRainbowRaceInfo)
-		g_WndMng.m_pWndRainbowRaceInfo->Initialize(NULL);
+		g_WndMng.m_pWndRainbowRaceInfo->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -3945,7 +3937,7 @@ BOOL TextCmd_RainbowRaceRule( CScanner& s )
 	g_WndMng.m_pWndRainbowRaceRule = new CWndRainbowRaceRule;
 
 	if(g_WndMng.m_pWndRainbowRaceRule)
-		g_WndMng.m_pWndRainbowRaceRule->Initialize(NULL);
+		g_WndMng.m_pWndRainbowRaceRule->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -3967,7 +3959,7 @@ BOOL TextCmd_RainbowRacePrize( CScanner& s )
 	g_WndMng.m_pWndRainbowRacePrize = new CWndRainbowRacePrize;
 
 	if(g_WndMng.m_pWndRainbowRacePrize)
-		g_WndMng.m_pWndRainbowRacePrize->Initialize(NULL);
+		g_WndMng.m_pWndRainbowRacePrize->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -4040,13 +4032,9 @@ BOOL TextCmd_RainbowRaceReqFininsh( CScanner& s )
 BOOL TextCmd_ChangeAttribute( CScanner& s )
 {
 #ifdef __CLIENT
-	if(g_WndMng.m_pWndChangeAttribute)
-		SAFE_DELETE(g_WndMng.m_pWndChangeAttribute);
-
+	SAFE_DELETE(g_WndMng.m_pWndChangeAttribute);
 	g_WndMng.m_pWndChangeAttribute = new CWndChangeAttribute;
-
-	if(g_WndMng.m_pWndChangeAttribute)
-		g_WndMng.m_pWndChangeAttribute->Initialize(NULL);
+	g_WndMng.m_pWndChangeAttribute->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -4084,7 +4072,7 @@ BOOL TextCmd_SmeltSafetyNormal( CScanner& s )
 	g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_NORMAL);
 	if(g_WndMng.m_pWndSmeltSafety)
 	{
-		g_WndMng.m_pWndSmeltSafety->Initialize(NULL);
+		g_WndMng.m_pWndSmeltSafety->Initialize();
 	}
 #endif // __CLIENT
 	return TRUE;
@@ -4099,7 +4087,7 @@ BOOL TextCmd_SmeltSafetyAccessary( CScanner& s )
 	g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_ACCESSARY);
 	if(g_WndMng.m_pWndSmeltSafety)
 	{
-		g_WndMng.m_pWndSmeltSafety->Initialize(NULL);
+		g_WndMng.m_pWndSmeltSafety->Initialize();
 	}
 #endif // __CLIENT
 	return TRUE;
@@ -4114,7 +4102,7 @@ BOOL TextCmd_SmeltSafetyPiercing( CScanner& s )
 	g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_PIERCING);
 	if(g_WndMng.m_pWndSmeltSafety)
 	{
-		g_WndMng.m_pWndSmeltSafety->Initialize(NULL);
+		g_WndMng.m_pWndSmeltSafety->Initialize();
 	}
 #endif // __CLIENT
 	return TRUE;
@@ -4130,7 +4118,7 @@ BOOL TextCmd_SmeltSafetyElement( CScanner& s )
 
 	g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety( CWndSmeltSafety::WND_ELEMENT );
 	if( g_WndMng.m_pWndSmeltSafety )
-		g_WndMng.m_pWndSmeltSafety->Initialize( NULL );
+		g_WndMng.m_pWndSmeltSafety->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -4194,7 +4182,7 @@ BOOL TextCmd_GuildHouseUpkeep( CScanner & s )
 	if( !g_WndMng.m_pWndUpkeep )
 	{
 		g_WndMng.m_pWndUpkeep = new CWndGHUpkeep;
-		g_WndMng.m_pWndUpkeep->Initialize( &g_WndMng, APP_CONFIRM_BUY_ );
+		g_WndMng.m_pWndUpkeep->Initialize();
 	}
 	else
 	{

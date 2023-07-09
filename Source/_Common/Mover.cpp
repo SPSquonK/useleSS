@@ -1193,11 +1193,11 @@ void CMover::ProcessRegenItem()
 
 #endif	// __WORLDSERVER
 
-CModel* CMover::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex )
+CModel* CMover::LoadModel( DWORD dwType, DWORD dwIndex )
 {
 	if( m_dwIndex == MI_FEMALE || m_dwIndex == MI_MALE )
-		return prj.m_modelMng.LoadModel( pd3dDevice, dwType, dwIndex, TRUE );
-	return prj.m_modelMng.LoadModel( pd3dDevice, dwType, dwIndex );
+		return prj.m_modelMng.LoadModel( dwType, dwIndex, TRUE );
+	return prj.m_modelMng.LoadModel( dwType, dwIndex );
 }
 
 
@@ -1491,7 +1491,7 @@ void CMover::SetSfxBuffPet( const DWORD idEffect )
 	}
 
 	if( NULL_ID != idEffect )
-		m_pSfxBuffPet =  CreateSfx( g_Neuz.m_pd3dDevice, idEffect, GetPos(), GetId(), GetPos(), GetId(), -1 );
+		m_pSfxBuffPet =  CreateSfx( idEffect, GetPos(), GetId(), GetPos(), GetId(), -1 );
 }
 
 #endif //__CLIENT
@@ -2013,7 +2013,7 @@ CItem *CMover::_DropItemNPC( DWORD dwItemType, DWORD dwID, short nDropNum, const
 	if( pItemBase->m_dwItemId == 0 ) 
 		Error( "_DropItemNPC SetIndex: %s \n", GetName() ); 
 
-	pItem->SetIndex( D3DDEVICE, pItemBase->m_dwItemId );
+	pItem->SetIndex( pItemBase->m_dwItemId );
 	if( pItem->m_pModel )
 	{
 		D3DXVECTOR3 v = vPos;
@@ -2108,7 +2108,7 @@ CItem* CMover::DropItem( DWORD dwID, short nDropNum, const D3DXVECTOR3 &vPos, BO
 		g_DPSrvr.OnLogItem( aLogItem, pItemBase, nDropNum );
 	}
 	
-	pItem->SetIndex( D3DDEVICE, pItemBase->m_dwItemId );
+	pItem->SetIndex( pItemBase->m_dwItemId );
 
 	if( pItem->m_pModel )
 	{
@@ -2520,11 +2520,11 @@ void CMover::ProcessWaterCircle( const D3DXVECTOR3& vPosTemp, const D3DXVECTOR3&
 			FLOAT fHeight = (FLOAT)pWaterHeight->byWaterHeight;
 			if( vPosTemp.y > fHeight && vPos.y <= fHeight && m_pActMover->IsActJump() ) 
 			{
-				CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_WATERCROWN01, D3DXVECTOR3( vPos.x, fHeight, vPos.z ) );
+				CreateSfx( XI_GEN_WATERCROWN01, D3DXVECTOR3( vPos.x, fHeight, vPos.z ) );
 			}
 			if( vPos != vPosTemp && vPos.y < fHeight && vPos.y > ( fHeight - 1.5f )  && m_nWaterCircleCount > 7 ) 
 			{
-				CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_WATERCIRCLE01, D3DXVECTOR3( vPos.x, fHeight + .01f, vPos.z) );
+				CreateSfx( XI_GEN_WATERCIRCLE01, D3DXVECTOR3( vPos.x, fHeight + .01f, vPos.z) );
 				m_nWaterCircleCount = 0;
 			}
 		}
@@ -2563,10 +2563,10 @@ void CMover::ProcessDustSFX()
  		if( IsPlayer() && pAttr && pAttr->m_nSndID > 0 )  // 효과음 속성이 있다면 플레이, pause상태면 사운드 출력 안함
 		{
 			if( m_pActMover->IsActJump() )
-				CreateSfx( g_Neuz.m_pd3dDevice, XI_NAT_DUST_JUMP, GetPos() );
+				CreateSfx( XI_NAT_DUST_JUMP, GetPos() );
 			else
 			if( m_pActMover->IsRun() && !m_pActMover->IsActAttack() )
-				CreateSfx( g_Neuz.m_pd3dDevice, XI_NAT_DUST_RUN, GetPos() );
+				CreateSfx( XI_NAT_DUST_RUN, GetPos() );
 		}
 	}
 }
@@ -2879,7 +2879,7 @@ void CMover::Process()
 		if( m_pAngel == NULL )
 		{
 			m_pAngel = new CModelObject;
-			m_pAngel->InitDeviceObjects( g_Neuz.m_pd3dDevice );
+			m_pAngel->InitDeviceObjects( );
 			
 			IBuff* pBuff	= m_buffs.GetBuffByIk3( IK3_ANGEL_BUFF );
 			ItemProp* pItemProp	= NULL;
@@ -2942,7 +2942,7 @@ void CMover::Process()
 		if( m_pBalloon == NULL )
 		{
 			m_pBalloon = new CModelObject;
-			m_pBalloon->InitDeviceObjects( g_Neuz.m_pd3dDevice );
+			m_pBalloon->InitDeviceObjects( );
 			
 			IBuff* pBuff = m_buffs.GetBuffByIk3( IK3_BALLOON );
 			if( pBuff != NULL )
@@ -2995,7 +2995,7 @@ void CMover::Process()
 		if(HasBuff( BUFF_ITEM, II_CHR_MAG_TRI_ANGELWING ) || HasBuff( BUFF_ITEM, II_SYS_SYS_EVE_WINGS ))
 		{
 			if(m_pSfxWing == NULL)				
-				m_pSfxWing = CreateSfx( D3DDEVICE, XI_NAT_WINGANGEL01, GetPos(), GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );				
+				m_pSfxWing = CreateSfx( XI_NAT_WINGANGEL01, GetPos(), GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );				
 		}
 		else
 		{
@@ -3217,7 +3217,7 @@ void CMover::SetRide(DWORD itemIdx) {
 		return;
 	}
 
-	auto pModelObject = prj.m_modelMng.LoadModel<sqktd::maybe_owned_ptr<CModelObject>>(D3DDEVICE, OT_ITEM, itemIdx);
+	auto pModelObject = prj.m_modelMng.LoadModel<sqktd::maybe_owned_ptr<CModelObject>>(OT_ITEM, itemIdx);
 
 	if (pModelObject->m_pBone) {
 		CString strMotion = pModelObject->GetMotionFileName(_T("stand"));
@@ -3574,7 +3574,7 @@ void CMover::CreateAbilityOption_SetItemSFX(const int nAbilityOption )
 	if (generalSfx == 0) return;
 
 	const auto BuildSfx_ = [&](const DWORD dwSfx, const int partLink, const float yOffset, const std::optional<D3DXVECTOR3> scale) {
-		CSfxPartsLinkShoulder * pSfx = (CSfxPartsLinkShoulder *)CreateSfx(D3DDEVICE, dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1);
+		CSfxPartsLinkShoulder * pSfx = (CSfxPartsLinkShoulder *)CreateSfx(dwSfx, GetPos(), GetId(), GetPos(), GetId(), -1);
 		pSfx->m_nPartsLink = partLink;
 		pSfx->m_nOldAbilityOption = nAbilityOption;
 
@@ -4775,7 +4775,7 @@ BOOL CMover::IsAttackAble( CObj *pObj )
 						{
 							bAble	= IsPKAttackAble( pMover );
 							if( bAble )
-								( (CWndWorld *)g_WndMng.m_pWndWorld )->SetLastTarget( pMover->GetId() );
+								g_WndMng.m_pWndWorld->SetLastTarget( pMover->GetId() );
 						}
 					}
 
@@ -4820,7 +4820,7 @@ BOOL CMover::IsAttackAble( CObj *pObj )
 		
 	#ifdef __CLIENT
 		if( !bAble )
-			( (CWndWorld *)g_WndMng.m_pWndWorld )->m_bAutoAttack	= FALSE;
+			g_WndMng.m_pWndWorld->m_bAutoAttack	= FALSE;
 	#endif
 	}
 	return bAble;
@@ -4874,7 +4874,7 @@ BOOL CMover::IsAttackAbleNPC( CMover* pNPC )
 #ifdef __CLIENT
 	if( bAble == TRUE )
 		if( GetAsyncKeyState(VK_CONTROL) & 0x8000 )	// NPC에게 공격키를 누르고 있을때 클릭하면 자동공격.
-			((CWndWorld *)g_WndMng.m_pWndWorld)->m_bAutoAttack = TRUE;
+			g_WndMng.m_pWndWorld->m_bAutoAttack = TRUE;
 #endif // Client
 				
 	return bAble;
@@ -5463,7 +5463,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 					pItem->m_idOwn	= pAttacker->GetId();
 					pItem->m_dwDropTime		= timeGetTime();
 					pItem->m_bDropMob	= TRUE;
-					pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
+					pItem->SetIndex( pItem->m_pItemBase->m_dwItemId );
 					D3DXVECTOR3 vPos = GetPos();
 					vPos.x += ( xRandomF(2.0f) - 1.0f );
 					vPos.z += ( xRandomF(2.0f) - 1.0f );
@@ -5504,7 +5504,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 					pItem->m_idOwn	= pAttacker->GetId();
 					pItem->m_dwDropTime		= timeGetTime();
 					pItem->m_bDropMob	= TRUE;
-					pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
+					pItem->SetIndex( pItem->m_pItemBase->m_dwItemId );
 					D3DXVECTOR3 vPos = GetPos();
 					vPos.x += ( xRandomF(2.0f) - 1.0f );
 					vPos.z += ( xRandomF(2.0f) - 1.0f );
@@ -5576,7 +5576,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 									pItem->m_pItemBase	= pItemElem;
 									if( pItemElem->m_dwItemId == 0 )
 										Error("DropItem:1st %s\n", GetName() );
-									pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+									pItem->SetIndex( pItemElem->m_dwItemId );
 									pItem->SetPos( pMember->GetPos() );
 									pItem->SetAngle( (float)( xRandom( 360 ) ) );
 									pItem->m_idHolder	= pMember->m_idPlayer;
@@ -5621,7 +5621,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							pItem->m_pItemBase	= pItemElem;
 							if( pItemElem->m_dwItemId == 0 )
 								Error("DropItem:1st %s\n", GetName() );
-							pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+							pItem->SetIndex( pItemElem->m_dwItemId );
 							pItem->SetPos( pAttacker->GetPos() );
 							pItem->SetAngle( (float)( xRandom( 360 ) ) );
 							pItem->m_idHolder	= pAttacker->m_idPlayer;
@@ -5785,7 +5785,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							}
 							pItem->m_bDropMob = TRUE;		// 몹이 죽어서 떨군 돈은 표시를 해둠.
 							if (pItem->m_pItemBase->m_dwItemId == 0) Error("DropItem: 3rd %s\n", GetName());
-							pItem->SetIndex(D3DDEVICE, pItem->m_pItemBase->m_dwItemId);
+							pItem->SetIndex(pItem->m_pItemBase->m_dwItemId);
 
 							vPos = GetPos();
 							vPos.x += (xRandomF(2.0f) - 1.0f);
@@ -5880,7 +5880,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							}
 							pItem->m_bDropMob = TRUE;		// 몹이 죽어서 떨군 돈은 표시를 해둠.
 							if( pItem->m_pItemBase->m_dwItemId == 0 ) Error("DropItem:2nd %s\n", GetName() );
-							pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
+							pItem->SetIndex( pItem->m_pItemBase->m_dwItemId );
 
 							vPos = GetPos();
 							vPos.x += ( xRandomF(2.0f) - 1.0f );
@@ -6010,7 +6010,7 @@ BOOL CMover::DropItem( CMover* pAttacker )
 							}
 					#endif // __EVENT_MONSTER
 							if( pItem->m_pItemBase->m_dwItemId == 0 ) Error("DropItem: 4th %s\n", GetName() );
-							pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
+							pItem->SetIndex( pItem->m_pItemBase->m_dwItemId );
 							pItem->SetPos( GetPos() );
 							GetWorld()->ADDOBJ( pItem, TRUE, GetLayer() );
 							bDrop = true;
@@ -6384,7 +6384,7 @@ BOOL CMover::IsBullet( const ItemProp* pItemProp )
 			{
 #ifdef __CLIENT
 				g_WndMng.PutString( prj.GetText( dwTip ), NULL, prj.GetTextColor( dwTip ) );
-				( (CWndWorld *)g_WndMng.m_pWndWorld )->m_bAutoAttack	= FALSE;
+				g_WndMng.m_pWndWorld->m_bAutoAttack	= FALSE;
 #endif // __CLIENT
 #ifdef __WORLDSERVER
 				((CUser*)this)->AddDefinedText( dwTip, "" );
@@ -6538,7 +6538,7 @@ CSfx* CMover::CreateSfxArrow( DWORD dwSfxObjArrow, DWORD dwSfxObjHit, D3DXVECTOR
 	CModelObject *pModel = (CModelObject *)m_pModel;
 	pModel->GetHandPos( &vPos, PARTS_LWEAPON, GetMatrixWorld() );		// 주먹 월드좌표 구함	
 	
-	pSfx = CreateSfx( D3DDEVICE, dwSfxObjArrow, vPos, GetId(), vPosDest , idTarget );
+	pSfx = CreateSfx( dwSfxObjArrow, vPos, GetId(), vPosDest , idTarget );
 	
 	if( dwSfxObjHit != NULL_ID )
 	{
@@ -6757,7 +6757,7 @@ void CMover::SetCheerParam( int nCheerPoint, DWORD dwTickCount, DWORD dwRest )
 }
 
 
-BOOL CMover::NoDisguise( LPDIRECT3DDEVICE9 pd3dDevice )     
+BOOL CMover::NoDisguise( )     
 { 
 #ifdef __CLIENT
 	// 이미 사람 모양이므로 해제 처리 할 필요 없음. 
@@ -6765,18 +6765,18 @@ BOOL CMover::NoDisguise( LPDIRECT3DDEVICE9 pd3dDevice )
 		return FALSE;
 	// 기존 모델 파괴 
 	DWORD dwIndex = (GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-	SetIndex( pd3dDevice, dwIndex, FALSE, FALSE );
+	SetIndex( dwIndex, FALSE, FALSE );
 #endif  //__CLIENT
 	return TRUE;
 }
-BOOL CMover::Disguise( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwMoverIndex )
+BOOL CMover::Disguise( DWORD dwMoverIndex )
 {
 #ifdef __CLIENT
-	return SetIndex( pd3dDevice, dwMoverIndex );
+	return SetIndex( dwMoverIndex );
 #endif // __CLIENT
 	return TRUE;
 }
-BOOL CMover::SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwMoverIndex, BOOL bInitProp, BOOL bDestParam )
+BOOL CMover::SetIndex( DWORD dwMoverIndex, BOOL bInitProp, BOOL bDestParam )
 { 
 	MoverProp* pMoverProp = prj.GetMoverProp( dwMoverIndex );
 	if( pMoverProp == NULL )
@@ -6787,7 +6787,7 @@ BOOL CMover::SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwMoverIndex, BOOL bI
 	// 기존 모델 파괴 
 	if( m_pModel && m_pModel->IsAniable() )
 		SAFE_DELETE( m_pModel );
-	SetTypeIndex( pd3dDevice, OT_MOVER, dwMoverIndex, bInitProp );//
+	SetTypeIndex( OT_MOVER, dwMoverIndex, bInitProp );//
 	m_dwMotion = -1;
 	SetMotion( MTI_STAND );
 	// 이런건 프로퍼티를 이용하는게 좋다.
@@ -8408,7 +8408,7 @@ void CMover::ProcessPet( void )
 			
 			if( dwIndex > 0 )
 			{
-				CMover* pPet	= (CMover *)CreateObj( D3DDEVICE, OT_MOVER, dwIndex );
+				CMover* pPet	= (CMover *)CreateObj( OT_MOVER, dwIndex );
 				if( m_pet.HasName() )
 					pPet->SetName( m_pet.GetName() );
 				pPet->InitMotion( MTI_STAND );
@@ -9008,7 +9008,7 @@ void	CMover::ProcessCollecting( void )
 				D3DXVECTOR3 vSrc, vLocal	= D3DXVECTOR3( 0, 0.5f, 0 );
 				( (CModelObject *)m_pModel )->GetForcePos( &vLocal, 0, PARTS_RWEAPON, GetMatrixWorld() );
 				vSrc	= vLocal;
-				CSfx *pSfx	= CreateSfx( D3DDEVICE, pHandProp->dwSfxObj2, vSrc, GetId(), D3DXVECTOR3( 0, 0, 0 ), NULL_ID, -1 );
+				CSfx *pSfx	= CreateSfx( pHandProp->dwSfxObj2, vSrc, GetId(), D3DXVECTOR3( 0, 0, 0 ), NULL_ID, -1 );
 				if( pSfx )
 				{
 					pSfx->SetAngle( -GetAngle() + 90.0f );

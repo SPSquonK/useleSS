@@ -219,37 +219,37 @@ UserMarkPositionInfoList& CMapInformationManager::GetUserMarkPositionInfoList( v
 //-----------------------------------------------------------------------------
 BOOL CMapInformationManager::LoadMapIconTexture( void )
 {
-	CTexture* pPCArrowTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ImgMapArrow.bmp" ) ), 0xffff00ff );
+	CTexture* pPCArrowTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, _T( "ImgMapArrow.bmp" ) ), 0xffff00ff );
 	if( pPCArrowTexture )
 	{
 		m_pPCArrowTexture = pPCArrowTexture;
 	}
 
-	CTexture* pPartyPCArrowTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ImgMapArrowParty.bmp" ) ), 0xffff00ff );
+	CTexture* pPartyPCArrowTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, _T( "ImgMapArrowParty.bmp" ) ), 0xffff00ff );
 	if( pPartyPCArrowTexture )
 	{
 		m_pPartyPCArrowTexture = pPartyPCArrowTexture;
 	}
 
-	CTexture* pTeleportationPositionTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "ButtTeleport.bmp"), 0xffff00ff );
+	CTexture* pTeleportationPositionTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtTeleport.bmp"), 0xffff00ff );
 	if( pTeleportationPositionTexture )
 	{
 		m_pTeleportationPositionTexture = pTeleportationPositionTexture;
 	}
 
-	CTexture* pDestinationPositionTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "ButtDestination.bmp"), 0xffff00ff );
+	CTexture* pDestinationPositionTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtDestination.bmp"), 0xffff00ff );
 	if( pDestinationPositionTexture )
 	{
 		m_pDestinationPositionTexture = pDestinationPositionTexture;
 	}
 
-	CTexture* pNPCPositionTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "MapNPCPositionMark.bmp"), 0xffff00ff );
+	CTexture* pNPCPositionTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "MapNPCPositionMark.bmp"), 0xffff00ff );
 	if( pNPCPositionTexture )
 	{
 		m_pNPCPositionTexture = pNPCPositionTexture;
 	}
 
-	CTexture* pUserMarkPositionTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndRainbowRaceLadderFail.bmp"), 0xffff00ff );
+	CTexture* pUserMarkPositionTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndRainbowRaceLadderFail.bmp"), 0xffff00ff );
 	if( pUserMarkPositionTexture )
 	{
 		m_pUserMarkPositionTexture = pUserMarkPositionTexture;
@@ -354,7 +354,7 @@ BOOL CMapInformationManager::LoadPropMapComboBoxData( void )
 		pMapComboBoxData->SetPictureFileName( strMapPictureFileName );
 		if( strMapPictureFileName != _T( "" ) )
 		{
-			CTexture* pMapTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, strMapPictureFileName ), 0xff000000 );
+			CTexture* pMapTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, strMapPictureFileName ), 0xff000000 );
 			pMapComboBoxData->SetMapTexture( pMapTexture );
 		}
 		if( eMapComboBoxCategory == MCC_MAP_NAME )

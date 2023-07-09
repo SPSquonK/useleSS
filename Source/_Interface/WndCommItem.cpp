@@ -31,7 +31,7 @@ void CWndCommItem::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndCommItem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndCommItem::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_COMM_ITEM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -65,7 +65,7 @@ HRESULT CWndCommItemCtrl::RestoreDeviceObjects()
 {
 	CWndBase::RestoreDeviceObjects();
 	if( m_pVBGauge == NULL )
-		return m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
+		return m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL );
 	return S_OK;
 }
 HRESULT CWndCommItemCtrl::InvalidateDeviceObjects()
@@ -90,8 +90,8 @@ void CWndCommItemCtrl::OnInitialUpdate()
 	pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 
 	RestoreDeviceObjects();
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauFillSmall.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauFillSmall.bmp" ), 0xffff00ff, TRUE );
 }
 void CWndCommItemCtrl::OnMouseWndSurface( CPoint point )
 {
@@ -699,7 +699,7 @@ void CWndCommercialElem::OnInitialUpdate()
 	CRect rcVendor = GetWindowRect( TRUE );
 	CPoint ptInventory	= rcInventory.TopLeft();
 	CPoint point;
-	if( ptInventory.x > m_pWndRoot->GetWndRect().Width() / 2 )
+	if( ptInventory.x > g_WndMng.GetWndRect().Width() / 2 )
 		point	= ptInventory - CPoint( rcVendor.Width(), 0 );
 	else
 		point	= ptInventory + CPoint( rcInventory.Width(), 0 );
@@ -707,7 +707,7 @@ void CWndCommercialElem::OnInitialUpdate()
 	Move( point );
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndCommercialElem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndCommercialElem::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_COMMERCIAL_ELEM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -787,7 +787,7 @@ bool CWndCommercialElem::IsRestrictionItem(CItemElem * pItemElem) {
 	}
 	
 	if (pItemElem->GetProp()->nLog >= 2) {
-		g_WndMng.OpenMessageBox(prj.GetText(TID_UPGRADE_ERROR_NOUNICK), MB_OK, this);
+		g_WndMng.OpenMessageBox(prj.GetText(TID_UPGRADE_ERROR_NOUNICK), MB_OK);
 		return false;
 	}
 
@@ -966,7 +966,7 @@ void CWndRemoveElem::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndRemoveElem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRemoveElem::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_REMOVE_ELEM, pWndParent, 0, CPoint( 0, 0 ) );

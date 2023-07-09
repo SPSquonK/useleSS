@@ -3,7 +3,7 @@
 
 #include "WndGuildMerit.h"
 
-class CWndGuildBank : public CWndNeuz 
+class CWndGuildBank final : public CWndNeuz
 { 
 	CWndGuildMerit* m_pwndGuildMerit;		// ±æµå°øÇå.
 public: 
@@ -14,7 +14,7 @@ public:
 	CWndGuildBank(); 
 	~CWndGuildBank(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -35,7 +35,6 @@ public:
 
 public:
 	CWndGuildLogGeneric(BYTE type, int xOffset);
-	~CWndGuildLogGeneric() final = default;
 
 	void Create( RECT& rect, CWndBase* pParentWnd, UINT nID );
 	void UpdateLogList();
@@ -49,17 +48,15 @@ public:
 	int GetDrawCount( void );
 };
 
-class CWndGuildBankLog : public CWndNeuz 
+class CWndGuildBankLog final : public CWndNeuz
 { 
 public: 
-	~CWndGuildBankLog() override = default;
-
 	CWndGuildLogGeneric m_wndAddItemLog{ 0x01, 4 };
 	CWndGuildLogGeneric	m_wndRemoveItemLog{ 0x02, 4 };
 	CWndGuildLogGeneric	m_wndReceivePenyaLog{ 0x03, 10 };
 	CWndGuildLogGeneric	m_wndInvestPenyaLog{ 0x04, 10 };
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 

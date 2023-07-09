@@ -39,7 +39,7 @@ void CWndPartyChangeName::OnInitialUpdate()
 } 
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPartyChangeName::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndPartyChangeName::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_PARTYCHANGENAME, pWndParent, 0, CPoint( 0, 0 ) );
@@ -94,7 +94,7 @@ void CWndPartyChangeTroup::OnInitialUpdate() {
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPartyChangeTroup::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndPartyChangeTroup::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_CHANGETROUP, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -139,7 +139,7 @@ void CWndPartyLeaveConfirm::OnInitialUpdate() {
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPartyLeaveConfirm::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndPartyLeaveConfirm::Initialize(CWndBase * pWndParent) {
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog(APP_PARTYLEAVE_CONFIRM, pWndParent, 0, CPoint(0, 0));
 }

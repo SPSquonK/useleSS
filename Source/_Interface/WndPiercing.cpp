@@ -16,7 +16,7 @@ CPiercingMessageBox::CPiercingMessageBox(const std::array<CWndComponentSlot, 3> 
 	m_Objid[2] = slots[2] ? slots[2].m_item->m_dwObjId : NULL_ID;
 }
 
-BOOL CPiercingMessageBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CPiercingMessageBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( prj.GetText(TID_PIERCING_ERROR_NOTICE), 
 		pWndParent, 
@@ -91,7 +91,7 @@ void CWndPiercing::OnInitialUpdate()
 	CRect rcVendor = GetWindowRect( TRUE );
 	CPoint ptInventory	= rcInventory.TopLeft();
 	CPoint point;
-	if( ptInventory.x > m_pWndRoot->GetWndRect().Width() / 2 )
+	if( ptInventory.x > g_WndMng.GetWndRect().Width() / 2 )
 		point	= ptInventory - CPoint( rcVendor.Width(), 0 );
 	else
 		point	= ptInventory + CPoint( rcInventory.Width(), 0 );
@@ -109,11 +109,11 @@ void CWndPiercing::OnInitialUpdate()
 	
 
 	if (g_pPlayer) {
-		m_pSfx = CreateSfx(g_Neuz.m_pd3dDevice, XI_INT_INCHANT, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1);
+		m_pSfx = CreateSfx( XI_INT_INCHANT, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1);
 	}
 } 
 
-BOOL CWndPiercing::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndPiercing::Initialize( CWndBase* pWndParent ) 
 {
 	return CWndNeuz::InitDialog( APP_PIERCING, pWndParent, 0, 0 );
 }
@@ -186,9 +186,7 @@ BOOL CWndPiercing::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		case WIDC_OK:
 			if (!m_slots[0] || !m_slots[1]) return FALSE;
 
-//		SAFE_DELETE( m_pPiercingMessageBox );
-			m_pPiercingMessageBox = new CPiercingMessageBox(m_slots.values);
-			g_WndMng.OpenCustomBox("", m_pPiercingMessageBox, this);				
+			g_WndMng.OpenCustomBox(new CPiercingMessageBox(m_slots.values));
 			break;
 		case WIDC_CANCEL:
 			Destroy();

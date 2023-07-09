@@ -35,7 +35,7 @@ CWndGHMainMenu::~CWndGHMainMenu( )
 		GuildDeploy()->EndDeploy( );
 }
 
-BOOL CWndGHMainMenu::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGHMainMenu::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_GH_MAIN, nullptr, 0, CPoint( 0, 0 ) );
 } 
@@ -152,7 +152,7 @@ BOOL CWndGHMainMenu::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			if( !g_WndMng.m_pWndUpkeep )
 			{
 				g_WndMng.m_pWndUpkeep = new CWndGHUpkeep;
-				g_WndMng.m_pWndUpkeep->Initialize(&g_WndMng, APP_CONFIRM_BUY_);
+				g_WndMng.m_pWndUpkeep->Initialize();
 				
 			}else
 			{
@@ -254,7 +254,7 @@ HRESULT CWndGHTeleporter::DeleteDeviceObjects()
 }
 
 
-BOOL CWndGHTeleporter::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGHTeleporter::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GH_TELEPORTER, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -551,7 +551,7 @@ void CWndGHTeleporter::DrawSlotItems( C2DRender* p2DRender )
 		if( !pProp )
 			continue;
 
-		m_pTexture[ i ] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
+		m_pTexture[ i ] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
 			
 		if(m_pTexture[ i ] != NULL)
 		{
@@ -661,7 +661,7 @@ void CWndGHUpkeep::OnChangeBuyCount( DWORD dwBuy )
 	m_pStaticGold->SetTitle( szString );
 }
 
-BOOL CWndGHUpkeep::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndGHUpkeep::Initialize( CWndBase* pWndParent ) 
 { 
 	InitDialog( APP_CONFIRM_BUY_, pWndParent, 0, 0 );
 	MoveParentCenter();

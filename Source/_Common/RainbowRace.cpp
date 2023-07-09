@@ -531,7 +531,7 @@ void CRainbowRaceMng::SetNPC()
 		float z = static_cast<float>( m_Lua.GetFieldToNumber( -1, "zPos" ) );
 		D3DXVECTOR3 vPos( x, y, z );
 		
-		CMover* pMover	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, dwNPCID );
+		CMover* pMover	= (CMover*)CreateObj( OT_MOVER, dwNPCID );
 		if( !pMover )
 		{
 			Error( "CRainbowRaceMng::SetNPC() - pMover is NULL - %s, %s", 

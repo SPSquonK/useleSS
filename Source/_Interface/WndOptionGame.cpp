@@ -65,8 +65,8 @@ void CWndOptionGame::OnInitialUpdate()
 	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_RADIO6 );
 	pWndButton[ 0 ]->SetGroup( TRUE );
 	pWndButton[ !(g_Option.m_bParty) ]->SetCheck( TRUE );
-	m_Texture.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
-	m_TexturePt.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );	
+	m_Texture.LoadTexture( MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
+	m_TexturePt.LoadTexture( MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );	
 	m_nStep[0] = (int)( g_Option.m_fEffectVolume * 10 );
 	m_nStep[1] = (int)( g_Option.m_fBGMVolume * 10 );
 
@@ -165,22 +165,7 @@ void CWndOptionGame::OnInitialUpdate()
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 } 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndOptionGame::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_OPTION_GAME, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndOptionGame::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
+
 BOOL CWndOptionGame::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
 	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
@@ -401,14 +386,4 @@ void CWndOptionGame::GetRangeSlider(DWORD dwWndId, int &nStep, CPoint point)
 	if( nStep > MAX_SLIDER )
 		nStep = MAX_SLIDER;
 }
-
-HRESULT CWndOptionGame::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-HRESULT CWndOptionGame::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
-
 

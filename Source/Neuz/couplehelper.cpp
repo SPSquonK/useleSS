@@ -60,7 +60,7 @@ void CCoupleHelper::OnProposeResult( CAr & ar )
 	if(g_WndMng.m_pWndCoupleMessage)
 	{
 		g_WndMng.m_pWndCoupleMessage->SetMessageMod(szText, CWndCoupleMessage::CM_RECEIVEPROPOSE);
-		g_WndMng.m_pWndCoupleMessage->Initialize(NULL);
+		g_WndMng.m_pWndCoupleMessage->Initialize();
 	}
 }
 

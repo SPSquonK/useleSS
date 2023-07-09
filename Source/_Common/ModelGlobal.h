@@ -64,11 +64,11 @@ extern D3DXMATRIX g_mViewLight;		// 빛으로부터 플레이어쪽으로 보는 뷰 매트릭스.
 extern D3DXMATRIX g_mShadowProj;		// 쉐도우 프로젝션
 
 // 쉐도우맵 텍스쳐 생성.
-BOOL CreateShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, D3DFORMAT backBufferFormat );
-void DeleteShadowMap( LPDIRECT3DDEVICE9 pd3dDevice );
-void RenderShadowMapInfo( LPDIRECT3DDEVICE9 pd3dDevice );
-void SetStateShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, int nShadowStage, const D3DXMATRIX &mView );
-void ResetStateShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, int nShadowStage );
+BOOL CreateShadowMap( D3DFORMAT backBufferFormat );
+void DeleteShadowMap( );
+void RenderShadowMapInfo( );
+void SetStateShadowMap( int nShadowStage, const D3DXMATRIX &mView );
+void ResetStateShadowMap( int nShadowStage );
 
 class CModelGlobal
 {
@@ -93,8 +93,8 @@ public:
 	LPDIRECT3DTEXTURE9	GetTexture( void ) { return m_pExtTexture; }
 	void	SetTexture( LPDIRECT3DTEXTURE9 pTexture ) { m_pExtTexture = pTexture; }		// 외부지정 텍스쳐.
 		
-	HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
-	HRESULT InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT RestoreDeviceObjects( );
+	HRESULT InvalidateDeviceObjects( );
 };
 
 extern CModelGlobal g_ModelGlobal;
@@ -127,8 +127,8 @@ public:
 	CPartsEffect() { m_nType = 0; }
 	virtual	~CPartsEffect() {}
 
-	virtual HRESULT InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) { return S_OK; }
-	virtual HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) { return S_OK; }
+	virtual HRESULT InvalidateDeviceObjects( ) { return S_OK; }
+	virtual HRESULT RestoreDeviceObjects( ) { return S_OK; }
 	
 };
 
@@ -169,11 +169,11 @@ public:
 #endif //__CSC_ENCHANT_EFFECT_2
 	}
 	virtual	~CPartsFire();
-	void	Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale );
+	void	Create( const D3DXVECTOR3 vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale );
 #ifdef __CSC_ENCHANT_EFFECT_2
-	void	Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, DWORD dwSfx );
+	void	Create( const D3DXVECTOR3 vPos, DWORD dwSfx );
 #endif //__CSC_ENCHANT_EFFECT_2
-	void	Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
+	void	Render( const D3DXMATRIX *mWorld );
 };
 
 
@@ -215,11 +215,11 @@ class CPartsFireDragon : public CPartsEffect
 public:
 	CPartsFireDragon(); 
 	~CPartsFireDragon() {}
-	void	Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 &vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale, const D3DXVECTOR3 &vVel );
-	void	Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
-	void	Process( LPDIRECT3DDEVICE9 pd3dDevice );
-	HRESULT InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
-	HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	void	Create( const D3DXVECTOR3 &vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale, const D3DXVECTOR3 &vVel );
+	void	Render( const D3DXMATRIX *mWorld );
+	void	Process( );
+	HRESULT InvalidateDeviceObjects( );
+	HRESULT RestoreDeviceObjects( );
 };
 
 
@@ -261,7 +261,7 @@ public:
 	void	Create( const D3DXVECTOR3 &v );
 	void	Create( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, float fSize = 1.0f, int nLevel = 0 );
 	void	Generate( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, int nLevel );
-	void	Render( LPDIRECT3DDEVICE9 pd3dDevice, 
+	void	Render( 
 					const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward, 
 					const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, int nLevel );
 };
@@ -295,13 +295,13 @@ public:
 	}
 	~CPartsLaser() {}
 	
-	HRESULT InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
-	HRESULT RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT InvalidateDeviceObjects( );
+	HRESULT RestoreDeviceObjects( );
 		
 	void	Create( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, float fSize = 1.0f );
 	void	SetPos( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, float fSize );
 //	void	Generate( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2 );
-	void	Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward/*, const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, FLOAT fSize = 0*/ );
+	void	Render( const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward/*, const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, FLOAT fSize = 0*/ );
 };
 
 #endif // __CLIENT
@@ -311,7 +311,6 @@ public:
 //
 class CTextureSurface
 {
-	LPDIRECT3DDEVICE9 m_pd3dDevice;
 	LPD3DXRENDERTOSURFACE   m_pRenderToSurface;
 	LPDIRECT3DSURFACE9      m_pSurface;
 	LPDIRECT3DVERTEXBUFFER9		m_pd3dVB;
@@ -327,7 +326,7 @@ public:
 	CTextureSurface();
 	~CTextureSurface();
 	
-	HRESULT Create( LPDIRECT3DDEVICE9 pd3dDevice, D3DFORMAT backBufferFormat, int nWidth, int nHeight, BOOL bDepth = FALSE );
+	HRESULT Create( D3DFORMAT backBufferFormat, int nWidth, int nHeight, BOOL bDepth = FALSE );
 	void DeleteDeviceObjects( void );
 	
 	void BeginScene( void );
@@ -335,11 +334,11 @@ public:
 	
 	void SetTexture( void );
 
-	void	RenderNormal( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSurface *pDst = NULL, BOOL bBlend = FALSE );
-	void	DownSampling( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSurface *pDst, float fOffsetU, float fOffsetV );
-	void	RenderTargetBlur( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSurface *pDst );
-	void	RenderTargetBlurH( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSurface *pDst );
-	void	RenderTargetBlurV( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSurface *pDst );
+	void	RenderNormal( CTextureSurface *pDst = NULL, BOOL bBlend = FALSE );
+	void	DownSampling( CTextureSurface *pDst, float fOffsetU, float fOffsetV );
+	void	RenderTargetBlur( CTextureSurface *pDst );
+	void	RenderTargetBlurH( CTextureSurface *pDst );
+	void	RenderTargetBlurV( CTextureSurface *pDst );
 	
 };
 
@@ -349,7 +348,6 @@ public:
 //
 class CGlareLevel
 {
-	LPDIRECT3DDEVICE9 m_pd3dDevice;
 	int		m_nWidth, m_nHeight;
 	
 	CTextureSurface		m_Surface[5];
@@ -364,14 +362,14 @@ public:
 	CGlareLevel();
 	~CGlareLevel();
 	
-	void Create( LPDIRECT3DDEVICE9 pd3dDevice, D3DFORMAT backBufferFormat, int nWidth, int nHeight );
+	void Create( D3DFORMAT backBufferFormat, int nWidth, int nHeight );
 	void DeleteDeviceObjects( void );
-	void SetState( LPDIRECT3DDEVICE9 pd3dDevice );
-	void ResetState( LPDIRECT3DDEVICE9 pd3dDevice );
-	void RenderWorld( LPDIRECT3DDEVICE9 pd3dDevice, CObj **pList, int nMax );
-//	void DownSampling( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSurface *pSrc, float fOffsetU, float fOffsetV );
-	void RenderGlareEffect( LPDIRECT3DDEVICE9 pd3dDevice );
-	void Blur( LPDIRECT3DDEVICE9 pd3dDevice );
+	void SetState( );
+	void ResetState( );
+	void RenderWorld( CObj **pList, int nMax );
+//	void DownSampling( CTextureSurface *pSrc, float fOffsetU, float fOffsetV );
+	void RenderGlareEffect( );
+	void Blur( );
 		
 };
 

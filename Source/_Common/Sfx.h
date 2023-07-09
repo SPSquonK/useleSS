@@ -63,13 +63,13 @@ public:
 	
 	void Process(); // 각 프레임마다 위치이동, 애니메이션 등 처리
 	void DamageToTarget( int nDmgCnt = 0, float fDmgAngle = 0, float fDmgPower = 0, int nMaxDmgCnt = 1 ); // 목표물에 맞았을때 데미지를 준다
-	BOOL SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwIndex, BOOL bInitProp = FALSE );
+	BOOL SetIndex( DWORD dwIndex, BOOL bInitProp = FALSE );
 
-	virtual	int SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex, D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec = 0 ); // 사용할 SFX 지정
+	virtual	int SetSfx( int nIndex, D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec = 0 ); // 사용할 SFX 지정
 	virtual void ShootSfx( float fAngXZ, float fAngY, float fSpeed ) {}
 	virtual void SetPartLink( int nPart ) {}
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice ); // 렌더
+	virtual void Render( ); // 렌더
 #endif	// __WORLDSERVER
 
 };
@@ -105,7 +105,7 @@ public:
 	
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -119,7 +119,7 @@ public:
 
 	void Process();
 #ifndef __WORLDSERVER
-	void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	void Render( );
 #endif
 };
 
@@ -133,7 +133,7 @@ public:
 	void Process();
 	void DeleteSfx( CMover* pEnemy );
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif		
 };
 
@@ -144,7 +144,7 @@ public:
 	~CSfxSetItem();
 	void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif		
 };
 
@@ -156,7 +156,7 @@ public:
 	~CSfxCollect() {};
 	
 	void Process();
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 };
 
 // 클락워크 보스 레이저 충전.
@@ -167,7 +167,7 @@ public:
 	~CSfxClockWorksCharge() {};
 	
 	void Process();
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 };
 
 // 클락워크 보스 왼팔에서 발사할때 나오는 이펙트.
@@ -178,7 +178,7 @@ public:
 	~CSfxClockWorksCannon() {};
 	
 	void Process();
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 };
 
 // 머쉬무트 보스 레이저 충전.
@@ -190,7 +190,7 @@ public:
 	~CSfxMushmootCharge() {};
 	
 	void Process();
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 };
 
 
@@ -212,7 +212,7 @@ public:
 	virtual ~CSfxGenNormalDmg01();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 #ifdef __CLIENT
 public:
@@ -236,7 +236,7 @@ public:
 	virtual ~CSfxTroStretching01();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 // 극단스킬 이펙트 : 스트레칭02
@@ -247,7 +247,7 @@ public:
 	virtual ~CSfxTroStretching02();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 // 극단스킬 이펙트 : 집중공격
@@ -258,7 +258,7 @@ public:
 	virtual ~CSfxTroBlitz();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -270,7 +270,7 @@ public:
 	virtual ~CSfxGenSuperDmg01();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 일반 이펙트 : 아직 안씀
@@ -281,7 +281,7 @@ public:
 	virtual ~CSfxGenSkillDmg01();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 일반 이펙트 : 아직 안씀
@@ -292,7 +292,7 @@ public:
 	virtual ~CSfxGenMonsterDmg01();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 // 일반 이펙트 : 부활
@@ -303,7 +303,7 @@ public:
 	virtual ~CSfxGenRestoration01();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 일반 이펙트 : 치료
@@ -314,7 +314,7 @@ public:
 	virtual ~CSfxGenCure();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 일반 이펙트 : 강화
@@ -325,7 +325,7 @@ public:
 	virtual ~CSfxGenIncrease01();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 일반 이펙트 : 레벨업
@@ -336,7 +336,7 @@ public:
 	virtual ~CSfxGenLevelUp();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 일반 이펙트 : 로그인
@@ -347,7 +347,7 @@ public:
 	virtual ~CSfxGenLogin();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 일반 이펙트 : 워프
@@ -358,7 +358,7 @@ public:
 	virtual ~CSfxGenWarp();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 일반 이펙트 : 사망
@@ -369,7 +369,7 @@ public:
 	virtual ~CSfxGenPcDie();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 일반 이펙트 : 몹 리스폰
@@ -380,7 +380,7 @@ public:
 	virtual ~CSfxGenMonsterSpawn();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 일반 이펙트 : 이동위치
@@ -391,7 +391,7 @@ public:
 	virtual ~CSfxGenMoveMark();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 #ifdef __CLIENT
 public:
@@ -414,7 +414,7 @@ public:
 	virtual ~CSfxGenWaterCircle();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 #ifdef __CLIENT
 public:
@@ -438,7 +438,7 @@ public:
 	virtual ~CSfxGenRainCircle();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 #ifdef __CLIENT
 public:
@@ -462,7 +462,7 @@ public:
 	virtual ~CSfxGenWaterCrown();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -486,7 +486,7 @@ public:
 	virtual ~CSfxMagicMiAtk1();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -503,7 +503,7 @@ public:
 	virtual ~CSfxItemWandAtk1();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 
@@ -524,7 +524,7 @@ public:
 	virtual ~CSfxItemRangeAtk1();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -537,7 +537,7 @@ public:
 	virtual ~CSfxItemRangeAtk1_Allow();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -550,7 +550,7 @@ public:
 	virtual ~CSfxItemRangeAtk1_AllowRain();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -563,7 +563,7 @@ public:
 	virtual ~CSfxItemRangeAtk1_Stone();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -576,7 +576,7 @@ public:
 	virtual ~CSfxItemRangeAtk1_StoneRain();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -596,9 +596,11 @@ public:
 	virtual ~CSfxItemRangeAtk_JunkBow();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
+
+D3DXVECTOR3	SplineSlerp(D3DXVECTOR3 * v1, D3DXVECTOR3 * v2, D3DXVECTOR3 * v3, D3DXVECTOR3 * v4, float fSlerp);
 
 class CSfxItemYoyoAtk : public CSfxShoot
 {
@@ -629,14 +631,13 @@ public:
 	FLOAT m_fRadiusXZ;		// 타겟의 XZ평면의 반지름.
 
 	void  MakePath(int nType);
-	D3DXVECTOR3	SplineSlerp( D3DXVECTOR3 *v1, D3DXVECTOR3 *v2, D3DXVECTOR3 *v3, D3DXVECTOR3 *v4, float fSlerp );
 	
 	CSfxItemYoyoAtk();
 	virtual ~CSfxItemYoyoAtk();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	void	RenderTail( LPDIRECT3DDEVICE9 pd3dDevice );
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	void	RenderTail( );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -654,7 +655,7 @@ public:
 	void ShootSfx( float fAngXZ, float fAngH, float fSpeed, DWORD dwExplosion );		// 발사체의 이동증가량을 선계산함. 
 	
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -667,10 +668,10 @@ public:
 	CSfxItemWandAtkAir();
 	~CSfxItemWandAtkAir() override;
 	void Process() override;
-	int SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex, D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec = 0 ) override; // 사용할 SFX 지정
+	int SetSfx( int nIndex, D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec = 0 ) override; // 사용할 SFX 지정
 	void ShootSfx( float fAngXZ, float fAngY, float fSpeed ) override;
 #ifndef __WORLDSERVER
-	void Render( LPDIRECT3DDEVICE9 pd3dDevice ) override;
+	void Render() override;
 #endif	// __WORLDSERVER
 };
 
@@ -685,7 +686,7 @@ public:
 	virtual ~CSfxItemWandAtk2();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 일반 이펙트 : 완드3
@@ -698,7 +699,7 @@ public:
 	virtual ~CSfxItemWandAtk3();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 일반 이펙트 : 완드4
@@ -711,7 +712,7 @@ public:
 	virtual ~CSfxItemWandAtk4();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -732,7 +733,7 @@ public:
 	virtual ~CSfxSkillVagOverCutter();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 방랑자 스킬 : 클린히트
@@ -743,7 +744,7 @@ public:
 	virtual ~CSfxSkillVagCleanHit();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 방랑자 스킬 : 브랜디쉬
@@ -754,7 +755,7 @@ public:
 	virtual ~CSfxSkillVagBrandish();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 
@@ -766,7 +767,7 @@ public:
 	virtual ~CSfxSkillMerKeenWheel();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 머셔너리 스킬 : 스플매쉬
@@ -778,7 +779,7 @@ public:
 	virtual ~CSfxSkillMerSplmash();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 머셔너리 스킬 : 블라인드 사이드
@@ -789,7 +790,7 @@ public:
 	virtual ~CSfxSkillMerBlindSide();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 머셔너리 스킬 : 팬바리어
@@ -803,7 +804,7 @@ public:
 	virtual ~CSfxSkillMerPanBarrier();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 머셔너리 스킬 : 프로텍션
@@ -817,7 +818,7 @@ public:
 	virtual ~CSfxSkillMerProtection();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 
@@ -830,7 +831,7 @@ public:
 	virtual ~CSfxSkillMagFireCasting();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 class CSfxSkillMagWindCasting : public CSfx
@@ -840,7 +841,7 @@ public:
 	virtual ~CSfxSkillMagWindCasting();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 
@@ -854,7 +855,7 @@ public:
 	virtual ~CSfxSkillAssBurstcrack();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -865,7 +866,7 @@ public:
 	virtual ~CSfxSkillAssTampinghole();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -878,7 +879,7 @@ public:
 	virtual ~CSfxNpcDirSteam();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -894,10 +895,10 @@ public:
 	BOOL m_bHit; // 명중했는지의 여부
 	CSfxSkillMagStrongWind();
 	virtual ~CSfxSkillMagStrongWind();
-//	int SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex, D3DXVECTOR3& vPosSrc, OBJID idSrc, D3DXVECTOR3& vPosDest, OBJID idDest, int nSec );
+
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 매지션 스킬 : 소드윈드
@@ -910,7 +911,7 @@ public:
 	virtual ~CSfxSkillMagSwordWind();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 매지션 스킬 : 파이어부메랑
@@ -923,7 +924,7 @@ public:
 	virtual ~CSfxSkillMagFireBoomerang();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 매지션 스킬 : 파이어봄버
@@ -934,7 +935,7 @@ public:
 	virtual ~CSfxSkillMagFireBomb();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 // 매지션 스킬 : 핫에어
@@ -947,7 +948,7 @@ public:
 	virtual ~CSfxSkillMagHotAir();
 	virtual void Process();
 	#ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	#endif	// __WORLDSERVER
 };
 #endif	// __WORLDSERVER
@@ -963,7 +964,7 @@ public:
 	virtual ~CSfxSkillMagIceMissile();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -977,7 +978,7 @@ public:
 	virtual ~CSfxSkillMagLightningBall();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -992,7 +993,7 @@ public:
 	virtual ~CSfxSkillMagSpikeStone();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -1019,7 +1020,7 @@ public:
 	
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -1033,7 +1034,7 @@ public:
 	virtual ~CSfxFixed();
 	virtual void Process();
 #ifndef __WORLDSERVER
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 #endif	// __WORLDSERVER
 };
 
@@ -1050,7 +1051,7 @@ public:
 	~CSfxPartsLink() {};
 	
 	void Process();
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	virtual void SetPartLink( int nPart ) { m_nPartsLink = nPart; }
 	
 };
@@ -1085,7 +1086,7 @@ public:
 	~CSfxAllowPartsLink() {};
 	
 	void Process();
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 	virtual void SetPartLink( int nPart ) { m_nPartsLink = nPart; }
 	
 };
@@ -1101,7 +1102,7 @@ public:
 	~CSfxPartsLinkShoulder();
 
 	void Process();
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render( );
 };
 #endif //__WORLDSERVER
 
@@ -1130,7 +1131,7 @@ public:
 	CSfxLinkMover( );
 	virtual ~CSfxLinkMover( );
 	virtual void Process( );
-	virtual void Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void Render();
 
 protected:
 	DWORD  _idSFX;

@@ -30,7 +30,7 @@ void CWndCloseExistingConnection::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndCloseExistingConnection::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndCloseExistingConnection::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog( APP_CLOSE_EXISTING_CONNECTION, pWndParent, 0, CPoint(0, 0) );
 }
 

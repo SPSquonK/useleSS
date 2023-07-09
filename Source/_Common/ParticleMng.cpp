@@ -65,12 +65,12 @@ void CParticles::Create( DWORD dwFlush, DWORD dwDiscard, int nType ) {
 
 
 
-HRESULT CParticles::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
+HRESULT CParticles::InitDeviceObjects( LPCTSTR szFileName )
 {
 	if (!m_bActive)	return S_OK;
 				
 	// Create the texture using D3DX
-	HRESULT hr = LoadTextureFromRes( pd3dDevice, MakePath( DIR_MODELTEX, szFileName ),
+	HRESULT hr = LoadTextureFromRes( MakePath( DIR_MODELTEX, szFileName ),
 									   D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, 
 									   D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 									   D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 0, NULL, NULL, &m_pParticleTexture );
@@ -89,7 +89,7 @@ HRESULT CParticles::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szF
 // Name:
 // Desc:
 //-----------------------------------------------------------------------------
-HRESULT CParticles::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CParticles::RestoreDeviceObjects( )
 {
 	if (!m_bActive)			return S_OK;
 	if( m_pParticleTexture == NULL )	return S_OK;
@@ -221,7 +221,7 @@ HRESULT CParticles::CreateParticle( int nType, const D3DXVECTOR3 &vPos, const D3
 // Desc: Renders the particle system using either pointsprites (if supported)
 //       or using 4 vertices per particle
 //-----------------------------------------------------------------------------
-HRESULT CParticles::Render(LPDIRECT3DDEVICE9 pd3dDevice)
+HRESULT CParticles::Render()
 {
 	if (!m_bActive)	return S_OK;
 	if (m_pParticleTexture == nullptr)	return S_OK;
@@ -385,8 +385,8 @@ CParticles *CParticleMng::CreateParticle( int nType, const D3DXVECTOR3 &vPos, co
 
 		const auto [fSize, szFileName] = CParticles::GetParticleTypeInfo(nType);
 		pParticles->m_fSize = fSize;
-		pParticles->InitDeviceObjects( m_pd3dDevice, szFileName );		// 파티클 텍스쳐 로딩.
-		pParticles->RestoreDeviceObjects( m_pd3dDevice );
+		pParticles->InitDeviceObjects( szFileName );		// 파티클 텍스쳐 로딩.
+		pParticles->RestoreDeviceObjects( );
 	}
 
 	pParticles->CreateParticle( nType, vPos, vVel, fGroundY );		// nType의 파티클 하나 생성.
@@ -436,15 +436,15 @@ void CParticleMng::Process() {
 	}
 }
 
-void CParticleMng::Render( LPDIRECT3DDEVICE9 pd3dDevice ) {
+void CParticleMng::Render( ) {
 	for (CParticles & particles : m_Particles) {
-		particles.Render(pd3dDevice);
+		particles.Render();
 	}
 }
 
-HRESULT CParticleMng::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
+HRESULT CParticleMng::RestoreDeviceObjects() {
 	for (CParticles & particles : m_Particles) {
-		particles.RestoreDeviceObjects(pd3dDevice);
+		particles.RestoreDeviceObjects();
 	}
 
 	return S_OK;

@@ -598,7 +598,7 @@ void CInstanceDungeonBase::CreateMonster( DWORD dwDungeonId, DWORD dwWorldId )
 			MoverProp* pMoverProp = prj.GetMoverProp( (*itVecMon).dwMonsterId );
 			if( pMoverProp )
 			{
-				CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+				CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 				if( NULL == pObj )
 					return;	
 				

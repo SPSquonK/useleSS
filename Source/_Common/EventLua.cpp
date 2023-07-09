@@ -631,7 +631,7 @@ void CEventLua::EventSpawnProcess()
 					{
 						D3DXVECTOR3 v = sp.GetPos();
 						v.y = pWorld->GetLandHeight( v.x, v.z ) + 1.0f;
-						CObj* pObj = CreateObj( D3DDEVICE, OT_ITEM, pProp->dwID );
+						CObj* pObj = CreateObj( OT_ITEM, pProp->dwID );
 						if( pObj )
 						{
 							CItemElem* pItemElem	= new CItemElem;
@@ -653,7 +653,7 @@ void CEventLua::EventSpawnProcess()
 					MoverProp* pMoverProp = prj.GetMoverPropEx( pSI->dwId );
 					if( pMoverProp )
 					{
-						CMover* pMover	= static_cast<CMover*>( CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID ) );
+						CMover* pMover	= static_cast<CMover*>( CreateObj( OT_MOVER, pMoverProp->dwID ) );
 						if( pMover )	
 						{
 							D3DXVECTOR3 v = sp.GetPos();

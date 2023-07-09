@@ -117,10 +117,10 @@ public:
 	int GetDrawCount( void );
 };
 
-class CWndCampus : public CWndNeuz
+class CWndCampus final : public CWndNeuz
 {
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual	void OnInitialUpdate( void );
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
  	virtual	void PaintFrame( C2DRender* p2DRender );

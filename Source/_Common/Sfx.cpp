@@ -58,12 +58,12 @@ void CSfxGenNormalDmg01::Process()
 	}
 	// 이것이 Process의 기본. 단순 재생 SFX는 대부분 이 형태를 취한다.
 }
-void CSfxGenNormalDmg01::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenNormalDmg01::Render( )
 {
 	m_pSfxObj->m_vPos = GetPos();		// 2006/6/20 xuzhu
 //	m_pSfxObj->m_vPos = GetPos()+D3DXVECTOR3(.0f,1.0f,.0f);
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 // 일반 공격으로 데미지 입을 때 효과 
 CSfxGenSuperDmg01::CSfxGenSuperDmg01()
@@ -81,11 +81,11 @@ void CSfxGenSuperDmg01::Process()
 	}
 	// 역시 단순 재생 Process이다.
 }
-void CSfxGenSuperDmg01::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenSuperDmg01::Render( )
 {
 	m_pSfxObj->m_vPos = GetPos()+D3DXVECTOR3(.0f,1.0f,.0f);
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 스킬로 데미지 입을 때 효과 
@@ -103,11 +103,11 @@ void CSfxGenSkillDmg01::Process()
 		Delete();
 	}
 }
-void CSfxGenSkillDmg01::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenSkillDmg01::Render( )
 {
 	m_pSfxObj->m_vPos = GetPos()+D3DXVECTOR3(.0f,1.0f,.0f);
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 몬스터가 데미지 입을 때 효과 
@@ -128,11 +128,11 @@ void CSfxGenMonsterDmg01::Process()
 	}
 	// 이것이 특정 Mover에 붙어다니는 SFX의 Process 기본형이다.
 }
-void CSfxGenMonsterDmg01::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenMonsterDmg01::Render( )
 {
 	m_pSfxObj->m_vPos = GetPos()+D3DXVECTOR3(.0f,1.0f,.0f);
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 부활 효과 
@@ -153,12 +153,12 @@ void CSfxGenRestoration01::Process()
 	}
 	// 역시 m_idSrc를 따라다니는 Process이다.
 }
-void CSfxGenRestoration01::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenRestoration01::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate.y=GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 치료 효과 
@@ -178,12 +178,12 @@ void CSfxGenCure::Process()
 		Delete();
 	}
 }
-void CSfxGenCure::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenCure::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate.y=GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 효력 증대 효과 
@@ -204,12 +204,12 @@ void CSfxGenIncrease01::Process()
 		Delete();
 	}
 }
-void CSfxGenIncrease01::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenIncrease01::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate.y=GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 레벨 업 효과 
@@ -232,12 +232,12 @@ void CSfxGenLevelUp::Process()
 		Delete();
 	}
 }
-void CSfxGenLevelUp::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenLevelUp::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate=D3DXVECTOR3(.0f,GetAngle(),.0f);
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 극단스킬 이펙트 : 스트레칭 01
@@ -265,18 +265,18 @@ void CSfxTroStretching01::Process()
 			
 			ItemProp* pItemProp = prj.GetPartySkill( ST_STRETCHING );
 			
-			CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj2, v, pObjSrc->GetId(), D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID, -1 );	// 머리위에 sfx생성.
+			CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj2, v, pObjSrc->GetId(), D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID, -1 );	// 머리위에 sfx생성.
 		}
 		
 	}
 }
 
-void CSfxTroStretching01::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxTroStretching01::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate=D3DXVECTOR3(.0f,GetAngle(),.0f);
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 극단스킬 이펙트 : 스트레칭 02
@@ -323,12 +323,12 @@ void CSfxTroStretching02::Process()
 		Delete();
 }
 
-void CSfxTroStretching02::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxTroStretching02::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate=D3DXVECTOR3(.0f,GetAngle(),.0f);
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 극단스킬 이펙트 : 블릿츠~
@@ -358,7 +358,7 @@ void CSfxTroBlitz::Process()
 	}
 }
 
-void CSfxTroBlitz::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxTroBlitz::Render( )
 {
 	CMover* pObjDest = (CMover*)prj.GetCtrl( m_idDest );
 
@@ -371,7 +371,7 @@ void CSfxTroBlitz::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pSfxObj->m_vRotate=D3DXVECTOR3(.0f,GetAngle(),.0f);
 	m_pSfxObj->m_vScale = pObjDest->GetScale();
 	
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 로그인 효과 
@@ -391,12 +391,12 @@ void CSfxGenLogin::Process()
 		Delete();
 	}
 }
-void CSfxGenLogin::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenLogin::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate.y=GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 워프 효과 
@@ -416,12 +416,12 @@ void CSfxGenWarp::Process()
 		Delete();
 	}
 }
-void CSfxGenWarp::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenWarp::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate.y=GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 플레이어 죽을 때 효과 
@@ -441,12 +441,12 @@ void CSfxGenPcDie::Process()
 		Delete();
 	}
 }
-void CSfxGenPcDie::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenPcDie::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate.y=GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 몬스터 스폰 할 때 효과 
@@ -466,12 +466,12 @@ void CSfxGenMonsterSpawn::Process()
 		Delete();
 	}
 }
-void CSfxGenMonsterSpawn::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenMonsterSpawn::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate.y=GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 일반 공격으로 데미지 입을 때 효과 
@@ -491,13 +491,13 @@ void CSfxGenMoveMark::Process()
 		Delete();
 	}
 }
-void CSfxGenMoveMark::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenMoveMark::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vPos.y += 0.05f;
 	m_pSfxObj->m_vScale = GetScale();
 
-	m_pSfxObj->Render2( pd3dDevice );
+	m_pSfxObj->Render2( );
 }
 
 // 일반 공격으로 데미지 입을 때 효과 
@@ -515,11 +515,11 @@ void CSfxGenWaterCircle::Process()
 		Delete();
 	}
 }
-void CSfxGenWaterCircle::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenWaterCircle::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 CSfxGenRainCircle::CSfxGenRainCircle()
@@ -539,9 +539,9 @@ void CSfxGenRainCircle::Process()
 	m_pSfxObj->m_vPos = GetPos();
 	m_pSfxObj->m_vScale    = GetScale();
 }
-void CSfxGenRainCircle::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenRainCircle::Render( )
 {
-	m_pSfxObj->Render2( pd3dDevice );
+	m_pSfxObj->Render2( );
 }
 
 
@@ -560,11 +560,11 @@ void CSfxGenWaterCrown::Process()
 		Delete();
 	}
 }
-void CSfxGenWaterCrown::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxGenWaterCrown::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -586,10 +586,10 @@ CSfxItemWandAtkAir::~CSfxItemWandAtkAir()
 {
 }
 
-int CSfxItemWandAtkAir::SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex, 
+int CSfxItemWandAtkAir::SetSfx( int nIndex, 
 								 const D3DXVECTOR3 vPosSrc, OBJID idSrc, const D3DXVECTOR3 vPosDest, OBJID idDest, int nSec )
 {
-	CSfx::SetSfx( pd3dDevice, nIndex, vPosSrc, idSrc, vPosDest, idDest, nSec );		// 기본초기화 먼저하고.
+	CSfx::SetSfx( nIndex, vPosSrc, idSrc, vPosDest, idDest, nSec );		// 기본초기화 먼저하고.
 
 	CMover* pObjSrc = prj.GetMover( m_idSrc );		// 발사측.
 	if( IsInvalidObj(pObjSrc) )		return 0;		// 실패.
@@ -695,17 +695,17 @@ void CSfxItemWandAtkAir::Process()
 	}
 }
 
-void CSfxItemWandAtkAir::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxItemWandAtkAir::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 	if( m_bHit == FALSE ) 
 	{
-		m_pSfxObj->Render2( pd3dDevice );
+		m_pSfxObj->Render2( );
 	}
 	else 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 
@@ -815,17 +815,17 @@ void CSfxMagicMiAtk1::Process()
 	if( m_nFrame >= SEC1 * 10 )		// 너무오래 쫒아가지 않게 10초지나면 소멸
 		Delete();
 }
-void CSfxMagicMiAtk1::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxMagicMiAtk1::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 	if( m_bHit == FALSE ) 
 	{
-		m_pSfxObj->Render2( pd3dDevice );
+		m_pSfxObj->Render2( );
 	}
 	else 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 
@@ -934,17 +934,17 @@ void CSfxItemWandAtk1::Process()
 	if( m_nFrame >= SEC1 * 10 )		// 너무오래 쫒아가지 않게 10초지나면 소멸
 		Delete();
 }
-void CSfxItemWandAtk1::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxItemWandAtk1::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 	if( m_bHit == FALSE ) 
 	{
-		m_pSfxObj->Render2( pd3dDevice );
+		m_pSfxObj->Render2( );
 	}
 	else 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 
@@ -1011,11 +1011,11 @@ void CSfxItemRangeAtk1::Process()
 		if( m_pTail )
 		{
 			if( m_pTail->GetType() != 2 )	// 생성되었던 꼬리고 일반보드용이 아니면 
-				m_pTail->ChangeTexture( D3DDEVICE, "etc_Tail2.bmp", 2 );	// 일반보드용으로 텍스쳐 교체.
+				m_pTail->ChangeTexture( "etc_Tail2.bmp", 2 );	// 일반보드용으로 텍스쳐 교체.
 		}
 		if( m_pTail == NULL )	// 아직 할당 안됐으면 할당하고.
 		{
-			m_pTail = (CTailEffectBelt*)g_TailEffectMng.AddEffect( g_Neuz.m_pd3dDevice, "etc_Tail2.bmp", 2, 0.35f );
+			m_pTail = (CTailEffectBelt*)g_TailEffectMng.AddEffect( "etc_Tail2.bmp", 2, 0.35f );
 		}
 		
 		FLOAT		fAngXZ = GetAngle();
@@ -1050,7 +1050,7 @@ void CSfxItemRangeAtk1::Process()
 			// 폭발 오브젝트 생성.
 			if( m_dwSfxHit != NULL_ID )
 			{
-				CSfx *pSfx = CreateSfx( D3DDEVICE, m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
+				CSfx *pSfx = CreateSfx( m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
 				if( pSfx )
 				{
 					pSfx->SetAngle( m_pSfxObj->m_vRotate.y );
@@ -1064,36 +1064,10 @@ void CSfxItemRangeAtk1::Process()
 	if( m_nFrame >= SEC1 * 10 )		// 너무오래 쫒아가지 않게 10초지나면 소멸
 		Delete();	
 }
-void CSfxItemRangeAtk1::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxItemRangeAtk1::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render2( pd3dDevice );
-}
-
-// 요요생성
-D3DXVECTOR3	CSfxItemYoyoAtk::SplineSlerp( D3DXVECTOR3 *v1, D3DXVECTOR3 *v2, D3DXVECTOR3 *v3, D3DXVECTOR3 *v4, float fSlerp )
-{
-	D3DXVECTOR3		vResult;
-	
-	float	t = fSlerp;
-	float	t2 = t * t;
-	float	t3 = t2 * t;
-	
-	D3DXVECTOR3		m0, m1;
-	const float alpha = 0.0f;
-	
-	m0 = ((1 - alpha) / 2.0f) * 
-		((*v2 - *v1) + *v3 - *v2);
-	m1 = ((1 - alpha) / 2.0f) *
-		((*v3 - *v2) + *v4 - *v3);
-	
-	vResult = (((2 * t3) - (3 * t2) + 1) * *v2) +
-		((t3 - (2 * t2) + t) * m0) + 
-		((t3 - t2) * m1) +
-		(((-2 * t3) + (3 * t2)) *
-		*v3 );
-	
-	return vResult;
+	m_pSfxObj->Render2( );
 }
 
 #define MAX_DELAY    10
@@ -1302,7 +1276,7 @@ void CSfxItemYoyoAtk::Process()
 				// 폭발 오브젝트 생성.
 				if( m_dwSfxHit != NULL_ID )
 				{
-					CSfx *pSfx = CreateSfx( D3DDEVICE, m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
+					CSfx *pSfx = CreateSfx( m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
 					if( pSfx )
 					{
 						pSfx->SetAngle( m_pSfxObj->m_vRotate.y );
@@ -1320,7 +1294,7 @@ void CSfxItemYoyoAtk::Process()
 		if( m_pTail == NULL )	// 아직 할당 안됐으면 할당하고.
 		{
 			if( m_pSfxObj->m_pSfxBase->m_aParts[0] )
-				m_pTail = (CTailEffectModel*)g_TailEffectMng.AddEffect( g_Neuz.m_pd3dDevice, m_pSfxObj->m_pSfxBase->m_aParts[0]->m_strTex, 100, 30.0f );
+				m_pTail = (CTailEffectModel*)g_TailEffectMng.AddEffect( m_pSfxObj->m_pSfxBase->m_aParts[0]->m_strTex, 100, 30.0f );
 		}
 
 		if( m_pTail )
@@ -1336,10 +1310,10 @@ void CSfxItemYoyoAtk::Process()
 		Delete();	
 }
 
-void CSfxItemYoyoAtk::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxItemYoyoAtk::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render2( pd3dDevice );
+	m_pSfxObj->Render2( );
 }
 
 
@@ -1416,11 +1390,11 @@ void CSfxItemRangeAtk_JunkBow::Process()
 			if( m_pTail[i] )
 			{
 				if( m_pTail[i]->GetType() != 2 )	// 생성되었던 꼬리고 일반보드용이 아니면 
-					m_pTail[i]->ChangeTexture( D3DDEVICE, "etc_Tail2.bmp", 2 );	// 일반보드용으로 텍스쳐 교체.
+					m_pTail[i]->ChangeTexture( "etc_Tail2.bmp", 2 );	// 일반보드용으로 텍스쳐 교체.
 			}
 			if( m_pTail[i] == NULL )	// 아직 할당 안됐으면 할당하고.
 			{
-				m_pTail[i] = (CTailEffectBelt*)g_TailEffectMng.AddEffect( g_Neuz.m_pd3dDevice, "etc_Tail2.bmp", 2, 0.35f );
+				m_pTail[i] = (CTailEffectBelt*)g_TailEffectMng.AddEffect( "etc_Tail2.bmp", 2, 0.35f );
 			}
 		}
 		
@@ -1467,7 +1441,7 @@ void CSfxItemRangeAtk_JunkBow::Process()
 			// 폭발 오브젝트 생성.
 			if( m_dwSfxHit != NULL_ID )
 			{
-				CSfx *pSfx = CreateSfx( D3DDEVICE, m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
+				CSfx *pSfx = CreateSfx( m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
 				if( pSfx )
 				{
 					pSfx->SetAngle( m_pSfxObj->m_vRotate.y );
@@ -1481,23 +1455,23 @@ void CSfxItemRangeAtk_JunkBow::Process()
 	if( m_nFrame >= SEC1 * 10 )		// 너무오래 쫒아가지 않게 10초지나면 소멸
 		Delete();	
 }
-void CSfxItemRangeAtk_JunkBow::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxItemRangeAtk_JunkBow::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 
 	// 좌표 백업
 	D3DXVECTOR3 vPosBackup = m_pSfxObj->m_vPos;
 	// 진짜 화살
-	m_pSfxObj->Render2( pd3dDevice );
+	m_pSfxObj->Render2( );
 	
 	// 가짜 1
 	m_pSfxObj->m_vPos.y += 0.5f;
-	m_pSfxObj->Render2( pd3dDevice );
+	m_pSfxObj->Render2( );
 
 	// 가짜 2
 	m_pSfxObj->m_vPos = vPosBackup;
 	m_pSfxObj->m_vPos.y -= 0.5f;
-	m_pSfxObj->Render2( pd3dDevice );
+	m_pSfxObj->Render2( );
 
 
 	// 좌표복구
@@ -1539,7 +1513,7 @@ void CSfxItemRangeAtk1_Allow::Process()
 		m_nFrame++;
 		vPos.y = fHeight;
 		
-		CSfx *pSfx = CreateSfx( D3DDEVICE, XI_SKILL_RAG_BOW_ARROWRAIN01, vPos );//, m_idSrc, vPos, m_idDest, 0 );		
+		CSfx *pSfx = CreateSfx( XI_SKILL_RAG_BOW_ARROWRAIN01, vPos );//, m_idSrc, vPos, m_idDest, 0 );		
 		Delete();
 	}
 
@@ -1547,10 +1521,10 @@ void CSfxItemRangeAtk1_Allow::Process()
 		
 	SetPos( vPos );
 }
-void CSfxItemRangeAtk1_Allow::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxItemRangeAtk1_Allow::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render2( pd3dDevice );
+	m_pSfxObj->Render2( );
 }
 
 #define MAX_ALLOW		50
@@ -1586,19 +1560,19 @@ void CSfxItemRangeAtk1_AllowRain::Process()
 			vPos.x += (xRandomF( 6.0f ) + -3.0f);
 			vPos.z += (xRandomF( 6.0f ) + -3.0f);
 
-			CSfx *pSfx = CreateSfx( D3DDEVICE, XI_SKILL_RAG_BOW_ARROWRAIN, vPos, m_idSrc, m_vPosDest, m_idDest, 0 );
+			CSfx *pSfx = CreateSfx( XI_SKILL_RAG_BOW_ARROWRAIN, vPos, m_idSrc, m_vPosDest, m_idDest, 0 );
 
 			vPos.x += (xRandomF( 6.0f ) + -3.0f);
 			vPos.z += (xRandomF( 6.0f ) + -3.0f);
 			
-			pSfx = CreateSfx( D3DDEVICE, XI_SKILL_RAG_BOW_ARROWRAIN, vPos, m_idSrc, m_vPosDest, m_idDest, 0 );
+			pSfx = CreateSfx( XI_SKILL_RAG_BOW_ARROWRAIN, vPos, m_idSrc, m_vPosDest, m_idDest, 0 );
 			m_nCount++;
 		}
 	}
 	else
 		Delete();
 }
-void CSfxItemRangeAtk1_AllowRain::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxItemRangeAtk1_AllowRain::Render( )
 {
 }
 
@@ -1634,7 +1608,7 @@ void CSfxItemRangeAtk1_Stone::Process()
 		m_nFrame++;
 		vPos.y = fHeight;
 		
-		CSfx *pSfx = CreateSfx( D3DDEVICE, XI_SKILL_CIRCLE_DUST, vPos );		
+		CSfx *pSfx = CreateSfx( XI_SKILL_CIRCLE_DUST, vPos );		
 		if( pSfx )
 		{
 			pSfx->SetScale( D3DXVECTOR3( 3.0f, 3.0f, 3.0f ) );					
@@ -1646,10 +1620,10 @@ void CSfxItemRangeAtk1_Stone::Process()
 	
 	SetPos( vPos );
 }
-void CSfxItemRangeAtk1_Stone::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxItemRangeAtk1_Stone::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render2( pd3dDevice );
+	m_pSfxObj->Render2( );
 }
 
 #define MAX_STONE		50
@@ -1685,7 +1659,7 @@ void CSfxItemRangeAtk1_StoneRain::Process()
 			vPos.x += (xRandomF( 40.0f ) + -20.0f);
 			vPos.z += (xRandomF( 40.0f ) + -20.0f);
 			
-			CSfx *pSfx = CreateSfx( D3DDEVICE, XI_SKILL_DROP_DUST, vPos, m_idSrc, m_vPosDest, m_idDest, 0 );
+			CSfx *pSfx = CreateSfx( XI_SKILL_DROP_DUST, vPos, m_idSrc, m_vPosDest, m_idDest, 0 );
 			if( pSfx )
 			{
 				pSfx->SetScale( D3DXVECTOR3( 8.0f, 8.0f, 8.0f ) );					
@@ -1696,7 +1670,7 @@ void CSfxItemRangeAtk1_StoneRain::Process()
 	else
 		Delete();
 }
-void CSfxItemRangeAtk1_StoneRain::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxItemRangeAtk1_StoneRain::Render( )
 {
 }
 
@@ -1765,13 +1739,13 @@ void CSfxAtkStraight::Process()
 			//vTemp.y -= (xRandomF( 0.05f ) + 0.01f );
 			
 			//extern CPartsFireDragon	g_FireDragon;
-			//g_FireDragon.Create( D3DDEVICE, m_pSfxObj->m_vPos, XI_NAT_FIRE01_ADV, vScal, vTemp );
+			//g_FireDragon.Create( m_pSfxObj->m_vPos, XI_NAT_FIRE01_ADV, vScal, vTemp );
 		}
 	#endif
 
 	if( IsRangeObj( m_vPosDest, 0 ) )							// 목표좌표에 다다르면
 	{
-		CreateSfx( D3DDEVICE, m_dwExplosion, m_vPosDest );		// 폭발 이펙트
+		CreateSfx( m_dwExplosion, m_vPosDest );		// 폭발 이펙트
 		Delete();												// 난 삭제.
 		return;
 	}
@@ -1782,7 +1756,7 @@ void CSfxAtkStraight::Process()
 		Delete();
 	}
 }
-void CSfxAtkStraight::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxAtkStraight::Render( )
 {
 	if( !IsVisible() || ( IsCull() && GetType() != 1 ))
 		return;
@@ -1797,7 +1771,7 @@ void CSfxAtkStraight::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pSfxObj->m_vPos = GetPos();
 	m_pSfxObj->m_vScale = GetScale();
 	m_pSfxObj->m_matScale = m_matScale;
-	m_pSfxObj->Render2( pd3dDevice, NULL );
+	m_pSfxObj->Render2( NULL );
 	
 }
 
@@ -1853,17 +1827,17 @@ void CSfxItemWandAtk2::Process()
 	}
 	m_nFrame++;
 }
-void CSfxItemWandAtk2::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxItemWandAtk2::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 	if(m_bHit==FALSE) 
 	{
-		m_pSfxObj->Render( pd3dDevice );
+		m_pSfxObj->Render( );
 	}
 	else 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 CSfxItemWandAtk3::CSfxItemWandAtk3()
@@ -1917,17 +1891,17 @@ void CSfxItemWandAtk3::Process()
 	}
 	m_nFrame++;
 }
-void CSfxItemWandAtk3::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxItemWandAtk3::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 	if(m_bHit==FALSE) 
 	{
-		m_pSfxObj->Render( pd3dDevice );
+		m_pSfxObj->Render( );
 	}
 	else 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 CSfxItemWandAtk4::CSfxItemWandAtk4()
@@ -1981,17 +1955,17 @@ void CSfxItemWandAtk4::Process()
 	}
 	m_nFrame++;
 }
-void CSfxItemWandAtk4::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxItemWandAtk4::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 	if(m_bHit==FALSE) 
 	{
-		m_pSfxObj->Render( pd3dDevice );
+		m_pSfxObj->Render( );
 	}
 	else 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2026,12 +2000,12 @@ void CSfxSkillVagOverCutter::Process()
 			Delete();
 	}
 }
-void CSfxSkillVagOverCutter::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillVagOverCutter::Render( )
 {
 	m_pSfxObj->m_vPos = GetPos();
 	m_pSfxObj->m_vRotate.y = GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 // 방랑자 기본 스킬 2
 CSfxSkillVagCleanHit::CSfxSkillVagCleanHit()
@@ -2054,12 +2028,12 @@ void CSfxSkillVagCleanHit::Process()
 	m_nFrame++;
 	
 }
-void CSfxSkillVagCleanHit::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillVagCleanHit::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate.y=GetAngle();//+180;
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 
@@ -2097,12 +2071,12 @@ void CSfxFixed::Process()
 	m_nFrame++;
 }
 
-void CSfxFixed::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxFixed::Render( )
 {
 	m_pSfxObj->m_vPos = GetPos();
 	m_pSfxObj->m_vRotate.y = GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 방랑자 기본 스킬 3
@@ -2126,12 +2100,12 @@ void CSfxSkillVagBrandish::Process()
 			Delete();
 	}
 }
-void CSfxSkillVagBrandish::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillVagBrandish::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate.y=GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 머셔너리 기본 스킬 1
@@ -2149,12 +2123,12 @@ void CSfxSkillMerKeenWheel::Process()
 		Delete();
 	}
 }
-void CSfxSkillMerKeenWheel::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillMerKeenWheel::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate.y=GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 // 머셔너리 기본 스킬 2
 CSfxSkillMerSplmash::CSfxSkillMerSplmash()
@@ -2182,7 +2156,7 @@ void CSfxSkillMerSplmash::Process()
 	}
 	m_nFrame++;
 }
-void CSfxSkillMerSplmash::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillMerSplmash::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate.y=GetAngle();
@@ -2190,11 +2164,11 @@ void CSfxSkillMerSplmash::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_SfxObj2.m_vRotate.y=GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
 	m_SfxObj2.m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 	if(m_nFrame>85) 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 // 머셔너리 기본 스킬 3
@@ -2212,12 +2186,12 @@ void CSfxSkillMerBlindSide::Process()
 		Delete();
 	}
 }
-void CSfxSkillMerBlindSide::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillMerBlindSide::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate.y=GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 어시 너클스킬
@@ -2246,9 +2220,9 @@ void CSfxSkillAssBurstcrack::Process()
 	else
 		Delete();
 }
-void CSfxSkillAssBurstcrack::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillAssBurstcrack::Render( )
 {
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 CSfxSkillAssTampinghole::CSfxSkillAssTampinghole()
@@ -2286,9 +2260,9 @@ void CSfxSkillAssTampinghole::Process()
 	else
 		Delete();
 }
-void CSfxSkillAssTampinghole::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillAssTampinghole::Render( )
 {
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 CSfxNpcDirSteam::CSfxNpcDirSteam()
@@ -2377,9 +2351,9 @@ void CSfxNpcDirSteam::Process()
 		m_fInit = FALSE;
 	}
 }
-void CSfxNpcDirSteam::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxNpcDirSteam::Render( )
 {
-	m_pSfxObj->Render2( pd3dDevice );
+	m_pSfxObj->Render2( );
 }
 
 
@@ -2398,7 +2372,7 @@ void CSfxSkillMagFireCasting::Process()
 		Delete();
 	}
 }
-void CSfxSkillMagFireCasting::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillMagFireCasting::Render( )
 {
 	CMover* pObjSrc = (CMover*)prj.GetCtrl( m_idSrc );
 	if( IsValidObj( pObjSrc ) )
@@ -2406,7 +2380,7 @@ void CSfxSkillMagFireCasting::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		m_pSfxObj->m_vPos = GetPos();
 		m_pSfxObj->m_vPos.y += 1.0f;
 		m_pSfxObj->m_vRotate.y = 180 - pObjSrc->GetAngle();
-		m_pSfxObj->Render( pd3dDevice );
+		m_pSfxObj->Render( );
 	}
 }
 // 매지션 바람 주문 외기
@@ -2424,12 +2398,12 @@ void CSfxSkillMagWindCasting::Process()
 		Delete();
 	}
 }
-void CSfxSkillMagWindCasting::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillMagWindCasting::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vPos.y += 0.2f;
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 
 // 매지션 기본 스킬 1
@@ -2510,17 +2484,17 @@ void CSfxSkillMagStrongWind::Process()
 	}
 	m_nFrame++;
 }
-void CSfxSkillMagStrongWind::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillMagStrongWind::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 	if(m_bHit==FALSE) 
 	{
-		m_pSfxObj->Render( pd3dDevice );
+		m_pSfxObj->Render( );
 	}
 	else 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 // 매지션 기본 스킬 2
@@ -2581,17 +2555,17 @@ void CSfxSkillMagSwordWind::Process()
 	}
 	m_nFrame++;
 }
-void CSfxSkillMagSwordWind::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillMagSwordWind::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 	if(m_bHit==FALSE) 
 	{
-		m_pSfxObj->Render( pd3dDevice );
+		m_pSfxObj->Render( );
 	}
 	else 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 // 매지션 기본 스킬 3
@@ -2665,17 +2639,17 @@ void CSfxSkillMagFireBoomerang::Process()
 	}
 	m_nFrame++;
 }
-void CSfxSkillMagFireBoomerang::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillMagFireBoomerang::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 	if(m_bHit==FALSE) 
 	{
-		m_pSfxObj->Render2( pd3dDevice );
+		m_pSfxObj->Render2( );
 	}
 	else 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 // 매지션 기본 스킬 4
@@ -2693,12 +2667,12 @@ void CSfxSkillMagFireBomb::Process()
 		Delete();
 	}
 }
-void CSfxSkillMagFireBomb::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillMagFireBomb::Render( )
 {
 	m_pSfxObj->m_vPos=GetPos();
 	m_pSfxObj->m_vRotate.y=GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 }
 // 매지션 기본 스킬 5
 CSfxSkillMagHotAir::CSfxSkillMagHotAir()
@@ -2781,12 +2755,12 @@ void CSfxSkillMagHotAir::Process()
 	}
 	m_nFrame++;
 }
-void CSfxSkillMagHotAir::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillMagHotAir::Render( )
 {
-	m_pSfxObj->Render( pd3dDevice );
+	m_pSfxObj->Render( );
 	m_pSfxObj->m_vScale = GetScale();
 	if( !g_Option.m_bSFXRenderOff )
-		m_SfxObj2.Render( pd3dDevice );
+		m_SfxObj2.Render( );
 }
 
 
@@ -2838,7 +2812,7 @@ void CSfxDuelParty::DeleteSfx( CMover* pEnemy )
 	Delete();
 }
 
-void	CSfxDuelParty::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void	CSfxDuelParty::Render( )
 {
 	CMover *pMover = prj.GetMover( m_idSrc );
 	if( IsInvalidObj( pMover ) )	// process중 src 무버가 없어졌으면 자동 삭제
@@ -2847,7 +2821,7 @@ void	CSfxDuelParty::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	if( pMover->HasBuff( BUFF_SKILL, SI_ACR_SUP_DARKILLUSION ) || pMover->IsMode( TRANSPARENT_MODE ) )
 		return;
 
-	CSfx::Render(pd3dDevice);
+	CSfx::Render();
 }
 
 
@@ -2881,14 +2855,14 @@ void CSfxSetItem::Process()
 	}
 }
 
-void	CSfxSetItem::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void	CSfxSetItem::Render( )
 {
 	CMover *pMover = prj.GetMover( m_idSrc );
 	if( IsInvalidObj( pMover ) )	// process중 src 무버가 없어졌으면 자동 삭제
 		return;
 	
 	if( ((pMover->IsMode( TRANSPARENT_MODE ) ) == 0) )
-		CSfx::Render(pd3dDevice);
+		CSfx::Render();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -2923,7 +2897,7 @@ void CSfxCollect::Process()
 	}
 }
 
-void CSfxCollect::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxCollect::Render( )
 {
 	if( !IsVisible() || ( IsCull() && GetType() != 1 ))
 		return;
@@ -2939,7 +2913,7 @@ void CSfxCollect::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pSfxObj->m_vRotate.y = GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
 	m_pSfxObj->m_matScale = m_matScale;
-	m_pSfxObj->Render( pd3dDevice, NULL );
+	m_pSfxObj->Render( NULL );
 }
 
 
@@ -2972,7 +2946,7 @@ void CSfxMushmootCharge::Process()
 		m_pSfxObj->m_nCurFrame = 0;
 }
 
-void CSfxMushmootCharge::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxMushmootCharge::Render( )
 {
 	if( !IsVisible() || ( IsCull() && GetType() != 1 ))
 		return;
@@ -2988,7 +2962,7 @@ void CSfxMushmootCharge::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pSfxObj->m_vRotate.y = GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
 	m_pSfxObj->m_matScale = m_matScale;
-	m_pSfxObj->Render( pd3dDevice, NULL );
+	m_pSfxObj->Render( NULL );
 }
 
 ////////////////////////////////////////////////////////////////
@@ -3020,7 +2994,7 @@ void CSfxClockWorksCharge::Process()
 		m_pSfxObj->m_nCurFrame = 0;
 }
 
-void CSfxClockWorksCharge::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxClockWorksCharge::Render( )
 {
 	if( !IsVisible() || ( IsCull() && GetType() != 1 ))
 		return;
@@ -3036,7 +3010,7 @@ void CSfxClockWorksCharge::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pSfxObj->m_vRotate.y = GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
 	m_pSfxObj->m_matScale = m_matScale;
-	m_pSfxObj->Render( pd3dDevice, NULL );
+	m_pSfxObj->Render( NULL );
 }
 
 ////////////////////////////////////////////////////////////////
@@ -3076,7 +3050,7 @@ void CSfxClockWorksCannon::Process()
 		Delete();
 }
 
-void CSfxClockWorksCannon::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxClockWorksCannon::Render( )
 {
 	if( !IsVisible() || ( IsCull() && GetType() != 1 ))
 		return;
@@ -3091,7 +3065,7 @@ void CSfxClockWorksCannon::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pSfxObj->m_vPos = GetPos();
 	m_pSfxObj->m_vScale = GetScale();
 	m_pSfxObj->m_matScale = m_matScale;
-	m_pSfxObj->Render2( pd3dDevice, NULL );
+	m_pSfxObj->Render2( NULL );
 }
 
 
@@ -3170,17 +3144,17 @@ void CSfxSkillMagIceMissile::Process()
 	}
 	m_nFrame++;
 }
-void CSfxSkillMagIceMissile::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillMagIceMissile::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 	if(m_bHit==FALSE) 
 	{
-		m_pSfxObj->Render2( pd3dDevice );
+		m_pSfxObj->Render2( );
 	}
 	else 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 
@@ -3255,17 +3229,17 @@ void CSfxSkillMagLightningBall::Process()
 	}
 	m_nFrame++;
 }
-void CSfxSkillMagLightningBall::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillMagLightningBall::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 	if(m_bHit==FALSE) 
 	{
-		m_pSfxObj->Render2( pd3dDevice );
+		m_pSfxObj->Render2( );
 	}
 	else 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 
@@ -3339,17 +3313,17 @@ void CSfxSkillMagSpikeStone::Process()
 	}
 	m_nFrame++;
 }
-void CSfxSkillMagSpikeStone::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxSkillMagSpikeStone::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 	if(m_bHit==FALSE) 
 	{
-		m_pSfxObj->Render2( pd3dDevice );
+		m_pSfxObj->Render2( );
 	}
 	else 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 
@@ -3384,7 +3358,7 @@ void CSfxRotate::Process()
 	}
 }
 
-void CSfxRotate::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxRotate::Render( )
 {
 	if( !IsVisible() || ( IsCull() && GetType() != 1 ))
 		return;
@@ -3412,7 +3386,7 @@ void CSfxRotate::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pSfxObj->m_vRotate.y = GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
 	m_pSfxObj->m_matScale = m_matScale;
-	m_pSfxObj->Render( pd3dDevice, NULL );
+	m_pSfxObj->Render( NULL );
 }
 
 
@@ -3505,7 +3479,7 @@ void CSfxShoot::Process()
 			// 폭발 오브젝트 생성.
 			if( m_dwSfxHit != NULL_ID )
 			{
-				CSfx *pSfx = CreateSfx( D3DDEVICE, m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
+				CSfx *pSfx = CreateSfx( m_dwSfxHit, GetPos(), m_idSrc, m_vPosDest, m_idDest, 0 );
 				if( pSfx )
 				{
 					pSfx->SetAngle( m_pSfxObj->m_vRotate.y );
@@ -3516,10 +3490,10 @@ void CSfxShoot::Process()
 	}
 	m_nFrame ++;
 }
-void CSfxShoot::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxShoot::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
-	m_pSfxObj->Render2( pd3dDevice );
+	m_pSfxObj->Render2( );
 }
 
 
@@ -3660,7 +3634,7 @@ void CSfxShootWave::Process()
 	}
 	m_nFrame ++;
 }
-void CSfxShootWave::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxShootWave::Render( )
 {
 	m_pSfxObj->m_vScale = GetScale();
 	int nFrame = m_pSfxObj->m_nCurFrame;
@@ -3670,19 +3644,19 @@ void CSfxShootWave::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		if( m_vTail[i].x )
 		{
 			m_pSfxObj->m_vPos = m_vTail[i];
-			m_pSfxObj->Render2( pd3dDevice );
+			m_pSfxObj->Render2( );
 		}
 	}
 	
 	if( m_bHit == FALSE ) 
 	{
 		m_pSfxObj->m_vPos = GetPos();
-		m_pSfxObj->Render2( pd3dDevice );
+		m_pSfxObj->Render2( );
 	}
 	else 
 	{
 		if( !g_Option.m_bSFXRenderOff )
-			m_SfxObj2.Render( pd3dDevice );
+			m_SfxObj2.Render( );
 	}
 }
 
@@ -3718,7 +3692,7 @@ void CSfxPartsLink::Process()
 	}
 }
 
-void CSfxPartsLink::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxPartsLink::Render( )
 {
 	if( !IsVisible() || ( IsCull() && GetType() != 1 ))
 		return;
@@ -3734,7 +3708,7 @@ void CSfxPartsLink::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pSfxObj->m_vRotate.y = GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
 	m_pSfxObj->m_matScale = m_matScale;
-	m_pSfxObj->Render( pd3dDevice, NULL );
+	m_pSfxObj->Render( NULL );
 }
 
 
@@ -3792,7 +3766,7 @@ void CSfxAllowPartsLink::Process()
 		Delete();
 }
 
-void CSfxAllowPartsLink::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxAllowPartsLink::Render( )
 {
 	if( !IsVisible() || ( IsCull() && GetType() != 1 ))
 		return;
@@ -3808,7 +3782,7 @@ void CSfxAllowPartsLink::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pSfxObj->m_vRotate.y = GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
 	m_pSfxObj->m_matScale = m_matScale;
-	m_pSfxObj->Render( pd3dDevice, NULL );
+	m_pSfxObj->Render( NULL );
 }
 
 void CSfxReady::Process()
@@ -3861,7 +3835,7 @@ void CSfxPartsLinkShoulder::Process()
 }
 
 
-void	CSfxPartsLinkShoulder::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void	CSfxPartsLinkShoulder::Render( )
 {
 	CMover *pMover = prj.GetMover( m_idSrc );
 
@@ -3975,7 +3949,7 @@ void	CSfxPartsLinkShoulder::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	if( IsInvalidObj( pMover ) )	// process중 src 무버가 없어졌으면 자동 삭제
 		return;
 	if( ((pMover->IsMode( TRANSPARENT_MODE ) ) == 0) )
-		CSfx::Render(pd3dDevice);
+		CSfx::Render();
 }
 
 CSfxCursor::CSfxCursor()
@@ -4030,7 +4004,7 @@ void CSfxLinkMover::Process( )
 	}
 }
 
-void CSfxLinkMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfxLinkMover::Render( )
 {
 	if( !IsVisible() || ( IsCull() && GetType() != 1 ))
 		return;
@@ -4058,5 +4032,5 @@ void CSfxLinkMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pSfxObj->m_vRotate.y = GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
 	m_pSfxObj->m_matScale = m_matScale;
-	m_pSfxObj->Render( pd3dDevice, NULL );
+	m_pSfxObj->Render( NULL );
 }

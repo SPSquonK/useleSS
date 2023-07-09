@@ -7,7 +7,7 @@
 
 class CWndVendorMessage;
 
-class CWndVendor : public CWndNeuz 
+class CWndVendor final : public CWndNeuz 
 {
 public:
 	CWndVendorCtrl	m_wndctrlVendor;
@@ -23,7 +23,7 @@ public:
 
 	void	SetVendor( CMover* pVendor );
 
-	virtual BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	void			ReloadItemList();
 	virtual BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void	OnDraw( C2DRender* p2DRender ); 
@@ -37,7 +37,7 @@ public:
 	virtual	void	OnDestroy( void );
 }; 
 
-class CWndVendorMessage : public CWndNeuz 
+class CWndVendorMessage final : public CWndNeuz 
 { 
 public: 
 	void RemoveChattingMemver(LPCTSTR lpszName);
@@ -58,7 +58,7 @@ public:
 	void OnInputString();
 	
 	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -68,13 +68,13 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-class CWndVendorConfirm : public CWndMessageBox
+class CWndVendorConfirm : public CWndCustomMessageBox
 { 
 public: 
 	CString m_strVendorName;
 	void	SetVendorName( CString str );
 	void	SetValue( CString str );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 

@@ -36,7 +36,7 @@ void CWndGuildMerit::OnInitialUpdate()
 	pWndEdit->SetFocus();
 } 
 
-BOOL CWndGuildMerit::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndGuildMerit::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_MERIT1, pWndParent, 0, CPoint(0, 0));
 }
 

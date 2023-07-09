@@ -124,7 +124,7 @@ void	CModelGlobal::SetCamera( const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vDest 
 extern CPartsLaser g_Laser;
 extern CPartsFireDragon	g_FireDragon;
 
-HRESULT CModelGlobal::InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CModelGlobal::InvalidateDeviceObjects( )
 {
 #ifdef __CLIENT
 	for( int i=0; i<MAX_ELETEXTURE; i++ )
@@ -132,8 +132,8 @@ HRESULT CModelGlobal::InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 		SAFE_RELEASE(m_pElecTexture[i]);
 	}	
 
-	g_Laser.InvalidateDeviceObjects( pd3dDevice );
-	g_FireDragon.InvalidateDeviceObjects( pd3dDevice );
+	g_Laser.InvalidateDeviceObjects( );
+	g_FireDragon.InvalidateDeviceObjects( );
 #endif //__CLIENT
 	
 	return S_OK;
@@ -144,23 +144,23 @@ CPartsLaser		g_Laser;
 CPartsFireDragon	g_FireDragon;
 #endif
 
-HRESULT CModelGlobal::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CModelGlobal::RestoreDeviceObjects( )
 {
-	LoadTextureFromRes( pd3dDevice, MakePath( DIR_MODELTEX, "etc_elec01.tga" ), &m_pElecTexture[0] );
-	LoadTextureFromRes( pd3dDevice, MakePath( DIR_MODELTEX, "etc_elec02.tga" ), &m_pElecTexture[1] );
-	LoadTextureFromRes( pd3dDevice, MakePath( DIR_MODELTEX, "etc_elec03.tga" ), &m_pElecTexture[2] );
+	LoadTextureFromRes( MakePath( DIR_MODELTEX, "etc_elec01.tga" ), &m_pElecTexture[0] );
+	LoadTextureFromRes( MakePath( DIR_MODELTEX, "etc_elec02.tga" ), &m_pElecTexture[1] );
+	LoadTextureFromRes( MakePath( DIR_MODELTEX, "etc_elec03.tga" ), &m_pElecTexture[2] );
 
 	char buffer[64] = {0};
 	for( int i=3; i< MAX_ELETEXTURE; i++ )
 	{
 		sprintf( buffer, "etc_elec%.2d.tga", i+1 );
 
-		LoadTextureFromRes( pd3dDevice, MakePath( DIR_MODELTEX, buffer ), &m_pElecTexture[i] );
+		LoadTextureFromRes( MakePath( DIR_MODELTEX, buffer ), &m_pElecTexture[i] );
 	}
 
 #ifdef __CLIENT
-	g_Laser.RestoreDeviceObjects( pd3dDevice );
-	g_FireDragon.RestoreDeviceObjects( pd3dDevice );
+	g_Laser.RestoreDeviceObjects( );
+	g_FireDragon.RestoreDeviceObjects( );
 #endif // Client
 	return S_OK;
 }
@@ -177,32 +177,32 @@ D3DXMATRIX g_mShadowProj;		// 쉐도우 프로젝션
 BOOL	g_bShadow = TRUE;
 
 // 쉐도우맵 텍스쳐 생성.
-BOOL CreateShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, D3DFORMAT backBufferFormat )
+BOOL CreateShadowMap( D3DFORMAT backBufferFormat )
 {  
 #ifndef __WORLDSERVER
 	if ( g_pRenderToSurface )	return TRUE;	// 이미 있으면 생성안함.
 
 	TRACE( "%d", (int)backBufferFormat );
 	HRESULT hr;
-	hr = D3DXCreateRenderToSurface( pd3dDevice, SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, backBufferFormat, FALSE, D3DFMT_UNKNOWN, &g_pRenderToSurface);
-	hr = D3DXCreateTexture( pd3dDevice, SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, 1, D3DUSAGE_RENDERTARGET, backBufferFormat,  D3DPOOL_DEFAULT, &g_pShadowTexture );
+	hr = D3DXCreateRenderToSurface(g_Neuz.m_pd3dDevice, SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, backBufferFormat, FALSE, D3DFMT_UNKNOWN, &g_pRenderToSurface);
+	hr = D3DXCreateTexture( g_Neuz.m_pd3dDevice, SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, 1, D3DUSAGE_RENDERTARGET, backBufferFormat,  D3DPOOL_DEFAULT, &g_pShadowTexture );
 	if( hr == E_OUTOFMEMORY )
 	{
 		Error( "쉐도우 맵 생성중 메모리 부족 %d, %d", g_Option.m_nShadow, g_Option.m_nTextureQuality );
-		DeleteShadowMap( pd3dDevice );
+		DeleteShadowMap( );
 		return FALSE;
 	}
 	if ( hr == D3DERR_OUTOFVIDEOMEMORY )
 	{
 		Error( "쉐도우 맵 생성중 비디오 메모리 부족 %d, %d", g_Option.m_nShadow, g_Option.m_nTextureQuality );
-		DeleteShadowMap( pd3dDevice );
+		DeleteShadowMap( );
 		return FALSE;
 	}
 	if( FAILED( hr ) )
 	{
 		LPCTSTR szErr = Error( "쉐도우 맵 생성 에러 %s, %d, %d", DXGetErrorString9(hr), g_Option.m_nShadow, g_Option.m_nTextureQuality );
 		//ADDERRORMSG( szErr );
-		DeleteShadowMap( pd3dDevice );
+		DeleteShadowMap( );
 		return FALSE;
 	}
 	if( g_pShadowTexture )
@@ -211,7 +211,7 @@ BOOL CreateShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, D3DFORMAT backBufferFormat )
 	}
 	else
 	{
-		DeleteShadowMap( pd3dDevice );
+		DeleteShadowMap( );
 		return FALSE;
 	}
 
@@ -220,7 +220,7 @@ BOOL CreateShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, D3DFORMAT backBufferFormat )
 	return TRUE;
 }
 
-void DeleteShadowMap( LPDIRECT3DDEVICE9 pd3dDevice )
+void DeleteShadowMap( )
 {
 	SAFE_RELEASE( g_pShadowSurface );
 	SAFE_RELEASE( g_pShadowTexture );
@@ -228,12 +228,12 @@ void DeleteShadowMap( LPDIRECT3DDEVICE9 pd3dDevice )
 	g_bShadow = FALSE;
 }
 // 쉐도우맵용 렌더타겟에 쉐도우맵 렌더링
-void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice )
+void RenderShadowMap( )
 {
 }
 
 // 디버깅용 쉐도우맵창을 그린다.
-void RenderShadowMapInfo( LPDIRECT3DDEVICE9 pd3dDevice )
+void RenderShadowMapInfo( )
 {
 	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, FALSE );
 	pd3dDevice->SetRenderState( D3DRS_FILLMODE, D3DFILL_SOLID );
@@ -267,7 +267,7 @@ void RenderShadowMapInfo( LPDIRECT3DDEVICE9 pd3dDevice )
 //
 // 그림자 리시버들을 렌더링 하기전에 이것을 호출한다.
 //
-void SetStateShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, int nShadowStage, const D3DXMATRIX &mView )
+void SetStateShadowMap( int nShadowStage, const D3DXMATRIX &mView )
 {
 	if( g_bShadow == FALSE )	return;
 	D3DXMATRIX mShadowUV; 
@@ -313,7 +313,7 @@ void SetStateShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, int nShadowStage, const D3
 	pd3dDevice->SetSamplerState( nShadowStage, D3DSAMP_MIPFILTER, D3DTEXF_POINT );
 }
 
-void ResetStateShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, int nShadowStage )
+void ResetStateShadowMap( int nShadowStage )
 {
 	if( g_bShadow == FALSE )	return;
 //	D3DXMATRIX m;
@@ -333,7 +333,7 @@ void ResetStateShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, int nShadowStage )
 #ifdef __CLIENT
 
 ////////////////////////////////////////////////////////////////////////////
-void	CPartsFire::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale )
+void	CPartsFire::Create( const D3DXVECTOR3 vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale )
 {
 	int		i;
 	D3DXMATRIX	m_mScale;
@@ -343,7 +343,7 @@ void	CPartsFire::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, D
 	for( i = 0; i < MAX_PARTS_FIRE; i ++ )
 	{
 		if( m_pList[i] )	continue;
-		m_pList[i] = (CSfxModel *)prj.m_modelMng.LoadModel( pd3dDevice, OT_SFX, dwSfx );
+		m_pList[i] = (CSfxModel *)prj.m_modelMng.LoadModel( OT_SFX, dwSfx );
 		m_pList[i]->m_matScale = m_mScale;
 
 		m_pList[i]->m_vScale = vScale;
@@ -362,7 +362,7 @@ CPartsFire::~CPartsFire()
 }
 
 #ifdef __CSC_ENCHANT_EFFECT_2
-void	CPartsFire::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, DWORD dwSfx )
+void	CPartsFire::Create( const D3DXVECTOR3 vPos, DWORD dwSfx )
 {
 	int		i;
 	D3DXMATRIX	m_mScale;
@@ -372,7 +372,7 @@ void	CPartsFire::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, D
 	for( i = 0; i < MAX_PARTS_FIRE_2; i ++ )
 	{
 		if( m_pList_2[i] )	continue;
-		m_pList_2[i] = (CSfxModel *)prj.m_modelMng.LoadModel( pd3dDevice, OT_SFX, dwSfx );
+		m_pList_2[i] = (CSfxModel *)prj.m_modelMng.LoadModel( OT_SFX, dwSfx );
 		m_pList_2[i]->m_matScale = m_mScale;
 		m_vList_2[i] = vPos;
 		break;
@@ -380,7 +380,7 @@ void	CPartsFire::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 vPos, D
 }
 #endif //__CSC_ENCHANT_EFFECT_2
 
-void	CPartsFire::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld )
+void	CPartsFire::Render( const D3DXMATRIX *mWorld )
 {
 	int		i;
 	CSfxModel *pSfxModel = NULL;
@@ -421,7 +421,7 @@ void	CPartsFire::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld 
 		D3DXVec3TransformCoord( &pSfxModel->m_vPos, &m_vList[i], mWorld );
 		
 
-		pSfxModel->Render( pd3dDevice, NULL );	
+		pSfxModel->Render( NULL );	
 	}
 
 #ifdef __CSC_ENCHANT_EFFECT_2
@@ -469,14 +469,14 @@ void	CPartsFire::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld 
 			pSfxModel->m_vScale.z = pSfxModel->m_pModelElem->m_fScale;
 		}
 		
-		pSfxModel->Render( pd3dDevice, NULL );	
+		pSfxModel->Render( NULL );	
 	}
 #endif //__CSC_ENCHANT_EFFECT_2
 }
 
 
 ////////////////////////////////////////////////////////////////////////////
-void	CPartsFireDragon::Create( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXVECTOR3 &vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale, const D3DXVECTOR3 &vVel  )
+void	CPartsFireDragon::Create( const D3DXVECTOR3 &vPos, DWORD dwSfx, const D3DXVECTOR3 &vScale, const D3DXVECTOR3 &vVel  )
 {
 	int		i;
 	D3DXMATRIX	m_mScale;
@@ -510,7 +510,7 @@ CPartsFireDragon::CPartsFireDragon()
 	m_vFan[5].v = D3DXVECTOR3( 0.5f, -0.5f, -0.5f );
 }
 
-void CPartsFireDragon::Process( LPDIRECT3DDEVICE9 pd3dDevice )
+void CPartsFireDragon::Process( )
 {
 	int		i;
 	HRESULT hr;
@@ -606,11 +606,11 @@ void CPartsFireDragon::Process( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pParticleVB->Unlock();
 }
 
-void	CPartsFireDragon::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld )
+void	CPartsFireDragon::Render( const D3DXMATRIX *mWorld )
 {
 	HRESULT hr;
 
-	Process( pd3dDevice );
+	Process( );
 
 	pd3dDevice->SetTransform( D3DTS_WORLD, mWorld );		// Set World Transform 
 
@@ -652,12 +652,12 @@ void	CPartsFireDragon::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *m
 
 }
 
-HRESULT CPartsFireDragon::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CPartsFireDragon::RestoreDeviceObjects( )
 {
 	HRESULT hr;
 	char szFileName[128] = {0};
 
-	hr = LoadTextureFromRes( pd3dDevice, MakePath( DIR_SFXTEX, "Sfx_NpcSp1DiePartbo03.dds" ), &m_pTexture );
+	hr = LoadTextureFromRes( MakePath( DIR_SFXTEX, "Sfx_NpcSp1DiePartbo03.dds" ), &m_pTexture );
 
 	if( hr == E_FAIL )
 	{
@@ -666,7 +666,7 @@ HRESULT CPartsFireDragon::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 	return S_OK;
 }
 
-HRESULT CPartsFireDragon::InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CPartsFireDragon::InvalidateDeviceObjects( )
 {
 	SAFE_RELEASE( m_pTexture );
 	SAFE_RELEASE( m_pParticleVB );
@@ -776,7 +776,7 @@ void	CPartsBeam :: Generate( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, int n
 	Create( vv, v2, fSize, nLevel );
 }
 
-void CPartsBeam :: Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward,
+void CPartsBeam :: Render( const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward,
 					  const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, int nLevel )
 {
 	Generate( v1, v2, nLevel );		// 번개 이펙트 생성.
@@ -900,7 +900,7 @@ void CPartsBeam :: Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorl
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-HRESULT CPartsLaser::InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CPartsLaser::InvalidateDeviceObjects( )
 {
 	SAFE_RELEASE( m_pTexture );
 	
@@ -908,9 +908,9 @@ HRESULT CPartsLaser::InvalidateDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 }
 
 
-HRESULT CPartsLaser::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CPartsLaser::RestoreDeviceObjects( )
 {
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_MODELTEX, "etc_Laser01.tga" ), &m_pTexture ) ) )
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_MODELTEX, "etc_Laser01.tga" ), &m_pTexture ) ) )
 		Error( "Read not Texture etc_Laser01.tga" );
 	return S_OK;
 }
@@ -936,7 +936,7 @@ void CPartsLaser::SetPos( const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, float fS
 // v1, v2 레이저 시작과 끝. 로컬좌표
 // fSize : 레이저 폭, 여기에 내부적으로 커졌다 작아졌다하는 크기가 더해진다.
 //
-void CPartsLaser :: Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward
+void CPartsLaser :: Render( const D3DXMATRIX *mWorld, const D3DXVECTOR3 &vEye, const D3DXVECTOR3 &vForward
 					  /*const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, FLOAT fSize*/ )
 {
 //	Generate( v1, v2 );		// 레이저 이펙트 생성.
@@ -1049,7 +1049,7 @@ public:
 	CVertexShader();
 	~CVertexShader();
 
-	HRESULT Create( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName, DWORD dwFVF );
+	HRESULT Create( LPCTSTR szFileName, DWORD dwFVF );
 	HRESULT DeleteDeviceObjects( void );
 };
 
@@ -1065,7 +1065,7 @@ CVertexShader::~CVertexShader()
 	dwFVF = 0;
 }
 
-HRESULT CVertexShader::Create( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName, DWORD dwFVF )
+HRESULT CVertexShader::Create( LPCTSTR szFileName, DWORD dwFVF )
 {
 	HRESULT hr;
     LPD3DXBUFFER pCode;
@@ -1117,7 +1117,7 @@ public:
 	CPixelShader();
 	~CPixelShader();
 	
-	HRESULT Create( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName );
+	HRESULT Create( LPCTSTR szFileName );
 	HRESULT DeleteDeviceObjects( void );
 };
 
@@ -1131,7 +1131,7 @@ CPixelShader::~CPixelShader()
 	m_pPS = NULL;
 }
 
-HRESULT CPixelShader::Create( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
+HRESULT CPixelShader::Create( LPCTSTR szFileName )
 {
 	LPD3DXBUFFER pCode;
 	
@@ -1198,22 +1198,22 @@ void CTextureSurface::Destroy( void )
 	Init();
 }
 
-HRESULT CTextureSurface::Create( LPDIRECT3DDEVICE9 pd3dDevice, D3DFORMAT backBufferFormat, int nWidth, int nHeight, BOOL bDepth )
+HRESULT CTextureSurface::Create( D3DFORMAT backBufferFormat, int nWidth, int nHeight, BOOL bDepth )
 {
 	if ( m_pRenderToSurface )	return E_FAIL;	// 이미 있으면 생성안함.
 	
 	HRESULT hr;
 	if( bDepth )
-		hr = D3DXCreateRenderToSurface( pd3dDevice, nWidth, nHeight, backBufferFormat, TRUE, D3DFMT_D16, &m_pRenderToSurface);
+		hr = D3DXCreateRenderToSurface( g_Neuz.m_pd3dDevice, nWidth, nHeight, backBufferFormat, TRUE, D3DFMT_D16, &m_pRenderToSurface);
 	else
-		hr = D3DXCreateRenderToSurface( pd3dDevice, nWidth, nHeight, backBufferFormat, FALSE, D3DFMT_UNKNOWN, &m_pRenderToSurface);
+		hr = D3DXCreateRenderToSurface( g_Neuz.m_pd3dDevice, nWidth, nHeight, backBufferFormat, FALSE, D3DFMT_UNKNOWN, &m_pRenderToSurface);
 
 	if( FAILED(hr) )
 	{
 		return E_FAIL;
 	}
 	
-	hr = D3DXCreateTexture( pd3dDevice, nWidth, nHeight, 1, D3DUSAGE_RENDERTARGET, backBufferFormat,  D3DPOOL_DEFAULT, &m_pTexture );
+	hr = D3DXCreateTexture( g_Neuz.m_pd3dDevice, nWidth, nHeight, 1, D3DUSAGE_RENDERTARGET, backBufferFormat,  D3DPOOL_DEFAULT, &m_pTexture );
 	if( hr == E_OUTOFMEMORY )
 	{
 		Error( "Out of Memory GlareMap Memory %d %d", nWidth, nHeight );
@@ -1289,8 +1289,6 @@ HRESULT CTextureSurface::Create( LPDIRECT3DDEVICE9 pd3dDevice, D3DFORMAT backBuf
 	
 #endif
 
-	
-	m_pd3dDevice = pd3dDevice;
 	m_nWidth = nWidth;
 	m_nHeight = nHeight;
 
@@ -1322,7 +1320,7 @@ void CTextureSurface::SetTexture( void )
 	m_pd3dDevice->SetTexture( 0, m_pTexture );
 }
 
-void CTextureSurface::DownSampling( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSurface *pDst, float fOffsetU, float fOffsetV )
+void CTextureSurface::DownSampling( CTextureSurface *pDst, float fOffsetU, float fOffsetV )
 {
 	float ooWidth = 1.0f / (float)m_nWidth;
 	float ooHeight = 1.0f / (float)m_nHeight;
@@ -1408,7 +1406,7 @@ void CTextureSurface::DownSampling( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSurfac
 }
 
 // 현재 디바이스에 m_pTexture내용을 카피하는 일반적인 렌더링.
-void CTextureSurface::RenderNormal( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSurface *pDst, BOOL bBlend )
+void CTextureSurface::RenderNormal( CTextureSurface *pDst, BOOL bBlend )
 {
 	int nWidth = m_nWidth;
 	int nHeight = m_nHeight;
@@ -1521,7 +1519,7 @@ void CTextureSurface::RenderNormal( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSurfac
 
 // this Surface내용을 pDst서피스에 렌더링 하는데...
 // Blur를 적용하여 렌더링 한다.
-void CTextureSurface::RenderTargetBlur( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSurface *pDst)
+void CTextureSurface::RenderTargetBlur( CTextureSurface *pDst)
 {
 	HRESULT	hr;
 	
@@ -1630,7 +1628,7 @@ void CTextureSurface::RenderTargetBlur( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSu
 }
 
 // VS,PS 사용버전.
-void CTextureSurface::RenderTargetBlurH( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSurface *pDst)
+void CTextureSurface::RenderTargetBlurH( CTextureSurface *pDst)
 {
 	HRESULT	hr;
 
@@ -1762,7 +1760,7 @@ void CTextureSurface::RenderTargetBlurH( LPDIRECT3DDEVICE9 pd3dDevice, CTextureS
 }
 
 // VS,PS 사용버전.
-void CTextureSurface::RenderTargetBlurV( LPDIRECT3DDEVICE9 pd3dDevice, CTextureSurface *pDst)
+void CTextureSurface::RenderTargetBlurV( CTextureSurface *pDst)
 {
 	HRESULT	hr;
 
@@ -1913,7 +1911,6 @@ CGlareLevel::~CGlareLevel()
 void CGlareLevel::Init( void )
 {
 	m_bActive = FALSE;
-	m_pd3dDevice = NULL;
 	m_nWidth = m_nHeight = 0;
 
 //	m_Src.Init();
@@ -1956,7 +1953,7 @@ void CGlareLevel::DeleteDeviceObjects( void )
 //
 // nWidth, nHeight는 원본 스크린 사이즈.
 //
-void CGlareLevel::Create( LPDIRECT3DDEVICE9 pd3dDevice, D3DFORMAT backBufferFormat, int nWidth, int nHeight )
+void CGlareLevel::Create( D3DFORMAT backBufferFormat, int nWidth, int nHeight )
 {
 	if( m_bActive )		return;	
 	HRESULT hr;
@@ -1965,51 +1962,50 @@ void CGlareLevel::Create( LPDIRECT3DDEVICE9 pd3dDevice, D3DFORMAT backBufferForm
 #ifdef __XGLARE2
 //	nWidth = 512;	nHeight = noHeight * nWidth / noWidth;
 #endif
-	hr = m_Src.Create( pd3dDevice, backBufferFormat, nWidth, nHeight, TRUE );		// 게임화면을 렌더링한 복사본
+	hr = m_Src.Create( backBufferFormat, nWidth, nHeight, TRUE );		// 게임화면을 렌더링한 복사본
 	if( FAILED(hr) )	return;
-//	m_Black.Create( pd3dDevice, backBufferFormat, nWidth, nHeight );
+//	m_Black.Create( backBufferFormat, nWidth, nHeight );
 		
 //	nWidth = 256;	nHeight = noHeight * nWidth / noWidth;
-	hr = m_Surface[0].Create( pd3dDevice, backBufferFormat, nWidth, nHeight );		// m_Src를 블러시키는 메모리. 최종결과는 [0]에 들어감.
+	hr = m_Surface[0].Create( backBufferFormat, nWidth, nHeight );		// m_Src를 블러시키는 메모리. 최종결과는 [0]에 들어감.
 	if( FAILED(hr) )	return;
-	hr = m_Surface[1].Create( pd3dDevice, backBufferFormat, nWidth, nHeight );
+	hr = m_Surface[1].Create( backBufferFormat, nWidth, nHeight );
 	if( FAILED(hr) )	return;
 #if 0
 	nWidth = 256;	nHeight = noHeight * nWidth / noWidth;
-	m_Surface[2].Create( pd3dDevice, backBufferFormat, nWidth, nHeight );
+	m_Surface[2].Create( backBufferFormat, nWidth, nHeight );
 	
 	nWidth = 128;	nHeight = noHeight * nWidth / noWidth;
-	m_Surface[3].Create( pd3dDevice, backBufferFormat, nWidth, nHeight );
-	m_Surface[4].Create( pd3dDevice, backBufferFormat, nWidth, nHeight );
+	m_Surface[3].Create( backBufferFormat, nWidth, nHeight );
+	m_Surface[4].Create( backBufferFormat, nWidth, nHeight );
 	
 	nWidth = 128;	nHeight = noHeight * nWidth / noWidth;
-//	m_Surface[3].Create( pd3dDevice, backBufferFormat, nWidth, nHeight );
+//	m_Surface[3].Create( backBufferFormat, nWidth, nHeight );
 #endif
 	
 #ifdef __XGLARE2
 
-	hr = g_BlurVS.Create( pd3dDevice, "blur.vs", D3DFVF_XYZRHW | D3DFVF_TEX1 );
+	hr = g_BlurVS.Create( "blur.vs", D3DFVF_XYZRHW | D3DFVF_TEX1 );
 	if( FAILED(hr) )
 	{
 		Error( "blur.vs 읽기 실패" );
 	}
-	hr = g_BlurPS.Create( pd3dDevice, "blur.ps" );
+	hr = g_BlurPS.Create( "blur.ps" );
 	if( FAILED(hr) )
 	{
 		Error( "blur.ps 읽기 실패" );
 	}
 #else
-	g_ShaderBlur.LoadEffect( pd3dDevice, "blur.fx" );
+	g_ShaderBlur.LoadEffect( "blur.fx" );
 	
 #endif // xGlare2	
 
 	m_bActive = TRUE;
-	m_pd3dDevice = pd3dDevice;
 	
 }
 
 // 풀스크린으로 덧씌울때 이걸 호출하고 바르면 된다.
-void CGlareLevel::SetState( LPDIRECT3DDEVICE9 pd3dDevice )
+void CGlareLevel::SetState( )
 {
 	if( m_bActive == FALSE )	return;
 
@@ -2024,7 +2020,7 @@ void CGlareLevel::SetState( LPDIRECT3DDEVICE9 pd3dDevice )
 	
 }
 
-void CGlareLevel::ResetState( LPDIRECT3DDEVICE9 pd3dDevice )
+void CGlareLevel::ResetState( )
 {
 	if( m_bActive == FALSE )	return;
 }
@@ -2032,11 +2028,11 @@ void CGlareLevel::ResetState( LPDIRECT3DDEVICE9 pd3dDevice )
 //
 // 작은 텍스쳐에 월드를 똑같이 그린다.
 // 약간 어둡게해서 렌더링하자.
-void CGlareLevel::RenderWorld( LPDIRECT3DDEVICE9 pd3dDevice, CObj **pList, int nMax )
+void CGlareLevel::RenderWorld( CObj **pList, int nMax )
 {
 }
 
-void CGlareLevel::Blur( LPDIRECT3DDEVICE9 pd3dDevice )
+void CGlareLevel::Blur( )
 {
 	float fVal = 1.0f;
 
@@ -2048,31 +2044,31 @@ void CGlareLevel::Blur( LPDIRECT3DDEVICE9 pd3dDevice )
 	// 원본(m_Src)크기의 블러[0]를 만듬.
 	m_Surface[0].BeginScene();
 //	pd3dDevice->Clear( 0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0,0,0,0), 0, 0 );
-	m_Src.RenderTargetBlur( pd3dDevice, &m_Surface[0] );		// 게임화면을 블러해서 [0]에 넣음
+	m_Src.RenderTargetBlur( &m_Surface[0] );		// 게임화면을 블러해서 [0]에 넣음
 	m_Surface[0].EndScene();
 	
 	// 중간크기의 원본을 만듬.
 	m_Surface[1].BeginScene();
-	m_Src.RenderNormal( pd3dDevice, &m_Surface[1] );
+	m_Src.RenderNormal( &m_Surface[1] );
 	m_Surface[1].EndScene();
 	// 중간크기의 블러 만듬.
 	m_Surface[2].BeginScene();
-	m_Surface[1].RenderTargetBlur( pd3dDevice, &m_Surface[2] );	
+	m_Surface[1].RenderTargetBlur( &m_Surface[2] );	
 	m_Surface[2].EndScene();
 
 	// 낮은크기의 원본을 만듬.
 	m_Surface[3].BeginScene();
-	m_Src.RenderNormal( pd3dDevice, &m_Surface[3] );
+	m_Src.RenderNormal( &m_Surface[3] );
 	m_Surface[3].EndScene();
 	// 낮은크기의 블러 만듬.
 	m_Surface[4].BeginScene();
-	m_Surface[3].RenderTargetBlur( pd3dDevice, &m_Surface[4] );	
+	m_Surface[3].RenderTargetBlur( &m_Surface[4] );	
 	m_Surface[4].EndScene();
 
 	// 합성
 	m_Surface[0].BeginScene();
-	m_Surface[4].RenderNormal( pd3dDevice, &m_Surface[0], TRUE );	// 높음블러에 낮은 블러를 블렌딩 한다
-	m_Surface[2].RenderNormal( pd3dDevice, &m_Surface[0], TRUE );	// 높음블러에 중간 블러를 블렌딩 한다
+	m_Surface[4].RenderNormal( &m_Surface[0], TRUE );	// 높음블러에 낮은 블러를 블렌딩 한다
+	m_Surface[2].RenderNormal( &m_Surface[0], TRUE );	// 높음블러에 중간 블러를 블렌딩 한다
 	m_Surface[0].EndScene();
 #endif // 0
 
@@ -2084,9 +2080,9 @@ void CGlareLevel::Blur( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_Surface[0].BeginScene();
 #ifdef __XGLARE2
 	pd3dDevice->Clear( 0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0,0,0,0), 0, 0 );
-	m_Src.RenderTargetBlurH( pd3dDevice, &m_Surface[0] );		// 게임화면을 블러해서 [0]에 넣음
+	m_Src.RenderTargetBlurH( &m_Surface[0] );		// 게임화면을 블러해서 [0]에 넣음
 #else	
-	m_Src.RenderTargetBlur( pd3dDevice, &m_Surface[0] );		// 게임화면을 블러해서 [0]에 넣음
+	m_Src.RenderTargetBlur( &m_Surface[0] );		// 게임화면을 블러해서 [0]에 넣음
 #endif
 	m_Surface[0].EndScene();
 	
@@ -2099,32 +2095,32 @@ void CGlareLevel::Blur( LPDIRECT3DDEVICE9 pd3dDevice )
 	for( i = 0; i < nMax; i ++ )
 	{
 		m_Surface[1].BeginScene();
-		m_Surface[0].RenderTargetBlurH( pd3dDevice, &m_Surface[1] );		// 0의 내용을 1로 블러
+		m_Surface[0].RenderTargetBlurH( &m_Surface[1] );		// 0의 내용을 1로 블러
 		m_Surface[1].EndScene();
 		
 		m_Surface[0].BeginScene();
-		m_Surface[1].RenderTargetBlurH( pd3dDevice, &m_Surface[0] );		// 다시 1의 내용을 0으로 블러
+		m_Surface[1].RenderTargetBlurH( &m_Surface[0] );		// 다시 1의 내용을 0으로 블러
 		m_Surface[0].EndScene();
 	}
 	for( i = 0; i < nMax; i ++ )
 	{
 		m_Surface[1].BeginScene();
-		m_Surface[0].RenderTargetBlurV( pd3dDevice, &m_Surface[1] );		// 0의 내용을 1로 블러
+		m_Surface[0].RenderTargetBlurV( &m_Surface[1] );		// 0의 내용을 1로 블러
 		m_Surface[1].EndScene();
 		
 		m_Surface[0].BeginScene();
-		m_Surface[1].RenderTargetBlurV( pd3dDevice, &m_Surface[0] );		// 다시 1의 내용을 0으로 블러
+		m_Surface[1].RenderTargetBlurV( &m_Surface[0] );		// 다시 1의 내용을 0으로 블러
 		m_Surface[0].EndScene();
 	}
 #else
 	for( i = 0; i < nMax; i ++ )
 	{
 		m_Surface[1].BeginScene();
-		m_Surface[0].RenderTargetBlur( pd3dDevice, &m_Surface[1] );		// 
+		m_Surface[0].RenderTargetBlur( &m_Surface[1] );		// 
 		m_Surface[1].EndScene();
 		
 		m_Surface[0].BeginScene();
-		m_Surface[1].RenderTargetBlur( pd3dDevice, &m_Surface[0] );
+		m_Surface[1].RenderTargetBlur( &m_Surface[0] );
 		m_Surface[0].EndScene();
 	}
 #endif
@@ -2133,7 +2129,7 @@ void CGlareLevel::Blur( LPDIRECT3DDEVICE9 pd3dDevice )
 
 //	m_Surface[0].BeginScene();
 //	m_Black.bTest = TRUE;
-//	m_Black.RenderNormal( pd3dDevice, &m_Surface[0], TRUE );
+//	m_Black.RenderNormal( &m_Surface[0], TRUE );
 //	m_Black.bTest = FALSE;
 //	m_Surface[0].EndScene();
 		
@@ -2147,7 +2143,7 @@ void CGlareLevel::Blur( LPDIRECT3DDEVICE9 pd3dDevice )
 
 //
 //
-void CGlareLevel::RenderGlareEffect( LPDIRECT3DDEVICE9 pd3dDevice )
+void CGlareLevel::RenderGlareEffect( )
 {
 //	return;
 	float	fOffset = g_Option.m_nBloom * 3.0f;

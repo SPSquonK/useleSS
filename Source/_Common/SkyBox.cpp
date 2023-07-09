@@ -183,7 +183,7 @@ void CSkyBox::Process()
 							{
 								FLOAT fHeight = (FLOAT)pWaterHeight->byWaterHeight;
 								v3Pos.y = fHeight;
-								CSfx *pObj = CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_RAINCIRCLE01, v3Pos );
+								CSfx *pObj = CreateSfx( XI_GEN_RAINCIRCLE01, v3Pos );
 								FLOAT fscal = (FLOAT)( xRandom(2)+1 );
 
 								fscal *= 0.1f;
@@ -193,7 +193,7 @@ void CSkyBox::Process()
 							else
 							{
 								FLOAT fscal = xRandom(2)+0.05f;
-								CSfx *pObj = CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_RAINCIRCLE01, v3Pos );
+								CSfx *pObj = CreateSfx( XI_GEN_RAINCIRCLE01, v3Pos );
 								fscal *= 0.1f;
 								pObj->SetScale( D3DXVECTOR3( fscal, fscal, fscal ) ); 
 
@@ -255,7 +255,7 @@ void CSkyBox::Process()
 	//		m_nWeather = WEATHER_NONE;
 	}
 }
-void CSkyBox::Render( CWorld* pWorld, LPDIRECT3DDEVICE9 pd3dDevice )
+void CSkyBox::Render( CWorld* pWorld )
 {
 	_PROFILE("CSkyBox::Render()");
 
@@ -438,7 +438,7 @@ void CSkyBox::Render( CWorld* pWorld, LPDIRECT3DDEVICE9 pd3dDevice )
 //	pd3dDevice->SetTexture( 0, m_pSkyBoxTexture);
 //	pd3dDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 0, 56);
 ///	pd3dDevice->DrawPrimitive( D3DPT_TRIANGLEFAN, 58, 28);
-//	pWorld->SetFogEnable(pd3dDevice,FALSE); 
+//	pWorld->SetFogEnable(FALSE); 
 //	pd3dDevice->SetRenderState( D3DRS_FOGSTART,   FtoDW(50.0f) );
 //	pd3dDevice->SetRenderState( D3DRS_FOGEND,     FtoDW(100.0f) );
 	// 높은 구름 UV 스크롤 
@@ -792,7 +792,7 @@ void CSkyBox::Render( CWorld* pWorld, LPDIRECT3DDEVICE9 pd3dDevice )
 }
 
 
-BOOL CSkyBox::CheckSun(LPDIRECT3DDEVICE9 pd3dDevice)
+BOOL CSkyBox::CheckSun()
 {
 	D3DXMATRIX mat,matProj;
 	pd3dDevice->GetTransform( D3DTS_PROJECTION, &matProj );
@@ -815,7 +815,7 @@ BOOL CSkyBox::CheckSun(LPDIRECT3DDEVICE9 pd3dDevice)
 	return TRUE;
 }
 
-void CSkyBox::DrawLensFlare(LPDIRECT3DDEVICE9 pd3dDevice)
+void CSkyBox::DrawLensFlare()
 {
 	if( !((g_GameTimer.m_nHour >= 7 ) && ( g_GameTimer.m_nHour <= 17 )) )
 		return;
@@ -833,7 +833,7 @@ void CSkyBox::DrawLensFlare(LPDIRECT3DDEVICE9 pd3dDevice)
 
 	
 	
-	if(!CheckSun(pd3dDevice)) return;
+	if(!CheckSun()) return;
 	pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
 	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
@@ -962,17 +962,17 @@ void CSkyBox::DrawLensFlare(LPDIRECT3DDEVICE9 pd3dDevice)
 	pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
 }
-void CSkyBox::RenderFall( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSkyBox::RenderFall()
 {
 	if(!g_Option.m_nWeatherEffect) return;
 
 	if( m_nWeather == WEATHER_RAIN )
-		DrawRain( pd3dDevice );
+		DrawRain( );
 	else
 	if( m_nWeather == WEATHER_SNOW )
-		DrawSnow( pd3dDevice );
+		DrawSnow( );
 }
-void CSkyBox::DrawRain(LPDIRECT3DDEVICE9 pd3dDevice)
+void CSkyBox::DrawRain()
 {
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
 	pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
@@ -1020,7 +1020,7 @@ void CSkyBox::DrawRain(LPDIRECT3DDEVICE9 pd3dDevice)
 	pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
 }
 
-void CSkyBox::DrawSnow(LPDIRECT3DDEVICE9 pd3dDevice)
+void CSkyBox::DrawSnow()
 {
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
 	pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
@@ -1249,16 +1249,16 @@ void CSkyBox::SetStarVertices()
 	//}
 }
 
-HRESULT CSkyBox::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
+HRESULT CSkyBox::InitDeviceObjects()
 {
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "Moon.dds"),
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "Moon.dds"),
 										&m_pMoonTexture ) ) )
 	{
 		return D3DAPPERR_MEDIANOTFOUND;
 	}
 
 
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "sundisk.bmp"), &m_pSunTexture ) ) )
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "sundisk.bmp"), &m_pSunTexture ) ) )
 	{
 		return	D3DAPPERR_MEDIANOTFOUND;
 	}
@@ -1266,7 +1266,7 @@ HRESULT CSkyBox::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
 /*	
 	if( CEnvironment::GetInstance()->GetSeason() == SEASON_SPRING )
 	{
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "sakura.bmp"), &m_pSunTexture ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "sakura.bmp"), &m_pSunTexture ) ) )
 		{
 			return	D3DAPPERR_MEDIANOTFOUND;
 		}
@@ -1274,7 +1274,7 @@ HRESULT CSkyBox::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
 
 	else if( CEnvironment::GetInstance()->GetSeason() == SEASON_FALL )
 	{
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "leaf.bmp"), &m_pSunTexture ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "leaf.bmp"), &m_pSunTexture ) ) )
 		{
 			return	D3DAPPERR_MEDIANOTFOUND;
 		}
@@ -1282,7 +1282,7 @@ HRESULT CSkyBox::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
 
 	else
 	{
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "sundisk.bmp"), &m_pSunTexture ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "sundisk.bmp"), &m_pSunTexture ) ) )
 		{
 			return	D3DAPPERR_MEDIANOTFOUND;
 		}
@@ -1290,53 +1290,53 @@ HRESULT CSkyBox::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
 */
 
 
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "flare_3.tga"),
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "flare_3.tga"),
 									   &m_pSunTexture2 ) ) )
 	{
 		return D3DAPPERR_MEDIANOTFOUND;
 	}
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "lenzflare_001.tga"),
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "lenzflare_001.tga"),
 									   &(m_pLensTexture[0])) ) )
 	{
 		return D3DAPPERR_MEDIANOTFOUND;
 	}
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "lenzflare_002.tga"),
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "lenzflare_002.tga"),
 									   &(m_pLensTexture[1])) ) )
 	{
 		return D3DAPPERR_MEDIANOTFOUND;
 	}
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "lenzflare_003.tga"),
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "lenzflare_003.tga"),
 									   &(m_pLensTexture[2])) ) )
 	{
 		return D3DAPPERR_MEDIANOTFOUND;
 	}
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "lenzflare_004.tga"),
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "lenzflare_004.tga"),
 									   &(m_pLensTexture[3])) ) )
 	{
 		return D3DAPPERR_MEDIANOTFOUND;
 	}
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "lenzflare_005.tga"),
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "lenzflare_005.tga"),
 									   &(m_pLensTexture[4])) ) )
 	{
 		return D3DAPPERR_MEDIANOTFOUND;
 	}
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "lenzflare_006.tga"),
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "lenzflare_006.tga"),
 									   &(m_pLensTexture[5])) ) )
 	{
 		return D3DAPPERR_MEDIANOTFOUND;
 	}
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "lenzflare_007.tga"),
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "lenzflare_007.tga"),
 									   &(m_pLensTexture[6])) ) )
 	{
 		return D3DAPPERR_MEDIANOTFOUND;
 	}
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "lenzflare_008.tga"),
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "lenzflare_008.tga"),
 									   &(m_pLensTexture[7])) ) )
 	{
 		return D3DAPPERR_MEDIANOTFOUND;
 	}
 	/*
-	if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "snow04.bmp"),
+	if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "snow04.bmp"),
 									   &m_pSnowTexture ) ) )
 	{
 		return D3DAPPERR_MEDIANOTFOUND;
@@ -1344,53 +1344,53 @@ HRESULT CSkyBox::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
 	*/
 	if( g_Option.m_nTextureQuality == 2 )
 	{
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "skybox01_low.dds" ), &m_pSkyBoxTexture ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "skybox01_low.dds" ), &m_pSkyBoxTexture ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "skybox02_low.dds"), &m_pSkyBoxTexture2 ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "skybox02_low.dds"), &m_pSkyBoxTexture2 ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "skybox03_low.dds"),  &m_pSkyBoxTexture3 ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "skybox03_low.dds"),  &m_pSkyBoxTexture3 ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "cloud01_low.dds"), &m_pCloudTexture ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "cloud01_low.dds"), &m_pCloudTexture ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "cloud02_low.dds"), &m_pCloudTexture2 ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "cloud02_low.dds"), &m_pCloudTexture2 ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "cloud03_low.dds"), &m_pCloudTexture3 ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "cloud03_low.dds"), &m_pCloudTexture3 ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
 	}
 	else
 	if( g_Option.m_nTextureQuality == 1 )
 	{
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "skybox01_low.dds" ), &m_pSkyBoxTexture ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "skybox01_low.dds" ), &m_pSkyBoxTexture ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "skybox02_low.dds"), &m_pSkyBoxTexture2 ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "skybox02_low.dds"), &m_pSkyBoxTexture2 ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "skybox03.dds"),  &m_pSkyBoxTexture3 ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "skybox03.dds"),  &m_pSkyBoxTexture3 ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "cloud01_low.dds"), &m_pCloudTexture ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "cloud01_low.dds"), &m_pCloudTexture ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "cloud02_low.dds"), &m_pCloudTexture2 ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "cloud02_low.dds"), &m_pCloudTexture2 ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "cloud03.dds"), &m_pCloudTexture3 ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "cloud03.dds"), &m_pCloudTexture3 ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
 	}
 	else
 	{
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "skybox01.dds" ), &m_pSkyBoxTexture ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "skybox01.dds" ), &m_pSkyBoxTexture ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "skybox02.dds"), &m_pSkyBoxTexture2 ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "skybox02.dds"), &m_pSkyBoxTexture2 ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "skybox03.dds"),  &m_pSkyBoxTexture3 ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "skybox03.dds"),  &m_pSkyBoxTexture3 ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "cloud01.dds"), &m_pCloudTexture ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "cloud01.dds"), &m_pCloudTexture ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "cloud02.dds"), &m_pCloudTexture2 ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "cloud02.dds"), &m_pCloudTexture2 ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
-		if( FAILED( LoadTextureFromRes( pd3dDevice, MakePath( DIR_WEATHER, "cloud03.dds"), &m_pCloudTexture3 ) ) )
+		if( FAILED( LoadTextureFromRes( MakePath( DIR_WEATHER, "cloud03.dds"), &m_pCloudTexture3 ) ) )
 		{ return D3DAPPERR_MEDIANOTFOUND; }
 	}
 	return S_OK;
 }
-HRESULT CSkyBox::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
+HRESULT CSkyBox::RestoreDeviceObjects()
 {
 	if( m_pTopSkyBoxVB ) return S_OK;
 

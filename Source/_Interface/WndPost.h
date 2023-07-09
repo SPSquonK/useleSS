@@ -1,6 +1,6 @@
 #pragma once
 
-class CWndPostSend : public CWndNeuz
+class CWndPostSend final : public CWndNeuz
 {
 	int		m_nCost = 0;
 	int		m_nCount = 0;
@@ -18,7 +18,7 @@ public:
 	void SetReceive( const char* pchar );
 	void SetTitle( const char* pchar );	
 	void SetText( const char* pchar );	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -26,20 +26,20 @@ public:
 	virtual void OnRButtonUp( UINT nFlags, CPoint point );
 };
 
-class CWndPostItemWarning : public CWndNeuz 
+class CWndPostItemWarning final : public CWndNeuz 
 { 
 public: 
 	int	   m_nMailIndex = -1;
 	
 	void	SetIndex( int nIndex ) { m_nMailIndex = nIndex; }
 	void	SetString(const char * string);
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 }; 
 
 class CWndPostDeleteConfirm;
-class CWndPostRead : public CWndNeuz
+class CWndPostRead final : public CWndNeuz
 {
 	int					m_nMailIndex = -1;
 	CWndGold			m_wndGold;
@@ -53,7 +53,7 @@ public:
 	void ClearData();
 	
 	void SetValue( int nMailIndex );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -65,7 +65,7 @@ public:
 };
 
 
-class CWndPostReceive : public CWndNeuz
+class CWndPostReceive final : public CWndNeuz
 {
 	CTexture			m_Texture[3];
 	CWndScrollBar		m_wndScrollBar;
@@ -80,7 +80,7 @@ public:
 	virtual ~CWndPostReceive(); 
 
 	int          GetSelectIndex( const CPoint& point );	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
@@ -89,7 +89,7 @@ public:
 	virtual HRESULT DeleteDeviceObjects();
 	virtual void OnMouseWndSurface( CPoint point );
 };
-class CWndPost : public CWndNeuz
+class CWndPost final : public CWndNeuz
 {
 public:
 	CWndPostSend		m_PostTabSend;
@@ -97,7 +97,7 @@ public:
 	
 	virtual ~CWndPost(); 
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 
@@ -108,7 +108,7 @@ private:
 	CWndMailRequestingBox* m_pWndMailRequestingBox = nullptr;
 };
 
-class CWndPostDeleteConfirm : public CWndNeuz
+class CWndPostDeleteConfirm final : public CWndNeuz
 {
 protected:
 	CWndText	m_wndText;
@@ -116,7 +116,7 @@ protected:
 public: 
 	
 	void			SetValue( int nIndex ) { m_nIndex = nIndex; }
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnInitialUpdate();
 }; 

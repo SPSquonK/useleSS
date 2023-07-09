@@ -13,8 +13,8 @@
 
 CTreeInformationManager g_QuestTreeInfoManager;
 
-BOOL CWndRemoveQuest::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
-	CRect rect = m_pWndRoot->MakeCenterRect(250, 130);
+BOOL CWndRemoveQuest::Initialize(CWndBase * pWndParent) {
+	CRect rect = g_WndMng.MakeCenterRect(250, 130);
 	Create("", MB_OKCANCEL, rect, APP_MESSAGEBOX);
 
 	m_wndText.SetString(prj.GetText(TID_GAME_QUEST_DELCONFIRM));
@@ -22,7 +22,7 @@ BOOL CWndRemoveQuest::Initialize(CWndBase * pWndParent, DWORD dwWndId) {
 	if (g_WndMng.m_pWndWorld && g_WndMng.m_pWndWorld->GetMouseMode() == 1) {	// FPS모드일때
 		g_WndMng.m_pWndWorld->SetMouseMode(0);
 	}
-	return CWndMessageBox::Initialize(pWndParent, dwWndId);
+	return TRUE;
 }
 
 BOOL CWndRemoveQuest::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
@@ -246,7 +246,7 @@ void CWndQuest::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndQuest::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndQuest::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_QUEST_EX_LIST, pWndParent, 0, CPoint( 0, 0 ) );
@@ -324,8 +324,8 @@ BOOL CWndQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					{
 						if( g_WndMng.m_pWndQuestDetail )
 							SAFE_DELETE( g_WndMng.m_pWndQuestDetail )
-						CWndRemoveQuest* pWndRemoveQuest = new CWndRemoveQuest(QuestId(nQuestID));
-						g_WndMng.OpenCustomBox( NULL, pWndRemoveQuest );
+
+						g_WndMng.OpenCustomBox(new CWndRemoveQuest(QuestId(nQuestID)));
 					}
 					break;
 				}
@@ -350,7 +350,7 @@ BOOL CWndQuest::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							SAFE_DELETE( g_WndMng.m_pWndQuestDetail )
 								g_WndMng.m_pWndQuestDetail = new CWndQuestDetail( nQuestID );
 							CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
-							pWndQuestDetail->Initialize( NULL );
+							pWndQuestDetail->Initialize();
 							if( pWndQuestDetail )
 								pWndQuestDetail->UpdateQuestText( TRUE );
 							CWndQuestQuickInfo* pWndQuestQuickInfo = g_WndMng.m_pWndQuestQuickInfo;
@@ -593,7 +593,7 @@ m_dwQuestID( dwQuestID )
 }
 
 //-----------------------------------------------------------------------------
-BOOL CWndQuestDetail::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndQuestDetail::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_QUEST_EX_DETAIL, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -650,11 +650,11 @@ void CWndQuestDetail::PaintFrame( C2DRender* p2DRender )
 	}
 	else if( m_strTexture.IsEmpty() )
 	{
-		m_pTheme->RenderWndBaseFrame( p2DRender, &rect );
+		m_Theme.RenderWndBaseFrame( p2DRender, &rect );
 		if( IsWndStyle( WBS_CAPTION ) )
 		{
 			rect.bottom = 21;
-			m_pTheme->RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
+			m_Theme.RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
 		}
 	}
 }

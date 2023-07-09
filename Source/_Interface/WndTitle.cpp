@@ -42,44 +42,44 @@ BOOL GetIePath( LPSTR lpPath )
 	return TRUE;
 }
 
-BOOL CWndConnectingBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
+BOOL CWndConnectingBox::Initialize( CWndBase* pWndParent  ) 
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
 	Create( _T( prj.GetText(TID_DIAG_0068) ), /*MB_CANCEL*/0xFFFFFFFF, rect, APP_MESSAGEBOX );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0064) ) );
 	
 	m_wndText.ResetString();
-	return CWndMessageBox::Initialize( pWndParent, 0 );
+	return TRUE;
 }
 BOOL CWndConnectingBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
 	return TRUE;
 }
 
-BOOL CWndCharBlockBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
+BOOL CWndCharBlockBox::Initialize( CWndBase* pWndParent  ) 
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
 	Create( _T( prj.GetText(TID_DIAG_0068) ), MB_CANCEL, rect, APP_MESSAGEBOX );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0073) ) );
 
 	m_wndText.ResetString();
-	return CWndMessageBox::Initialize( pWndParent, 0 );
+	return TRUE;
 }
 BOOL CWndCharBlockBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
 	return CWndMessageBox::OnChildNotify( message, nID, pLResult );
 }
-BOOL CWndAllCharBlockBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
+BOOL CWndAllCharBlockBox::Initialize( CWndBase* pWndParent  ) 
 {
-    CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+    CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
 	Create( _T( prj.GetText(TID_DIAG_0068) ), MB_CANCEL, rect, APP_MESSAGEBOX );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0074) ) );
 
 	m_wndText.ResetString();
-	return CWndMessageBox::Initialize( pWndParent, 0 );
+	return TRUE;
 }
 BOOL CWndAllCharBlockBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
@@ -295,7 +295,7 @@ void CWndLogin::OnInitialUpdate()
 	{
 		CRect HanrectWindow = GetWindowRect( TRUE );
 		SetWndRect( CRect( HanrectWindow.left, HanrectWindow.top, HanrectWindow.right - 120, HanrectWindow.bottom - 115 ) );
-		CRect rectLayout = m_pWndRoot->GetLayoutRect();
+		CRect rectLayout = g_WndMng.GetLayoutRect();
 		Move( (int)( rectLayout.Width() / 2 - m_rectWindow.Width() / 2 ), (int)( rectLayout.Height() * 0.65 ) );
 	}
 #endif	// __THROUGHPORTAL0810
@@ -312,7 +312,7 @@ void CWndLogin::OnInitialUpdate()
 		case LANG_FRE:
 		case LANG_GER:
 			{
-				CRect rectRoot = m_pWndRoot->GetLayoutRect();
+				CRect rectRoot = g_WndMng.GetLayoutRect();
 				CRect rectWindow = GetWindowRect( TRUE );
 				rectWindow.top = 400 * rectRoot.Height() / 768;
 				Move( rectWindow.TopLeft() );
@@ -355,7 +355,7 @@ void CWndLogin::OnInitialUpdate()
 	g_Neuz.m_dwTimeOutDis = 0xffffffff;
 	m_bDisconnect = FALSE;
 }
-BOOL CWndLogin::Initialize(CWndBase* pWndParent,DWORD dwStyle)
+BOOL CWndLogin::Initialize(CWndBase* pWndParent)
 {
 	return CWndNeuz::InitDialog( APP_LOGIN, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
@@ -471,7 +471,7 @@ BOOL CWndLogin::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 					g_Neuz.SetAccountInfo( pAccount->GetString(), pPassword->GetString() );
 				g_dpCertified.SendCertify();
 
-				g_WndMng.OpenCustomBox( NULL, new CWndConnectingBox );
+				g_WndMng.OpenCustomBox( new CWndConnectingBox );
 				break;
 			}
 
@@ -591,7 +591,7 @@ void CWndSelectServer::OnInitialUpdate()
 
 	if( ::GetLanguage() == LANG_JAP )
 	{
-		CRect rect2 = m_pWndRoot->GetLayoutRect();
+		CRect rect2 = g_WndMng.GetLayoutRect();
 		
 		int width = (rect2.right-rect2.left) / 2;
 		
@@ -663,7 +663,7 @@ BOOL CWndSelectServer::Process()
 	
 	return TRUE;
 }
-BOOL CWndSelectServer::Initialize(CWndBase* pWndParent,DWORD dwStyle)
+BOOL CWndSelectServer::Initialize(CWndBase* pWndParent)
 {
 	return CWndNeuz::InitDialog( APP_SELECT_SERVER, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
@@ -814,7 +814,7 @@ BOOL CWndSelectServer::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				g_dpLoginClient.DeleteDPObject();	// 2004^04^19
 				break;
 			}
-			g_WndMng.OpenCustomBox( NULL, new CWndConnectingBox );
+			g_WndMng.OpenCustomBox( new CWndConnectingBox );
 
 			CWndListBox* pWndList	= (CWndListBox*)GetDlgItem( WIDC_CONTROL0 );
 			CListedServers::Server * pTServerDesc	= (CListedServers::Server *)pWndList->GetItemData( pWndList->GetCurSel() );
@@ -917,7 +917,7 @@ void CWndDeleteChar::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3D
 	CWndNeuz::AdditionalSkinTexture( pDest, sizeSurface, d3dFormat );
 }
 
-BOOL CWndDeleteChar::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndDeleteChar::Initialize( CWndBase* pWndParent ) 
 { 
 	InitDialog( APP_DELETE_CHAR, nullptr, WBS_MODAL );
 	CWndEdit *WndEdit   = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
@@ -1128,7 +1128,7 @@ HRESULT CWndSelectChar::InitDeviceObjects()
 	for( int i = 0; i < MAX_CHARACTER_LIST; i++ )
 	{
 		if( m_pBipedMesh[ i ] )
-			m_pBipedMesh[ i ]->InitDeviceObjects( m_pApp->m_pd3dDevice );
+			m_pBipedMesh[ i ]->InitDeviceObjects( );
 	}
 
 	return S_OK;
@@ -1290,7 +1290,6 @@ void CWndSelectChar::OnDraw( C2DRender* p2DRender )
 				p2DRender->TextOut( rect.left, rect.bottom + 10, g_Neuz.m_apPlayer[i]->GetName(), 0xff505050 );
 
 			CModelObject* pModel = m_pBipedMesh[ i ].get();
-			LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 
 			pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 			pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
@@ -1458,10 +1457,10 @@ void CWndSelectChar::OnDraw( C2DRender* p2DRender )
 			SetLightVec( D3DXVECTOR3( 0.0f, 0.0f, 1.0f ) );
 #endif //__YENV
 			
-			pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+			pModel->Render( &matWorld );
 
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+			D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+			D3DDEVICE->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 		
 			
 			viewport.X      = p2DRender->m_ptOrigin.x;// + 5;
@@ -1523,7 +1522,7 @@ void CWndSelectChar::UpdateCharacter()
 			m_dwMotion[i] = (i == m_nSelectCharacter ? MTI_STAND : MTI_SITSTAND);
 			
 			m_pBipedMesh[i] = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>(
-				g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE
+				OT_MOVER, nMover, TRUE
 			);
 			m_pBipedMesh[i]->LoadMotionId(m_dwMotion[i]);
 
@@ -1552,9 +1551,9 @@ void CWndSelectChar::OnInitialUpdate()
 	MoveParentCenter();
 }
 
-BOOL CWndSelectChar::Initialize(CWndBase* pWndParent,DWORD dwStyle)
+BOOL CWndSelectChar::Initialize(CWndBase* pWndParent)
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 590, 400 );
+	CRect rect = g_WndMng.MakeCenterRect( 590, 400 );
 	SetTitle( _T( "Select Character" ) );
 	return CWndNeuz::InitDialog( APP_SELECT_CHAR, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
@@ -1646,7 +1645,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 			{
 				SAFE_DELETE( m_pWndDeleteChar );
 				m_pWndDeleteChar = new CWndDeleteChar;
-				m_pWndDeleteChar->Initialize( this, APP_DELETE_CHAR );
+				m_pWndDeleteChar->Initialize( this );
 			}
 			break;
 		case WIDC_ACCEPT: // Accept
@@ -1672,7 +1671,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 			
 			if( g_Neuz.m_nCharacterBlock[m_nSelectCharacter] == 0 )
 			{
-				g_WndMng.OpenCustomBox( NULL, new CWndCharBlockBox );
+				g_WndMng.OpenCustomBox( new CWndCharBlockBox );
 			}
 			else
 			{
@@ -1691,7 +1690,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 					if( m_pWnd2ndPassword )
 						SAFE_DELETE( m_pWnd2ndPassword );
 					m_pWnd2ndPassword = new CWnd2ndPassword();
-					m_pWnd2ndPassword->Initialize( this, APP_2ND_PASSWORD_NUMBERPAD );
+					m_pWnd2ndPassword->Initialize( this );
 					m_pWnd2ndPassword->SetInformation( g_dpLoginClient.GetNumberPad(), m_nSelectCharacter );
 #ifdef __CON_AUTO_LOGIN
 					for( int i = 0; i < 4; ++i )
@@ -1701,8 +1700,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				}
 				else
 				{
-					g_WndMng.OpenCustomBox( _T( prj.GetText(TID_DIAG_0064) ), new CWndConnectingBox );
-					//g_WndMng.OpenCustomBox( _T( "로딩중입니다. 잠시만 기다려 주십시오." ), new CWndConnectingBox );
+					g_WndMng.OpenCustomBox( new CWndConnectingBox );
 
 					if( g_DPlay.Connect( g_Neuz.m_lpCacheAddr, g_Neuz.m_uCachePort ) )
 					{						
@@ -1777,7 +1775,7 @@ void CWndSelectChar::OnLButtonUp(UINT nFlags, CPoint point)
 		{
 			if( g_Neuz.m_nCharacterBlock[i] == 0 )
 			{
-				g_WndMng.OpenCustomBox( NULL, new CWndCharBlockBox );
+				g_WndMng.OpenCustomBox( new CWndCharBlockBox );
 					
 			}
 			else
@@ -1811,7 +1809,7 @@ HRESULT CWndCreateChar::InitDeviceObjects()
 {
 	CWndBase::InitDeviceObjects();
 	if( m_pModel )
-		m_pModel->InitDeviceObjects( m_pApp->m_pd3dDevice );
+		m_pModel->InitDeviceObjects( );
 	return S_OK;
 }
 HRESULT CWndCreateChar::RestoreDeviceObjects()
@@ -1842,8 +1840,6 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 
 	pt = CPoint( 260, 15 );
 
-
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
@@ -1958,10 +1954,10 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 		}
 	}
 	
-	m_pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+	m_pModel->Render( &matWorld );
 
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+	D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+	D3DDEVICE->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 
 	viewport.X      = p2DRender->m_ptOrigin.x;// + 5;
 	viewport.Y      = p2DRender->m_ptOrigin.y;// + 5;
@@ -2031,7 +2027,7 @@ void CWndCreateChar::SetSex( int nSex )
 	int nMover = m_Player.m_bySex == SEX_MALE ? MI_MALE : MI_FEMALE;
 
 	SAFE_DELETE( m_pModel );
-	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( OT_MOVER, nMover, TRUE );
 
 	const DWORD dwMotion = nSex == SEX_MALE ? MTI_STAND : MTI_STAND2;
 	m_pModel->LoadMotionId(dwMotion);
@@ -2050,9 +2046,9 @@ void CWndCreateChar::SetSex( int nSex )
 	CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 }
 
-BOOL CWndCreateChar::Initialize( CWndBase* pWndParent, DWORD dwStyle )
+BOOL CWndCreateChar::Initialize( CWndBase* pWndParent )
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 590, 400 );
+	CRect rect = g_WndMng.MakeCenterRect( 590, 400 );
 	return CWndNeuz::InitDialog( APP_CREATE_CHAR, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
 
@@ -2187,7 +2183,7 @@ BOOL CWndCreateChar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			break;
 		case 10002: // Accept
 			{
-			g_WndMng.OpenCustomBox( NULL, new CWndConnectingBox );
+			g_WndMng.OpenCustomBox( new CWndConnectingBox );
 			g_Neuz.m_dwTempMessage = 1;
 			g_Neuz.m_timerConnect.Set( 1 );
 			}

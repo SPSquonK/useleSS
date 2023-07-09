@@ -8,7 +8,7 @@
 #include "ModelGlobal.h"
 #include <optional>
 #ifdef __ATTACH_MODEL
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #endif //__ATTACH_MODEL
 
 #define		MAX_SF_SLERP		3		// 키와키 사이를 몇단계로 보간할 것인가
@@ -60,7 +60,7 @@ public:
 
 	void	Add( D3DXVECTOR3 v1, D3DXVECTOR3 v2 );
 	void	Process( void );
-	void	Draw( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
+	void	Draw( const D3DXMATRIX *mWorld );
 	void	MakeSpline( void );
 
 };
@@ -99,12 +99,6 @@ struct O3D_ELEMENT
 
 #define		MAX_ELEMENT		21
 
-#ifdef __ATTACH_MODEL
-class CModelObject;
-typedef	boost::shared_ptr<CModelObject>	SpModelObject;
-typedef	map<int, SpModelObject> MapSpModelObject;
-#endif //__ATTACH_MODEL
-
 // 애니메이션 개체. 게임내 오브젝트의 최소단위.
 // 모션이 여기에 포함되어 있기때문에 바이페드든 일반이든 애니메이션을 시킨다면
 // 반드시 이것으로 생성시켜서 쓸것.
@@ -142,7 +136,7 @@ public:
 
 #ifdef __ATTACH_MODEL
 private:
-	MapSpModelObject	m_mapAttachModel;
+	std::map<int, std::shared_ptr<CModelObject>>	m_mapAttachModel;
 #endif //__ATTACH_MODEL
 
 private:
@@ -164,11 +158,11 @@ public:
 #ifdef __ATTACH_MODEL
 	void				SetAttachModel(int nEventIndex, CModelObject* pModelObject);
 	void				SetDetachModel(int nEventIndex);
-	void				RenderAttachModel(LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld);
-	int					RenderAttachModelElem(LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld);
+	void				RenderAttachModel(const D3DXMATRIX *mWorld);
+	int					RenderAttachModelElem(const D3DXMATRIX *mWorld);
 	void				FrameMoveAttachModel( D3DXVECTOR3 *pvSndPos = NULL, float fSpeed = 1.0f );
 
-	void				InitAttachModelDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
+	void				InitAttachModelDeviceObjects();
 	void				RestoreAttachModelDeviceObjects();
 	void				InvalidateAttachModelDeviceObjects();
 	void				DeleteAttachModelDeviceObjects();
@@ -340,12 +334,12 @@ public:
 	void	RenderItemElec_Adv( int nParts, const D3DXMATRIX *pmWorld, int nLevel );
 
 #ifndef __WORLDSERVER
-	BOOL	Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
-	void	RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld, DWORD dwItemKind3 = NULL_ID, int nLevelL = 0, int nLeveR = 0);
+	BOOL	Render( const D3DXMATRIX *mWorld );
+	void	RenderEffect( const D3DXMATRIX *mWorld, DWORD dwItemKind3 = NULL_ID, int nLevelL = 0, int nLeveR = 0);
 #ifdef __SHADOW
-	BOOL	RenderShadow( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
-	void	SetStateShadow( LPDIRECT3DDEVICE9 pd3dDevice );
-	void	ResetStateShadow( LPDIRECT3DDEVICE9 pd3dDevice );
+	BOOL	RenderShadow( const D3DXMATRIX *mWorld );
+	void	SetStateShadow( );
+	void	ResetStateShadow( );
 #endif
 
 	int LoadClonedElement( LPCTSTR szFileName );		//gmpbigsun:복제본 생성 
@@ -398,7 +392,7 @@ public:
 #endif
 
 	// 디바이스 초기화 및 삭제 
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT InitDeviceObjects( );
 	HRESULT RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();

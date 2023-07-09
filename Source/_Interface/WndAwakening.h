@@ -2,7 +2,7 @@
 
 #include "WndSqKComponents.h"
 
-class CWndAwakening : public CWndNeuz {
+class CWndAwakening final : public CWndNeuz {
 public:
 	class CAwakenableItemReceiver : public CWndItemReceiver {
 	public:
@@ -14,18 +14,18 @@ private:
 	CAwakenableItemReceiver m_receiver;
 
 public:
-	BOOL Initialize(CWndBase * pWndParent, DWORD) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
 }; 
 
-class CWndSelectAwakeCase : public CWndNeuz {
+class CWndSelectAwakeCase final : public CWndNeuz {
 public:
 	static constexpr DWORD AWAKE_KEEP_TIME = SEC(60);
 
 	CWndSelectAwakeCase(BYTE byObjID, DWORD dwSerialNum, __int64 n64NewOption);
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

@@ -23,7 +23,7 @@ void CWndHelp::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndHelp::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndHelp::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog( APP_HELPER_HELP, pWndParent, 0, CPoint(0, 0) );
 }
 
@@ -55,7 +55,7 @@ void CWndHelpFAQ::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndHelpFAQ::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndHelpFAQ::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog( APP_HELPER_FAQ, pWndParent, 0, CPoint(0, 0) );
 }
 
@@ -152,7 +152,7 @@ bool CWndHelpTip::LoadTips() {
 	return true;
 }
 
-BOOL CWndHelpTip::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndHelpTip::Initialize(CWndBase * pWndParent) {
 	return InitDialog( APP_HELPER_TIP );
 }
 
@@ -185,7 +185,7 @@ void CWndHelpInstant::OnInitialUpdate()  {
 	MoveParentCenter();
 } 
 
-BOOL CWndHelpInstant::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndHelpInstant::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog( APP_HELP_INSTANT, pWndParent, 0, CPoint(0, 0) );
 }
 

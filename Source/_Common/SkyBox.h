@@ -30,8 +30,8 @@ class CSkyBox
 {
 	CTimer m_timerWeather;
 	int m_nWeather;
-	void	DrawRain(LPDIRECT3DDEVICE9 pd3dDevice);
-	void	DrawSnow(LPDIRECT3DDEVICE9 pd3dDevice);
+	void	DrawRain();
+	void	DrawSnow();
 	
 public:
 	enum SKY_TYPE
@@ -95,19 +95,19 @@ public:
 
 	// 처리 및 출력 
 	void    Process();
-	void    Render(CWorld* pWorld, LPDIRECT3DDEVICE9 pd3dDevice);
-	void	DrawLensFlare(LPDIRECT3DDEVICE9 pd3dDevice);
-	void    RenderFall( LPDIRECT3DDEVICE9 pd3dDevice );
+	void    Render(CWorld* pWorld);
+	void	DrawLensFlare();
+	void    RenderFall(  );
 		
-	BOOL CheckSun(LPDIRECT3DDEVICE9 pd3dDevice);
+	BOOL CheckSun();
 
 	int GetWeather( )	{ return m_nWeather; }
 
 	IDirect3DTexture9* GetCurrSkyTexture( SKY_TYPE eType );
 
 	// Direct3D 관련 오브젝트 초기화및 제거, 재설정 관련 
-	HRESULT InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
-	HRESULT RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
+	HRESULT InitDeviceObjects();
+	HRESULT RestoreDeviceObjects();
 	HRESULT DeleteDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 };

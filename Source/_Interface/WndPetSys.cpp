@@ -20,7 +20,7 @@ void CWndPetAwakCancel::OnInitialUpdate()
 	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_BUTTON1);
 
 	if(::GetLanguage() == LANG_FRE)
-		pButton->SetTexture(g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
+		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 	
@@ -33,7 +33,7 @@ void CWndPetAwakCancel::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPetAwakCancel::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndPetAwakCancel::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_PET_AWAK_CANCEL, pWndParent, 0, CPoint( 0, 0 ) );
@@ -189,7 +189,7 @@ void CWndPetStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBHPGauge = m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, 0x64ff0000, m_pVBHPGauge, &m_texGauFillNormal );
+			m_bVBHPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x64ff0000, m_pVBHPGauge, &m_texGauFillNormal );
 		}
 
 		// Exp
@@ -201,7 +201,7 @@ void CWndPetStatus::MakeGaugeVertex()
 			rectTemp = rect; 
 			rectTemp.right = rectTemp.left + nWidth;
 			ClientToScreen( rectTemp );
-			m_bVBEXPGauge = m_pTheme->MakeGaugeVertex( m_pApp->m_pd3dDevice, &rectTemp, 0x847070ff, m_pVBEXPGauge, &m_texGauFillNormal );
+			m_bVBEXPGauge = m_Theme.MakeGaugeVertex( &rectTemp, 0x847070ff, m_pVBEXPGauge, &m_texGauFillNormal );
 		}
 	}
 }
@@ -248,13 +248,13 @@ void CWndPetStatus::PaintFrame( C2DRender* p2DRender )
 		}
 		else
 		{
-			m_pTheme->RenderWndBaseFrame( p2DRender, &rect );
+			m_Theme.RenderWndBaseFrame( p2DRender, &rect );
 			if( IsWndStyle( WBS_CAPTION ) )
 			{
 				// 타이틀 바 
 				rect.bottom = 21;
 				{
-					m_pTheme->RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
+					m_Theme.RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
 				}
 			}
 		}
@@ -323,7 +323,7 @@ void CWndPetStatus::DrawPetInformation(C2DRender* p2DRender)
 						else
 							strPath = m_strPathLvImage[bLevel-1];
 						
-						m_pTexPetLv[i] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+						m_pTexPetLv[i] = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 						m_aPetLv[i] = bLevel;
 					}
 					if(m_pTexPetLv[i] != NULL)
@@ -373,10 +373,10 @@ void CWndPetStatus::OnDraw(C2DRender* p2DRender)
 			m_bHPVisible = TRUE;
 
 		if( m_bHPVisible )
-			m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBHPGauge, &m_texGauFillNormal );
+			m_Theme.RenderGauge( m_pVBHPGauge, &m_texGauFillNormal );
 	}
 	if( m_bVBEXPGauge )
-		m_pTheme->RenderGauge( p2DRender->m_pd3dDevice, m_pVBEXPGauge, &m_texGauFillNormal );
+		m_Theme.RenderGauge( m_pVBEXPGauge, &m_texGauFillNormal );
 	
 	//Pet Information
 	DrawPetInformation(p2DRender);
@@ -430,8 +430,6 @@ void CWndPetStatus::OnDraw(C2DRender* p2DRender)
 		p2DRender->TextOut( x - (int)(nCharEXP*5.8f), lpExp->rect.top - 0, cbufExp, dwColor, 0xff000000 );
 	}
 
-
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 	pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER, 0xffa08080, 1.0f, 0 ) ;
 
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
@@ -560,7 +558,7 @@ void CWndPetStatus::OnDraw(C2DRender* p2DRender)
 		}			
 
 		m_pPetModel->SetTextureEx( m_pPetModel->m_pModelElem->m_nTextureEx );
-		m_pPetModel->Render(pd3dDevice, &matWorld);
+		m_pPetModel->Render(&matWorld);
 
 		SetDiffuse( 0.0f, 0.0f, 0.0f );
 		SetAmbient( 1.0f, 1.0f, 1.0f );
@@ -579,8 +577,8 @@ HRESULT CWndPetStatus::RestoreDeviceObjects()
 	CWndBase::RestoreDeviceObjects();
 	if( m_pVBHPGauge == NULL )
 	{
-		m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBHPGauge, NULL );
-		m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBEXPGauge, NULL );
+		m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBHPGauge, NULL );
+		m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX2 ) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBEXPGauge, NULL );
 
 		m_nHPWidth = -1;
 		m_nEXPWidth = -1;
@@ -608,11 +606,11 @@ void CWndPetStatus::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate();
 	
 	RestoreDeviceObjects();
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
 
-	m_pTexPetLvBg = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "PetLevelBg.tga"), 0xffff00ff );
-	m_pTexPetStatusBg = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "PetStatusBg.tga"), 0xffff00ff, TRUE );
+	m_pTexPetLvBg = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "PetLevelBg.tga"), 0xffff00ff );
+	m_pTexPetStatusBg = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "PetStatusBg.tga"), 0xffff00ff, TRUE );
 
 	// 장착, 게이지에 나올 캐릭터 오브젝트 설정
 	if( g_pPlayer->HasActivatedSystemPet() )
@@ -633,7 +631,7 @@ void CWndPetStatus::OnInitialUpdate()
 	}
 	else
 	{
-		CRect rectRoot = m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CPoint point( rectRoot.left+192, rectRoot.top );
 		Move( point );
 	}
@@ -705,7 +703,7 @@ void CWndPetStatus::SetExtension(BOOL eflag)
 	SetWndRect(rect);
 }
 
-BOOL CWndPetStatus::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndPetStatus::Initialize(CWndBase* pWndParent)
 {
 	return InitDialog( APP_PET_STATUS );
 }
@@ -742,7 +740,7 @@ BOOL CWndPetStatus::OnEraseBkgnd(C2DRender* p2DRender)
 {
 	return CWndBase::OnEraseBkgnd( p2DRender );
 	CRect rect = GetClientRect();
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
+	D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
 	p2DRender->RenderFillRect( rect, D3DCOLOR_ARGB( 100, 0, 0, 0 ) );
 
 	return TRUE;
@@ -777,7 +775,7 @@ BOOL CWndPetStatus::Process()
 			else if( m_pPetElem->m_pPet != NULL && g_pPlayer->GetPetModel() != NULL && m_pPetModel == NULL )
 			{
 				m_pPetModel = new CModelObject;
-				m_pPetModel->InitDeviceObjects( g_Neuz.m_pd3dDevice );
+				m_pPetModel->InitDeviceObjects( );
 				
 				CString textFile;
 				textFile.Format("Mvr_%s.chr", g_pPlayer->GetPetModel()->m_pModelElem->m_szName);
@@ -821,7 +819,7 @@ void CWndPetStatus::LockShowLevel(BOOL lFlag, int nLevel, int nPos)
 		if(bLevel != 0)
 		{
 			strPath = m_strPathLvImage[bLevel-1];
-			m_pTexPetLv[nLevel] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+			m_pTexPetLv[nLevel] = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 		}
 	}
 }
@@ -941,7 +939,7 @@ void CWndFoodConfirm::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndFoodConfirm::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndFoodConfirm::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_PET_ITEM, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1025,13 +1023,13 @@ void CWndFoodConfirm::PaintFrame( C2DRender* p2DRender )
 	}
 	else
 	{
-		m_pTheme->RenderWndBaseFrame( p2DRender, &rect );
+		m_Theme.RenderWndBaseFrame( p2DRender, &rect );
 		if( IsWndStyle( WBS_CAPTION ) )
 		{
 			// 타이틀 바 
 			rect.bottom = 21;
 			{
-				m_pTheme->RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
+				m_Theme.RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
 			}
 		}
 	}
@@ -1113,7 +1111,7 @@ void CWndPetMiracle::OnDraw( C2DRender* p2DRender )
 		strPath = m_strPathLvImage[m_nMiracleLv[0] - 1];
 	if(strPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC3 )->rect.left, GetWndCtrl( WIDC_STATIC3 )->rect.top + 4 ) );	
 	}
@@ -1125,7 +1123,7 @@ void CWndPetMiracle::OnDraw( C2DRender* p2DRender )
 	
 	if(strPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC4 )->rect.left, GetWndCtrl( WIDC_STATIC4 )->rect.top + 4 ) );
 	}
@@ -1140,7 +1138,7 @@ void CWndPetMiracle::OnInitialUpdate()
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButChance.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButChance.bmp" ), 0xffff00ff );
 	}
 
 	//B/A/S 급 펫만 해당 기능을 이용할 수 있다.
@@ -1197,7 +1195,7 @@ void CWndPetMiracle::OnInitialUpdate()
 		Destroy();
 } 
 
-BOOL CWndPetMiracle::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndPetMiracle::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_PET_MIRACLE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1456,7 +1454,7 @@ void CWndPetFoodMill::OnInitialUpdate()
 	MoveParentCenter();
 }
 
-BOOL CWndPetFoodMill::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndPetFoodMill::Initialize(CWndBase* pWndParent)
 {
 	return InitDialog( APP_PET_FOODMILL );
 }
@@ -1522,7 +1520,7 @@ BOOL CWndPetFoodMill::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			
 			m_pWndFoodConfrim = new CWndFoodConfirm(2);
 			m_pWndFoodConfrim->m_pItemElem = pTempElem;
-			m_pWndFoodConfrim->Initialize(NULL);
+			m_pWndFoodConfrim->Initialize();
 		}
 	}
 
@@ -1545,7 +1543,7 @@ void CWndPetFoodMill::SetItemForFeed(CItemElem* pItemElem, int nCount)
 		ItemProp* pItemProp = m_pItemElem->GetProp();
 		
 		if(pItemProp != NULL)
-			m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+			m_pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 	}
 }
 
@@ -1606,15 +1604,15 @@ void CWndPetLifeConfirm::OnInitialUpdate()
 	
 	m_wndButton1.Create("YES", 0, rect2_1, this, IDYES);
 	m_wndButton2.Create("NO" , 0, rect2_2, this, IDNO);
-	m_wndButton1.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtYes.tga" ) );
-	m_wndButton2.SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtNo.tga" ) );
+	m_wndButton1.SetTexture( MakePath( DIR_THEME, "ButtYes.tga" ) );
+	m_wndButton2.SetTexture( MakePath( DIR_THEME, "ButtNo.tga" ) );
 	m_wndButton1.FitTextureSize();
 	m_wndButton2.FitTextureSize();
 
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPetLifeConfirm::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndPetLifeConfirm::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_MESSAGEBOX, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -1692,14 +1690,14 @@ void CWndPetTransEggs::OnInitialUpdate()
 
 	ItemProp* pItemProp = prj.GetItemProp( II_PET_EGG );
 	if(pItemProp)
-		m_pEggTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
+		m_pEggTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
 
 	CWndText::SetupDescription(m_pText, _T("PetTransEggs.inc"));
 
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPetTransEggs::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndPetTransEggs::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_PET_TRANS_EGGS, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1941,7 +1939,7 @@ void CWndBuffPetStatus::OnInitialUpdate()
 	}
 	else
 	{
-		CRect rectRoot = m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CPoint point( rectRoot.left+192, rectRoot.top );
 		Move( point );
 	}
@@ -1956,10 +1954,10 @@ void CWndBuffPetStatus::OnInitialUpdate()
 	m_nCtrlId[7] = WIDC_BUFFPET_SLOT8;
 	m_nCtrlId[8] = WIDC_BUFFPET_SLOT9;
 
-	m_pTexPetStatusBg = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "BuffpetStatusBg .tga"), 0xffff00ff, TRUE );
+	m_pTexPetStatusBg = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "BuffpetStatusBg .tga"), 0xffff00ff, TRUE );
 }
 
-BOOL CWndBuffPetStatus::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndBuffPetStatus::Initialize(CWndBase* pWndParent)
 {
 	return CWndNeuz::InitDialog( APP_BUFFPET_STATUS, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -2005,8 +2003,6 @@ void CWndBuffPetStatus::OnDraw(C2DRender* p2DRender)
 	if(m_pTexPetStatusBg != NULL)
 		m_pTexPetStatusBg->Render( p2DRender,  point );
 		
-
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 	pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER, 0xffa08080, 1.0f, 0 ) ;
 
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
@@ -2122,7 +2118,7 @@ void CWndBuffPetStatus::OnDraw(C2DRender* p2DRender)
  	SetAmbient( 1.0f, 1.0f, 1.0f );
 
 	m_pPetModel->SetTextureEx( m_pPetModel->m_pModelElem->m_nTextureEx );
-	m_pPetModel->Render(pd3dDevice, &matWorld);
+	m_pPetModel->Render(&matWorld);
 
 //	SetDiffuse( 0.0f, 0.0f, 0.0f );
 //	SetAmbient( 1.0f, 1.0f, 1.0f );
@@ -2381,7 +2377,7 @@ void CWndBuffPetStatus::DrawSlotItems( C2DRender* p2DRender )
 			if( !pProp )
 				continue;
 
-			m_pTexture[ i ] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
+			m_pTexture[ i ] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pProp->szIcon), 0xffff00ff );
 			
 			if(m_pTexture[ i ] != NULL)
 			{
@@ -2400,7 +2396,7 @@ void CWndBuffPetStatus::DrawSlotItems( C2DRender* p2DRender )
 		{
 			//사용불가능 슬롯 
 			wndCtrl = GetWndCtrl( m_nCtrlId[i] );
-			CTexture* pTexClosed = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "Icon_Lock.dds" ), 0xffff00ff );
+			CTexture* pTexClosed = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "Icon_Lock.dds" ), 0xffff00ff );
 			if( pTexClosed )
 				pTexClosed->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
 
@@ -2419,7 +2415,7 @@ BOOL CWndBuffPetStatus::DoModal_ConfirmQuestion( DWORD dwItemId, OBJID dwObjid, 
 	m_pWndConfirmVis->m_eSection = eSection;
 	m_pWndConfirmVis->m_dwItemIndex = dwIndex;
 	
-	m_pWndConfirmVis->Initialize( this, APP_CONFIRM_ENTER );
+	m_pWndConfirmVis->Initialize( this );
 		
 	return TRUE;
 }
@@ -2627,7 +2623,7 @@ void CWndConfirmVis::OnInitialUpdate()
 	pEdit->SetFocus( );
 } 
 
-BOOL CWndConfirmVis::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndConfirmVis::Initialize( CWndBase* pWndParent ) 
 { 
 	InitDialog( APP_CONFIRM_ENTER, pWndParent, WBS_KEY, 0);
 	MoveParentCenter();

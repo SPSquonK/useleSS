@@ -214,15 +214,14 @@ HRESULT CBillboard::DeleteDeviceObjects()
 	SAFE_RELEASE(m_pVertexBuffer);
 	return hr;
 }
-HRESULT CBillboard::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPBILLBOARD lpBillboard, CTexture* pTexture )
+HRESULT CBillboard::InitDeviceObjects( LPBILLBOARD lpBillboard, CTexture* pTexture )
 {
 	HRESULT hr = S_OK;
-	m_pd3dDevice = pd3dDevice;
 	m_pBillboard = lpBillboard;
 	m_pTexture = pTexture;
 	return hr;
 }
-BOOL CBillboard::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmatWorld )
+BOOL CBillboard::Render( const D3DXMATRIX* pmatWorld )
 {
 	if( m_pBillboard->bAnimation )
 	{

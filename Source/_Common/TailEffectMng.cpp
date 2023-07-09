@@ -168,7 +168,7 @@ HRESULT CTailEffectBelt::FrameMove( void )
 //---------------------------------------------------------------------
 //
 //---------------------------------------------------------------------
-HRESULT CTailEffectBelt::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
+HRESULT CTailEffectBelt::InitDeviceObjects( LPCTSTR szFileName )
 {
 	HRESULT hr;
 	
@@ -176,7 +176,7 @@ HRESULT CTailEffectBelt::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTST
 	if( m_pTexture )			return S_OK;
 	
 	// Create the texture using D3DX
-	hr = LoadTextureFromRes( pd3dDevice, MakePath( DIR_MODELTEX, szFileName ), 
+	hr = LoadTextureFromRes( MakePath( DIR_MODELTEX, szFileName ), 
 								D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, 
 								D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 								D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 0, NULL, NULL, &m_pTexture );
@@ -189,7 +189,7 @@ HRESULT CTailEffectBelt::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTST
 	return hr;
 }
 
-HRESULT CTailEffectBelt::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CTailEffectBelt::RestoreDeviceObjects()
 {
 	if( m_bActive == FALSE )	return S_OK;
 	if( m_pTexture == NULL )	return S_OK;
@@ -207,11 +207,11 @@ HRESULT CTailEffectBelt::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
     return S_OK;
 }
 
-HRESULT CTailEffectBelt::ChangeTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName, int nType )
+HRESULT CTailEffectBelt::ChangeTexture( LPCTSTR szFileName, int nType )
 {
 	SAFE_RELEASE( m_pTexture );
 	m_nType = nType;
-	return InitDeviceObjects( pd3dDevice, szFileName );
+	return InitDeviceObjects( szFileName );
 }
 
 HRESULT CTailEffectBelt::InvalidateDeviceObjects()
@@ -222,7 +222,7 @@ HRESULT CTailEffectBelt::InvalidateDeviceObjects()
 }
 
 
-HRESULT CTailEffectBelt::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CTailEffectBelt::Render()
 {
 	if( m_bActive == FALSE )	return E_FAIL;
 	if( m_pTexture == NULL )	return E_FAIL;
@@ -445,19 +445,19 @@ HRESULT CTailEffectModel::FrameMove( void )
 //---------------------------------------------------------------------
 //
 //---------------------------------------------------------------------
-HRESULT CTailEffectModel::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName )
+HRESULT CTailEffectModel::InitDeviceObjects( LPCTSTR szFileName )
 {
 	if( m_bActive == FALSE )	return S_OK;
 
 	m_pModel = new CModelObject;
-	m_pModel->InitDeviceObjects(pd3dDevice);
+	m_pModel->InitDeviceObjects();
 	if( m_pModel->LoadElement(szFileName, 0 ) == SUCCESS )
 		return S_OK;
 	else
 		return E_FAIL;
 }
 
-HRESULT CTailEffectModel::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CTailEffectModel::RestoreDeviceObjects()
 {
 	if( m_bActive == FALSE )	return S_OK;
 	
@@ -470,7 +470,7 @@ HRESULT CTailEffectModel::InvalidateDeviceObjects()
 }
 
 
-HRESULT CTailEffectModel::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CTailEffectModel::Render()
 {
 	if( m_bActive == FALSE )	return E_FAIL;
 
@@ -488,7 +488,7 @@ HRESULT CTailEffectModel::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		//pd3dDevice->SetRenderState( D3DRS_ZENABLE, FALSE );
 		pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 		m_pModel->SetBlendFactor(m_vecTail[i].m_nFactor);
-		m_pModel->Render( pd3dDevice, &(m_vecTail[i].m_mWorld) );
+		m_pModel->Render( &(m_vecTail[i].m_mWorld) );
 		pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
 //		pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE);
 		//pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
@@ -516,10 +516,10 @@ CTailEffectMng::~CTailEffectMng() {
 	}
 }
 
-HRESULT CTailEffectMng::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
+HRESULT CTailEffectMng::RestoreDeviceObjects() {
 	for (CTailEffect * pTailEffect : m_TailEffects) {
 		if (pTailEffect) {
-			pTailEffect->RestoreDeviceObjects(pd3dDevice);
+			pTailEffect->RestoreDeviceObjects();
 		}
 	}
 
@@ -540,7 +540,7 @@ HRESULT CTailEffectMng::InvalidateDeviceObjects( void )
 //
 // 파티클 하나 생성.
 //
-CTailEffect *CTailEffectMng::AddEffect( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR szFileName, int nType, FLOAT fFadeSpeed )
+CTailEffect *CTailEffectMng::AddEffect( LPCTSTR szFileName, int nType, FLOAT fFadeSpeed )
 {
 	for(int i = 0; i < MAX_TAILEFFECT; i ++ )
 	{
@@ -552,8 +552,8 @@ CTailEffect *CTailEffectMng::AddEffect( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR sz
 			m_TailEffects[ i ] = new CTailEffectModel();
 		
 		m_TailEffects[ i ]->Create( nType, fFadeSpeed );		// 꼬리메모리 할당하고
-		m_TailEffects[ i ]->InitDeviceObjects( pd3dDevice, szFileName );	// 텍스쳐 읽고
-		m_TailEffects[ i ]->RestoreDeviceObjects( pd3dDevice );	// 버텍스 버퍼 할당하고.
+		m_TailEffects[ i ]->InitDeviceObjects( szFileName );	// 텍스쳐 읽고
+		m_TailEffects[ i ]->RestoreDeviceObjects();	// 버텍스 버퍼 할당하고.
 		return m_TailEffects[ i ];
 	}
 	
@@ -578,10 +578,10 @@ void CTailEffectMng::Process() {
 	}
 }
 
-void CTailEffectMng::Render(LPDIRECT3DDEVICE9 pd3dDevice) {
+void CTailEffectMng::Render() {
 	for (CTailEffect * pTailEffect : m_TailEffects) {
 		if (pTailEffect && pTailEffect->IsActive()) {
-			pTailEffect->Render(pd3dDevice);
+			pTailEffect->Render();
 		}
 	}
 }

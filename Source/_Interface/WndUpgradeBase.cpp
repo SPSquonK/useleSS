@@ -41,7 +41,7 @@ void CWndUpgradeBase::OnInitialUpdate()
 	CRect rcVendor = GetWindowRect( TRUE );
 	CPoint ptInventory	= rcInventory.TopLeft();
 	CPoint point;
-	if( ptInventory.x > m_pWndRoot->GetWndRect().Width() / 2 )
+	if( ptInventory.x > g_WndMng.GetWndRect().Width() / 2 )
 		point	= ptInventory - CPoint( rcVendor.Width(), 0 );
 	else
 		point	= ptInventory + CPoint( rcInventory.Width(), 0 );
@@ -66,7 +66,7 @@ void CWndUpgradeBase::OnInitialUpdate()
 	m_nMaxCount = 0;
 } 
 
-BOOL CWndUpgradeBase::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndUpgradeBase::Initialize( CWndBase* pWndParent ) 
 {
 	return CWndNeuz::InitDialog( APP_TEST, pWndParent, 0, 0 );
 }
@@ -132,7 +132,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			// 재련할 아이템이 없는경우 리턴
 			if(m_slots[0] == NULL )
 			{
-				g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_ITEMFIRST), MB_OK, this );
+				g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_ITEMFIRST), MB_OK );
 				return FALSE;
 			}
 			
@@ -148,7 +148,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					zeroProp->dwItemKind2 != IK2_WEAPON_DIRECT )
 					)
 				{
-					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOELEUPGRADE), MB_OK, this );
+					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOELEUPGRADE), MB_OK );
 					return FALSE;
 				}
 			}
@@ -159,7 +159,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				&& m_slots[0]->m_bItemResist != SAI79::NO_PROP
 				&& m_slots[0]->m_bItemResist != pItemElem->GetProp()->eItemType )
 			{
-				g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_TWOELEMENT), MB_OK, this );
+				g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_TWOELEMENT), MB_OK );
 				return FALSE;
 			}
 
@@ -176,7 +176,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				{
 					CString str;
 					str.Format( prj.GetText(TID_UPGRADE_ERROR_MAXLEVEL), 10 );
-					g_WndMng.OpenMessageBox( str, MB_OK, this );
+					g_WndMng.OpenMessageBox( str, MB_OK );
 					return FALSE;
 				}
 				/**/
@@ -188,7 +188,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			
 			if( fSucessPersent[pItemElem->GetProp()->dwItemLV-1][*pAbilityOption] <= 0.0f )
 			{
-				g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_WRONGUPLEVEL), MB_OK, this );
+				g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_WRONGUPLEVEL), MB_OK );
 				return FALSE;
 			}
 
@@ -284,7 +284,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			{
 				if( m_dwReqItem[0] != pItemElem->m_dwItemId )
 				{
-					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_WRONGSUPITEM), MB_OK, this );
+					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_WRONGSUPITEM), MB_OK );
 					return FALSE;
 				}
 
@@ -292,7 +292,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				{
 					if(pItemElem->m_nItemNum < m_nCount[0])
 					{
-						g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOSUPSTON), MB_OK, this );
+						g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOSUPSTON), MB_OK );
 						return FALSE;
 					}
 				}
@@ -324,8 +324,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			{
 				if( m_dwReqItem[0] != pItemElem->m_dwItemId )
 				{
-					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_WRONGSUPITEM), MB_OK, this );
-					//g_WndMng.OpenMessageBox( "필요한 보조석이 아닙니다.", MB_OK, this );
+					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_WRONGSUPITEM), MB_OK );
 					return FALSE;
 				}
 
@@ -333,7 +332,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				{
 					if(pItemElem->m_nItemNum < m_nCount[0])
 					{
-						g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOSUPSTON), MB_OK, this );
+						g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOSUPSTON), MB_OK );
 						return FALSE;
 					}
 				}
@@ -365,7 +364,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			{
 				if( m_dwReqItem[1] != pItemElem->m_dwItemId )
 				{
-					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_WRONGSUPITEM), MB_OK, this );
+					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_WRONGSUPITEM), MB_OK );
 					return FALSE;
 				}
 
@@ -373,7 +372,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				{
 					if(pItemElem->m_nItemNum < m_nCount[1])
 					{
-						g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOSUPSTON), MB_OK, this );
+						g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOSUPSTON), MB_OK );
 						return FALSE;
 					}
 				}
@@ -405,7 +404,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			{
 				if( m_dwReqItem[1] != pItemElem->m_dwItemId )
 				{
-					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_WRONGSUPITEM), MB_OK, this );
+					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_WRONGSUPITEM), MB_OK );
 					return FALSE;
 				}
 
@@ -413,7 +412,7 @@ BOOL CWndUpgradeBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				{
 					if(pItemElem->m_nItemNum < m_nCount[1])
 					{
-						g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOSUPSTON), MB_OK, this );
+						g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOSUPSTON), MB_OK );
 						return FALSE;
 					}
 				}
@@ -444,7 +443,7 @@ bool CWndUpgradeBase::DropMainItem(CItemElem * pItemElem) {
 
 	if (pItemElem->m_nResistSMItemId != 0) // 상용화 아이템 적용중이면 불가능
 	{
-		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_NOTUPGRADE), MB_OK, this);
+		g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_NOTUPGRADE), MB_OK);
 		return false;
 	}
 
@@ -496,7 +495,7 @@ BOOL CWndUpgradeBase::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 				if( (int)( dwCount[0] ) < m_nMaxCount || (int)( dwCount[1] ) < m_nMaxCount )
 				{
-					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOSUPSTON), MB_OK, this );
+					g_WndMng.OpenMessageBox( prj.GetText(TID_UPGRADE_ERROR_NOSUPSTON), MB_OK );
 					return FALSE;
 				}
 

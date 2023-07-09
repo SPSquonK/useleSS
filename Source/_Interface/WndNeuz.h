@@ -63,7 +63,7 @@ public:
 	// 윈도 정보 저장 관련 끝 
 
 	BOOL InitDialog( DWORD dwWID, CWndBase * pWndParent = nullptr, DWORD dwStyle = 0, CPoint ptLeftTop = 0 );
-	CWndBase* CreateControl( HWND hWnd, LPWNDCTRL lpWndCtrl );
+	CWndBase* CreateControl( LPWNDCTRL lpWndCtrl );
 	//CWndBase* GetDlgItem( UINT nID )
 protected:
 	CWndNeuz();
@@ -78,13 +78,14 @@ public:
 	BOOL IsFullMax() { return m_bFullMax; }
 	virtual	void PaintFrame( C2DRender* p2DRender );
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL,DWORD dwStyle = 0 );
+
+	BOOL DefaultInitialize(CWndBase * pWndParent = nullptr);
 	// message
 	virtual BOOL OnChildNotify( UINT message,UINT nID,LRESULT* pLResult );
 	virtual void OnSize( UINT nType, int cx, int cy );
 	virtual void OnNonClientLButtonDblClk( UINT nFlags, CPoint point );
 	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE);
-	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	void OnSetCursor() override;
 
 	void SetSizeMax();
 	void SetSizeWnd();

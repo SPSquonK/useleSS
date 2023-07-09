@@ -108,7 +108,7 @@ void CWndGuildBank::OnInitialUpdate()
 	pWndButtLog->SetVisible(TRUE);
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildBank::Initialize( CWndBase* pWndParent, DWORD ) 
+BOOL CWndGuildBank::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GUILD_BANK, pWndParent, 0, CPoint( 0, 0 ) );
@@ -199,7 +199,7 @@ BOOL CWndGuildBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					if( pGuild->m_szGuild[0] == '\0' )
 					{
 						// "길드명칭이 없어 길드에 지원을 할 수 없습니다. 길드마스터는 길드명칭을 정해주세요."
-						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDNOTHINGNAME ), MB_OK, this );
+						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDNOTHINGNAME ), MB_OK );
 					}
 					else
 					{
@@ -216,7 +216,7 @@ BOOL CWndGuildBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				{
 					if( pGuild->m_nLevel < 4 )		// 4레벨 이하는 망토못만듬.
 					{
-						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDNOTLEVEL ), MB_OK, this );
+						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDNOTLEVEL ), MB_OK );
 						break;
 					}
 					g_DPlay.SendCreateGuildCloak();
@@ -288,7 +288,7 @@ void CWndGuildBankLog::OnInitialUpdate()
 	CWndGuildBank* pWndGuildBank = (CWndGuildBank*)GetWndBase( APP_GUILD_BANK );
 	if(pWndGuildBank != NULL)
 	{
-		CRect rectRoot = pWndGuildBank->m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CRect rectBank = pWndGuildBank->GetWindowRect( TRUE );
 
 		CPoint ptMove;
@@ -312,7 +312,7 @@ void CWndGuildBankLog::OnInitialUpdate()
 	}
 	else
 	{
-		CRect rectRoot = m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CRect rectWindow = GetWindowRect();
 		CPoint point( rectRoot.right - rectWindow.Width(), rectRoot.bottom - rectWindow.Height() );
 		Move( point );
@@ -320,7 +320,7 @@ void CWndGuildBankLog::OnInitialUpdate()
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildBankLog::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildBankLog::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GUILD_BANK_LOG, pWndParent, 0, CPoint( 0, 0 ) );

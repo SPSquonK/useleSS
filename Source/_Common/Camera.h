@@ -44,8 +44,8 @@ public:
 
 	void	SetQuake( int nSec, float fSize = 0.06f );
 
-virtual	void Process( LPDIRECT3DDEVICE9 pd3dDevice, float fFactor=15.0f );
-virtual	void Transform( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWorld );
+virtual	void Process( float fFactor=15.0f );
+virtual	void Transform( CWorld* pWorld );
 virtual void ControlCamera( DWORD dwStyle );
 };
 
@@ -73,7 +73,7 @@ public:
 
 	int  GetAnglePie( FLOAT fAngle );
 	
-	virtual	void Process( LPDIRECT3DDEVICE9 pd3dDevice, float fFactor=15.0f );
+	virtual	void Process( float fFactor=15.0f );
 	virtual void ControlCamera( DWORD dwStyle );
 };
 
@@ -96,7 +96,7 @@ public:
 	void Lock();
 	void Unlock();
 	
-	virtual	void Process( LPDIRECT3DDEVICE9 pd3dDevice, float fFactor=15.0f );
+	virtual	void Process( float fFactor=15.0f );
 	virtual void ControlCamera( DWORD dwStyle );
 };
 
@@ -112,8 +112,8 @@ public:
 	//D3DXMATRIXA16         m_matView;
 	D3DXMATRIXA16         m_matOrientation;
 	CToolCamera();
-	virtual	void Process( LPDIRECT3DDEVICE9 pd3dDevice, float fFactor=15.0f );
-	virtual	void Transform( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWorld );
+	virtual	void Process( float fFactor=15.0f );
+	virtual	void Transform( CWorld* pWorld );
 	
 };
 

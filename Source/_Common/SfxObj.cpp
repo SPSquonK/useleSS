@@ -55,7 +55,7 @@ CSfx::~CSfx()
 #endif // __CLIENT
 }
 
-BOOL CSfx::SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwIndex, BOOL bInitProp )
+BOOL CSfx::SetIndex( DWORD dwIndex, BOOL bInitProp )
 {
 	BOOL bResult = FALSE;
 	m_idSrc = NULL_ID;
@@ -65,7 +65,7 @@ BOOL CSfx::SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwIndex, BOOL bInitProp
 	if( dwIndex >= 0 ) 
 	{
 #ifndef __WORLDSERVER
-		bResult = SetTypeIndex( pd3dDevice, OT_SFX, dwIndex, bInitProp );
+		bResult = SetTypeIndex( OT_SFX, dwIndex, bInitProp );
 		m_pSfxObj = (CSfxModel*)m_pModel;
 #endif	// __WORLDSERVER
 	}
@@ -73,7 +73,7 @@ BOOL CSfx::SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwIndex, BOOL bInitProp
 	return bResult;
 }
 
-int	CSfx::SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex, 
+int	CSfx::SetSfx( int nIndex, 
 				   D3DXVECTOR3 vPosSrc, OBJID idSrc, const D3DXVECTOR3 vPosDest, OBJID idDest, int nSec )
 {
 	m_idSrc = idSrc;
@@ -87,7 +87,7 @@ int	CSfx::SetSfx( LPDIRECT3DDEVICE9 pd3dDevice, int nIndex,
 	if( nIndex >= 0 ) 
 	{
 #ifndef __WORLDSERVER
-		SetTypeIndex( pd3dDevice, OT_SFX, nIndex,TRUE);
+		SetTypeIndex( OT_SFX, nIndex,TRUE);
 		m_pSfxObj = (CSfxModel*)m_pModel;
 #endif	// __WORLDSERVER
 		return 1;
@@ -224,7 +224,7 @@ void CSfx::Process()
 }
 #ifndef __WORLDSERVER
 // y축으로만 회전도는 버전.
-void CSfx::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CSfx::Render( )
 {
 	if( !IsVisible() || ( IsCull() && GetType() != 1 ))
 		return;
@@ -241,7 +241,7 @@ void CSfx::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	m_pSfxObj->m_vRotate.y = GetAngle();
 	m_pSfxObj->m_vScale = GetScale();
 	m_pSfxObj->m_matScale = m_matScale;
-	m_pSfxObj->Render( pd3dDevice, NULL );
+	m_pSfxObj->Render( NULL );
 	
 }
 #endif // not worldserver

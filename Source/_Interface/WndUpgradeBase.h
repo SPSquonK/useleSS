@@ -5,7 +5,7 @@
 
 #define MAX_UPGRADE      6
 
-class CWndUpgradeBase : public CWndNeuz 
+class CWndUpgradeBase final : public CWndNeuz 
 {
 public: 
 	DWORD      m_dwReqItem[2];
@@ -21,7 +21,7 @@ public:
 	
 	virtual BOOL    OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
 
-	virtual BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void	OnDraw( C2DRender* p2DRender ); 
 	virtual	void	OnInitialUpdate(); 

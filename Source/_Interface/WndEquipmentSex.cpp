@@ -5,7 +5,7 @@
 #include "Clipboard.h"
 #include <array>
 
-BOOL CWndEquipmentSex::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndEquipmentSex::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_EQUIPMENT_SEX, pWndParent, 0, CPoint(0, 0));
 }
 

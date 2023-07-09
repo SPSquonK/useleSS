@@ -1,6 +1,6 @@
 #pragma once
 
-class CWndFriendConFirm : public CWndNeuz {
+class CWndFriendConFirm final : public CWndNeuz {
 public:
 	u_long m_uLeader = 0;
 	TCHAR m_szLeaderName[MAX_NAME] = _T("");
@@ -8,16 +8,16 @@ public:
 public:
 	void SetMember(u_long uLeader, const char * szLeadName);
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;
 };
 
-class CWndAddFriend : public CWndNeuz 
+class CWndAddFriend final : public CWndNeuz 
 { 
 public: 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual	void OnInitialUpdate(); 
 

@@ -32,7 +32,7 @@ void CWndInvenRemoveItem::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndInvenRemoveItem::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndInvenRemoveItem::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_INVEN_REMOVE_ITEM, pWndParent, WBS_MODAL, CPoint(0, 0));
 }
 
