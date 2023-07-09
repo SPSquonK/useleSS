@@ -6628,17 +6628,9 @@ BOOL CWndWorld::Process()
 		}
 
 		CWorld* pWorld = g_WorldMng();
-		// 캐릭터가 움직이면 대화, 상인, 거래 창을 무조건 닫는다.
+		// When the character moves, the dialog, merchant, and trading windows are unconditionally closed.
 		if( g_pPlayer->m_pActMover->IsState( OBJSTA_STAND ) == FALSE || g_pPlayer->m_pActMover->GetMoveState() == OBJSTA_BMOVE )
 		{
-			if(CWndBase::m_GlobalShortcut.IsEmpty() == FALSE)
-			{
-				CWndBase* pWndFrame = CWndBase::m_GlobalShortcut.m_pFromWnd->GetFrameWnd();
-
-				if(pWndFrame && pWndFrame->GetWndId() != APP_INVENTORY) // 인벤토리 제외 다른 창에서 드래그된 아이템이 있다면 지워준다.
-					CWndBase::m_GlobalShortcut.Empty();
-			}
-
 			if( g_pPlayer->m_dwCtrlReadyTime != 0xffffffff )
 			{
 				g_pPlayer->m_dwCtrlReadyTime = 0xffffffff;

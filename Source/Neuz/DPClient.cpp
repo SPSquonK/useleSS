@@ -11111,31 +11111,30 @@ void CDPClient::OnPVendorOpen( OBJID objid, CAr & ar )
 	pMover->m_vtInfo.SetTitle( szPVendor );
 	g_DialogMsg.AddVendorMessage( pMover, pMover->m_vtInfo.GetTitle(), 0xffffffff );
 
+	if (!pMover->IsActiveMover()) return;
+
 	CWndVendor* pWnd = (CWndVendor*)g_WndMng.GetWndVendorBase();
 	if( pWnd == NULL )
 		return;
 
-	if( pMover->IsActiveMover() )
-	{
-		CWndEdit* pWndEdit	= (CWndEdit*)pWnd->GetDlgItem( WIDC_EDIT1 );
-		pWndEdit->EnableWindow( FALSE );
+	CWndEdit* pWndEdit	= (CWndEdit*)pWnd->GetDlgItem( WIDC_EDIT1 );
+	pWndEdit->EnableWindow( FALSE );
 
-		SendEnterChattingRoom( pMover->m_idPlayer );
+	SendEnterChattingRoom( pMover->m_idPlayer );
 		
-		if( pWnd->m_pwndVenderMessage == NULL )
-		{
-			g_Chatting.m_bState = TRUE;
+	if( pWnd->m_pwndVenderMessage == NULL )
+	{
+		g_Chatting.m_bState = TRUE;
 
-			pWnd->m_pwndVenderMessage = new CWndVendorMessage;
-				if(pWnd->m_pVendor->IsActiveMover())
-					pWnd->m_pwndVenderMessage->m_nIsOwner = TRUE;
+		pWnd->m_pwndVenderMessage = new CWndVendorMessage;
+			if(pWnd->m_pVendor->IsActiveMover())
+				pWnd->m_pwndVenderMessage->m_nIsOwner = TRUE;
 #ifdef __FIX_WND_1109
-			pWnd->m_pwndVenderMessage->Initialize( pWnd );
+		pWnd->m_pwndVenderMessage->Initialize( pWnd );
 #else	// __FIX_WND_1109
-			pWnd->m_pwndVenderMessage->Initialize( );
+		pWnd->m_pwndVenderMessage->Initialize( );
 #endif	// __FIX_WND_1109
-			pWnd->SetFocus();   // 개인상점창이 채팅창 보다 앞에 나오게 한다.(기획상)
-		}
+		pWnd->SetFocus();   // 개인상점창이 채팅창 보다 앞에 나오게 한다.(기획상)
 	}
 
 	CString strTitle = prj.GetText( TID_GAME_VENDOR_TITLE );
