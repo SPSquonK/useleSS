@@ -45,6 +45,7 @@ public:
 	void ResetSkills();
 
 	void OnSkillPointUp();
+	void OnSkillPointDown();
 	void OnSkillPointDown(const SKILL & reducedSkill);
 
 public:

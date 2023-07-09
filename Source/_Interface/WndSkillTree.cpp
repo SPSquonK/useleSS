@@ -492,6 +492,33 @@ void CWndSkillTreeCommon::OnSkillPointUp() {
 	} while (loop);
 }
 
+
+void CWndSkillTreeCommon::OnSkillPointDown() {
+	if (!m_pFocusItem) return;
+
+	const ItemProp * prop = m_pFocusItem->GetProp();
+	if (!prop) return;
+
+	const int nPoint = prj.GetSkillPoint(prop);
+	if (nPoint == 0) return;
+
+	const SKILL * realSkill = g_pPlayer->GetSkill(m_pFocusItem->dwSkill);
+	if (!realSkill) return;
+	if (realSkill->dwLevel >= m_pFocusItem->dwLevel) return;
+
+	const bool unmax = g_WndMng.m_pWndWorld && g_WndMng.m_pWndWorld->m_bShiftPushed;
+	if (unmax) {
+		const DWORD diffLevel = m_pFocusItem->dwLevel - realSkill->dwLevel;
+		m_nCurrSkillPoint += diffLevel * nPoint;
+		m_pFocusItem->dwLevel = realSkill->dwLevel;
+	} else {
+		m_nCurrSkillPoint += nPoint;
+		--m_pFocusItem->dwLevel;
+	}
+
+	OnSkillPointDown(*m_pFocusItem);
+}
+
 void CWndSkillTreeCommon::OnSkillPointDown(const SKILL & reducedSkill) {
 	for (SKILL & inPlaceSkill : m_apSkills) {
 		const ItemProp * prop = inPlaceSkill.GetProp();
@@ -1317,17 +1344,12 @@ BOOL CWndSkillTreeEx::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) 
 	if (m_focusedSkill && g_pPlayer->m_nSkillPoint > 0) {
 		const ItemProp * pSkillProp = m_focusedSkill->GetProp();
 		if (pSkillProp) {
-			const int nPoint = prj.GetSkillPoint(pSkillProp);
 			switch (nID) {
 				case WIDC_BUTTON1:	// + ��ư
 					OnSkillPointUp();
 					break;
 				case WIDC_BUTTON2:	// - ��ư
-					if (IsSkillHigherThanReal(*m_focusedSkill)) {
-						m_nCurrSkillPoint += nPoint;
-						--m_focusedSkill->dwLevel;
-						OnSkillPointDown(*m_focusedSkill);
-					}
+					OnSkillPointDown();
 					break;
 				case WIDC_BUTTON3:	// Reset ��ư
 					if (m_nCurrSkillPoint != g_pPlayer->m_nSkillPoint)

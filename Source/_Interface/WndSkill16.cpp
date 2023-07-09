@@ -64,12 +64,7 @@ BOOL CWndSkill_16::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
 					break;
 
 				case WIDC_BUTTON_MINUS:
-					if (IsSkillHigherThanReal(*m_pFocusItem)) {
-						m_nCurrSkillPoint += nPoint;
-						--m_pFocusItem->dwLevel;
-
-						OnSkillPointDown(*m_pFocusItem);
-					}
+					OnSkillPointDown();
 					break;
 
 				case WIDC_BUTTON_BACK:
