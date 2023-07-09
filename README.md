@@ -76,6 +76,7 @@ Very common ideas in this repository include:
 
 Note that some changes are very opinionated, for example:
 - `UIVariant` API (The design choices behind these changes in french: https://www.sà.fr/2022/06/04/uivariant/)
+- Enforce the fact that `LPDIRECT3DDEVICE9` is a global variable (no more passed as an attribute / stored as a field everywhere)
 
 ## Contributing
 
