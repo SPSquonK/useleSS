@@ -145,6 +145,7 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 	CAr ar( (LPBYTE)lpMsg + sizeof(DPID) + sizeof(DPID), dwMsgSize - ( sizeof(DPID) + sizeof(DPID) ) );
 	DWORD dw; ar >> dw;
 
+#ifdef __NEW_PROFILE
 	static std::map<DWORD, CString> mapstrProfile;
 	auto it = mapstrProfile.find( dw );
 	if( it == mapstrProfile.end() )
@@ -154,32 +155,13 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 		it = mapstrProfile.emplace( dw, strTemp ).first;
 	}
 	_PROFILE( it->second );
+#endif
 	
 	if( Handle(ar, dw, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + sizeof(DPID)), NULL_ID) ) {
 		if (ar.IsOverflow()) Error("World-Core: Packet %08x overflowed", dw);
 	}
 	else {
-		switch( dw )
-		{
-			case PACKETTYPE_BROADCAST:
-				{
-					DWORD dwtmp;
-					ar >> dwtmp;
-
-					Handle(
-						ar, dwtmp,
-						*(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + sizeof(DPID)),
-						NULL_ID
-					);
-
-					if (ar.IsOverflow()) Error("World-Core: Packet BROADCAST-%08x overflowed", dw);
-
-					break;
-				}
-			default:
-				Error( "Handler not found(%08x)\n",dw );
-				break;
-		}
+		Error( "Handler not found(%08x)\n",dw );
 	}
 
 

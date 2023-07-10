@@ -120,19 +120,8 @@ void CDPCoreSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 	if( Handle(ar, dw, idFrom, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + nSize), (dwMsgSize - nSize - nSize) ) )
 	{
 		if (ar.IsOverflow()) Error("Core-World: Packet %08x overflowed", dw);
-	}
-	else {
-		switch( dw )
-		{
-			case PACKETTYPE_BROADCAST:
-				{
-					Send( lpMsg, dwMsgSize, DPID_ALLPLAYERS );
-					break;
-				}
-			default:
-				TRACE( "Handler not found(%08x)\n", dw );
-				break;
-		}
+	} else {
+		TRACE( "Handler not found(%08x)\n", dw );
 	}
 }
 
