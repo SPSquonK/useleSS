@@ -196,8 +196,6 @@ private:
 
 	void OnBuyingInfo(CAr & ar);
 	void OnModifyMode(CAr & ar);
-
-	void PASS(CAr & ar);
 };
 
 extern CDPCoreClient g_DPCoreClient;

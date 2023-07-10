@@ -175,12 +175,6 @@ BOOL CDPCoreClient::Run( LPSTR lpszAddr, USHORT uPort, u_long uKey )
 	return FALSE;
 }
 
-void CDPCoreClient::PASS(CAr & ar) {
-	int nBufSize;
-	LPBYTE lpBuf = ar.GetBuffer(&nBufSize);
-	Send(lpBuf, nBufSize, DPID_SERVERPLAYER);
-}
-
 void CDPCoreClient::MyRegister( u_long uKey )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_MYREG, DPID_UNKNOWN, DPID_UNKNOWN );
