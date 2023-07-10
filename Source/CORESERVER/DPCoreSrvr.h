@@ -14,7 +14,7 @@
 #include "rtmessenger.h"
 	
 class CDPCoreSrvr : public CDPMng,
-	public DPMngFeatures::BroadcastPacketDual<CDPCoreSrvr>,
+	public DPMngFeatures::BroadcastPacketNone<CDPCoreSrvr>,
 	public DPMngFeatures::PacketHandler<CDPCoreSrvr, DPID, DPID, DPID, u_long>
 {
 public:
@@ -195,7 +195,7 @@ public:
 		const DPID dpid = GetWorldSrvrDPID(player.m_uIdofMulti);
 		if (dpid == DPID_UNKNOWN) return;
 
-		BEFORESENDDUAL(ar, PacketId, DPID_ALLPLAYERS, DPID_ALLPLAYERS);
+		BEFORESEND(ar, PacketId);
 		ar.Accumulate(player.uKey, ts...);
 		SEND(ar, this, dpid);
 	}

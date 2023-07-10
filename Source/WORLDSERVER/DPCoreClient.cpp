@@ -142,7 +142,7 @@ void CDPCoreClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 
 void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
-	CAr ar( (LPBYTE)lpMsg + sizeof(DPID) + sizeof(DPID), dwMsgSize - ( sizeof(DPID) + sizeof(DPID) ) );
+	CAr ar( (LPBYTE)lpMsg , dwMsgSize );
 	DWORD dw; ar >> dw;
 
 #ifdef __NEW_PROFILE
