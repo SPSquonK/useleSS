@@ -9,8 +9,6 @@
 
 #include "InstanceDungeonBase.h"
 
-#define PASS( ar )	SEND( ar, this, DPID_SERVERPLAYER );
-
 class CDPCoreClient : public CDPMng,
 	public DPMngFeatures::SendPacketDual<CDPCoreClient>,
 	public DPMngFeatures::PacketHandler<CDPCoreClient>
@@ -201,6 +199,8 @@ private:
 
 	void OnBuyingInfo(CAr & ar);
 	void OnModifyMode(CAr & ar);
+
+	void PASS(CAr & ar);
 };
 
 extern CDPCoreClient g_DPCoreClient;

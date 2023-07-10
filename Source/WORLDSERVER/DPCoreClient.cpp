@@ -33,7 +33,6 @@
 
 CDPCoreClient	g_DPCoreClient;
 
-
 CDPCoreClient::CDPCoreClient()
 {
 	ON_MSG( PACKETTYPE_LOAD_WORLD, &CDPCoreClient::OnLoadWorld );
@@ -177,6 +176,12 @@ BOOL CDPCoreClient::Run( LPSTR lpszAddr, USHORT uPort, u_long uKey )
 	return FALSE;
 }
 
+void CDPCoreClient::PASS(CAr & ar) {
+	int nBufSize;
+	LPBYTE lpBuf = ar.GetBuffer(&nBufSize);
+	Send(lpBuf, nBufSize, DPID_SERVERPLAYER);
+}
+
 void CDPCoreClient::MyRegister( u_long uKey )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_MYREG, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -221,26 +226,24 @@ void CDPCoreClient::SendToServer( LPBYTE lpBuffer, u_long uBufSize, DPID dpidCac
 	Send( (LPVOID)lpBuf, nBufSize, DPID_SERVERPLAYER );
 }
 
-void CDPCoreClient::SendEventRealItem( u_long uIdPlayer, int nRealItemIndex, int nRealItemCount )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_RENEWEVNET, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uIdPlayer << nRealItemIndex << nRealItemCount;
-	PASS( ar );
+void CDPCoreClient::SendEventRealItem(u_long uIdPlayer, int nRealItemIndex, int nRealItemCount) {
+	SendPacket<PACKETTYPE_RENEWEVNET, u_long, int, int>(
+		uIdPlayer, nRealItemIndex, nRealItemCount
+	);
 }
 
 
-void CDPCoreClient::SendPartyLevel( CUser* pUser, DWORD dwLevel, DWORD dwPoint, DWORD dwExp )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_PARTYLEVEL, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << pUser->m_idparty << pUser->m_idPlayer << dwLevel << dwPoint << dwExp;	
-	PASS( ar );
+void CDPCoreClient::SendPartyLevel(CUser * pUser, DWORD dwLevel, DWORD dwPoint, DWORD dwExp) {
+	SendPacket<PACKETTYPE_PARTYLEVEL, u_long, DWORD, DWORD, DWORD>(
+		pUser->m_idparty, pUser->m_idPlayer, dwLevel, dwPoint, dwExp
+	);
 }
-void CDPCoreClient::SendAddPartyExp( u_long uPartyId, int nMonLv, BOOL bSuperLeader , BOOL bLeaderSMExpUp )
-{
+
+void CDPCoreClient::SendAddPartyExp(u_long uPartyId, int nMonLv, BOOL bSuperLeader, BOOL bLeaderSMExpUp) {
 	//극단에 속해있으면 포인트를 올려줌( core에서는 포인터만 가지고 있고 월드에서는 포인터를 이용하여~ 극단레벨을 구함)
-	BEFORESENDDUAL( ar, PACKETTYPE_ADDPARTYEXP, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uPartyId << nMonLv << bSuperLeader << bLeaderSMExpUp;
-	PASS( ar );
+	SendPacket<PACKETTYPE_ADDPARTYEXP, u_long, int, BOOL, BOOL>(
+		uPartyId, nMonLv, bSuperLeader, bLeaderSMExpUp
+	);
 }
 
 void CDPCoreClient::SendRemovePartyPoint( u_long uPartyId, int nRemovePoint )
@@ -248,40 +251,35 @@ void CDPCoreClient::SendRemovePartyPoint( u_long uPartyId, int nRemovePoint )
 	if( nRemovePoint != 0 )
 	{
 		//극단에 속해있으면 포인트를 올려줌( core에서는 포인터만 가지고 있고 월드에서는 포인터를 이용하여~ 극단레벨을 구함)
-		BEFORESENDDUAL( ar, PACKETTYPE_REMOVEPARTYPOINT, DPID_UNKNOWN, DPID_UNKNOWN );
-		ar << uPartyId << nRemovePoint;
-		PASS( ar );
+		SendPacket<PACKETTYPE_REMOVEPARTYPOINT, u_long, int>(uPartyId, nRemovePoint);
 	}
 }
 
 
-void CDPCoreClient::SendGameRate( FLOAT fRate, BYTE nFlag )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GAMERATE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << fRate;
-	ar << nFlag;
-	PASS( ar );	
+void CDPCoreClient::SendGameRate(FLOAT fRate, BYTE nFlag) {
+	SendPacket<PACKETTYPE_GAMERATE, FLOAT, BYTE>(fRate, nFlag);
 }
 
-void CDPCoreClient::SendLoadConstant()
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_LOADCONSTANT, DPID_UNKNOWN, DPID_UNKNOWN );
-	PASS( ar );		
+void CDPCoreClient::SendLoadConstant() {
+	SendPacket<PACKETTYPE_LOADCONSTANT>();
 }
 
 void CDPCoreClient::SendSetMonsterRespawn( u_long uidPlayer, DWORD dwMonsterID, DWORD dwRespawnNum, DWORD dwAttackNum, DWORD dwRect, DWORD dwRespawnTime, BOOL bFlying )
 {
-	BEFORESENDDUAL( ar, PACKETTYPE_SETMONSTERRESPAWN, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uidPlayer;
-	ar << dwMonsterID << dwRespawnNum << dwAttackNum << dwRect << dwRespawnTime;
-	ar << bFlying;
-	PASS( ar );	
+	SendPacket<PACKETTYPE_SETMONSTERRESPAWN>(
+		uidPlayer,
+		dwMonsterID, dwRespawnNum, dwAttackNum, dwRect, dwRespawnTime,
+		bFlying
+	);
 }
 
 
 void CDPCoreClient::SendGuildMsgControl_Bank_Item( CUser* pUser, CItemElem* pItemElem, BYTE p_Mode )
 {
+	if (!pUser->GetGuild()) return;
+
 	BEFORESENDDUAL( ar, PACKETTYPE_GUILD_MSG_CONTROL, DPID_UNKNOWN, DPID_UNKNOWN );
+	(void)nBufSize;
 
 	GUILD_MSG_HEADER	Header;
 	Header.HeadAMain	= p_Mode;
@@ -289,18 +287,18 @@ void CDPCoreClient::SendGuildMsgControl_Bank_Item( CUser* pUser, CItemElem* pIte
 	Header.HeadBMain	= GUILD_MSG_HEADER::GUILD_BANK;
 	Header.HeadBSub		= GUILD_MSG_HEADER::ITEM;
 	
-	if (pUser->GetGuild())
-	{
-		ar.Write(&Header, sizeof(GUILD_MSG_HEADER));
-		ar << *pItemElem;
-	}
+	ar.Write(&Header, sizeof(GUILD_MSG_HEADER));
+	ar << *pItemElem;
 	
 	PASS( ar );
 }
 
 void CDPCoreClient::SendGuildMsgControl_Bank_Penya( CUser* pUser, DWORD p_Penya, BYTE p_Mode, BYTE cbCloak )
 {
+	if (!pUser->GetGuild()) return;
+
 	BEFORESENDDUAL( ar, PACKETTYPE_GUILD_MSG_CONTROL, DPID_UNKNOWN, DPID_UNKNOWN );
+	(void)nBufSize;
 
 	GUILD_MSG_HEADER	Header;
 	Header.HeadAMain	= p_Mode;
@@ -308,12 +306,9 @@ void CDPCoreClient::SendGuildMsgControl_Bank_Penya( CUser* pUser, DWORD p_Penya,
 	Header.HeadBMain	= GUILD_MSG_HEADER::GUILD_BANK;
 	Header.HeadBSub		= GUILD_MSG_HEADER::PENYA;
 	
-	if (pUser->GetGuild())
-	{
-		ar.Write(&Header, sizeof(GUILD_MSG_HEADER));
-		ar << p_Penya;
-		ar << cbCloak;
-	}
+	ar.Write(&Header, sizeof(GUILD_MSG_HEADER));
+	ar << p_Penya;
+	ar << cbCloak;
 	
 	PASS( ar );
 }
@@ -324,8 +319,7 @@ void CDPCoreClient::SendBlock( BYTE nGu, u_long uidPlayerTo, char *szNameTo, u_l
 	ar << nGu;
 	ar << uidPlayerTo << uidPlayerFrom;
 	ar.WriteString( szNameTo );
-	PASS( ar );
-	
+	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
 // Handlers
