@@ -907,6 +907,13 @@ void CDPCoreClient::OnSetPartyExp( CAr & ar )
 {
 	u_long uPartyId;
 	LONG nExp, nPoint, nLevel;
+	static_assert(
+		   std::is_same_v<decltype(nExp)  , decltype(CParty::m_nExp)>  
+		&& std::is_same_v<decltype(nPoint), decltype(CParty::m_nPoint)>
+		&& std::is_same_v<decltype(nLevel), decltype(CParty::m_nLevel)>,
+		"Mismatch between the field type (which is the one sent) and the "
+		"received type in CDPCoreClient::OnSetPartyExp"
+		);
 	ar >> uPartyId >> nExp >> nPoint >> nLevel;
 
 	CParty* pParty	= g_PartyMng.GetParty( uPartyId );
@@ -930,6 +937,11 @@ void CDPCoreClient::OnRemovePartyPoint( CAr & ar )
 {
 	u_long uPartyId;
 	LONG nPartyPoint;
+	static_assert(
+		std::is_same_v<decltype(nPartyPoint), decltype(CParty::m_nPoint)>,
+		"Mismatch between the field type (which is the one sent) and the "
+		"received type in CDPCoreClient::OnRemovePartyPoint"
+		);
 	ar >> uPartyId;
 	ar >> nPartyPoint;
 	

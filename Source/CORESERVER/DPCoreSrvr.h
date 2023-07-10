@@ -145,7 +145,7 @@ public:
 	void	SendChgMaster( u_long idPlayer, u_long idPlayer2, u_long idGuild );
 	void	SendGuildSetName( u_long idGuild, const char * lpszGuild , u_long idPlayer = 0, BYTE nId = 0xff, BYTE nError = 0 );
 
-	void	SendAddVoteResult( VOTE_INSERTED_INFO& info );
+	void	SendAddVoteResult( const VOTE_INSERTED_INFO& info );
 	void	SendAddRemoveVote( u_long idGuild, u_long idVote );		
 	void	SendAddCloseVote( u_long idGuild, u_long idVote );
 	void	SendAddCastVote( u_long idGuild, u_long idVote, BYTE cbSelection );

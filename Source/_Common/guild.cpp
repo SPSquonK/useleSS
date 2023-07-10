@@ -47,7 +47,7 @@ CAr&  operator>>(CAr& ar, VOTE_INSERTED_INFO& info)
 }
 
 //________________________________________________________________________________
-CAr&  operator<<(CAr& ar, CONTRIBUTION_CHANGED_INFO& info)
+CAr&  operator<<(CAr& ar, const CONTRIBUTION_CHANGED_INFO& info)
 {
 	ar << info.idGuild << info.idPlayer << info.dwPxpCount << info.dwPenya;
 	ar << info.dwGuildPxpCount << info.dwGuildPenya << info.nGuildLevel;

@@ -774,9 +774,7 @@ void CPartyMng::AddConnection( CPlayer* pPlayer )
 		pParty->m_aMember[i].m_remove	= std::nullopt;
 		pParty->m_nReferens--;
 
-		BEFORESENDDUAL( ar, PACKETTYPE_ADDPLAYERPARTY, DPID_UNKNOWN, DPID_UNKNOWN );
-		ar << pPlayer->m_uPartyId << pPlayer->uKey;
-		SEND( ar, &g_dpCoreSrvr, DPID_ALLPLAYERS );
+		g_dpCoreSrvr.BroadcastPacket<PACKETTYPE_ADDPLAYERPARTY>(pPlayer->m_uPartyId, pPlayer->uKey);
 	}
 	else
 		pPlayer->m_uPartyId		= 0;
@@ -799,9 +797,7 @@ void CPartyMng::RemoveConnection( CPlayer* pPlayer )
 		pParty->m_aMember[i].m_remove	= CTime::GetCurrentTime();
 		pParty->m_nReferens++;
 
-		BEFORESENDDUAL( ar, PACKETTYPE_REMOVEPLAYERPARTY, DPID_UNKNOWN, DPID_UNKNOWN );
-		ar << pPlayer->m_uPartyId << pPlayer->uKey;
-		SEND( ar, &g_dpCoreSrvr, DPID_ALLPLAYERS );
+		g_dpCoreSrvr.BroadcastPacket<PACKETTYPE_REMOVEPLAYERPARTY>(pPlayer->m_uPartyId, pPlayer->uKey);
 
 		if( pParty->m_nModeTime[PARTY_PARSKILL_MODE] )
 			g_dpCoreSrvr.SendSetPartyMode( pParty->m_uPartyId, PARTY_PARSKILL_MODE, FALSE );

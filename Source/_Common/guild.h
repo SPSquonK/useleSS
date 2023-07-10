@@ -141,7 +141,7 @@ struct CONTRIBUTION_CHANGED_INFO
 	WORD nGuildLevel;						// 길드레벨 
 };
 
-extern CAr&  operator<<(CAr& ar, CONTRIBUTION_CHANGED_INFO& info);
+extern CAr&  operator<<(CAr& ar, const CONTRIBUTION_CHANGED_INFO& info);
 extern CAr&  operator>>(CAr& ar, CONTRIBUTION_CHANGED_INFO& info);
 
 ////////////////////////////////////////////////////////////////////////////////
