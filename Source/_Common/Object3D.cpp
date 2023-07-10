@@ -1259,7 +1259,7 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 				if( mMaterialAry[ pObject->m_pMtrlBlk[i].m_nTextureID ] )
 				{
 					pObject->m_pMtrlBlkTexture[i] = mMaterialAry[ pObject->m_pMtrlBlk[i].m_nTextureID ]->m_pTexture;
-						
+
 			#ifdef __YENV
 				#ifdef __YENV_WITHOUT_BUMP
 					if( g_Option.m_bSpecBump )
@@ -1308,11 +1308,10 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 							_splitpath( szTexture, drive, dir, name, ext );
 							
 							TCHAR szFileName[ _MAX_PATH ];
-							RESOURCE* lpRes;
 							strcpy( szFileName, MakePath( DIR_MODELTEX, szTexture ) );
 							strlwr( szFileName );
 							
-							if( CResFile::m_mapResource.Lookup( szFileName, (void*&) lpRes ) )
+							if( CResFile::m_mapResource.contains( szFileName ) )
 							{								
 								LoadTextureFromRes( MakePath( DIR_MODELTEX, szTexture ), &(pObject->m_pNoSpecTexture[i] ) );
 							}							

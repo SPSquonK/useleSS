@@ -11,10 +11,7 @@
 #endif	// __WORLDSERVER
 
 
-typedef std::map< std::string, DWORD >			CMapStrToObjId;
-typedef CMapStrToObjId :: value_type	MapStrToObjIdType;
-
-CMapStrToObjId	g_MapStrToObjId;
+std::map< std::string, DWORD >	g_MapStrToObjId;
  
 CCommonCtrl::CCommonCtrl()
 {
