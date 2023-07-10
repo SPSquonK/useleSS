@@ -49,36 +49,19 @@ enum class GuildPower {
 
 using GuildPowers = sqktd::EnumSet<GuildPower>;
 
-typedef struct _SGuildMsgHeader
-{
-	enum
-	{
-		GUILD_BANK		= 0x0001,
-		PENYA			= 0x0001,
-		ITEM			= 0x0002,
+struct GUILD_MSG_HEADER {
+	enum {
+		GUILD_BANK = 0x0001,
+		PENYA = 0x0001,
+		ITEM = 0x0002,
 	};
 
-	union
-	{
-		DWORD		HeadA;			//
-		struct 
-		{
-			WORD	HeadASub;		//	길드 아이디
-			WORD	HeadAMain;		//	업데이트될 총 타입 갯수
-		};
-	};
+	WORD	HeadASub;		//	Guild ID
+	WORD	HeadAMain;		//	Total number of types to be updated
 
-	union
-	{
-		DWORD		HeadB;			//	업데이트 타입
-		struct 
-		{
-			WORD	HeadBSub;		//	용도에 맞게 쪼개 쓴다.
-			WORD	HeadBMain;
-		};
-	};
-
-}GUILD_MSG_HEADER, *LPGUILD_MSG_HEADER;
+	WORD	HeadBSub;		//	Divide according to use.
+	WORD	HeadBMain;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 //투표 관련 
