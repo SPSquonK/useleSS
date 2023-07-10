@@ -10,7 +10,7 @@
 #include "InstanceDungeonBase.h"
 
 class CDPCoreClient : public CDPMng,
-	public DPMngFeatures::SendPacketDual<CDPCoreClient>,
+	public DPMngFeatures::SendPacketNone<CDPCoreClient>,
 	public DPMngFeatures::PacketHandler<CDPCoreClient>
 {
 private:
@@ -57,7 +57,6 @@ public:
 	void	SendGetPlayerCount( u_long idOperator );
 	void	SendGetCorePlayer( u_long idOperator );
 	void	SendSystem( const CHAR* lpString );
-	void	SendToServer( LPBYTE lpBuffer, u_long uBufSize, DPID dpidCache, DPID dpidUser );
 	
 	void	SendCaption( const CHAR* lpString, DWORD dwWorldId = 0, BOOL bSmall = FALSE );
 		

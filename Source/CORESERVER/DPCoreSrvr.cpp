@@ -109,18 +109,14 @@ void CDPCoreSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPI
 	}
 }
 
-void CDPCoreSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
-{
-	static constexpr size_t nSize = sizeof(DPID);
-	
-	CAr ar( (LPBYTE)lpMsg + nSize + nSize, dwMsgSize - ( nSize + nSize ) );
+void CDPCoreSrvr::UserMessageHandler(LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom) {
+	CAr ar(lpMsg, dwMsgSize);
 	DWORD dw; ar >> dw;
-	
-	if( Handle(ar, dw, idFrom ) )
-	{
+
+	if (Handle(ar, dw, idFrom)) {
 		if (ar.IsOverflow()) Error("Core-World: Packet %08x overflowed", dw);
 	} else {
-		TRACE( "Handler not found(%08x)\n", dw );
+		TRACE("Handler not found(%08x)\n", dw);
 	}
 }
 
