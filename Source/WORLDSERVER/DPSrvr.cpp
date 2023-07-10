@@ -1043,7 +1043,7 @@ void CDPSrvr::OnCreateGuildCloak( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 	}
 	// 현 멀티셋 서버에는 위 루틴이 모두 10000페냐가 소모됨을 알렸으므로 DPCoreClient로 캐시서버에 요청하여 
 	// 모든 멀티셋에 10000페냐가 소모되었다고 알린다. 물론 보내는 이 멀티셋 서버는 이 메시지를 무시해야 한다. ( 무시하게 해놨지만 잘 될런지 -_- )
-	g_DPCoreClient.SendGuildMsgControl_Bank_Penya( pUser, 10000, 2, 1 ); 	// 2는 업데이트 해야할 다른 월드서버의 클라이언트
+	g_DPCoreClient.SendGuildMsgControl_Bank_Penya( pUser, 10000, 1 ); 	// 2는 업데이트 해야할 다른 월드서버의 클라이언트
 	UpdateGuildBank(pGuild, GUILD_CLOAK, 0, pUser->m_idPlayer, &itemElem, 10000, 1 ); // 0은 길드 페냐를 업데이트 한다는 것이다.(실은 모든것을 업데이트하지만 -_-)
 	pUser->AddDefinedText( TID_GAME_GUILDCREATECLOAK, "" );
 }
@@ -3112,7 +3112,7 @@ void CDPSrvr::OnGetItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYT
 					}
 				}
 
-				g_DPCoreClient.SendGuildMsgControl_Bank_Penya( pUser, nGold, 2, 0 ); 	// 2는 업데이트 해야할 다른 월드서버의 클라이언트
+				g_DPCoreClient.SendGuildMsgControl_Bank_Penya( pUser, nGold, 0 ); 	// 2는 업데이트 해야할 다른 월드서버의 클라이언트
 			}
 			//	Core 서버에 전 서버에 업데이트 되야함을 알린다.
 		}

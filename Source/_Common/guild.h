@@ -57,7 +57,6 @@ struct GUILD_MSG_HEADER {
 	};
 
 	WORD	HeadASub;		//	Guild ID
-	WORD	HeadAMain;		//	Total number of types to be updated
 
 	WORD	HeadBSub;		//	Divide according to use.
 	WORD	HeadBMain;

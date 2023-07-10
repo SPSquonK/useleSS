@@ -273,7 +273,7 @@ void CDPCoreClient::SendSetMonsterRespawn( u_long uidPlayer, DWORD dwMonsterID, 
 	);
 }
 
-void CDPCoreClient::SendGuildMsgControl_Bank_Penya( CUser* pUser, DWORD p_Penya, BYTE p_Mode, BYTE cbCloak )
+void CDPCoreClient::SendGuildMsgControl_Bank_Penya( CUser* pUser, DWORD p_Penya, BYTE cbCloak )
 {
 	if (!pUser->GetGuild()) return;
 
@@ -281,7 +281,6 @@ void CDPCoreClient::SendGuildMsgControl_Bank_Penya( CUser* pUser, DWORD p_Penya,
 	(void)nBufSize;
 
 	GUILD_MSG_HEADER	Header;
-	Header.HeadAMain	= p_Mode;
 	Header.HeadASub		= (WORD)( pUser->m_idGuild );
 	Header.HeadBMain	= GUILD_MSG_HEADER::GUILD_BANK;
 	Header.HeadBSub		= GUILD_MSG_HEADER::PENYA;

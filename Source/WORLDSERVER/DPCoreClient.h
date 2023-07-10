@@ -89,7 +89,7 @@ public:
 	bool SendGuildStatPxp(CUser * pUser, DWORD data);
 	void SendGuildStatNotice(CUser * pUser, const char * notice);
 	void	SendGuildGetPay( u_long uGuildId, DWORD nGoldGuild );
-	void	SendGuildMsgControl_Bank_Penya( CUser* pUser, DWORD p_Penya, BYTE p_Mode, BYTE cbCloak );
+	void	SendGuildMsgControl_Bank_Penya( CUser* pUser, DWORD p_Penya, BYTE cbCloak );
 	void	SendWarDead( u_long idPlayer );
 	void	SendWarMasterAbsent(WarId idWar, BOOL bDecl );
 	void	SendWarTimeout(WarId idWar );
