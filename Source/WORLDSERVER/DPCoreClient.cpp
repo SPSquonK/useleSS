@@ -157,7 +157,7 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 	_PROFILE( it->second );
 #endif
 	
-	if( Handle(ar, dw, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + sizeof(DPID)), NULL_ID) ) {
+	if( Handle(ar, dw) ) {
 		if (ar.IsOverflow()) Error("World-Core: Packet %08x overflowed", dw);
 	}
 	else {
@@ -329,7 +329,7 @@ void CDPCoreClient::SendBlock( BYTE nGu, u_long uidPlayerTo, char *szNameTo, u_l
 }
 
 // Handlers
-void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnLoadWorld( CAr & ar )
 {
 	CServerDesc desc;
 	ar >> desc;
@@ -397,7 +397,7 @@ void CDPCoreClient::OnLoadWorld( CAr & ar, DPID, DPID, OBJID )
 	WSASetEvent( m_hWait );
 }
 
-void CDPCoreClient::OnRecharge( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnRecharge( CAr & ar )
 {
 	OBJID idBase;
 	u_long uBlockSize;
@@ -585,7 +585,7 @@ void CDPCoreClient::SendGCAddParty( u_long idLeader, LONG nLeaderLevel, LONG nLe
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPCoreClient::OnShout( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnShout( CAr & ar )
 {
 	char	lpString[1024];
 	u_long idPlayer;
@@ -606,7 +606,7 @@ void CDPCoreClient::OnShout( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnPlayMusic( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnPlayMusic( CAr & ar )
 {
 	DWORD dwWorldID;
 	u_long idmusic;
@@ -622,7 +622,7 @@ void CDPCoreClient::OnPlayMusic( CAr & ar, DPID, DPID, OBJID )
 	g_UserMng.AddBlock( lpBlock, uBlockSize, pWorld );
 }
 
-void CDPCoreClient::OnPlaySound( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnPlaySound( CAr & ar )
 {
 	DWORD dwWorldID;
 	u_long idsound;
@@ -639,7 +639,7 @@ void CDPCoreClient::OnPlaySound( CAr & ar, DPID, DPID, OBJID )
 	g_UserMng.AddBlock( lpBlock, uBlockSize, pWorld );
 }
 
-void CDPCoreClient::OnErrorParty( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnErrorParty( CAr & ar )
 {
 	DWORD dw;
 	u_long uLeader;
@@ -651,7 +651,7 @@ void CDPCoreClient::OnErrorParty( CAr & ar, DPID, DPID, OBJID )
 		pUser->AddSendErrorParty( dw );		
 }
 
-void CDPCoreClient::OnAddPartyMember( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnAddPartyMember( CAr & ar )
 {
 	const auto [idParty, idLeader, idMember] = ar.Extract<u_long, u_long, u_long>();
 
@@ -706,7 +706,7 @@ void CDPCoreClient::OnAddPartyMember( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnRemovePartyMember( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnRemovePartyMember( CAr & ar )
 {
 	const auto [idParty, idLeader, idMember] = ar.Extract<u_long, u_long, u_long>();
 
@@ -762,7 +762,7 @@ void CDPCoreClient::OnRemovePartyMember( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnAddPlayerParty(CAr & ar, DPID, DPID, OBJID) {
+void CDPCoreClient::OnAddPlayerParty(CAr & ar) {
 	const auto [idParty, idPlayer] = ar.Extract<u_long, u_long>();
 
 	CParty * const pParty = g_PartyMng.GetParty(idParty);
@@ -775,7 +775,7 @@ void CDPCoreClient::OnAddPlayerParty(CAr & ar, DPID, DPID, OBJID) {
 	pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_SET_PARTY_MEMBER_PARAM, u_long, bool>(idPlayer, false);
 }
 
-void CDPCoreClient::OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnRemovePlayerParty( CAr & ar )
 {
 	u_long idParty, idPlayer;
 	ar >> idParty >> idPlayer;
@@ -842,7 +842,7 @@ void CDPCoreClient::OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID )
 }
 
 
-void CDPCoreClient::OnSetPartyMode( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnSetPartyMode( CAr & ar )
 {
 	u_long uPartyId;
 	int nMode;
@@ -882,7 +882,7 @@ void CDPCoreClient::OnSetPartyMode( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnPartyChangeItemMode(CAr & ar, DPID, DPID, OBJID) {
+void CDPCoreClient::OnPartyChangeItemMode(CAr & ar) {
 	const auto [uPartyId, nMode] = ar.Extract<u_long, CParty::ShareItemMode>();
 
 	CParty * const pParty = g_PartyMng.GetParty(uPartyId);
@@ -892,7 +892,7 @@ void CDPCoreClient::OnPartyChangeItemMode(CAr & ar, DPID, DPID, OBJID) {
 	pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_PARTYCHANGEITEMMODE, CParty::ShareItemMode>(nMode);
 }
 
-void CDPCoreClient::OnPartyChangeExpMode(CAr & ar, DPID, DPID, OBJID) {
+void CDPCoreClient::OnPartyChangeExpMode(CAr & ar) {
 	const auto [uPartyId, nMode] = ar.Extract<u_long, CParty::ShareExpMode>();
 
 	CParty * const pParty = g_PartyMng.GetParty(uPartyId);
@@ -903,7 +903,7 @@ void CDPCoreClient::OnPartyChangeExpMode(CAr & ar, DPID, DPID, OBJID) {
 }
 
 
-void CDPCoreClient::OnSetPartyExp( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnSetPartyExp( CAr & ar )
 {
 	u_long uPartyId;
 	LONG nExp, nPoint, nLevel;
@@ -926,7 +926,7 @@ void CDPCoreClient::OnSetPartyExp( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnRemovePartyPoint( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnRemovePartyPoint( CAr & ar )
 {
 	u_long uPartyId;
 	LONG nPartyPoint;
@@ -948,7 +948,7 @@ void CDPCoreClient::OnRemovePartyPoint( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnPartyChangeName( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnPartyChangeName( CAr & ar )
 {
 	u_long uidParty;
 	TCHAR	sParty[128];
@@ -969,7 +969,7 @@ void CDPCoreClient::OnPartyChangeName( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnPartyChangeTroup( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnPartyChangeTroup( CAr & ar )
 {
 	u_long uidParty;
 	TCHAR	sParty[33];		
@@ -991,7 +991,7 @@ void CDPCoreClient::OnPartyChangeTroup( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnAddFriend(CAr & ar, DPID, DPID, OBJID) {
+void CDPCoreClient::OnAddFriend(CAr & ar) {
 	const auto [uidSend, uidFriend] = ar.Extract<u_long, u_long>();
 
 	CUser * pSender = g_UserMng.GetUserByPlayerID(uidSend);
@@ -1012,7 +1012,7 @@ void CDPCoreClient::OnAddFriend(CAr & ar, DPID, DPID, OBJID) {
 	}
 }
 
-void CDPCoreClient::OnRemovefriend( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnRemovefriend( CAr & ar )
 {
 	u_long uidSend, uidFriend;
 	ar >> uidSend >> uidFriend;
@@ -1035,7 +1035,7 @@ void CDPCoreClient::OnRemovefriend( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnQueryTickCount( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnQueryTickCount( CAr & ar )
 {
 	DWORD dwTime;
 	__int64 nTickCount;
@@ -1050,7 +1050,7 @@ void CDPCoreClient::OnQueryTickCount( CAr & ar, DPID, DPID, OBJID )
 }
 
 
-void CDPCoreClient::OnEnvironmentEffect( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnEnvironmentEffect( CAr & ar )
 {
 	ar >> *CEnvironment::GetInstance();
 
@@ -1068,7 +1068,7 @@ void CDPCoreClient::OnEnvironmentEffect( CAr & ar, DPID, DPID, OBJID )
 }
 
 
-void CDPCoreClient::OnPartyChat( CAr & ar , DPID, DPID, OBJID )
+void CDPCoreClient::OnPartyChat( CAr & ar  )
 {
 	u_long idParty;
 static	\
@@ -1128,7 +1128,7 @@ void CDPCoreClient::SendGuildChat( CUser* pUser, const char* sChat )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPCoreClient::OnCreateGuild( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnCreateGuild( CAr & ar )
 {
 	int nSize;
 	GUILD_MEMBER_INFO	info[MAX_PTMEMBER_SIZE];
@@ -1208,7 +1208,7 @@ void CDPCoreClient::OnCreateGuild( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnDestroyGuild( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnDestroyGuild( CAr & ar )
 {
 	u_long idGuild;
 	ar >> idGuild;
@@ -1284,7 +1284,7 @@ void CDPCoreClient::OnDestroyGuild( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnAddGuildMember( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnAddGuildMember( CAr & ar )
 {
 	u_long idGuild;
 //	ar >> idPlayer >> idGuild;
@@ -1319,7 +1319,7 @@ void CDPCoreClient::OnAddGuildMember( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnRemoveGuildMember( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnRemoveGuildMember( CAr & ar )
 {
 	u_long idPlayer, idGuild;
 	ar >> idPlayer >> idGuild;
@@ -1376,7 +1376,7 @@ void CDPCoreClient::OnRemoveGuildMember( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnGuildMemberLv( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnGuildMemberLv( CAr & ar )
 {
 	u_long idPlayer, idGuild;
 	int nMemberLv;
@@ -1393,7 +1393,7 @@ void CDPCoreClient::OnGuildMemberLv( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnGuildClass( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnGuildClass( CAr & ar )
 {
 	u_long idPlayer, idGuild;
 	int nClass;
@@ -1407,7 +1407,7 @@ void CDPCoreClient::OnGuildClass( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnGuildNickName( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnGuildNickName( CAr & ar )
 {
 	u_long idPlayer, idGuild;
 	char strNickName[MAX_GM_ALIAS] = {0,};
@@ -1422,7 +1422,7 @@ void CDPCoreClient::OnGuildNickName( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnChgMaster( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnChgMaster( CAr & ar )
 {
 	u_long idPlayer, idPlayer2, idGuild;
 	ar >> idPlayer >> idPlayer2 >> idGuild;
@@ -1445,7 +1445,7 @@ void CDPCoreClient::OnChgMaster( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnGuildMemberLogOut( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnGuildMemberLogOut( CAr & ar )
 {
 	u_long idPlayer, idGuild;
 	ar >> idGuild >> idPlayer;
@@ -1472,7 +1472,7 @@ void CDPCoreClient::SendWarTimeout(WarId idWar )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPCoreClient::OnAcptWar( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnAcptWar( CAr & ar )
 {
 	WarId idWar;
 	u_long idDecl, idAcpt;
@@ -1528,7 +1528,7 @@ void CDPCoreClient::OnAcptWar( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnSurrender( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnSurrender( CAr & ar )
 {
 	WarId idWar;
 	u_long idPlayer;
@@ -1564,7 +1564,7 @@ void CDPCoreClient::OnSurrender( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnWarDead( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnWarDead( CAr & ar )
 {
 	WarId idWar;
 	BOOL bDecl;
@@ -1580,7 +1580,7 @@ void CDPCoreClient::OnWarDead( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnWarEnd( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnWarEnd( CAr & ar )
 {
 	WarId idWar;
 	int nWptDecl, nWptAcpt;
@@ -1598,7 +1598,7 @@ void CDPCoreClient::OnWarEnd( CAr & ar, DPID, DPID, OBJID )
 	g_GuildWarMng.Result( pWar, pDecl, pAcpt, nType, nWptDecl, nWptAcpt );
 }
 
-void CDPCoreClient::OnGuildLogoACK( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnGuildLogoACK( CAr & ar )
 {
 /*  // 시야안의 유저에게 로고가 변경됨을 알린다.
 	u_long idGuild;
@@ -1641,7 +1641,7 @@ void CDPCoreClient::OnGuildLogoACK( CAr & ar, DPID, DPID, OBJID )
 	g_UserMng.AddSetLogo( idGuild, dwLogo );	// g_UserMng와 교착 상태를 피하기 위해서 unlock된후에 한다.
 }
 
-void CDPCoreClient::OnGuildContributionACK( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnGuildContributionACK( CAr & ar )
 {
 	CONTRIBUTION_CHANGED_INFO info;
 	ULONG uServerID;
@@ -1671,7 +1671,7 @@ void CDPCoreClient::OnGuildContributionACK( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnModifyVote( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnModifyVote( CAr & ar )
 {
 	u_long idVote, idGuild;
 	BYTE cbOperation;
@@ -1702,7 +1702,7 @@ void CDPCoreClient::OnModifyVote( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnAddVoteResultACk( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnAddVoteResultACk( CAr & ar )
 {
 	VOTE_INSERTED_INFO	info;
 	ar >> info;
@@ -1738,7 +1738,7 @@ void CDPCoreClient::OnAddVoteResultACk( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnGuildNoticeACk( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnGuildNoticeACk( CAr & ar )
 {
 	u_long idGuild;
 	char szNotice[MAX_BYTE_NOTICE];
@@ -1764,7 +1764,7 @@ void CDPCoreClient::OnGuildNoticeACk( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnGuildAuthority(CAr & ar, DPID, DPID, OBJID) {
+void CDPCoreClient::OnGuildAuthority(CAr & ar) {
 	const auto [uGuildId, dwAuthority] = ar.Extract<u_long, GuildPowerss>();
 
 	CGuild * const pGuild = g_GuildMng.GetGuild(uGuildId);
@@ -1774,7 +1774,7 @@ void CDPCoreClient::OnGuildAuthority(CAr & ar, DPID, DPID, OBJID) {
 	pGuild->SendSnapshotNoTarget<SNAPSHOTTYPE_GUILD_AUTHORITY, GuildPowerss>(dwAuthority);
 }
 
-void CDPCoreClient::OnGuildPenya(CAr & ar, DPID, DPID, OBJID) {
+void CDPCoreClient::OnGuildPenya(CAr & ar) {
 	const auto [uGuildId, dwType, dwPenya] = ar.Extract<u_long, DWORD, DWORD>();
 
 	CGuild * pGuild = g_GuildMng.GetGuild(uGuildId);
@@ -1785,7 +1785,7 @@ void CDPCoreClient::OnGuildPenya(CAr & ar, DPID, DPID, OBJID) {
 	pGuild->SendSnapshotNoTarget<SNAPSHOTTYPE_GUILD_PENYA, DWORD, DWORD>(dwType, dwPenya);
 }
 
-void CDPCoreClient::OnGuildRealPenya( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnGuildRealPenya( CAr & ar )
 {
 	u_long uGuildId;
 	int nGoldGuild;
@@ -1815,7 +1815,7 @@ void CDPCoreClient::OnGuildRealPenya( CAr & ar, DPID, DPID, OBJID )
 
 
 // raiders_test 유저가 아이템을 사용하고 나가면?
-void CDPCoreClient::OnGuildSetName( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnGuildSetName( CAr & ar )
 {
 	u_long idGuild;
 	char lpszGuild[MAX_G_NAME];
@@ -1874,7 +1874,7 @@ void CDPCoreClient::OnGuildSetName( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnGuildMsgControl( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnGuildMsgControl( CAr & ar )
 {
 	if ( !g_eLocal.GetState( ENABLE_GUILD_INVENTORY ) )
 	{
@@ -1977,7 +1977,7 @@ void CDPCoreClient::SendGuildGetPay( u_long uGuildId, DWORD nGoldGuild )
 	SEND( ar, this, DPID_SERVERPLAYER );		
 }
 
-void CDPCoreClient::OnSetFriendState(CAr & ar, DPID, DPID, OBJID) {
+void CDPCoreClient::OnSetFriendState(CAr & ar) {
 	const auto [uidPlayer, dwState] = ar.Extract<u_long, FriendStatus>();
 
 	CUser * pUser = prj.GetUserByID(uidPlayer);
@@ -1986,7 +1986,7 @@ void CDPCoreClient::OnSetFriendState(CAr & ar, DPID, DPID, OBJID) {
 	}
 }
 
-void CDPCoreClient::OnFriendInterceptState( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnFriendInterceptState( CAr & ar )
 {
 	u_long uidPlayer;
 	u_long uidFriend;
@@ -2014,7 +2014,7 @@ void CDPCoreClient::OnFriendInterceptState( CAr & ar, DPID, DPID, OBJID )
 }
 
 
-void CDPCoreClient::OnPartyChangeLeader(CAr & ar, DPID, DPID, OBJID) {
+void CDPCoreClient::OnPartyChangeLeader(CAr & ar) {
 	const auto [uPartyId, idChangeLeader] = ar.Extract<u_long, u_long>();
 
 	CParty * const pParty = g_PartyMng.GetParty(uPartyId);
@@ -2024,7 +2024,7 @@ void CDPCoreClient::OnPartyChangeLeader(CAr & ar, DPID, DPID, OBJID) {
 	pParty->SendSnapshotNoTarget<SNAPSHOTTYPE_ADDPARTYCHANGELEADER, u_long>(idChangeLeader);
 }
 
-void CDPCoreClient::OnGameRate( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnGameRate( CAr & ar )
 {
 	FLOAT fRate;
 	BYTE nFlag;
@@ -2062,13 +2062,13 @@ void CDPCoreClient::OnGameRate( CAr & ar, DPID, DPID, OBJID )
 	}
 }
 
-void CDPCoreClient::OnLoadConstant( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnLoadConstant( CAr & ar )
 {
 	CProject::LoadConstant( "Constant.inc" );
 	g_UserMng.AddGameSetting();
 }
 
-void CDPCoreClient::OnSetMonsterRespawn( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnSetMonsterRespawn( CAr & ar )
 {
 	u_long uidPlayer;
 	DWORD dwMonsterID;
@@ -2119,12 +2119,12 @@ void CDPCoreClient::OnSetMonsterRespawn( CAr & ar, DPID, DPID, OBJID )
 
 
 // 코어서버로부터 리스트를 받을 때 
-void CDPCoreClient::OnCWWantedList(CAr & ar, DPID, DPID, DPID) {
+void CDPCoreClient::OnCWWantedList(CAr & ar) {
 	ar >> CWantedListSnapshot::GetInstance();
 }
 
 // 코어서버로 부터 현상금을 받을 때 
-void CDPCoreClient::OnCWWantedReward( CAr & ar, DPID, DPID, DPID )
+void CDPCoreClient::OnCWWantedReward( CAr & ar )
 {
 	u_long		idPlayer, idAttacker;
 	__int64		nGold;
@@ -2203,7 +2203,7 @@ void CDPCoreClient::SendSetPartyDuel( u_long idParty1, u_long idParty2, BOOL bDu
 }
 
 // raiders_test 사용하고 나가면?
-void CDPCoreClient::OnSetPlayerName( CAr& ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnSetPlayerName( CAr& ar )
 {
 	u_long idPlayer;
 	char lpszPlayer[MAX_PLAYER]	= { 0, };
@@ -2310,7 +2310,7 @@ void CDPCoreClient::SendChat( u_long idPlayer1, u_long idPlayer2, const char* lp
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPCoreClient::OnSetSnoop( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnSetSnoop( CAr & ar )
 {
 //	OutputDebugString( "WORLDSERVER.EXE\t// PACKETTYPE_SETSNOOP" );
 	u_long idPlayer, idSnoop;
@@ -2369,7 +2369,7 @@ void CDPCoreClient::OnEvent1206( CAr & ar, DPID, DPID, DPID )
 }
 #endif	// __EVENT1206
 
-void CDPCoreClient::OnEvent( CAr & ar, DPID, DPID, DPID )
+void CDPCoreClient::OnEvent( CAr & ar )
 {
 	DWORD dwEvent;
 	ar >> dwEvent;
@@ -2444,7 +2444,7 @@ void CDPCoreClient::OnEvent( CAr & ar, DPID, DPID, DPID )
 	}
 }
 
-void CDPCoreClient::OnGuildCombatState( CAr & ar, DPID, DPID, DPID )
+void CDPCoreClient::OnGuildCombatState( CAr & ar )
 {
 	int nState;
 	ar >> nState;
@@ -2456,7 +2456,7 @@ void CDPCoreClient::OnGuildCombatState( CAr & ar, DPID, DPID, DPID )
 	g_UserMng.AddGuildCombatState();
 }
 
-void CDPCoreClient::OnRemoveUserFromCORE( CAr & ar, DPID, DPID, DPID )
+void CDPCoreClient::OnRemoveUserFromCORE( CAr & ar )
 {
 	DWORD dwSerial;
 	ar >> dwSerial;		// CACHE에서 생성된 serial한 값 
@@ -2479,7 +2479,7 @@ void CDPCoreClient::SendPing( void )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPCoreClient::OnPing( CAr & ar, DPID, DPID, DPID )
+void CDPCoreClient::OnPing( CAr & ar )
 {
 	time_t tSend, tTrans;
 	ar >> tSend >> tTrans;
@@ -2494,7 +2494,7 @@ void CDPCoreClient::OnPing( CAr & ar, DPID, DPID, DPID )
 	m_bAlive	= TRUE;
 }
 
-void CDPCoreClient::OnDestroyPlayer( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnDestroyPlayer( CAr & ar )
 {
 	u_long idPlayer;
 	ar >> idPlayer;
@@ -2503,12 +2503,12 @@ void CDPCoreClient::OnDestroyPlayer( CAr & ar, DPID, DPID, OBJID )
 		g_DPSrvr.QueryDestroyPlayer( pUser->m_Snapshot.dpidCache, pUser->m_Snapshot.dpidUser, pUser->m_dwSerial, pUser->m_idPlayer );
 }
 
-void CDPCoreClient::OnInstanceDungeonAllInfo( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnInstanceDungeonAllInfo( CAr & ar )
 {
 	CInstanceDungeonHelper::GetInstance()->OnInstanceDungeonAllInfo( ar );
 }
 
-void CDPCoreClient::OnInstanceDungeonCreate( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnInstanceDungeonCreate( CAr & ar )
 {
 	int nType;
 	DWORD dwDungeonId;
@@ -2526,7 +2526,7 @@ void CDPCoreClient::SendInstanceDungeonCreate( int nType, DWORD dwDungeonId, con
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPCoreClient::OnInstanceDungeonDestroy( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnInstanceDungeonDestroy( CAr & ar )
 {
 	int nType;
 	DWORD dwDungeonId;
@@ -2544,7 +2544,7 @@ void CDPCoreClient::SendInstanceDungeonDestroy( int nType, DWORD dwDungeonId, co
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPCoreClient::OnInstanceDungeonSetCoolTimeInfo( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnInstanceDungeonSetCoolTimeInfo( CAr & ar )
 {
 	int nType;
 	DWORD dwPlayerId;
@@ -2563,7 +2563,7 @@ void CDPCoreClient::SendInstanceDungeonSetCoolTimeInfo( int nType, DWORD dwPlaye
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPCoreClient::OnInstanceDungeonDeleteCoolTimeInfo( CAr & ar, DPID, DPID, OBJID )
+void CDPCoreClient::OnInstanceDungeonDeleteCoolTimeInfo( CAr & ar )
 {
 	int nType;
 	DWORD dwPlayerId;
@@ -2582,7 +2582,7 @@ void CDPCoreClient::SendQuizSystemMessage( int nDefinedTextId, BOOL bAll, int nC
 }
 #endif // __QUIZ
 
-void CDPCoreClient::OnBuyingInfo( CAr & ar, DPID, DPID, DPID)
+void CDPCoreClient::OnBuyingInfo( CAr & ar )
 {
 	auto [playerId, bi2] = ar.Extract<u_long, BUYING_INFO2>();
 
@@ -2616,7 +2616,7 @@ void CDPCoreClient::OnBuyingInfo( CAr & ar, DPID, DPID, DPID)
 	g_dpDBClient.SendBuyingInfo(&bi2, iSerialNumber);
 }
 
-void CDPCoreClient::OnModifyMode(CAr & ar, DPID, DPID, DPID) {
+void CDPCoreClient::OnModifyMode(CAr & ar) {
 	const auto [idTo, dwMode, f, _idFrom] = ar.Extract<u_long, DWORD, bool, u_long>();
 
 	CUser * pUser = g_UserMng.GetUserByPlayerID(idTo);

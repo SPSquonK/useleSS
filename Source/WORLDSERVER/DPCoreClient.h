@@ -13,7 +13,7 @@
 
 class CDPCoreClient : public CDPMng,
 	public DPMngFeatures::SendPacketDual<CDPCoreClient>,
-	public DPMngFeatures::PacketHandler<CDPCoreClient, DPID, DPID, OBJID>
+	public DPMngFeatures::PacketHandler<CDPCoreClient>
 {
 private:
 	WSAEVENT	m_hWait;
@@ -81,8 +81,8 @@ public:
 	void	SendGCRemoveParty( u_long uidPartyid, u_long uidPlayer );
 	void	SendGCAddParty( u_long idLeader, LONG nLeaderLevel, LONG nLeaderJob, DWORD dwLSex, 
 							u_long idMember, LONG nMemberLevel, LONG nMemberJob, DWORD dwMSex );
-	void	OnCWWantedList( CAr & ar, DPID, DPID, DPID );
-	void	OnCWWantedReward( CAr & ar, DPID, DPID, DPID );
+	void	OnCWWantedList( CAr & ar );
+	void	OnCWWantedReward( CAr & ar );
 	void	SendSetPartyDuel( u_long idParty1, u_long idParty2, BOOL bDuel );
 	void	SendCreateGuild( GUILD_MEMBER_INFO* info, int nSize, const char* szGuild );
 	void	SendGuildChat( CUser* pUser, const char* sChat );
@@ -96,8 +96,8 @@ public:
 	void	SendWarDead( u_long idPlayer );
 	void	SendWarMasterAbsent(WarId idWar, BOOL bDecl );
 	void	SendWarTimeout(WarId idWar );
-	void	OnWarDead( CAr & ar, DPID, DPID, OBJID );
-	void	OnWarEnd( CAr & ar, DPID, DPID, OBJID );
+	void	OnWarDead( CAr & ar );
+	void	OnWarEnd( CAr & ar );
 	void	SendAddFriendNameReqest( u_long uLeaderid, LONG nLeaderJob, BYTE nLeaderSex, u_long uMember, const char * szLeaderName, const char * szMemberName );
 	void	SendBlock( BYTE nGu, u_long uidPlayerTo, char *szNameTo, u_long uidPlayerFrom );
 	void	SendWCWantedGold( LPCTSTR szPlayer, u_long idPlayer, int nGold, LPCTSTR szMsg );
@@ -108,17 +108,17 @@ public:
 #endif	// __LAYER_1015
 	void	SendQuerySetGuildName( u_long idPlayer, u_long idGuild, const char* lpszGuild, BYTE nId );
 	void	SendSetSnoop( u_long idPlayer, u_long idSnoop, BOOL bRelease  );
-	void	OnSetSnoop( CAr & ar, DPID, DPID, OBJID );
+	void	OnSetSnoop( CAr & ar );
 	void	SendSetSnoopGuild( u_long idGuild, BOOL bRelease );
 	void	SendChat( u_long idPlayer1, u_long idPlayer2, const char* lpszChat );
 	void	SendPing( void );
-	void	OnDestroyPlayer( CAr & ar, DPID, DPID, OBJID );
+	void	OnDestroyPlayer( CAr & ar );
 private:
-	void	OnInstanceDungeonAllInfo( CAr & ar, DPID, DPID, OBJID );
-	void	OnInstanceDungeonCreate( CAr & ar, DPID, DPID, OBJID );
-	void	OnInstanceDungeonDestroy( CAr & ar, DPID, DPID, OBJID );
-	void	OnInstanceDungeonSetCoolTimeInfo( CAr & ar, DPID, DPID, OBJID );
-	void	OnInstanceDungeonDeleteCoolTimeInfo( CAr & ar, DPID, DPID, OBJID );
+	void	OnInstanceDungeonAllInfo( CAr & ar );
+	void	OnInstanceDungeonCreate( CAr & ar );
+	void	OnInstanceDungeonDestroy( CAr & ar );
+	void	OnInstanceDungeonSetCoolTimeInfo( CAr & ar );
+	void	OnInstanceDungeonDeleteCoolTimeInfo( CAr & ar );
 public:
 	void	SendInstanceDungeonCreate( int nType, DWORD dwDungeonId, const ID_INFO & ID_Info );
 	void	SendInstanceDungeonDestroy( int nType, DWORD dwDungeonId, const ID_INFO & ID_Info );
@@ -130,77 +130,77 @@ public:
 
 	// Handlers
 private:
-	void	OnLoadWorld( CAr & ar, DPID, DPID, OBJID );
-	void	OnQueryTickCount( CAr & ar, DPID, DPID, OBJID );
-	void	OnRecharge( CAr & ar, DPID, DPID, OBJID );
+	void	OnLoadWorld( CAr & ar );
+	void	OnQueryTickCount( CAr & ar );
+	void	OnRecharge( CAr & ar );
 
-	void	OnSetPartyExp( CAr & ar, DPID, DPID, OBJID objid );
-	void	OnRemovePartyPoint( CAr & ar, DPID, DPID, OBJID objid );
-	void	OnPartyChangeTroup( CAr & ar, DPID, DPID, OBJID );
-	void	OnPartyChangeName( CAr & ar, DPID, DPID, OBJID );
-	void	OnAddFriend( CAr & ar, DPID, DPID, OBJID );
-	void	OnRemovefriend( CAr & ar, DPID, DPID, OBJID );
-	void	OnShout( CAr & ar, DPID, DPID, OBJID );
-	void	OnPlayMusic( CAr & ar, DPID, DPID, OBJID );
-	void	OnPlaySound( CAr & ar, DPID, DPID, OBJID );
-	void	OnErrorParty( CAr & ar, DPID, DPID, OBJID );
-	void	OnAddPartyMember( CAr & ar, DPID, DPID, OBJID );
-	void	OnRemovePartyMember( CAr & ar, DPID, DPID, OBJID );
-	void	OnAddPlayerParty( CAr & ar, DPID, DPID, OBJID );
-	void	OnRemovePlayerParty( CAr & ar, DPID, DPID, OBJID );
-	void	OnGuildMemberLv( CAr & ar, DPID, DPID, OBJID );
-	void	OnSetPartyMode( CAr & ar, DPID, DPID, OBJID );
-	void	OnPartyChangeItemMode( CAr & ar, DPID, DPID, OBJID );
-	void	OnPartyChangeExpMode( CAr & ar, DPID, DPID, OBJID );
+	void	OnSetPartyExp( CAr & ar );
+	void	OnRemovePartyPoint( CAr & ar );
+	void	OnPartyChangeTroup( CAr & ar );
+	void	OnPartyChangeName( CAr & ar );
+	void	OnAddFriend( CAr & ar );
+	void	OnRemovefriend( CAr & ar );
+	void	OnShout( CAr & ar );
+	void	OnPlayMusic( CAr & ar );
+	void	OnPlaySound( CAr & ar );
+	void	OnErrorParty( CAr & ar );
+	void	OnAddPartyMember( CAr & ar );
+	void	OnRemovePartyMember( CAr & ar );
+	void	OnAddPlayerParty( CAr & ar );
+	void	OnRemovePlayerParty( CAr & ar );
+	void	OnGuildMemberLv( CAr & ar );
+	void	OnSetPartyMode( CAr & ar );
+	void	OnPartyChangeItemMode( CAr & ar );
+	void	OnPartyChangeExpMode( CAr & ar );
 
-	void	OnEnvironmentEffect( CAr & ar, DPID, DPID, OBJID );
+	void	OnEnvironmentEffect( CAr & ar );
 
-	void	OnPartyChat( CAr & ar , DPID, DPID, OBJID );
-	void	OnCreateGuild( CAr & ar, DPID, DPID, OBJID );
-	void	OnDestroyGuild( CAr & ar, DPID, DPID, OBJID );
-	void	OnAddGuildMember( CAr & ar, DPID, DPID, OBJID );
-	void	OnRemoveGuildMember( CAr & ar, DPID, DPID, OBJID );
-	void	OnGuildClass( CAr & ar, DPID, DPID, OBJID );
-	void	OnGuildNickName( CAr & ar, DPID, DPID, OBJID );
-	void	OnChgMaster( CAr & ar, DPID, DPID, OBJID );
-	void	OnGuildMemberLogOut( CAr & ar, DPID, DPID, OBJID );
-	void	OnGuildLogoACK( CAr & ar, DPID, DPID, OBJID );
-	void	OnGuildContributionACK( CAr & ar, DPID, DPID, OBJID );
-	void	OnGuildNoticeACk( CAr & ar, DPID, DPID, OBJID );
-	void	OnAddVoteResultACk( CAr & ar, DPID, DPID, OBJID );
-	void	OnModifyVote( CAr & ar, DPID, DPID, OBJID );
+	void	OnPartyChat( CAr & ar  );
+	void	OnCreateGuild( CAr & ar );
+	void	OnDestroyGuild( CAr & ar );
+	void	OnAddGuildMember( CAr & ar );
+	void	OnRemoveGuildMember( CAr & ar );
+	void	OnGuildClass( CAr & ar );
+	void	OnGuildNickName( CAr & ar );
+	void	OnChgMaster( CAr & ar );
+	void	OnGuildMemberLogOut( CAr & ar );
+	void	OnGuildLogoACK( CAr & ar );
+	void	OnGuildContributionACK( CAr & ar );
+	void	OnGuildNoticeACk( CAr & ar );
+	void	OnAddVoteResultACk( CAr & ar );
+	void	OnModifyVote( CAr & ar );
 
-	void	OnGuildAuthority( CAr & ar, DPID, DPID, OBJID );
-	void	OnGuildPenya( CAr & ar, DPID, DPID, OBJID );
-	void	OnGuildRealPenya( CAr & ar, DPID, DPID, OBJID );
-	void	OnGuildSetName( CAr & ar, DPID, DPID, OBJID );
-	void	OnGuildMsgControl( CAr & ar, DPID, DPID, OBJID );
-	void	OnAcptWar( CAr & ar, DPID, DPID, OBJID );
-	void	OnSurrender( CAr & ar, DPID, DPID, OBJID );
+	void	OnGuildAuthority( CAr & ar );
+	void	OnGuildPenya( CAr & ar );
+	void	OnGuildRealPenya( CAr & ar );
+	void	OnGuildSetName( CAr & ar );
+	void	OnGuildMsgControl( CAr & ar );
+	void	OnAcptWar( CAr & ar );
+	void	OnSurrender( CAr & ar );
 
-	void	OnSetPointParam( CAr & ar, DPID, DPID, OBJID );
-	void	OnFriendInterceptState( CAr & ar, DPID, DPID, OBJID );
-	void	OnSetFriendState( CAr & ar, DPID, DPID, OBJID );
-	void	OnPartyChangeLeader( CAr & ar, DPID, DPID, OBJID );
+	void	OnSetPointParam( CAr & ar );
+	void	OnFriendInterceptState( CAr & ar );
+	void	OnSetFriendState( CAr & ar );
+	void	OnPartyChangeLeader( CAr & ar );
 
-	void	OnLoadConstant( CAr & ar, DPID, DPID, OBJID );
-	void	OnGameRate( CAr & ar, DPID, DPID, OBJID );
-	void	OnSetMonsterRespawn( CAr & ar, DPID, DPID, OBJID );
-	void	OnSetPlayerName( CAr & ar, DPID, DPID, OBJID );
+	void	OnLoadConstant( CAr & ar );
+	void	OnGameRate( CAr & ar );
+	void	OnSetMonsterRespawn( CAr & ar );
+	void	OnSetPlayerName( CAr & ar );
 #ifdef __EVENT0913
-	void	OnEvent0913( CAr & ar, DPID, DPID, DPID );
+	void	OnEvent0913( CAr & ar );
 #endif	// __EVENT0913
 #ifdef __EVENT1206
-	void	OnEvent1206( CAr & ar, DPID, DPID, DPID );
+	void	OnEvent1206( CAr & ar );
 #endif	// __EVENT1206
-	void	OnEvent( CAr & ar, DPID, DPID, DPID );
-	void	OnGuildCombatState( CAr & ar, DPID, DPID, DPID );
-	void	OnRemoveUserFromCORE( CAr & ar, DPID, DPID, DPID );
-	void	OnPing( CAr & ar, DPID, DPID, DPID );
+	void	OnEvent( CAr & ar );
+	void	OnGuildCombatState( CAr & ar );
+	void	OnRemoveUserFromCORE( CAr & ar );
+	void	OnPing( CAr & ar );
 
 
-	void OnBuyingInfo(CAr & ar, DPID, DPID, DPID);
-	void OnModifyMode(CAr & ar, DPID, DPID, DPID);
+	void OnBuyingInfo(CAr & ar);
+	void OnModifyMode(CAr & ar);
 };
 
 extern CDPCoreClient g_DPCoreClient;
