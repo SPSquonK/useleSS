@@ -1335,7 +1335,7 @@ public:
 	void			Abrade( CMover* pAttacker, int nParts = PARTS_RWEAPON );
 	DWORD			GetRandomPartsAbraded();
 	void			SetMarkingPos();
-	void			RemoveSFX( OBJID idTarget, int id, BOOL bForce, DWORD dwSkill );
+	void			RemoveSFX( OBJID idTarget, DWORD dwSkill );
 	int				GetSFXCount( OBJID idTarget );
 	void			IncSFXCount( OBJID idTarget, DWORD dwSkill );
 	void			AddSFXInfo( OBJID idTarget, SFXHIT_INFO& info );

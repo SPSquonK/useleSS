@@ -3463,35 +3463,27 @@ void CDPSrvr::OnConfirmBank( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpB
 	);
 }
 
-void CDPSrvr::OnSfxHit( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnSfxHit( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE, u_long )
 {
-	int idSfxHit;
-	int nMagicPower;
-	DWORD dwSkill;
-	OBJID idAttacker;
-	int	nDmgCnt;	// 일반적으론 0, 지속데미지의 경우 첫빵이후는 1이상이 넘어온다. 이경우는 데미지의 10%만 준다.
-	float fDmgAngle, fDmgPower;
-	
-	CMover* pAttacker	= NULL;
-
-	ar >> idSfxHit >> nMagicPower >> dwSkill >> idAttacker >> nDmgCnt >> fDmgAngle >> fDmgPower;		
+	const auto [idSfxHit, dwSkill, idAttacker] = ar.Extract<int, DWORD, OBJID>();
 
 	// idAttacker가 NULL_ID면 어태커를 dpidUser로 한다.
-	if( idAttacker == NULL_ID )
-		pAttacker = g_UserMng.GetUser( dpidCache, dpidUser );	
-	else
-		pAttacker = prj.GetMover( idAttacker );
+	CMover * pAttacker;
+	if (idAttacker == NULL_ID) {
+		pAttacker = g_UserMng.GetUser(dpidCache, dpidUser);
+	} else {
+		pAttacker = prj.GetMover(idAttacker);
+	}
 
 	if( IsValidObj( pAttacker ) == FALSE ) 
 		return;
 
 	const CSfxHitArray::SfxHit * pSfxHit = pAttacker->m_sfxHitArray.GetSfxHit( idSfxHit );
-	if( pSfxHit == NULL ) 
-		return;
+	if (!pSfxHit) return;
 
 	CMover* pTarget	= prj.GetMover( pSfxHit->objid );
 
-	pAttacker->RemoveSFX( pSfxHit->objid, idSfxHit, ( IsInvalidObj( pTarget ) || pTarget->IsDie() ), dwSkill );
+	pAttacker->RemoveSFX( pSfxHit->objid, dwSkill );
 	pAttacker->m_sfxHitArray.RemoveSfxHit( idSfxHit, TRUE );	// 무조건 제거
 }
 

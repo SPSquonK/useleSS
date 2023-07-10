@@ -8933,12 +8933,8 @@ void CDPClient::SendSnapshot( BOOL fUnconditional )
 	}
 }
 
-void CDPClient::SendSfxHit( int idSfxHit, int nMagicPower, DWORD dwSkill, OBJID idAttacker, 
-						    int nDmgCnt, float fDmgAngle, float fDmgPower )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_SFX_HIT, DPID_UNKNOWN );
-	ar << idSfxHit << nMagicPower << dwSkill << idAttacker << nDmgCnt << fDmgAngle << fDmgPower;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendSfxHit(int idSfxHit, DWORD dwSkill, OBJID idAttacker) {
+	SendPacket<PACKETTYPE_SFX_HIT>(idSfxHit, dwSkill, idAttacker);
 }
 
 void CDPClient::SendSfxClear( int idSfxHit, OBJID idMover )

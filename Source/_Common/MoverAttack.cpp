@@ -1929,7 +1929,7 @@ void CMover::ClearSFX( OBJID idTarget )
 	m_mapSFXCount.erase( idTarget );
 }
 
-void CMover::RemoveSFX( OBJID idTarget, int id, BOOL bForce, DWORD dwSkill )
+void CMover::RemoveSFX( OBJID idTarget, DWORD dwSkill )
 {
 	if( idTarget != NULL_ID )
 	{

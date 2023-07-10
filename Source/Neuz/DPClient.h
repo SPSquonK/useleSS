@@ -336,7 +336,7 @@ public:
 #endif	// __IAOBJ0622
 	void	PutPlayerDestAngle( float fAnlge, BYTE fLeft, BYTE f = 0 );
 	void	ClearPlayerDestPos( void );
-	void	SendSfxHit( int idSfxHit, int nMagicPower, DWORD dwSkill = NULL_ID, OBJID idAttacker = NULL_ID, int nDmgCnt = 0, float fDmgAngle = 0, float fDmgPower = 0 );
+	void	SendSfxHit( int idSfxHit, DWORD dwSkill = NULL_ID, OBJID idAttacker = NULL_ID );
 	void	SendSfxClear( int idSfxHit, OBJID idMover = NULL_ID );
 	void	SendQuerySetPlayerName( DWORD dwData, const char* lpszPlayer );
 	void	SendSummonFriend( DWORD dwData, const char* lpszPlayer );

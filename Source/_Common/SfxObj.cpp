@@ -103,7 +103,7 @@ int	CSfx::SetSfx( int nIndex,
 //
 // nDmgCnt : 일반적으론 0 : 지속데미지를 사용할경우에 0이 아닌값이 들어온다.
 //
-void CSfx::DamageToTarget( int nDmgCnt, float fDmgAngle, float fDmgPower, int nMaxDmgCnt )
+void CSfx::DamageToTarget( int nMaxDmgCnt )
 {
 	CMover* pObjSrc = (CMover*)prj.GetCtrl( m_idSrc );
 	CCtrl* pObjDest = prj.GetCtrl( m_idDest );
@@ -114,7 +114,7 @@ void CSfx::DamageToTarget( int nDmgCnt, float fDmgAngle, float fDmgPower, int nM
 	if( pObjDest->GetType() == OT_MOVER )
 	{
 		CMover* pMover = (CMover*) pObjDest;
-#ifdef __CLIENT
+
 		const auto pos = pMover->GetPos();
 		PLAYSND( pMover->GetProp()->dwSndDmg2, &pos );	// 마법류 맞을때 타격음.	
 
@@ -122,11 +122,10 @@ void CSfx::DamageToTarget( int nDmgCnt, float fDmgAngle, float fDmgPower, int nM
 		if( pObjSrc->IsActiveMover() || (pObjSrc->IsPlayer() == FALSE && pObjDest->IsActiveMover()) )
 		{
 			pMover->SetDmgCnt( 10 );	// 발사체 맞아도 이제 흔들린다,
-			g_DPlay.SendSfxHit( m_idSfxHit, m_nMagicPower, m_dwSkill, pObjSrc->GetId(), nDmgCnt, fDmgAngle, fDmgPower );
+			g_DPlay.SendSfxHit( m_idSfxHit, m_dwSkill, pObjSrc->GetId() );
 			if( nMaxDmgCnt == 1 )	// 한방짜리 데미지만 id를 클리어 함.
 				m_idSfxHit = 0;		// 0으로 해놔야 this가 삭제될때 SendSfxClear를 또 보내지 않는다.
 		}
-#endif	// __CLIENT
 	}
 }
 void CSfx::Process()

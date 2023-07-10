@@ -2469,7 +2469,7 @@ void CSfxSkillMagStrongWind::Process()
 				}
 			}
 			
-			DamageToTarget( 0, (float)( fAngle ), fDmgPower );
+			DamageToTarget( fDmgPower );
 			// 타겟에 맞은순간 맞은 각도로 외부힘 0.x를 가함.
 			if( IsValidObj(pObjDest) )
 			{
@@ -2737,9 +2737,9 @@ void CSfxSkillMagHotAir::Process()
 	{
 		int	nMaxDmgCnt = (pAddSkillProp->dwSkillTime / pAddSkillProp->dwPainTime) + 1;		// 몇번 데미지를 먹냐.
 		// 康	2006/11/9	// 첫번째만 전송, 이 후 지속 피해 처리
-//		DamageToTarget( m_nDmgCnt++, 0, 0, nMaxDmgCnt );
+
 		if( m_nDmgCnt++ == 0 )
-			DamageToTarget( m_nDmgCnt, 0, 0, nMaxDmgCnt );
+			DamageToTarget( nMaxDmgCnt );
 		if( m_nDmgCnt >= nMaxDmgCnt )
 			m_idSfxHit = 0;
 		const auto pos = GetPos();
