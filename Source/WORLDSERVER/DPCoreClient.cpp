@@ -273,26 +273,6 @@ void CDPCoreClient::SendSetMonsterRespawn( u_long uidPlayer, DWORD dwMonsterID, 
 	);
 }
 
-
-void CDPCoreClient::SendGuildMsgControl_Bank_Item( CUser* pUser, CItemElem* pItemElem, BYTE p_Mode )
-{
-	if (!pUser->GetGuild()) return;
-
-	BEFORESENDDUAL( ar, PACKETTYPE_GUILD_MSG_CONTROL, DPID_UNKNOWN, DPID_UNKNOWN );
-	(void)nBufSize;
-
-	GUILD_MSG_HEADER	Header;
-	Header.HeadAMain	= p_Mode;
-	Header.HeadASub		= (WORD)( pUser->m_idGuild );
-	Header.HeadBMain	= GUILD_MSG_HEADER::GUILD_BANK;
-	Header.HeadBSub		= GUILD_MSG_HEADER::ITEM;
-	
-	ar.Write(&Header, sizeof(GUILD_MSG_HEADER));
-	ar << *pItemElem;
-	
-	PASS( ar );
-}
-
 void CDPCoreClient::SendGuildMsgControl_Bank_Penya( CUser* pUser, DWORD p_Penya, BYTE p_Mode, BYTE cbCloak )
 {
 	if (!pUser->GetGuild()) return;
