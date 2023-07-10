@@ -119,7 +119,6 @@ public:
 	void	SendGuildMemberGameJoin( CPlayer * pTo, int nMaxLogin, u_long uLoginPlayerId[], u_long uLoginGuildMulti[] );
 	void	SendGuildError( CPlayer * pTo, int nError );
 	void	SendGuildRank( CPlayer * pTo );
-	void	SendGuildMsgControl( GUILD_MSG_HEADER* pHeader, DWORD pPenya, BYTE cbCloak );
 
 private:
 	void	SendDeclWar( u_long idDecl, const char* pszMaster, CPlayer* pPlayer );

@@ -49,19 +49,6 @@ enum class GuildPower {
 
 using GuildPowers = sqktd::EnumSet<GuildPower>;
 
-struct GUILD_MSG_HEADER {
-	enum {
-		GUILD_BANK = 0x0001,
-		PENYA = 0x0001,
-		ITEM = 0x0002,
-	};
-
-	WORD	HeadASub;		//	Guild ID
-
-	WORD	HeadBSub;		//	Divide according to use.
-	WORD	HeadBMain;
-};
-
 ////////////////////////////////////////////////////////////////////////////////
 //투표 관련 
 ////////////////////////////////////////////////////////////////////////////////

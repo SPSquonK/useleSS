@@ -77,7 +77,6 @@ CDPCoreClient::CDPCoreClient()
 	ON_MSG( PACKETTYPE_GUILD_PENYA, &CDPCoreClient::OnGuildPenya );
 	ON_MSG( PACKETTYPE_GUILD_DB_REALPENYA, &CDPCoreClient::OnGuildRealPenya );
 	ON_MSG( PACKETTYPE_GUILD_SETNAME, &CDPCoreClient::OnGuildSetName );
-	ON_MSG( PACKETTYPE_GUILD_MSG_CONTROL, &CDPCoreClient::OnGuildMsgControl);
 	ON_MSG( PACKETTYPE_GUILD_CLASS, &CDPCoreClient::OnGuildClass );
 	ON_MSG( PACKETTYPE_GUILD_NICKNAME, &CDPCoreClient::OnGuildNickName );
 
@@ -271,25 +270,6 @@ void CDPCoreClient::SendSetMonsterRespawn( u_long uidPlayer, DWORD dwMonsterID, 
 		dwMonsterID, dwRespawnNum, dwAttackNum, dwRect, dwRespawnTime,
 		bFlying
 	);
-}
-
-void CDPCoreClient::SendGuildMsgControl_Bank_Penya( CUser* pUser, DWORD p_Penya, BYTE cbCloak )
-{
-	if (!pUser->GetGuild()) return;
-
-	BEFORESENDDUAL( ar, PACKETTYPE_GUILD_MSG_CONTROL, DPID_UNKNOWN, DPID_UNKNOWN );
-	(void)nBufSize;
-
-	GUILD_MSG_HEADER	Header;
-	Header.HeadASub		= (WORD)( pUser->m_idGuild );
-	Header.HeadBMain	= GUILD_MSG_HEADER::GUILD_BANK;
-	Header.HeadBSub		= GUILD_MSG_HEADER::PENYA;
-	
-	ar.Write(&Header, sizeof(GUILD_MSG_HEADER));
-	ar << p_Penya;
-	ar << cbCloak;
-	
-	PASS( ar );
 }
 
 void CDPCoreClient::SendBlock( BYTE nGu, u_long uidPlayerTo, char *szNameTo, u_long uidPlayerFrom )
@@ -1855,36 +1835,6 @@ void CDPCoreClient::OnGuildSetName( CAr & ar )
 #ifdef __S_SERVER_UNIFY
 			pUser->SetAllAction();
 #endif // __S_SERVER_UNIFY
-		}
-	}
-}
-
-void CDPCoreClient::OnGuildMsgControl( CAr & ar )
-{
-	if ( !g_eLocal.GetState( ENABLE_GUILD_INVENTORY ) )
-	{
-		GUILD_MSG_HEADER	Header;
-		DWORD				dwPenya;
-		BYTE				cbCloak;
-
-		ar.Read( &Header, sizeof(GUILD_MSG_HEADER));
-		ar >> dwPenya;
-		ar >> cbCloak;		// 망토의 경우 
-
-		CGuild* pGuild	= g_GuildMng.GetGuild( Header.HeadASub );
-		if( pGuild )
-		{
-			CGuildMember*	pMember;
-			CUser*			pUsertmp;
-			for( auto i = pGuild->m_mapPMember.begin();	i != pGuild->m_mapPMember.end(); ++i )
-			{
-				pMember		= i->second;
-				pUsertmp	= prj.GetUserByID( pMember->m_idPlayer );
-				if( IsValidObj( pUsertmp ) ) 
-				{
-					pUsertmp->AddGetGoldGuildBank( dwPenya, 2, pMember->m_idPlayer, cbCloak );	// 2는 업데이트 해야할 클라이게
-				}
-			}
 		}
 	}
 }

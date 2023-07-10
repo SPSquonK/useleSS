@@ -1566,16 +1566,6 @@ void CDPCacheSrvr::SendGuildSetName( u_long idGuild, const char* szName )
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPCacheSrvr::SendGuildMsgControl( GUILD_MSG_HEADER* pHeader, DWORD pPenya, BYTE cbCloak )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_MSG_CONTROL, DPID_ALLPLAYERS );
-
-	ar.Write( pHeader, sizeof(GUILD_MSG_HEADER) );
-	ar << pPenya;
-	ar << cbCloak;
-	SEND( ar, this, DPID_ALLPLAYERS );
-}
-
 void CDPCacheSrvr::SendGuildChat( const char* lpszPlayer, const char* sChat, CPlayer* pPlayer, OBJID objid )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_CHAT, pPlayer->dpidUser );

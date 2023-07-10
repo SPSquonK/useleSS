@@ -57,7 +57,6 @@ CDPCoreSrvr::CDPCoreSrvr()
 
 	ON_MSG( PACKETTYPE_CREATE_GUILD, &CDPCoreSrvr::OnCreateGuild );
 	ON_MSG( PACKETTYPE_GUILD_CHAT, &CDPCoreSrvr::OnGuildChat );
-	ON_MSG( PACKETTYPE_GUILD_MSG_CONTROL, &CDPCoreSrvr::OnGuildMsgControl );
 
 	ON_MSG( PACKETTYPE_ADDFRIENDNAMEREQEST, &CDPCoreSrvr::OnAddFriendNameReqest );
 	ON_MSG( PACKETTYPE_BLOCK, &CDPCoreSrvr::OnBlock );
@@ -853,28 +852,6 @@ void CDPCoreSrvr::SendEnvironmentEffect()
 	BEFORESEND( ar, PACKETTYPE_ENVIRONMENTALL );
 	ar << *CEnvironment::GetInstance();
 	SEND( ar, this, DPID_ALLPLAYERS );
-}
-
-
-void CDPCoreSrvr::OnGuildMsgControl( CAr & ar, DPID, DPID, DPID, u_long )
-{//*
-	GUILD_MSG_HEADER	Header;
-
-	ar.Read(&Header, sizeof(GUILD_MSG_HEADER));
-
-	if ( Header.HeadBMain == GUILD_MSG_HEADER::GUILD_BANK )
-	{
-		DWORD		dwPenya = 0;
-		BYTE		cbCloak;
-//		CItemElem	ItemElem;
-
-		if ( Header.HeadBSub & GUILD_MSG_HEADER::PENYA )
-		{
-			ar >> dwPenya;
-			ar >> cbCloak;
-			g_DPCacheSrvr.SendGuildMsgControl( &Header, dwPenya, cbCloak );
-		}
-	}//*/
 }
 
 void CDPCoreSrvr::OnCreateGuild( CAr & ar, DPID, DPID, DPID, u_long )

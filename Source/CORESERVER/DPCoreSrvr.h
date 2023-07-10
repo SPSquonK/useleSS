@@ -128,7 +128,6 @@ private:
 public:
 	[[nodiscard]] DPID GetWorldSrvrDPIDWeak(u_long uIdofMulti) const;
 
-	void	OnGuildMsgControl( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnCreateGuild( CAr & ar, DPID, DPID, DPID, u_long );
 	void	OnGuildChat( CAr & ar, DPID, DPID, DPID, u_long );
 	void	SendCreateGuild( GUILD_MEMBER_INFO* pInfo, int nSize, u_long idGuild, const char* szGuild );
