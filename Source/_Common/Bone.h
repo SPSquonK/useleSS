@@ -61,23 +61,13 @@ public:
 
 
 // read only bone database
-class CBonesMng
-{
+class CBonesMng final {
+private:
+	std::map<std::string, std::unique_ptr<CBones>, std::less<>> m_mapBones;
+
 public:
-	std::map<std::string, CBones*>	m_mapBones;
-
-//#ifdef __WORLDSERVER
-//	CRIT_SEC	m_AccessLock;
-//#endif	// __WORLDSERVER
-
-	CBonesMng();
-	~CBonesMng();
-
-	void	Init( void );
-	void	Destroy( void );
-
-	CBones *LoadBone( LPCTSTR szFileName );									// Bone파일을 읽어서 메모리에 적재시킨다.
-
+	// Bone file is read and loaded into memory.
+	CBones * LoadBone(LPCTSTR szFileName);
 };
 
 extern CBonesMng		g_BonesMng;

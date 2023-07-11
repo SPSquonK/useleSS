@@ -5,7 +5,6 @@
 
 
 
-CBonesMng		g_BonesMng;
 
 ////////////////////////////////////////////////////////////////////////////////////
 ///////////////
@@ -188,47 +187,29 @@ int		CBones :: LoadBone( LPCTSTR szFileName )
 ///////////////
 ///////////////
 ////////////////////////////////////////////////////////////////////////////////////
-CBonesMng :: CBonesMng()
-{
-}
 
-CBonesMng :: ~CBonesMng()
-{
-	Destroy();
-}
+CBonesMng		g_BonesMng;
 
+// When this file load request comes in, the file
+// is read and loaded into memory.
+// When loading, the duplicate returns a pointer to
+// the already loaded bone.
+CBones * CBonesMng::LoadBone(LPCTSTR szFileName) {
+	char sFile[MAX_PATH] = { 0, };
+	strcpy(sFile, szFileName);
+	strlwr(sFile);
 
-void	CBonesMng :: Init( void )
-{
-}
-
-void	CBonesMng :: Destroy( void )
-{
-	for( auto i = m_mapBones.begin(); i != m_mapBones.end(); ++i )
-		safe_delete( i->second );
-	m_mapBones.clear();
-}
-
-// 본 파일Load요청이 들어오면 파일을 읽어 메모리에 적재한다.
-// 적재할땐 중복된것은 이미 로딩되었던 본의 포인터를 리턴한다.
-// 파일의 첫머리에 고유 아이디를 넣어서 검색할때 파일이름으로 하지말고 아이디로 하도록 한다.
-CBones *CBonesMng :: LoadBone( LPCTSTR szFileName )
-{
-	char sFile[MAX_PATH]	= { 0,};
-	strcpy( sFile, szFileName );
-	strlwr( sFile );
-
-	auto i	= m_mapBones.find( sFile );
-	if( i != m_mapBones.end() )
-		return i->second;
-	// 로딩된게 아니었다면.  실제로 데이타 읽음.
-	CBones* pBones	= new CBones;
-	if( pBones->LoadBone( szFileName ) == FAIL )
-	{
-		safe_delete( pBones );
-		return NULL;
+	if (const auto i = m_mapBones.find(sFile); i != m_mapBones.end()) {
+		return i->second.get();
 	}
-	bool bResult	= m_mapBones.emplace(sFile, pBones).second;
+
+	CBones * pBones = new CBones;
+	if (pBones->LoadBone(szFileName) == FAIL) {
+		safe_delete(pBones);
+		return nullptr;
+	}
+
+	m_mapBones.emplace(sFile, pBones);
 	return pBones;
 }
 
