@@ -87,48 +87,36 @@ static long GetPlayLeftTime( BYTE cbAccountFlag )
 	return std::max<long>( (long)( span.GetTotalSeconds() ), 1 );	// 적어도 1초 이상 ( 0 과 구분하기 위해서 )
 }
 
-#ifdef __GPAUTH_01
-#ifdef __GPAUTH_02
-#ifdef __EUROPE_0514
-void CDPCertifier::SendServerList( DPID dpId, DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan, const char* szGPotatoNo, const char* szCheck, const char* szBak )
-#else	// __EUROPE_0514
-void CDPCertifier::SendServerList( DPID dpId, DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan, const char* szGPotatoNo, const char* szCheck )
-#endif	// __EUROPE_0514
-#else	// __GPAUTH_02
-void CDPCertifier::SendServerList( DPID dpId, DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan, const char* szGPotatoNo )
-#endif	// __GPAUTH_02
-#else	// __GPAUTH_01
-void CDPCertifier::SendServerList( DPID dpId, DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan )
-#endif	// __GPAUTH_01
+void CDPCertifier::SendServerList(DPID dpid, SendServerListArgs args)
 {
 	BEFORESEND( ar, PACKETTYPE_SRVR_LIST );
-	ar << dwAuthKey;
-	ar << cbAccountFlag;
+	ar << args.dwAuthKey;
+	ar << args.cbAccountFlag;
 
 #ifdef __GPAUTH_01
 	BOOL bGPotatoAuth	= ::GetLanguage() == LANG_GER || ::GetLanguage() == LANG_FRE;
 	if( bGPotatoAuth )
 	{
-		ar.WriteString( szGPotatoNo );
+		ar.WriteString( args.szGPotatoNo );
 #ifdef __GPAUTH_02
-		ar.WriteString( szCheck );
+		ar.WriteString( args.szCheck );
 #endif	// __GPAUTH_02
 	}
 #ifdef __EUROPE_0514
-	ar.WriteString( szBak );
+	ar.WriteString( args.szBak );
 #endif	// __EUROPE_0514
 
 #endif	// __GPAUTH_01
 
 	if( ::GetLanguage() == LANG_THA )
 	{
-		long lTimeLeft = GetPlayLeftTime( cbAccountFlag );	// 태국의 경우 돌아오는 22:00시까지의 남은 시간을 보낸다.
+		long lTimeLeft = GetPlayLeftTime( args.cbAccountFlag );	// 태국의 경우 돌아오는 22:00시까지의 남은 시간을 보낸다.
 		ar << lTimeLeft;
 	}
 
 	m_servers.read([&ar](const CListedServers & servers) { ar << servers; });
 
-	SEND( ar, this, dpId );
+	SEND( ar, this, dpid );
 }
 
 void CDPCertifier::SendError( LONG lError, DPID dpId )
