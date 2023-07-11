@@ -10,64 +10,25 @@
 
 #include "Housing.h"
 #include "guild.h"
-   
-typedef	struct	tagPLAYERPOS
-{
-	D3DXVECTOR3 vPos;
-	D3DXVECTOR3	vDelta;
-	BOOL fValid;
-}
-PLAYERPOS, *LPPLAYERPOS;
 
-typedef	struct	tagPLAYERDESTPOS
-{
+struct PLAYERDESTPOS {
 	D3DXVECTOR3 vPos;
 	BYTE	fForward;
 	BOOL	fValid;
-	FLOAT	d;
 #ifdef __IAOBJ0622
 	OBJID	objidIAObj;
 #endif	// __IAOBJ0622
-}
-PLAYERDESTPOS, *LPPLAYERDESTPOS;
+};
 
-typedef	struct	tagPLAYERDESTANGLE
-{
-	float	fAngle;
-	BOOL	fValid;
-	BYTE	fLeft;
-}
-PLAYERDESTANGLE, *LPPLAYERDESTANGLE;
-
-typedef	struct	tagPLAYERMOVINGACTMSG
-{
-	D3DXVECTOR3 vPos;
-	BYTE	fMoving;
-	BYTE	fForward;
-	DWORD	dwMsg;
-	int		nParam1;
-	int		nParam2;
-	float	fAngle;
-	BOOL	fValid;
-}
-PLAYERMOVINGACTMSG, *LPPLAYERMOVINGACTMSG;
-
-typedef	struct	tagPLAYERANGLE
-{
-	BOOL	fValid;
-	int		nCounter;
-}
-PLAYERANGLE, *PPLAYERANGLE;
-
-typedef struct tagSNAPSHOT
-{
-	PLAYERPOS	playerpos;
+struct SNAPSHOT {
 	PLAYERDESTPOS	playerdestpos;
-	PLAYERDESTANGLE		playerdestangle;
-	PLAYERMOVINGACTMSG	playermovingactmsg;
 	u_long	uFrameMove;
-}
-SNAPSHOT, *LPSNAPSHOT;
+};
+
+struct PLAYERANGLE {
+	BOOL	fValid = false;
+	int		nCounter = 0;
+};
 
 class CWndGuildVote;
 class CDPClient : public CDPMng,
@@ -114,7 +75,7 @@ public:
 	LONG	GetNetError();
 	void	SendJoin( BYTE nSlot, CMover* pMover, CRTMessenger* pRTMessenger, u_long uIdofMulti );
 
-	void	PostPlayerAngle( BOOL f );
+	void	PostPlayerAngle( bool f );
 	void	FlushPlayerAngle( void );
 	void	SendBlock( BYTE Gu, const char *szName, const char *szFrom );
 	void	SendSkillFlag( int nSkill );
@@ -334,7 +295,6 @@ public:
 #else	// __IAOBJ0622
 	void	PutPlayerDestPos( CONST D3DXVECTOR3 & vPos, bool bForward, BYTE f = 0 );
 #endif	// __IAOBJ0622
-	void	PutPlayerDestAngle( float fAnlge, BYTE fLeft, BYTE f = 0 );
 	void	ClearPlayerDestPos( void );
 	void	SendSfxHit( int idSfxHit, DWORD dwSkill = NULL_ID, OBJID idAttacker = NULL_ID );
 	void	SendSfxClear( int idSfxHit, OBJID idMover = NULL_ID );

@@ -179,7 +179,6 @@ CDPClient::CDPClient()
 #endif // __QUIZ
 
 	memset( (void*)&m_ss, 0, sizeof(SNAPSHOT) );
-	memset( (void*)&m_pa, 0, sizeof(PLAYERANGLE) );
 	
 	m_nMaxLoginGuild = 0;
 	memset( m_uLoginPlayerIdGuild, 0, sizeof(m_uLoginPlayerIdGuild) );
@@ -8019,7 +8018,7 @@ void CDPClient::SendPlayerBehavior( void )
 
 void CDPClient::SendPlayerMoved2( BYTE nFrame )
 {
-	PostPlayerAngle( FALSE );	
+	PostPlayerAngle( false );	
 
 	CMover* pPlayer	= g_pPlayer;
 	if( pPlayer ) 
@@ -8046,7 +8045,7 @@ void CDPClient::SendPlayerMoved2( BYTE nFrame )
 
 void CDPClient::SendPlayerBehavior2( void )
 {
-	PostPlayerAngle( FALSE );	//
+	PostPlayerAngle( false );	//
 
 	CMover* pPlayer	= g_pPlayer;
 	if( pPlayer ) 
@@ -8877,14 +8876,6 @@ void CDPClient::PutPlayerDestPos( CONST D3DXVECTOR3 & vPos, bool bForward, BYTE 
 #ifdef __IAOBJ0622
 	m_ss.playerdestpos.objidIAObj	= objidIAObj;
 #endif	// __IAOBJ0622
-}
-
-void CDPClient::PutPlayerDestAngle( float fAngle, BYTE fLeft, BYTE f )
-{
-	m_ss.playerdestangle.fValid	= TRUE;
-	m_ss.playerdestangle.fLeft	= fLeft;
-	m_ss.playerdestangle.fAngle	= fAngle;
-	if( f )	m_ss.uFrameMove		= 1;
 }
 
 void CDPClient::ClearPlayerDestPos( void )
@@ -11685,18 +11676,15 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::PostPlayerAngle( BOOL f )
-{
-	m_pa.fValid		= f;
+void CDPClient::PostPlayerAngle(bool f) {
+	m_pa.fValid = f;
 }
 
 void CDPClient::FlushPlayerAngle( void )
 {
 	if( m_pa.fValid && ( ++m_pa.nCounter % 30 ) == 0 )
 	{
-//		static	int	i	= 0;
-//		TRACE( "FlushPlayerAngle(): %d\n", ++i );
-		m_pa.fValid		= FALSE;
+		m_pa.fValid		= false;
 		CMover* pPlayer	= g_pPlayer;
 		if( pPlayer )
 		{

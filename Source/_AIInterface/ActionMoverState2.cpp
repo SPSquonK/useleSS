@@ -315,7 +315,7 @@ void CActionMover::ProcessFlyTracking()
 				pMover->SetAngleX( pMover->GetAngleX() + s_fTurnAccH );
 
 				if( s_fTurnAcc || s_fTurnAccH )	// 값이 달라지면 전송함.
-					g_DPlay.PostPlayerAngle( TRUE );
+					g_DPlay.PostPlayerAngle( true );
 			}
 		}
 	}

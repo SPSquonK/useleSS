@@ -884,7 +884,7 @@ int		CWndWorld::ControlFlying( DWORD dwMessage, CPoint point )
 		pMover->SetAngleX( fAngX );
 
 		if( fAdd || fAddX )
-			g_DPlay.PostPlayerAngle( TRUE );
+			g_DPlay.PostPlayerAngle( true );
 	}
 	
 
