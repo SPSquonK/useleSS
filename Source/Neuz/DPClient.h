@@ -14,14 +14,13 @@
 struct PLAYERDESTPOS {
 	D3DXVECTOR3 vPos;
 	BYTE	fForward;
-	BOOL	fValid;
 #ifdef __IAOBJ0622
-	OBJID	objidIAObj;
+	OBJID	objidIAObj = NULL_ID;
 #endif	// __IAOBJ0622
 };
 
 struct SNAPSHOT {
-	PLAYERDESTPOS	playerdestpos;
+	std::optional<PLAYERDESTPOS>	playerdestpos;
 	u_long	uFrameMove;
 };
 
@@ -290,11 +289,7 @@ public:
 	void	SendBlessednessCancel( int nItem );
 
 	void	SendSnapshot( BOOL fUnconditional = FALSE );
-#ifdef __IAOBJ0622
-	void	PutPlayerDestPos( CONST D3DXVECTOR3 & vPos, bool bForward, BYTE f = 0, OBJID objidIAObj = NULL_ID );
-#else	// __IAOBJ0622
-	void	PutPlayerDestPos( CONST D3DXVECTOR3 & vPos, bool bForward, BYTE f = 0 );
-#endif	// __IAOBJ0622
+	void	PutPlayerDestPos( const PLAYERDESTPOS & playerDestPos, BYTE f = 0 );
 	void	ClearPlayerDestPos( void );
 	void	SendSfxHit( int idSfxHit, DWORD dwSkill = NULL_ID, OBJID idAttacker = NULL_ID );
 	void	SendSfxClear( int idSfxHit, OBJID idMover = NULL_ID );

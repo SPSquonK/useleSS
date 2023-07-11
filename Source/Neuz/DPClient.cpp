@@ -8862,25 +8862,13 @@ void CDPClient::SendBlock( BYTE Gu, const char *szName, const char *szFrom )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#ifdef __IAOBJ0622
-void CDPClient::PutPlayerDestPos( CONST D3DXVECTOR3 & vPos, bool bForward, BYTE f, OBJID objidIAObj )
-#else	// __IAOBJ0622
-void CDPClient::PutPlayerDestPos( CONST D3DXVECTOR3 & vPos, bool bForward, BYTE f )
-#endif	// __IAOBJ0622
-{
-	m_ss.playerdestpos.fValid	= TRUE;
-	m_ss.playerdestpos.vPos		= vPos;
-	m_ss.playerdestpos.fForward	= (bForward ? 1 : 0);
-	if( f )	m_ss.uFrameMove		= 1;
-
-#ifdef __IAOBJ0622
-	m_ss.playerdestpos.objidIAObj	= objidIAObj;
-#endif	// __IAOBJ0622
+void CDPClient::PutPlayerDestPos(const PLAYERDESTPOS & playerDestPos, BYTE f) {
+	m_ss.playerdestpos = playerDestPos;
+	if (f)	m_ss.uFrameMove = 1;
 }
 
-void CDPClient::ClearPlayerDestPos( void )
-{
-	memset( &m_ss.playerdestpos, 0, sizeof(PLAYERDESTPOS) );
+void CDPClient::ClearPlayerDestPos() {
+	m_ss.playerdestpos = std::nullopt;
 }
 
 void CDPClient::SendSnapshot( BOOL fUnconditional )
@@ -8888,36 +8876,31 @@ void CDPClient::SendSnapshot( BOOL fUnconditional )
 	m_ss.uFrameMove++;
 	if( fUnconditional || m_ss.uFrameMove % 30 == 0 )	// 5 / 1
 	{
-	if( m_ss.playerdestpos.fValid == TRUE )
+	if( m_ss.playerdestpos )
 	{
 		if( g_pPlayer->m_pActMover->IsSit() )
 			SendMotion( OBJMSG_STANDUP );
 	}
 		BEFORESENDSOLE( ar, PACKETTYPE_SNAPSHOT, DPID_UNKNOWN );
 
-		u_long uOffset	= ar.GetOffset();
-		BYTE c	= 0;
-		ar << c;	// reserve
+		auto pC = ar.PushBack<BYTE>(0);
 
-		if( m_ss.playerdestpos.fValid == TRUE )
+		if( m_ss.playerdestpos )
 		{
 			ar << SNAPSHOTTYPE_DESTPOS;
-			ar << m_ss.playerdestpos.vPos;	// 12
-			ar << m_ss.playerdestpos.fForward;	// 1
+			ar << m_ss.playerdestpos->vPos;	// 12
+			ar << m_ss.playerdestpos->fForward;	// 1
 
 #ifdef __IAOBJ0622
-			ar << m_ss.playerdestpos.objidIAObj;
+			ar << m_ss.playerdestpos->objidIAObj;
 #endif	// __IAOBJ0622
 
-			m_ss.playerdestpos.fValid	= FALSE;
-			c++;
+			m_ss.playerdestpos = std::nullopt;
+			(*pC)++;
 		}
 
-		if( c > 0 )
-		{
-			BYTE* lpBuf		= ar.GetBuffer( &nBufSize );
-			*( lpBuf + uOffset )	= c;
-			Send( (LPVOID)lpBuf, nBufSize, DPID_SERVERPLAYER );
+		if (*pC > 0) {
+			SEND(ar, this, DPID_SERVERPLAYER);
 		}
 
 		m_ss.uFrameMove		= 0;
