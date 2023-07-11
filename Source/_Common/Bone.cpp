@@ -16,20 +16,10 @@
 ////////////////////////////////////////////////////////////////////////////////////
 CBones :: CBones()
 {
-	Init();
-}
-
-CBones :: ~CBones()
-{
-	Destroy();
-}
-
-void	CBones :: Init( void )
-{
 	m_nID = 0;
 	memset( m_szName, 0, sizeof(m_szName) );
 	m_nMaxBone = 0;
-	m_pBones = NULL;
+	m_pBones = nullptr;
 	m_nRHandIdx = m_nLHandIdx = m_nRArmIdx = m_nLArmIdx = 0;
 
 	D3DXMatrixIdentity( &m_mLocalRH );
@@ -38,36 +28,8 @@ void	CBones :: Init( void )
 	D3DXMatrixIdentity( &m_mLocalKnuckle );
 
 	memset( m_vEvent, 0, sizeof(m_vEvent) );
-//	memset( m_pEventParent, 0, sizeof(m_pEventParent) );
 	memset( m_nEventParentIdx, 0, sizeof(m_nEventParentIdx) );
-
 }
-
-void	CBones :: Destroy( void )
-{
-	SAFE_DELETE_ARRAY( m_pBones );
-	Init();
-}
-
-//
-//  뼈대들중에서 nID값을 가지는 뼈대를 찾음
-//
-/*
-BONE	*CBones :: FindBone( int nID )
-{
-	int		i;
-	BONE	*pBone = m_pBones;
-
-	i = m_nMaxBone;
-	while( i-- )
-	{
-		if( pBone->m_nID == nID )	return pBone;
-		pBone ++;
-	}
-	
-	return NULL;
-}
-*/
 
 //
 //
@@ -107,8 +69,8 @@ int		CBones :: LoadBone( LPCTSTR szFileName )
 
 	resFp.Read( &nNumBone, 4, 1 );			// 본 개수 읽음
 	m_nMaxBone = nNumBone;
-	m_pBones = new BONE[ nNumBone ];			// 본 개수 만큼 할당
-	memset( m_pBones, 0, sizeof(BONE) * nNumBone );		// zero clear
+	m_pBones = std::make_unique<BONE[]>(nNumBone);			// 본 개수 만큼 할당
+	memset( m_pBones.get(), 0, sizeof(BONE) * nNumBone);		// zero clear
 
 	for( i = 0; i < nNumBone; i ++ )
 	{
@@ -152,12 +114,6 @@ int		CBones :: LoadBone( LPCTSTR szFileName )
 	{
 		resFp.Read( &m_mLocalLH, sizeof(D3DXMATRIX), 1 );
 	}
-
-	// 포인터로 할당.
-//	for( i = 0; i < 4; i ++ )
-//	{
-//		m_pEventParent[i] = &m_pBones[ nParentIdx[i] ];
-//	}
 
 	resFp.Close();
 

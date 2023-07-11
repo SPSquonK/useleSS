@@ -4,32 +4,29 @@
 #include "file.h"
 #include <functional>
 
-#define		MAX_VS_BONE		28		// VS에서 최대사용가능한 뼈대레지스터의 개수.
+#define		MAX_VS_BONE		28		// The maximum number of skeleton registers available in VS.
 
-struct BONE;
-struct BONE
-{
-	BONE		*m_pParent;			// 상위 부모 노드
+struct BONE {
+	BONE *			m_pParent;    // Parent node
 
-//	int			m_nID;				// 계층순서 대로 부여된 번호 - 어차피 필요없을거 같다.
-	int			m_nParentIdx;		// 부모 인덱스
-	char		m_szName[32];		// * 스트링형태의 노드 이름
-	D3DXMATRIX		m_mTM;		// ase원본 TM
-	D3DXMATRIX		m_mInverseTM;	// * 미리 변환된 인버스TM 
-	D3DXMATRIX		m_mLocalTM;	// * 미리변환된 로컬 TM
+	int					m_nParentIdx; // Parent index
+	char				m_szName[32]; // Bode name
+	D3DXMATRIX	m_mTM;        // original TM
+	D3DXMATRIX	m_mInverseTM; // pre-converted inverseTM
+	D3DXMATRIX	m_mLocalTM;   // pretransformed local TM
 };
 
 #define MAX_MDL_EVENT		8	// #event xx
 
 //
 // 본셋트의 구조
-class CBones
+class CBones final
 {
 public:
 	int		m_nID;				// 본의 고유 ID(파일내에 있다)
 	char	m_szName[64];		// 본의 파일명 - 나중에 이건 빠진다.
 	int		m_nMaxBone;			// 뼈대 갯수
-	BONE	*m_pBones;			// 뼈대 리스트
+	std::unique_ptr<BONE[]> m_pBones;			// 뼈대 리스트
 	int		m_bSendVS;			// 본개수가 MAX_VS_BONE보다 적은지...
 
 	D3DXMATRIX	m_mLocalRH;		// 오른손 무기의 RHand로부터의 상대TM
@@ -41,19 +38,12 @@ public:
 	int		m_nRArmIdx;			// 오른손 팔뚝
 	int		m_nLArmIdx;			// 왼손 팔뚝 인덱스.
 	D3DXVECTOR3	m_vEvent[MAX_MDL_EVENT];	
-//	BONE	*m_pEventParent[MAX_MDL_EVENT];	// 이벤트 좌표들 부모
 	int		m_nEventParentIdx[MAX_MDL_EVENT];	// 이벤트좌표들 부모인덱스.
 	
-private:
-	void Init( void );
-	void Destroy( void );
-
 public:
 	CBones();
-	~CBones();
 
-//	BONE	*FindBone( int nID );								// nID값을 가지는 본을 찾음
-	BONE	*GetBone( int nIdx ) { return &m_pBones[ nIdx ]; }
+	BONE * GetBone(int nIdx) { return &m_pBones[nIdx]; }
 
 	int		LoadBone( LPCTSTR szFileName );		// 실제로 본 파일을 읽음
 };

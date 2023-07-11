@@ -239,11 +239,8 @@ int CModelObject::RenderAttachModelElem(const D3DXMATRIX *mWorld)
 
 	if( m_pBone )		// m_pBone이 있다면 뼈대가 있다는 얘기. VS를 써야 한다.
 	{
-		D3DXMATRIX *pmBones;
-		D3DXMATRIX mWorldTranspose;
 		D3DXMATRIX *pmBonesInv = m_pBaseBoneInv ;
-		BONE	*pBoneList = m_pBone->m_pBones;
-		pmBones = m_mUpdateBone;
+		D3DXMATRIX * pmBones = m_mUpdateBone;
 
 		if( m_pBone->m_bSendVS )	// 뼈대개수가 MAX_VS_BONE이하라서 한번에 다 전송한다.
 		{
@@ -254,21 +251,19 @@ int CModelObject::RenderAttachModelElem(const D3DXMATRIX *mWorld)
 
 			for( int i = 0; i < nMaxBone; i ++ )	// MAX_VS_BONE개 이하	
 			{
-				mWorldTranspose = pmBonesInv[i] * pmBones[i];				
+				D3DXMATRIX mWorldTranspose = pmBonesInv[i] * pmBones[i];
 				D3DXMatrixTranspose( &mWorldTranspose, &mWorldTranspose );		// 매트릭스를 돌린다음.
 				m_pd3dDevice->SetVertexShaderConstantF( i * 3, (float*)&mWorldTranspose, 3 );		// 상수레지스터에 집어넣음.
 			}
 		}
-		D3DXMATRIX	mView, mProj;
-		D3DXMATRIX	mViewProj, mViewProjTranspose, mInvWorld;
+		D3DXMATRIX	mViewProjTranspose, mInvWorld;
 
 		D3DXVECTOR4 vLight = s_vLight;
 		D3DXVECTOR4 vLightPos = s_vLightPos;
 
-		mViewProj = *mWorld * s_mView * s_mProj;
+		const D3DXMATRIX mViewProj = *mWorld * s_mView * s_mProj;
 		
 		D3DXMatrixTranspose( &mViewProjTranspose, &mViewProj );
-		D3DXMatrixTranspose( &mWorldTranspose, mWorld );
 
 		D3DXMatrixInverse( &mInvWorld, NULL, mWorld );
 		D3DXVec4Transform( &vLight, &vLight, &mInvWorld );
@@ -965,11 +960,8 @@ int		CModelObject::Render( const D3DXMATRIX *mWorld )
 
 	if( m_pBone )		// m_pBone이 있다면 뼈대가 있다는 얘기. VS를 써야 한다.
 	{
-		D3DXMATRIX *pmBones;
-		D3DXMATRIX mWorldTranspose;
 		D3DXMATRIX *pmBonesInv = m_pBaseBoneInv ;
-		BONE	*pBoneList = m_pBone->m_pBones;
-		pmBones = m_mUpdateBone;
+		D3DXMATRIX * pmBones = m_mUpdateBone;
 
 		if( m_pBone->m_bSendVS )	// 뼈대개수가 MAX_VS_BONE이하라서 한번에 다 전송한다.
 		{
@@ -980,7 +972,7 @@ int		CModelObject::Render( const D3DXMATRIX *mWorld )
 
 			for( i = 0; i < nMaxBone; i ++ )	// MAX_VS_BONE개 이하	
 			{
-				mWorldTranspose = pmBonesInv[i] * pmBones[i];				
+				D3DXMATRIX mWorldTranspose = pmBonesInv[i] * pmBones[i];
 #ifdef	__YENV		
 				CString str;
 				str.Format( "mBoneMatrix[%d]", i );
@@ -991,54 +983,27 @@ int		CModelObject::Render( const D3DXMATRIX *mWorld )
 #endif //__YENV		
 			}
 		}
-		D3DXMATRIX	mView, mProj;
-		D3DXMATRIX	mViewProj, mViewProjTranspose, mInvWorld;
+		D3DXMATRIX	mViewProjTranspose, mInvWorld;
 
 		D3DXVECTOR4 vLight = s_vLight;
 		D3DXVECTOR4 vLightPos = s_vLightPos;
 
-		mViewProj = *mWorld * s_mView * s_mProj;
+		const D3DXMATRIX mViewProj = *mWorld * s_mView * s_mProj;
 		
 		D3DXMatrixTranspose( &mViewProjTranspose, &mViewProj );
-		D3DXMatrixTranspose( &mWorldTranspose, mWorld );
 
 		D3DXMatrixInverse( &mInvWorld, NULL, mWorld );
 		D3DXVec4Transform( &vLight, &vLight, &mInvWorld );
 		D3DXVec4Normalize( &vLight, &vLight );
 		D3DXVec4Transform( &vLightPos, &vLightPos, &mInvWorld );
 
-#ifdef __YENV
-		/*
-		// 투영 설정...
-		g_Neuz.m_pEffect->SetMatrix( g_Neuz.m_hmWVP, &mViewProjTranspose );
-		
-		// 라이트 위치 설정
-		D3DXVECTOR4 v;
-		D3DXVECTOR4 vLight_Pos = s_vLight;
-		D3DXMATRIX mLocal;
-		D3DXMatrixInverse( &mLocal, NULL, &mViewProjTranspose );						
-		D3DXVec4Transform( &v, &vLight_Pos, &mLocal );						// 로컬좌표로 변환
-		D3DXVec3Normalize( (D3DXVECTOR3*)&v, (D3DXVECTOR3*)&v );			// 정규화
-		v.w = -0.6f;														// 환경광의 밝기(Ambint) Def : -0.3f
-		
-		// 라이트 방향 설정
-		g_Neuz.m_pEffect->SetVector( g_Neuz.m_hvLightDir, &v );
-		
-		g_Neuz.m_pEffect->SetVector( g_Neuz.m_hvDiffuse, (D3DXVECTOR4*)&s_fDiffuse[0] );	
-		g_Neuz.m_pEffect->SetVector( g_Neuz.m_hvAmbient, (D3DXVECTOR4*)&s_fAmbient[0] );
-		*/
-#else //__YENV
+#ifndef __YENV
 		m_pd3dDevice->SetVertexShaderConstantF( 84, (float*)&mViewProjTranspose, 4 );
-//		m_pd3dDevice->SetVertexShaderConstantF( 88, (float*)&mWorldTranspose, 4 );
-//		m_pd3dDevice->SetVertexShaderConstantF( 88, (float*)&vEyePos,  1 );		// specular use
-//		m_pd3dDevice->SetVertexShaderConstantF( 89, (float*)&fSpecular, 1 );	// specular use
-//		m_pd3dDevice->SetVertexShaderConstantF( 90, (float*)&fLightCol, 1 );	// specular use
 		m_pd3dDevice->SetVertexShaderConstantF( 91, (float*)&vLightPos, 1 );
 		m_pd3dDevice->SetVertexShaderConstantF( 92, (float*)&vLight,   1 );
 		m_pd3dDevice->SetVertexShaderConstantF( 93, (float*)&s_fDiffuse, 1 );
 		m_pd3dDevice->SetVertexShaderConstantF( 94, (float*)&s_fAmbient, 1 );
-//		m_pd3dDevice->SetVertexShaderConstant( 95, &vConst, 1 );
-#endif //__YENV
+#endif
 	}
 
 	if( m_nNoEffect == 0 )
