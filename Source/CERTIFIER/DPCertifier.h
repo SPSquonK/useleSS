@@ -9,7 +9,7 @@
 #include "sqktd/mutexed_object.h"
 
 class CDPCertifier : public CDPMng,
-	public DPMngFeatures::PacketHandler<CDPCertifier, DPID, BYTE *, u_long>
+	public DPMngFeatures::PacketHandler<CDPCertifier, DPID>
 {
 public:
 	sqktd::mutexed_on_write_object<CListedServers> m_servers;
@@ -48,11 +48,11 @@ private:
 	// Handlers
 	void	OnAddConnection( DPID dpid );
 	void	OnRemoveConnection( DPID dpid );
-	void	OnCertify( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-	void	OnPing( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-	void	OnCloseExistingConnection( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-	void	OnKeepAlive( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-	void	OnError( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
+	void	OnCertify( CAr & ar, DPID dpid );
+	void	OnPing( CAr & ar, DPID dpid );
+	void	OnCloseExistingConnection( CAr & ar, DPID dpid );
+	void	OnKeepAlive( CAr & ar, DPID dpid );
+	void	OnError( CAr & ar, DPID dpid );
 };
 
 extern CDPCertifier g_dpCertifier;

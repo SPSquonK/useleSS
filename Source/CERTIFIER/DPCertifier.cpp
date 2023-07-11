@@ -47,7 +47,7 @@ void CDPCertifier::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 
 	DWORD dw; ar >> dw;
 
-	if (Handle(ar, dw, dpid, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD))) {
+	if (Handle(ar, dw, dpid)) {
 		if (ar.IsOverflow()) Error("Certifier-Neuz: Packet %08x overflowed", dw);
 	}
 }
@@ -155,12 +155,12 @@ void CDPCertifier::OnRemoveConnection(const DPID dpid) {
 	g_dpAccountClient.SendRemoveAccount(dpid);
 }
 
-void CDPCertifier::OnError( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
+void CDPCertifier::OnError( CAr & ar, DPID dpid )
 {
 	DestroyPlayer( dpid );
 }
 
-void CDPCertifier::OnCertify( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
+void CDPCertifier::OnCertify( CAr & ar, DPID dpid )
 {
 	char pszVer[32]	= { 0, };
 	ar.ReadString( pszVer, 32 );
@@ -231,12 +231,12 @@ void CDPCertifier::OnCertify( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize
 	g_DbManager.PostQ( pData );
 }
 
-void CDPCertifier::OnPing( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
+void CDPCertifier::OnPing( CAr & ar, DPID dpid )
 {
 	g_dpAccountClient.SendPing( dpid );
 }
 
-void CDPCertifier::OnCloseExistingConnection( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
+void CDPCertifier::OnCloseExistingConnection( CAr & ar, DPID dpid )
 {
 	char pszAccount[MAX_ACCOUNT], pszPwd[MAX_PASSWORD];
 	ar.ReadString( pszAccount, MAX_ACCOUNT );
@@ -255,7 +255,7 @@ void CDPCertifier::OnCloseExistingConnection( CAr & ar, DPID dpid, LPBYTE lpBuf,
 	g_DbManager.PostQ( pData );
 }
 
-void CDPCertifier::OnKeepAlive(CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize) {
+void CDPCertifier::OnKeepAlive(CAr & ar, DPID dpid) {
 	g_CertUserMng.KeepAlive(dpid);
 }
 /*________________________________________________________________________________*/
