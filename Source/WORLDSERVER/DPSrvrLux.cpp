@@ -62,7 +62,7 @@ void CDPSrvr::OnDoCollect( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf
 }
 */
 // 클라이언트로 부터 받은 에러코드를 로그로 남긴다.
-void CDPSrvr::OnError( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize)
+void CDPSrvr::OnError( CAr & ar, DPID dpidCache, DPID dpidUser)
 {
 	int		nCode, nData;
 	
@@ -100,7 +100,7 @@ void CDPSrvr::OnError( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_
 		Error( "CDPSrvr::OnError pUser - Invalid %d %d", dpidCache, dpidUser );
 }
 
-void CDPSrvr::OnShipActMsg( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnShipActMsg( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	DWORD dwMsg;
 	OBJID idShip;
@@ -127,7 +127,7 @@ void CDPSrvr::OnShipActMsg( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBu
 	}
 }
 
-void CDPSrvr::OnLocalPosFromIA( CAr & ar, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPSrvr::OnLocalPosFromIA( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	D3DXVECTOR3 vLocal;
 	OBJID		idIA;
