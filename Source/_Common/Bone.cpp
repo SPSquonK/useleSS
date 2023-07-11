@@ -150,7 +150,7 @@ CBonesMng		g_BonesMng;
 // is read and loaded into memory.
 // When loading, the duplicate returns a pointer to
 // the already loaded bone.
-CBones * CBonesMng::LoadBone(LPCTSTR szFileName) {
+const CBones * CBonesMng::LoadBone(LPCTSTR szFileName) {
 	char sFile[MAX_PATH] = { 0, };
 	strcpy(sFile, szFileName);
 	strlwr(sFile);

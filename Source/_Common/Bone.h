@@ -43,7 +43,7 @@ public:
 public:
 	CBones();
 
-	BONE * GetBone(int nIdx) { return &m_pBones[nIdx]; }
+	[[nodiscard]] const BONE * GetBone(int nIdx) const { return &m_pBones[nIdx]; }
 
 	int		LoadBone( LPCTSTR szFileName );		// 실제로 본 파일을 읽음
 };
@@ -57,7 +57,7 @@ private:
 
 public:
 	// Bone file is read and loaded into memory.
-	CBones * LoadBone(LPCTSTR szFileName);
+	const CBones * LoadBone(LPCTSTR szFileName);
 };
 
 extern CBonesMng		g_BonesMng;

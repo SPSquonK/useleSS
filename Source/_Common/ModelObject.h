@@ -118,7 +118,7 @@ public:
 	// Bone / animation
 	// 원래 Motion은 Element안에 있어야 맞는것이지만 문제를 간략화 하기 위해서 
 	// CModelObject로 빼냈다.  1뼈대 n메쉬 구조가 더 이해하기가 쉽기 때문이다.
-	CBones				*m_pBone;						// 뼈대 클래스 - 이것을 직접 파괴시키면 안된다.
+	const CBones	*m_pBone;						// 뼈대 클래스 - 이것을 직접 파괴시키면 안된다.
 	CMotion				*m_pMotionOld;					// 이전 모션
 	CMotion				*m_pMotion;						// 현재 로딩된 모션 포인터 - 직접 파괴시키면 안된다.
 	CSwordForce			*m_pForce;						// 검광

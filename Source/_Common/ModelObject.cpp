@@ -2179,7 +2179,7 @@ void	CModelObject::GetForcePos( D3DXVECTOR3 *vOut, int nIdx, int nParts, const D
 // 주먹 중앙의 위치를 계산할때.
 void	CModelObject::GetHandPos( D3DXVECTOR3 *vOut, int nParts, const D3DXMATRIX &mWorld )
 {
-	D3DXMATRIX *pmLocal;
+	const D3DXMATRIX *pmLocal;
 	D3DXMATRIX	m1;
 	D3DXVECTOR3		v1;
 
@@ -2218,7 +2218,7 @@ void	CModelObject::GetHandPos( D3DXVECTOR3 *vOut, int nParts, const D3DXMATRIX &
 std::optional<D3DXVECTOR3> CModelObject::GetPosBone(const char * const bonename) {
 	//gmpbigsun : 본이름으로 본좌표 추출 
 	for (int i = 0; i < m_pBone->m_nMaxBone; ++i) {
-		BONE * pUnitBone = m_pBone->GetBone(i);
+		const BONE * pUnitBone = m_pBone->GetBone(i);
 		if (!pUnitBone) {
 			assert(0);
 			continue;
@@ -2227,9 +2227,9 @@ std::optional<D3DXVECTOR3> CModelObject::GetPosBone(const char * const bonename)
 		if (strcmp(bonename, pUnitBone->m_szName) == 0) {
 			D3DXMATRIX matTemp;
 			if (pUnitBone->m_pParent)
-				D3DXMatrixMultiply(&matTemp, &pUnitBone->m_mLocalTM, &m_mUpdateBone[pUnitBone->m_nParentIdx]);
+				matTemp = pUnitBone->m_mLocalTM * m_mUpdateBone[pUnitBone->m_nParentIdx];
 			else
-				D3DXMatrixMultiply(&matTemp, &pUnitBone->m_mLocalTM, &m_mUpdateBone[i]);
+				matTemp = pUnitBone->m_mLocalTM * m_mUpdateBone[i];
 
 			return D3DXVECTOR3(matTemp._41, matTemp._42, matTemp._43);
 		}
