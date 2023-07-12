@@ -6,7 +6,7 @@
 	#define __INTERNALSERVER
 #endif
 
-#define		D3DDEVICE	NULL
+#define		D3DDEVICE	nullptr
 #define		__SERVER						// 클라이언트 전용코드를 빌드하지 않기 위한 define
 #define		__X15
 #define		__VERIFY_LOOP041010
@@ -15,7 +15,6 @@
 #define		__SLIDE_060502					// 땅으로 꺼지는 문제 수정 
 #define		__S8_SERVER_PORT				// 2006월 11월 7일 업데이트 - World, Cache, CoreServer
 #define		__EVENT_1101					// 출첵 이벤트
-#define		__NEWYEARDAY_EVENT_COUPON		// 설 이벤트 - 헤어샾, 성형 무료이용권 관련.
 // 해외 6차 수정 적용
 #define		__HACK_1130						// 미국 해킹 막기 - 강제 듀얼, 스크립트 실행
 #define		__QUEST_1208					// 스크립트 패킷 처리 제한
@@ -45,7 +44,6 @@
 #define		__EXP_ANGELEXP_LOG				// 경험치, 엔젤 경험치 로그 관련 CHARACTER_TBL 컬럼 추가
 #define		__S_ADD_EXP						// EXP_S 아이템 생성
 
-#define		__RULE_0615						// 명명 규칙 정리
 #define		__S_ADD_RESTATE					// 상용화 아이템 생성( 리스테트 힘, 민첩, 체력, 지능 )
 
 //	#define		__REMOVE_ATTRIBUTE			// 속성제련 제거(10차로 변경)
@@ -97,7 +95,6 @@
 #define		__EVENTLUA_GIFT				// 특정 레벨로 레벨업시 아이템 지급
 
 #define		__JEFF_11_4					// 아레나
-#define		__JEFF_11_5					// 메모리 누수
 #define		__JEFF_11_6					// 바보 몬스터
 
 #define		__DST_GIFTBOX				// 착용 아이템에 기프트 박스 기능 추가
@@ -144,7 +141,6 @@
 #define		__LAYER_1020		// __LAYER_1015 테스트
 #define		__LAYER_1021		// __LAYER_1015 리스폰
 #define		__AZRIA_1023	// 입장권 층 적용
-#define		__PET_1024		// 펫 작명
 
 #define		__OCCUPATION_SHOPITEM	// 점령길드 전용 구매 가능 아이템
 
@@ -210,8 +206,6 @@
 
 
 #if	  defined(__INTERNALSERVER)	// 내부 사무실 테스트서버 
-//	#define	__RULE_0615
-
 //	#define		__VERIFY_MEMPOOL
 	#define		__GUILDVOTE					// 길드 투표 
 	#define		__IAOBJ0622					// 상대 목표 좌표 전송	// 월드, 뉴즈

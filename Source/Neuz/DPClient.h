@@ -2,7 +2,7 @@
 
 #include "DPMng.h"
 #include "Ar.h"
-//#include "MsgHdr.h"		// ÀÌ°Å include ½ÃÅ°Áö ¸»°Í. ºôµå ´À·ÁÁü.
+//#include "MsgHdr.h"		// ì´ê±° include ì‹œí‚¤ì§€ ë§ê²ƒ. ë¹Œë“œ ëŠë ¤ì§.
 #include "Obj.h"
 #include "playerdata.h"
 
@@ -11,72 +11,28 @@
 #include "Housing.h"
 #include "guild.h"
 
-#undef	theClass
-#define	theClass	CDPClient
-#undef theParameters
-#define theParameters	CAr & ar
-   
-typedef	struct	tagPLAYERPOS
-{
-	D3DXVECTOR3 vPos;
-	D3DXVECTOR3	vDelta;
-	BOOL fValid;
-}
-PLAYERPOS, *LPPLAYERPOS;
-
-typedef	struct	tagPLAYERDESTPOS
-{
+struct PLAYERDESTPOS {
 	D3DXVECTOR3 vPos;
 	BYTE	fForward;
-	BOOL	fValid;
-	FLOAT	d;
 #ifdef __IAOBJ0622
-	OBJID	objidIAObj;
+	OBJID	objidIAObj = NULL_ID;
 #endif	// __IAOBJ0622
-}
-PLAYERDESTPOS, *LPPLAYERDESTPOS;
+};
 
-typedef	struct	tagPLAYERDESTANGLE
-{
-	float	fAngle;
-	BOOL	fValid;
-	BYTE	fLeft;
-}
-PLAYERDESTANGLE, *LPPLAYERDESTANGLE;
-
-typedef	struct	tagPLAYERMOVINGACTMSG
-{
-	D3DXVECTOR3 vPos;
-	BYTE	fMoving;
-	BYTE	fForward;
-	DWORD	dwMsg;
-	int		nParam1;
-	int		nParam2;
-	float	fAngle;
-	BOOL	fValid;
-}
-PLAYERMOVINGACTMSG, *LPPLAYERMOVINGACTMSG;
-
-typedef	struct	tagPLAYERANGLE
-{
-	BOOL	fValid;
-	int		nCounter;
-}
-PLAYERANGLE, *PPLAYERANGLE;
-
-typedef struct tagSNAPSHOT
-{
-	PLAYERPOS	playerpos;
-	PLAYERDESTPOS	playerdestpos;
-	PLAYERDESTANGLE		playerdestangle;
-	PLAYERMOVINGACTMSG	playermovingactmsg;
+struct SNAPSHOT {
+	std::optional<PLAYERDESTPOS>	playerdestpos;
 	u_long	uFrameMove;
-}
-SNAPSHOT, *LPSNAPSHOT;
+};
+
+struct PLAYERANGLE {
+	BOOL	fValid = false;
+	int		nCounter = 0;
+};
 
 class CWndGuildVote;
 class CDPClient : public CDPMng,
-	public DPMngFeatures::SendPacketSole
+	public DPMngFeatures::SendPacketSole,
+	public DPMngFeatures::PacketHandler<CDPClient>
 {
 private:
 	SNAPSHOT	m_ss;
@@ -97,7 +53,7 @@ public:
 	u_long  m_uLoginPlayerIdGuild[ 200 ];
 	u_long  m_uLoginGuildMulti[ 200 ];
 
-	DWORD	m_dwReturnScroll;		// ±ÍÈ¯ÀÇ µÎ·ç¸¶¸® 
+	DWORD	m_dwReturnScroll;		// ê·€í™˜ì˜ ë‘ë£¨ë§ˆë¦¬ 
 
 #ifdef __TRAFIC_1218
 	CTraficLog	m_traficLog;
@@ -118,7 +74,7 @@ public:
 	LONG	GetNetError();
 	void	SendJoin( BYTE nSlot, CMover* pMover, CRTMessenger* pRTMessenger, u_long uIdofMulti );
 
-	void	PostPlayerAngle( BOOL f );
+	void	PostPlayerAngle( bool f );
 	void	FlushPlayerAngle( void );
 	void	SendBlock( BYTE Gu, const char *szName, const char *szFrom );
 	void	SendSkillFlag( int nSkill );
@@ -136,13 +92,9 @@ public:
 	void	SendQueryReadMail( u_long nMail );
 	void	SendQueryMailBox( void );
 	void	SendDropItem( DWORD dwItemId, short nITemNum, const D3DXVECTOR3 & vPos );
-	void	SendDropGold( DWORD dwGold, const D3DXVECTOR3 & vPlayerPos, const D3DXVECTOR3 & vPos );
 	void	SendConfirmPKPVP( u_long uidPlayer );
 	void	OnSetDuel( OBJID objid, CAr & ar );
 	void	OnPKRelation( OBJID objid, CAr & ar );
-	void	OnPKPink( OBJID objid, CAr & ar );
-	void	OnPKPropensity( OBJID objid, CAr& ar );
-	void	OnPKValue( OBJID objid, CAr& ar );
 
 	void	SendConfirmTrade( CMover* pTrader );
 	void	SendTrade( CMover* pTrader );
@@ -313,7 +265,7 @@ public:
 	void	OnSetWar( OBJID objid, CAr & ar );
 	void	SendDeclWar( u_long idMaster, const char* szGuild );
 	
-	void	OnSurrender( CAr & ar );	// Ç×º¹
+	void	OnSurrender( CAr & ar );	// í•­ë³µ
 	void	OnQueryTruce( CAr & ar );
 
 	void	OnDeclWar( CAr & ar );
@@ -337,14 +289,9 @@ public:
 	void	SendBlessednessCancel( int nItem );
 
 	void	SendSnapshot( BOOL fUnconditional = FALSE );
-#ifdef __IAOBJ0622
-	void	PutPlayerDestPos( CONST D3DXVECTOR3 & vPos, bool bForward, BYTE f = 0, OBJID objidIAObj = NULL_ID );
-#else	// __IAOBJ0622
-	void	PutPlayerDestPos( CONST D3DXVECTOR3 & vPos, bool bForward, BYTE f = 0 );
-#endif	// __IAOBJ0622
-	void	PutPlayerDestAngle( float fAnlge, BYTE fLeft, BYTE f = 0 );
+	void	PutPlayerDestPos( const PLAYERDESTPOS & playerDestPos, BYTE f = 0 );
 	void	ClearPlayerDestPos( void );
-	void	SendSfxHit( int idSfxHit, int nMagicPower, DWORD dwSkill = NULL_ID, OBJID idAttacker = NULL_ID, int nDmgCnt = 0, float fDmgAngle = 0, float fDmgPower = 0 );
+	void	SendSfxHit( int idSfxHit, DWORD dwSkill = NULL_ID, OBJID idAttacker = NULL_ID );
 	void	SendSfxClear( int idSfxHit, OBJID idMover = NULL_ID );
 	void	SendQuerySetPlayerName( DWORD dwData, const char* lpszPlayer );
 	void	SendSummonFriend( DWORD dwData, const char* lpszPlayer );
@@ -353,8 +300,8 @@ public:
 	void	SendSummonParty( DWORD dwData );
 	void	SendSummonPartyConfirm( OBJID objid, DWORD dwData );
 	void	SendPetRelease( void );
-	void	SendUsePetFeed( DWORD dwFeedId );	// dwFeedId : ¸ÔÀÌ	// ÀÔ·Â °³¼ö Á¦°Å
-	void	SendMakePetFeed( DWORD dwMaterialId, short nNum, DWORD dwToolId );	// dwFeedId : ¹«±â/¹æ¾î±¸/Àü¸®Ç°, dwToolId : ºĞ¼â±â( npcÀÏ °æ¿ì NULL_ID )
+	void	SendUsePetFeed( DWORD dwFeedId );	// dwFeedId : ë¨¹ì´	// ì…ë ¥ ê°œìˆ˜ ì œê±°
+	void	SendMakePetFeed( DWORD dwMaterialId, short nNum, DWORD dwToolId );	// dwFeedId : ë¬´ê¸°/ë°©ì–´êµ¬/ì „ë¦¬í’ˆ, dwToolId : ë¶„ì‡„ê¸°( npcì¼ ê²½ìš° NULL_ID )
 	void	SendPetTamerMistake( DWORD dwId );
 	void	SendPetTamerMiracle( DWORD dwId );
 	void	SendFeedPocketInactive( void );
@@ -456,8 +403,9 @@ public:
 	void OnAngel( OBJID objid, CAr& ar );
 	void OnCreateAngel( OBJID objid, CAr & ar );
 	void OnAngelInfo( OBJID objid, CAr & ar );
+
+private:
 	// Handlers
-	USES_PFNENTRIES;
 	void	OnGetClock( CAr & ar );
 	void	OnKeepAlive( CAr & ar );
 	void	OnError( CAr & ar );
@@ -519,9 +467,9 @@ public:
 #endif	// __JEFF_11
 	void	OnSetDestParam( OBJID objid, CAr & ar );
 	void	OnResetDestParam( OBJID objid, CAr & ar );
-#ifdef __SPEED_SYNC_0108		// ResetDestParam speed ¼öÁ¤
+#ifdef __SPEED_SYNC_0108		// ResetDestParam speed ìˆ˜ì •
 	void	OnResetDestParamSync( OBJID objid, CAr & ar );
-#endif // __SPEED_SYNC_0108		// ResetDestParam speed ¼öÁ¤
+#endif // __SPEED_SYNC_0108		// ResetDestParam speed ìˆ˜ì •
 	void	OnSetPointParam( OBJID objid, CAr & ar );
 	void	OnSetScale( OBJID objid, CAr & ar );
 		
@@ -631,14 +579,11 @@ public:
 	void	OnGuildCombatState( CAr & ar );
 	void	OnGCUserState( CAr & ar );
 	void	OnGCGuildStatus( CAr & ar );
-	void	OnGCGuildPrecedence( CAr & ar );
-	void	OnGCPlayerPrecedence( CAr & ar );
 	void	OnGCJoinWarWindow( CAr & ar );
 	void	OnGCGetPenyaGuild( CAr & ar );
 	void	OnGCGetPenyaPlayer( CAr & ar );
 	void	OnGCWinGuild( CAr & ar );
 	void	OnGCBestPlayer( CAr & ar );
-	void	OnGCWarPlayerList( CAr & ar );
 	void	OnGCTele( CAr & ar );
 	void	OnGCDiagMessage( CAr & ar );	
 	void	OnIsRequest( CAr & ar );
@@ -886,51 +831,49 @@ public:
 private:
 
 private:
-	// ±ºÁÖ ÀÔÂû °á°ú °»½Å
+	// êµ°ì£¼ ì…ì°° ê²°ê³¼ ê°±ì‹ 
 	void	OnElectionAddDeposit( CAr & ar );
-	// °ø¾à ¼³Á¤ °á°ú °»½Å
+	// ê³µì•½ ì„¤ì • ê²°ê³¼ ê°±ì‹ 
 	void	OnElectionSetPledge( CAr & ar );
-	// ÅõÇ¥ °á°ú °»½Å
+	// íˆ¬í‘œ ê²°ê³¼ ê°±ì‹ 
 	void	OnElectionIncVote( CAr & ar );
-	// ÀÔÈÄº¸ ½ÃÀÛ »óÅÂ·Î º¯°æ
+	// ì…í›„ë³´ ì‹œì‘ ìƒíƒœë¡œ ë³€ê²½
 	void	OnElectionBeginCandidacy( CAr & ar );
-	// ÅõÇ¥ ½ÃÀÛ »óÅÂ·Î º¯°æ
+	// íˆ¬í‘œ ì‹œì‘ ìƒíƒœë¡œ ë³€ê²½
 	void	OnElectionBeginVote( CAr & ar );
-	// ÅõÇ¥ Á¾·á »óÅÂ·Î º¯°æ
+	// íˆ¬í‘œ ì¢…ë£Œ ìƒíƒœë¡œ ë³€ê²½
 	void	OnElectionEndVote( CAr & ar );
-	// ±ºÁÖ ½Ã½ºÅÛ Á¤º¸¸¦ ¼ö½ÅÇÏ¿© º¹¿ø
+	// êµ°ì£¼ ì‹œìŠ¤í…œ ì •ë³´ë¥¼ ìˆ˜ì‹ í•˜ì—¬ ë³µì›
 	void	OnLord( CAr & ar );
-	// ±ºÁÖ ÀÌº¥Æ® ½ÃÀÛ Ã³¸®
+	// êµ°ì£¼ ì´ë²¤íŠ¸ ì‹œì‘ ì²˜ë¦¬
 	void	OnLEventCreate( CAr & ar );
-	// ±ºÁÖ ÀÌº¥Æ® ÃÊ±âÈ­ Ã³¸®
+	// êµ°ì£¼ ì´ë²¤íŠ¸ ì´ˆê¸°í™” ì²˜ë¦¬
 	void	OnLEventInitialize( CAr & ar );
-	// ±ºÁÖ ½ºÅ³ Àç»ç¿ë ´ë±â ½Ã°£ Ã³¸®
+	// êµ°ì£¼ ìŠ¤í‚¬ ì¬ì‚¬ìš© ëŒ€ê¸° ì‹œê°„ ì²˜ë¦¬
 	void	OnLordSkillTick( CAr & ar );
-	// ±ºÁÖ ÀÌº¥Æ® Áö¼Ó ½Ã°£ Ã³¸®
+	// êµ°ì£¼ ì´ë²¤íŠ¸ ì§€ì† ì‹œê°„ ì²˜ë¦¬
 	void	OnLEventTick( CAr & ar );
-	// ±ºÁÖ ½ºÅ³ »ç¿ë
+	// êµ°ì£¼ ìŠ¤í‚¬ ì‚¬ìš©
 	void	OnLordSkillUse( OBJID objid, CAr & ar );
 public:
-	// ±ºÁÖ ÀÔÂû Ã³¸® ¿äÃ»
+	// êµ°ì£¼ ì…ì°° ì²˜ë¦¬ ìš”ì²­
 	void	SendElectionAddDeposit( __int64 iDeposit );
-	// °ø¾à ¼³Á¤ Ã³¸® ¿äÃ»
+	// ê³µì•½ ì„¤ì • ì²˜ë¦¬ ìš”ì²­
 	void	SendElectionSetPledge( const char* szPledge );
-	// ÅõÇ¥ Ã³¸® ¿äÃ»
+	// íˆ¬í‘œ ì²˜ë¦¬ ìš”ì²­
 	void	SendElectionIncVote( u_long idPlayer );
-	// ±ºÁÖ ÀÌº¥Æ® ½ÃÀÛ ¿äÃ»
+	// êµ°ì£¼ ì´ë²¤íŠ¸ ì‹œì‘ ìš”ì²­
 	void	SendLEventCreate( int iEEvent, int iIEvent );
-	// ±ºÁÖ ½ºÅ³ »ç¿ë ¿äÃ»
+	// êµ°ì£¼ ìŠ¤í‚¬ ì‚¬ìš© ìš”ì²­
 	void	SendLordSkillUse( int nSkill, const char* szTarget = "" );
-	void	SendTransformItem( CTransformStuff & stuff );	// ¾Ëº¯È¯ ¿äÃ»
-	void	SendPickupPetAwakeningCancel( DWORD dwItem );	// ÇÈ¾÷Æê °¢¼º Ãë¼Ò ¿äÃ»
+	void	SendTransformItem( CTransformStuff & stuff );	// ì•Œë³€í™˜ ìš”ì²­
+	void	SendPickupPetAwakeningCancel( DWORD dwItem );	// í”½ì—…í« ê°ì„± ì·¨ì†Œ ìš”ì²­
 
 #ifdef __AZRIA_1023
 	void	SendDoUseItemInput( DWORD dwData, const char* szInput );
 #endif	// __AZRIA_1023
-#ifdef __PET_1024
 	void	SendClearPetName();
 	void	OnSetPetName( OBJID objid, CAr & ar );
-#endif	// __PET_1024
 
 	void	SendTutorialState( int nState );
 	void	OnTutorialState( CAr & ar );

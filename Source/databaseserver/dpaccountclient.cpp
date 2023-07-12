@@ -6,7 +6,6 @@
 
 CDPAccountClient::CDPAccountClient()
 {
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_GETPLAYERLIST, &CDPAccountClient::OnGetPlayerList );
 #ifdef __REMOVE_PLAYER_0221
 	ON_MSG( PACKETTYPE_DEL_PLAYER, &CDPAccountClient::OnRemovePlayer );
@@ -14,7 +13,7 @@ CDPAccountClient::CDPAccountClient()
 	ON_MSG( PACKETTYPE_JOIN, &CDPAccountClient::OnJoin );
 	ON_MSG( PACKETTYPE_PLAYER_COUNT, &CDPAccountClient::OnPlayerCount );
 	ON_MSG( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPAccountClient::OnCloseExistingConnection );
-	ON_MSG( PACKETTYPE_ONE_HOUR_NOTIFY, &CDPAccountClient::OnOneHourNotify )
+	ON_MSG( PACKETTYPE_ONE_HOUR_NOTIFY, &CDPAccountClient::OnOneHourNotify );
 	ON_MSG( PACKETTYPE_FAIL, &CDPAccountClient::OnFail );
 	ON_MSG( PACKETTYPE_BUYING_INFO, &CDPAccountClient::OnBuyingInfo );
 }
@@ -35,11 +34,9 @@ void CDPAccountClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize
 void CDPAccountClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )
-		=	GetHandler( dw );
-	ASSERT( pfn );
-	( this->*( pfn ) )( ar, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD) );
+	DWORD dw; ar >> dw;
+	const bool ok = Handle( ar, dw, (LPBYTE)lpMsg + sizeof(DWORD), dwMsgSize - sizeof(DWORD) );
+	ASSERT(ok);
 	if (ar.IsOverflow()) Error("Database-Account: Packet %08x overflowed", dw);
 }
 

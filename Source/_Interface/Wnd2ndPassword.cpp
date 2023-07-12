@@ -20,7 +20,7 @@ CWnd2ndPassword::~CWnd2ndPassword( void )
 {
 }
 //-----------------------------------------------------------------------------
-BOOL CWnd2ndPassword::Initialize( CWndBase* pWndParent, DWORD dwType )
+BOOL CWnd2ndPassword::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_2ND_PASSWORD_NUMBERPAD, pWndParent, WBS_MODAL | WBS_KEY, CPoint( 0, 0 ) );
 }
@@ -35,7 +35,7 @@ void CWnd2ndPassword::OnInitialUpdate( void )
 
 	CWndButton* pWndButton = ( CWndButton* )GetDlgItem( WIDC_BUTTON_OK );
 	if( pWndButton )
-		pWndButton->SetDefault( TRUE );
+		pWndButton->SetDefault();
 
 	MoveParentCenter();
 }
@@ -119,7 +119,7 @@ BOOL CWnd2ndPassword::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					break;
 
 				int m_nSelectCharacter = pWndSelectChar->m_nSelectCharacter;
-				g_WndMng.OpenCustomBox( _T( prj.GetText(TID_DIAG_0064) ), new CWndConnectingBox );
+				g_WndMng.OpenCustomBox( new CWndConnectingBox );
 				if( g_DPlay.Connect( g_Neuz.m_lpCacheAddr, g_Neuz.m_uCachePort ) )
 				{						
 					CNetwork::GetInstance().OnEvent( CACHE_CONNECTED );
@@ -382,7 +382,7 @@ void CWnd2ndPassword::ResetNumberpad( u_long idNumberPad )
 	{
 		strKeyNumber[ i ].Format( _T( "ButtNum%d.bmp" ), byNumberTable[ idNumberPad ][ i ] );
 		CWndButton* pWndButton = ( CWndButton* )GetDlgItem( m_dwButtonID[ i ] );
-		pWndButton->SetTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, strKeyNumber[ i ] ), TRUE );
+		pWndButton->SetTexture( MakePath( DIR_THEME, strKeyNumber[ i ] ), TRUE );
 	}
 
 #ifdef __CON_AUTO_LOGIN

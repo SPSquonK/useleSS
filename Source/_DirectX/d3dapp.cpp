@@ -1552,11 +1552,6 @@ INT CD3DApplication::Run()
     }
     if( hAccel != NULL )
         DestroyAcceleratorTable( hAccel );
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-#ifdef __CLIENT
-	g_vecEncryptedValidCertifierIP.clear();
-#endif // __CLIENT
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 
     return (INT)msg.wParam;
 }

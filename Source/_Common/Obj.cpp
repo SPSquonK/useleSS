@@ -290,7 +290,7 @@ void CObj::SetOnLand()
 }
 
 
-void CObj::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CObj::Render( )
 {
 #ifndef __WORLDSERVER
 	if( !IsVisible() || ( IsCull() && GetType() != 1 ))
@@ -310,7 +310,7 @@ void CObj::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		((CSfxModel*)m_pModel)->m_vRotate.y = GetAngle();
 		((CSfxModel*)m_pModel)->m_vScale = GetScale();
 		((CSfxModel*)m_pModel)->m_matScale = m_matScale;
-		((CSfxModel*)m_pModel)->Render( pd3dDevice, NULL );
+		((CSfxModel*)m_pModel)->Render( NULL );
 		return;
 	}
 
@@ -367,14 +367,14 @@ void CObj::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 			((CModelObject*)pModel)->SetTextureEx( 0 );
 	}
 	
-	pModel->Render( pd3dDevice, &m_matWorld ); 
+	pModel->Render( &m_matWorld ); 
 #endif
 }
 
 
-CModel* CObj::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex ) 
+CModel* CObj::LoadModel( DWORD dwType, DWORD dwIndex ) 
 {
-	return prj.m_modelMng.LoadModel( pd3dDevice, dwType, dwIndex );
+	return prj.m_modelMng.LoadModel( dwType, dwIndex );
 }
 
 void CObj::ResetScale()
@@ -384,10 +384,10 @@ void CObj::ResetScale()
 	m_vScale.z = m_pModel->m_pModelElem->m_fScale;
 }
 
-BOOL CObj::SetTypeIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex, BOOL bInitProp )
+BOOL CObj::SetTypeIndex( DWORD dwType, DWORD dwIndex, BOOL bInitProp )
 {
 	m_dwIndex = dwIndex;
-	m_pModel = LoadModel( pd3dDevice, dwType, dwIndex );
+	m_pModel = LoadModel( dwType, dwIndex );
 	if( m_pModel ) 
 	{ 
 		if( bInitProp )
@@ -594,9 +594,6 @@ void CObj::SetPos( const D3DXVECTOR3& vPos )
 			else
 			{
 				// 같은 Landscape 안에서의 이동 
-				int nWidth = 0;
-				if(m_pModel) 
-					nWidth	= (int)( m_pModel->GetMaxWidth() );
 				DWORD dwLinkType	= GetLinkType();
 				if( pWorld->GetObjInLinkMap( m_vPos, dwLinkType, m_dwLinkLevel ) == this )
 					pWorld->SetObjInLinkMap( m_vPos, dwLinkType, m_dwLinkLevel, m_pNext );
@@ -732,16 +729,15 @@ void CObj::Delete()
 }
 
 #ifdef __CLIENT
-BOOL CObj::Pick( D3DXVECTOR3* pvPickRayOrig, D3DXVECTOR3* pvPickRayDir, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bOnlyBoundBox, BOOL bColl )
+bool CObj::Pick( const D3DXVECTOR3* pvPickRayOrig, const D3DXVECTOR3* pvPickRayDir, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bOnlyBoundBox, BOOL bColl )
 {
-	if( m_pModel->IntersectBB( *pvPickRayOrig, *pvPickRayDir, GetMatrixWorld(), pvIntersect, pfDist ) == TRUE )	
-	{
-		if( bOnlyBoundBox == TRUE )
-			return TRUE;
-		if( m_pModel->Intersect( *pvPickRayOrig, *pvPickRayDir, GetMatrixWorld(), pvIntersect, pfDist, bColl ) == TRUE )
-			return TRUE;
-	}
-	return FALSE;
+	if (!m_pModel->IntersectBB(*pvPickRayOrig, *pvPickRayDir, GetMatrixWorld(), pvIntersect, pfDist))
+		return false;
+
+	if (bOnlyBoundBox == TRUE)
+		return true;
+
+	return m_pModel->Intersect(*pvPickRayOrig, *pvPickRayDir, GetMatrixWorld(), pvIntersect, pfDist, bColl);
 }
 #endif
 
@@ -758,11 +754,12 @@ FLOAT	CObj::GetRadiusXZ( void )
 	return fRadius;
 }
 
-const float INV_6 = 1.0f / 6.0f;
 
 // this의 반지름을 계산함. = 삼면 평균을 반지름으로 선택 
 FLOAT	CObj::GetRadius( void ) const
 {
+	static constexpr float INV_6 = 1.0f / 6.0f;
+
 	float fRadius = fabs(m_pModel->m_vMax.x - m_pModel->m_vMin.x);
 	fRadius      += fabs(m_pModel->m_vMax.y - m_pModel->m_vMin.y);
 	fRadius      += fabs(m_pModel->m_vMax.z - m_pModel->m_vMin.z);
@@ -857,7 +854,7 @@ void	CObj::ProcessAirShip( void )
 				pObj->m_dwType = 1;
 				pObj->SetScale( D3DXVECTOR3(50, 50, 50) );
 				pObj->SetPos( vPos );
-				pObj->SetIndex( g_Neuz.m_pd3dDevice, 22 );
+				pObj->SetIndex( 22 );
 				pObj->UpdateLocalMatrix();
 				m_pWorld->AddObj( pObj );
 			}
@@ -889,7 +886,7 @@ void	CObj::ProcessAirShip( void )
 				pObj->m_dwType = 1;
 				pObj->SetScale( D3DXVECTOR3(50, 50, 50) );
 				pObj->SetPos( vPos );
-				pObj->SetIndex( g_Neuz.m_pd3dDevice, 22 );
+				pObj->SetIndex( 22 );
 				pObj->UpdateLocalMatrix();
 				m_pWorld->AddObj( pObj );
 			}
@@ -937,7 +934,7 @@ DWORD CObj::GetLinkType( void )
 	return( -1 );
 }
 
-void CObj::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor )
+void CObj::RenderName( CD3DFont* pFont, DWORD dwColor )
 {
 	return;
 }

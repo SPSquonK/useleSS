@@ -119,10 +119,8 @@ void CMover::Serialize( CAr & ar )
 		{
 			ar.WriteString( m_szName );
 			ar << GetSex();
-			ar << (u_char)m_dwSkinSet;
-			ar << (u_char)m_dwHairMesh;
+			ar << m_skin;
 			ar << m_dwHairColor;
-			ar << (u_char)m_dwHeadMesh;
 			ar << m_idPlayer;
 			ar << (u_char)m_nJob;
 			ar << (u_short)m_nStr;
@@ -278,26 +276,20 @@ void CMover::Serialize( CAr & ar )
 				GETBLOCK( ar, pBlock, nBlockSize );
 				*(UNALIGNED u_char*)( pBlock + uOffset )	= uSize;
 				DWORD dwPetId	= NULL_ID;
-#ifdef __PET_1024
 				const char* pszPetName	= "";
-#endif	// __PET_1024
 				CItemElem* pItemElem	= GetPetItem();
 				if( pItemElem )
 				{
 					dwPetId		= MAKELONG( (WORD)pItemElem->m_pPet->GetIndex(), (WORD)pItemElem->m_pPet->GetLevel() );
-#ifdef __PET_1024
 					pszPetName	= pItemElem->m_pPet->GetName();
-#endif	// __PET_1024
 				}
 				ar << dwPetId;
-#ifdef __PET_1024
 				ar.WriteString( pszPetName );
-#endif	// __PET_1024
 			}
 		}
 		else	// NPC
 		{
-			ar << (u_char)m_dwHairMesh << m_dwHairColor << (u_char)m_dwHeadMesh;
+			ar << m_skin << m_dwHairColor;
 			ar.WriteString( m_szCharacterKey );
 
 			u_char uSize	= 0;
@@ -371,9 +363,6 @@ void CMover::Serialize( CAr & ar )
 		ar >> m_dwMoverSfxId;
 		if( m_bPlayer )	// PLAYER
 		{
-			m_dwSkinSet		=
-			m_dwHairMesh	=
-			m_dwHeadMesh	=
 			m_idPlayer	=
 			m_nJob	=
 			m_nStr	=
@@ -388,10 +377,8 @@ void CMover::Serialize( CAr & ar )
 			ar.ReadString( m_szName, 32 );
 			ar >> bySex;
 			SetSex( bySex );
-			ar >> (u_char&)m_dwSkinSet;
-			ar >> (u_char&)m_dwHairMesh;
+			ar >> m_skin;
 			ar >> m_dwHairColor;
-			ar >> (u_char&)m_dwHeadMesh;
 #	if defined (__WORLDSERVER) || defined(__CLIENT)
 			SetHairColor( m_dwHairColor );
 #	endif	// __WORLDSERVER	//__CLIENT
@@ -530,13 +517,11 @@ void CMover::Serialize( CAr & ar )
 				DWORD dwPetId;
 				ar >> dwPetId;
 				SetPetId( dwPetId );
-	#ifdef __PET_1024
 	#ifdef __CLIENT
 				CPet* pPet	= GetPet();
 				if( pPet )
 					m_pet.SetName( const_cast<char*>( pPet->GetName() ) );
 	#endif	// __CLIENT
-	#endif	// __PET_1024
 				ar >> m_Pocket;
 
 #ifdef __JEFF_9_20
@@ -581,13 +566,11 @@ void CMover::Serialize( CAr & ar )
 				DWORD dwPetId;
 				ar >> dwPetId;
 				SetPetId( dwPetId );
-	#ifdef __PET_1024
 				char szPetName[MAX_PET_NAME]	= { 0,};
 				ar.ReadString( szPetName, MAX_PET_NAME );
 	#ifdef __CLIENT
 				m_pet.SetName( szPetName );
 	#endif	// __CLIENT
-	#endif	// __PET_1024
 			}
 
 		#if defined(__WORLDSERVER) || defined(__CLIENT)
@@ -603,7 +586,7 @@ void CMover::Serialize( CAr & ar )
 		}
 		else	// NPC
 		{
-			ar >> (u_char&)m_dwHairMesh >> m_dwHairColor >> (u_char&)m_dwHeadMesh;
+			ar >> m_skin >> m_dwHairColor ;
 			ar.ReadString( m_szCharacterKey, 32 );
 		#if defined (__WORLDSERVER) || defined(__CLIENT)
 			SetHairColor( m_dwHairColor );

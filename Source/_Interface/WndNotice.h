@@ -1,7 +1,7 @@
 #ifndef __WNDNOTICE__H
 #define __WNDNOTICE__H
 
-class CWndInfoNotice : public CWndNeuz 
+class CWndInfoNotice final : public CWndNeuz
 { 
 public: 
 	std::vector<CString> m_vecStrBanner;
@@ -13,8 +13,8 @@ public:
 
 	void AfterSkinTexture( LPWORD pDest, CSize size, D3DFORMAT d3dFormat = D3DFMT_A4R4G4B4 );
 	virtual BOOL Process ();
-	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	void OnSetCursor() override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

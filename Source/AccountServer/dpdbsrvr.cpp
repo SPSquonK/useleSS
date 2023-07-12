@@ -9,7 +9,6 @@
 
 CDPDBSrvr::CDPDBSrvr()
 {
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_MYREG, &CDPDBSrvr::OnAddConnection );
 	ON_MSG( PACKETTYPE_REMOVE_ACCOUNT, &CDPDBSrvr::OnRemoveAccount );
 	ON_MSG( PACKETTYPE_GETPLAYERLIST, &CDPDBSrvr::OnGetPlayerList );
@@ -17,11 +16,6 @@ CDPDBSrvr::CDPDBSrvr()
 	ON_MSG( PACKETTYPE_JOIN, &CDPDBSrvr::OnJoin );
 	ON_MSG( PACKETTYPE_REMOVE_ALLACCOUNTS, &CDPDBSrvr::OnRemoveAllAccounts );
 	ON_MSG( PACKETTYPE_BUYING_INFO, &CDPDBSrvr::OnBuyingInfo );
-}
-
-CDPDBSrvr::~CDPDBSrvr()
-{
-
 }
 
 void CDPDBSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpId )
@@ -40,11 +34,10 @@ void CDPDBSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID 
 void CDPDBSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpId )
 {
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )
-		=	GetHandler( dw );
-	ASSERT( pfn );
-	( this->*( pfn ) )( ar, dpId, (LPBYTE)lpMsg, (u_long)dwMsgSize );
+	DWORD dw; ar >> dw;
+
+	const bool handled = Handle(ar, dw, dpId, (LPBYTE)lpMsg, (u_long)dwMsgSize);
+	ASSERT(handled);
 
 	if (ar.IsOverflow()) Error("Account-Database: Packet %08x overflowed", dw);
 }
@@ -265,35 +258,6 @@ void CDPDBSrvr::OnCloseBattleServer( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long u
 void CDPDBSrvr::SendLogSMItem()
 {
 }
-
-/*
-#ifdef __S0114_RELOADPRO
-void CDPDBSrvr::SendReloadAccount()
-{
-	BEFORESEND( ar, PACKETTYPE_RELOAD_PROJECT );
-	ar << g_DbManager.m_OutAccount_List.size();
-	for( SET_STRING::iterator i = g_DbManager.m_OutAccount_List.begin() ; i != g_DbManager.m_OutAccount_List.end() ; ++i )
-	{
-		ar.WriteString( i->data() );
-	}	
-	SEND( ar, this, DPID_ALLPLAYERS );
-
-	for( i = g_DbManager.m_OutAccount_List.begin() ; i != g_DbManager.m_OutAccount_List.end() ; ++i )
-	{
-		g_dpSrvr.CloseExistingConnection( i->data(), ERROR_FLYFF_DB_JOB_ING );
-	}	
-}
-
-void CDPDBSrvr::OnCompleteReloadProject( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
-{
-	DWORD dwDBServer;
-	ar >> dwDBServer;
-	char szMessage[1024];
-	sprintf( szMessage, "CompleteReloadProject -> %d ", dwDBServer );
-	ReloadLog( szMessage );
-}
-#endif // __S0114_RELOADPRO
-*/
 
 #ifdef __SERVERLIST0911
 void CDPDBSrvr::OnServerEnable( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )

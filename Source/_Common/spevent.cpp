@@ -8,69 +8,7 @@
 #include "worldmng.h"
 #endif	// __EVENT_0117
 #endif	// __WORLDSERVER
-
-CXMasEvent::CXMasEvent()
-: CSPEvent()
-{
-	m_dwTimeout	= GetTickCount();
-	memset( (void*)m_adwInterval, 0, sizeof(DWORD) * 24 );
-	m_lSkip		= 0;
-}
-
-CXMasEvent::~CXMasEvent()
-{
-
-}
-
-BOOL CXMasEvent::IsTimeout( int nHour )
-{
-	DWORD dwTickCount	= GetTickCount();
-	if( dwTickCount >= m_dwTimeout )
-	{
-		m_dwTimeout	= dwTickCount + m_adwInterval[nHour];
-
-		if( m_lSkip > 0 )
-		{
-			m_lSkip--;
-			return FALSE;
-		}
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL CXMasEvent::LoadScript( LPCTSTR lpFilename )
-{
-	CScript s;
-	if( s.Load( lpFilename ) == FALSE )
-		return FALSE;
-	
-	int an[24]	= { 0, };
-	int nTotal	= 0;
-	
-	int nMax	= s.GetNumber();	// drop num a day
-
-	for( int i = 0; i < 24; i++ )
-	{
-		an[i]	= s.GetNumber();
-		nTotal	+= an[i];
-	}
-	for( int i = 0; i < 24; i++ )
-		m_adwInterval[i]	= (DWORD)( (float)MIN( 60 ) / ( nMax * (float)an[i] / (float)nTotal ) );
-
-	return TRUE;
-}
-
-void CXMasEvent::Skip( LONG lSkip )
-{
-	m_lSkip		= lSkip;
-}
-
-CXMasEvent*	CXMasEvent::GetInstance( void )
-{
-	static	CXMasEvent	sXMasEvent;
-	return	&sXMasEvent;
-}
+#include <numeric>
 
 CEventItem::CEventItem()
 {
@@ -90,33 +28,27 @@ CEventItem::CEventItem( DWORD dwItemId, int nMax, int nNum )
 	m_dwTimeout	= GetTickCount();
 	m_lSkip	= 0;
 
-	static	int	s_anHour[24]	=
+	static constexpr int s_anHour[24]	=
 		{	505, 409, 324, 280, 220, 203, 202, 212,
 			227, 261, 302, 349, 571, 701, 764, 803,
 			790, 789, 754, 849, 936, 940, 919, 720	};
-	int nTotal	= 0;
+	
+	static constexpr int nTotal = std::reduce(s_anHour, s_anHour + 24);
 
-	for( int i = 0; i < 24; i++ )
-		nTotal	+= s_anHour[i];
 	for( int i = 0; i < 24; i++ )
 		m_adwInterval[i]	= (DWORD)( (float)MIN( 60 ) / ( nMax * (float)s_anHour[i] / (float)nTotal ) );
 }
 
-BOOL CEventItem::IsTimeout( int nHour )
-{
-	DWORD dwTickCount	= GetTickCount();
-	if( dwTickCount >= m_dwTimeout )
-	{
-		m_dwTimeout	= dwTickCount + m_adwInterval[nHour];
+bool CEventItem::IsTimeout(const int nHour) {
+	const DWORD dwTickCount = GetTickCount();
+	if (dwTickCount < m_dwTimeout) return false;
 
-		if( m_lSkip > 0 )
-		{
-			m_lSkip--;
-			return FALSE;
-		}
-		return TRUE;
-	}
-	return FALSE;
+	m_dwTimeout	= dwTickCount + m_adwInterval[nHour];
+
+	if (m_lSkip <= 0) return true;
+
+	m_lSkip--;
+	return false;
 }
 
 void CEventItem::Skip( LONG lSkip )
@@ -155,19 +87,9 @@ CEventGeneric::~CEventGeneric()
 
 void CEventGeneric::Clear( BOOL bDestructor )
 {
-	for( auto i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
-		safe_delete( *i );
 	m_lspEvent.clear();
-
-	for( auto i2 = m_mapEventItemList.begin(); i2 != m_mapEventItemList.end(); ++i2 )
-	{
-		std::list<CEventItem*>* pList	= i2->second;
-		for( auto i3 = pList->begin(); i3 != pList->end(); ++i3 )
-			safe_delete( *i3 );
-		pList->clear();
-		safe_delete( pList );
-	}
 	m_mapEventItemList.clear();
+
 #ifdef __EVENT_0117
 	if( bDestructor )
 	{
@@ -185,17 +107,14 @@ BOOL CEventGeneric::LoadScript( LPCSTR lpFilename )
 		return FALSE;
 	s.GetToken();	// subject or FINISHED
 	
-//	int nEvent	= 500;
-
 	while( s.tok != FINISHED )
 	{
 		if( s.Token == _T( "Event" ) )
 		{
-			PEVENT_GENERIC pEvent	= new EVENT_GENERIC;
+			EVENT_GENERIC & rEvent = m_lspEvent.emplace_back();
+			EVENT_GENERIC * pEvent	= &rEvent;
 			pEvent->nId		= s.GetNumber();
-//			pEvent->nId	= nEvent++;
 			pEvent->nFlag	= 0x00000001 << ( pEvent->nId - 500 );
-			m_lspEvent.push_back( pEvent );
 
 			s.GetToken();	// {
 			s.GetToken();
@@ -213,8 +132,6 @@ BOOL CEventGeneric::LoadScript( LPCSTR lpFilename )
 						if( nLang == ::GetLanguage() )
 						{
 							CString str		= token;
-//							if( str.IsEmpty() )
-//								str	= "Empty";
 							lstrcpy( pEvent->pszTitle, (LPCSTR)str );
 						}
 						nLang	= s.GetNumber();
@@ -262,12 +179,11 @@ BOOL CEventGeneric::LoadScript( LPCSTR lpFilename )
 						{
 							//
 						}
-						int nMax	= s.GetNumber();
-						int nNum	= s.GetNumber();
-						if( FALSE == AddItem( pEvent->nId, dwItemId, nMax, nNum ) )
-						{
-							//
-						}
+						const int nMax	= s.GetNumber();
+						const int nNum	= s.GetNumber();
+
+						m_mapEventItemList[pEvent->nId].emplace_back(dwItemId, nMax, nNum);
+
 						dwItemId	= s.GetNumber();
 					}
 #else	// __DBSERVER
@@ -307,7 +223,7 @@ BOOL CEventGeneric::LoadScript( LPCSTR lpFilename )
 					DWORD dwIndex	= s.GetNumber();
 					int nMax	= s.GetNumber();
 					float fRatio	= s.GetFloat();
-					DWORD dwInterval	= 86400000 / nMax;	// 86400000	= 1일
+					DWORD dwInterval	= 86400000 / nMax;	// 86400000	= 1day
 					AddSpawn( pEvent->nId, dwType, dwIndex, nMax, fRatio, dwInterval );
 					s.GetToken();	// }
 #else	// __WORLDSERVER
@@ -327,26 +243,6 @@ BOOL CEventGeneric::LoadScript( LPCSTR lpFilename )
 	return TRUE;
 }
 
-BOOL CEventGeneric::AddItem( int nEvent, DWORD dwItemId, int nMax, int nNum )
-{
-	std::list<CEventItem*>*	pList	= NULL;
-	auto i	= m_mapEventItemList.find( nEvent );
-	if( i == m_mapEventItemList.end() )
-	{
-		pList	= new std::list<CEventItem*>;
-		bool bResult	= m_mapEventItemList.emplace(nEvent, pList).second;
-		if( !bResult )	// ?
-			return FALSE;
-	}
-	else
-	{
-		pList	= i->second;
-	}
-	CEventItem* pEventItem	= new CEventItem( dwItemId, nMax, nNum );
-	pList->push_back( pEventItem );
-	return TRUE;
-}
-
 CEventGeneric*	CEventGeneric::GetInstance( void )
 {
 	static CEventGeneric	sEventGeneric;
@@ -354,39 +250,35 @@ CEventGeneric*	CEventGeneric::GetInstance( void )
 }
 
 #ifdef __WORLDSERVER
-CEventItem* CEventGeneric::GetItem( int* pnNum )
-{
-	int nHour	= CTime::GetCurrentTime().GetHour();
-	for( auto i = m_mapEventItemList.begin(); i != m_mapEventItemList.end(); ++i )
-	{
-		if( g_eLocal.GetState( i->first ) )
-		{
-			std::list<CEventItem*>* pList	= i->second;
-			for( auto i2 = pList->begin(); i2 != pList->end(); ++i2 )
-			{
-				CEventItem* pEventItem	= *i2;
-				if( pEventItem->IsTimeout( nHour ) )
-				{
-					int nNum	= xRandom( 1, pEventItem->m_nNum + 1 );
-					pEventItem->Skip( (LONG)( nNum - 1 ) );
-					*pnNum	= nNum;
-					return pEventItem;
-				}
+std::pair<CEventItem *, int> CEventGeneric::GetItem() {
+	const int nHour	= CTime::GetCurrentTime().GetHour();
+
+	for (auto & [eventId, eventItems] : m_mapEventItemList) {
+		if (!g_eLocal.GetState(eventId)) continue;
+
+		for (CEventItem & pEventItem : eventItems) {
+			if (pEventItem.IsTimeout(nHour)) {
+				const int nNum = xRandom(1, pEventItem.m_nNum + 1);
+				pEventItem.Skip((LONG)(nNum - 1));
+				
+				return { &pEventItem, nNum };
 			}
 		}
 	}
-	return NULL;
+
+	return { nullptr, 0 };
 }
 
 FLOAT CEventGeneric::GetExpFactor( void )
 {
 	FLOAT	fExpFactor	= 1.0f;
-	for( auto i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
-	{
-		PEVENT_GENERIC pEvent	= *i;
-		if( g_eLocal.GetState( pEvent->nId ) )
-			fExpFactor	*= pEvent->fExpFactor;
+
+	for (const EVENT_GENERIC & pEvent : m_lspEvent) {
+		if (g_eLocal.GetState(pEvent.nId)) {
+			fExpFactor *= pEvent.fExpFactor;
+		}
 	}
+
 	return fExpFactor;
 }
 
@@ -394,11 +286,9 @@ FLOAT CEventGeneric::GetExpFactor( void )
 FLOAT CEventGeneric::GetItemDropRateFactor( void )
 {
 	FLOAT	fFactor	= 1.0f;
-	for( auto i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
-	{
-		PEVENT_GENERIC pEvent	= *i;
-		if( g_eLocal.GetState( pEvent->nId ) )
-			fFactor	*= pEvent->fItemDropRate;
+	for (const EVENT_GENERIC & pEvent : m_lspEvent) {
+		if( g_eLocal.GetState( pEvent.nId ) )
+			fFactor	*= pEvent.fItemDropRate;
 	}
 	return fFactor;
 }
@@ -406,17 +296,17 @@ FLOAT CEventGeneric::GetItemDropRateFactor( void )
 #endif	// __WORLDSERVER
 CAr & operator<<(CAr & ar, const CEventGeneric & self) {
 	ar << (int)self.m_lspEvent.size();
-	for (const EVENT_GENERIC * pEvent : self.m_lspEvent) {
-		ar.Write(pEvent, sizeof(EVENT_GENERIC));
+	for (const EVENT_GENERIC & pEvent : self.m_lspEvent) {
+		ar.Write(&pEvent, sizeof(EVENT_GENERIC));
 	}
 
 	ar << (int)self.m_mapEventItemList.size();
 	for (const auto & [nEvent, pList] : self.m_mapEventItemList) {
-		ar << (int)nEvent;
-		ar << (int)pList->size();
-		
-		for (const CEventItem * pEventItem : *pList) {
-			ar << *pEventItem;
+		ar << nEvent;
+
+		ar << (int)pList.size();
+		for (const CEventItem & pEventItem : pList) {
+			ar << pEventItem;
 		}
 	}
 
@@ -429,26 +319,23 @@ CAr & operator>>(CAr & ar, CEventGeneric & self) {
 	ar >> nEventSize;
 	for( int i = 0; i < nEventSize; i++ )
 	{
-		EVENT_GENERIC * pEvent	= new EVENT_GENERIC;
-		ar.Read( pEvent, sizeof(EVENT_GENERIC) );
-		self.m_lspEvent.push_back( pEvent );
+		EVENT_GENERIC & pEvent = self.m_lspEvent.emplace_back();
+		ar.Read(&pEvent, sizeof(EVENT_GENERIC));
 	}
+
 	int nEventItemListSize;
 	ar >> nEventItemListSize;
 	for( int i = 0; i < nEventItemListSize; i++ )
 	{
 		int nEvent;
 		ar >> nEvent;
-		std::list<CEventItem*>* pList	= new std::list<CEventItem*>;
-		self.m_mapEventItemList.emplace(nEvent, pList);
 
-		int nEventItemSize;
-		ar >> nEventItemSize;
-		for( int j = 0; j < nEventItemSize; j++ )
-		{
-			CEventItem* pEventItem	= new CEventItem;
-			ar >> *pEventItem;
-			pList->push_back( pEventItem );
+		std::vector<CEventItem> & itemList = self.m_mapEventItemList[nEvent];
+
+		int nEventItemSize; ar >> nEventItemSize;
+		for( int j = 0; j < nEventItemSize; j++ ) {
+			auto & pEventItem = itemList.emplace_back();
+			ar >> pEventItem;
 		}
 	}
 
@@ -459,45 +346,43 @@ BOOL CEventGeneric::Run( void )
 {
 	BOOL f	= FALSE;
 	time_t t	= time_null();
-	for( auto i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
-	{
-		PEVENT_GENERIC pEvent	= *i;
-		BOOL bEvent	= ( t >= pEvent->tStart && t < pEvent->tEnd );
+
+	for (const EVENT_GENERIC & pEvent : m_lspEvent) {
+		const bool bEvent	= ( t >= pEvent.tStart && t < pEvent.tEnd );
 		// 康
 		char lpOutputString[512]	= { 0, };
-		sprintf( lpOutputString, "m_dwFlag=0x%08x, nId=%d, tStart=%d, tEnd=%d, t=%d, nFlag=%d", m_dwFlag, pEvent->nId, pEvent->tStart, pEvent->tEnd, time_null(), pEvent->nFlag );
+		sprintf( lpOutputString, "m_dwFlag=0x%08x, nId=%d, tStart=%d, tEnd=%d, t=%d, nFlag=%d", m_dwFlag, pEvent.nId, pEvent.tStart, pEvent.tEnd, time_null(), pEvent.nFlag );
 		OutputDebugString( lpOutputString );
 
-		if( bEvent && !( m_dwFlag & pEvent->nFlag ) )
+		if( bEvent && !( m_dwFlag & pEvent.nFlag ) )
 		{
-			m_dwFlag	|= pEvent->nFlag;
+			m_dwFlag	|= pEvent.nFlag;
 			f	= TRUE;
 		}
-		else if( !bEvent && ( m_dwFlag & pEvent->nFlag ) )
+		else if( !bEvent && ( m_dwFlag & pEvent.nFlag ) )
 		{
-			m_dwFlag	&= ~pEvent->nFlag;
+			m_dwFlag	&= ~pEvent.nFlag;
 			f	= TRUE;
 		}
 	}
 	return f;
 }
 
-PEVENT_GENERIC CEventGeneric::GetEvent( int nEvent )
-{
-	for( auto i = m_lspEvent.begin(); i != m_lspEvent.end(); ++i )
-	{
-		PEVENT_GENERIC pEvent	= *i;
-		if( pEvent->nId == nEvent )
-			return pEvent;
+const EVENT_GENERIC * CEventGeneric::GetEvent(const int nEvent ) const {
+	for (const EVENT_GENERIC & pEvent : m_lspEvent) {
+		if (pEvent.nId == nEvent) {
+			return &pEvent;
+		}
 	}
-	return NULL;
+
+	return nullptr;
 }
 
 #ifdef __WORLDSERVER
 #ifdef __EVENT_1101
 LONG CEventGeneric::GetEventElapsed( void )
 {
-	PEVENT_GENERIC pEvent	= GetEvent( 531 );
+	const EVENT_GENERIC * pEvent = GetEvent(531);
 	if( !pEvent )
 		return 0;
 	CTime tStart	= CTime( pEvent->tStart );
@@ -510,7 +395,7 @@ LONG CEventGeneric::GetEventElapsed( void )
 
 void CEventGeneric::CallTheRoll( void )
 {
-	PEVENT_GENERIC pEvent	= GetEvent( 531 );	// 이벤트가 등록되어 있지 않으면
+	const EVENT_GENERIC * pEvent = GetEvent( 531 );	// 이벤트가 등록되어 있지 않으면
 	if( !pEvent )
 		return;
 
@@ -567,7 +452,7 @@ void CEventGeneric::Spawn( void )
 				{
 					D3DXVECTOR3 v = m_aRegionGeneric[nIndex].pi->GetRandomPosition();
 					v.y		=	pWorld->GetLandHeight( v.x, v.z ) + 1.0f;
-					CObj* pObj	= CreateObj( D3DDEVICE, pSpawn->m_dwType, pSpawn->m_dwIndex );
+					CObj* pObj	= CreateObj( pSpawn->m_dwType, pSpawn->m_dwIndex );
 					if( pSpawn->m_dwType == OT_ITEM )
 					{
 						CItemElem* pItemElem	= new CItemElem;

@@ -1,5 +1,4 @@
-#ifndef __2DRENDER_H
-#define __2DRENDER_H
+#pragma once
 
 #include <exception>
 
@@ -26,38 +25,25 @@ public:
 	CRectClip(POINT topLeft,POINT bottomRight) : CRect(topLeft,bottomRight) { }
 
 	BOOL Clipping(CRect& rect) const;
-//BOOL Clipping(CRect& os,Rect& is);
 
-	//BOOL Clipping(CPtSz& os,CPtSz& is) const;
-
-	//BOOL PtSzLapRect(CPtSz ptSz) const;
-	//BOOL PtSzInRect (CPtSz ptSz) const;
 	BOOL RectLapRect(CRect rect) const;
 	BOOL RectInRect (CRect rect) const;
 };
 
-#define D2DTEXRENDERFLAG_90    1
-#define D2DTEXRENDERFLAG_180   2
-#define D2DTEXRENDERFLAG_HFLIP 3
-#define D2DTEXRENDERFLAG_VFLIP 4
-
 struct DRAWVERTEX
 {
-	D3DXVECTOR3 vec;//AT x, y, z;
+	D3DXVECTOR3 vec;
 	FLOAT rhw;
-	DWORD color; 
-//	FLOAT u, v;
+	DWORD color;
 };
 struct TEXTUREVERTEX
 {
-	D3DXVECTOR3 vec;//
-	//FLOAT x, y, z, 
+	D3DXVECTOR3 vec;
 	FLOAT rhw, u, v;
 };
 struct TEXTUREVERTEX2
 {
-	D3DXVECTOR3 vec;//
-	//FLOAT x, y, z, 
+	D3DXVECTOR3 vec;
 	FLOAT rhw;
 	DWORD color; 
 	FLOAT u, v;
@@ -66,17 +52,8 @@ struct TEXTUREVERTEX2
 #define D3DFVF_TEXTUREVERTEX (D3DFVF_XYZRHW|D3DFVF_TEX1)
 #define D3DFVF_TEXTUREVERTEX2 (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1)
 
-inline void SetDrawVertex( DRAWVERTEX* pVertices, FLOAT x, FLOAT y, DWORD dwColor )
-{
-	pVertices->vec = D3DXVECTOR3( x,y,0);
-	pVertices->rhw   = 1.0f;
-	pVertices->color = dwColor;
-}
 inline void SetTextureVertex( TEXTUREVERTEX* pVertices, FLOAT x, FLOAT y, FLOAT u, FLOAT v )
 {
-	//pVertices->x     = (FLOAT)x - 0.5f;
-	//pVertices->y     = (FLOAT)y - 0.5f;
-	//pVertices->z     = 0.0f;
 	pVertices->vec = D3DXVECTOR3( x - 0.5f, y - 0.5f, 0 );
 	pVertices->rhw   = 1.0f;
 	pVertices->u     = u;
@@ -84,9 +61,6 @@ inline void SetTextureVertex( TEXTUREVERTEX* pVertices, FLOAT x, FLOAT y, FLOAT 
 }
 inline void SetTextureVertex2( TEXTUREVERTEX2* pVertices, FLOAT x, FLOAT y, FLOAT u, FLOAT v, DWORD dwColor )
 {
-	//pVertices->x     = (FLOAT)x - 0.5f;
-	//pVertices->y     = (FLOAT)y - 0.5f;
-	//pVertices->z     = 0.0f;
 	pVertices->vec = D3DXVECTOR3( x - 0.5f, y - 0.5f, 0 );
 	pVertices->rhw   = 1.0f;
 	pVertices->u     = u;
@@ -98,7 +72,7 @@ class CTexture;
 class CTexturePack;
 
 
-class C2DRender
+class C2DRender final
 {
 	LPDIRECT3DVERTEXBUFFER9 m_pVBRect;
 	LPDIRECT3DVERTEXBUFFER9 m_pVBFillRect;
@@ -107,10 +81,8 @@ class C2DRender
 	LPDIRECT3DVERTEXBUFFER9 m_pVBTriangle;
 	LPDIRECT3DVERTEXBUFFER9 m_pVBLine;
 	LPDIRECT3DVERTEXBUFFER9 m_pVBPixel;
-	//LPDIRECT3DVERTEXBUFFER9 m_pVBTexture;
 	
 public:
-	LPDIRECT3DDEVICE9 m_pd3dDevice; // The D3D rendering device
 	DWORD      m_dwTextColor;
 	CD3DFont*  m_pFont;
  	CPoint     m_ptOrigin ; // 뷰포트 시작 지점 
@@ -171,7 +143,6 @@ public:
 	void TextOut( int x,int y, int nValue, DWORD dwColor = 0xffffffff, DWORD dwShadowColor = 0x00000000 );
 	void TextOut( int x,int y, FLOAT fXScale, FLOAT fYScale, LPCTSTR pszString, DWORD dwColor = 0xffffffff, DWORD dwShadowColor = 0x00000000 );
 
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
 	HRESULT RestoreDeviceObjects(  D3DSURFACE_DESC*  pd3dsdBackBuffer );
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
@@ -211,10 +182,10 @@ public:
 
 
 	LPDIRECT3DTEXTURE9 GetTexture() { return m_pTexture; }
-	BOOL CreateTexture( LPDIRECT3DDEVICE9 pd3dDevice, int nWidth, int nHeight, 
+	BOOL CreateTexture( int nWidth, int nHeight, 
 						   UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool = D3DPOOL_DEFAULT );
-	BOOL LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE );
-	//BOOL LoadTextureFromRes( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE );
+	BOOL LoadTexture( LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE );
+	//BOOL LoadTextureFromRes( LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE );
 	void Render( C2DRender* p2DRender, CPoint pt, DWORD dwBlendFactorAlhpa = 255 ) {
 		p2DRender->RenderTexture( pt, this, dwBlendFactorAlhpa ); 
 	}
@@ -242,8 +213,6 @@ public:
 	void RenderScal2( C2DRender* p2DRender, CPoint pt, DWORD dwBlendFactorAlhpa = 255, FLOAT fscalX = 1.0, FLOAT fscalY = 1.0, D3DCOLOR color = 0 ) {
 		p2DRender->RenderTextureColor( pt, this, fscalX, fscalY, color ); 
 	}
-	
-	//CSize ComputeSize( CSize size );
 };
 class CTexturePack
 {
@@ -260,12 +229,12 @@ public:
 	[[nodiscard]] DWORD GetNumber() const noexcept { return m_dwNumber; }
 	void MakeVertex( C2DRender* p2DRender, CPoint point, int nIndex, TEXTUREVERTEX** ppVertices );
 	void MakeVertex( C2DRender* p2DRender, CPoint point, int nIndex, TEXTUREVERTEX2** ppVertices, DWORD dwColor );
-	void Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX* pVertices, int nVertexNum );
-	void Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX2* pVertices, int nVertexNum );
+	void Render( TEXTUREVERTEX* pVertices, int nVertexNum );
+	void Render( TEXTUREVERTEX2* pVertices, int nVertexNum );
 
-	virtual BOOL LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName );
+	virtual BOOL LoadScript( LPCTSTR pFileName );
 
-	CTexture* LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor );
+	CTexture* LoadTexture( LPCTSTR pFileName, D3DCOLOR d3dKeyColor );
 	CTexture* GetAt( DWORD dwIndex ) {
 		return &m_ap2DTexture[ dwIndex ];
 	}
@@ -286,7 +255,7 @@ private:
 	std::map<std::string, std::unique_ptr<CTexture>> m_mapTexture;
 	std::set<std::string> m_failedTextures;
 public:
-	CTexture * AddTexture(LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE);
+	CTexture * AddTexture(LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader = FALSE);
 	void Clear() { m_mapTexture.clear(); m_failedTextures.clear(); }
 };
 
@@ -323,11 +292,9 @@ public:
 	~CDamageNumMng();
 
 	void DeleteDeviceObjects();
-	void LoadTexture(LPDIRECT3DDEVICE9 pd3dDevice);
+	void LoadTexture();
 	void AddNumber(D3DXVECTOR3 vPos,DWORD nNumber,DWORD nAttribute); // 새로운 데미지 표시를 생성시킨다.
 	void Process(); // 현재 생성된 데미지 표시들을 처리한다.
 	void Render(); // 현재 생성된 데미지 표시들을 출력한다.
 };
 #endif
-#endif
-

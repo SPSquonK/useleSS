@@ -21,17 +21,18 @@ public:
 	BOOL Create(LPCTSTR lpszMessage,UINT nType,const RECT& rect,UINT nID, CWndBase* pWndParent = NULL );
 	virtual void OnEnter( UINT nChar );
 
-	
 	virtual	void OnInitialUpdate();
 	virtual void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
-	virtual BOOL Initialize( LPCTSTR lpszMessage, CWndBase* pWndParent, DWORD nType = MB_OK );
-	//BOOL Initialize(CString strMessage,UINT nType = MB_OK);
+	virtual BOOL Initialize( LPCTSTR lpszMessage, CWndBase* pWndParent, DWORD nType = MB_OK ) final;
 
-	// message
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-//	virtual BOOL OnCommand(UINT nID,DWORD dwMessage);
 };
+
+class CWndCustomMessageBox : public CWndMessageBox {
+public:
+	virtual BOOL Initialize(CWndBase * pWndParent = nullptr) = 0;
+};
+
 class CWndMessageBoxUpper : public CWndNeuz
 {
 protected:
@@ -45,8 +46,8 @@ public:
 	BOOL Create(LPCTSTR lpszMessage,UINT nType,const RECT& rect,UINT nID, CWndBase* pWndParent = NULL );
 	
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
-	virtual BOOL Initialize( LPCTSTR lpszMessage, CWndBase* pWndParent, DWORD nType = MB_OK, BOOL bPostLogoutMsg = FALSE );
+	// virtual BOOL Initialize( CWndBase* pWndParent = nullptr ) final;
+	virtual BOOL Initialize( LPCTSTR lpszMessage, CWndBase* pWndParent, DWORD nType = MB_OK, BOOL bPostLogoutMsg = FALSE ) final;
 	//BOOL Initialize(CString strMessage,UINT nType = MB_OK);
 	
 	// message
@@ -54,9 +55,9 @@ public:
 	//	virtual BOOL OnCommand(UINT nID,DWORD dwMessage);
 };
 #define DECLARE_WNDMESSAGEBOX( class_name ) \
-	class class_name : public CWndMessageBox \
+	class class_name : public CWndCustomMessageBox \
 	{ \
-		virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); \
+		BOOL Initialize( CWndBase* pWndParent = nullptr ) override; \
 		BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult); \
 	}; 
 

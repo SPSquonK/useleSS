@@ -5,11 +5,11 @@
 #include "mempool.h"
 #include <dplay.h>
 #include "account.h"
+#include <thread>
 
 #include <map>
 #include <set>
 #include <string>
-typedef	std::set<std::string>			SET_STRING;
 
 enum QUERYMODE
 {	
@@ -98,19 +98,14 @@ typedef	struct tagDB_OVERLAPPED_PLUS
 class CDbManager
 {
 protected:
-	enum	{	DEFAULT_DB_WORKER_THREAD_NUM	= 8	};
-	HANDLE							m_hDbWorkerThreadTerminate[DEFAULT_DB_WORKER_THREAD_NUM];
+	static constexpr size_t DEFAULT_DB_WORKER_THREAD_NUM = 8;
+	std::array<std::thread, DEFAULT_DB_WORKER_THREAD_NUM> m_hDbWorkerThreadTerminate;
 
 public:
 	CMemPool<DB_OVERLAPPED_PLUS>*	m_pDbIOData;
 	HANDLE							m_hDbCompletionPort;
 	BOOL							m_bTracking;
 	BOOL							m_bLogItem;		// 상용화 아이템 로그 ( 예전 - __NOLOG )
-/*
-#ifdef __S0114_RELOADPRO
-	SET_STRING						m_OutAccount_List;
-#endif // __S0114_RELOADPRO
-*/
 
 public:
 //	Constructions
@@ -140,7 +135,7 @@ public:
 
 extern CDbManager g_DbManager;
 
-u_int	__stdcall	DbWorkerThread( LPVOID lpDbManager );	// DbWorkerThread
+u_int	DbWorkerThread(CDbManager * lpDbManager);	// DbWorkerThread
 
 extern CQuery::Credentials dbLogin;
 extern CQuery::Credentials dbLog;

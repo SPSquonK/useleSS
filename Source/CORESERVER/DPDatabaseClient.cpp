@@ -13,7 +13,6 @@
 
 CDPDatabaseClient::CDPDatabaseClient()
 {
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_PARTYNAME, &CDPDatabaseClient::OnPartyName );
 	ON_MSG( PACKETTYPE_GLOBAL_DATA, &CDPDatabaseClient::OnGlobalData );
 	ON_MSG( PACKETTYPE_INSERTTAG_RESULT, &CDPDatabaseClient::OnInsertTagResult );
@@ -54,23 +53,11 @@ void CDPDatabaseClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSiz
 void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpId )
 {
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
+	DWORD dw; ar >> dw;
 
-	GETTYPE( ar );
-	
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
-
-	if( pfn ) {
-		( this->*( pfn ) )( ar );
+	if (Handle(ar, dw)) {
 		if (ar.IsOverflow()) Error("Core-Database: Packet %08x overflowed", dw);
 	}
-//	else {
-//		switch( dw ) {
-//			default:
-//				TRACE( "Handler not found(%08x)\n", dw );
-//				ASSERT( 0 );
-//				break;
-//		}
-//	}
 }
 
 void CDPDatabaseClient::OnPartyName( CAr & ar )

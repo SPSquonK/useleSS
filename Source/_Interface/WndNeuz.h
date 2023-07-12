@@ -49,7 +49,7 @@ class CWndNeuz : public CWndBase
 protected:
 	CWndTitleBar m_wndTitleBar;
 	CRect m_rectBackup;
-	CPtrArray m_wndArrayTemp; // List of created controls (to be able to release them only)
+	std::vector<CWndBase *> m_wndArrayTemp; // List of created controls (to be able to release them only)
 
 public:
 	CPoint m_ptMouseCenter;
@@ -63,7 +63,7 @@ public:
 	// 윈도 정보 저장 관련 끝 
 
 	BOOL InitDialog( DWORD dwWID, CWndBase * pWndParent = nullptr, DWORD dwStyle = 0, CPoint ptLeftTop = 0 );
-	CWndBase* CreateControl( HWND hWnd, LPWNDCTRL lpWndCtrl );
+	CWndBase* CreateControl( LPWNDCTRL lpWndCtrl );
 	//CWndBase* GetDlgItem( UINT nID )
 protected:
 	CWndNeuz();
@@ -76,16 +76,16 @@ public:
 	void PaintTexture( LPVOID pDestData, LPIMAGE pImage, CPoint pt, CSize sizeSurface ) { ::PaintTexture( pDestData, pImage, pt, sizeSurface, m_d3dFormat ); }
 	void SetFullMax( BOOL bFullMax ) { m_bFullMax = bFullMax; }
 	BOOL IsFullMax() { return m_bFullMax; }
-//	virtual CItem* GetFocusItem() { return NULL; }
 	virtual	void PaintFrame( C2DRender* p2DRender );
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL,DWORD dwStyle = 0 );
+
+	BOOL DefaultInitialize(CWndBase * pWndParent = nullptr);
 	// message
 	virtual BOOL OnChildNotify( UINT message,UINT nID,LRESULT* pLResult );
 	virtual void OnSize( UINT nType, int cx, int cy );
 	virtual void OnNonClientLButtonDblClk( UINT nFlags, CPoint point );
 	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE);
-	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	void OnSetCursor() override;
 
 	void SetSizeMax();
 	void SetSizeWnd();
@@ -98,14 +98,17 @@ public:
 template<typename T, typename D>
 	requires (WndTListBox::DisplayerOf<T, D>)
 CWndTListBox<T, D> & CWndNeuz::ReplaceListBox(UINT listboxId) {
-	for (int i = 0; i != m_wndArrayTemp.GetSize(); ++i) {
-		CWndBase * oldComponent = (CWndBase *) m_wndArrayTemp.GetAt(i);
-		if (oldComponent->GetWndId() == listboxId) {
-			RemoveWnd(oldComponent);
-			oldComponent->Destroy(true);
-			m_wndArrayTemp.RemoveAt(i);
-			break;
+	const auto itOldComponent = std::find_if(
+		m_wndArrayTemp.begin(), m_wndArrayTemp.end(),
+		[listboxId](CWndBase * pOldComponent) {
+			return pOldComponent->GetWndId() == listboxId;
 		}
+	);
+
+	if (itOldComponent != m_wndArrayTemp.end()) {
+		RemoveWnd(*itOldComponent);
+		(*itOldComponent)->Destroy(TRUE);
+		m_wndArrayTemp.erase(itOldComponent);
 	}
 
 	CWndTListBox<T, D> * e = new CWndTListBox<T, D>();
@@ -119,6 +122,6 @@ CWndTListBox<T, D> & CWndNeuz::ReplaceListBox(UINT listboxId) {
 		e->m_strTexture = lpWndCtrl->strTexture;
 	e->m_bTile = (lpWndCtrl->bTile != FALSE);
 
-	m_wndArrayTemp.Add(e);
+	m_wndArrayTemp.emplace_back(e);
 	return *e;
 }

@@ -675,7 +675,7 @@ BOOL CMover::AddFxp( int nFxp )
 		
 #ifdef __CLIENT
 		// �������� ����Ʈ
-		CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_LEVEL_UP01,GetPos(),GetId());
+		CreateSfx(XI_GEN_LEVEL_UP01,GetPos(),GetId());
 		PlayMusic( BGM_IN_LEVELUP );
 #endif	// __CLIENT
 	
@@ -693,6 +693,7 @@ BOOL CMover::AddFxp( int nFxp )
 bool CMover::AddChangeJob(const int nJob) {
 	if (nJob < 0 || nJob >= MAX_JOB) return false;
 
+	m_nJob = nJob;
 	const DWORD jobType = GetJobType(nJob);
 
 	const MoverSkills previously = std::move(m_jobSkills);
@@ -725,7 +726,7 @@ BOOL CMover::SetFxp( int nFxp, int nFlightLv )
 	{
 		SetFlightLv( nFlightLv );
 #ifdef __CLIENT
-		CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_LEVEL_UP01,GetPos(),GetId());
+		CreateSfx(XI_GEN_LEVEL_UP01,GetPos(),GetId());
 		PlayMusic( BGM_IN_LEVELUP );
 		g_WndMng.PutString( prj.GetText( TID_GAME_FLYLVLUP ), NULL, prj.GetTextColor( TID_GAME_FLYLVLUP ) );
 #endif // CLIENT
@@ -753,7 +754,7 @@ BOOL CMover::SetExperience( EXPINTEGER nExp1, int nLevel )
 
 		if( m_pActMover && ( m_pActMover->IsState( OBJSTA_STAND ) || m_pActMover->IsState( OBJSTA_STAND2 ) ) )
 			SetMotion( MTI_LEVELUP, ANILOOP_1PLAY, MOP_FIXED );
-		CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_LEVEL_UP01,GetPos(),GetId());
+		CreateSfx(XI_GEN_LEVEL_UP01,GetPos(),GetId());
 		PlayMusic( BGM_IN_LEVELUP );
 		if( m_nDeathLevel < nLevel )
 			g_WndMng.PutString( prj.GetText( TID_GAME_LEVELUP ), NULL, prj.GetTextColor( TID_GAME_LEVELUP ) );

@@ -82,12 +82,7 @@ void CUser::Init( DPID dpidCache, DPID dpidUser )
 {
 	CMover::m_bPlayer	= TRUE;
 
-	
-	//////////////////////////////////////////////////////////////////////////
-	m_bCheckTransMailBox = FALSE;
-	m_nCountFromClient = 0;
-	m_dwTickFromClient = 0;
-	//////////////////////////////////////////////////////////////////////////
+	mailBoxRequest.Init();
 
 	m_nUsedSkillQueue = -1;
 
@@ -944,23 +939,8 @@ void CUser::AddSetFxp( int nFxp, int nFlightLv )
 	m_Snapshot.ar << (WORD)nFxp << (WORD)nFlightLv;
 }
 
-void CUser::AddSetGrowthLearningPoint( long nRemainGP )
-{
-	if( IsDelete() )	return;
-
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_SET_GROWTH_LEARNING_POINT;
-	m_Snapshot.ar << nRemainGP << (long)0;
-}
-
-void CUser::AddSetChangeJob( int nJob )
-{
-	if( IsDelete() )	return;
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_SET_JOB_SKILL;
-	m_Snapshot.ar << nJob << m_jobSkills;
+void CUser::AddSetGrowthLearningPoint(const long nRemainGP) {
+	SendSnapshotThisId<SNAPSHOTTYPE_SET_GROWTH_LEARNING_POINT, long>(nRemainGP);
 }
 
 void CUser::AddReturnSay( int ReturnFlag, const CHAR* lpszPlayer )
@@ -2049,15 +2029,10 @@ void CUser::AddSetDuel( CMover* pMover )
 	
 }
 
-void CUser::AddPKValue()
-{
-	if( IsDelete() )	return;
-
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_PK_RELATION;
-	m_Snapshot.ar << PK_PKVALUE;
-	m_Snapshot.ar << GetPKValue();
+void CUser::AddPKValue() {
+	SendSnapshotThisId<SNAPSHOTTYPE_PK_RELATION, Subsnapshot::PK, int>(
+		Subsnapshot::PK::PKVALUE, GetPKValue()
+	);
 }
 
 
@@ -3126,7 +3101,7 @@ CUser* CUserMng::GetUser( DPID, const DPID dpidUser )
 
 CUser* CUserMng::GetUserByPlayerID( u_long idPlayer )
 {
-	return (CUser*)prj.GetUserByID( idPlayer );
+	return prj.GetUserByID( idPlayer );
 }
 
 #ifdef __LAYER_1015
@@ -3347,7 +3322,7 @@ void CUserMng::DestroyPlayer( CUser* pUser )
 
 	
 	//////////////////////////////////////////////////////////////////////////
-	pUser->ResetCheckClientReq();
+	pUser->mailBoxRequest.ResetCheckClientReq();
 	//////////////////////////////////////////////////////////////////////////
 
 
@@ -4026,29 +4001,16 @@ void CUserMng::AddMotionArrive( CMover* pMover, OBJMSG objmsg )
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddPKPink( CMover* pMover, BYTE byPink )
-{
-	CAr ar;
-	ar << GETID( pMover ) << SNAPSHOTTYPE_PK_RELATION;
-	ar << PK_PINK;
-	ar << byPink;
-	
-	GETBLOCK( ar, lpBuf, nBufSize );
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddPKPink(CMover * pMover, BYTE byPink) {
+	BroadcastAround<SNAPSHOTTYPE_PK_RELATION, Subsnapshot::PK, BYTE>(
+		pMover, Subsnapshot::PK::PINK, byPink
+	);
 }
-void CUserMng::AddPKPropensity( CMover* pMover )
-{
-	CAr ar;
-	ar << GETID( pMover ) << SNAPSHOTTYPE_PK_RELATION;
-	ar << PK_PROPENSITY;
-	ar << pMover->GetPKPropensity();
 
-	GETBLOCK( ar, lpBuf, nBufSize );
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddPKPropensity(CMover * pMover) {
+	BroadcastAround<SNAPSHOTTYPE_PK_RELATION, Subsnapshot::PK, DWORD>(
+		pMover, Subsnapshot::PK::PROPENSITY, pMover->GetPKPropensity()
+	);
 }
 
 void CUserMng::AddWorldCreateSfxObj( DWORD dwSfxObj, float x, float y, float z, BOOL bFlag, DWORD dwWorldId )
@@ -4073,18 +4035,16 @@ void	CUserMng::AddCreateSfxAllow( CMover *pMover, DWORD dwSfxObjArrow, DWORD dwS
 	NEXT_VISIBILITYRANGE( pMover )
 }
 
-void CUserMng::AddNearSetChangeJob( CMover* pMover, int nJob)
-{
-	CAr ar;
-	ar << GETID( pMover ) << SNAPSHOTTYPE_SET_NEAR_JOB_SKILL;
-	ar << nJob << pMover->m_jobSkills;
+void CUserMng::AddNearSetChangeJob( CUser * pMover ) {
+	// Self
+	pMover->SendSnapshotThisId<SNAPSHOTTYPE_SET_JOB_SKILL>(
+		pMover->m_nJob, pMover->m_jobSkills
+	);
 
-	GETBLOCK( ar, lpBuf, nBufSize );
-	
-	FOR_VISIBILITYRANGE( pMover )
-		if( USERPTR != pMover )
-			USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+	// Other players
+	BroadcastAroundExcluding<SNAPSHOTTYPE_SET_NEAR_JOB_SKILL>(
+		pMover, pMover->m_nJob, pMover->m_jobSkills
+	);
 }
 
 void CUserMng::AddModifyMode( CUser* pUser )
@@ -4953,39 +4913,32 @@ void CUserMng::AddGCGuildPrecedence( CUser* pSendUser )
 	arBlock << NULL_ID << SNAPSHOTTYPE_GUILDCOMBAT;
 	arBlock << GC_GUILDPRECEDENCE;
 
-	arBlock << (int)g_GuildCombatMng.m_vecGuildCombatMem.size();
+	auto itSize = arBlock.PushBack<int>(0);
+
 	for (const CGuildCombat::__GuildCombatMember * pGCMember : g_GuildCombatMng.m_vecGuildCombatMem) {
-		if( !pGCMember->vecGCSelectMember.empty() )
-		{			
-			arBlock << (BOOL)TRUE; // bSend;
-			CGuild* pGuild = g_GuildMng.GetGuild( pGCMember->uGuildId );
-			if( pGuild )
-				arBlock.WriteString( pGuild->m_szGuild );
-			else
-				arBlock.WriteString( "Not Guild" );
-			arBlock << pGCMember->nGuildPoint;
+		CGuild* pGuild = g_GuildMng.GetGuild( pGCMember->uGuildId );
+		arBlock << pGCMember->uGuildId;
+		if (pGuild) {
+			arBlock.WriteString(pGuild->m_szGuild);
+		} else {
+			arBlock.WriteString("Not Guild");
 		}
-		else
-		{
-			arBlock << (BOOL)FALSE; // bSend;
-		}
+		arBlock << pGCMember->nGuildPoint;
+		++*itSize;
 	}
 
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
-	if( pSendUser == NULL )
-	{
-		for( auto it = m_users.begin(); it != m_users.end(); ++it )
-		{
-			CUser* pUser = it->second;
-			if( pUser->IsValid() == FALSE )
-				continue;
-			if( pUser->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
-				pUser->AddBlock( lpBlock, uBlockSize );
+
+	if (pSendUser) {
+		pSendUser->AddBlock(lpBlock, uBlockSize);
+	} else {
+		for (const auto & [_, pUser] : m_users) {
+			if (pUser->IsValid()) {
+				if (pUser->GetWorld()->GetID() == WI_WORLD_GUILDWAR) {
+					pUser->AddBlock(lpBlock, uBlockSize);
+				}
+			}
 		}
-	}
-	else
-	{
-		pSendUser->AddBlock( lpBlock, uBlockSize );
 	}
 }
 void CUserMng::AddGCPlayerPrecedence( CUser* pSendUser )
@@ -5007,24 +4960,17 @@ void CUserMng::AddGCPlayerPrecedence( CUser* pSendUser )
 	}
 
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
-	
-	if( pSendUser == NULL )
-	{
-		for(auto it = m_users.begin(); it != m_users.end(); ++it )
-		{
-			CUser* pUser = it->second;
-			if( pUser->IsValid() == FALSE )
-				continue;
-			
-			if( pUser->GetWorld()->GetID() == WI_WORLD_GUILDWAR )
-			{
-				pUser->AddBlock( lpBlock, uBlockSize );
+
+	if (pSendUser) {
+		pSendUser->AddBlock(lpBlock, uBlockSize);
+	} else {
+		for (const auto & [_, pUser] : m_users) {
+			if (pUser->IsValid()) {
+				if (pUser->GetWorld()->GetID() == WI_WORLD_GUILDWAR) {
+					pUser->AddBlock(lpBlock, uBlockSize);
+				}
 			}
 		}
-	}
-	else
-	{
-		pSendUser->AddBlock( lpBlock, uBlockSize );
 	}
 }
 
@@ -5066,12 +5012,6 @@ void CUser::AddRunScriptFunc( const RunScriptFunc & runScriptFunc )
 		case FUNCTYPE_INITINT:
 			{
 				m_Snapshot.ar << runScriptFunc.dwVal1;
-				break;
-			}
-		case FUNCTYPE_SETNAVIGATOR:
-			{
-				m_Snapshot.ar << runScriptFunc.dwVal1;
-				m_Snapshot.ar << runScriptFunc.vPos;
 				break;
 			}
 		case FUNCTYPE_NEWQUEST:
@@ -5322,81 +5262,40 @@ void CUser::AddReturnScroll()
 	
 }
 
-void CUser::AddPostMail( CMail* pMail )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_POSTMAIL;
-	pMail->Serialize( m_Snapshot.ar );
-	
+void CUser::AddRemoveMail(u_long nMail, int nType) {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_REMOVEMAIL, u_long, int>(nMail, nType);
 }
 
-void CUser::AddRemoveMail( u_long nMail, int nType )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_REMOVEMAIL;
-	m_Snapshot.ar << nMail << nType;
-	
+void CUser::AddMailBox(const CMailBox * pMailBox) {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_QUERYMAILBOX, CMailBox>(*pMailBox);
 }
 
-void CUser::AddMailBox( CMailBox* pMailBox )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_QUERYMAILBOX;
-	pMailBox->Serialize( m_Snapshot.ar );
-	
+void CUser::SendCheckMailBoxReq(bool bCheckTransMailBox) {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_QUERYMAILBOX_REQ, bool>(bCheckTransMailBox);
 }
 
-void CUser::SendCheckMailBoxReq( BOOL bCheckTransMailBox )
-{
-	if( IsDelete() )	return;
-
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_QUERYMAILBOX_REQ;
-	m_Snapshot.ar << bCheckTransMailBox;
-}
-
-
-void CUser::CheckTransMailBox( BOOL bCheckTransMailBox )
-{
-	m_bCheckTransMailBox = bCheckTransMailBox;
-}
-
-BOOL CUser::GetCheckTransMailBox()
-{
-	return m_bCheckTransMailBox;
-}
-
-bool CUser::CheckClientReq()
-{
+bool Users::MailBoxRequest::CheckClientReq() {
 	DWORD dwTick = GetTickCount();
-	if( dwTick >= m_dwTickFromClient + CHECK_TICK_FROM_CLIENT )
-	{
-		m_dwTickFromClient = dwTick;
-		++m_nCountFromClient;
-		return true;
+	if (dwTick < m_dwTickFromClient + CHECK_TICK_FROM_CLIENT) {
+		return false;
 	}
-	return false;
+	
+	m_dwTickFromClient = dwTick;
+	++m_nCountFromClient;
+	return true;
 }
 
-void CUser::ResetCheckClientReq()
-{
+void Users::MailBoxRequest::ResetCheckClientReq() {
 	m_dwTickFromClient = 0;
 	m_nCountFromClient = 0;
 }
 
-int CUser::GetCountClientReq()
-{
-	return m_nCountFromClient;
+int Users::MailBoxRequest::GetCountClientReq() {
+	if (CheckClientReq()) {
+		return m_nCountFromClient;
+	} else {
+		return 1;
+	}
 }
 
 // 신청 윈도우 띄움
@@ -6372,7 +6271,6 @@ void CUser::AddRemoveAttribute( BOOL bSuccess )
 	m_Snapshot.ar << bSuccess;
 }
 
-#ifdef __PET_1024
 void CUserMng::AddSetPetName( CUser* pUser, const char* szPetName )
 {
 	CAr ar;
@@ -6386,21 +6284,14 @@ void CUserMng::AddSetPetName( CUser* pUser, const char* szPetName )
 		USERPTR->AddBlock( lpBuf, nBufSize );
 	NEXT_VISIBILITYRANGE( pUser )
 }
-#endif	// __PET_1024
 
-#ifdef __PET_1024
 void CUserMng::AddPetCall( CMover* pMover, DWORD dwPetId, DWORD dwIndex, BYTE nPetLevel, const char* szPetName )
-#else	// __PET_1024
-void CUserMng::AddPetCall( CMover* pMover, DWORD dwPetId, DWORD dwIndex, BYTE nPetLevel )
-#endif	// __PET_1024
 {
 	CAr ar;
 	
 	ar << GETID( pMover ) << SNAPSHOTTYPE_PET_CALL;
 	ar << dwPetId << dwIndex << nPetLevel;
-#ifdef __PET_1024
 	ar.WriteString( szPetName );
-#endif	// __PET_1024
 	
 	GETBLOCK( ar, lpBuf, nBufSize );
 	
@@ -7033,17 +6924,14 @@ CUser::DoUseSystemAnswer CUser::DoUseItemInput( ItemProp* pProp, CItemElem* pIte
 		return DoUseSystemAnswer::Ok;
 	}
 
-#ifdef __PET_1024
 	if (pProp->dwID == II_SYS_SYS_SCR_PET_NAMING) {
 		return DoUseItemPetNaming();
 	}
-#endif	// __PET_1024
 
 	return DoUseSystemAnswer::SilentError;
 }
 #endif	// __AZRIA_1023
 
-#ifdef __PET_1024
 CUser::DoUseSystemAnswer CUser::DoUseItemPetNaming() {
 	CPet * pPet = GetPet();
 	if (!pPet) {
@@ -7060,7 +6948,6 @@ CUser::DoUseSystemAnswer CUser::DoUseItemPetNaming() {
 	g_UserMng.AddSetPetName(this, pPet->GetName());
 	return DoUseSystemAnswer::Ok;
 }
-#endif	// __PET_1024
 
 void CUser::AddPCBangInfo(CPCBangInfo * pPI) {
 	SendSnapshotThisId<SNAPSHOTTYPE_PCBANG_INFO, CPCBangInfo>(*pPI);

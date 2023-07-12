@@ -14,7 +14,6 @@ class CLoginUser final {
 public:
 	DPID		m_dpid;
 	DWORD		m_dwTime;
-	int			m_nIndexOfCache;
 	char		m_pKey[MAX_ACCOUNT];
 	DWORD		m_idPlayer;
 	DWORD		m_tPingRecvd;

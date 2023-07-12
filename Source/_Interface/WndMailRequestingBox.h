@@ -1,9 +1,7 @@
-#ifndef __WND_MAIL_REQUESTING_BOX_H__
-#define __WND_MAIL_REQUESTING_BOX_H__
+#pragma once
 
-#ifdef __MAIL_REQUESTING_BOX
 #ifdef __CLIENT
-class CWndMailRequestingBox : public CWndNeuz
+class CWndMailRequestingBox final : public CWndNeuz
 {
 public:
 	enum { REQUEST_BUTTON_WAITING_TIME = 5 };
@@ -14,7 +12,7 @@ public:
 	~CWndMailRequestingBox( void );
 
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual	void OnInitialUpdate( void );
 	BOOL Process( void );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
@@ -24,6 +22,4 @@ private:
 	int m_nDestroyCounter;
 };
 #endif // __CLIENT
-#endif // __MAIL_REQUESTING_BOX
 
-#endif // __WND_MAIL_REQUESTING_BOX_H__

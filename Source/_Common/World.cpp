@@ -100,7 +100,6 @@ m_cbRunnableObject( 0 )
 	m_fFogStartValue	= 70;
 	m_fFogEndValue	= 400;
 	m_fFogDensity	= 0.0f;
-	m_pd3dDevice	= NULL;
 	m_pBoundBoxVertexBuffer = NULL;
 	m_nCharLandPosX = -1;
 	m_nCharLandPosZ = -1;
@@ -793,51 +792,16 @@ void CWorld::Process()
 	}
 #endif //__BS_SAFE_WORLD_DELETE
 
-	// 오브젝트 Delete ( DeleteObj가 호출된 오브젝트들)
-	for (CObj * pObj : m_aDeleteObjs) {
-		if( !pObj )
-		{
-			Error( "m_apDeleteObjs %d is NULL", i );
-			continue;
-		}
-	
-		if( m_pObjFocus == pObj )
-			SetObjFocus( NULL );
-
-		CWndWorld* pWndWorld	= (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-		if( pWndWorld )
-		{
-			if(pWndWorld->m_pSelectRenderObj == pObj)
-				pWndWorld->m_pSelectRenderObj = NULL;
-			else if(pWndWorld->m_pNextTargetObj == pObj)
-				pWndWorld->m_pNextTargetObj = NULL;
-		}
-
-		if( CObj::m_pObjHighlight == pObj )
-			CObj::m_pObjHighlight = NULL;
-		// 화면에 출력되고 있는 오브젝트인가.
- 		if( pObj->m_ppViewPtr )					//sun : (가끔)pObj->m_ppViewPtr이 이미 지워진 상태다 문제가 많군 제길
- 		{										//오브젝트 삭제과정에 문제가 있다. 어디선가 꼬이고 있다 추적하기에 시간과 의욕이 없다.
- 			// 그렇다면 화면 출력 배열에서 자신을 삭제 
- 			*pObj->m_ppViewPtr = NULL;	
- 			pObj->m_ppViewPtr = NULL;
- 		}
-
-		RemoveObjLink( pObj );
-		RemoveObjArray( pObj );
-		SAFE_DELETE( pObj );
-	}
-
-	m_aDeleteObjs.clear();  //gmpbigsun: Clara died as m_nDeleteObjs and m_apDeleteObjs were twisted.. Safety is the best!
+	DeleteObjects();
 
 	if( m_pCamera )
 	{
 		if(g_pPlayer && g_pPlayer->m_pActMover )
 		{
 			if(g_pPlayer->m_pActMover->IsFly() )
-				m_pCamera->Process( m_pd3dDevice, 10.0f );
+				m_pCamera->Process( 10.0f );
 			else
-				m_pCamera->Process( m_pd3dDevice, 4.0f );
+				m_pCamera->Process( 4.0f );
 		}
 	}
 	if( g_pPlayer )
@@ -864,6 +828,44 @@ void CWorld::Process()
 
 }
 #endif	// not __WORLDSERVER
+
+#ifdef __CLIENT
+void CWorld::DeleteObjects() {
+	size_t i = 0;
+	for (CObj * pObj : m_aDeleteObjs) {
+		++i;
+		if (!pObj) {
+			Error("m_apDeleteObjs %zu is NULL", i - 1);
+			continue;
+		}
+
+		if (m_pObjFocus == pObj)
+			SetObjFocus(NULL);
+
+		CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
+		if (pWndWorld) {
+			if (pWndWorld->m_pSelectRenderObj == pObj)
+				pWndWorld->m_pSelectRenderObj = NULL;
+			else if (pWndWorld->m_pNextTargetObj == pObj)
+				pWndWorld->m_pNextTargetObj = NULL;
+		}
+
+		if (CObj::m_pObjHighlight == pObj)
+			CObj::m_pObjHighlight = NULL;
+			
+		if (pObj->m_ppViewPtr) {
+			*pObj->m_ppViewPtr = NULL;
+			pObj->m_ppViewPtr = NULL;
+		}
+
+		RemoveObjLink(pObj);
+		RemoveObjArray(pObj);
+		SAFE_DELETE(pObj);
+	}
+
+	m_aDeleteObjs.clear();
+}
+#endif
 
 // 
 // GetHeight(D3DXVECTOR vecPos)
@@ -1747,15 +1749,22 @@ void CWorld::OnDie(CUser * pDie, CUser * pAttacker ) {
 }
 
 void CWorld::_OnDie() {
-	for (const auto & onDie : m_OnDie) {
-		g_GuildCombatMng.OutWar(onDie.pDie, NULL);
-		g_GuildCombatMng.GetPoint(onDie.pAttacker, onDie.pDie);
-		
-		const int nIndex = g_GuildCombat1to1Mng.GetTenderGuildIndexByUser(onDie.pDie);
-		if (nIndex != NULL_ID) {
+	if (GetID() == WI_WORLD_GUILDWAR) {
+		for (const auto & onDie : m_OnDie) {
+			g_GuildCombatMng.OutWar(onDie.pDie, NULL);
+			g_GuildCombatMng.GetPoint(onDie.pAttacker, onDie.pDie);
+		}
+	}
+
+	if (GetID() >= WI_WORLD_GUILDWAR1TO1_0 && GetID() <= WI_WORLD_GUILDWAR1TO1_L) {
+		for (const auto & onDie : m_OnDie) {
+			const int nIndex = g_GuildCombat1to1Mng.GetTenderGuildIndexByUser(onDie.pDie);
+			if (nIndex == NULL_ID) continue;
+			
 			const int nStageId = g_GuildCombat1to1Mng.m_vecTenderGuild[nIndex].nStageId;
-			if (nStageId != NULL_ID)
-				g_GuildCombat1to1Mng.m_vecGuilCombat1to1[nStageId].SetLost(onDie.pDie);
+			if (nStageId == NULL_ID) continue;
+			
+			g_GuildCombat1to1Mng.m_vecGuilCombat1to1[nStageId].SetLost(onDie.pDie);
 		}
 	}
 

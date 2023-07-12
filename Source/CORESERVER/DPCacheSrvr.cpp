@@ -17,7 +17,6 @@
 
 CDPCacheSrvr::CDPCacheSrvr() 
 {
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_JOIN, &CDPCacheSrvr::OnAddPlayer );
 	ON_MSG( PACKETTYPE_DESTROY_PLAYER, &CDPCacheSrvr::OnQueryRemovePlayer );
 	ON_MSG(PACKETTYPE_ADDPARTYMEMBER_NeuzCore, &CDPCacheSrvr::OnAddPartyMember );
@@ -76,11 +75,9 @@ void CDPCacheSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	CAr ar( (LPBYTE)lpMsg + sizeof(DPID), dwMsgSize - sizeof(DPID) );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
+	DWORD dw; ar >> dw;
 	
-	if( pfn ) {
-		( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg, dwMsgSize - sizeof(DPID) - sizeof(DWORD) );
+	if (Handle(ar, dw, idFrom, *(UNALIGNED LPDPID)lpMsg) ) {
 		if (ar.IsOverflow()) Error("Core-Cache: Packet %08x overflowed", dw);
 	} else {
 		TRACE( "Handler not found(%08x)\n", lpMsg->dwType );
@@ -126,7 +123,7 @@ void CDPCacheSrvr::OnRemoveConnection(DPID dpid) {
 	}
 }
 
-void CDPCacheSrvr::OnAddPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnAddPlayer( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	char lpszPlayer[MAX_PLAYER];
 	DWORD dwAuthKey;
@@ -181,7 +178,7 @@ void CDPCacheSrvr::OnAddPlayer( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 	}
 }
 
-void CDPCacheSrvr::OnQueryRemovePlayer( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnQueryRemovePlayer( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CPlayer* pPlayer	= g_PlayerMng.GetPlayerBySerial( dpidUser );
@@ -421,7 +418,7 @@ void CDPCacheSrvr::SendDefinedText( int dwText, DPID dpidCache, DPID dpidUser, L
 	SEND( ar, this, dpidCache );
 }
 
-void CDPCacheSrvr::OnSendTag( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnSendTag( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	const auto [idTo, szString] = ar.Extract<u_long, TCHAR[256]>();
 
@@ -460,7 +457,7 @@ void CDPCacheSrvr::SendTagResult(CPlayer * pPlayer, bool cbResult) {
 	SEND(ar, this, pPlayer->dpidCache);
 }
 
-void CDPCacheSrvr::OnPartyChangeLeader( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnPartyChangeLeader( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long _idLeader, idChangeLeader;
 	ar >> _idLeader >> idChangeLeader;
@@ -528,7 +525,7 @@ void CDPCacheSrvr::OnPartyChangeLeader( CAr & ar, DPID dpidCache, DPID dpidUser,
 	g_dpCoreSrvr.SendChangeLeader( pParty->m_uPartyId, idChangeLeader );
 }
 
-void CDPCacheSrvr::OnAddPartyMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnAddPartyMember( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long idLeader; ar >> idLeader;
 
@@ -594,7 +591,7 @@ void CDPCacheSrvr::OnAddPartyMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_
 	}
 }
 
-void CDPCacheSrvr::OnRemovePartyMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnRemovePartyMember( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long idMember; ar >> idMember;
 
@@ -679,15 +676,15 @@ void CDPCacheSrvr::OnRemovePartyMember( CAr & ar, DPID dpidCache, DPID dpidUser,
 	}
 }
 
-void CDPCacheSrvr::OnPartyChangeName( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnPartyChangeName( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
-	if( uBufSize > 40 )	return;		// 4 + 4 + 32
-
 	u_long _uidPlayer;
 	TCHAR	sParty[33];	// 32
 	ar >> _uidPlayer;	// 4
 	ar.ReadString( sParty, 33 );
 	CPlayer* pPlayer;
+
+	if (sParty[0] == '\0') return;
 		
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	
@@ -738,7 +735,7 @@ void CDPCacheSrvr::OnPartyChangeName( CAr & ar, DPID dpidCache, DPID dpidUser, u
 
 
 
-void CDPCacheSrvr::OnPartyChangeItemMode( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnPartyChangeItemMode( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	CParty::ShareItemMode nItemMode; ar >> nItemMode;
 	if (!CParty::IsValidMode(nItemMode)) return;
@@ -770,7 +767,7 @@ void CDPCacheSrvr::OnPartyChangeItemMode( CAr & ar, DPID dpidCache, DPID dpidUse
 	}
 }
 
-void CDPCacheSrvr::OnPartyChangeExpMode( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnPartyChangeExpMode( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	CParty::ShareExpMode nExpMode; ar >> nExpMode;
 	if (!CParty::IsValidMode(nExpMode)) return;
@@ -808,7 +805,7 @@ void CDPCacheSrvr::OnPartyChangeExpMode( CAr & ar, DPID dpidCache, DPID dpidUser
 	}
 }
 
-void CDPCacheSrvr::OnPartyChangeTroup( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnPartyChangeTroup( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long _uidPlayer;
 	BOOL   bSendName;
@@ -885,7 +882,7 @@ void CDPCacheSrvr::OnPartyChangeTroup( CAr & ar, DPID dpidCache, DPID dpidUser, 
 }
 
 
-void CDPCacheSrvr::OnDestroyGuild( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnDestroyGuild( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CPlayer* pMaster = g_PlayerMng.GetPlayerBySerial( dpidUser );
@@ -930,7 +927,7 @@ void CDPCacheSrvr::OnDestroyGuild( CAr & ar, DPID dpidCache, DPID dpidUser, u_lo
 }
 
 // fixme - raiders
-void CDPCacheSrvr::OnAddGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnAddGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long idMaster; ar >> idMaster;
 
@@ -1031,7 +1028,7 @@ void CDPCacheSrvr::OnAddGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_
 	}
 }
 
-void CDPCacheSrvr::OnRemoveGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnRemoveGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long _idMaster, idPlayer;
 	ar >> _idMaster >> idPlayer;
@@ -1114,7 +1111,7 @@ void CDPCacheSrvr::OnRemoveGuildMember( CAr & ar, DPID dpidCache, DPID dpidUser,
 	}
 }
 
-void CDPCacheSrvr::OnGuildMemberLv( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnGuildMemberLv( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long _idMaster, idPlayer;
 	int nMemberLv;
@@ -1199,7 +1196,7 @@ void CDPCacheSrvr::OnGuildMemberLv( CAr & ar, DPID dpidCache, DPID dpidUser, u_l
 	}
 }
 
-void CDPCacheSrvr::OnGuildAuthority(CAr & ar, DPID, DPID dpidUser, u_long) {
+void CDPCacheSrvr::OnGuildAuthority(CAr & ar, DPID, DPID dpidUser) {
 	GuildPowerss dwAuthority; ar >> dwAuthority;
 
 	CMclAutoLock	Lock(g_PlayerMng.m_AddRemoveLock);
@@ -1225,55 +1222,37 @@ void CDPCacheSrvr::OnGuildAuthority(CAr & ar, DPID, DPID dpidUser, u_long) {
 	}
 }
 
-void CDPCacheSrvr::OnGuildSetName( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnGuildSetName( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
-	u_long _uidPlayer, _uGuildId;
 	char szName[MAX_G_NAME];
-	
-	ar >> _uidPlayer >> _uGuildId;
-	ar.ReadString( szName, MAX_G_NAME );
+	ar >> szName;
 
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );	
 
 	CPlayer* pPlayer = g_PlayerMng.GetPlayerBySerial( dpidUser );	
-	if( pPlayer == NULL )
-		return;
+	if (!pPlayer) return;
 
 	CGuild* pGuild = g_GuildMng.GetGuild( pPlayer->m_idGuild );
-	if( pGuild && pGuild->IsMaster( pPlayer->uKey ) )
-	{
-		CString str1, str2;
-		str1 = pGuild->m_szGuild;
-		str2	= "";
-//		str2 = pPlayer->lpszPlayer;
-		if( str1 == str2 )
-		{
-			if( g_GuildMng.SetName( pGuild, szName ) )
-			{
-				g_dpCoreSrvr.SendGuildSetName( pPlayer->m_idGuild, pGuild->m_szGuild );
-				g_dpDatabaseClient.SendGuildSetName( pPlayer->m_idGuild, pGuild->m_szGuild );
-				SendGuildSetName( pPlayer->m_idGuild, pGuild->m_szGuild );
-			}
-			else
-			{
-				// duplicated
-				SendGuildError( pPlayer, 1 );
-			}
-		}
-		else
-		{
-			//
-		}
+	if (!pGuild || !pGuild->IsMaster(pPlayer->uKey)) {
+		SendDefinedText(TID_GAME_COMDELNOTKINGPIN, pPlayer->dpidCache, pPlayer->dpidUser, "");
+		return;
 	}
-	else
-	{
-		// is not master
-		SendDefinedText( TID_GAME_COMDELNOTKINGPIN, pPlayer->dpidCache, pPlayer->dpidUser, "" );
+
+	LPCTSTR str1 = pGuild->m_szGuild;
+	if (str1[0] != '\0') return;
+
+	if (!g_GuildMng.SetName(pGuild, szName)) {
+		SendGuildError(pPlayer, 1);
+		return;
 	}
+
+	g_dpCoreSrvr.SendGuildSetName( pPlayer->m_idGuild, pGuild->m_szGuild );
+	g_dpDatabaseClient.SendGuildSetName( pPlayer->m_idGuild, pGuild->m_szGuild );
+	SendGuildSetName( pPlayer->m_idGuild, pGuild->m_szGuild );
 }
 
-void CDPCacheSrvr::OnGuildPenya( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnGuildPenya( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	const auto [dwType, dwPenya] = ar.Extract<DWORD, DWORD>();
 
@@ -1304,7 +1283,7 @@ void CDPCacheSrvr::OnGuildPenya( CAr & ar, DPID dpidCache, DPID dpidUser, u_long
 	}
 }
 
-void CDPCacheSrvr::OnGuildClass( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnGuildClass( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	BYTE nFlag;
 	u_long _idMaster, idPlayer;
@@ -1382,7 +1361,7 @@ void CDPCacheSrvr::OnGuildClass( CAr & ar, DPID dpidCache, DPID dpidUser, u_long
 	}
 }
 
-void CDPCacheSrvr::OnChgMaster( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnChgMaster( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long _idPlayer, idPlayer2;
 	ar >> _idPlayer >> idPlayer2;
@@ -1445,7 +1424,7 @@ void CDPCacheSrvr::OnChgMaster( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 	}
 }
 
-void CDPCacheSrvr::OnGuildNickName( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnGuildNickName( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long _idMaster, idPlayer;
 	char strNickName[MAX_GM_ALIAS] = {0,};
@@ -1486,7 +1465,6 @@ void CDPCacheSrvr::OnGuildNickName( CAr & ar, DPID dpidCache, DPID dpidUser, u_l
 
 	if( pGuild->IsMaster( pMaster->uKey ) )
 	{
-//		int nLength = GetStrLen( strNickName );
 		int nLen	= lstrlen( strNickName );
 
 		if( nLen < 2 || nLen > 12 )
@@ -1588,16 +1566,6 @@ void CDPCacheSrvr::SendGuildSetName( u_long idGuild, const char* szName )
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPCacheSrvr::SendGuildMsgControl( GUILD_MSG_HEADER* pHeader, DWORD pPenya, BYTE cbCloak )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_MSG_CONTROL, DPID_ALLPLAYERS );
-
-	ar.Write( pHeader, sizeof(GUILD_MSG_HEADER) );
-	ar << pPenya;
-	ar << cbCloak;
-	SEND( ar, this, DPID_ALLPLAYERS );
-}
-
 void CDPCacheSrvr::SendGuildChat( const char* lpszPlayer, const char* sChat, CPlayer* pPlayer, OBJID objid )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_CHAT, pPlayer->dpidUser );
@@ -1631,7 +1599,7 @@ void CDPCacheSrvr::SendGuildError( CPlayer * pTo, int nError )
 }
 
 // fixme - raiders
-void CDPCacheSrvr::OnAddFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize ) {
+void CDPCacheSrvr::OnAddFriend( CAr & ar, DPID dpidCache, DPID dpidUser ) {
 	u_long uidSend; ar >> uidSend;
 
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
@@ -1667,7 +1635,7 @@ void CDPCacheSrvr::OnAddFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 	g_dpCoreSrvr.BroadcastPacket<PACKETTYPE_CW_ADDFRIEND, u_long, u_long>(uidSend, pFriend->uKey);
 }
 
-void CDPCacheSrvr::OnGetFriendState(CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize) {
+void CDPCacheSrvr::OnGetFriendState(CAr & ar, DPID dpidCache, DPID dpidUser) {
 	CMclAutoLock	Lock(g_PlayerMng.m_AddRemoveLock);
 	
 	if (CPlayer * pPlayer = g_PlayerMng.GetPlayerBySerial(dpidUser)) {
@@ -1675,7 +1643,7 @@ void CDPCacheSrvr::OnGetFriendState(CAr & ar, DPID dpidCache, DPID dpidUser, u_l
 	}
 }
 
-void CDPCacheSrvr::OnSetFrinedState( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnSetFrinedState( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CPlayer * pPlayer	= g_PlayerMng.GetPlayerBySerial( dpidUser );
@@ -1689,7 +1657,7 @@ void CDPCacheSrvr::OnSetFrinedState( CAr & ar, DPID dpidCache, DPID dpidUser, u_
 	g_dpCoreSrvr.SendSetFriendState(pPlayer->uKey, pPlayer->m_RTMessenger.GetState());
 }
 
-void CDPCacheSrvr::OnFriendInterceptState( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnFriendInterceptState( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	const auto [uidFriend] = ar.Extract<u_long>();
 
@@ -1731,7 +1699,7 @@ void CDPCacheSrvr::OnFriendInterceptState( CAr & ar, DPID dpidCache, DPID dpidUs
 
 
 
-void CDPCacheSrvr::OnRemoveFriend( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnRemoveFriend( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long _uidPlayer, uidFriend;
 	ar >> _uidPlayer >> uidFriend;
@@ -1795,7 +1763,7 @@ void CDPCacheSrvr::SendBlock( BYTE nGu, char *szName, CPlayer* pTo )
 	SEND( ar, this, pTo->dpidCache );
 }
 
-void CDPCacheSrvr::OnSurrender( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnSurrender( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );
@@ -1877,7 +1845,7 @@ void CDPCacheSrvr::SendSurrender(WarId idWar, u_long idPlayer, const char* sPlay
 	SEND( ar, this, pPlayer->dpidCache );
 }
 
-void CDPCacheSrvr::OnQueryTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnQueryTruce( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );
@@ -1916,7 +1884,7 @@ void CDPCacheSrvr::OnQueryTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long
 	SendQueryTruce( pMaster );
 }
 
-void CDPCacheSrvr::OnAcptTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnAcptTruce( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	CMclAutoLock	Lock2( g_GuildMng.m_AddRemoveLock );
@@ -1937,7 +1905,7 @@ void CDPCacheSrvr::OnAcptTruce( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 	g_GuildWarMng.Result( pWar, pDecl, pAcpt, WR_TRUCE );
 }
 
-void CDPCacheSrvr::OnDeclWar( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnDeclWar( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long _idMaster;
 	char szGuild[MAX_G_NAME];
@@ -2014,7 +1982,7 @@ void CDPCacheSrvr::OnDeclWar( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uB
 }
 
 // fixme	- raiders
-void CDPCacheSrvr::OnAcptWar( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnAcptWar( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long idDecl; ar >> idDecl;
 
@@ -2142,7 +2110,7 @@ void CDPCacheSrvr::SendQueryTruce( CPlayer* pPlayer )
 	SEND( ar, this, pPlayer->dpidCache );
 }
 
-void CDPCacheSrvr::OnAddVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnAddVote( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	char szTitle[MAX_BYTE_VOTETITLE];
 	char szQuestion[MAX_BYTE_VOTEQUESTION];
@@ -2174,7 +2142,7 @@ void CDPCacheSrvr::OnAddVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uB
 	}	
 }
 
-void CDPCacheSrvr::OnRemoveVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnRemoveVote( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long idVote;
 	u_long _idGuild, _idPlayer;
@@ -2200,7 +2168,7 @@ void CDPCacheSrvr::OnRemoveVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long
 	}	
 }
 
-void CDPCacheSrvr::OnCloseVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnCloseVote( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long _idGuild, _idPlayer;
 	u_long idVote;
@@ -2230,7 +2198,7 @@ void CDPCacheSrvr::OnCloseVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long 
 	}	
 }
 
-void CDPCacheSrvr::OnCastVote( CAr & ar, DPID dpidCache, DPID dpidUser, u_long uBufSize )
+void CDPCacheSrvr::OnCastVote( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	u_long _idGuild, _idPlayer;
 	u_long idVote;

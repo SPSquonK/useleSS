@@ -49,37 +49,6 @@ enum class GuildPower {
 
 using GuildPowers = sqktd::EnumSet<GuildPower>;
 
-typedef struct _SGuildMsgHeader
-{
-	enum
-	{
-		GUILD_BANK		= 0x0001,
-		PENYA			= 0x0001,
-		ITEM			= 0x0002,
-	};
-
-	union
-	{
-		DWORD		HeadA;			//
-		struct 
-		{
-			WORD	HeadASub;		//	길드 아이디
-			WORD	HeadAMain;		//	업데이트될 총 타입 갯수
-		};
-	};
-
-	union
-	{
-		DWORD		HeadB;			//	업데이트 타입
-		struct 
-		{
-			WORD	HeadBSub;		//	용도에 맞게 쪼개 쓴다.
-			WORD	HeadBMain;
-		};
-	};
-
-}GUILD_MSG_HEADER, *LPGUILD_MSG_HEADER;
-
 ////////////////////////////////////////////////////////////////////////////////
 //투표 관련 
 ////////////////////////////////////////////////////////////////////////////////
@@ -141,7 +110,7 @@ struct CONTRIBUTION_CHANGED_INFO
 	WORD nGuildLevel;						// 길드레벨 
 };
 
-extern CAr&  operator<<(CAr& ar, CONTRIBUTION_CHANGED_INFO& info);
+extern CAr&  operator<<(CAr& ar, const CONTRIBUTION_CHANGED_INFO& info);
 extern CAr&  operator>>(CAr& ar, CONTRIBUTION_CHANGED_INFO& info);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -298,7 +267,6 @@ public:
 	bool SetLogo(DWORD dwLogo);
 	void	SetNotice( const char* szNotice );
 
-	void	MeritResultMsg( CONTRIBUTION_RESULT cbResult );
 	void	SetContribution( CONTRIBUTION_CHANGED_INFO & info );
 	BOOL	AddContribution( DWORD dwPxp, DWORD dwPenya, u_long idPlayer );
 	CONTRIBUTION_RESULT CanContribute( DWORD dwPxp, DWORD dwPenya, u_long idPlayer );
@@ -362,6 +330,8 @@ public:
 	void	operator delete( void* lpMem, LPCSTR lpszFileName, int nLine )	{	CGuild::sm_pPool->Free( (CGuild*)lpMem );	}
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
+
+	[[nodiscard]] static bool IsValidName(const char * szGuild);
 
 #ifdef __WORLDSERVER
 public:

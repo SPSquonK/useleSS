@@ -45,7 +45,7 @@
 #include "file.h"
 #include "authorization.h"
 #include "Scanner.h"
-#include "ScriptDialog.h"
+#include "Script.h"
 #include "Project.h"
 #include "Timer.h"
 #include "Debug.h"
@@ -76,6 +76,3 @@ extern	char	DB_ADMIN_ID_LOG[260];
 
 extern	char	DSN_NAME_BACKSYSTEM[260];
 extern	char	DB_ADMIN_ID_BACKSYSTEM[260];
-
-extern	char	DSN_NAME_ITEMUPDATE[260];
-extern	char	DB_ADMIN_ID_ITEMUPDATE[260];

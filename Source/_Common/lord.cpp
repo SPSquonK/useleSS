@@ -421,7 +421,7 @@ int CLEComponent::Decrement( void )
 #ifdef __CLIENT
 void CLEComponent::SetTexture( void )
 {
-	m_pTexture	= CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, "Skill_TroGiftbox02.dds" ), 0xffff00ff );
+	m_pTexture	= CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, "Skill_TroGiftbox02.dds" ), 0xffff00ff );
 }
 #endif	// __CLIENT
 

@@ -22,24 +22,24 @@ BOOL	IsTouchRayTri( const D3DXVECTOR3 *v0, const D3DXVECTOR3 *v1, const D3DXVECT
 
 void	CalcSlideVec( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vDir, const D3DXVECTOR3 &vN );
 
-inline void AngleToVector( D3DXVECTOR3 *vDelta, float fAngXZ, float fAngH, float fSpeed )
-{
-	float	fDist;
-
+[[nodiscard]] inline D3DXVECTOR3 AngleToVector(float fAngXZ, float fAngH, float fSpeed) {
 	fAngXZ = D3DXToRadian(fAngXZ);
-	fAngH  = D3DXToRadian(fAngH);
-	fDist = cosf(-fAngH) * fSpeed;
-	vDelta->x = sinf(fAngXZ) * fDist;
-	vDelta->z = -cosf(fAngXZ) * fDist;
-	vDelta->y = -sinf(-fAngH) * fSpeed;
+	fAngH = D3DXToRadian(fAngH);
+	const float fDist = cosf(-fAngH) * fSpeed;
+	return D3DXVECTOR3(
+		sinf(fAngXZ) * fDist,
+		-sinf(-fAngH) * fSpeed,
+		-cosf(fAngXZ) * fDist
+	);
 }
 
-inline void AngleToVectorXZ( D3DXVECTOR3 *vDelta, float fAngXZ, float fSpeed )
-{
+[[nodiscard]] inline D3DXVECTOR3 AngleToVectorXZ(float fAngXZ, float fSpeed) {
 	fAngXZ = D3DXToRadian(fAngXZ);
-	vDelta->x = sinf(fAngXZ) * fSpeed;
-	vDelta->z = -cosf(fAngXZ) * fSpeed;
-	vDelta->y = 0;
+	return D3DXVECTOR3(
+		sinf(fAngXZ) * fSpeed,
+		0.f,
+		-cosf(fAngXZ) * fSpeed
+	);
 }
 
 // XZ평면의 각도와 높이쪽 각도를 한꺼번에 구함.

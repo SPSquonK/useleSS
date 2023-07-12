@@ -28,7 +28,7 @@ CWndPartyQuick::~CWndPartyQuick() {
 HRESULT CWndPartyQuick::RestoreDeviceObjects() {
 	CWndBase::RestoreDeviceObjects();
 	if (!m_pVBGauge) {
-		return m_pApp->m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL);
+		return m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL);
 	}
 	return S_OK;
 }
@@ -105,8 +105,8 @@ void CWndPartyQuick::OnDraw( C2DRender* p2DRender )
 		rectTemp.right = rectTemp.left + nWidth;
 		if( rect.right < rectTemp.right )
 			rectTemp.right = rect.right;
-		m_pTheme->RenderGauge( p2DRender, &rect, 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
-		m_pTheme->RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
+		m_Theme.RenderGauge( p2DRender, &rect    , 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
+		m_Theme.RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
 	}
 } 
 
@@ -125,30 +125,6 @@ CString CWndPartyQuick::FormatPlayerName(int level, DWORD dwJob, const char * na
 	return result;
 }
 
-CString strings::CStringMaxSize(const char * text, int length) {
-	CString str = text;
-	::strings::ReduceSize(str, length);
-	return str;
-}
-
-
-void strings::ReduceSize(CString & str, int length) {
-	if (str.GetLength() > length) {
-		int	nReduceCount = 0;
-
-		for (nReduceCount = 0; nReduceCount < length; ) {
-			if (IsDBCSLeadByte(str[nReduceCount]))
-				nReduceCount += 2;
-			else
-				nReduceCount++;
-		}
-
-		str = str.Left(nReduceCount);
-		str += "...";
-	}
-}
-
-
 void CWndPartyQuick::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -159,17 +135,17 @@ void CWndPartyQuick::OnInitialUpdate()
 		m_pWndMemberStatic[i] = GetDlgItem<CWndStatic>(StaticID[i]);
 	}
 
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauFillSmall.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptySmall.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauFillSmall.bmp" ), 0xffff00ff, TRUE );
 	
 	SetActiveMember(g_Party.m_nSizeofMember);
 	
-	const CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	const CRect rectRoot = g_WndMng.GetLayoutRect();
 	const CPoint point( 30, (rectRoot.bottom - rectRoot.top) / 4);
 	Move(point);
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPartyQuick::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndPartyQuick::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	if(g_Party.GetSizeofMember() < 2) //시작과 함께 열릴 경우 Quick창은 열지 않도록 한다. Party정보가 없어 세팅 불가.

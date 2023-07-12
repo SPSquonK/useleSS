@@ -5,182 +5,175 @@
 	#define __INTERNALSERVER
 #endif
 
-#define		__SERVER					// Å¬¶óÀÌ¾ðÆ® Àü¿ëÄÚµå¸¦ ºôµåÇÏÁö ¾Ê±â À§ÇÑ define
-#define		__ITEM_REMOVE_LIST			// ¾ÆÀÌÅÛ Á¦°Å 
+#define		__SERVER					// í´ë¼ì´ì–¸íŠ¸ ì „ìš©ì½”ë“œë¥¼ ë¹Œë“œí•˜ì§€ ì•Šê¸° ìœ„í•œ define
+#define		__ITEM_REMOVE_LIST			// ì•„ì´í…œ ì œê±° 
 
-#define		__EVENT_1101				// ÃâÃ½ ÀÌº¥Æ®
+#define		__EVENT_1101				// ì¶œì²µ ì´ë²¤íŠ¸
 
-// ÇØ¿Ü 6Â÷ Àû¿ë
+// í•´ì™¸ 6ì°¨ ì ìš©
 //	#define		__VERIFY_0201
 
-//	mulcom	BEGIN100415	DB_OVERLAPPED_PLUS ¸Þ¸ð¸® Ç® »ç¿ë.
-//#define		__TRANS_0413				// Æ®·£½º ¼­¹ö ¸Þ·Î¸® ÃÖÀûÈ­
-//	mulcom	END100415	DB_OVERLAPPED_PLUS ¸Þ¸ð¸® Ç® »ç¿ë.
+//	mulcom	BEGIN100415	DB_OVERLAPPED_PLUS ë©”ëª¨ë¦¬ í’€ ì‚¬ìš©.
+//#define		__TRANS_0413				// íŠ¸ëžœìŠ¤ ì„œë²„ ë©”ë¡œë¦¬ ìµœì í™”
+//	mulcom	END100415	DB_OVERLAPPED_PLUS ë©”ëª¨ë¦¬ í’€ ì‚¬ìš©.
 
-#define		__SKILL_0205				// ½ºÅ³ º¯°æ ºÎºÐ¸¸ ÀúÀå
+#define		__SKILL_0205				// ìŠ¤í‚¬ ë³€ê²½ ë¶€ë¶„ë§Œ ì €ìž¥
 
-#define		__ITEMDROPRATE				// ¾ÆÀÌÅÛ µå·Ó·ü Á¶Á¤(ÀÌº¥Æ®)
-#define		__EVENT_1101_2				// ÃâÃ½ ÀÌº¥Æ® 64ºñÆ® º¯°æ
-#define		__GETMAILREALTIME			// ½Ç½Ã°£ ¸ÞÀÏ °¡Áö°í ¿À±â Trans
-#define		__S_RECOMMEND_EVE			// ÃßÃµ ÀÌº¥Æ® Neuz, Trans, World
-#define		__EXP_ANGELEXP_LOG			// °æÇèÄ¡, ¿£Á© °æÇèÄ¡ ·Î±× °ü·Ã CHARACTER_TBL ÄÃ·³ Ãß°¡
+#define		__ITEMDROPRATE				// ì•„ì´í…œ ë“œë¡­ë¥  ì¡°ì •(ì´ë²¤íŠ¸)
+#define		__EVENT_1101_2				// ì¶œì²µ ì´ë²¤íŠ¸ 64ë¹„íŠ¸ ë³€ê²½
+#define		__GETMAILREALTIME			// ì‹¤ì‹œê°„ ë©”ì¼ ê°€ì§€ê³  ì˜¤ê¸° Trans
+#define		__S_RECOMMEND_EVE			// ì¶”ì²œ ì´ë²¤íŠ¸ Neuz, Trans, World
+#define		__EXP_ANGELEXP_LOG			// ê²½í—˜ì¹˜, ì—”ì ¤ ê²½í—˜ì¹˜ ë¡œê·¸ ê´€ë ¨ CHARACTER_TBL ì»¬ëŸ¼ ì¶”ê°€
 
-#define		__RULE_0615					// ¸í¸í ±ÔÄ¢ Á¤¸®
-
-#define		__PROP_0827					// ¾ÆÀÌÅÛ ÇÁ·ÎÆÛÆ¼ Àû¿ë ÆÄ¶ó¹ÌÅÍ È®Àå
+#define		__PROP_0827					// ì•„ì´í…œ í”„ë¡œí¼í‹° ì ìš© íŒŒë¼ë¯¸í„° í™•ìž¥
 
 //11th
-//#define		__MA_VER11_04				// ±æµå Ã¢°í ·Î±× ±â´É world,database
-//#define		__MA_VER11_05				// ÄÉ¸¯ÅÍ ºÀÀÎ °Å·¡ ±â´É world,database,neuz
-//#define		__CSC_VER11_5				// ÅÂ½ºÅ©¹Ù È®Àå
-//#define		__GUILD_COMBAT_1TO1			// ÀÏ´ëÀÏ ±æµå´ëÀü
+//#define		__MA_VER11_04				// ê¸¸ë“œ ì°½ê³  ë¡œê·¸ ê¸°ëŠ¥ world,database
+//#define		__MA_VER11_05				// ì¼€ë¦­í„° ë´‰ì¸ ê±°ëž˜ ê¸°ëŠ¥ world,database,neuz
+//#define		__CSC_VER11_5				// íƒœìŠ¤í¬ë°” í™•ìž¥
+//#define		__GUILD_COMBAT_1TO1			// ì¼ëŒ€ì¼ ê¸¸ë“œëŒ€ì „
 
-#define		__EVENTLUA_COUPON			// ÄíÆù ÀÌº¥Æ®
-#define		__LOG_PLAYERCOUNT_CHANNEL	// Ã¤³Îº° µ¿Á¢ ·Î±×
+#define		__EVENTLUA_COUPON			// ì¿ í° ì´ë²¤íŠ¸
+#define		__LOG_PLAYERCOUNT_CHANNEL	// ì±„ë„ë³„ ë™ì ‘ ë¡œê·¸
 
-//	#define		__SYS_POCKET				// ÁÖ¸Ó´Ï
+//	#define		__SYS_POCKET				// ì£¼ë¨¸ë‹ˆ
 //	#define		__SYS_COLLECTING			//
-//	#define		__SYS_IDENTIFY				// °¢¼º, Ãàº¹
-//	#define		__SYS_PLAYER_DATA			// Ä³¸¯ÅÍ ÅëÇÕ Á¤º¸
+//	#define		__SYS_IDENTIFY				// ê°ì„±, ì¶•ë³µ
+//	#define		__SYS_PLAYER_DATA			// ìºë¦­í„° í†µí•© ì •ë³´
 #define		__CONV_0906
-#define		__INVALID_LOGIN_0320		// ÀúÀåÀÌ ¿Ï·á µÇÁö ¾ÊÀº »ç¿ëÀÚÀÇ Á¢¼Ó ¸·±â(º¹»ç ¹æÁö)
-#define		__INVALID_LOGIN_0612		// º¸¿Ï
-#define		__VENDOR_1106				// °³ÀÎ»óÁ¡ Á¦¸ñ Çã¿ë ¹®ÀÚ
+#define		__INVALID_LOGIN_0320		// ì €ìž¥ì´ ì™„ë£Œ ë˜ì§€ ì•Šì€ ì‚¬ìš©ìžì˜ ì ‘ì† ë§‰ê¸°(ë³µì‚¬ ë°©ì§€)
+#define		__INVALID_LOGIN_0612		// ë³´ì™„
+#define		__VENDOR_1106				// ê°œì¸ìƒì  ì œëª© í—ˆìš© ë¬¸ìž
 
-#define		__JEFF_9_20		// ºñÇà ½Ã°£À» Ä§¹¬ ½Ã°£À¸·Î Àü¿ë
+#define		__JEFF_9_20		// ë¹„í–‰ ì‹œê°„ì„ ì¹¨ë¬µ ì‹œê°„ìœ¼ë¡œ ì „ìš©
 #define		__JEFF_FIX_0
 
-#define	__REMOVE_PLAYER_0221		// Ä³¸¯ÅÍ »èÁ¦ ÆÐÅ¶ Á¶ÀÛ
+#define	__REMOVE_PLAYER_0221		// ìºë¦­í„° ì‚­ì œ íŒ¨í‚· ì¡°ìž‘
 
-#define		__SEND_ITEM_ULTIMATE	// ¾óÅÍ¸Ú ¿þÆùµµ ITEM_SEND_TBL¿¡¼­ Áö±Þ°¡´ÉÇÏ°Ô...
+#define		__SEND_ITEM_ULTIMATE	// ì–¼í„°ë©‹ ì›¨í°ë„ ITEM_SEND_TBLì—ì„œ ì§€ê¸‰ê°€ëŠ¥í•˜ê²Œ...
 
-#define		__AUTO_NOTICE		// ÀÚµ¿ °øÁö
+#define		__AUTO_NOTICE		// ìžë™ ê³µì§€
 
-// 12Â÷
+// 12ì°¨
 //	#define		__SECRET_ROOM
 //	#define		__TAX
 //	#define		__LORD
-//	#define		__EXT_PIERCING				// ¹«±â ÇÇ¾î½Ì
-//	#define		__MOD_TUTORIAL	// Æ©Åä¸®¾ó °³¼±
+//	#define		__EXT_PIERCING				// ë¬´ê¸° í”¼ì–´ì‹±
+//	#define		__MOD_TUTORIAL	// íŠœí† ë¦¬ì–¼ ê°œì„ 
 
-// 13Â÷
-//	#define		__RAINBOW_RACE		// ·¹ÀÎº¸¿ì ·¹ÀÌ½º
-//	#define		__HOUSING			// ÇÏ¿ìÂ¡ ½Ã½ºÅÛ
+// 13ì°¨
+//	#define		__RAINBOW_RACE		// ë ˆì¸ë³´ìš° ë ˆì´ìŠ¤
+//	#define		__HOUSING			// í•˜ìš°ì§• ì‹œìŠ¤í…œ
 
-#define		__PET_1024
-//	#define		__HONORABLE_TITLE			// ´ÞÀÎ
+//	#define		__HONORABLE_TITLE			// ë‹¬ì¸
 //	#define		__COUPLE_1117
-//	#define		__COUPLE_1202		// Ä¿ÇÃ º¸»ó
-//	#define		__POST_1204		// ¿ìÆí »èÁ¦ ÃÖÀûÈ­
+//	#define		__COUPLE_1202		// ì»¤í”Œ ë³´ìƒ
 
-#define		__OCCUPATION_SHOPITEM	// Á¡·É±æµå Àü¿ë ±¸¸Å °¡´É ¾ÆÀÌÅÛ
+#define		__OCCUPATION_SHOPITEM	// ì ë ¹ê¸¸ë“œ ì „ìš© êµ¬ë§¤ ê°€ëŠ¥ ì•„ì´í…œ
 
-#define		__POST_DUP_1209		// ¿ìÆí ·Îµå ½Ã ¹«°á¼º °Ë»ç
+#define		__LAYER_1015	// ë ˆì´ì–´ ì €ìž¥	
 
-#define		__LAYER_1015	// ·¹ÀÌ¾î ÀúÀå	
+#define		__FUNNY_COIN			// í¼ë‹ˆ ì½”ì¸
 
-#define		__FUNNY_COIN			// ÆÛ´Ï ÄÚÀÎ
+#define		__REMOVEITEM_POCKET		// ì‚­ì œ ì˜ˆì•½ í…Œì´ë¸”ì— íœ´ëŒ€ê°€ë°© í¬í•¨..
 
-#define		__REMOVEITEM_POCKET		// »èÁ¦ ¿¹¾à Å×ÀÌºí¿¡ ÈÞ´ë°¡¹æ Æ÷ÇÔ..
+#define		__PERIN_BUY_BUG				// íŽ˜ëƒ ë°˜ë³µêµ¬ë§¤ ë²„ê·¸ í™•ì¸ìš© ì½”ë“œ
 
-#define		__PERIN_BUY_BUG				// Æä³Ä ¹Ýº¹±¸¸Å ¹ö±× È®ÀÎ¿ë ÄÚµå
+// 14ì°¨
+//	#define		__INSTANCE_DUNGEON			// 14ì°¨ ì¸ìŠ¤í„´ìŠ¤ ë˜ì „ ê¸°ë°˜
+//	#define		__PCBANG				// PCë°© í˜œíƒ
 
-// 14Â÷
-//	#define		__INSTANCE_DUNGEON			// 14Â÷ ÀÎ½ºÅÏ½º ´øÀü ±â¹Ý
-//	#define		__PCBANG				// PC¹æ ÇýÅÃ
+#define		__QUIZ					// í€´ì¦ˆ ì´ë²¤íŠ¸ ì‹œìŠ¤í…œ
 
-#define		__QUIZ					// ÄûÁî ÀÌº¥Æ® ½Ã½ºÅÛ
-
-#define		__ERROR_LOG_TO_DB		// ¿¡·¯ ·Î±× ½Ã½ºÅÛ
+#define		__ERROR_LOG_TO_DB		// ì—ëŸ¬ ë¡œê·¸ ì‹œìŠ¤í…œ
 
 
-// 15Â÷
-//	#define		__USING_CONTINENT_DATA		// ´ë·ú °æ°èµ¥ÀÌÅÍ ¿ÜºÎ¿¡¼­ ±Ü¾î¿È! 
+// 15ì°¨
+//	#define		__USING_CONTINENT_DATA		// ëŒ€ë¥™ ê²½ê³„ë°ì´í„° ì™¸ë¶€ì—ì„œ ê¸ì–´ì˜´! 
 
-//	#define		__PETVIS					// 15Â÷ ºñ½ºÆê
-//	#define		__GUILD_HOUSE				// 15Â÷ ±æµåÇÏ¿ì½º
+//	#define		__PETVIS					// 15ì°¨ ë¹„ìŠ¤íŽ«
+//	#define		__GUILD_HOUSE				// 15ì°¨ ê¸¸ë“œí•˜ìš°ìŠ¤
 
-//	#define		__HERO129_VER15				// 15Â÷ È÷¾î·Î ·¹º§È®Àå
+//	#define		__HERO129_VER15				// 15ì°¨ ížˆì–´ë¡œ ë ˆë²¨í™•ìž¥
 
-//	#define		__IMPROVE_QUEST_INTERFACE	// 15Â÷ Äù½ºÆ® ½Ã½ºÅÛ
-//	#define		__CAMPUS					// 15Â÷ »çÁ¦ ½Ã½ºÅÛ
-//	#define		__2ND_PASSWORD_SYSTEM		// ·Î±×ÀÎ ½Ã 2Â÷ ºñ¹Ð¹øÈ£ ÀÔ·Â
+//	#define		__IMPROVE_QUEST_INTERFACE	// 15ì°¨ í€˜ìŠ¤íŠ¸ ì‹œìŠ¤í…œ
+//	#define		__CAMPUS					// 15ì°¨ ì‚¬ì œ ì‹œìŠ¤í…œ
+//	#define		__2ND_PASSWORD_SYSTEM		// ë¡œê·¸ì¸ ì‹œ 2ì°¨ ë¹„ë°€ë²ˆí˜¸ ìž…ë ¥
 
-#if	  defined(__INTERNALSERVER)	// ³»ºÎ »ç¹«½Ç Å×½ºÆ®¼­¹ö 
-//	#define	__RULE_0615
+#if	  defined(__INTERNALSERVER)	// ë‚´ë¶€ ì‚¬ë¬´ì‹¤ í…ŒìŠ¤íŠ¸ì„œë²„ 
 
 	#define		__SKILL_0205
-	#define		__GUILDVOTE				// ±æµå ÅõÇ¥ 
+	#define		__GUILDVOTE				// ê¸¸ë“œ íˆ¬í‘œ 
 	#define		__VERIFY_MEMPOOL
 
-//	#define		__S_NEW_SKILL_2			// ½ºÅ³ °³¼± ÆÐÅ¶ Àü¼Û Neuz, World, Trans
-	#define		__Y_MAX_LEVEL_8			// ¸¸·¦ 120À¸·Î Á¶Á¤... Neuz, World, Trans
-//	#define		__INVALID_LOGIN_0320	// ÀúÀåÀÌ ¿Ï·á µÇÁö ¾ÊÀº »ç¿ëÀÚÀÇ Á¢¼Ó ¸·±â(º¹»ç ¹æÁö)
-//	#define		__INVALID_LOGIN_0612	// º¸¿Ï
+//	#define		__S_NEW_SKILL_2			// ìŠ¤í‚¬ ê°œì„  íŒ¨í‚· ì „ì†¡ Neuz, World, Trans
+	#define		__Y_MAX_LEVEL_8			// ë§Œëž© 120ìœ¼ë¡œ ì¡°ì •... Neuz, World, Trans
+//	#define		__INVALID_LOGIN_0320	// ì €ìž¥ì´ ì™„ë£Œ ë˜ì§€ ì•Šì€ ì‚¬ìš©ìžì˜ ì ‘ì† ë§‰ê¸°(ë³µì‚¬ ë°©ì§€)
+//	#define		__INVALID_LOGIN_0612	// ë³´ì™„
 
-//	#define		__LEGEND				//	9Â÷ Àü½Â½Ã½ºÅÛ	Neuz, World, Trans
-//	#define		__ULTIMATE				// ¾óÅÍ¸Ú ¿þÆù
+//	#define		__LEGEND				//	9ì°¨ ì „ìŠ¹ì‹œìŠ¤í…œ	Neuz, World, Trans
+//	#define		__ULTIMATE				// ì–¼í„°ë©‹ ì›¨í°
 
-//	#define		__PET_0410				// 9, 10Â÷ Æê
-//	#define		__AI_0509				// ¸ó½ºÅÍ ÀÎ°øÁö´É
+//	#define		__PET_0410				// 9, 10ì°¨ íŽ«
+//	#define		__AI_0509				// ëª¬ìŠ¤í„° ì¸ê³µì§€ëŠ¥
 
-//	#define		__LUASCRIPT				// ·ç¾Æ ½ºÅ©¸³Æ® »ç¿ë (World, Trans, Neuz)
-//	#define		__EVENTLUA				// ÀÌº¥Æ® (·ç¾Æ ½ºÅ©¸³Æ® Àû¿ë) - World, Trans, Neuz
-//	#define		__SKILL_0706			// ´ëÀÎ¿ë AddSkillProp ÄÃ·³ Ãß°¡ ¹× Àû¿ë
+//	#define		__LUASCRIPT				// ë£¨ì•„ ìŠ¤í¬ë¦½íŠ¸ ì‚¬ìš© (World, Trans, Neuz)
+//	#define		__EVENTLUA				// ì´ë²¤íŠ¸ (ë£¨ì•„ ìŠ¤í¬ë¦½íŠ¸ ì ìš©) - World, Trans, Neuz
+//	#define		__SKILL_0706			// ëŒ€ì¸ìš© AddSkillProp ì»¬ëŸ¼ ì¶”ê°€ ë° ì ìš©
 
 //	#define		__CONV_0906
 
-//	#define		__SYS_POCKET			// ÁÖ¸Ó´Ï
+//	#define		__SYS_POCKET			// ì£¼ë¨¸ë‹ˆ
 //	#define		__SYS_COLLECTING	//
 
-//	#define		__SYS_IDENTIFY			// °¢¼º, Ãàº¹
-//	#define		__SYS_PLAYER_DATA		// Ä³¸¯ÅÍ ÅëÇÕ Á¤º¸
-//	#define		__RT_1025				// ¸Þ½ÅÀú
+//	#define		__SYS_IDENTIFY			// ê°ì„±, ì¶•ë³µ
+//	#define		__SYS_PLAYER_DATA		// ìºë¦­í„° í†µí•© ì •ë³´
+//	#define		__RT_1025				// ë©”ì‹ ì €
 
-//	#define		__VENDOR_1106			// °³ÀÎ»óÁ¡ Çã¿ë ¹®ÀÚ
+//	#define		__VENDOR_1106			// ê°œì¸ìƒì  í—ˆìš© ë¬¸ìž
 
-	#define		__JEFF_11_2		// ¼ö½ÅÀÚ ¾ø´Â ¸ÞÀÏ ·Îµù ½Ã ¹Ý¼Û
+	#define		__JEFF_11_2		// ìˆ˜ì‹ ìž ì—†ëŠ” ë©”ì¼ ë¡œë”© ì‹œ ë°˜ì†¡
 
 	#define		__VTN_TIMELIMIT
 
-	#define		 __GUILD_HOUSE_MIDDLE	// ±æµåÇÏ¿ì½º ÁßÇü
+	#define		 __GUILD_HOUSE_MIDDLE	// ê¸¸ë“œí•˜ìš°ìŠ¤ ì¤‘í˜•
 
 
 
-#elif defined(__TESTSERVER)		// ¿ÜºÎ À¯Àú Å×½ºÆ®¼­¹ö 
+#elif defined(__TESTSERVER)		// ì™¸ë¶€ ìœ ì € í…ŒìŠ¤íŠ¸ì„œë²„ 
 
-//	#define		__NOTIFYSTART0706		// ·±ÃÄ¿¡°Ô ½ÃÀÛ ¾Ë¸² ¹æ½ÄÀ» ÀÌº¥Æ®·Î  
-	#define		__GUILDVOTE				// ±æµå ÅõÇ¥ 
-	#define		__Y_MAX_LEVEL_8			// ¸¸·¦ 120À¸·Î Á¶Á¤... Neuz, World, Trans
-//	#define		__PET_0410				// 9, 10Â÷ Æê
-//	#define		__AI_0509				// ¸ó½ºÅÍ ÀÎ°øÁö´É
-//	#define		__LEGEND				//	9Â÷ Àü½Â½Ã½ºÅÛ	Neuz, World, Trans
-//	#define		__ULTIMATE				// ¾óÅÍ¸Ú ¿þÆù
+//	#define		__NOTIFYSTART0706		// ëŸ°ì³ì—ê²Œ ì‹œìž‘ ì•Œë¦¼ ë°©ì‹ì„ ì´ë²¤íŠ¸ë¡œ  
+	#define		__GUILDVOTE				// ê¸¸ë“œ íˆ¬í‘œ 
+	#define		__Y_MAX_LEVEL_8			// ë§Œëž© 120ìœ¼ë¡œ ì¡°ì •... Neuz, World, Trans
+//	#define		__PET_0410				// 9, 10ì°¨ íŽ«
+//	#define		__AI_0509				// ëª¬ìŠ¤í„° ì¸ê³µì§€ëŠ¥
+//	#define		__LEGEND				//	9ì°¨ ì „ìŠ¹ì‹œìŠ¤í…œ	Neuz, World, Trans
+//	#define		__ULTIMATE				// ì–¼í„°ë©‹ ì›¨í°
 	
-//	#define		__LUASCRIPT				// ·ç¾Æ ½ºÅ©¸³Æ® »ç¿ë (World, Trans, Neuz)
+//	#define		__LUASCRIPT				// ë£¨ì•„ ìŠ¤í¬ë¦½íŠ¸ ì‚¬ìš© (World, Trans, Neuz)
 //	#undef	__VER
-//	#define	__VER	11					// 11Â÷
+//	#define	__VER	11					// 11ì°¨
 
-//	#define		__SYS_POCKET			// ÁÖ¸Ó´Ï
+//	#define		__SYS_POCKET			// ì£¼ë¨¸ë‹ˆ
 //	#define		__SYS_COLLECTING	//
-//	#define		__SYS_IDENTIFY			// °¢¼º, Ãàº¹
-//	#define		__SYS_PLAYER_DATA		// Ä³¸¯ÅÍ ÅëÇÕ Á¤º¸
-//	#define		__RT_1025				// ¸Þ½ÅÀú
+//	#define		__SYS_IDENTIFY			// ê°ì„±, ì¶•ë³µ
+//	#define		__SYS_PLAYER_DATA		// ìºë¦­í„° í†µí•© ì •ë³´
+//	#define		__RT_1025				// ë©”ì‹ ì €
 //	#define		__CONV_0906
-//	#define		__INVALID_LOGIN_0320	// ÀúÀåÀÌ ¿Ï·á µÇÁö ¾ÊÀº »ç¿ëÀÚÀÇ Á¢¼Ó ¸·±â(º¹»ç ¹æÁö)
-//	#define		__INVALID_LOGIN_0612	// º¸¿Ï
-//	#define		__VENDOR_1106			// °³ÀÎ»óÁ¡ Çã¿ë ¹®ÀÚ
+//	#define		__INVALID_LOGIN_0320	// ì €ìž¥ì´ ì™„ë£Œ ë˜ì§€ ì•Šì€ ì‚¬ìš©ìžì˜ ì ‘ì† ë§‰ê¸°(ë³µì‚¬ ë°©ì§€)
+//	#define		__INVALID_LOGIN_0612	// ë³´ì™„
+//	#define		__VENDOR_1106			// ê°œì¸ìƒì  í—ˆìš© ë¬¸ìž
 
-	#define	__JEFF_11_2		// ¼ö½ÅÀÚ ¾ø´Â ¸ÞÀÏ ·Îµù ½Ã ¹Ý¼Û
+	#define	__JEFF_11_2		// ìˆ˜ì‹ ìž ì—†ëŠ” ë©”ì¼ ë¡œë”© ì‹œ ë°˜ì†¡
 
-	#define __GUILD_HOUSE_MIDDLE	// ±æµåÇÏ¿ì½º ÁßÇü
+	#define __GUILD_HOUSE_MIDDLE	// ê¸¸ë“œí•˜ìš°ìŠ¤ ì¤‘í˜•
 
 
-#elif defined(__MAINSERVER)		// ¿ÜºÎ º»¼· 
+#elif defined(__MAINSERVER)		// ì™¸ë¶€ ë³¸ì„­ 
 
 	#define		__IDC
 //	#define		__TOOMANY_PENDINGLOG1115
 
-#endif	// end - ¼­¹öÁ¾·ùº° define 
+#endif	// end - ì„œë²„ì¢…ë¥˜ë³„ define 
 
 #endif

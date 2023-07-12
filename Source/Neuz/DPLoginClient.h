@@ -4,13 +4,13 @@
 #include "DPMng.h"
 #include "MsgHdr.h"
 
-#undef	theClass
-#define	theClass	CDPLoginClient
-#undef theParameters
-#define theParameters	CAr & ar
+namespace MoverSub {
+	struct SkinMeshs;
+}
 
 class CDPLoginClient : public CDPMng,
-	public DPMngFeatures::SendPacketSole
+	public DPMngFeatures::SendPacketSole,
+	public DPMngFeatures::PacketHandler<CDPLoginClient>
 {
 private:
 	BOOL	m_fDestroy; 
@@ -38,13 +38,13 @@ public:
 	void	Ping( void );
 	void	QueryTickCount( void );
 	void	SendGetPlayerList( DWORD dwID, LPCSTR lpszAccount, LPCSTR lpszpw );
-	void	SendCreatePlayer( BYTE nSlot, LPCSTR lpszPlayer/*, LPDWORD adwEquipment*/, BYTE nFace, BYTE nCostume, BYTE nSkinSet, BYTE nHairMesh, DWORD dwHairColor, BYTE nSex, BYTE nJob, BYTE nHeadMesh, int nBankPW = 0 );
+	void	SendCreatePlayer( BYTE nSlot, LPCSTR lpszPlayer, const MoverSub::SkinMeshs & skin, BYTE nCostume, DWORD dwHairColor, BYTE nSex, BYTE nJob, int nBankPW = 0 );
 	void	SendDeletePlayer( BYTE nSlot, LPCTSTR szNo );
 	void	SendPreJoin( const TCHAR* lpszAccount, u_long idPlayer, const TCHAR* lpszPlayer, int nSlot, int nSecretNum = 0 );
 	void	OnPreJoin( CAr & ar );
 
+private:
 //	Handlers
-	USES_PFNENTRIES;
 	void	OnPlayerList( CAr & ar );
 	void	OnError( CAr & ar );
 	void	OnCacheAddr( CAr & ar );

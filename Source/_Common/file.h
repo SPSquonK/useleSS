@@ -1,9 +1,10 @@
-#ifndef __CFileIO_H
-#define __CFileIO_H
+#pragma once
 
 #include <TCHAR.H>
 #include <stdio.h>
 #include <io.h>
+#include <map>
+#include <memory>
 
 
 class CFileIO
@@ -69,11 +70,11 @@ public:
 
 #ifdef __SECURITY_0628
 		static	char	m_szResVer[100];
-		static	map<string, string>	m_mapAuth;
+		static	std::map<std::string, std::string>	m_mapAuth;
 		static	void	LoadAuthFile( void );
 #endif	// __SECURITY_0628
 
-		static CMapStringToPtr m_mapResource;
+		static std::map<std::string, std::unique_ptr<RESOURCE>, std::less<>> m_mapResource;
 
 		static BYTE Encryption( BYTE byEncryptionKey, BYTE byData )
 		{
@@ -110,26 +111,6 @@ public:
 		static void FreeResource();
 	};
 #else
-	// 클라이언트가 아니면 
-	#define CResFile CFileIO
-#endif
-
-
-class CFileFinder
-{
-	POSITION m_pos;
-	long m_lHandle;
-	CHAR m_szFilespec[ MAX_PATH ];
-	BOOL m_bResFile;
-public:
-	CFileFinder();
-	~CFileFinder();
-	BOOL WildCmp( LPCTSTR lpszWild, LPCTSTR lpszString );
-
-	BOOL FindFirst( LPCTSTR lpFilespec, struct _finddata_t *fileinfo );
-	BOOL FindNext( struct _finddata_t *fileinfo );
-	void FindClose();
-};
-
-
+// 클라이언트가 아니면 
+using CResFile = CFileIO;
 #endif

@@ -85,10 +85,10 @@ void CPatch::Init( int heightX, int heightY, int worldX, int worldY, FLOAT *hMap
 	CalculateBound();
 }
 
-void CPatch::Render(LPDIRECT3DDEVICE9 pd3dDevice,int X,int Y)
+void CPatch::Render(int X,int Y)
 {
-	if( pd3dDevice ) 
-	{
+	if (pd3dDevice.IsMissing()) return;
+	
 		DWORD nBaseVertexIndex = ((PATCH_SIZE+1)*(PATCH_SIZE+1)) * (Y*NUM_PATCHES_PER_SIDE+X);
 		pd3dDevice->SetIndices( g_pIB );
 		if( CWorld::m_bViewLODTerrain ) 
@@ -122,7 +122,7 @@ void CPatch::Render(LPDIRECT3DDEVICE9 pd3dDevice,int X,int Y)
 		{
 			pd3dDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, nBaseVertexIndex, 0, (PATCH_SIZE+1)*(PATCH_SIZE+1),0, 128 );
 		}
-	}
+	
 }
 
 void CPatch::CalculateBound()
@@ -226,7 +226,6 @@ void CPatch::CalculateLevel()
 CLandscape::CLandscape()
 {
 	m_dwVersion = 0;
-	m_pd3dDevice = NULL;
 	m_pHeightMap = NULL;
 	m_pVB=NULL;
 	m_pWorld = NULL;
@@ -310,18 +309,13 @@ CLandscape::~CLandscape()
 		for( int i = 0; i < MAX_LINKLEVEL; i++ ) 
 			SAFE_DELETE_ARRAY( m_apObjLink[j][i] );
 	}
-
-	for( int i = 0; i < m_aLayer.GetSize(); i++) {
-		safe_delete( (CLandLayer*)m_aLayer.GetAt(i) );
-	}
 }
 
 //
 // 디바이스 관련
 //
-HRESULT CLandscape::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWorld )
+HRESULT CLandscape::InitDeviceObjects( CWorld* pWorld )
 {
-	m_pd3dDevice = pd3dDevice;
 	m_pWorld = pWorld;
 
 	FreeTerrain();
@@ -331,12 +325,12 @@ HRESULT CLandscape::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWo
 	return S_OK;
 }
 
-HRESULT CLandscape::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice)
+HRESULT CLandscape::RestoreDeviceObjects()
 {
 	if( m_pVB ) 
 		return S_OK;
 
-	if(pd3dDevice) 
+	if(!pd3dDevice.IsMissing()) 
 		pd3dDevice->CreateVertexBuffer( (PATCH_SIZE+1) * (PATCH_SIZE+1) * (NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE) *sizeof(D3DLANDSCAPEVERTEX),
 										  D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &m_pVB , NULL);
 	
@@ -633,6 +627,7 @@ HRESULT CLandscape::InvalidateDeviceObjects()
 
 	return S_OK;
 }
+
 HRESULT CLandscape::DeleteDeviceObjects()
 {
 	SAFE_RELEASE( m_texMiniMap.m_pTexture );
@@ -644,11 +639,10 @@ HRESULT CLandscape::DeleteDeviceObjects()
 		}
 	}
 
-	for( int i = 0; i < m_aLayer.GetSize(); i++ ) 
-	{
-		CLandLayer* pLandLayer = (CLandLayer*)m_aLayer.GetAt( i );
-		SAFE_RELEASE( pLandLayer->m_pLightMap );
+	for (CLandLayer & pLandLayer : m_aLayer) {
+		SAFE_RELEASE(pLandLayer.m_pLightMap);
 	}
+
 	return S_OK;
 }
 
@@ -786,18 +780,11 @@ void CLandscape::SetVertices()
 
 BOOL CLandscape::ForceTexture(LPDIRECT3DTEXTURE9 pNewTex)
 {
-
-	CLandLayer* pLayer;
-
-
-	for(int i = 0; i < m_aLayer.GetSize(); i++ ) 
-	{
-		pLayer = (CLandLayer*)(m_aLayer[i]);
-
-		if( pLayer->m_bVisible == FALSE )
+	for (CLandLayer & pLayer : m_aLayer) {
+		if( pLayer.m_bVisible == FALSE )
 			continue;
 
-		prj.m_terrainMng.GetTerrain( pLayer->m_nTex )->m_pTexture = pNewTex;
+		prj.m_terrainMng.GetTerrain( pLayer.m_nTex )->m_pTexture = pNewTex;
 	}	
 
 	return TRUE;
@@ -805,40 +792,33 @@ BOOL CLandscape::ForceTexture(LPDIRECT3DTEXTURE9 pNewTex)
 
 void CLandscape::RenderPatches()
 {
-	int X, Y;
-	CPatch* patch;
-	CLandLayer* pLayer;
 	int nBlendStatus=0;
 	
 	for(int i = 0; i < NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE; i++ )
 		m_abPatchRendered[ i ] = FALSE;
 
-	for( int i = 0; i < m_aLayer.GetSize(); i++ ) 
-	{
-		pLayer = (CLandLayer*)(m_aLayer[i]);
-
-		if( pLayer->m_bVisible == FALSE )
+	for (CLandLayer & pLayer : m_aLayer) {
+		if( pLayer.m_bVisible == FALSE )
 			continue;
 
-		if( prj.m_terrainMng.GetTerrain( pLayer->m_nTex )->m_pTexture == NULL )
-			prj.m_terrainMng.LoadTexture( pLayer->m_nTex );
+		if(prj.m_terrainMng.GetTerrain(pLayer.m_nTex)->m_pTexture == NULL )
+			prj.m_terrainMng.LoadTexture( pLayer.m_nTex );
 
-		if( prj.m_terrainMng.GetTerrain( pLayer->m_nTex )->m_pTexture == NULL )
+		if(prj.m_terrainMng.GetTerrain(pLayer.m_nTex)->m_pTexture == NULL )
 			continue;
 
-		m_pd3dDevice->SetTexture( 0, prj.m_terrainMng.GetTerrain( pLayer->m_nTex )->m_pTexture );
-		prj.m_terrainMng.GetTerrain( pLayer->m_nTex )->m_pTexture->GetLevelCount();
-		m_pd3dDevice->SetTexture( 1, pLayer->m_pLightMap );
+		m_pd3dDevice->SetTexture( 0, prj.m_terrainMng.GetTerrain(pLayer.m_nTex)->m_pTexture );
+		m_pd3dDevice->SetTexture( 1, pLayer.m_pLightMap );
 		m_pd3dDevice->SetIndices( g_pIB );
 
-		for ( Y=0; Y < NUM_PATCHES_PER_SIDE; Y++)
+		for (int Y=0; Y < NUM_PATCHES_PER_SIDE; Y++)
 		{
-			for ( X=0; X < NUM_PATCHES_PER_SIDE; X++ )
+			for (int X=0; X < NUM_PATCHES_PER_SIDE; X++ )
 			{
-				patch = &(m_aPatches[Y][X]);
-				if( patch->isVisibile() ) 
-				{
-					if(pLayer->m_aPatchEnable[X+Y*NUM_PATCHES_PER_SIDE] ) 
+				CPatch * patch = &(m_aPatches[Y][X]);
+				if (!patch->isVisibile()) continue;
+				
+					if(pLayer.m_aPatchEnable[X+Y*NUM_PATCHES_PER_SIDE] ) 
 					{
 						if(m_abPatchRendered[X+Y*NUM_PATCHES_PER_SIDE]) 
 						{
@@ -857,14 +837,14 @@ void CLandscape::RenderPatches()
 								nBlendStatus=0;
 							}
 						}
-						patch->Render(m_pd3dDevice,X,Y);
+						patch->Render(X,Y);
 					}
-				}
+				
 			}
 		}
 	}
 }
-HRESULT CLandscape::Render(LPDIRECT3DDEVICE9 pd3dDevice,BOOL bLod)
+HRESULT CLandscape::Render(BOOL bLod)
 {
 	/*
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE);
@@ -930,7 +910,7 @@ HRESULT CLandscape::Render(LPDIRECT3DDEVICE9 pd3dDevice,BOOL bLod)
 	
 }
 //////////////////////////////////////////////////////////////
-HRESULT CLandscape::RenderWater( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CLandscape::RenderWater( )
 {
 //	return S_OK;
 	D3DXMATRIX mat,matView,matProj;
@@ -1192,22 +1172,20 @@ void CLandscape::Cull()
 FLOAT CLandscape::GetHeight(FLOAT x,FLOAT z)
 {
 	if(x<0 || x>MAP_SIZE || z<0 || z>MAP_SIZE) return .0f;
-	int px,pz;
-	FLOAT dx,dz;
-	FLOAT dy1,dy2,dy3,dy4;
-	px=(int)x;
-	pz=(int)z;
-	dx=x-px;
-	dz=z-pz;
+	
+	const int px= static_cast<int>(x);
+	const int pz= static_cast<int>(z);
+	const FLOAT dx=x-px;
+	const FLOAT dz=z-pz;
 
-	FLOAT y1=GetHeightMap(px+pz*(MAP_SIZE+1));
-	FLOAT y2=GetHeightMap(px+1+pz*(MAP_SIZE+1));
-	FLOAT y3=GetHeightMap(px+(pz+1)*(MAP_SIZE+1));
-	FLOAT y4=GetHeightMap(px+1+(pz+1)*(MAP_SIZE+1));
-	dy1=y1*(1-dx)*(1-dz);
-	dy2=y2*dx*(1-dz);
-	dy3=y3*(1-dx)*dz;
-	dy4=y4*dx*dz;
+	const FLOAT y1=GetHeightMap(px+pz*(MAP_SIZE+1));
+	const FLOAT y2=GetHeightMap(px+1+pz*(MAP_SIZE+1));
+	const FLOAT y3=GetHeightMap(px+(pz+1)*(MAP_SIZE+1));
+	const FLOAT y4=GetHeightMap(px+1+(pz+1)*(MAP_SIZE+1));
+	const FLOAT dy1=y1*(1-dx)*(1-dz);
+	const FLOAT dy2=y2*dx*(1-dz);
+	const FLOAT dy3=y3*(1-dx)*dz;
+	const FLOAT dy4=y4*dx*dz;
 	return dy1+dy2+dy3+dy4;
 }
 
@@ -1215,12 +1193,9 @@ FLOAT CLandscape::GetHeight_Fast(FLOAT x,FLOAT z)
 {
 	if( x < 0 || x > MAP_SIZE || z < 0 || z > MAP_SIZE) 
 		return .0f;
-	int px,pz;
-	FLOAT dx,dz;
-	px=(int)x;
-	pz=(int)z;
-	dx=x-px;
-	dz=z-pz;
+
+	const int px= static_cast<int>(x);
+	const int pz= static_cast<int>(z);
 	return GetHeightMap( px + pz * ( MAP_SIZE + 1 ) );
 }
 
@@ -1277,48 +1252,31 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 	}
 	BYTE nLayer;
 	file.Read( &nLayer, sizeof(BYTE) , 1 );
-	CLandLayer* pLayer;
-	WORD nTex;
+	
+	
 	for(int j = 0; j < nLayer; j++ )  
 	{
+		WORD nTex;
 		file.Read( &( nTex ), sizeof(WORD), 1 );
 
-		pLayer = NewLayer( nTex );
+		CLandLayer * pLayer = NewLayer( nTex );
 		file.Read( pLayer->m_aPatchEnable, sizeof( BOOL ), NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE );
+		
 		D3DLOCKED_RECT rectLock;
 		pLayer->m_pLightMap->LockRect( 0, &rectLock, 0, 0 );
-#ifdef __16BITLIGHT
-		DWORD dwLightMap[ MAP_SIZE*MAP_SIZE ];
-		file.Read( dwLightMap, sizeof( DWORD ), MAP_SIZE * MAP_SIZE );
-		for( int i = 0; i < MAP_SIZE * MAP_SIZE; i++ )
-		{
-			((WORD *)rectLock.pBits)[i] = 
-			D3DCOLOR_ARGB16
-			( 
-				( dwLightMap[ i ] & 0xff000000 ) >> ( 24 ), 
-				( dwLightMap[ i ] & 0x00ff0000 ) >> ( 16 ),
-				( dwLightMap[ i ] & 0x0000ff00 ) >> (  8 ),
-				( dwLightMap[ i ] & 0x000000ff )
-			);
-		}
-#else	//!__16BITLIGHT
 		file.Read(((DWORD *)rectLock.pBits),sizeof(DWORD),MAP_SIZE*MAP_SIZE);
-#endif	//!__16BITLIGHT
 		pLayer->m_pLightMap->UnlockRect(0);
 	}
+
 	// 해당 레이어에 존재하는 텍스춰가 없을 시에는 삭제 
-	for( int j = 0; j < nLayer; j++ )  
-	{
-		CLandLayer* pLayer = (CLandLayer*)m_aLayer.GetAt( j );
-		if( prj.m_terrainMng.GetTerrain( pLayer->m_nTex )->m_pTexture == NULL )
-			prj.m_terrainMng.LoadTexture( pLayer->m_nTex );
+	for (auto pLayer = m_aLayer.begin(); pLayer != m_aLayer.end();) {
+		if (prj.m_terrainMng.GetTerrain(pLayer->m_nTex)->m_pTexture == NULL)
+			prj.m_terrainMng.LoadTexture( pLayer->m_nTex);
 		
-		if( prj.m_terrainMng.GetTerrain( pLayer->m_nTex )->m_pTexture == NULL )
-		{
-			safe_delete( pLayer );
-			m_aLayer.RemoveAt( j );
-			nLayer--;
-			j--;
+		if( prj.m_terrainMng.GetTerrain( pLayer->m_nTex)->m_pTexture == NULL) {
+			pLayer = m_aLayer.erase(pLayer);
+		} else {
+			++pLayer;
 		}
 	}
 	MakeHgtAttrVertexBuffer();
@@ -1342,7 +1300,7 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 		}
 
 		//pObj->m_vPos += D3DXVECTOR3( 1024, 0, 0 );
-		if( pObj->SetIndex( m_pd3dDevice, pObj->m_dwIndex ) == TRUE)
+		if( pObj->SetIndex( pObj->m_dwIndex ) == TRUE)
 		{
 			if( ::GetLanguage() == LANG_JAP && pObj->m_dwIndex == 360 )
 			{
@@ -1384,7 +1342,7 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 				pObj->m_vPos.z += yy * LANDREALSCALE;
 			}
 			//pObj->m_vPos += D3DXVECTOR3( 1024, 0, 0 );
-			if( pObj->SetIndex( m_pd3dDevice, pObj->m_dwIndex ) == TRUE )
+			if( pObj->SetIndex( pObj->m_dwIndex ) == TRUE )
 			{
 				InsertObjLink( pObj );
 				AddObjArray( pObj );
@@ -1397,7 +1355,7 @@ BOOL CLandscape::LoadLandscape( LPCTSTR lpszFileName, int xx, int yy )
 	CString strDDSName = lpszFileName;
 	strDDSName = strDDSName.Left( strDDSName.GetLength() - 3 );
 	strDDSName += "dds";
-	m_texMiniMap.LoadTexture( m_pd3dDevice, strDDSName, 0, FALSE );
+	m_texMiniMap.LoadTexture( strDDSName, 0, FALSE );
 	return TRUE;
 }
 //
@@ -1538,38 +1496,29 @@ void CLandscape::RemoveObjArray( CObj* pObj )
 
 CLandLayer* CLandscape::NewLayer( WORD nTex )
 {
-	CLandLayer* pLayer = NULL;
-	for(int i = 0; i < m_aLayer.GetSize(); i++) 
-	{
-		pLayer = (CLandLayer*)(m_aLayer.GetAt(i));
-		if( pLayer->m_nTex == nTex ) 
-			return pLayer;
-	}
-	pLayer = new CLandLayer(m_pd3dDevice,nTex);
+	const auto it = std::find_if(
+		m_aLayer.begin(), m_aLayer.end(),
+		[nTex](const CLandLayer & pLayer) { return pLayer.m_nTex == nTex; }
+	);
+	if (it != m_aLayer.end()) return &*it;
 
-	if( m_aLayer.GetSize() == 0 ) 
+	CLandLayer * pLayer = &m_aLayer.emplace_back(nTex);
+
+	if( m_aLayer.empty() ) 
 	{
-		for( int i=0;i<NUM_PATCHES_PER_SIDE*NUM_PATCHES_PER_SIDE;i++) 
-			pLayer->m_aPatchEnable[i]=TRUE;
+		std::ranges::fill(pLayer->m_aPatchEnable, TRUE);
 	}
 	else 
 	{
-		DWORD color = 0;
-		CLandLayer* pTempLayer = (CLandLayer*)m_aLayer[0];
-
 		D3DLOCKED_RECT rectLock;
 		pLayer->m_pLightMap->LockRect( 0 , &rectLock, 0, 0);
-		for( int i = 0; i < MAP_SIZE * MAP_SIZE; i++ ) 
-		{
-			((WORD *)rectLock.pBits)[i]=0;//color;
-		}
+		std::memset(rectLock.pBits, 0, sizeof(WORD) * MAP_SIZE * MAP_SIZE);
 		pLayer->m_pLightMap->UnlockRect(0);
-		for( int i=0;i<NUM_PATCHES_PER_SIDE*NUM_PATCHES_PER_SIDE;i++) 
-			pLayer->m_aPatchEnable[i]=FALSE;
-	}
-	m_aLayer.Add(pLayer);
-	return pLayer;
 
+		std::ranges::fill(pLayer->m_aPatchEnable, FALSE);
+	}
+
+	return pLayer;
 }
 
 int CLandscape::GetHeightAttribute( int x, int z )
@@ -1612,35 +1561,43 @@ FLOAT CLandscape::GetHeightMap( int nOffset )
 }
 
 
-CLandLayer::CLandLayer(LPDIRECT3DDEVICE9 pd3dDevice,WORD nTex) 
+CLandLayer::CLandLayer(WORD nTex) 
 {
 	m_pLightMap = NULL;
 	m_bVisible = TRUE;
 	m_nTex = nTex;
 
-	if( pd3dDevice ) 
-	{
-	#ifdef __16BITLIGHT
-		pd3dDevice->CreateTexture( MAP_SIZE, MAP_SIZE, 1, 0, D3DFMT_A4R4G4B4, D3DPOOL_MANAGED,
-										   &m_pLightMap, NULL );
-	#else
+	if (pd3dDevice.IsMissing())  return;
+	
+
 		pd3dDevice->CreateTexture( MAP_SIZE, MAP_SIZE, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED,
 										   &m_pLightMap, NULL );
-	#endif
+
 		D3DLOCKED_RECT rectLock;
 		m_pLightMap->LockRect( 0, &rectLock, 0, 0 );
-	#ifdef __16BITLIGHT
-		for( int i = 0; i < MAP_SIZE * MAP_SIZE; i++ )
-			((WORD *)rectLock.pBits)[i] = D3DCOLOR_ARGB16( 0, 127, 127, 127 );
-	#else
+
 		for( int i = 0; i < MAP_SIZE * MAP_SIZE; i++ )
 			((DWORD *)rectLock.pBits)[i] = D3DCOLOR_ARGB16( 0, 127, 127, 127 );
-	#endif
+
 		m_pLightMap->UnlockRect( 0 );
 
 		for( int i = 0; i < NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE; i++ ) 
 			m_aPatchEnable[ i ]=FALSE;
-	}
+	
+}
+
+CLandLayer::CLandLayer(CLandLayer && other) noexcept {
+	std::memcpy(this, &other, sizeof(CLandLayer));
+	other.m_pLightMap = nullptr;
+}
+
+
+CLandLayer & CLandLayer::operator=(CLandLayer && other) noexcept {
+	if (this == &other) return *this;
+	LPDIRECT3DTEXTURE9 myLightMap = m_pLightMap;
+	std::memcpy(this, &other, sizeof(CLandLayer));
+	other.m_pLightMap = myLightMap;
+	return *this;
 }
 
 CLandLayer::~CLandLayer() 

@@ -83,12 +83,12 @@ void CWndRegVend::OnInitialUpdate()
 	m_Calc.m_ch     = 0;
 	SetFocus();
 
-	m_pTex = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "WndVenderArrowEx.tga" ), 0xffff00ff );
+	m_pTex = m_textureMng.AddTexture( MakePath( DIR_THEME, "WndVenderArrowEx.tga" ), 0xffff00ff );
 
 	MoveParentCenter();
 } 
 
-BOOL CWndRegVend::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
+BOOL CWndRegVend::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_VENDOREX_SELL, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -297,7 +297,7 @@ BOOL CWndRegVend::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 		if( n64Sum <= 0 || 2100000000 <= n64Sum || nOldGold >= n64Sum )
 		{
-			g_WndMng.OpenMessageBox( _T(prj.GetText(TID_GAME_VENDOR_MAX_ALL_GOLD)), MB_OK, this );
+			g_WndMng.OpenMessageBox( _T(prj.GetText(TID_GAME_VENDOR_MAX_ALL_GOLD)), MB_OK );
 			return TRUE;
 		}
 

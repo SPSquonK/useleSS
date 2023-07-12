@@ -23,7 +23,6 @@ CTheme::CTheme()
 	m_bNudeSkin = FALSE;
 	//m_pActiveDesktop = NULL;
 	//m_pd3dsdBackBuffer = NULL;
-	m_pd3dDevice =NULL;
 
 	m_pFontStatus = NULL;
 
@@ -45,10 +44,8 @@ CTheme::~CTheme()
 {
 	DeleteTheme();
 }
-BOOL CTheme::LoadTheme( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName)
+BOOL CTheme::LoadTheme( LPCTSTR lpszFileName)
 {
-	m_pd3dDevice = pd3dDevice;
-
 	//DeleteTheme();
 
 	CScanner scanner;
@@ -69,8 +66,8 @@ BOOL CTheme::LoadTheme( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName)
 			scanner.GetToken();
 			scanner.GetToken();
 
-			m_texWallPaper.LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, scanner.token ), 0xff0000 );
-			m_texWndPaper.LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, "WindField.bmp" ), 0xff0000 );
+			m_texWallPaper.LoadTexture( MakePath( DIR_THEME, scanner.token ), 0xff0000 );
+			m_texWndPaper.LoadTexture( MakePath( DIR_THEME, "WindField.bmp" ), 0xff0000 );
 		}	
 		else
 		if( scanner.Token == "m_dwWallPaperType" )
@@ -82,8 +79,8 @@ BOOL CTheme::LoadTheme( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName)
 	}
 
 #ifdef __GAME_GRADE_SYSTEM
-	m_GameGradeScreenTexture.LoadTexture( m_pd3dDevice, MakePath( DIR_THEME, _T( "GameGradeWarningScreen.tga" ) ), 0xff0000 );
-	m_pGameGradeTexture = CWndBase::m_textureMng.AddTexture( m_pd3dDevice, MakePath( DIR_THEME, _T( "GameGradeMark.bmp" ) ), 0xffff00ff );
+	m_GameGradeScreenTexture.LoadTexture( MakePath( DIR_THEME, _T( "GameGradeWarningScreen.tga" ) ), 0xff0000 );
+	m_pGameGradeTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, _T( "GameGradeMark.bmp" ) ), 0xffff00ff );
 #endif // __GAME_GRADE_SYSTEM
 
 	PLANG_DATA pLangData	= CLangMan::GetInstance()->GetLangData( ::GetLanguage() );
@@ -141,10 +138,9 @@ void CTheme::DeleteTheme()
 	DeleteDeviceObjects();
 } 
 
-HRESULT CTheme::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
-	m_pd3dDevice = pd3dDevice;
+HRESULT CTheme::InitDeviceObjects() {
 	for (CD3DFont * pFont : m_mapFont | std::views::values) {
-		pFont->InitDeviceObjects(pd3dDevice);
+		pFont->InitDeviceObjects();
 	}
 
 	return TRUE;
@@ -216,7 +212,7 @@ void CTheme::ReadTitleWorld()
 			
 			if(m_bLoadTerrainScript)
 			{
-				if(m_pTitleWorld->InitDeviceObjects( m_pd3dDevice ) == S_OK)
+				if(m_pTitleWorld->InitDeviceObjects( ) == S_OK)
 				{
 					if(m_pTitleWorld->OpenWorld( MakePath( DIR_WORLD, "WdArena" ), TRUE ))
 					{
@@ -230,10 +226,10 @@ void CTheme::ReadTitleWorld()
 						camera.m_vLookAt = vecLookat;
 						m_pTitleWorld->SetCamera(&camera);
 
-						m_pFlyffLogo = CWndBase::m_textureMng.AddTexture( m_pd3dDevice, MakePath( DIR_THEME, _T( "flyfftitletest.bmp" ) ), 0xffff00ff );
-						m_pGameGrade = CWndBase::m_textureMng.AddTexture( m_pd3dDevice, MakePath( DIR_THEME, _T( "gamegradetest.bmp" ) ), 0xffff00ff );
-						m_pAeonLogo = CWndBase::m_textureMng.AddTexture( m_pd3dDevice, MakePath( DIR_THEME, _T( "aeonsoftlogotest.bmp" ) ), 0xffff00ff );
-						m_pGalaLogo = CWndBase::m_textureMng.AddTexture( m_pd3dDevice, MakePath( DIR_THEME, _T( "galalogotest.bmp" ) ), 0xffff00ff );
+						m_pFlyffLogo = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, _T( "flyfftitletest.bmp" ) ), 0xffff00ff );
+						m_pGameGrade = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, _T( "gamegradetest.bmp" ) ), 0xffff00ff );
+						m_pAeonLogo = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, _T( "aeonsoftlogotest.bmp" ) ), 0xffff00ff );
+						m_pGalaLogo = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, _T( "galalogotest.bmp" ) ), 0xffff00ff );
 						
 						m_bRenderTitleWorld = TRUE;
 					}
@@ -342,10 +338,10 @@ void CTheme::RenderDesktop( C2DRender* p2DRender )
 	float fNear = CWorld::m_fNearPlane;
 
 	D3DXMatrixPerspectiveFovLH( &m_pTitleWorld->m_matProj, fFov, fAspect, fNear - 0.01f, CWorld::m_fFarPlane );
-	p2DRender->m_pd3dDevice->SetTransform( D3DTS_PROJECTION, &m_pTitleWorld->m_matProj );
+	D3DDEVICE->SetTransform( D3DTS_PROJECTION, &m_pTitleWorld->m_matProj );
 
 	DWORD dwColor = CWorld::GetDiffuseColor();
-	p2DRender->m_pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, dwColor /*D3DCOLOR_ARGB( 255, 255, 255, 255 )*/, 1.0f, 0 ) ;
+	D3DDEVICE->Clear(0, NULL, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, dwColor /*D3DCOLOR_ARGB( 255, 255, 255, 255 )*/, 1.0f, 0 ) ;
 
 	// ÇÊµå Ãâ·Â 
 	if(m_pTitleWorld != NULL)
@@ -389,16 +385,16 @@ void CTheme::RenderDesktop( C2DRender* p2DRender )
 		camera.m_vLookAt = vecLookat;
 		m_pTitleWorld->SetCamera( &camera );
 
-		m_pTitleWorld->Render( p2DRender->m_pd3dDevice, m_pFontWorld );
+		m_pTitleWorld->Render( m_pFontWorld );
 
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ZENABLE, FALSE );
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, TRUE );
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHAREF,        0x08 );
+		D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
+		D3DDEVICE->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
+		D3DDEVICE->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+		D3DDEVICE->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
+		D3DDEVICE->SetRenderState( D3DRS_ZENABLE, FALSE );
+		D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE,   TRUE );
+		D3DDEVICE->SetRenderState( D3DRS_ALPHATESTENABLE, TRUE );
+		D3DDEVICE->SetRenderState( D3DRS_ALPHAREF,        0x08 );
 
 		if(m_pFlyffLogo != NULL)
 		{
@@ -435,7 +431,7 @@ void CTheme::RenderDesktop( C2DRender* p2DRender )
 	BOOL isWide = FALSE;
 	CTexture texture = m_texWallPaper;
 	texture.SetAutoFree( FALSE );
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
+	D3DDEVICE->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
 	CRect rectWindow = p2DRender->m_clipRect;
 	if( m_dwWallPaperType == WPT_STRETCH ) // ÀüÃ¼ ´Ã¸®±â 
 	{
@@ -475,14 +471,14 @@ void CTheme::RenderDesktop( C2DRender* p2DRender )
 			texture.m_size.cy = rectWindow.Height();
 		}
 
-		p2DRender->m_pd3dDevice->Clear(0, NULL,  D3DCLEAR_TARGET, m_d3dcBackground, 1.0f, 0 ) ;
+		D3DDEVICE->Clear(0, NULL,  D3DCLEAR_TARGET, m_d3dcBackground, 1.0f, 0 ) ;
 		p2DRender->RenderTexture( CPoint( xOffset, 0 ), &texture );
 	}
 	else
 	if( m_dwWallPaperType == WPT_CENTER ) // Áß¾Ó Á¤·Ä 
 	{
 		CPoint pt( ( rectWindow.Width() / 2 ) - ( texture.m_size.cx / 2 ), ( rectWindow.Height() / 2 ) - ( texture.m_size.cy / 2 ) );
-		p2DRender->m_pd3dDevice->Clear(0, NULL,  D3DCLEAR_TARGET, m_d3dcBackground, 1.0f, 0 ) ;
+		D3DDEVICE->Clear(0, NULL,  D3DCLEAR_TARGET, m_d3dcBackground, 1.0f, 0 ) ;
 		p2DRender->RenderTexture( pt, &texture );
 	}
 	else
@@ -502,7 +498,7 @@ void CTheme::RenderDesktop( C2DRender* p2DRender )
 		}
 
 		CPoint pt( ( rectWindow.Width() / 2 ) - ( texture.m_size.cx / 2 ), ( rectWindow.Height() / 2 ) - ( texture.m_size.cy / 2 ) );
-		p2DRender->m_pd3dDevice->Clear(0, NULL,  D3DCLEAR_TARGET, m_d3dcBackground, 1.0f, 0 ) ;
+		D3DDEVICE->Clear(0, NULL,  D3DCLEAR_TARGET, m_d3dcBackground, 1.0f, 0 ) ;
 		p2DRender->RenderTexture( pt, &texture );
 	}
 	else
@@ -516,13 +512,13 @@ void CTheme::RenderDesktop( C2DRender* p2DRender )
 		texture.m_fuRT = fu  ; texture.m_fvRT = 0.0f;
 		texture.m_fuLB = 0.0f; texture.m_fvLB = fv  ;
 		texture.m_fuRB = fu  ; texture.m_fvRB = fv  ;
-		p2DRender->m_pd3dDevice->Clear(0, NULL,  D3DCLEAR_TARGET, m_d3dcBackground, 1.0f, 0 ) ;
+		D3DDEVICE->Clear(0, NULL,  D3DCLEAR_TARGET, m_d3dcBackground, 1.0f, 0 ) ;
 		p2DRender->RenderTexture( CPoint( 0, 0), &texture );
 	}
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
-	p2DRender->TextOut( 1 + xOffset, 1, "Version", 0xffffffff  );
-	p2DRender->TextOut( 50 + xOffset, 1, g_szVersion, 0xffffffff  );
+	D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+	D3DDEVICE->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+	p2DRender->TextOut( 1 + xOffset, 1, "Version", 0xfffffffe  );
+	p2DRender->TextOut( 50 + xOffset, 1, g_szVersion, 0xfffffffe  );
 #endif //__FLYFF_INITPAGE_EXT
 }
 
@@ -535,7 +531,7 @@ void CTheme::RenderGameGradeScreen( C2DRender* p2DRender )
 	CTexture texture;
 	texture = m_GameGradeScreenTexture;
 	texture.SetAutoFree( FALSE );
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
+	D3DDEVICE->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
 	CRect rectWindow = p2DRender->m_clipRect;
 	if( g_WndMng.m_Theme.m_dwWallPaperType == WPT_STRETCH ) // ÀüÃ¼ ´Ã¸®±â 
 	{
@@ -575,13 +571,13 @@ void CTheme::RenderGameGradeScreen( C2DRender* p2DRender )
 			texture.m_size.cy = rectWindow.Height();
 		}
 
-		p2DRender->m_pd3dDevice->Clear(0, NULL,  D3DCLEAR_TARGET, g_WndMng.m_Theme.m_d3dcBackground, 1.0f, 0 ) ;
+		D3DDEVICE->Clear(0, NULL,  D3DCLEAR_TARGET, g_WndMng.m_Theme.m_d3dcBackground, 1.0f, 0 ) ;
 		p2DRender->RenderTexture( CPoint( xOffset, 0 ), &texture );
 	}
 	else if( g_WndMng.m_Theme.m_dwWallPaperType == WPT_CENTER ) // Áß¾Ó Á¤·Ä 
 	{
 		CPoint pt( ( rectWindow.Width() / 2 ) - ( texture.m_size.cx / 2 ), ( rectWindow.Height() / 2 ) - ( texture.m_size.cy / 2 ) );
-		p2DRender->m_pd3dDevice->Clear(0, NULL,  D3DCLEAR_TARGET, g_WndMng.m_Theme.m_d3dcBackground, 1.0f, 0 ) ;
+		D3DDEVICE->Clear(0, NULL,  D3DCLEAR_TARGET, g_WndMng.m_Theme.m_d3dcBackground, 1.0f, 0 ) ;
 		p2DRender->RenderTexture( pt, &texture );
 	}
 	else if( g_WndMng.m_Theme.m_dwWallPaperType == WPT_CENTERSTRETCH ) // Áß¾Ó ´Ã¸®±â  
@@ -600,7 +596,7 @@ void CTheme::RenderGameGradeScreen( C2DRender* p2DRender )
 		}
 
 		CPoint pt( ( rectWindow.Width() / 2 ) - ( texture.m_size.cx / 2 ), ( rectWindow.Height() / 2 ) - ( texture.m_size.cy / 2 ) );
-		p2DRender->m_pd3dDevice->Clear(0, NULL,  D3DCLEAR_TARGET, g_WndMng.m_Theme.m_d3dcBackground, 1.0f, 0 ) ;
+		D3DDEVICE->Clear(0, NULL,  D3DCLEAR_TARGET, g_WndMng.m_Theme.m_d3dcBackground, 1.0f, 0 ) ;
 		p2DRender->RenderTexture( pt, &texture );
 	}
 	else if( g_WndMng.m_Theme.m_dwWallPaperType == WPT_TILE ) // Å¸ÀÏ Á¤·Ä 
@@ -613,7 +609,7 @@ void CTheme::RenderGameGradeScreen( C2DRender* p2DRender )
 		texture.m_fuRT = fu  ; texture.m_fvRT = 0.0f;
 		texture.m_fuLB = 0.0f; texture.m_fvLB = fv  ;
 		texture.m_fuRB = fu  ; texture.m_fvRB = fv  ;
-		p2DRender->m_pd3dDevice->Clear(0, NULL,  D3DCLEAR_TARGET, g_WndMng.m_Theme.m_d3dcBackground, 1.0f, 0 ) ;
+		D3DDEVICE->Clear(0, NULL,  D3DCLEAR_TARGET, g_WndMng.m_Theme.m_d3dcBackground, 1.0f, 0 ) ;
 		p2DRender->RenderTexture( CPoint( 0, 0), &texture );
 	}
 }
@@ -811,16 +807,16 @@ void CTheme::RenderWndBaseFrame( C2DRender* p2DRender, CRect* pRect )
 		m_pVBTexture->Unlock(); 
 
 		
-		//p2DRender->m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ADDRESSU, 1 );
-		//p2DRender->m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ADDRESSV, 1 );
-		//p2DRender->m_pd3dDevice->SetTextureStageState( 0, D3DTSS_MINFILTER, D3DTEXF_NONE );
-		//p2DRender->m_pd3dDevice->SetTextureStageState( 0, D3DTSS_MAGFILTER, D3DTEXF_NONE );
-		p2DRender->m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
-		p2DRender->m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
-		p2DRender->m_pd3dDevice->SetTexture( 0, texture.m_pTexture );
-		p2DRender->m_pd3dDevice->SetFVF( D3DFVF_TEXTUREVERTEX );
-		p2DRender->m_pd3dDevice->SetStreamSource( 0, m_pVBTexture, 0,sizeof( TEXTUREVERTEX ) );
-		p2DRender->m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, 8);
+		//D3DDEVICE->SetTextureStageState( 0, D3DTSS_ADDRESSU, 1 );
+		//D3DDEVICE->SetTextureStageState( 0, D3DTSS_ADDRESSV, 1 );
+		//D3DDEVICE->SetTextureStageState( 0, D3DTSS_MINFILTER, D3DTEXF_NONE );
+		//D3DDEVICE->SetTextureStageState( 0, D3DTSS_MAGFILTER, D3DTEXF_NONE );
+		D3DDEVICE->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
+		D3DDEVICE->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
+		D3DDEVICE->SetTexture( 0, texture.m_pTexture );
+		D3DDEVICE->SetFVF( D3DFVF_TEXTUREVERTEX );
+		D3DDEVICE->SetStreamSource( 0, m_pVBTexture, 0,sizeof( TEXTUREVERTEX ) );
+		D3DDEVICE->DrawPrimitive( D3DPT_TRIANGLELIST, 0, 8);
 
 	//
 	}
@@ -888,7 +884,7 @@ void CTheme::RenderWndBaseBkgr( C2DRender* p2DRender, CRect* pRect  )
 	}
 	else
 	{
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+		D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
 		p2DRender->RenderFillRect( *pRect, D3DCOLOR_ARGB( 100, 0, 0, 0 ) );
 	}
 }
@@ -1343,7 +1339,7 @@ void CTheme::RenderWndMenu( C2DRender* p2DRender, CRect* pRect )
 void CTheme::RenderWndMenuItem( C2DRender* p2DRender, CWndButton* pWndButton )
 {
 }
-BOOL CTheme::MakeGaugeVertex( LPDIRECT3DDEVICE9 pd3dDevice, CRect* pRect, DWORD dwColor, LPDIRECT3DVERTEXBUFFER9 pVB, CTexture* pTexture )
+BOOL CTheme::MakeGaugeVertex( CRect* pRect, DWORD dwColor, LPDIRECT3DVERTEXBUFFER9 pVB, CTexture* pTexture )
 {
 	CPoint pt = pRect->TopLeft();
 	CPoint ptCenter = pTexture->m_ptCenter;
@@ -1509,7 +1505,7 @@ BOOL CTheme::MakeGaugeVertex( LPDIRECT3DDEVICE9 pd3dDevice, CRect* pRect, DWORD 
 	pVB->Unlock(); 
 	return TRUE;
 }				
-void CTheme::RenderGauge( LPDIRECT3DDEVICE9 pd3dDevice, LPDIRECT3DVERTEXBUFFER9 pVB, CTexture* pTexture )
+void CTheme::RenderGauge( LPDIRECT3DVERTEXBUFFER9 pVB, CTexture* pTexture )
 {
 	///////////////////////////////////////////////////////////////
 
@@ -1569,7 +1565,6 @@ void CTheme::RenderGauge( LPDIRECT3DDEVICE9 pd3dDevice, LPDIRECT3DVERTEXBUFFER9 
 void CTheme::RenderGauge( C2DRender* p2DRender, CRect* pRect, DWORD dwColor, LPDIRECT3DVERTEXBUFFER9 pVB, CTexture* pTexture )
 {
 //	pTexture = &m_texGauEmptyNormal;
-    LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice; 
 	CPoint pt = pRect->TopLeft();
 	pt += p2DRender->m_ptOrigin;
 	CPoint ptCenter = pTexture->m_ptCenter;

@@ -42,7 +42,7 @@ void CWndChangeName::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndChangeName::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndChangeName::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_CHANGENAME, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -71,8 +71,6 @@ void CWndChangeName::SetData( WORD wId, WORD wReset )
 {
 	m_dwData	= MAKELONG( wId, wReset );
 }
-
-extern DWORD IsValidPlayerName( CString& strName );
 
 BOOL CWndChangeName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -108,7 +106,6 @@ BOOL CWndChangeName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-#ifdef __PET_1024
 
 CWndChangePetName::CWndChangePetName() 
 { 
@@ -139,7 +136,7 @@ void CWndChangePetName::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndChangePetName::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndChangePetName::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_CHANGENAME, pWndParent, 0, CPoint( 0, 0 ) );
 } 
@@ -204,4 +201,3 @@ BOOL CWndChangePetName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
-#endif

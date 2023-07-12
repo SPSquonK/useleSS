@@ -130,7 +130,7 @@ void CWndParty::OnInitialUpdate()
 } 
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndParty::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndParty::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_PARTY, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -231,7 +231,7 @@ void CWndParty::OnLeave() {
 
 	if (leaver) {
 		g_WndMng.m_pWndPartyLeaveConfirm = new CWndPartyLeaveConfirm;
-		g_WndMng.m_pWndPartyLeaveConfirm->Initialize(NULL, APP_PARTYLEAVE_CONFIRM);
+		g_WndMng.m_pWndPartyLeaveConfirm->Initialize();
 		g_WndMng.m_pWndPartyLeaveConfirm->SetLeaveId(leaver.value());
 	}
 
@@ -373,9 +373,9 @@ void CWndPartyInfo::OnDraw( C2DRender* p2DRender )
 		rectTemp = rect; 
 		rectTemp.right = rectTemp.left + nWidth;
 
-		m_pTheme->RenderGauge( p2DRender, &rect, 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
+		m_Theme.RenderGauge( p2DRender, &rect, 0xffffffff, m_pVBGauge, &m_texGauEmptyNormal );
 		if( IsValidObj(pObjMember) )
-			m_pTheme->RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
+			m_Theme.RenderGauge( p2DRender, &rectTemp, 0x64ff0000, m_pVBGauge, &m_texGauFillNormal );
 	
 		y+=15; // 다음줄
 	}
@@ -410,7 +410,7 @@ CWndPartyInfo::PlayerInfo CWndPartyInfo::GetPlayerInfo(u_long playerId, CMover *
 HRESULT CWndPartyInfo::RestoreDeviceObjects() {
 	CWndNeuz::RestoreDeviceObjects();
 	if (m_pVBGauge == NULL)
-		return m_pApp->m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL);
+		return m_pd3dDevice->CreateVertexBuffer(sizeof(TEXTUREVERTEX2) * 3 * 6, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX2, D3DPOOL_DEFAULT, &m_pVBGauge, NULL);
 	return S_OK;
 }
 
@@ -432,14 +432,14 @@ void CWndPartyInfo::OnInitialUpdate()
 	// 여기에 코딩하세요
 
 	RestoreDeviceObjects();
-	m_texGauEmptyNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
-	m_texGauFillNormal.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauEmptyNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
+	m_texGauFillNormal.LoadTexture( MakePath( DIR_THEME, "GauEmptyNormal.bmp" ), 0xffff00ff, TRUE );
 	
 	MoveParentCenter();
 } 
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPartyInfo::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndPartyInfo::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_PARTY_INFO, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -499,7 +499,7 @@ void CWndPartySkill::OnDraw( C2DRender* p2DRender )  {
 		const ItemProp * const pItemProp = prj.GetPartySkill(nCount + 1);
 		if (!pItemProp) continue;
 
-		m_atexSkill[nCount] = m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ICON, pItemProp->szIcon), 0xffff00ff, FALSE);
+		m_atexSkill[nCount] = m_textureMng.AddTexture(MakePath(DIR_ICON, pItemProp->szIcon), 0xffff00ff, FALSE);
 
 		const CPoint ptName = CPoint( j * nWidth + 35 , i * nHeight + 6 );
 		const CPoint ptIcon = CPoint( j * nWidth + 3  , i * nHeight + 3 );
@@ -597,7 +597,7 @@ void CWndPartySkill::OnInitialUpdate() {
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndPartySkill::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndPartySkill::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_PARTY_SKILL, pWndParent, 0, CPoint(0, 0));
 }
 

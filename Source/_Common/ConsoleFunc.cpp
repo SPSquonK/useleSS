@@ -120,7 +120,7 @@ void _change_model( std::vector< string >& arg )
 
 	if( g_pPlayer ) 
 	{
-		g_pPlayer->SetIndex( D3DDEVICE , modelIndex );
+		g_pPlayer->SetIndex( modelIndex );
 	}
 }
 
@@ -153,7 +153,7 @@ void _sfx_pos( std::vector< string >& arg )
 // 			if( pPet )
 // 			{
 // 				index = pPet->m_dwMoverSfxId;
-// 				pSfx = CreateSfx( D3DDEVICE, index, kPos );
+// 				pSfx = CreateSfx( index, kPos );
 // 				pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f  ) );
 // 			}
 			
@@ -171,7 +171,7 @@ void _sfx_link( std::vector< string >& arg )
 
 	if( g_pPlayer )
 	{
-		CSfx *pSfx = CreateSfx( D3DDEVICE, index, g_pPlayer->GetPos(), g_pPlayer->GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
+		CSfx *pSfx = CreateSfx( index, g_pPlayer->GetPos(), g_pPlayer->GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
 		if( pSfx )
 		{
 			pSfx->SetPartLink( 0 );		// 오른손에 링크.
@@ -210,7 +210,7 @@ void _test_func( std::vector< std::string >& arg )
 	if( !g_WndMng.m_pWndUpkeep )
 	{
 		g_WndMng.m_pWndUpkeep = new CWndGHUpkeep;
-		g_WndMng.m_pWndUpkeep->Initialize(&g_WndMng, APP_CONFIRM_BUY_);
+		g_WndMng.m_pWndUpkeep->Initialize();
 		
 	}
 }
@@ -274,7 +274,7 @@ void _diffuse( std::vector< string >& arg )
 //	if( g_pReflectMap )
 //		SAFE_RELEASE( g_pReflectMap );
 //	
-//	if( FAILED( LoadTextureFromRes( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, arg[1].c_str() ), &g_pReflectMap ) ) )
+//	if( FAILED( LoadTextureFromRes( MakePath( DIR_MODELTEX, arg[1].c_str() ), &g_pReflectMap ) ) )
 //		AfxMessageBox( "error! cannot find reflect1 texture file" );
 //
 //	g_Console.Log( "changed reflection texture1" );
@@ -288,7 +288,7 @@ void _diffuse( std::vector< string >& arg )
 //	if( g_pReflectMap2 )
 //		SAFE_RELEASE( g_pReflectMap2 );
 //	
-//	if( FAILED( LoadTextureFromRes( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, arg[1].c_str() ), &g_pReflectMap2 ) ) )
+//	if( FAILED( LoadTextureFromRes( MakePath( DIR_MODELTEX, arg[1].c_str() ), &g_pReflectMap2 ) ) )
 //		AfxMessageBox( "error! cannot find reflect1 texture file" );
 //
 //	g_Console.Log( "changed reflection texture2" );
@@ -320,10 +320,9 @@ void RandomMoving( DWORD dt )
 	dwDelta += dt;
 	if( dwDelta > 5000 && g_pPlayer )
 	{
-		D3DXVECTOR3 kDir;
 		float fAngle = float( rand() % 361 );
 		float fSpeed = float( rand() % 30 );
-		AngleToVectorXZ( &kDir, fAngle, fSpeed );
+		D3DXVECTOR3 kDir = AngleToVectorXZ( fAngle, fSpeed );
 
 		D3DXVECTOR3 kPos = g_pPlayer->GetPos( );
 		kPos += kDir;

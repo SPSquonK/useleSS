@@ -1026,15 +1026,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 		}
 #endif
 
-		CModel* pModel = prj.m_modelMng.LoadModel( D3DDEVICE, OT_ITEM, (DWORD) nParam1 );
-		CModelObject* pModelObject = (CModelObject*)pModel;
-		if( pModelObject->m_pBone )
-		{
-			CString strMotion = pModelObject->GetMotionFileName( _T("stand") );
-			assert( strMotion != _T("") );
-			pModelObject->LoadMotion( strMotion );
-		}
-		m_pMover->SetRide( pModel, (DWORD) nParam1 );
+		m_pMover->SetRide(static_cast<DWORD>(nParam1));
 		break;
 	}
 	case OBJMSG_MOTION:		// 단순 모션 플레이
@@ -1073,7 +1065,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 				CMover* pObj = new CMover;
 				D3DXVECTOR3 vPos = pMover->GetPos();
 				pObj->SetPos( vPos );
-				pObj->SetIndex( g_Neuz.m_pd3dDevice, MI_AIBATT1, TRUE );
+				pObj->SetIndex( MI_AIBATT1, TRUE );
 				pObj->SetMotion( 0 );
 				g_WorldMng.Get()->AddObj( pObj, TRUE ); 
 			}

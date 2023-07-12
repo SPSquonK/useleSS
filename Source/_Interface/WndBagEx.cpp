@@ -61,43 +61,7 @@ void CWndBagEx::OnDraw( C2DRender* p2DRender )
 	
 	int     nBag[2] = { WIDC_CUSTOM4, WIDC_CUSTOM5};
 	int     nIco[2] = { WIDC_ICO_BAG1, WIDC_ICO_BAG2};
-	if(g_pPlayer)
-	{
-		/*
-		if(g_pPlayer->m_Pocket.IsAvailable(1)) 
-		{
-			m_bUse[0] = TRUE;
-		}
-		else								   
-			m_bUse[0] = FALSE;
-		if(g_pPlayer->m_Pocket.IsAvailable(2)) 
-		{
-			m_bUse[1] = TRUE;
-		}
-		else								   
-			m_bUse[1] = FALSE;
-		if(g_pPlayer->m_Pocket.IsAvailable(0)) 
-		{
-			m_wndItemCtrl[0].InitItem( g_pPlayer->m_Pocket.GetPocket(0), APP_CANCEL_BLESSING );
-		}
-		// 가방이 활성화 돼있는지 확인
-		if(g_pPlayer->m_Pocket.IsAvailable(1)) 
-		{
-			m_bUse[0] = TRUE;
-			m_wndItemCtrl[1].InitItem( g_pPlayer->m_Pocket.GetPocket(1), APP_CANCEL_BLESSING );
-		}
-		else								   
-			m_bUse[0] = FALSE;
-		if(g_pPlayer->m_Pocket.IsAvailable(2)) 
-		{
-			m_bUse[1] = TRUE;
-			m_wndItemCtrl[2].InitItem( g_pPlayer->m_Pocket.GetPocket(2), APP_CANCEL_BLESSING );
-		}
-		else								   
-			m_bUse[1] = FALSE;
-		*/
-	}
-	else 
+	if(!g_pPlayer)
 		return;
 
 	for( int i = 1 ; i < 3 ; ++i )
@@ -158,42 +122,18 @@ void CWndBagEx::OnInitialUpdate()
 	m_RectItemCtrl[1] = pTab1->m_rectClient;
 	m_RectItemCtrl[2] = pTab2->m_rectClient;
 
-	m_pTexNouse = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "InventoryBagEff.tga" ), 0xffff00ff );
-	m_pTexIco	= m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "Itm_SysSysScrBagBag01.bmp" ), 0xffff00ff );;
-	m_pTexIco_empty = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "Itm_SysSysScrBagBag02.bmp" ), 0xffff00ff );;
+	m_pTexNouse = m_textureMng.AddTexture( MakePath( DIR_THEME, "InventoryBagEff.tga" ), 0xffff00ff );
+	m_pTexIco	= m_textureMng.AddTexture( MakePath( DIR_THEME, "Itm_SysSysScrBagBag01.bmp" ), 0xffff00ff );;
+	m_pTexIco_empty = m_textureMng.AddTexture( MakePath( DIR_THEME, "Itm_SysSysScrBagBag02.bmp" ), 0xffff00ff );;
 
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndBagEx::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndBagEx::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_BAG_EX, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndBagEx::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndBagEx::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndBagEx::OnSize( UINT nType, int cx, int cy ) 
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndBagEx::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndBagEx::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
 } 
 
 BOOL CWndBagEx::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
@@ -276,13 +216,6 @@ void CWndBagEx::OnMouseWndSurface( CPoint point )
 		{
 			// 사용하면 시간을 보여준다
 			time_t nRemain = (g_pPlayer->m_Pocket.GetPocket(1))->GetExpirationDate() - time(NULL);
-			/*
-			int nHour = (int)(nRemain / 3600);
-			int nMin  = (int)((nRemain % 3600) / 60);
-			if(nHour < 0) nHour = 0;
-			if(nMin < 0) nMin = 0;
-			strText.Format(prj.GetText(TID_TOOLTIP_BAG_TIME), nHour, nMin);
-			*/
 			CTimeSpan time(nRemain);
 			strText.Format(prj.GetText(TID_TOOLTIP_BAG_TIME), static_cast<int>(time.GetDays()), time.GetHours(), time.GetMinutes());
 		}
@@ -310,13 +243,6 @@ void CWndBagEx::OnMouseWndSurface( CPoint point )
 		{
 			// 사용하면 시간을 보여준다
 			time_t nRemain = (g_pPlayer->m_Pocket.GetPocket(2))->GetExpirationDate() - time(NULL);
-			/*
-			int nHour = (int)(nRemain / 3600);
-			int nMin  = (int)((nRemain % 3600) / 60);
-			if(nHour < 0) nHour = 0;
-			if(nMin < 0) nMin = 0;
-			strText.Format(prj.GetText(TID_TOOLTIP_BAG_TIME), nHour, nMin);
-			*/
 			CTimeSpan time(nRemain);
 			strText.Format(prj.GetText(TID_TOOLTIP_BAG_TIME), static_cast<int>(time.GetDays()), time.GetHours(), time.GetMinutes());
 		}
@@ -329,13 +255,6 @@ void CWndBagEx::OnMouseWndSurface( CPoint point )
 
 	}
 }
-
-BOOL CWndBagEx::process()
-{
-
-	return TRUE;
-}
-
 
 BOOL CWndBagEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -373,134 +292,59 @@ BOOL CWndBagEx::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					UINT SelectCount = pWndItemCtrl->GetSelectedCount();
 					if( SelectCount != 1)
 					{
-						//g_WndMng.PutString( "장착 되어 있는것은 넣을수 없습니다", NULL, 0xffffff00 );
-						g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor( TID_GAME_EQUIPPUT ) );
-						
+						g_WndMng.PutString(TID_GAME_EQUIPPUT);
 					}
 					else
 					{
-						for( int i = 0; i < (int)( SelectCount ); i++ )
-						{
-							int nItem = pWndItemCtrl->GetSelectedItem( i );
-							pWndItemCtrl->GetItem( nItem );
-						}
 						CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-						if( itemElem->GetProp()->dwItemKind3 == IK3_QUEST )
-						{
-							// 퀘스트 아이템은 휴대 가방으로 옮길 수 없습니다.
-							g_WndMng.PutString( prj.GetText( TID_GAME_ERROR_DONT_MOVE_QUEST_ITEM_TO_BAG_EX ), NULL, prj.GetTextColor( TID_GAME_ERROR_DONT_MOVE_QUEST_ITEM_TO_BAG_EX ) );
-						}
-						else
-						{
-							if( itemElem->m_nItemNum > 1 )
-							{
-								if( itemElem->GetExtra() == 0 )
-								{
-									g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-									memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-									g_WndMng.m_pWndTradeGold->m_dwGold = itemElem->m_nItemNum;
-									g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_BAG_EX;
-									g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-									g_WndMng.m_pWndTradeGold->m_nSlot = nSlot;
-									g_WndMng.m_pWndTradeGold->m_nPutSlot = -1;
-									g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-									g_WndMng.m_pWndTradeGold->MoveParentCenter();
-									CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-									CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-									CString strMain = prj.GetText(TID_GAME_MOVECOUNT);//"몇개를 이동하시겠습니까?";
-									CString strCount = prj.GetText(TID_GAME_NUMCOUNT);// " 갯수 : ";
-									pStatic->m_strTitle = strMain;
-									pStaticCount->m_strTitle = strCount;
+						if (itemElem->GetProp()->dwItemKind3 == IK3_QUEST) {
+							g_WndMng.PutString(TID_GAME_ERROR_DONT_MOVE_QUEST_ITEM_TO_BAG_EX);
+						} else {
+							CWndTradeGold::Create<SHORTCUT::Source::Inventory>(
+								{ lpShortcut->m_dwId },
+								[nSlot](auto source, int quantity) {
+									g_DPlay.SendMoveItem_Pocket(-1, source.itemPos, quantity, nSlot);
 								}
-							}
-							else
-							{
-								g_DPlay.SendMoveItem_Pocket( -1, lpShortcut->m_dwId, 1 , nSlot);
-							}
+							);
+
 						}
 					}
 				}
 			}
 			else if( pWndFrame->GetWndId() == APP_BAG_EX )
 			{
-				BYTE nPutSlot;
 			
 				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 				if( lpShortcut->m_dwData != 0 )
 				{
-					if( pWndPut == &(m_wndItemCtrl[0]) )
-					{
+					BYTE nPutSlot;
+					if (pWndPut == &(m_wndItemCtrl[0])) {
 						nPutSlot = 0;
-					}
-					else if( pWndPut == &(m_wndItemCtrl[1]) )
-					{
+					} else if( pWndPut == &(m_wndItemCtrl[1]) ) {
 						nPutSlot = 1;
 						if(!m_bUse[0]) return FALSE;
-					}
-					else
-					{
+					} else {
 						nPutSlot = 2;
 						if(!m_bUse[1]) return FALSE;
 					}
 
 					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 					UINT SelectCount = pWndItemCtrl->GetSelectedCount();
-					if( SelectCount != 1)
-					{
-						//g_WndMng.PutString( "장착 되어 있는것은 넣을수 없습니다", NULL, 0xffffff00 );
-						g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor( TID_GAME_EQUIPPUT ) );
-						
-					}
-					else
-					{
-						for( int i = 0; i < (int)( SelectCount ); i++ )
-						{
-							int nItem = pWndItemCtrl->GetSelectedItem( i );
-							pWndItemCtrl->GetItem( nItem );
-						}
-						CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-						if( itemElem->m_nItemNum > 1 )
-						{ 
-							g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-							memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-							g_WndMng.m_pWndTradeGold->m_dwGold = itemElem->m_nItemNum;
-							g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_BAG_EX;
-							g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-							g_WndMng.m_pWndTradeGold->m_nSlot = nSlot;
-							g_WndMng.m_pWndTradeGold->m_nPutSlot = nPutSlot;
-							
-							g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-							g_WndMng.m_pWndTradeGold->MoveParentCenter();
-							CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-							CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-							CString strMain = prj.GetText(TID_GAME_MOVECOUNT);//"몇개를 이동하시겠습니까?";
-							CString strCount = prj.GetText(TID_GAME_NUMCOUNT);// " 갯수 : ";
-							pStatic->m_strTitle = strMain;
-							pStaticCount->m_strTitle = strCount;
-						}
-						else
-						{
-							g_DPlay.SendMoveItem_Pocket( nPutSlot, lpShortcut->m_dwId, 1 , nSlot);
-						}
-						
+					if (SelectCount != 1) {
+						g_WndMng.PutString(TID_GAME_EQUIPPUT);
+					} else {
+						CWndTradeGold::Create<SHORTCUT::Source::Bag>(
+							{ nPutSlot, lpShortcut->m_dwId },
+							[nSlot](auto source, int quantity) {
+								g_DPlay.SendMoveItem_Pocket(source.bagId, source.itemPos, quantity, nSlot);
+							}
+						);
 					}
 				}
 			}
 		}
 	}
-	if( message == WNM_CLICKED )
-	{
-		switch( nID )
-		{
-			case 100: // icon
-//				m_wndItemCtrl.SetWndRect( m_wndItemCtrl.GetWindowRect( TRUE ) );
-				break;
-			case WTBID_REPORT:
-				break;
-			case WTBID_CLOSE: // 종료
-				break;
-		}
-	}	
+
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 

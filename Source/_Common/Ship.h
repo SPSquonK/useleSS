@@ -1,10 +1,7 @@
-#ifndef __SHIP_H__
-#define __SHIP_H__
+#pragma once
 
 #include "Ctrl.h"
 #include "..\_AIInterface\ActionShip.h"
-
-#define MAX_LINKCTRL	128
 
 /// 비공정 
 class CShip : public CCtrl
@@ -19,7 +16,7 @@ protected:
 	D3DXVECTOR3		m_vDeltaUnit, m_vAcc;		// 관성, 매프레임 힘
 	FLOAT			m_fDeltaAng;
 	FLOAT	m_fAccAng;		// 회전 가속도.
-	OBJID	m_LinkCtrl[ MAX_LINKCTRL ];
+	std::vector<OBJID> m_LinkCtrl;
 	
 	virtual void Init( void );
 	virtual void Destroy( void );
@@ -35,15 +32,15 @@ public:
 	{
 		return m_Act.SendActMsg( dwMsg, nParam1, nParam2, nParam3 );
 	}
-	void	AddCtrl( OBJID idCtrl );
-	OBJID*	FindCtrl( OBJID idCtrl );
-	void	RemoveCtrl( OBJID idCtrl );
-	D3DXVECTOR3 GetDelta( void ) { return m_vDelta; }
-	FLOAT		GetDeltaAng( void ) { return m_fDeltaAng; }
+	void AddCtrl( OBJID idCtrl );
+	void RemoveCtrl( OBJID idCtrl );
+	[[nodiscard]] D3DXVECTOR3 GetDelta() const { return m_vDelta; }
+	[[nodiscard]] FLOAT GetDeltaAng() const { return m_fDeltaAng; }
 
+#ifdef __CLIENT
 	void Control( void );
+#endif
 	virtual void Process();
-		
 };
 
 inline CShip * CObj::ToShip() {
@@ -77,6 +74,3 @@ public:
 #ifdef __CLIENT
 extern CShip *g_pShip;
 #endif
-
-
-#endif // SHIP_h

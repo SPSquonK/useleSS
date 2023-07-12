@@ -1,11 +1,6 @@
 #include "StdAfx.h"
 #include "defineText.h"
 #include "AppDefine.h"
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-#include "DPCollectClient.h"
-#include "tools.h"
-extern char	g_szVersion[];
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 #include "DPCertified.h"
 #include "dpclient.h"
 #include "DPLoginClient.h"
@@ -21,7 +16,6 @@ CDPLoginClient::CDPLoginClient()
 	m_lError = 0;
 	m_idNumberPad = 0;
 
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_ERROR, &CDPLoginClient::OnError );
 	ON_MSG( PACKETTYPE_PLAYER_LIST, &CDPLoginClient::OnPlayerList );
 	ON_MSG( PACKETTYPE_CACHE_ADDR, &CDPLoginClient::OnCacheAddr );
@@ -78,11 +72,8 @@ void CDPLoginClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 void CDPLoginClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
-	
-	if( pfn ) 
-		( this->*( pfn ) )( ar );
+	DWORD dw; ar >> dw;
+	Handle(ar, dw);
 }
 
 void CDPLoginClient::QueryTickCount( void )
@@ -116,8 +107,8 @@ void CDPLoginClient::SendGetPlayerList( DWORD dwID, LPCSTR lpszAccount, LPCSTR l
 	ar << dwID;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-void CDPLoginClient::SendCreatePlayer(BYTE nSlot, LPCSTR lpszPlayer/*, LPDWORD adwEquipment*/, BYTE nFace, BYTE nCostume, BYTE nSkinSet, BYTE nHairMesh, DWORD dwHairColor, BYTE nSex, BYTE nJob, BYTE nHeadMesh, int nBankPW )
-{
+
+void CDPLoginClient::SendCreatePlayer(BYTE nSlot, LPCSTR lpszPlayer, const MoverSub::SkinMeshs & skin, BYTE nCostume, DWORD dwHairColor, BYTE nSex, BYTE nJob, int nBankPW ) {
 	BEFORESENDSOLE( ar, PACKETTYPE_CREATE_PLAYER, DPID_UNKNOWN );
 #ifdef __GPAUTH_01
 	ar.WriteString( g_Neuz.m_bGPotatoAuth?g_Neuz.m_szGPotatoNo: g_Neuz.m_szAccount );
@@ -130,14 +121,10 @@ void CDPLoginClient::SendCreatePlayer(BYTE nSlot, LPCSTR lpszPlayer/*, LPDWORD a
 	if( strlen( lpszPlayer ) > 16 )
 		Error( "CDPLoginClient::SendCreatePlayer에서 이상 캐릭터 명 E: %s", lpszPlayer );
 	ar.WriteString( lpszPlayer );
-	if( strlen( lpszPlayer ) > 16 )
-		Error( "CDPLoginClient::SendCreatePlayer에서 이상 캐릭터 명 F: %s", lpszPlayer );
 	
 	//	ar.Write( adwEquipment, sizeof(DWORD) * MAX_HUMAN_PARTS );
 
-	ar << nFace << nCostume << nSkinSet << nHairMesh;
-	ar << dwHairColor;
-	ar << nSex << nJob << nHeadMesh;
+	ar << skin << dwHairColor << nSex;
 	ar << nBankPW;
 	ar << g_Neuz.m_dwAuthKey;
 	SEND( ar, this, DPID_SERVERPLAYER );
@@ -318,32 +305,6 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 {
 	g_Neuz.m_dwTimeOutDis = 0xffffffff;
 
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-	TCHAR szEncryptedCertifierIP[ MAX_PATH ] = { 0, };
-	md5( szEncryptedCertifierIP, g_Neuz.m_lpCertifierAddr );
-
-	BOOL bCertifiedIP = FALSE;
-	for( vector< CString >::iterator Iterator = g_vecEncryptedValidCertifierIP.begin(); Iterator != g_vecEncryptedValidCertifierIP.end(); ++Iterator )
-	{
-		if( strcmp( szEncryptedCertifierIP, *Iterator ) == 0 )
-		{
-			bCertifiedIP = TRUE;
-			break;
-		}
-	}
-
-	if( bCertifiedIP == FALSE )
-	{
-#ifdef __CRC
-		if( DPCollectClient->ConnectToServer( "127.0.0.1", PN_COLLECTION, TRUE, CSock::crcWrite, 500 ) )	// "log.flyff.com"
-#else // __CRC
-		if( DPCollectClient->ConnectToServer( "127.0.0.1", PN_COLLECTION, TRUE ) )	// "log.flyff.com"
-#endif // __CRC
-		{
-			DPCollectClient->SendCollectionCertify( g_Neuz.m_lpCertifierAddr, g_szVersion, __VER, ::GetLanguage() );
-		}
-	}
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 
 	CWndBase* pWndBase = g_WndMng.GetWndBase( APP_SELECT_SERVER );
 	if( pWndBase )
@@ -403,7 +364,7 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 		pMover->m_dwIndex = dwIndex;
 		g_Neuz.m_apPlayer[slot]	= pMover;
 
-		//g_Neuz.m_apPlayer[slot]	= (CMover*)CreateObj( g_Neuz.m_pd3dDevice, OT_MOVER, dwIndex, FALSE );
+		//g_Neuz.m_apPlayer[slot]	= (CMover*)CreateObj( OT_MOVER, dwIndex, FALSE );
 		g_Neuz.m_apPlayer[slot]->m_bPlayer	= TRUE;
 		g_Neuz.m_apPlayer[slot]->InitProp();
 
@@ -412,11 +373,9 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 		ar >> g_Neuz.m_apPlayer[slot]->m_idparty;
 		ar >> g_Neuz.m_apPlayer[slot]->m_idGuild;
 		ar >> g_Neuz.m_apPlayer[slot]->m_idWar;
-		ar >> g_Neuz.m_apPlayer[slot]->m_dwSkinSet;
-		ar >> g_Neuz.m_apPlayer[slot]->m_dwHairMesh;
+		ar >> g_Neuz.m_apPlayer[slot]->m_skin;
 		ar >> g_Neuz.m_apPlayer[slot]->m_dwHairColor;
 
-		ar >> g_Neuz.m_apPlayer[slot]->m_dwHeadMesh;
 		ar >> bySex;
 		g_Neuz.m_apPlayer[slot]->SetSex( bySex );
 		ar >> g_Neuz.m_apPlayer[slot]->m_nJob;
@@ -481,7 +440,6 @@ void CDPLoginClient::OnPlayerList( CAr & ar )
 			}
 		}
 		pWndSelectChar->SelectCharacter( pWndSelectChar->m_nSelectCharacter );
-//		g_WndMng.OpenCustomBox( _T( "접속할수 없는 계정입니다"), new CWndAllCharBlockBox );
 		// 모든 캐릭터가 블럭되어 있습니다.		
 	}
 }

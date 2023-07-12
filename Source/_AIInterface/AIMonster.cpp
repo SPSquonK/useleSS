@@ -1320,7 +1320,7 @@ void CAIMonster::SubSummonProcess( CMover *pTarget )
 			if( (int)( xRandom(100) ) < pProp->m_nSummProb )	// 소환 시도.
 			{
 				D3DXVECTOR3 vLocal, vPos;
-				CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, (DWORD)pProp->m_nSummID );
+				CObj* pObj	= CreateObj( OT_MOVER, (DWORD)pProp->m_nSummID );
 				if( NULL == pObj )	
 				{
 					Error( "SubSummonProcess : 소환 실패 %d", pProp->m_nSummID );
@@ -2259,7 +2259,7 @@ BOOL CMonsterSkill::MonsterTransform( CMover* pMover, int nMoverHP )
 
 	if( pWorld && pMoverProp )
 	{
-		CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+		CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 		if( NULL == pObj )
 			return FALSE;
 		pObj->SetPos( pMover->GetPos() );

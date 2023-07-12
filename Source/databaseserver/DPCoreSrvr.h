@@ -1,21 +1,14 @@
-#ifndef __DPCORESRVR_H__
-#define __DPCORESRVR_H__
-
 #pragma once
 
 #include "DPMng.h"
 #include "MsgHdr.h"
 #include "guild.h"
 
-#undef	theClass
-#define theClass	CDPCoreSrvr
-#undef	theParameters
-#define theParameters	CAr & ar, LPBYTE lpBuf, u_long uBufSize
-
 #include "playerdata.h"
 
 class CDPCoreSrvr : public CDPMng,
-	public DPMngFeatures::BroadcastPacketNone
+	public DPMngFeatures::BroadcastPacketNone,
+	public DPMngFeatures::PacketHandler<CDPCoreSrvr, LPBYTE, u_long>
 {
 public:
 //	Constructions
@@ -44,9 +37,8 @@ public:
 	void	SendNoticeMessage( const char* szNotice );
 #endif // __GUILD_HOUSE_MIDDLE
 
-//	Handlers	
-	USES_PFNENTRIES;
-
+private:
+//	Handlers
 	void	OnCreateGuild( CAr & ar, LPBYTE lpBuf, u_long uBufSize );
 	void	OnDestroyGuild( CAr & ar, LPBYTE lpBuf, u_long uBufSize );
 	void	OnAddGuildMember( CAr & ar, LPBYTE lpBuf, u_long uBufSize );
@@ -86,5 +78,3 @@ private:
 };
 
 extern CDPCoreSrvr g_dpCoreSrvr;
-
-#endif	// __DPLOGINSRVR_H__

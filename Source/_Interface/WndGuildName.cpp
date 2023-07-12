@@ -14,62 +14,40 @@
   CtrlId : WIDC_CANCEL - Button
 ****************************************************/
 
-CWndGuildName::CWndGuildName() 
-{ 
-	m_nId	= 0xff;
-} 
-CWndGuildName::~CWndGuildName() 
-{ 
-} 
+CWndGuildName::CWndGuildName() {
+	m_nId = 0xff;
+}
 
-void CWndGuildName::OnDraw( C2DRender* p2DRender ) 
-{ 
+void CWndGuildName::OnDraw(C2DRender * p2DRender) {
 #ifdef __S_SERVER_UNIFY
-	if( g_WndMng.m_bAllAction == FALSE )
-	{
-		MoveParentCenter();		
+	if (g_WndMng.m_bAllAction == FALSE) {
+		MoveParentCenter();
 	}
 #endif // __S_SERVER_UNIFY
-} 
+}
+
 void CWndGuildName::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 	CGuild* pGuild = g_pPlayer->GetGuild();
-	if( pGuild )
-	{
-		CWndEdit *pWndEdit = (CWndEdit *)GetDlgItem( WIDC_EDIT1 );
-		pWndEdit->SetString( pGuild->m_szGuild );		// 디폴트 이름을 에디트 박스에 입력함.
-	}
-	else
-	{
+	if (!pGuild) {
 		Destroy();
+		return;
 	}
+
+	CWndEdit * pWndEdit = GetDlgItem<CWndEdit>(WIDC_EDIT1);
+	pWndEdit->SetString( pGuild->m_szGuild );		// 디폴트 이름을 에디트 박스에 입력함.
+
 
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildName::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_GUILDNAME, pWndParent, 0, CPoint( 0, 0 ) );
-} 
+BOOL CWndGuildName::Initialize(CWndBase * pWndParent) {
+	return CWndNeuz::InitDialog(APP_GUILDNAME, pWndParent, 0, CPoint(0, 0));
+}
 
-BOOL CWndGuildName::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildName::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildName::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildName::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndGuildName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_OK )
@@ -78,67 +56,39 @@ BOOL CWndGuildName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		LPCTSTR szName = pWndEdit->GetString();
 
 		// 이곳에다 szName을 서버로 보내는 코드를 넣으시오.
-		CString strGuild = szName;
-		strGuild.TrimLeft();
-		strGuild.TrimRight();
-		CHAR c = strGuild.GetAt( 0 );
-		
-		int nLength = strGuild.GetLength();
-#ifdef __RULE_0516
-		if( nLength < 6 || nLength > 24 )
-#else	// __RULE_0516
-		if( nLength < 3 || nLength > 32 )
-#endif	// __RULE_0516
-		{
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0011) ) );
-			//				g_WndMng.OpenMessageBox( _T( "명칭에 3글자 이상, 16글자 이하로 입력 입력하십시오." ) );
-			return TRUE;
-		}
-		else
-		if( isdigit2( c ) && !IsDBCSLeadByte( strGuild.GetAt( 0 ) ) )
-		{
-			g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0012) ) );
-			//				g_WndMng.OpenMessageBox( _T( "명칭에 첫글자를 숫자로 사용할 수 없습니다." ) );
-			return TRUE;
-		}
-		else
-		for( int i = 0; i < strGuild.GetLength(); i++ )
-		{
-			c = strGuild.GetAt( i );
-			// 숫자나 알파벳이 아닐 경우는 의심하자.
-			if( IsDBCSLeadByte( c ) == TRUE ) 
-			{
-				CHAR c2 = strGuild.GetAt( ++i );
-				WORD word = ( ( c << 8 ) & 0xff00 ) | ( c2 & 0x00ff );
-				if( ::GetLanguage() == LANG_KOR )
-				{
-					if( IsHangul( word ) == FALSE ) 
-					{
-						g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0014) ) );
-						return TRUE;
-					}
-				}
-			}
+		const auto guildName = CheckGuildName(szName);
+
+		if (guildName.has_value()) {
+			if (m_nId == 0xff)
+				g_DPlay.SendGuildSetName(guildName->GetString());
 			else
-			if( !IsCyrillic( c ) && ( isalnum( c ) == FALSE || iscntrl( c ) )  )
-			{
-				// 특수 문자도 아니다 (즉 콘트롤 또는 !@#$%^&**()... 문자임)
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0013) ) );
-				return TRUE;
-			}
-		}
+				g_DPlay.SendQuerySetGuildName(guildName->GetString(), m_nId);
 
-		if (prj.nameValider.IsNotAllowedName(szName)) {
-			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0020)));
+			Destroy();
+		} else {
+			const GuildNameError error = guildName.error();
+
+			switch (error) {
+				case GuildNameError::TooShort:
+				case GuildNameError::TooLong:
+					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0011)));
+					break;
+				case GuildNameError::DigitLead:
+					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0012)));
+					break;
+				case GuildNameError::BadEUCKRSymbol:
+					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0014)));
+					break;
+				case GuildNameError::BadSymbol:
+					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0013)));
+					break;
+				case GuildNameError::UnallowedName:
+					g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0020)));
+					break;
+			}
+
 			return TRUE;
 		}
-
-		if( m_nId == 0xff )
-			g_DPlay.SendGuildSetName( (LPCSTR)strGuild );
-		else
-			g_DPlay.SendQuerySetGuildName( (LPCSTR)strGuild, m_nId );
-
-		Destroy();
 	}
 	else if( nID == WIDC_CANCEL || nID == WTBID_CLOSE )
 	{
@@ -164,38 +114,19 @@ CWndGuildNickName::CWndGuildNickName()
 { 
 	m_idPlayer = 0;
 } 
-CWndGuildNickName::~CWndGuildNickName() 
-{ 
-} 
-void CWndGuildNickName::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
+
 void CWndGuildNickName::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildNickName::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildNickName::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GUILD_NICKNAME, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-BOOL CWndGuildNickName::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildNickName::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildNickName::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildNickName::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
 BOOL CWndGuildNickName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
 	if( nID == WIDC_OK )
@@ -203,81 +134,16 @@ BOOL CWndGuildNickName::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult
 		CWndEdit *pEdit = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
 		CString strNickName = pEdit->GetString();
 		
-		strNickName.TrimLeft();
-		strNickName.TrimRight();
-		LPCTSTR lpszString = strNickName;
+		strNickName.Trim();
+		
 		if( strNickName.IsEmpty() == FALSE )
 		{
-			CHAR c = strNickName[ 0 ];
-			
-			int nLength = strNickName.GetLength();
-		
-			int nMaxLen = 0;
-			int nMinLen = 0;
+			const DWORD error = CheckGuildNickName(strNickName);
+			if (error != 0) {
+				g_WndMng.OpenMessageBox(_T(prj.GetText(error)));
+				return TRUE;
+			}
 
-			// 한글은 별칭 3~12자 가능...
-#ifndef __RULE_0615
-			if( ::GetLanguage() == LANG_KOR )
-#endif	// __RULE_0615
-			{
-				nMinLen = 2;
-				nMaxLen = 12;
-			}
-#ifndef __RULE_0615
-			else
-			{
-				nMinLen = 3;
-				nMaxLen = 10;			
-			}
-#endif	// __RULE_0615
-									
-			if( nLength < nMinLen || nLength > nMaxLen )
-			{
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0011_01) ) );
-//				g_WndMng.OpenMessageBox( _T( "명칭에 3글자 이상, 16글자 이하로 입력 입력하십시오." ) );
-				return TRUE;
-			}
-			else
-			if( IsDBCSLeadByte( c ) == FALSE && isdigit2( c ) ) 
-			{
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0012) ) );
-//				g_WndMng.OpenMessageBox( _T( "명칭에 첫글자를 숫자로 사용할 수 없습니다." ) );
-				return TRUE;
-			}
-			else
-			{
-				for( int i = 0; i < strNickName.GetLength(); i++ )
-				{
-					c = strNickName[ i ];
-					// 숫자나 알파벳이 아닐 경우는 의심하자.
-					if( IsDBCSLeadByte( c ) == TRUE ) 
-					{
-						CHAR c2 = strNickName[ ++i ];
-						WORD word = ( ( c << 8 ) & 0xff00 ) | ( c2 & 0x00ff );
-						if( ::GetLanguage() == LANG_KOR )
-						{
-							if( IsHangul( word ) == FALSE ) 
-							{
-								g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0014) ) );
-								return TRUE;
-							}
-						}
-					}
-					else
-						if( !IsCyrillic( c ) && ( isalnum( c ) == FALSE || iscntrl( c ) )  )
-						{
-							// 특수 문자도 아니다 (즉 콘트롤 또는 !@#$%^&**()... 문자임)
-							g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0013) ) );
-							return TRUE;
-						}
-				}
-
-			}
-			
-			if (prj.nameValider.IsNotAllowedName(strNickName)) {
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0020) ) );
-				return TRUE;
-			}
 			CGuild* pGuild = g_pPlayer->GetGuild();
 			if( pGuild )
 			{

@@ -11,14 +11,14 @@
 
 class CWndGHTeleporter;
 class CWndGHUpkeep;
-class CWndGHMainMenu : public CWndNeuz			//GH : Guild House 
+class CWndGHMainMenu final : public CWndNeuz			//GH : Guild House 
 {
 	// 길드하우스 메인메뉴 윈도우
 public:
 	CWndGHMainMenu( );
 	virtual ~CWndGHMainMenu( );
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual	void OnInitialUpdate();
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
 //	virtual void OnMouseWndSurface( CPoint point );
@@ -40,7 +40,7 @@ protected:
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define MAX_TELEPORTER_SLOT  (5)
 
-class CWndGHTeleporter : public CWndNeuz
+class CWndGHTeleporter final : public CWndNeuz
 {
 	// 텔레포터 , 
 	// 2009_11_17 개발도중 길드가구창으로 편입댐 , 현재 쓰이지 않음 
@@ -48,7 +48,7 @@ public:
 	CWndGHTeleporter( );
 	virtual ~CWndGHTeleporter( );
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual	void OnInitialUpdate(); 
 //	virtual void OnMouseWndSurface( CPoint point );
 
@@ -87,13 +87,13 @@ protected:
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //CWndGHUpkeep
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class CWndGHUpkeep : public CWndNeuz
+class CWndGHUpkeep final : public CWndNeuz
 { 
 public: 
 	CWndGHUpkeep(); 
 	virtual ~CWndGHUpkeep(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

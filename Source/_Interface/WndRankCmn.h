@@ -23,7 +23,6 @@ public:
 	virtual BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
 	virtual void OnDraw(C2DRender * p2DRender);
 	virtual	void OnInitialUpdate();
 
@@ -91,11 +90,11 @@ public:
 	ValuesToPrint GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) override;
 };
 
-class CWndRankGuild : public CWndNeuz {
+class CWndRankGuild final : public CWndNeuz {
 public:
 	CWndTabCtrlManager m_tabManager;
 
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	virtual	void OnInitialUpdate();
 };
 
@@ -112,28 +111,28 @@ public:
 	ValuesToPrint GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) override;
 };
 
-class CWndRankInfo : public CWndNeuz {
+class CWndRankInfo final : public CWndNeuz {
 public:
 	CWndTabCtrlManager m_tabManager;
 
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	virtual	void OnInitialUpdate();
 };
 
 
-class CWndRankWarTabGiveUp : public CWndRankTab {
+class CWndRankWarTabGiveUp final : public CWndRankTab {
 public:
 	CWndRankWarTabGiveUp();
 	ValuesToPrint GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) override;
 };
 
-class CWndRankWarTabLose : public CWndRankTab {
+class CWndRankWarTabLose final : public CWndRankTab {
 public:
 	CWndRankWarTabLose();
 	ValuesToPrint GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) override;
 };
 
-class CWndRankWarTabWin : public CWndRankTab {
+class CWndRankWarTabWin final : public CWndRankTab {
 public:
 	CWndRankWarTabWin();
 	ValuesToPrint GetValuesToPrint(const CGuildRank::GUILD_RANKING & ranking) override;
@@ -143,7 +142,7 @@ class CWndRankWar : public CWndNeuz {
 public:
 	CWndTabCtrlManager m_tabManager;
 
-	virtual BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK);
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
 	virtual	void OnInitialUpdate();
 };
 

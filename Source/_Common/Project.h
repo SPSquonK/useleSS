@@ -4,7 +4,7 @@
 static_assert(false, "Project.h was included")
 #endif
 
-
+#include <functional>
 #include <memory>
 #include <set>
 #include <boost/container/small_vector.hpp>
@@ -58,7 +58,7 @@ static_assert(false, "Project.h was included")
 // extern 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-extern CString GetLangFileName( int nLang, int nType );
+extern CString GetLangFileName( int nLang, _FILEWITHTEXT nType );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // struct
@@ -215,12 +215,6 @@ struct QuestProp
 
 	[[nodiscard]] static const QuestProp * Get(const QuestId questId);
 };
-
-struct FILTER {
-	TCHAR	m_szSrc[ 64 ];
-	TCHAR	m_szDst[ 64 ];
-};
-
 
 struct STRUCTURE {
 	TCHAR	szName[ 32 ];
@@ -684,9 +678,6 @@ private:
 	std::map<std::string, DWORD>			m_mapII;
 	std::map<std::string, DWORD>			m_mapMVI;
 	std::map<std::string, DWORD>			m_mapCtrl;
-#ifdef __CLIENT
-	CDWordArray					m_aStateQuest; // 스테이트 사용 여부를 체크할 배열 
-#endif
 
 #if defined( __CLIENT )
 	std::map< int, CString >			m_mapQuestDestination;		// 퀘스트 목적지 설명
@@ -716,8 +707,8 @@ public:
 	CFixedArray< ItemProp >		m_aPropSkill;
 	CFixedArray< AddSkillProp > m_aPropAddSkill;
 	CFixedArray< tagColorText >	m_colorText;
-	std::map<std::string, std::string>	m_mapAlphaFilter;
-	std::map<std::string, std::string>	m_mapNonalphaFilter;
+	std::map<CString, CString>               m_mapAlphaFilter;
+	std::vector<std::pair<CString, CString>> m_mapNonalphaFilter;
 	CFixedArray< QuestProp >	m_aPropQuest ;
 	CFixedArray<GUILDQUESTPROP>	m_aPropGuildQuest;
 	CMapStringToPtr				m_mapCharacter;
@@ -747,8 +738,7 @@ public:
 
 #ifdef __CLIENT
 	CTerrainMng					m_terrainMng;
-	CMapStringToString			m_mapHelp;
-	CMapStringToString			m_mapWordToolTip;	
+	std::map<std::string, std::string, std::less<>> m_mapHelp;
 #endif
 	
 	FLOAT						m_fMonsterRebirthRate;	// 몬스터 리스폰률(시간)
@@ -894,25 +884,14 @@ public:
 
 #ifdef __CLIENT
 	BOOL			LoadFilter( LPCTSTR lpszFileName );
-	BOOL			LoadWordToolTip( LPCTSTR lpszFileName );
 	BOOL			LoadHelp( LPCTSTR lpszFileName ); 
-	CString			GetHelp( LPCTSTR lpStr );
-	CString			GetWordToolTip( LPCTSTR lpStr );
+	[[nodiscard]] LPCTSTR GetHelp(LPCTSTR lpStr) const;
 	CSfx*			GetSfx( OBJID objid );
 #endif	// __CLIENT
 
-#ifdef __RULE_0615
 	CNameValider nameValider;
-#endif	// __RULE_0615
 
-#ifdef __OUTPUT_INFO_0803
-	void			OutputStore( const char* lpStrKey, CMover* pMover  );
-#endif	// __OUTPUT_INFO_0803
 	void			OutputDropItem( void );
-
-#ifdef __ADDSKILLPROP0811
-	void			OutputSkill( void );
-#endif	
 
 	void			AddMonsterProp( MONSTER_PROP MonsterProp );
 	void			RemoveMonsterProp( char* lpszMonsterName );
@@ -1024,7 +1003,7 @@ inline LPCTSTR CProject::GetText( DWORD dwIndex )
 	VERIFY_RANGE( (int)( dwIndex ), 0, m_colorText.GetSize(), "GetText range_error", "error" );
 	if( m_colorText.GetAt( dwIndex ) == NULL )
 		return "";
-	return m_colorText.GetAt( dwIndex )->lpszData; 
+	return m_colorText.GetAt( dwIndex )->lpszData.GetString(); 
 }
 
 inline CMoverPlayer * CProject::GetUserByID(const u_long idPlayer) {

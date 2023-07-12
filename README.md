@@ -1,18 +1,16 @@
 # useleSS
 
-FlyFF v15 code with some refactor.
-
-The base code is from Blouflash V15
-https://www.elitepvpers.com/forum/flyff-pserver-guides-releases/4244222-visual-studio-2017-source-files.html 
-
-Some v22 resource compatiblity have been added. See [Documentation/v15plus.md](Documentation/v15plus.md).
-
-This source is developped on Visual Studio 2022 with the C++lastest option.
+FlyFF v15 source code with some refactor.
 
 - This repository **does not** provide a production ready of the source code. Many exploits are not (yet) fixed.
-- **/!\ Server developer /!\: Read the How to use section of this document**
-- If you encounter a bug, please use the Github issue system, or in the worst case send a mail.
+- **/!\\ Server developer /!\\: Read the How to use section of this document**
 
+- **If you encounter a bug, please use the Github issue system, send a Discord PM or a mail**
+  - Do not ask on some forums/places on the internet how to solve a bug related to this source. Instead, please, create an issue here so I can actually see it and fix it
+  - **Do not reupload this source on these forums** without any modification:
+    - It creates more bug reports on places I do not visit which is bad in short, medium and long term
+    - It is pointless as it evolves quickly and is public
+    - If you are scared about the source disappearing, just click the fork button on Github
 
 ## Getting started
 
@@ -24,7 +22,16 @@ This source is developped on Visual Studio 2022 with the C++lastest option.
     - ODBC source `useless_account` = table `USELESS_ACCOUNT_DBF`
     - ODBC source `useless_character` = table `USELESS_CHARACTER_01_DBF`
     - ODBC source `useless_log` = table `USELESS_LOGGING_01_DBF`
-- Use [Server Starter](https://github.com/SPSquonK/ServerStarter): `git clone https://github.com/SPSquonK/ServerStarter.git`
+    - ODBC sources must be set to english language
+
+## Details
+
+The base code is from Blouflash V15
+https://www.elitepvpers.com/forum/flyff-pserver-guides-releases/4244222-visual-studio-2017-source-files.html 
+
+Some v22 resource compatibility have been added. See [Documentation/v15plus.md](Documentation/v15plus.md).
+
+This source is developed on Visual Studio 2022 with the C++latest option.
 
 ## Dependencies
 
@@ -41,46 +48,36 @@ We give here the list of dependencies with an example of a file that should exis
 
 ## About the code here
 
-You can use the modifications done here on your own project. But if you copy
-the code, you must cite me (SquonK) as the original author of the code somewhere
-in your project code.
-
 **This repository does not provide a production ready version of a FlyFF server.**
 
-In particular, specific code that is explicitely commented with a reference to
-the
-[SquonK Hidden Boss License](http://squonk.fr/SquonK-Hidden-Boss-License.txt)
-should keep their comments.
+You can use the modifications done here on your own projects. But if you copy
+the code, you must cite me (SquonK) as the original author of the code somewhere
+in your project code (aka my modifications are under the Boost Licence)
 
-
-
-The [Source/Libraries/boost/pfr/detail/core17_generated.hpp file](Source/Libraries/boost/pfr/detail/core17_generated.hpp) is licensied under the Boost License by its author. It is included in the project to break through the 100 limit.
+The [Source/Libraries/boost/pfr/detail/core17_generated.hpp file](Source/Libraries/boost/pfr/detail/core17_generated.hpp) is licensed under the Boost License by its author. It is included in the project to break through the 100 limit.
 
 ## How to use this repository as a server developer?
 
-As this repository does not fix bugs/exploits, change some parts of the architecture and does not implement new major features, using it as the start point of your project is probably counter productive.
+As this repository does not fix bugs/exploits, change some parts of the architecture and does not implement new major features, using it as the start point for your project is probably counterproductive.
 
-The best way to use this repository is probably to clone two versions of it, `git checkout original-code` on one code, and use diff between the current HEAD and the initial commit (for example with a tool like WinMerge) to check for all the modifications. Then, integrate the modifications that you find usefull in your own code.
+The best way to use this repository is probably to clone two versions of it, `git checkout original-code` on one code, and use diff between the current HEAD and the initial commit (for example with a tool like WinMerge) to check for all the modifications. Then, integrate the modifications that you find useful in your own code.
 
 Do not forget to put a message like `// Original code: SquonK, https://github.com/SPSquonK/useless` if you copy several lines of code.
 
-Examples of code that you might find usefull include:
+Examples of code that you might find useful include:
 - `SendPacket` / `BroadcastPacket` API
-- WorldServer's OnSnapshot error handling
-- The `CWndTListBox` class
+- Neuz OnSnapshot error handling
+- `CWndTListBox` class: a CWndListBox templated by the type of the objects to display and the way to display them
+- New `CWndTradeGold` API: relies on callbacks instead of modifying its OnChildNotify method
 
 Very common ideas in this repository include:
-- Simplification of `CWndBase` derived classes
-- STL-ization of many classes (`CFixedArray`, … are considered obsolete)
+- Simplification of `CWndBase` derived classes by removing duplicated methods
+- STL-ization of many classes: `CPtrArray`, … are considered obsolete
 
-Note that some changes are very opiniated, for example:
+Note that some changes are very opinionated, for example:
 - `UIVariant` API (The design choices behind these changes in french: https://www.sà.fr/2022/06/04/uivariant/)
+- Enforce the fact that `LPDIRECT3DDEVICE9` is a global variable (no more passed as an attribute / stored as a field everywhere)
 
 ## Contributing
 
 Any contribution of any kind is welcomed. This includes some casual messages like "hey, check out this thing. They changed it in V21 / this private server source code release and it is probably better than the V15 / what you've done here.", bug report, pull requests, ...
-
-
-
-
-

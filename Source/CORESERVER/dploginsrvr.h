@@ -2,13 +2,9 @@
 
 #include "DPMng.h"
 
-#undef	theClass
-#define theClass	CDPLoginSrvr
-#undef	theParameters
-#define theParameters	CAr & ar
-
 class CDPLoginSrvr : public CDPMng,
-	public DPMngFeatures::BroadcastPacketNone
+	public DPMngFeatures::BroadcastPacketNone,
+	public DPMngFeatures::PacketHandler<CDPLoginSrvr>
 {
 public:
 //	Constructions
@@ -21,8 +17,7 @@ public:
 
 	void	SendQueryRemovePlayer( const CHAR* lpszAccount );
 //	Handlers
-	USES_PFNENTRIES;
-
+private:
 	void	OnAddConnection( DPID dpid );
 	void	OnRemoveConnection( DPID dpid );
 

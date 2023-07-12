@@ -15,22 +15,44 @@ int GetCharLen( const CHAR* pStr )
 	return (int) (pNext - pStr );
 }
 
+void ComputeShortenName(CHAR * pDest, const CHAR * pSrc, size_t nCount) {
+	size_t nOffset = 0;
+
+	while (nCount > 0) {
+		if (pSrc[nOffset] == '\0') break;
+
+		const int nLen = GetCharLen(&pSrc[nOffset]);
+		nOffset += nLen;
+		--nCount;
+	}
+
+	std::memcpy(pDest, pSrc, nOffset);
+	pDest[nOffset] = '\0';
+
+	if (pSrc[nOffset] == '\0') {
+		// No more characters
+	} else if (pSrc[nOffset + GetCharLen(&pSrc[nOffset])] == '\0') {
+		// Only one character: just write it instead of 3 dots
+		std::strcat(pDest, &pSrc[nOffset]);
+	} else {
+		// Add ...
+		std::strcat(pDest, "...");
+	}
+}
+
 // 외국어포함 문장의 길이를 잘라준다.
-int GetStrCut( const CHAR* pSrc, CHAR* pDest, int nCount )
-{
+int GetStrCut( const CHAR* pSrc, CHAR* pDest, int nCount ) {
 	int nOffset = 0;
-	int nLen;
 	
-	while( nCount )
-	{
-		nLen = GetCharLen( &pSrc[ nOffset ]  );
+	while (nCount) {
+		const int nLen = GetCharLen(&pSrc[nOffset]);
 		nOffset += nLen;
 		nCount--;
 	}
 	
 	memcpy( pDest, pSrc, sizeof(char)*nOffset);
-	
-	return 1;
+	pDest[nOffset] = '\0';
+	return nOffset;
 }	
 
 // 외국어포함 문자 갯수를 알아냄
@@ -38,11 +60,10 @@ int GetStrLen( const CHAR* pSrc )
 {
 	int nCount = 0;
 	int nOffset = 0;
-	int nLen;
 	
-	while( pSrc[ nOffset ] != NULL )
+	while( pSrc[ nOffset ] != '\0')
 	{
-		nLen = GetCharLen( &pSrc[ nOffset ]  );
+		const int nLen = GetCharLen(&pSrc[nOffset]);
 		nOffset += nLen;
 		nCount++;
 	}
@@ -175,7 +196,6 @@ void SetStrNull( CString& string, int nNullLength )
 #if	defined (__WORLDSERVER) || defined (__CLIENT)
 
 HRESULT LoadTextureFromRes( 
-	LPDIRECT3DDEVICE9 pd3dDevice, 
 	LPCTSTR strTexture,
 	LPDIRECT3DTEXTURE9* ppTexture,
 	DWORD MipFilter,
@@ -183,14 +203,13 @@ HRESULT LoadTextureFromRes(
 	)
 {
 
-    return LoadTextureFromRes( pd3dDevice, strTexture, 
+    return LoadTextureFromRes( strTexture, 
 		D3DX_DEFAULT, D3DX_DEFAULT, MipFilter, 0, d3dFormat, 
 		D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 		D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 0, NULL, NULL, ppTexture );
 }
 
 HRESULT LoadTextureFromRes( 
-	LPDIRECT3DDEVICE9 pDevice,
 	LPCTSTR pFileName,
 	UINT Width,
 	UINT Height,
@@ -219,7 +238,7 @@ HRESULT LoadTextureFromRes(
 	LPBYTE pSrcData = new BYTE[ nSrcDataSize ];
 	if( file.Read( pSrcData, nSrcDataSize ) >= 1 )
 	{
-		hr = D3DXCreateTextureFromFileInMemoryEx( pDevice,
+		hr = D3DXCreateTextureFromFileInMemoryEx( D3DDEVICE,
 			   pSrcData, nSrcDataSize, Width, Height, MipLevels, Usage, Format, Pool, Filter, MipFilter, ColorKey, pSrcInfo, pPalette, ppTexture );
 		if( FAILED( hr ) )
 		{
@@ -557,7 +576,7 @@ BOOL SaveBMP( LPCTSTR lpszFileName, LPBYTE lpData, SIZE size )
 	return FALSE; 
 }
 
-void GetPickRay(CRect rect,POINT ptCursor,D3DXMATRIX* pmatProj,D3DXMATRIX* pmatView,D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir)
+std::pair<D3DXVECTOR3, D3DXVECTOR3> GetPickRay(CRect rect,POINT ptCursor,const D3DXMATRIX* pmatProj,const D3DXMATRIX* pmatView)
 {
 	D3DXVECTOR3 v;
 	v.x =  ( ( ( 2.0f * ptCursor.x ) / rect.Width()  ) - 1 ) / pmatProj->_11;
@@ -569,12 +588,18 @@ void GetPickRay(CRect rect,POINT ptCursor,D3DXMATRIX* pmatProj,D3DXMATRIX* pmatV
 	D3DXMatrixInverse( &m, NULL, pmatView );
 
 	// Transform the screen space pick ray into 3D space
-	pvPickRayDir->x  = v.x*m._11 + v.y*m._21 + v.z*m._31;
-	pvPickRayDir->y  = v.x*m._12 + v.y*m._22 + v.z*m._32;
-	pvPickRayDir->z  = v.x*m._13 + v.y*m._23 + v.z*m._33;
-	pvPickRayOrig->x = m._41;
-	pvPickRayOrig->y = m._42;
-	pvPickRayOrig->z = m._43;
+	std::pair<D3DXVECTOR3, D3DXVECTOR3> result;
+	D3DXVECTOR3 & pvPickRayDir = result.second;
+	D3DXVECTOR3 & pvPickRayOrig = result.first;
+
+	pvPickRayDir.x  = v.x*m._11 + v.y*m._21 + v.z*m._31;
+	pvPickRayDir.y  = v.x*m._12 + v.y*m._22 + v.z*m._32;
+	pvPickRayDir.z  = v.x*m._13 + v.y*m._23 + v.z*m._33;
+	pvPickRayOrig.x = m._41;
+	pvPickRayOrig.y = m._42;
+	pvPickRayOrig.z = m._43;
+
+	return result;
 }
 
 void GetRayEnd(D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir,D3DXVECTOR3* pvPickRayEnd)
@@ -588,17 +613,17 @@ void GetRayEnd(D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir,D3DXVECTOR3*
 }
 
 
-BOOL IntersectTriangle( D3DXVECTOR3& v0, D3DXVECTOR3& v1, D3DXVECTOR3& v2,
-			            const D3DXVECTOR3& orig, const D3DXVECTOR3& dir, 
-						D3DXVECTOR3* pIntersect, FLOAT* pfDist )
-{
-	FLOAT fU,fV;
-	if(D3DXIntersectTri( &v0, &v1, &v2, &orig, &dir, &fU, &fV, pfDist ) == TRUE )
-	{
+bool IntersectTriangle(
+	const D3DXVECTOR3 & v0, const D3DXVECTOR3 & v1, const D3DXVECTOR3 & v2,
+	const D3DXVECTOR3 & orig, const D3DXVECTOR3 & dir,
+	D3DXVECTOR3 * pIntersect, FLOAT * pfDist
+) {
+	FLOAT fU, fV;
+	if (D3DXIntersectTri(&v0, &v1, &v2, &orig, &dir, &fU, &fV, pfDist)) {
 		*pIntersect = orig + *pfDist * dir;
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 #endif	//defined (__WORLDSERVER) || defined (__CLIENT) 

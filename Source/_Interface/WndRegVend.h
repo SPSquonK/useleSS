@@ -8,7 +8,7 @@ typedef struct CALC_DATA
 } CALC_DATA;
 
 
-class CWndRegVend : public CWndNeuz
+class CWndRegVend final : public CWndNeuz
 {
 private:
 	CWndEdit*	m_pWndEdit;
@@ -24,7 +24,7 @@ public:
 //	Operations
 	void	SetItem( int iIndex, CItemElem * pItemBase );
 
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();

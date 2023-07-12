@@ -22,7 +22,6 @@
 	#include "DPSrvr.h"
 	#include "DPCoreClient.h"
 	#include "dpdatabaseclient.h"
-	#include "ItemScript.h"
 #endif	// __CLIENT
 
 #include "accessory.h"
@@ -129,13 +128,13 @@ void CMover::SetHair( int nHair )
 {
 	if( nHair >= 0 && nHair < MAX_HAIR )
 	{
-		m_dwHairMesh = nHair;
+		m_skin.hairMesh = nHair;
 		CModelObject* pModel = (CModelObject*)m_pModel;
 		TCHAR lpszTemp[ 64 ];
 		// Hair
-		_stprintf( lpszTemp, PARTSMESH_HAIR( GetSex() ), m_dwHairMesh + 1 );
+		_stprintf( lpszTemp, PARTSMESH_HAIR( GetSex() ), nHair + 1 );
 		pModel->LoadElement( lpszTemp, PARTS_HAIR );
-		_stprintf( lpszTemp, PARTSTEX_HAIR( GetSex() ), 0 /*nHairColor*/ + 1 );
+		_stprintf( lpszTemp, PARTSTEX_HAIR( GetSex() ), 0 + 1 );
 		pModel->ChangeTexture( PARTS_HAIR, TEX_PART_HAIR( GetSex() ), lpszTemp );
 	}
 }
@@ -148,15 +147,15 @@ void  CMover::SetHairColor( FLOAT r, FLOAT g, FLOAT b )
 	{
 		if( GetSex() == SEX_MALE )
 		{
-			m_fHairColorR = (nMaleHairColor[m_dwHairMesh][0])/255.f;
-			m_fHairColorG = (nMaleHairColor[m_dwHairMesh][1])/255.f;
-			m_fHairColorB = (nMaleHairColor[m_dwHairMesh][2])/255.f;
+			m_fHairColorR = (nMaleHairColor[m_skin.hairMesh][0])/255.f;
+			m_fHairColorG = (nMaleHairColor[m_skin.hairMesh][1])/255.f;
+			m_fHairColorB = (nMaleHairColor[m_skin.hairMesh][2])/255.f;
 		}
 		else
 		{
-			m_fHairColorR = (nFeMaleHairColor[m_dwHairMesh][0])/255.f;
-			m_fHairColorG = (nFeMaleHairColor[m_dwHairMesh][1])/255.f;
-			m_fHairColorB = (nFeMaleHairColor[m_dwHairMesh][2])/255.f;
+			m_fHairColorR = (nFeMaleHairColor[m_skin.hairMesh][0])/255.f;
+			m_fHairColorG = (nFeMaleHairColor[m_skin.hairMesh][1])/255.f;
+			m_fHairColorB = (nFeMaleHairColor[m_skin.hairMesh][2])/255.f;
 		}
 	}
 	else
@@ -190,15 +189,15 @@ void CMover::SetHairColor( DWORD dwHairColor )
 	{
 		if( GetSex() == SEX_MALE )
 		{
-			m_fHairColorR = (nMaleHairColor[m_dwHairMesh][0])/255.f;
-			m_fHairColorG = (nMaleHairColor[m_dwHairMesh][1])/255.f;
-			m_fHairColorB = (nMaleHairColor[m_dwHairMesh][2])/255.f;
+			m_fHairColorR = (nMaleHairColor[m_skin.hairMesh][0])/255.f;
+			m_fHairColorG = (nMaleHairColor[m_skin.hairMesh][1])/255.f;
+			m_fHairColorB = (nMaleHairColor[m_skin.hairMesh][2])/255.f;
 		}
 		else
 		{
-			m_fHairColorR = (nFeMaleHairColor[m_dwHairMesh][0])/255.f;
-			m_fHairColorG = (nFeMaleHairColor[m_dwHairMesh][1])/255.f;
-			m_fHairColorB = (nFeMaleHairColor[m_dwHairMesh][2])/255.f;
+			m_fHairColorR = (nFeMaleHairColor[m_skin.hairMesh][0])/255.f;
+			m_fHairColorG = (nFeMaleHairColor[m_skin.hairMesh][1])/255.f;
+			m_fHairColorB = (nFeMaleHairColor[m_skin.hairMesh][2])/255.f;
 		}
 
 	}
@@ -212,58 +211,27 @@ void CMover::SetHead( int nHead )
 {
 	if( nHead < MAX_HEAD )
 	{
-		m_dwHeadMesh = nHead;
+		m_skin.headMesh = nHead;
 		CModelObject* pModel = (CModelObject*)m_pModel;
 		TCHAR lpszTemp[ 64 ];
 		// Hair
-		_stprintf( lpszTemp, PARTSMESH_HEAD( GetSex() ), m_dwHeadMesh + 1 );
+		_stprintf( lpszTemp, PARTSMESH_HEAD( GetSex() ), nHead + 1 );
 		pModel->LoadElement( lpszTemp, PARTS_HEAD );
 	}
 }
-void CMover::SetSkinSet( int nSkinSet )
-{
-	if( nSkinSet < 2 )
-	{
-		m_dwSkinSet = nSkinSet;
-#ifdef __CLIENT
-		UpdateParts();
-#endif
-	}
-}
-
 
 // 이 함수는 전체 의상을 새로 완성하도록 한다.
 // 보통 이 함수는 처음에 캐릭터를 생성할 때 한번 호출한다.
 void CMover::UpdateParts( BOOL bFakeParts )
 {
-	UpdateParts( GetSex(), m_dwSkinSet, m_dwFace, m_dwHairMesh, m_dwHeadMesh, 
+	UpdateParts( GetSex(), m_skin, 
 		m_aEquipInfo, (CModelObject*)m_pModel, bFakeParts ? NULL : &m_Inventory, GetProp()->bIfParts, this );
 	((CModelObject*)m_pModel)->RestoreDeviceObjects();
 	UpdateBoundBox();
 	UpdateParam();
 }
 
-ItemProp* GetInventoryProp(EQUIP_INFO * pEquipInfo, CItemContainer* pInventory, int nParts )
-{
-	CItemElem* pItemElem = NULL;
-	ItemProp* pItemProp = NULL;
-
-	if( pInventory == NULL ) // fake only
-	{
-		if( pEquipInfo[nParts].dwId != NULL_ID ) 
-			pItemProp = prj.GetItemProp( pEquipInfo[nParts].dwId );
-	}
-	else
-	{
-		pItemElem = pInventory->GetEquip( nParts );
-		if( pItemElem )
-			pItemProp = pItemElem->GetProp();
-	}
-
-	return pItemProp;
-}
-
-void CMover::UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, EQUIP_INFO * pEquipInfo, CModelObject* pModel, CItemContainer * pInventory, BOOL bIfParts, CMover* pMover )
+void CMover::UpdateParts( int nSex, const MoverSub::SkinMeshs skin, EQUIP_INFO * pEquipInfo, CModelObject* pModel, CItemContainer * pInventory, BOOL bIfParts, CMover* pMover )
 {
 	if( pModel == NULL )
 	{
@@ -278,10 +246,10 @@ void CMover::UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int 
 	if( bIfParts )
 	{
 		// Hair
-		_stprintf( lpszTemp, PARTSMESH_HAIR( nSex ), nHairMesh + 1 );
+		_stprintf( lpszTemp, PARTSMESH_HAIR( nSex ), static_cast<int>(skin.hairMesh + 1) );
 		pModel->LoadElement( lpszTemp, PARTS_HAIR );
 		// Head
-		_stprintf( lpszTemp, PARTSMESH_HEAD( nSex ), nHeadMesh + 1 );
+		_stprintf( lpszTemp, PARTSMESH_HEAD( nSex ), static_cast<int>(skin.headMesh + 1) );
 		pModel->LoadElement( lpszTemp, PARTS_HEAD );
 	}
 	// 먼저 익스크루시브 오브젝트를 TakeOff한다.
@@ -291,11 +259,9 @@ void CMover::UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int 
 	{
 		if( i == PARTS_HAIR || i == PARTS_HEAD  )//|| i == PARTS_CAP || i == PARTS_HAND || i == PARTS_FOOT )
 			continue;
-		DWORD dwParts = -1;
-		CItemElem* pItemElem = NULL;
-		ItemProp* pItemProp = NULL;
+
 		// 프로퍼티 꺼냄
-		pItemProp = GetInventoryProp( pEquipInfo, pInventory, i );
+		const ItemProp * pItemProp = GetEquipItemProp(pInventory, pEquipInfo, i);
 		if( pItemProp )
 		{
 			if( pInventory )
@@ -447,12 +413,11 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 					  CItemElem* pItemElem, int nPart, const EQUIP_INFO & rEquipInfo, CItemContainer * pInventory, 
 	EQUIP_INFO * pEquipInfo, CModelObject* pModel, BOOL bEquip, CMover *pMover )
 {
-	ItemProp* pItemProp = pItemElem ? pItemElem->GetProp() : prj.GetItemProp( rEquipInfo.dwId );
-	DWORD dwIndex = pItemElem ? pItemElem->m_dwObjIndex : 0;
+	const ItemProp* pItemProp = pItemElem ? pItemElem->GetProp() : prj.GetItemProp( rEquipInfo.dwId );
+	const DWORD dwIndex = pItemElem ? pItemElem->m_dwObjIndex : 0;
 	DWORD dwParts = pItemProp->dwParts;
-	BOOL bIfParts = pMover ? pMover->GetProp()->bIfParts : 0;
+	const BOOL bIfParts = pMover ? pMover->GetProp()->bIfParts : 0;
 	TCHAR lpszTemp[ 64 ];
-	BOOL bFake = (pInventory == NULL) ? TRUE : FALSE;
 	if( dwParts == NULL_ID )
 		return FALSE;
 
@@ -476,14 +441,14 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 		{
 			// 디폴트는 장착위치 오른손
 			// 왼손에 무기가 가야하는 상황을 검사
-			ItemProp *pProp = pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_RWEAPON );
+			const ItemProp *pProp = GetEquipItemProp( pInventory, pEquipInfo, PARTS_RWEAPON );
 			if (pMover->IsInteriorityJob(JOB_BLADE)) // 쌍칼속성
 			{
 				if( pItemProp->dwID != II_WEA_KNU_ISHOFIST )
 				{
 					if( pProp && pProp->dwHanded == HD_ONE )	// 오른손에 무기가 있냐? 그 무기가 원핸드냐
 					{
-						if( pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_SHIELD ) == NULL )	//왼손에 방패없냐?
+						if( GetEquipItemProp( pInventory, pEquipInfo, PARTS_SHIELD ) == NULL )	//왼손에 방패없냐?
 							dwParts = PARTS_LWEAPON;		// 장착위치를 왼손으로 바꿈
 					} 
 				}
@@ -502,7 +467,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 	} // 쌍칼 처리.
 	
 #ifndef __WORLDSERVER	// <<<< 월드에서 처리안하면 메모리 리크 나지 않나? -xuzhu-
-	((CModelObject*)pModel)->TakeOffParts( dwParts );	
+	pModel->TakeOffParts( dwParts );	
 #endif
 
 	if( pItemProp && pItemProp->dwItemKind3 == IK3_YOYO )	// 벗으려던 무기가 요요였으면
@@ -510,12 +475,9 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 
 	if( bEquip )	// 장착하려 할때만...
 	{
-		ItemProp *pHandItemProp	= NULL;
-		ItemProp *pLHandItemProp = NULL;
-
 		// 들고있는 무기 프로퍼티 꺼냄.
-		pHandItemProp = pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_RWEAPON );		// 오른손 무기 프로퍼티.
-		pLHandItemProp = pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_LWEAPON );		// 왼손 무기 프로퍼티.
+		const ItemProp * pHandItemProp = GetEquipItemProp( pInventory, pEquipInfo, PARTS_RWEAPON );		// 오른손 무기 프로퍼티.
+		const ItemProp * pLHandItemProp = GetEquipItemProp( pInventory, pEquipInfo, PARTS_LWEAPON );		// 왼손 무기 프로퍼티.
 		
 		// 조건검사.
 		if( pItemProp->dwItemKind3 == IK3_SHIELD )	// 방패류를 착용하려 했을때
@@ -740,49 +702,49 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 			// 변신 캐릭터는 장착 무기를 볼 수 없게 하자(파츠 장착만 못함. 수치 계산은 적용됨)
 			if( pMover == NULL || ( pMover && pMover->IsDisguise() == FALSE ) )
 			{
-				((CModelObject*)pModel)->LoadElement( szPartsName, dwParts );
+				pModel->LoadElement( szPartsName, dwParts );
 				switch( pItemProp->dwItemKind3 )
 				{
 				case IK3_KNUCKLEHAMMER:
-					((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRArmIdx() );
+					pModel->SetParent( PARTS_RWEAPON, pModel->GetRArmIdx() );
 					break;
 				case IK3_BOW:
-					((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetLHandIdx() );
+					pModel->SetParent( PARTS_RWEAPON, pModel->GetLHandIdx() );
 					break;
 				case IK3_YOYO:
-					((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRHandIdx() );
-					((CModelObject*)pModel)->LoadElement( szPartsName, PARTS_LWEAPON );
-					((CModelObject*)pModel)->SetParent( PARTS_LWEAPON, ((CModelObject*)pModel)->GetLHandIdx() );
+					pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );
+					pModel->LoadElement( szPartsName, PARTS_LWEAPON );
+					pModel->SetParent( PARTS_LWEAPON, pModel->GetLHandIdx() );
 					break;
 				default:
-					((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRHandIdx() );
+					pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );
 				}
 	//			if( pItemProp->dwItemKind3 == IK3_KNUCKLEHAMMER )
-	//				((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRArmIdx() );
+	//				pModel->SetParent( PARTS_RWEAPON, pModel->GetRArmIdx() );
 	//			else
-	//				((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRHandIdx() );
+	//				pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );
 			}
 			break;
 		case PARTS_LWEAPON: 
 			// 변신 캐릭터는 장착 무기를 볼 수 없게 하자(파츠 장착만 못함. 수치 계산은 적용됨)
 			if( pMover == NULL || ( pMover && pMover->IsDisguise() == FALSE ) )
 			{
-				((CModelObject*)pModel)->LoadElement( szPartsName, dwParts );
-				((CModelObject*)pModel)->SetParent( PARTS_LWEAPON, ((CModelObject*)pModel)->GetLHandIdx() );
+				pModel->LoadElement( szPartsName, dwParts );
+				pModel->SetParent( PARTS_LWEAPON, pModel->GetLHandIdx() );
 			}
 			break;
 		case PARTS_SHIELD: 
 			// 변신 캐릭터는 장착 무기를 볼 수 없게 하자(파츠 장착만 못함. 수치 계산은 적용됨)
 			if( pMover == NULL || ( pMover && pMover->IsDisguise() == FALSE ) )
 			{
-				((CModelObject*)pModel)->LoadElement( szPartsName, dwParts );
-				((CModelObject*)pModel)->SetParent( PARTS_SHIELD, ((CModelObject*)pModel)->GetLArmIdx() );
+				pModel->LoadElement( szPartsName, dwParts );
+				pModel->SetParent( PARTS_SHIELD, pModel->GetLArmIdx() );
 			}
 			break;
 		case PARTS_UPPER_BODY:
 			if( bIfParts )
 			{
-				((CModelObject*)pModel)->LoadElement( szPartsName, dwParts );
+				pModel->LoadElement( szPartsName, dwParts );
 				_stprintf( lpszTemp, PARTSTEX_UPPER( nSex ), nSkinSet + 1 );
 				pModel->ChangeTexture( PARTS_UPPER_BODY, TEX_PART_UPPER( nSex ), lpszTemp );
 			}
@@ -791,7 +753,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 			if( bIfParts )
 			{
 				{
-					((CModelObject*)pModel)->LoadElement( szPartsName, dwParts );
+					pModel->LoadElement( szPartsName, dwParts );
 					_stprintf( lpszTemp, PARTSTEX_LOWER( nSex ), nSkinSet + 1 );
 					pModel->ChangeTexture( PARTS_LOWER_BODY, TEX_PART_LOWER( nSex ), lpszTemp );
 				}
@@ -799,7 +761,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 			break;
 		default:
 			if( bIfParts )
-				((CModelObject*)pModel)->LoadElement( szPartsName, dwParts );
+				pModel->LoadElement( szPartsName, dwParts );
 			break;
 
 		}
@@ -829,14 +791,14 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 				case PARTS_LOWER_BODY:
 					{
 
-						ItemProp* pItemPropEquip = NULL;
+						const ItemProp* pItemPropEquip = NULL;
 						if( pItemProp->dwParts == PARTS_CLOTH )
 						{
-							pItemPropEquip = pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_UPPER_BODY );
+							pItemPropEquip = GetEquipItemProp( pInventory, pEquipInfo, PARTS_UPPER_BODY );
 						}
 						else
 						{
-							pItemPropEquip = pMover->GetEquipItemProp( pInventory, pEquipInfo, PARTS_CLOTH );
+							pItemPropEquip = GetEquipItemProp( pInventory, pEquipInfo, PARTS_CLOTH );
 						}
 
 						if( pItemPropEquip == NULL )
@@ -947,8 +909,8 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 #endif // __WORLDSERVER
 
 				#ifdef __CLIENT
-					((CModelObject*)pModel)->MovePart( PARTS_RWEAPON, PARTS_LWEAPON );
-					((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRHandIdx() );
+					pModel->MovePart( PARTS_RWEAPON, PARTS_LWEAPON );
+					pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );
 				#endif //__CLIENT
 				}
 			}
@@ -963,8 +925,8 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 						pEquipInfo[PARTS_LWEAPON].nOption	= 0;
 						pEquipInfo[PARTS_LWEAPON].byFlag	= 0;
 					#ifdef __CLIENT
-						((CModelObject*)pModel)->MovePart( PARTS_RWEAPON, PARTS_LWEAPON );
-						((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRHandIdx() );
+						pModel->MovePart( PARTS_RWEAPON, PARTS_LWEAPON );
+						pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );
 					#endif	// __CLIENT
 					}
 				}
@@ -1008,6 +970,20 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 #endif //__CLIENT
 
 	return TRUE;
+}
+
+const ItemProp * CMover::GetEquipItemProp(const CItemContainer * pInventory, const EQUIP_INFO * pEquipInfo, int nParts) {
+	if (!pInventory) {
+		if (pEquipInfo[nParts].dwId != NULL_ID) {
+			return prj.GetItemProp(pEquipInfo[nParts].dwId);
+		}
+	} else {
+		if (const CItemElem * pItemElem = pInventory->GetEquip(nParts)) {
+			return pItemElem->GetProp();
+		}
+	}
+
+	return nullptr;
 }
 
 
@@ -1216,7 +1192,7 @@ BOOL CMover::DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart )
 	equipInfo.dwId	= pItemElem->m_dwItemId;
 	equipInfo.nOption	= pItemElem->GetAttrOption();
 	equipInfo.byFlag	= pItemElem->m_byFlag;
-	BOOL bResult = DoEquip( GetSex(), m_dwSkinSet, pItemElem, nPart, equipInfo, &m_Inventory, m_aEquipInfo, (CModelObject*)m_pModel, bEquip, this );
+	BOOL bResult = DoEquip( GetSex(), m_skin.skinSet, pItemElem, nPart, equipInfo, &m_Inventory, m_aEquipInfo, (CModelObject*)m_pModel, bEquip, this );
 		
 	if( !bResult )	// 2004/04/27
 		return FALSE;
@@ -1315,9 +1291,9 @@ BOOL CMover::DoFakeEquip( const EQUIP_INFO & rEquipInfo, BOOL bEquip, int nPart,
 {
 	BOOL bResult;
 	if( pModel )
-		bResult	= CMover::DoEquip( GetSex(), m_dwSkinSet, NULL, nPart, rEquipInfo, NULL, m_aEquipInfo, (CModelObject*)pModel, bEquip, this );
+		bResult	= CMover::DoEquip( GetSex(), m_skin.skinSet, NULL, nPart, rEquipInfo, NULL, m_aEquipInfo, (CModelObject*)pModel, bEquip, this );
 	else
-		bResult = CMover::DoEquip( GetSex(), m_dwSkinSet, NULL, nPart, rEquipInfo, NULL, m_aEquipInfo, (CModelObject*)m_pModel, bEquip, this );
+		bResult = CMover::DoEquip( GetSex(), m_skin.skinSet, NULL, nPart, rEquipInfo, NULL, m_aEquipInfo, (CModelObject*)m_pModel, bEquip, this );
 
 	if( !bResult )	// 2004/04/27
 	{
@@ -1539,10 +1515,6 @@ void CMover::SetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemElem,
 	if( pItemElem && pItemElem->IsFlag( CItemElem::expired ) )
 		return;
 
-#ifdef __WORLDSERVER
-	RunItemScript( this, pItemProp->dwID, ITEM_OP_EQUIP, NULL );
-#endif // __WORLDSERVER
-
 	for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
 		SetDestParam(i, *pItemProp, TRUE);
 	}
@@ -1611,18 +1583,9 @@ void CMover::ResetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemEle
 	if( pItemElem && pItemElem->IsFlag( CItemElem::expired ) )
 		return;
 
-#ifdef __WORLDSERVER
-	RunItemScript( this, pItemProp->dwID, ITEM_OP_UNEQUIP, NULL );
-#endif // __WORLDSERVER
-
-	if( pItemProp->dwDestParam1 != -1 )
-		ResetDestParam( pItemProp->dwDestParam1, pItemProp->nAdjParamVal1 );
-	if( pItemProp->dwDestParam2 != -1 )
-		ResetDestParam( pItemProp->dwDestParam2, pItemProp->nAdjParamVal2 );
-#ifdef __PROP_0827
-	if( pItemProp->dwDestParam3 != -1 )
-		ResetDestParam( pItemProp->dwDestParam3, pItemProp->nAdjParamVal3 );
-#endif	// __PROP_0827
+	for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
+		ResetDestParam(pItemProp->dwDestParam[i], pItemProp->nAdjParamVal[i]);
+	}
 	
 	if( pItemElem && pItemElem->m_nResistAbilityOption && pItemElem->GetProp()->dwItemKind1 == IK1_ARMOR )
 	{
@@ -1848,7 +1811,7 @@ CItem* CMover::DropGold( DWORD dwGold, const D3DXVECTOR3& vPos, BOOL bPK )
 
 		CItem* pItem	= new CItem;
 		pItem->m_pItemBase	= pItemElem;
-		pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+		pItem->SetIndex( pItemElem->m_dwItemId );
 		pItem->SetPos( vPos );
 		pItem->SetAngle( (float)xRandom( 360 ) );
 		pItem->m_dwDropTime		= timeGetTime();	
@@ -1895,7 +1858,7 @@ BOOL CMover::DropEquipedItem( int nParts )
 		CItem* pItem	= new CItem;
 		pItem->m_pItemBase	= new CItemElem;
 		*pItem->m_pItemBase		= *pItemElem;
-		pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+		pItem->SetIndex( pItemElem->m_dwItemId );
 		pItem->SetPos( GetPos() );
 		pItem->SetAngle( xRandom( 360 ) );
 		GetWorld()->AddObj( pItem, TRUE );

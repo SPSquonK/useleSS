@@ -243,12 +243,12 @@ BOOL TextCmd_GameSetting(CScanner &, CPlayer_ * pUser) {
 BOOL TextCmd_ChangeFace(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 	DWORD dwFace = scanner.GetNumber();
-	if( dwFace < 0 || 4 < dwFace )
+	if( dwFace < 0 || dwFace >= MAX_HEAD )
 		return TRUE;
 	
 	if( (pUser->m_dwMode & NOTFRESH_MODE) || (pUser->m_dwMode & NOTFRESH_MODE2) )
 	{
-		pUser->m_dwHeadMesh = dwFace;
+		pUser->m_skin.headMesh = dwFace;
 		g_UserMng.AddChangeFace(*pUser, dwFace);
 		if( pUser->m_dwMode & NOTFRESH_MODE )
 		{
@@ -288,7 +288,7 @@ BOOL TextCmd_AroundKill(CScanner &, CPlayer_ * pUser) {
 
 	CWorld* pWorld	= pUser->GetWorld();
 	if( pWorld )
-		pUser->SendDamageAround( AF_MAGICSKILL, (CMover*)pUser, OBJTYPE_MONSTER, 1, 64.0f, 0.0, 1.0f );
+		pUser->SendDamageAround( AF_MAGICSKILL, pUser, OBJTYPE_MONSTER, 1, 64.0f, 0.0, 1.0f );
 #endif // __WORLDSERVER
 	return TRUE;
 }
@@ -309,7 +309,7 @@ BOOL	TextCmd_MakePetFeed( CScanner & s )
 	{
 		SAFE_DELETE( g_WndMng.m_pWndPetFoodMill );
 		g_WndMng.m_pWndPetFoodMill = new CWndPetFoodMill;
-		g_WndMng.m_pWndPetFoodMill->Initialize( &g_WndMng, APP_PET_FOOD );
+		g_WndMng.m_pWndPetFoodMill->Initialize();
 		return FALSE;
 	}
 #endif	// __CLIENT
@@ -566,7 +566,7 @@ BOOL TextCmd_PickupPetAwakeningCancel( CScanner & )
 #ifdef __CLIENT
 	SAFE_DELETE( g_WndMng.m_pWndPetAwakCancel );
 	g_WndMng.m_pWndPetAwakCancel = new CWndPetAwakCancel;
-	g_WndMng.m_pWndPetAwakCancel->Initialize(&g_WndMng);
+	g_WndMng.m_pWndPetAwakCancel->Initialize();
 #endif	// __CLIENT
 	return TRUE;
 }
@@ -655,7 +655,7 @@ BOOL TextCmd_ChangeJob(CScanner & scanner, CPlayer_ * pUser) {
 	int nJob = JOB_VAGRANT;
 	
 	for (int i = 0; i < MAX_JOB; i++) {
-		if (strJob == prj.jobs.info[i].szName || strJob == prj.jobs.info[i].szName) {
+		if (strJob == prj.jobs.info[i].szName || strJob == prj.jobs.info[i].szEName) {
 			nJob = i;
 			break;
 		}
@@ -671,9 +671,8 @@ BOOL TextCmd_ChangeJob(CScanner & scanner, CPlayer_ * pUser) {
 	
 	if( pUser->AddChangeJob( nJob ) )
 	{
-		( (CUser*)pUser )->AddSetChangeJob( nJob );
-		g_UserMng.AddNearSetChangeJob(pUser, nJob);
-		g_dpDBClient.SendLogLevelUp( (CUser*)pUser, 4 );
+		g_UserMng.AddNearSetChangeJob(pUser);
+		g_dpDBClient.SendLogLevelUp( pUser, 4 );
 		g_dpDBClient.SendUpdatePlayerData( pUser );
 		return TRUE;
 	}
@@ -805,8 +804,7 @@ BOOL TextCmd_QuerySetPlayerName(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 	CString strPlayer	= scanner.Token;
-	strPlayer.TrimLeft();
-	strPlayer.TrimRight();
+	strPlayer.Trim();
 	g_dpDBClient.SendQuerySetPlayerName( pUser->m_idPlayer, strPlayer, MAKELONG( 0xffff, 0 ) );
 	return TRUE;
 #endif	// __WORLDSERVER
@@ -817,8 +815,7 @@ BOOL TextCmd_QuerySetGuildName(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 	CString strGuild	= scanner.Token;
-	strGuild.TrimLeft();
-	strGuild.TrimRight();
+	strGuild.Trim();
 	CGuild* pGuild	= g_GuildMng.GetGuild( pUser->m_idGuild );
 	if( pGuild && pGuild->IsMaster( pUser->m_idPlayer ) )
 	{
@@ -1253,7 +1250,7 @@ BOOL TextCmd_ResistItem(CScanner & scanner, CPlayer_ * pUser) {
 	{
 		SAFE_DELETE( g_WndMng.m_pWndUpgradeBase );
 		g_WndMng.m_pWndUpgradeBase = new CWndUpgradeBase;
-		g_WndMng.m_pWndUpgradeBase->Initialize( &g_WndMng, APP_TEST );
+		g_WndMng.m_pWndUpgradeBase->Initialize();
 		return FALSE;
 	}
 
@@ -1318,7 +1315,7 @@ BOOL TextCmd_CommercialElem( CScanner& )
 #ifdef __CLIENT
 	SAFE_DELETE( g_WndMng.m_pWndCommerialElem );
 	g_WndMng.m_pWndCommerialElem = new CWndCommercialElem;
-	g_WndMng.m_pWndCommerialElem->Initialize( &g_WndMng, APP_COMMERCIAL_ELEM );
+	g_WndMng.m_pWndCommerialElem->Initialize();
 #endif // __CLIENT
 	return FALSE;
 }
@@ -1790,7 +1787,6 @@ BOOL TextCmd_Summon(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-#ifdef __PET_1024
 BOOL TextCmd_ClearPetName( CScanner &)
 {
 #ifdef __CLIENT
@@ -1810,7 +1806,6 @@ BOOL TextCmd_SetPetName(CScanner & s, CPlayer_ * pUser) {
 #endif	// __WORLDSERVER
 	return TRUE;
 }
-#endif	// __PET_1024
 
 #ifdef __LAYER_1020
 BOOL TextCmd_CreateLayer(CScanner & s) {
@@ -2170,7 +2165,7 @@ BOOL TextCmd_CreateChar(CScanner & scanner, CPlayer_ * pUser) {
 		BOOL bActiveAttack = scanner.GetNumber();
 		for( DWORD dw = 0; dw < dwNum; dw++ )
 		{
-			CMover* pMover = (CMover*)CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+			CMover* pMover = (CMover*)CreateObj( OT_MOVER, pMoverProp->dwID );
 			if( NULL == pMover ) return FALSE; // ASSERT( pObj );
 			strcpy( pMover->m_szCharacterKey, strName );
 			pMover->InitNPCProperty();
@@ -2197,7 +2192,7 @@ BOOL TextCmd_CreateCtrl(CScanner & s, CPlayer_ * pUser) {
 	if( dwID == 0 )
 		return FALSE;
 
-	CCtrl* pCtrl	= (CCtrl*)CreateObj( D3DDEVICE, OT_CTRL, dwID );
+	CCtrl* pCtrl	= (CCtrl*)CreateObj( OT_CTRL, dwID );
 	if( !pCtrl )
 		return FALSE;
 
@@ -2417,7 +2412,7 @@ BOOL TextCmd_CreateNPC(CScanner & scanner, CPlayer_ * pUser) {
 		BOOL bActiveAttack = scanner.GetNumber();
 		for( DWORD dw = 0; dw < dwNum; dw++ )
 		{
-			CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+			CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 			if( NULL == pObj )	
 				return FALSE;	
 			pObj->SetPos( vPos );
@@ -2537,7 +2532,7 @@ BOOL TextCmd_Undying2(CScanner &, CPlayer_ * pUser) {
 
 BOOL TextCmd_NoDisguise(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
-	pUser->NoDisguise( NULL );
+	pUser->NoDisguise( );
 	g_UserMng.AddNoDisguise( pUser );
 #endif // __WORLDSERVER
 	return TRUE;
@@ -2546,7 +2541,7 @@ BOOL TextCmd_NoDisguise(CScanner & scanner, CPlayer_ * pUser) {
 #ifdef __WORLDSERVER
 BOOL DoDisguise( CUser* pUser, DWORD dwIndex )
 {
-	pUser->Disguise( NULL, dwIndex );
+	pUser->Disguise( dwIndex );
 	g_UserMng.AddDisguise( pUser, dwIndex );
 	return TRUE;
 }
@@ -3465,7 +3460,7 @@ BOOL TextCmd_RemoveAttribute( CScanner& scanner )
 	{
 		SAFE_DELETE( g_WndMng.m_pWndUpgradeBase );
 		g_WndMng.m_pWndUpgradeBase = new CWndUpgradeBase;
-		g_WndMng.m_pWndUpgradeBase->Initialize( &g_WndMng, APP_TEST );
+		g_WndMng.m_pWndUpgradeBase->Initialize();
 		return FALSE;
 	}
 	
@@ -3559,13 +3554,9 @@ BOOL TextCmd_RemoveAllBuff(CScanner &, CPlayer_ * pUser) {
 BOOL TextCmd_HeavenTower( CScanner& s )
 {
 #ifdef __CLIENT
-	if(g_WndMng.m_pWndHeavenTower)
-		SAFE_DELETE(g_WndMng.m_pWndHeavenTower);
-
+	SAFE_DELETE(g_WndMng.m_pWndHeavenTower);
 	g_WndMng.m_pWndHeavenTower = new CWndHeavenTower;
-
-	if(g_WndMng.m_pWndHeavenTower)
-		g_WndMng.m_pWndHeavenTower->Initialize(NULL);
+	g_WndMng.m_pWndHeavenTower->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -3573,13 +3564,9 @@ BOOL TextCmd_HeavenTower( CScanner& s )
 BOOL TextCmd_RemoveJewel( CScanner& s )
 {
 #ifdef __CLIENT
-	if(g_WndMng.m_pWndRemoveJewel)
-		SAFE_DELETE(g_WndMng.m_pWndRemoveJewel);
-
+	SAFE_DELETE(g_WndMng.m_pWndRemoveJewel);
 	g_WndMng.m_pWndRemoveJewel = new CWndRemoveJewel;
-
-	if(g_WndMng.m_pWndRemoveJewel)
-		g_WndMng.m_pWndRemoveJewel->Initialize(NULL);
+	g_WndMng.m_pWndRemoveJewel->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -3595,7 +3582,7 @@ BOOL TextCmd_TransEggs( CScanner& s )
 	g_WndMng.m_pWndPetTransEggs = new CWndPetTransEggs;
 
 	if(g_WndMng.m_pWndPetTransEggs)
-		g_WndMng.m_pWndPetTransEggs->Initialize(NULL);
+		g_WndMng.m_pWndPetTransEggs->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -3696,7 +3683,7 @@ BOOL TextCmd_SecretRoomTenderView( CScanner& s )
 
 	if(g_WndMng.m_pWndSecretRoomCheckTaxRate)
 	{
-		g_WndMng.m_pWndSecretRoomCheckTaxRate->Initialize(NULL);
+		g_WndMng.m_pWndSecretRoomCheckTaxRate->Initialize();
 	}
 #endif // __CLIENT
 	return TRUE;
@@ -3936,7 +3923,7 @@ BOOL TextCmd_RainbowRaceInfo( CScanner& s )
 	g_WndMng.m_pWndRainbowRaceInfo = new CWndRainbowRaceInfo;
 
 	if(g_WndMng.m_pWndRainbowRaceInfo)
-		g_WndMng.m_pWndRainbowRaceInfo->Initialize(NULL);
+		g_WndMng.m_pWndRainbowRaceInfo->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -3950,7 +3937,7 @@ BOOL TextCmd_RainbowRaceRule( CScanner& s )
 	g_WndMng.m_pWndRainbowRaceRule = new CWndRainbowRaceRule;
 
 	if(g_WndMng.m_pWndRainbowRaceRule)
-		g_WndMng.m_pWndRainbowRaceRule->Initialize(NULL);
+		g_WndMng.m_pWndRainbowRaceRule->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -3972,7 +3959,7 @@ BOOL TextCmd_RainbowRacePrize( CScanner& s )
 	g_WndMng.m_pWndRainbowRacePrize = new CWndRainbowRacePrize;
 
 	if(g_WndMng.m_pWndRainbowRacePrize)
-		g_WndMng.m_pWndRainbowRacePrize->Initialize(NULL);
+		g_WndMng.m_pWndRainbowRacePrize->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -4045,13 +4032,9 @@ BOOL TextCmd_RainbowRaceReqFininsh( CScanner& s )
 BOOL TextCmd_ChangeAttribute( CScanner& s )
 {
 #ifdef __CLIENT
-	if(g_WndMng.m_pWndChangeAttribute)
-		SAFE_DELETE(g_WndMng.m_pWndChangeAttribute);
-
+	SAFE_DELETE(g_WndMng.m_pWndChangeAttribute);
 	g_WndMng.m_pWndChangeAttribute = new CWndChangeAttribute;
-
-	if(g_WndMng.m_pWndChangeAttribute)
-		g_WndMng.m_pWndChangeAttribute->Initialize(NULL);
+	g_WndMng.m_pWndChangeAttribute->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -4089,7 +4072,7 @@ BOOL TextCmd_SmeltSafetyNormal( CScanner& s )
 	g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_NORMAL);
 	if(g_WndMng.m_pWndSmeltSafety)
 	{
-		g_WndMng.m_pWndSmeltSafety->Initialize(NULL);
+		g_WndMng.m_pWndSmeltSafety->Initialize();
 	}
 #endif // __CLIENT
 	return TRUE;
@@ -4104,7 +4087,7 @@ BOOL TextCmd_SmeltSafetyAccessary( CScanner& s )
 	g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_ACCESSARY);
 	if(g_WndMng.m_pWndSmeltSafety)
 	{
-		g_WndMng.m_pWndSmeltSafety->Initialize(NULL);
+		g_WndMng.m_pWndSmeltSafety->Initialize();
 	}
 #endif // __CLIENT
 	return TRUE;
@@ -4119,7 +4102,7 @@ BOOL TextCmd_SmeltSafetyPiercing( CScanner& s )
 	g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_PIERCING);
 	if(g_WndMng.m_pWndSmeltSafety)
 	{
-		g_WndMng.m_pWndSmeltSafety->Initialize(NULL);
+		g_WndMng.m_pWndSmeltSafety->Initialize();
 	}
 #endif // __CLIENT
 	return TRUE;
@@ -4135,7 +4118,7 @@ BOOL TextCmd_SmeltSafetyElement( CScanner& s )
 
 	g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety( CWndSmeltSafety::WND_ELEMENT );
 	if( g_WndMng.m_pWndSmeltSafety )
-		g_WndMng.m_pWndSmeltSafety->Initialize( NULL );
+		g_WndMng.m_pWndSmeltSafety->Initialize();
 #endif // __CLIENT
 	return TRUE;
 }
@@ -4199,7 +4182,7 @@ BOOL TextCmd_GuildHouseUpkeep( CScanner & s )
 	if( !g_WndMng.m_pWndUpkeep )
 	{
 		g_WndMng.m_pWndUpkeep = new CWndGHUpkeep;
-		g_WndMng.m_pWndUpkeep->Initialize( &g_WndMng, APP_CONFIRM_BUY_ );
+		g_WndMng.m_pWndUpkeep->Initialize();
 	}
 	else
 	{
@@ -4331,9 +4314,9 @@ BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 		u_long pDef = usablePlayers[uniform_dist(e1) % usablePlayers.size()];
 		CGuild * gDef = usableGuilds[uniform_dist(e1) % usableGuilds.size()];
 
-		BOOL master = (uniform_dist(e1) % 15 == 5) ? TRUE : FALSE;
-		BOOL defender = (uniform_dist(e1) % 15 == 8) ? TRUE : FALSE;
-		BOOL bLastLife = (uniform_dist(e1) % 15 == 4) ? TRUE : FALSE;
+		const BOOL master    = uniform_dist(e1) % 15 == 5;
+		const BOOL defender  = uniform_dist(e1) % 15 == 8;
+		const BOOL bLastLife = uniform_dist(e1) % 15 == 4;
 
 		int points = 2
 			+ (master ? 1 : 0)
@@ -4372,16 +4355,18 @@ BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
 	CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
 	if (!pWndWorld) return FALSE;
 
-	pWndWorld->m_mmapGuildCombat_GuildPrecedence.clear();
+	pWndWorld->m_GCprecedence.guilds.clear();
+	pWndWorld->m_GCprecedence.idToGuildName.clear();
 
 	for (const auto & [guildId, points] : guildToPoints) {
 		CGuild * guild = g_GuildMng.GetGuild(guildId);
-		pWndWorld->m_mmapGuildCombat_GuildPrecedence.emplace(points, guild->m_szGuild);
+		pWndWorld->m_GCprecedence.guilds.emplace(points, guildId);
+		pWndWorld->m_GCprecedence.idToGuildName.emplace(guildId, guild->m_szGuild);
 	}
 
-	pWndWorld->m_mmapGuildCombat_PlayerPrecedence.clear();
+	pWndWorld->m_GCprecedence.players.clear();
 	for (const auto & [playerId, points] : playersToPoints) {
-		pWndWorld->m_mmapGuildCombat_PlayerPrecedence.emplace(points, playerId);
+		pWndWorld->m_GCprecedence.players.emplace(points, playerId);
 	}
 
 
@@ -4575,10 +4560,8 @@ CmdFunc::AllCommands::AllCommands() {
 	ON_TEXTCMDFUNC( TextCmd_GenRandomOption,		"GenRandomOption",	"gro",	"각성축복", "각축",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_InitializeRandomOption,	"InitializeRandomOption",	"iro",	"각성축복제거", "각축제거",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
 	ON_TEXTCMDFUNC( TextCmd_SetRandomOption,		"SetRandomOption",	"sro",	"각성축복지정", "각지",	TCM_BOTH,	AUTH_ADMINISTRATOR, "" )
-#ifdef __PET_1024
 	ON_TEXTCMDFUNC( TextCmd_SetPetName,             "SetPetName",           "setpetname",             "펫작명",       "펫작",    TCM_SERVER, AUTH_ADMINISTRATOR , "펫작명" )
 	ON_TEXTCMDFUNC( TextCmd_ClearPetName,           "ClearPetName",           "cpn",             "펫작명취소",       "펫작취",    TCM_CLIENT, AUTH_ADMINISTRATOR , "펫작명취소" )
-#endif	// __PET_1024
 	ON_TEXTCMDFUNC( TextCmd_Propose,				"Propose",           "propose",             "프러포즈",       "프러포즈",    TCM_SERVER, AUTH_ADMINISTRATOR , "프러포즈" )
 	ON_TEXTCMDFUNC( TextCmd_Refuse,					"Refuse",           "refuse",             "프러포즈거절",       "프거",    TCM_SERVER, AUTH_ADMINISTRATOR , "프러포즈거절" )
 	ON_TEXTCMDFUNC( TextCmd_Couple,					"Couple",           "couple",             "커플",       "커플",    TCM_SERVER, AUTH_ADMINISTRATOR , "커플" )

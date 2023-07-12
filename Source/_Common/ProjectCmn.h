@@ -8,6 +8,7 @@
 #include <boost/container/small_vector.hpp>
 #include "FlyFFTypes.h"
 #include "defineJob.h"
+#include <variant>
 
 #define	MAX_OBJARRAY			8
 #define	MAX_QUICKSLOT			21
@@ -59,11 +60,10 @@ const int	MAX_PROPMOVER =		2000;		// MoverProp배열의 최대갯수
 
 #include "defineitemkind.h"
 
-struct tagColorText
-{
+struct tagColorText {
 	DWORD dwColor;
-	TCHAR * lpszData;
-}; 
+	CString lpszData;
+};
 
 struct ObjProp
 {
@@ -178,7 +178,7 @@ struct PartySkillProp
 	}
 };
 
-enum 
+enum class _FILEWITHTEXT
 {	
 	FILE_FILTER	= 0, 
 	FILE_INVALID = 1, 
@@ -188,20 +188,17 @@ enum
 	FILE_GUILDCOMBAT_TEXT_3 = 5, 
 	FILE_GUILDCOMBAT_TEXT_4 = 6, 
 	FILE_GUILDCOMBAT_TEXT_5 = 7,
-	FILE_GUILDCOMBAT_TEXT_6 = 8
-#ifdef __RULE_0615
-	,FILE_ALLOWED_LETTER	= 9
-#endif	// __RULE_0615
-	,
+	FILE_GUILDCOMBAT_TEXT_6 = 8,
+	FILE_ALLOWED_LETTER	= 9,
 	FILE_GUILDCOMBAT_1TO1_TEXT_1 = 10,
 	FILE_GUILDCOMBAT_1TO1_TEXT_2 = 11,
 	FILE_GUILDCOMBAT_1TO1_TEXT_3 = 12,
 	FILE_GUILDCOMBAT_1TO1_TEXT_4 = 13,
-	FILE_GUILDCOMBAT_1TO1_TEXT_5 = 14
-#ifdef __VENDOR_1106
-	,FILE_ALLOWED_LETTER2	= 15
-#endif	// __VENDOR_1106
+	FILE_GUILDCOMBAT_1TO1_TEXT_5 = 14,
+	FILE_ALLOWED_LETTER2	= 15
 };
+
+using enum _FILEWITHTEXT;
 
 // Item Property Type
 enum IP_TYPE 
@@ -826,7 +823,6 @@ struct SHORTCUT {
 	ShortcutType m_dwShortcut = ShortcutType::None;
 	DWORD     m_dwId = 0;
 	DWORD     m_dwIndex = 0;
-	DWORD     m_dwUserId = 0;
 	DWORD     m_dwData = NULL;
 	TCHAR     m_szString[MAX_SHORTCUT_STRING] = ""; // SHORTCUT_CHAT일 경우 저장.
 	BOOL IsEmpty() const { return m_dwShortcut == ShortcutType::None; }
@@ -834,6 +830,27 @@ struct SHORTCUT {
 
 	friend CAr & operator<<(CAr & ar, const SHORTCUT & self);
 	friend CAr & operator>>(CAr & ar, SHORTCUT & self);
+
+	// ==========================================================================
+
+	struct Source {
+		struct Inventory { DWORD itemPos; };
+		struct Penya {};
+		struct Bag { int bagId; DWORD itemPos; };
+		struct Bank { int slot; DWORD itemPos; };
+		struct BankPenya { int slot; };
+		struct Guild { DWORD itemPos; };
+		struct GuildMoney {};
+	};
+
+	struct Sources {
+		using ItemOrMoney = std::variant<
+			Source::Inventory, Source::Penya,
+			Source::Bank, Source::BankPenya,
+			Source::Guild, Source::GuildMoney,
+			Source::Bag
+		>;
+	};
 };
 using LPSHORTCUT = SHORTCUT *;
 
@@ -848,35 +865,7 @@ struct EXPCHARACTER {
 	EXPINTEGER	nLimitExp;
 };
 
-
-#ifdef __RULE_0615
-
-class CNameValider {
-	// Note: CNameValider logic is incompatible with wide char encoding.
-	
-	// We prefer std::array<bool, 256> instead of std::bitset<256>
-	// https://stackoverflow.com/a/58476584
-	// Some bit trickery might be possible though
-
-private:
-	std::vector<std::string> m_invalidNames;
-	std::array<bool, 256> m_allowedLetters{ false, };
-	std::array<bool, 256> m_allowedLettersForVendor{ false, };
-	static_assert(sizeof(char) == 1, "char should be on only one byte so its value goes from 0 included to 256 excluded");
-
-public:
-	bool Load();
-
-	static void Formalize(LPSTR szName);
-	[[nodiscard]] bool IsNotAllowedName(LPCSTR name) const;
-	[[nodiscard]] bool IsNotAllowedVendorName(LPCSTR name) const;
-	[[nodiscard]] bool IsAllowedLetter(LPCSTR name) const { return AllLettersAreIn(name, m_allowedLetters); }
-
-private:
-	[[nodiscard]] bool IsInvalidName(LPCSTR name) const;
-	[[nodiscard]] static bool AllLettersAreIn(LPCSTR name, const std::array<bool, 256> & allowed);
-};
-#endif	// __RULE_0615
+#include "NameValidation.h"
 
 class ProjectLoadError : public std::exception {
 	const char * m_errorMessage;

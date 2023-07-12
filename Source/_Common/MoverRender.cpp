@@ -142,7 +142,7 @@ void CMover::SetRenderPartsEffect( int nParts )
 		}
 	}
 }
-void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CMover::Render( )
 {
 	MoverProp *pMoverProp = GetProp();
 	if( pMoverProp == NULL )
@@ -219,7 +219,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 
 #endif
 
-	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( pd3dDevice, 0 ) );
+	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( 0 ) );
 
 	D3DXMATRIX  mWorld;
 
@@ -500,14 +500,14 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 				g_eLocal.GetState( EVE_SCHOOL_BATTLE ) < SBS_START &&	// 대항전 시작 이전,
 				!IsAuthHigher( AUTH_GAMEMASTER ) )	// 일반 사용자,
 			{
-				m_pModel->Render( pd3dDevice, &mWorld ); 
+				m_pModel->Render( &mWorld ); 
 			}
 			else
 			{
 				m_pModel->SetBlendFactor( 80 );
 				if( IsActiveMover() ||		// 자기자신은 반투명으로 출력 ...혹은
 					(IsActiveMover() == FALSE && g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER )) )		// 타인인데 플레이어가 겜마면.
-					m_pModel->Render( pd3dDevice, &mWorld );		// 반투명으로 출력
+					m_pModel->Render( &mWorld );		// 반투명으로 출력
 				m_pModel->SetBlendFactor( 255 );
 			}
 		}
@@ -531,7 +531,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 #endif //__YSMOOTH_OBJ
 			
 			m_pModel->SetBlendFactor(m_wBlendFactor);
-			m_pModel->Render( pd3dDevice, &mWorld );	// 일반 상태 출력
+			m_pModel->Render( &mWorld );	// 일반 상태 출력
 		}
 
 
@@ -549,7 +549,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		{
 			if( m_pModel->m_nNoEffect == 0 )
 			{
-				m_pModel->Render( pd3dDevice, &mWorld ); 
+				m_pModel->Render( &mWorld ); 
 				pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, FALSE );
 				pd3dDevice->SetRenderState(D3DRS_SRCBLEND,D3DBLEND_SRCALPHA);
 				pd3dDevice->SetRenderState(D3DRS_DESTBLEND,D3DBLEND_INVSRCALPHA);
@@ -558,14 +558,14 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 
 	}
 	if( m_pActMover )
-		m_pActMover->Render( pd3dDevice, &mWorld ); 
+		m_pActMover->Render( &mWorld ); 
 	
 #ifdef __CLIENT
 #ifdef __AMAKI
 	if( g_pPlayer != this )
 	{
 		if( m_pRide && m_pActMover->IsFly() )
-			m_pRide->Render( pd3dDevice, &mWorld );
+			m_pRide->Render( &mWorld );
 	}
 #else
 	if( IsMode( TRANSPARENT_MODE ) == 0 )		// 투명상태가 아닐때만 렌더.
@@ -626,7 +626,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 #ifdef __CSC_EXTEXTURE
 			m_pRide->SetTextureEx(m_pRide->m_pModelElem->m_nTextureEx);
 #endif //__CSC_EXTEXTURE
-			m_pRide->Render( pd3dDevice, &mRide );
+			m_pRide->Render( &mRide );
 			m_pRide->m_nNoEffect = 0;
 
 #ifdef __CLIENT
@@ -638,18 +638,17 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 				if( m_pLadolf == NULL )
 				{ 
 					m_pLadolf = new CModelObject;
-					m_pLadolf->InitDeviceObjects( pd3dDevice );
+					m_pLadolf->InitDeviceObjects( );
 					m_pLadolf->LoadBone( "mvr_Ladolf.chr" );
 					m_pLadolf->LoadElement( "mvr_Ladolf.o3d", 0 );
 					m_pLadolf->LoadMotion( "mvr_Ladolf_stand.ani" );
 				}
 
 				D3DXMATRIX mLadolf = mRide;
-				D3DXVECTOR3 vLocal;
 
-				FLOAT fAngXZ = GetAngle();
-				FLOAT fAngH  = GetAngleX();
-				AngleToVector( &vLocal, fAngXZ, -fAngH-10.0f, 1.4f );
+				const FLOAT fAngXZ = GetAngle();
+				const FLOAT fAngH  = GetAngleX();
+				const D3DXVECTOR3 vLocal = AngleToVector( fAngXZ, -fAngH-10.0f, 1.4f );
 
 				// 날기 시작 - 가속중
 				if( m_pActMover->GetStateFlag() & OBJSTAF_ACC )
@@ -681,7 +680,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 				mLadolf._43 += vLocal.z;
 				
 				m_pLadolf->m_nNoEffect = m_pModel->m_nNoEffect;
-				m_pLadolf->Render( pd3dDevice, &mLadolf );
+				m_pLadolf->Render( &mLadolf );
 				m_pLadolf->m_nNoEffect = 0;
 			}
 #endif //__CLIENT
@@ -697,7 +696,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	if(m_pAngelFlag && m_pAngel != NULL)
 	{
 		m_pAngel->m_nNoEffect = m_pModel->m_nNoEffect;
-		m_pAngel->Render( pd3dDevice, &m_AngelWorldM );
+		m_pAngel->Render( &m_AngelWorldM );
 		m_pAngel->m_nNoEffect = 0;
 	}
 
@@ -705,7 +704,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 	if(m_pBalloonFlag && m_pBalloon != NULL)
 	{
 		m_pBalloon->m_nNoEffect = m_pModel->m_nNoEffect;
-		m_pBalloon->Render( pd3dDevice, &m_BalloonWorldM );
+		m_pBalloon->Render( &m_BalloonWorldM );
 		m_pBalloon->m_nNoEffect = 0;
 	}
 #endif //__EVE_BALLOON
@@ -721,10 +720,8 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 			FLOAT fDot = D3DXVec3Dot( &vCamera, &vObj );
 			if( fDot > cosf(D3DXToRadian(15.0f)) )
 			{
-				CWndWorld *pWndWorld = (CWndWorld *)g_WndMng.m_pWndWorld;
-				if( pWndWorld )
-				{
-					pWndWorld->AddFlyTarget( GetId() );
+				if (g_WndMng.m_pWndWorld) {
+					g_WndMng.m_pWndWorld->m_flyTarget.Add(GetId());
 				}
 			}
 		}
@@ -740,7 +737,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		case MI_RISEM2:
 		case MI_RISEM3:
 		case MI_RISEM4:
-			pSfx = CreateSfx( D3DDEVICE, XI_NPCRISEMSIGN, GetPos(), GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );
+			pSfx = CreateSfx( XI_NPCRISEMSIGN, GetPos(), GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );
 			if( pSfx )
 				pSfx->SetScale( GetScale() );
 		}
@@ -748,7 +745,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 			m_dwFlag |= MVRF_EFFECT1;
 	}
 	if( m_pModel->m_nNoEffect == 0 )
-		RenderQuestEmoticon( pd3dDevice );
+		RenderQuestEmoticon( );
 
 	if( IsActiveMover() && m_pModel && IsDie() && !HasBuffByIk3(IK3_TEXT_DISGUISE) )
 	{
@@ -763,7 +760,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 			
 			if( pGmObj )
 			{
-				(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEye[m_bySex][m_dwHeadMesh];
+				(*pGmObj->m_pMtrlBlkTexture) = CMover::m_pTextureEye[m_bySex][m_skin.headMesh];
 			}
 		}
 	}
@@ -773,7 +770,7 @@ void CMover::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 }
 
 // 이것이 호출될때는 바로 이전에 CMover::Render()가 호출되어야 한다.
-void CMover::RenderPartsEffect( LPDIRECT3DDEVICE9 pd3dDevice )
+void CMover::RenderPartsEffect( )
 {
 #ifdef _DEBUG
 	if( g_pPlayer == this )
@@ -791,7 +788,7 @@ void CMover::RenderPartsEffect( LPDIRECT3DDEVICE9 pd3dDevice )
 	if( !IsVisible() || IsCull() )
 		return;
 
-	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( pd3dDevice, 0 ) );
+	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( 0 ) );
 
 	D3DXVECTOR3 vPos = GetPos();
 	D3DXMATRIX  matWorld;
@@ -870,52 +867,67 @@ void CMover::RenderPartsEffect( LPDIRECT3DDEVICE9 pd3dDevice )
 				nRO = (m_aEquipInfo[PARTS_RWEAPON].nOption & 0xFF000000) >> 24;
 			}
 
-			m_pModel->RenderEffect( pd3dDevice, &matWorld, pItemProp->dwItemKind3, nLO, nRO ); 
+			m_pModel->RenderEffect( &matWorld, pItemProp->dwItemKind3, nLO, nRO ); 
 		}
 		else
-			m_pModel->RenderEffect( pd3dDevice, &matWorld, NULL_ID ); 		
+			m_pModel->RenderEffect( &matWorld, NULL_ID ); 		
 	}
 
 	extern CPartsLaser g_Laser;
 	D3DXMatrixIdentity( &matWorld );
-	g_Laser.Render( pd3dDevice, &matWorld, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward );
+	g_Laser.Render( &matWorld, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward );
 
 	if( m_dwIndex == MI_DU_METEONYKER || m_dwIndex == MI_DU_METEONYKER2 || m_dwIndex == MI_DU_METEONYKER3 ||
 		m_dwIndex == MI_DU_METEONYKER4 )
 	{
 		extern CPartsFireDragon	g_FireDragon;
-		g_FireDragon.Render( pd3dDevice, &matWorld );
+		g_FireDragon.Render( &matWorld );
 	}
 }
 
 
 #ifdef __CLIENT
 
-// nValue ( 1,2,3,4 )
-void CMover::RenderGauge( LPDIRECT3DDEVICE9 pd3dDevice, int nValue )
-{
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-    D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
+D3DXVECTOR3 CObj::ProjectWorldCoordToScreenCoord(
+	std::optional<D3DXVECTOR3> pPos,
+	DWORD flags
+) {
+	D3DVIEWPORT9 vp; pd3dDevice->GetViewport(&vp);
 
-    pd3dDevice->GetViewport( &vp );
-	vp.X = 0;
-	vp.Y = 0;
+	if (!(flags & PWCTSC_UntouchedViewport)) {
+		vp.X = 0;
+		vp.Y = 0;
+	}
 
-	D3DXMATRIX matTrans;
 	D3DXMATRIX matWorld;
 	D3DXMatrixIdentity(&matWorld);
-	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
+	if (!(flags & PWCTSC_DoNotResetWorldTransform)) {
+		pd3dDevice->SetTransform(D3DTS_WORLD, &matWorld);
+	}
+
+	const D3DXVECTOR3 vPos = pPos.value_or(GetPos());
+	D3DXMATRIX matTrans; D3DXMatrixTranslation(&matTrans, vPos.x, vPos.y, vPos.z);
+
 	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-	
-	vPosHeight = pBB->m_vPos[0];
+
+	const BOUND_BOX * pBB = m_pModel->GetBBVector();
+	D3DXVECTOR3 vPosHeight = pBB->m_vPos[0];
 	vPosHeight.x = 0;
 	vPosHeight.z = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
+
+	CWorld * pWorld = GetWorld();
+
+	D3DXVECTOR3 vOut;
+	D3DXVec3Project(&vOut, &vPosHeight, &vp, &pWorld->m_matProj,
+		&pWorld->m_pCamera->m_matView, &matWorld);
+
+	return vOut;
+}
+
+// nValue ( 1,2,3,4 )
+void CMover::RenderGauge( int nValue )
+{
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord();
 
 	vOut.y -= 40;
 
@@ -955,7 +967,7 @@ void CMover::RenderGauge( LPDIRECT3DDEVICE9 pd3dDevice, int nValue )
 
 
 // 비행시 터보그래프
-void CMover::RenderTurboGauge( LPDIRECT3DDEVICE9 pd3dDevice, DWORD nColor, int nValue, int nMaxValue )
+void CMover::RenderTurboGauge( DWORD nColor, int nValue, int nMaxValue )
 {
 	if( IsMode( TRANSPARENT_MODE ) )
 		return;
@@ -1059,7 +1071,7 @@ void CMover::RenderTurboGauge( LPDIRECT3DDEVICE9 pd3dDevice, DWORD nColor, int n
 #endif // __CLIENT
 
 #ifdef __CLIENT
-void CMover::RenderQuestEmoticon( LPDIRECT3DDEVICE9 pd3dDevice )
+void CMover::RenderQuestEmoticon( )
 {
 	if( IsPlayer() || m_bShowQuestEmoticon == FALSE )
 		return;
@@ -1067,25 +1079,11 @@ void CMover::RenderQuestEmoticon( LPDIRECT3DDEVICE9 pd3dDevice )
 
 	if( lpCharacter == NULL ) return;
 
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-    D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(
+		std::nullopt,
+		PWCTSC_DoNotResetWorldTransform | PWCTSC_UntouchedViewport
+	);
 
-    pd3dDevice->GetViewport( &vp );
-
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z );
-	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
-
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
 	//vOutFLOAT fHeight = ( vOut[0].y - vOut[4].y ) - 10f;
 	CPoint point;
 	point.x = (LONG)( vOut.x );
@@ -1112,7 +1110,7 @@ void CMover::RenderQuestEmoticon( LPDIRECT3DDEVICE9 pd3dDevice )
 }
 #endif // __CLIENT
 
-void CMover::RenderChrState(LPDIRECT3DDEVICE9 pd3dDevice)
+void CMover::RenderChrState()
 {
 	if( !IsVisible() )
 		return;
@@ -1121,32 +1119,10 @@ void CMover::RenderChrState(LPDIRECT3DDEVICE9 pd3dDevice)
 	{
 		if( IsCull() == FALSE )
 		{
-			// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-			D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-			D3DVIEWPORT9 vp;
-			const BOUND_BOX* pBB;
-			
-			if( m_pModel )
-				pBB	= m_pModel->GetBBVector();
-			else
-				return;
-			
-			pd3dDevice->GetViewport( &vp );
-
-			D3DXMATRIX matTrans;
-			D3DXMATRIX matWorld;
-			D3DXMatrixIdentity(&matWorld);
-			D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
-			
-			matWorld = matWorld * GetMatrixScale() * GetMatrixRotation();
-			D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
-			
-			vPosHeight = pBB->m_vPos[0];
-			vPosHeight.x = 0;
-			vPosHeight.z = 0;
-			
-			D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-				&GetWorld()->m_pCamera->m_matView, &matWorld);
+			D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(
+				std::nullopt,
+				PWCTSC_DoNotResetWorldTransform | PWCTSC_UntouchedViewport
+			);
 			
 			CPoint point;
 			point.x = (LONG)( vOut.x - 32 / 2 );
@@ -1177,7 +1153,7 @@ void	CMover::SetTitle(LPCTSTR pTitle)
 	m_strTitle = pTitle;
 }
 
-void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor )
+void CMover::RenderName( CD3DFont* pFont, DWORD dwColor )
 {
 	if( !IsVisible() )
 		return;
@@ -1244,33 +1220,19 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 		}
 	}
 
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos, vPosHeight;
-
 	//소환수만 GetScrPos로 위치를 구한다.
-	MoverProp* pMoverProp = GetProp();
-	if( pMoverProp && ( pMoverProp->dwAI == AII_PET || pMoverProp->dwAI == AII_EGG ) )
+	D3DXVECTOR3 vPos;
+	MoverProp * pMoverProp = GetProp();
+	if (pMoverProp && (pMoverProp->dwAI == AII_PET || pMoverProp->dwAI == AII_EGG))
 		vPos = GetScrPos();
 	else
 		vPos = GetPos();
-	
-    D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
 
-    pd3dDevice->GetViewport( &vp );
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(
+		vPos,
+		PWCTSC_DoNotResetWorldTransform
+	);
 
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z );
-	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
-
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
 	//vOutFLOAT fHeight = ( vOut[0].y - vOut[4].y ) - 10f;
 	CPoint point;
 	point.x = (LONG)( vOut.x );
@@ -1458,7 +1420,7 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 			//	strPath = MakePath( DIR_ICON, "icon_Expert6.dds");
 				pTexture = g_Neuz.m_pMasterIcon[5];
 
-			//pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+			//pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 			if(pTexture != NULL)
 			{
 				point.y -= pTexture->m_size.cy + 5;
@@ -1468,7 +1430,7 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 		else if(checkhero == LEGEND_CLASS_HERO) //영웅일 경우.
 		{
 			//strPath = MakePath( DIR_ICON, "icon_Hero.dds");
-			//pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+			//pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 			pTexture = g_Neuz.m_pHeroIcon;
 			if(pTexture != NULL)
 			{
@@ -1494,14 +1456,13 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 		dwColor = 0xFFFFFFFF;
 		if( pGuild->IsMaster(m_idPlayer))
 			dwColor = 0xFFFFFF99;
-		else
-		if( bOtherColor )
+		else if( bOtherColor )
 			dwColor = dwNewColor;
 
 		// 길드컴뱃이 열린상태이면서 디펜더는 분홍색으로 출력
 		if( g_GuildCombatMng.m_nGCState >= CGuildCombat::MAINTENANCE_STATE )
 		{
-			if( pWndWorld && pWndWorld->GetGCStatusDefender(m_idPlayer) != -1 )
+			if( pWndWorld && pWndWorld->m_infoGC.IsGCStatusDefender(m_idPlayer) )
 			{
 				dwColor = 0xFFFEA8FF;
 			}		
@@ -1624,7 +1585,7 @@ void CMover::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dw
 void CMover::RenderFlag( int nType )
 {
 	// 결투상대라는 sfx를 머리위에 띄워줌.
-	CSfx *pSfx = CreateSfx( D3DDEVICE, XI_GEN_PVP_FLAG01, GetPos(), GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );
+	CSfx *pSfx = CreateSfx( XI_GEN_PVP_FLAG01, GetPos(), GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );
 	if( pSfx )
 	{
 		pSfx->SetScale( D3DXVECTOR3(1.5f, 1.5f, 1.5f) );
@@ -1633,7 +1594,7 @@ void CMover::RenderFlag( int nType )
 	}
 }
 	
-void CMover::RenderHP(LPDIRECT3DDEVICE9 pd3dDevice)
+void CMover::RenderHP()
 {
 	if( !IsVisible() )
 		return;
@@ -1663,36 +1624,17 @@ void CMover::RenderHP(LPDIRECT3DDEVICE9 pd3dDevice)
 #endif // __QUIZ
 	
 	pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos, vPosHeight;
-	D3DVIEWPORT9 vp;
+
 
 	//소환수만 GetScrPos로 위치를 구한다.
-	MoverProp* pMoverProp = GetProp();
-	if( pMoverProp && ( pMoverProp->dwAI == AII_PET || pMoverProp->dwAI == AII_EGG ) )
+	D3DXVECTOR3 vPos;
+	MoverProp * pMoverProp = GetProp();
+	if (pMoverProp && (pMoverProp->dwAI == AII_PET || pMoverProp->dwAI == AII_EGG))
 		vPos = GetScrPos();
 	else
 		vPos = GetPos();
 
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
-	
-	pd3dDevice->GetViewport( &vp );
-	vp.X = 0;
-	vp.Y = 0;
-	
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-	
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(vPos);
 	
 	vOut.y -= 34;
 	int nGaugeWidth = 80;
@@ -1721,11 +1663,11 @@ void CMover::RenderHP(LPDIRECT3DDEVICE9 pd3dDevice)
 		g_Neuz.m_TextureHPGauge[1].Render(&(g_Neuz.m_2DRender), p, p2, 200, 0.8f, 0.55f);				
 
 	if(m_pAngelFlag)
-		RenderAngelStatus( pd3dDevice );
+		RenderAngelStatus( );
 }
 
 
-void CMover::RenderCltGauge(LPDIRECT3DDEVICE9 pd3dDevice)
+void CMover::RenderCltGauge()
 {
 
 	if( !IsVisible())	return;
@@ -1734,33 +1676,9 @@ void CMover::RenderCltGauge(LPDIRECT3DDEVICE9 pd3dDevice)
 
 	if( g_Option.m_nOtherPlayerName == FALSE && !IsActiveMover() && IsPlayer() )
 		return;
+	MoverProp * pMoverProp = GetProp();
 
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos, vPosHeight;
-	D3DVIEWPORT9 vp;
-
-	MoverProp* pMoverProp = GetProp();
-	vPos = GetPos();
-
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
-	
-	pd3dDevice->GetViewport( &vp );
-	vp.X = 0;
-	vp.Y = 0;
-	
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-	
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x  = 0;
-	vPosHeight.z  = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord();
 	
 	vOut.y -= 48;
 	int nGaugeWidth = 80;
@@ -1780,7 +1698,7 @@ void CMover::RenderCltGauge(LPDIRECT3DDEVICE9 pd3dDevice)
 
 }
 
-void CMover::RenderAngelStatus(LPDIRECT3DDEVICE9 pd3dDevice)
+void CMover::RenderAngelStatus()
 {
 	if(m_pAngel == NULL)
 		return;
@@ -1842,7 +1760,7 @@ void CMover::RenderAngelStatus(LPDIRECT3DDEVICE9 pd3dDevice)
 	}
 }
 
-void CMover::RenderCasting(LPDIRECT3DDEVICE9 pd3dDevice)
+void CMover::RenderCasting()
 {
 	if( g_pPlayer->IsStateMode( STATE_BASEMOTION_MODE ) == FALSE )
 		return;
@@ -1852,28 +1770,8 @@ void CMover::RenderCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 		return;
 	
 	pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-	D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
-	
-	pd3dDevice->GetViewport( &vp );
-	vp.X = 0;
-	vp.Y = 0;
-	
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-	
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
+
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord();
 	
 	vOut.y -= 48;
 	int nGaugeWidth = 80;
@@ -1903,7 +1801,7 @@ void CMover::RenderCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 	}
 }
 
-void CMover::RenderCtrlCasting(LPDIRECT3DDEVICE9 pd3dDevice)
+void CMover::RenderCtrlCasting()
 {
 //	if( g_pPlayer->IsStateMode( STATE_BASEMOTION_MODE ) == FALSE )
 //		return;
@@ -1913,28 +1811,8 @@ void CMover::RenderCtrlCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 		return;
 	
 	pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-	D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
-	
-	pd3dDevice->GetViewport( &vp );
-	vp.X = 0;
-	vp.Y = 0;
-	
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-	
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
+
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord();
 	
 	vOut.y -= 48;
 	int nGaugeWidth = 80;
@@ -1964,7 +1842,7 @@ void CMover::RenderCtrlCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 	}
 }
 
-void CMover::RenderSkillCasting(LPDIRECT3DDEVICE9 pd3dDevice)
+void CMover::RenderSkillCasting()
 {
 //	if( g_pPlayer->IsStateMode( STATE_BASEMOTION_MODE ) == FALSE )
 //		return;
@@ -1984,28 +1862,8 @@ void CMover::RenderSkillCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 
 	
 	pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-	D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
 	
-	pd3dDevice->GetViewport( &vp );
-	vp.X = 0;
-	vp.Y = 0;
-	
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z);
-	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
-	
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord();
 	
 	vOut.y -= 48;
 	int nGaugeWidth = 80;
@@ -2036,7 +1894,7 @@ void CMover::RenderSkillCasting(LPDIRECT3DDEVICE9 pd3dDevice)
 }
 
 
-void CMover::RenderPVPCount(LPDIRECT3DDEVICE9 pd3dDevice)
+void CMover::RenderPVPCount()
 {
 	DWORD dwWidth = g_Neuz.m_d3dsdBackBuffer.Width / 2;
 	DWORD dwHeight = g_Neuz.m_d3dsdBackBuffer.Height / 2;

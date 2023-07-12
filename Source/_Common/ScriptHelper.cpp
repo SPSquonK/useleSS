@@ -155,7 +155,7 @@ int __RemoveQuest( int nPcId, int nQuest_ )
 		if( pQuest && pQuestProp->m_nBeginSetDisguiseMoverIndex )
 		{
 			CUser* pUser = prj.GetUser( nPcId );
-			pUser->NoDisguise( NULL );
+			pUser->NoDisguise( );
 			g_UserMng.AddNoDisguise( pUser );
 		}
 	}
@@ -213,7 +213,7 @@ int __RunQuest( int nPcId, int nNpcId, int nQuestId )
 		if( pQuestProp->m_nBeginSetDisguiseMoverIndex )
 		{
 			CUser* pUser = prj.GetUser( nPcId );
-			pUser->Disguise( NULL, pQuestProp->m_nBeginSetDisguiseMoverIndex );
+			pUser->Disguise( pQuestProp->m_nBeginSetDisguiseMoverIndex );
 			g_UserMng.AddDisguise( pUser, pQuestProp->m_nBeginSetDisguiseMoverIndex );
 		}
 		__SetQuest( nPcId, nQuestId );
@@ -365,7 +365,7 @@ int __EndQuest( int nPcId, int nQuestId, BOOL IsEndQuestCondition )
 		if( pQuestProp->m_nBeginSetDisguiseMoverIndex )
 		{
 			CUser* pUser = prj.GetUser( nPcId );
-			pUser->NoDisguise( NULL );
+			pUser->NoDisguise( );
 			g_UserMng.AddNoDisguise( pUser );
 		}
 		if( pQuestProp->m_nEndRewardTSP )

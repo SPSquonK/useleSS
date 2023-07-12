@@ -11,16 +11,16 @@ public:
 	void OnLButtonDown(UINT nFlags, CPoint point) override;
 };
 
-class CWndRemoveQuest : public CWndMessageBox {
+class CWndRemoveQuest : public CWndCustomMessageBox {
 	QuestId m_nRemoveQuestId;
 public:
 	CWndRemoveQuest(const QuestId nRemoveQuestId) : m_nRemoveQuestId(nRemoveQuestId) {}
 	
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 };
 
-class CWndQuest : public CWndNeuz 
+class CWndQuest final : public CWndNeuz
 { 
 public: 
 	using TreeElems = boost::container::stable_vector<TREEELEM>;
@@ -31,7 +31,7 @@ public:
 	enum { MAX_CHECK_NUMBER = 5 };
 
 	int m_idSelQuest;
-	CWordArray m_aOpenTree;
+	std::vector<QuestId> m_aOpenTree;
 	void Update( int nNewQuestId = -1 );
 	void RemoveQuest( void );
 	void ControlOpenTree( const LPTREEELEM lpTreeElem );
@@ -39,22 +39,16 @@ public:
 	void TreeOpen();
 	virtual void SerializeRegInfo( CAr& ar, DWORD& dwVersion );
 	CString MakeQuestString( CString& string, BOOL bCond ); 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE );
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 
 private:
-	CWndQuestTreeCtrl* GetQuestTreeSelf( const DWORD dwQuestID );
-	void AddOpenTree( CWordArray& raOpenTree, const TreeElems & rPtrArray );
+	CWndQuestTreeCtrl* GetQuestTreeSelf( QuestId dwQuestID );
 	void OpenTreeArray( TreeElems & rPtrArray, BOOL bOpen = TRUE );
-	void InsertQuestItem( const DWORD dwQuestID, CDWordArray& raOldHeadQuestID, const BOOL bCompleteQuest, const int nNewQuestId = -1 );
-	DWORD FindOldHeadQuest( const CDWordArray& raOldHeadQuestID, const DWORD dwNowHeadQuestID ) const;
+	void InsertQuestItem(QuestId dwQuestID, std::set<QuestId> & raOldHeadQuestID, BOOL bCompleteQuest, int nNewQuestId = -1 );
 	BOOL IsCheckedQuestID( DWORD dwQuestID );
 
 private:
@@ -64,7 +58,7 @@ private:
 	CWndQuestTreeCtrl m_WndEvent;
 }; 
 
-class CWndQuestDetail : public CWndNeuz
+class CWndQuestDetail final : public CWndNeuz
 {
 public:
 	class CWndQConditionTreeCtrl : public CWndTreeCtrl {
@@ -75,7 +69,7 @@ public:
 	CWndQuestDetail( DWORD dwQuestID = -1 );
 
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual	void OnInitialUpdate( void );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE );
@@ -101,7 +95,7 @@ void MakeQuestConditionItems( QuestId dwQuestID,
 							  DWORD dwSelectColor = D3DCOLOR_ARGB( 255, 0, 0, 255 ) );
 const CString MakeString( const CString& string, BOOL bCond );
 DWORD MakeTextColor( DWORD dwStartColor = D3DCOLOR_ARGB( 255, 0, 0, 0 ), DWORD dwEndColor = D3DCOLOR_ARGB( 255, 0, 0, 0 ), int nCurrentNumber = 0, int nCompleteNumber = 0 );
-DWORD GetRootHeadQuest( DWORD dwHeadQuest );
+QuestId GetRootHeadQuest( QuestId dwHeadQuest );
 DWORD SetQuestDestinationInformation( DWORD dwQuestID, DWORD dwGoalIndex );
 void ProcessQuestDestinationWorldMap( DWORD dwGoalTextID );
 

@@ -64,7 +64,7 @@ void CWndQITreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 				{
 					SAFE_DELETE( g_WndMng.m_pWndQuestDetail )
 					g_WndMng.m_pWndQuestDetail = new CWndQuestDetail( dwQuestID );
-					g_WndMng.m_pWndQuestDetail->Initialize( NULL );
+					g_WndMng.m_pWndQuestDetail->Initialize();
 					LPQUEST lpQuest = g_pPlayer->FindQuest( QuestId(dwQuestID) );
 					BOOL bComplete = dwQuestID != -1 && g_pPlayer->IsCompleteQuest( QuestId(dwQuestID) );
 					g_WndMng.m_pWndQuestDetail->UpdateQuestDetailText( dwQuestID, lpQuest, bComplete );
@@ -185,7 +185,7 @@ CWndQuestQuickInfo::~CWndQuestQuickInfo( void )
 	DeleteTree();
 }
 //-----------------------------------------------------------------------------
-BOOL CWndQuestQuickInfo::Initialize( CWndBase* pWndParent, DWORD dwType )
+BOOL CWndQuestQuickInfo::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_QUEST_QUICK_INFO, pWndParent, WBS_MANAGER, CPoint( 0, 0 ) );
 }
@@ -200,12 +200,14 @@ void CWndQuestQuickInfo::OnInitialUpdate( void )
 	m_CWndQITreeCtrl.SetCategoryTextSpace( 12 );
 
 	static const int TOP_MARGIN = 220;
-	CRect rectRoot = m_pWndRoot->m_rectWindow;
+	CRect rectRoot = g_WndMng.m_rectWindow;
 	Move( rectRoot.right - m_rectWindow.Width(), TOP_MARGIN );
 }
 //-----------------------------------------------------------------------------
 BOOL CWndQuestQuickInfo::Process( void )
 {
+	if (!g_pPlayer) return TRUE;
+
 	CRect rtQuickInfoApplet = GetWindowRect();
 	static const int REVISION_RECT_LEFT = 4; // Rect가 실제 윈도우보다 4픽셀 정도 오른쪽으로 치우쳐져 있는 것을 보정
 	static const int REVISION_RECT_UP = 22; // Rect가 실제 윈도우보다 22픽셀 정도 내려가 있는 것을 보정

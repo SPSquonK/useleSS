@@ -4,22 +4,11 @@
 #include "dpmng.h"
 #include "msghdr.h"
 
-#undef	theClass
-#define theClass	CDPAccountClient
-#undef theParameters
-#define theParameters	CAr & ar, LPBYTE lpBuf, u_long uBufSize
-
 class CDPAccountClient : public CDPMng,
-	public DPMngFeatures::SendPacketNone
+	public DPMngFeatures::SendPacketNone,
+	public DPMngFeatures::PacketHandler<CDPAccountClient, LPBYTE, u_long>
 {
 public:
-/*
-#ifdef __S0114_RELOADPRO
-	SET_STRING		m_OutAccount_List;
-	CTime			m_tMemDelete;
-	BOOL			m_bMemDelete;
-#endif // __S0114_RELOADPRO
-*/
 //	Constructions
 	CDPAccountClient();
 	virtual	~CDPAccountClient();
@@ -41,7 +30,7 @@ public:
 #endif // __S0114_RELOADPRO
 */
 //	Handlers
-	USES_PFNENTRIES;
+private:
 	void	OnGetPlayerList( CAr & ar, LPBYTE, u_long );
 #ifdef __REMOVE_PLAYER_0221
 	void	OnRemovePlayer( CAr & ar, LPBYTE lpBuf, u_long uBufSize );

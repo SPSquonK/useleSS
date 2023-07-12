@@ -54,7 +54,7 @@ BOOL EdgeIntersectsFace( D3DXVECTOR3* pEdges, D3DXVECTOR3* pFacePoints, D3DXPLAN
 
 float fDiv = 4.0f;
 
-void CWorld::Projection( LPDIRECT3DDEVICE9 pd3dDevice, int nWidth, int nHeight )
+void CWorld::Projection( int nWidth, int nHeight )
 { 
 	// Frame Window와 관려된 Projection
 	FLOAT fAspect = (FLOAT)nWidth / (FLOAT)nHeight;
@@ -107,7 +107,7 @@ void CWorld::Projection( LPDIRECT3DDEVICE9 pd3dDevice, int nWidth, int nHeight )
 
 
 // 지형과 오브젝트만 렌더링.
-void CWorld::RenderBase( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
+void CWorld::RenderBase( CD3DFont* pFont )
 {
 #ifdef __CLIENT
 	// 기본 랜더 세팅 
@@ -141,13 +141,13 @@ void CWorld::RenderBase( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 	CHECK1();
 	if( m_bViewSkybox )
 	{
-		m_skyBox.Render( this, pd3dDevice );
+		m_skyBox.Render( this );
 		pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	}
 	CHECK2( "  Render SkyBox" );
 #endif
 	// 카메라 트랜스폼 ( View 트랜스폼 ) 
-	m_pCamera->Transform( pd3dDevice, this );
+	m_pCamera->Transform( this );
 	// 밉맵 세팅 
 	//pd3dDevice->SetSamplerState( 0, D3DSAMP_MAXMIPLEVEL, 0 );
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_POINT );
@@ -159,13 +159,13 @@ void CWorld::RenderBase( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 
 	SetLight( TRUE ); // 지형은 반드시 조명을 받게 한다.
 
-	SetFogEnable( m_pd3dDevice, m_bViewFog );
+	SetFogEnable( m_bViewFog );
 	
 	// 지형 랜더링  
 	CHECK1(); 
-	if( g_Option.m_nShadow < 2 ) SetStateShadowMap( m_pd3dDevice, 2, m_pCamera->m_matView );
+	if( g_Option.m_nShadow < 2 ) SetStateShadowMap( 2, m_pCamera->m_matView );
 	RenderTerrain();
-	if( g_Option.m_nShadow < 2 ) ResetStateShadowMap( m_pd3dDevice, 2 );
+	if( g_Option.m_nShadow < 2 ) ResetStateShadowMap( 2 );
 	CHECK2( "  Render Terrain" );
 	
 	if( m_bViewLight != TRUE )
@@ -177,7 +177,7 @@ void CWorld::RenderBase( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 }
 
 
-void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
+void CWorld::Render( CD3DFont* pFont )
 {
 	_PROFILE("CWorld::Render()");
 	CWorldMap* pWorldMap = CWorldMap::GetInstance();
@@ -185,10 +185,10 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 	if( g_Option.m_nBloom && !pWorldMap->IsRender() )
 	{
 		//	RenderBase로 다른 렌더타겟에 렌더링한 텍스쳐를 this에 렌더함.
-		// RenderBase( pd3dDevice, pFont );		// 이건 외부에서 미리 실행되어야 한다.
+		// RenderBase( pFont );		// 이건 외부에서 미리 실행되어야 한다.
 		
-			g_Glare.m_Src.RenderNormal( pd3dDevice );	// 게임화면 원본을 스크린에 박음
-			g_Glare.RenderGlareEffect( pd3dDevice );	// 그위에 블러된 화면을 덧씌움.
+			g_Glare.m_Src.RenderNormal( );	// 게임화면 원본을 스크린에 박음
+			g_Glare.RenderGlareEffect( );	// 그위에 블러된 화면을 덧씌움.
 	} 
 	else
 	{
@@ -223,13 +223,13 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 		CHECK1();
 		if( m_bViewSkybox )
 		{
-			m_skyBox.Render( this, pd3dDevice );
+			m_skyBox.Render( this );
 			pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 		}
 		CHECK2( "  Render SkyBox" );
 	 #endif
 		// 카메라 트랜스폼 ( View 트랜스폼 ) 
-		m_pCamera->Transform( pd3dDevice, this );
+		m_pCamera->Transform( this );
 		// 밉맵 세팅 
 		//pd3dDevice->SetSamplerState( 0, D3DSAMP_MAXMIPLEVEL, 0 );
 		pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_POINT );
@@ -240,14 +240,14 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 		//m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPMAPLODBIAS , 0 );
 		
 		SetLight( TRUE ); // 지형은 반드시 조명을 받게 한다.
-		SetFogEnable( m_pd3dDevice, m_bViewFog );
+		SetFogEnable( m_bViewFog );
 		
 		// 지형 랜더링  
 		CHECK1(); 
 		//m_pd3dDevice->SetRenderState( D3DRS_AMBIENT, D3DCOLOR_ARGB( 255,0,0,0) ); 
-		if( g_Option.m_nShadow < 2 ) SetStateShadowMap( m_pd3dDevice, 2, m_pCamera->m_matView );
+		if( g_Option.m_nShadow < 2 ) SetStateShadowMap( 2, m_pCamera->m_matView );
 		RenderTerrain();
-		if( g_Option.m_nShadow < 2 ) ResetStateShadowMap( m_pd3dDevice, 2 );
+		if( g_Option.m_nShadow < 2 ) ResetStateShadowMap( 2 );
 
 		CHECK2( "  Render Terrain" );
 
@@ -261,7 +261,7 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 		RenderObject( pFont );
 
 #ifdef __BS_EFFECT_LUA
-		CSfxModelMng::GetThis()->Render( m_pd3dDevice );
+		CSfxModelMng::GetThis()->Render( );
 #endif //__BS_EFFECT_LUA
 	}
 
@@ -272,10 +272,10 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 	g_GameTimer.GetMoonPercent();
 	// 스카이 박스 랜더링 
 	CHECK1();
-	m_skyBox.RenderFall( pd3dDevice );
+	m_skyBox.RenderFall( );
 	if( m_bViewSkybox ) //&& g_GameTimer.GetSunPercent() )
 	{
-		m_skyBox.DrawLensFlare(pd3dDevice);
+		m_skyBox.DrawLensFlare();
 	}
 	CHECK2( "  Render LensFlare" );
 	
@@ -293,7 +293,7 @@ void CWorld::Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont )
 	// 랜더 스테이트 복구 
 	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_NONE );
-	SetFogEnable( pd3dDevice, FALSE );
+	SetFogEnable( FALSE );
 }
 //-----------------------------------------------------------------------------
 // Name: ObjSortNearToFar()
@@ -430,7 +430,7 @@ void CWorld::RenderTerrain()
 				if( LandInWorld( (int)j, (int)i ) && m_apLand[ nOffset ] )
 				{
 					if(m_apLand[ nOffset ]->isVisibile())
-						m_apLand[ nOffset ]->Render( m_pd3dDevice );
+						m_apLand[ nOffset ]->Render( );
 				}
 			}
 		}
@@ -448,7 +448,7 @@ void CWorld::RenderTerrain()
 void CWorld::RenderWater()
 {
 //	SetLight( m_bViewLight );		//!!gmpbigsun: Light를 계산하는 함수인데 .. 물의경우라고 다시 계산해야할 이유는?
-//	SetFogEnable( m_pd3dDevice, m_bViewFog );
+//	SetFogEnable( m_bViewFog );
 
 	{
 		const auto [x, z] = WorldPosToLand( m_pCamera->m_vPos );
@@ -465,7 +465,7 @@ void CWorld::RenderWater()
 						if( m_bViewWater )
 						{
 							m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, m_bViewLight );
-							m_apLand[ nOffset ]->RenderWater( m_pd3dDevice);
+							m_apLand[ nOffset ]->RenderWater();
 						}
 					}						
 				}
@@ -502,7 +502,7 @@ void CWorld::RenderObj(CObj* pObj)
 		}		
 	}
 	
-	pObj->Render( m_pd3dDevice );
+	pObj->Render( );
 	if( m_bViewBoundBox )
 	{
 		SetBoundBoxVertex( pObj );
@@ -723,7 +723,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				}
 				
 				{
-					pObj->Render( m_pd3dDevice );
+					pObj->Render( );
 				}
 #endif //__CSC_UPDATE_WORLD3D
 				// The object name is moved to the last shot.
@@ -765,7 +765,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 						{
 							if( !IsWorldGuildHouse() )			//In the guild house, do not cast shadows on objects.
 							{
-								SetStateShadowMap( m_pd3dDevice, 2, m_pCamera->m_matView );
+								SetStateShadowMap( 2, m_pCamera->m_matView );
 								bRenderedShadow = true;
 							}
 						}
@@ -794,10 +794,10 @@ void CWorld::RenderObject( CD3DFont* pFont )
 						}
 					}
 					if( pObj->m_pModel->m_bSkin )
-						ResetStateShadowMap( m_pd3dDevice, 2 );
-					pObj->Render( m_pd3dDevice );
+						ResetStateShadowMap( 2 );
+					pObj->Render( );
 					if( pObj->m_pModel->m_bSkin )
-						SetStateShadowMap( m_pd3dDevice, 2, m_pCamera->m_matView );
+						SetStateShadowMap( 2, m_pCamera->m_matView );
 					
 					if( m_bViewBoundBox )
 					{
@@ -808,22 +808,22 @@ void CWorld::RenderObject( CD3DFont* pFont )
 					if( bRenderedShadow )
 					{
 						bRenderedShadow = false;
-						ResetStateShadowMap( m_pd3dDevice, 2 );
+						ResetStateShadowMap( 2 );
 					}
 				}
 
-				ResetStateShadowMap( m_pd3dDevice, 2 );
+				ResetStateShadowMap( 2 );
 			}
 
 			for (CObj * pObj : m_objCull) {
 				if( pObj == NULL )	continue;
 				if( pObj->GetType() != OT_MOVER )	continue;
 				CMover* pMover = (CMover*) pObj;
-				pMover->RenderPartsEffect( m_pd3dDevice );
+				pMover->RenderPartsEffect( );
 			}
 
 #ifdef __CLIENT			
-			g_ParticleMng.Render( m_pd3dDevice );
+			g_ParticleMng.Render( );
 #endif
 			
 			// Simple shadow
@@ -833,7 +833,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				D3DXMATRIX mWorldShadow;
 				g_Shadow.SetGroup(0);
 				float bias = -0.0001f;
-				LPDIRECT3DDEVICE9 pd3dDevice = m_pd3dDevice;
+
 				if( g_ModelGlobal.m_bDepthBias )
 					pd3dDevice->SetRenderState(D3DRS_DEPTHBIAS, *((DWORD*) (&bias)));
 				pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
@@ -905,7 +905,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 						mWorldShadow = mRot * mWorldShadow;
 						//////////////////////////////////////////
 						
-						g_Shadow.Render( pd3dDevice, &mWorldShadow );
+						g_Shadow.Render( &mWorldShadow );
 					}
 				}
 				
@@ -921,7 +921,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 	RenderWater();
 	CHECK2( "  Render Water" );
 
-	g_TailEffectMng.Render( m_pd3dDevice );
+	g_TailEffectMng.Render( );
 	
 	// Water surface treatment (when the camera goes under water, it draws a water texture on the front of the screen to make it look like it is under water)
 	D3DXMATRIX matWorld;
@@ -1005,7 +1005,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 				continue;
 		}
 		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
-		pObj->Render( m_pd3dDevice );
+		pObj->Render( );
 	}
 	//
 	// 4.Print a semi-transparent object
@@ -1037,7 +1037,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 					}
 				}
 			}
-			pObj->Render( m_pd3dDevice );
+			pObj->Render( );
 			if( m_bViewBoundBox )
 			{
 				SetBoundBoxVertex( pObj );
@@ -1083,13 +1083,13 @@ void CWorld::RenderObject( CD3DFont* pFont )
 							// Normal users are yellow only if they are game masters.
 							if( pMover->IsAuthorization( AUTH_GAMEMASTER ) )
 								dwColor = 0xffffff00; // Yellow
-						pMover->RenderName( m_pd3dDevice, pFont, dwColor );
+						pMover->RenderName( pFont, dwColor );
 							
 					}
 				}
 				// Displays emoticons with status abnormalities such as stun (previously it was handled in g_DialogMsg,
 				// I shouldn't draw it, but if I touch it, it gets messy, so I removed it separately)
-				pMover->RenderChrState( m_pd3dDevice );
+				pMover->RenderChrState( );
 			}
 		}
 	}
@@ -1115,7 +1115,7 @@ CMover * CWorld::RenderObject_IsTabbable(CObj * pObj) {
 }
 
 
-void	_DrawRect( LPDIRECT3DDEVICE9 pd3dDevice, int x, int y, int w, int h, DWORD dwColor )
+void	_DrawRect( int x, int y, int w, int h, DWORD dwColor )
 {
 	#define D3DFVF_2DVERTEX (D3DFVF_XYZRHW | D3DFVF_DIFFUSE)
 	
@@ -1173,7 +1173,7 @@ void	_DrawRect( LPDIRECT3DDEVICE9 pd3dDevice, int x, int y, int w, int h, DWORD 
 }
 
 // 쉐도우 맵에 오브젝트들을 렌더함.
-void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, std::span<CObj *> pList )
+void RenderShadowMap( std::span<CObj *> pList )
 {
 	extern BOOL g_bShadow;
 	if( g_bShadow == FALSE )	return;
@@ -1202,8 +1202,7 @@ void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, std::span<CObj *> pList )
 	D3DXVec3Normalize( &vLightDir, &vLightDir );	// 빛방향 노말라이즈
 
 	float fDistLight = -100.0f;
-//	if( g_pPlayer->m_fDistCamera < 9.0f )
-//		fDistLight = -30.0;
+
 	fDistLight = 20.0f + (g_pPlayer->m_fDistCamera - 4.0f) * 5.375f;
 
 	D3DXVECTOR3 vLightPos = vLightDir * -fDistLight;		// 빛방향으로 28m 떨어진곳에서 빛이 비추도록 한다. 28이 적정값.
@@ -1233,31 +1232,25 @@ void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, std::span<CObj *> pList )
 				continue;
 			if( pObj->m_pModel && pObj->m_pModel->m_pModelElem->m_bShadow )		// 그림자를 드리워야 하는것만 한다.
 			{
-//				pObj->m_pModel->m_nNoTexture = 1;
 				pObj->m_pModel->m_nNoEffect = 2;	// 키값만 빠지게 하는 스테이트만 사용.
-				pObj->Render( pd3dDevice );
+				pObj->Render( );
 				pObj->m_pModel->m_nNoEffect = 0;
-//				pObj->m_pModel->m_nNoTexture = 0;
 			}
 		}
 	}
 
 	pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
 	pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );	//
-//	pd3dDevice->SetRenderState( D3DRS_AMBIENT, D3DCOLOR_ARGB( 0,0,0,0) ); //m_dwAmbient );//D3DCOLOR_ARGB( 255,128,128,128) );//D3DCOLOR_ARGB( 255,50,50,70) );
 	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, FALSE );
 	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, D3DZB_FALSE );
 	
 
-//	pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB(255,255,255,255) );
-//	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TFACTOR);
-//	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_DIFFUSE );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 	
-	_DrawRect( pd3dDevice, 0, 0, 2048, 2048, D3DCOLOR_ARGB( 255, 255, 255, 255 ) );		// 외곽에 흰색 테두리를 씌우자.
+	_DrawRect( 0, 0, 2048, 2048, D3DCOLOR_ARGB( 255, 255, 255, 255 ) );		// 외곽에 흰색 테두리를 씌우자.
 
 	extern BOOL s_bLight;
 	pd3dDevice->SetRenderState( D3DRS_LIGHTING, s_bLight );	//
@@ -1269,9 +1262,8 @@ void RenderShadowMap( LPDIRECT3DDEVICE9 pd3dDevice, std::span<CObj *> pList )
 
 void CWorld::RenderBoundBoxVertex( CObj* pObj )
 {
-	CModel* pModel = pObj->m_pModel;
-	D3DXVECTOR3 vPos = pObj->GetPos();
-	D3DXVECTOR3 vScale = pObj->GetScale();
+	const D3DXVECTOR3 vPos = pObj->GetPos();
+	const D3DXVECTOR3 vScale = pObj->GetScale();
 
 	D3DXMATRIX mat, matWorld;
 	D3DXMatrixIdentity( &matWorld );
@@ -1290,32 +1282,17 @@ void CWorld::RenderBoundBoxVertex( CObj* pObj )
 	m_pd3dDevice->SetVertexShader( NULL );
 	m_pd3dDevice->SetFVF ( D3DFVF_BOUNDBOXVERTEX );
 	m_pd3dDevice->SetStreamSource( 0, m_pBoundBoxVertexBuffer, 0, sizeof(BOUNDBOXVERTEX) );
-	m_pd3dDevice->DrawPrimitive( D3DPT_LINELIST, 0, m_nBoundBoxVertexNum / 2 );
+	m_pd3dDevice->DrawPrimitive( D3DPT_LINELIST, 0, BoundBoxVertexNum / 2 );
 
 }
-void CWorld::SetBoundBoxVertex( CObj* pObj )
+void CWorld::SetBoundBoxVertex( const CObj* pObj )
 {
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity( &matWorld );
+	D3DXMATRIX matWorld; D3DXMatrixIdentity( &matWorld );
 	m_pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
-	const BOUND_BOX* pBB;
-	CModel* pModel = pObj->m_pModel;
-	pBB = pModel->GetBBVector();
-	/*
-	switch( pModel->GetModelType() )
-	{
-		case MODELTYPE_BILLBOARD:
-			return;
-		case MODELTYPE_STATIC_MESH: 
-			pBB = ((CModelObject*)pModel)->GetBBVector(); 
-			break;
-		case MODELTYPE_BIPED_MESH: 
-			pBB = ((CModelObject*)pModel)->GetBBVector(); 
-			break;
-	}
-	*/
-	D3DXVECTOR3 vBoundBox;
+	const CModel * pModel = pObj->m_pModel;
+	const BOUND_BOX * pBB = pModel->GetBBVector();
+
 	//     - z
 	//   3 | 2
 	// - --+-- + x
@@ -1325,70 +1302,46 @@ void CWorld::SetBoundBoxVertex( CObj* pObj )
 	// - --+-- + x
 	//   4 | 5
 	BOUNDBOXVERTEX* pVertices;
-	m_pBoundBoxVertexBuffer->Lock( 0, m_nBoundBoxVertexNum * sizeof(BOUNDBOXVERTEX), (void**)&pVertices, 0 );
+	m_pBoundBoxVertexBuffer->Lock( 0, BoundBoxVertexNum * sizeof(BOUNDBOXVERTEX), (void**)&pVertices, 0 );
 
 	// 0
-	vBoundBox = pBB->m_vPos[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 1 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 0 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 1 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 1
-	vBoundBox = pBB->m_vPos[ 1 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 2 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 1 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 2 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 2
-	vBoundBox = pBB->m_vPos[ 2 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 3 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 2 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 3 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 3
-	vBoundBox = pBB->m_vPos[ 3 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 0 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 3 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 0 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 
 	// 4
-	vBoundBox = pBB->m_vPos[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 4 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 0 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 4 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 5
-	vBoundBox = pBB->m_vPos[ 1 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 5 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 1 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 5 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 6
-	vBoundBox = pBB->m_vPos[ 3 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 7 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 3 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 7 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 7
-	vBoundBox = pBB->m_vPos[ 2 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 6 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 2 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 6 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 
 	// 8
-	vBoundBox = pBB->m_vPos[ 4 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 5 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 4 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 5 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 9
-	vBoundBox = pBB->m_vPos[ 5 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 6 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 5 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 6 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 10
-	vBoundBox = pBB->m_vPos[ 6 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 7 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 6 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 7 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 	// 11
-	vBoundBox = pBB->m_vPos[ 7 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
-	vBoundBox = pBB->m_vPos[ 4 ];//avBoundBox[ 0 ];
-	pVertices->p = vBoundBox                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 7 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
+	pVertices->p = pBB->m_vPos[ 4 ]                                  ; pVertices->color = 0xffffffff;	pVertices++;
 
 	m_pBoundBoxVertexBuffer->Unlock();
 }
@@ -1540,7 +1493,7 @@ void CWorld::SetLight( BOOL bLight )
  			D3DXVECTOR3 vecSun = D3DXVECTOR3( 0.0f, 0.5f,0.5f);
  			D3DXVec3Normalize(&(vecSun),&(vecSun));
  			pLight->SetDir( -vecSun.x, -vecSun.y, -vecSun.z ); 
- 			pLight->Appear( m_pd3dDevice, TRUE );
+ 			pLight->Appear( TRUE );
 	
 			DWORD dwR, dwG, dwB;
 			dwR = (DWORD)( pLight->Ambient.r * 255 );
@@ -1597,7 +1550,7 @@ void CWorld::SetLight( BOOL bLight )
 			memcpy( &m_light, pLight, sizeof( m_light ) );
 			
 			pLight->SetDir( m_v3LightDir.x, m_v3LightDir.y, m_v3LightDir.z );
-			pLight->Appear( m_pd3dDevice, TRUE );
+			pLight->Appear( TRUE );
 	
 			DWORD dwR, dwG, dwB;
 			dwR = (DWORD)( pLight->Ambient.r * 255 );
@@ -1700,7 +1653,7 @@ void CWorld::SetLight( BOOL bLight )
 			D3DXMatrixRotationX( &matTemp,(m_skyBox.m_fSunAngle +180)*CONS_VAL);
 			D3DXVec3TransformCoord(&vecSun,&vecSun,&matTemp);
 			pLight->SetDir( vecSun.x, vecSun.y, vecSun.z ); 
-			pLight->Appear( m_pd3dDevice, TRUE );
+			pLight->Appear( TRUE );
 
 			//	D3DXVECTOR3 vecSun = D3DXVECTOR3( 0.0f, 0.5f,0.5f);
 			//	D3DXVec3Normalize(&(vecSun),&(vecSun));
@@ -1724,10 +1677,9 @@ void CWorld::SetLight( BOOL bLight )
 #endif // not WORLDSERVER
 }
 #ifdef __CLIENT
-HRESULT CWorld::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CWorld::InitDeviceObjects()
 {
 	HRESULT hr = S_OK;
-	m_pd3dDevice = pd3dDevice;
 
 	if (!prj.m_terrainMng.GetTerrain(10)->m_pTexture) {
 		prj.m_terrainMng.LoadTexture(10);
@@ -1777,21 +1729,21 @@ HRESULT CWorld::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 }
 #endif
 
-HRESULT CWorld::RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CWorld::RestoreDeviceObjects()
 {
 	if( m_pBoundBoxVertexBuffer ) 
 		return S_OK;
 	HRESULT hr;
-	SetFogEnable( pd3dDevice, m_bViewFog );
+	SetFogEnable( m_bViewFog );
 	for( int i = 0; i < m_nLandWidth * m_nLandHeight; i++ ) 
 	{
 		if( m_apLand[ i ] )
-			m_apLand[ i ]->RestoreDeviceObjects( pd3dDevice );
+			m_apLand[ i ]->RestoreDeviceObjects();
 	}
 	// 바운드 박스 버텍스 버퍼 만들기 
-	m_nBoundBoxVertexNum = 12 * 2; // 라인수 * 점 ( 하나의 라인은 점 두쌍 )
+	// BoundBoxVertexNum = 12 // 라인수 * 점 ( 하나의 라인은 점 두쌍 )
 	hr = m_pd3dDevice->CreateVertexBuffer( 
-		m_nBoundBoxVertexNum * sizeof( BOUNDBOXVERTEX ),
+		BoundBoxVertexNum * sizeof( BOUNDBOXVERTEX ),
 		D3DUSAGE_WRITEONLY, D3DFVF_BOUNDBOXVERTEX,
 		D3DPOOL_MANAGED, &m_pBoundBoxVertexBuffer, NULL );
 
@@ -1830,17 +1782,17 @@ HRESULT CWorld::DeleteDeviceObjects()
 	}
 	return hr;
 }
-HRESULT CWorld::StaticInitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CWorld::StaticInitDeviceObjects()
 {
 #ifdef __CLIENT
-	m_skyBox.InitDeviceObjects( pd3dDevice );
+	m_skyBox.InitDeviceObjects();
 #endif
 	return S_OK;
 }
-HRESULT CWorld::StaticRestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CWorld::StaticRestoreDeviceObjects()
 {
 #ifdef __CLIENT
-	m_skyBox.RestoreDeviceObjects( pd3dDevice );
+	m_skyBox.RestoreDeviceObjects();
 #endif
 	if( g_pExIB == NULL ) 
 	{
@@ -1974,7 +1926,7 @@ HRESULT CWorld::StaticDeleteDeviceObjects()
 	return S_OK;
 }
 
-void CWorld::SetFogEnable(LPDIRECT3DDEVICE9 pd3dDevice,BOOL bEnable)
+void CWorld::SetFogEnable(BOOL bEnable)
 {
 	pd3dDevice->SetRenderState( D3DRS_FOGENABLE, bEnable );
 	if(bEnable)
@@ -2033,8 +1985,6 @@ BOOL CWorld::ClientPointToVector( D3DXVECTOR3 *pOut, RECT rect, POINT point, D3D
 {
 	if( m_pCamera == NULL )
 		return FALSE;
-	D3DXVECTOR3 vPickRayOrig;
-	D3DXVECTOR3 vPickRayDir ;
 	D3DXVECTOR3 vPickRayAdd ;
 	D3DXVECTOR3 vPickRayCur;
 	D3DXVECTOR3 vLength;
@@ -2048,7 +1998,7 @@ BOOL CWorld::ClientPointToVector( D3DXVECTOR3 *pOut, RECT rect, POINT point, D3D
 	D3DXVECTOR3 vPickObj = D3DXVECTOR3( 0, 0, 0 );	// 오브젝트에 피킹된좌표.
 
 
-	GetPickRay( rect, point, pmatProj, pmatView, &vPickRayOrig, &vPickRayDir );
+	auto [vPickRayOrig, vPickRayDir] = GetPickRay( rect, point, pmatProj, pmatView );
 
 	if( bObject )
 	{
@@ -2062,9 +2012,8 @@ BOOL CWorld::ClientPointToVector( D3DXVECTOR3 *pOut, RECT rect, POINT point, D3D
 	}
 	
 
-	vPickRayDir.x *= (FLOAT)m_iMPU * 2;
-	vPickRayDir.z *= (FLOAT)m_iMPU * 2;
-	vPickRayDir.y *= (FLOAT)m_iMPU * 2;
+	vPickRayDir *= (FLOAT)m_iMPU * 2;
+
 	vPickRayCur = vPickRayOrig;
 	vPickRayAdd = vPickRayDir;// * MPU;
 
@@ -2176,24 +2125,19 @@ BOOL CWorld::IsPickTerrain( RECT rect, POINT point, D3DXMATRIX* pmatProj, D3DXMA
 {
 	if( m_pCamera == NULL )
 		return FALSE;
-	D3DXVECTOR3 vector;
-	D3DXVECTOR3 vPickRayOrig;
-	D3DXVECTOR3 vPickRayDir ;
 	D3DXVECTOR3 vPickRayAdd ;
 	D3DXVECTOR3 vPickRayCur;
 	D3DXVECTOR3 vLength;
 	D3DXVECTOR3 v1, v2, v3, v4;
-	D3DXVECTOR3 _v1, _v2, _v3, _v4;
 	BOOL bTriangle1 = FALSE;
 	D3DXVECTOR3 vecIntersect;
 	FLOAT fDist;               // Ray-Intersection Parameter Distance
 	FLOAT fNearDist = m_fFarPlane;                    
 	FLOAT fFarPlaneSq = m_fFarPlane * m_fFarPlane;
 
-	GetPickRay( rect, point, pmatProj, pmatView, &vPickRayOrig, &vPickRayDir );
-	vPickRayDir.x *= (FLOAT)MPU * 2;
-	vPickRayDir.z *= (FLOAT)MPU * 2;
-	vPickRayDir.y *= (FLOAT)MPU * 2;
+	auto [vPickRayOrig, vPickRayDir] = GetPickRay( rect, point, pmatProj, pmatView );
+	vPickRayDir *= (FLOAT)MPU * 2;
+
 	vPickRayCur = vPickRayOrig;
 	vPickRayAdd = vPickRayDir;// * MPU;
 	do 
@@ -2230,88 +2174,22 @@ BOOL CWorld::IsPickTerrain( RECT rect, POINT point, D3DXMATRIX* pmatProj, D3DXMA
 	return FALSE;
 }
 
-// 주어진 레이와 충돌하는 바닥을 체크.
-FLOAT CWorld::IntersectRayTerrain( const D3DXVECTOR3 &vPickRayOrig, const D3DXVECTOR3 &vPickRayDir )
-{
-	if( m_pCamera == NULL )
-		return FALSE;
-	D3DXVECTOR3 vector;
-	D3DXVECTOR3 vPickRayAdd ;
-	D3DXVECTOR3 vPickRayCur;
-	D3DXVECTOR3 vLength;
-	D3DXVECTOR3 v1, v2, v3, v4;
-	D3DXVECTOR3 _v1, _v2, _v3, _v4;
-	BOOL bTriangle1 = FALSE;
-	D3DXVECTOR3 vecIntersect;
-	FLOAT fDist;               // Ray-Intersection Parameter Distance
-	FLOAT fNearDist = m_fFarPlane;                    
-	FLOAT fFarPlaneSq = m_fFarPlane * m_fFarPlane;
-
-	vPickRayAdd = vPickRayDir;
-	vPickRayAdd.x *= (FLOAT)MPU * 2;
-	vPickRayAdd.z *= (FLOAT)MPU * 2;
-	vPickRayAdd.y *= (FLOAT)MPU * 2;
-	vPickRayCur = vPickRayOrig;
-//	vPickRayAdd = vPickRayDir;// * MPU;
-	do 
-	{
-		vPickRayCur += vPickRayAdd;
-		if( VecInWorld( vPickRayCur ) )
-		{
-			CLandscape* pLand = GetLandscape( vPickRayCur );
-			if( pLand  && pLand->isVisibile() )
-			{
-				int tempx = (int)( vPickRayCur.x );//( (int)vPickRayCur.x / MPU ) * MPU;//(pLand->m_nWorldX+x*PATCH_SIZE+px)*MPU;
-				int tempy = (int)( vPickRayCur.z );//( (int)vPickRayCur.z / MPU ) * MPU;//(pLand->m_nWorldY+y*PATCH_SIZE+py)*MPU;
-				v1=D3DXVECTOR3( (FLOAT)( tempx			), GetLandHeight( ( FLOAT ) tempx		  , ( FLOAT ) tempy		     ), (FLOAT)( tempy       ) );
-				v2=D3DXVECTOR3( (FLOAT)( tempx + m_iMPU ), GetLandHeight( ( FLOAT ) tempx + m_iMPU, ( FLOAT ) tempy		     ), (FLOAT)( tempy       ) );
-				v3=D3DXVECTOR3( (FLOAT)( tempx			), GetLandHeight( ( FLOAT ) tempx         , ( FLOAT ) tempy + m_iMPU ), (FLOAT)( tempy + m_iMPU ) );
-				v4=D3DXVECTOR3( (FLOAT)( tempx + m_iMPU ), GetLandHeight( ( FLOAT ) tempx + m_iMPU, ( FLOAT ) tempy + m_iMPU ), (FLOAT)( tempy + m_iMPU ) );
-				if( IntersectTriangle( v1, v2, v3, vPickRayOrig, vPickRayDir, &vecIntersect, &fDist ) ) 
-				{
-					if( fDist < fNearDist ) { fNearDist = fDist; bTriangle1 = TRUE; }
-				}
-				else
-					if( IntersectTriangle( v2, v4, v3, vPickRayOrig, vPickRayDir, &vecIntersect, &fDist ) ) 
-					{
-						if( fDist < fNearDist ) {	fNearDist = fDist; bTriangle1 = TRUE; }
-					}
-			}
-		}
-		vLength = vPickRayOrig - vPickRayCur;
-	} while( D3DXVec3LengthSq( &vLength ) < fFarPlaneSq );	// Sq버전으로 바꿈. -xuzhu-
-	if( bTriangle1 )
-		return fNearDist;
-	return 0;
-}
-
-
-
 //
 // 필드의 클릭한 지점을 얻기
 // [in] point는 클라이언트 화면의 좌표 
 // [out] pVector는 목표 좌표 
 //
-CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj, D3DXMATRIX* pmatView, DWORD dwObjectFilter, CObj* pExceptionObj, D3DXVECTOR3* pVector, BOOL bOnlyTopPick, BOOL bOnlyNPC )
+CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, const D3DXMATRIX* pmatProj, const D3DXMATRIX* pmatView, DWORD dwObjectFilter, CObj* pExceptionObj, D3DXVECTOR3* pVector, BOOL bOnlyTopPick, BOOL bOnlyNPC )
 {
 	if( m_pCamera == NULL )
 		return FALSE;
 
-	D3DXVECTOR3 vPickRayOrig;
-	D3DXVECTOR3 vPickRayDir ;
 	D3DXVECTOR3 vPickRayDir2;
-	D3DXVECTOR3 vPickRayAdd ;
-	D3DXVECTOR3 vPickRayCur ;
 	D3DXVECTOR3 vIntersect  ;
-	D3DXVECTOR3 vLength;
-	D3DXVECTOR3 v1, v2, v3, v4;
-	BOOL bTriangle1 = FALSE;
-	D3DXVECTOR3 vecIntersect;
 	FLOAT fDist;               // Ray-Intersection Parameter Distance
 	FLOAT fNearDist = m_fFarPlane;      
-	CObj* pSelectObj = NULL;
 
-	GetPickRay( rectClient, ptClient, pmatProj, pmatView, &vPickRayOrig, &vPickRayDir );
+	const auto [vPickRayOrig, vPickRayDir] = GetPickRay( rectClient, ptClient, pmatProj, pmatView );
 	vPickRayDir2 = vPickRayDir;
 	vPickRayDir2.y = 0.0f;
 	D3DXVec3Normalize( &vPickRayDir2, &vPickRayDir2 );
@@ -2319,26 +2197,23 @@ CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj,
 	boost::container::small_vector<CObj *, 5000> pNonCullObjs;
 
 	for (CObj * pObj : m_objCull) {
-		if( pObj )
-		{
-			if( bOnlyTopPick && pObj->GetModel()->m_pModelElem->m_bPick == FALSE )
-				continue;
-			if( pObj->IsCull() == FALSE ) 
-			{
-				if( pObj != pExceptionObj && ( ObjTypeToObjFilter( pObj->GetType() ) & dwObjectFilter ) ) 
-				{
-					if( bOnlyNPC && pObj->GetType() == OT_MOVER )	// bOnlyNPC옵션이 켜져있을때
-						if( ((CMover*)pObj)->IsPlayer() )	continue;	// 플레이어는 스킵.
+		if (!pObj) continue;
 
-					pNonCullObjs.emplace_back(pObj);
-				}
-			}
+		if( bOnlyTopPick && pObj->GetModel()->m_pModelElem->m_bPick == FALSE )
+			continue;
+		if (pObj->IsCull())  continue;
+
+		if( pObj != pExceptionObj && ( ObjTypeToObjFilter( pObj->GetType() ) & dwObjectFilter ) ) 
+		{
+			if( bOnlyNPC && pObj->GetType() == OT_MOVER )	// bOnlyNPC옵션이 켜져있을때
+				if( ((CMover*)pObj)->IsPlayer() )	continue;	// 플레이어는 스킵.
+
+			pNonCullObjs.emplace_back(pObj);
 		}
 	}
 
-	BOOL bPick = FALSE;
 	for (CObj * pObj : pNonCullObjs | std::views::reverse) {
-
+		bool bPick;
 		if( pObj->GetType() == OT_MOVER && ((CMover*)pObj)->IsDie() )	// 죽은사람은 바운딩박스로 검사하지 않음.(바운딩박스랑 맞지 않는다).
 			bPick = pObj->m_pModel->Intersect( vPickRayOrig, vPickRayDir, pObj->GetMatrixWorld(), &vIntersect, &fDist );
 		else
@@ -2354,32 +2229,19 @@ CObj* CWorld::PickObject( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj,
 			}
 		}
 	}
-	return NULL;
+	return nullptr;
 }
-CObj* CWorld::PickObject_Fast( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj, D3DXMATRIX* pmatView, DWORD dwObjectFilter, CObj* pExceptionObj, BOOL bBoundBox, BOOL bOnlyNPC )
+CObj* CWorld::PickObject_Fast( RECT rectClient, POINT ptClient, const D3DXMATRIX* pmatProj, const D3DXMATRIX* pmatView, DWORD dwObjectFilter, CObj* pExceptionObj, BOOL bBoundBox, BOOL bOnlyNPC )
 {
 	if( m_pCamera == NULL )
 		return NULL;
 	
-	D3DXVECTOR3 vPickRayOrig;
-	D3DXVECTOR3 vPickRayDir ;
-	D3DXVECTOR3 vPickRayDir2;
-	D3DXVECTOR3 vPickRayAdd ;
-	D3DXVECTOR3 vPickRayCur ;
 	D3DXVECTOR3 vIntersect  ;
-	D3DXVECTOR3 vLength;
-	D3DXVECTOR3 v1, v2, v3, v4;
-	BOOL bTriangle1 = FALSE;
-	D3DXVECTOR3 vecIntersect;
 	FLOAT fDist;               // Ray-Intersection Parameter Distance
 	FLOAT fNearDist = m_fFarPlane;      
-	CObj* pSelectObj = NULL;
 	
-	GetPickRay( rectClient, ptClient, pmatProj, pmatView, &vPickRayOrig, &vPickRayDir );
-	vPickRayDir2 = vPickRayDir;
-	vPickRayDir2.y = 0.0f;
-	D3DXVec3Normalize( &vPickRayDir2, &vPickRayDir2 );
-	int nCount = 0;
+	const auto [vPickRayOrig, vPickRayDir] = GetPickRay( rectClient, ptClient, pmatProj, pmatView );
+
 	
 	boost::container::small_vector<CObj *, 5000> pNonCullObjs;
 

@@ -39,8 +39,13 @@
 #include "xutil.h"
 #include "tickcount.h"
 
+struct ServerAddrs {
+	char db[16];
+	char core[16];
+	char cache[16];
+};
+
 extern	CTickCount	g_TickCount;
-extern	char	g_lpCoreAddr[16];
-extern	char	g_lpDBAddr[16];
+extern ServerAddrs g_lpAddr;
 extern  BOOL	g_bNProtectAuth;
 extern	char	g_szMSG_VER[256];

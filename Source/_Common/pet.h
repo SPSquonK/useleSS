@@ -1,92 +1,82 @@
-#ifndef __PET_H__
-#define	__PET_H__
+#pragma once
 
 #include <array>
+#include <span>
+#include "defineitem.h"
 #include "SingleDst.h"
 
 #ifdef __CLIENT
 #include "..\_AIInterface\AIInterface.h"
 #endif	// __CLIENT
 
-#include "defineitem.h"
-// 그냥 클라이언트에서 따로 따로 움직여도 상관 없지 않을까?
-// 이렇게 될 경우, (전송과 처리가 가벼워지는 장점이 있다.)
-	// 서버는 펫 자료 객체만,
-	// 클라이언트는 CPet의 데이터를 가지고 있는 CMover 객체를 생성하면 된다.
 
 enum	PETLEVEL	{	PL_EGG,	PL_D,	PL_C,	PL_B,	PL_A,	PL_S,	PL_MAX,	};
 
 #define	MAX_PET_AVAIL_LEVEL	9
 #define	MAX_ADD_LIFE	5
 
-typedef	struct	_FEEDENERGY
-{
-	DWORD	dwCostMin;
-	DWORD	dwCostMax;
-	WORD	wEnergyMin;
-	WORD	wEnergyMax;
-}	FEEDENERGY,	*PFEEDENERGY;
-
-typedef struct	_PETPENALTY
-{
-	FLOAT	fExp;
-	WORD	wEnergy;
-	_PETPENALTY()
-	{
-		fExp	= 0.0f;
-		wEnergy	= 0;
-	}
-}	PETPENALTY, *PPETPENALTY;
-
 #define	MAX_PET_SHAPE	3
-typedef	struct	_PETAVAILPARAM
-{
-	DWORD	dwDstParam;		// 능력치 상승 파라미터
-	DWORD	m_anParam[MAX_PET_AVAIL_LEVEL];		// 능력치 상승 값
-	DWORD	m_dwItemId;	// 펫 아이템
-	DWORD	m_adwIndex[MAX_PET_SHAPE];	// 펫 객체 모양
-	DWORD	m_dwProbability;	// 부화 확률
-}	PETAVAILPARAM, *PPETAVAILPARAM;
 
-class CPetProperty
-{
+class CProject;
+class CScript;
+
+class CPetProperty final {
 public:
+	struct FEEDENERGY {
+		DWORD	dwCostMin;
+		DWORD	dwCostMax;
+		WORD	wEnergyMin;
+		WORD	wEnergyMax;
+	};
+
+	struct PETPENALTY {
+		FLOAT	fExp = 0.0f;
+		WORD	wEnergy = 0;
+	};
+
+	struct PETAVAILPARAM {
+		DWORD	dwDstParam;
+		DWORD	m_anParam[MAX_PET_AVAIL_LEVEL];	
+		DWORD	m_dwItemId;	// Pet item ID
+		DWORD	m_adwIndex[MAX_PET_SHAPE];	// Pet object index
+		DWORD	m_dwProbability;	// Hatching probability
+	};
+
 	CPetProperty();
-	virtual	~CPetProperty();
 
-	PPETAVAILPARAM	GetAvailParam( BYTE nKind );	// 치유 속성 추가
-	BYTE	GetLevelupAvailLevel( BYTE wLevel );		// 레벨 업 시 상승되는 능력치 레벨(임의)
-	WORD	GetFeedEnergy( DWORD dwCost, int nIndex = 0 );		// 가격에 따른 먹이 생성(임의)
-	DWORD	GetIncrementExp( BYTE nLevel );	// 분당 습득 경험치
+	[[nodiscard]] const PETAVAILPARAM * GetAvailParam(BYTE nKind) const;
+	BYTE	GetLevelupAvailLevel( BYTE wLevel );		// Returns a random ability level for the given pet level
+	[[nodiscard]] WORD GetFeedEnergy(DWORD dwCost, int nIndex = 0) const;		// Generate random food number according to price
+	DWORD	GetIncrementExp( BYTE nLevel );	// Experience gained per minute
 	WORD	GetMaxEnergy( BYTE nLevel );
-	WORD	GetAddLife( void );		// 수명 회복액에 의한 생명 추가
-
-#ifdef __JEFF_11_3
-	LPDWORD		GetLevelupAvailLevelProbabilityPtr( void )	{	return &m_adwLevelupAvailLevelProbability[0][0];	}
-	LPBYTE	GetLevelupAvailLevelMaxPtr( void )		{	return m_anLevelupAvailLevelMax;	}
-	std::vector<WORD>*	GetAddLifeProbabilityPtr( void )	{	return &m_awAddLifeProbability;		}
-#endif	// __JEFF_11_3
+	WORD	GetAddLife();		// Add life by life recovery liquid
 
 	static	CPetProperty*	GetInstance( void );
 	BOOL	LoadScript( LPCTSTR szFile );
+	void LoadLevelupAvail(CScript & script);
 	BYTE	Hatch( void );
-	PPETPENALTY		GetPenalty( BYTE nLevel );
+	[[nodiscard]] const PETPENALTY * GetPenalty(BYTE nLevel) const;
 
 #ifdef __CLIENT
 	[[nodiscard]] static DWORD GetTIdOfLevel(PETLEVEL petLevel);
 	[[nodiscard]] static DWORD GetTIdOfDst(const SINGLE_DST & dst, bool shortenHpMax = false);
 #endif
 
-private:
-	PETAVAILPARAM	m_aPetAvailParam[PK_MAX];
-	BYTE	m_anLevelupAvailLevelMax[PL_MAX];
-	DWORD	m_adwLevelupAvailLevelProbability[PL_MAX][MAX_PET_AVAIL_LEVEL];	// 확률
-	std::vector<FEEDENERGY>	m_aFeedEnergy[2];	// 먹이 만들기 시 전리 가격에 따른 먹이 량 
-	DWORD	m_adwIncrementExp[PL_MAX];		// 분당 습득 경험치
-	WORD	m_awMaxEnergy[PL_MAX];
-	std::vector<WORD>	m_awAddLifeProbability;
+	friend CProject;
 
-	PETPENALTY	m_aPenalty[PL_MAX];
+private:
+	struct LevelInfo {
+		std::array<DWORD, MAX_PET_AVAIL_LEVEL> availProb {0, };
+		BYTE availMax      = 0;
+		DWORD incrementExp = 0;
+		WORD maxEnergy     = 0;
+		PETPENALTY penalty;
+	};
+
+	PETAVAILPARAM	m_aPetAvailParam[PK_MAX];
+	std::array<LevelInfo, PL_MAX> m_levelInfos;
+	std::vector<FEEDENERGY>	m_aFeedEnergy[2];	// Amount of food according to loot price when making food
+	std::vector<WORD>	m_awAddLifeProbability;
 };
 
 #define	MAX_PET_LIFE	99
@@ -107,10 +97,8 @@ private:
 #define	PETLOGTYPE_MISTAKE	7
 #define	PETLOGTYPE_LIFE	8
 
-#ifdef __PET_1024
 #define	MAX_PET_NAME_FMT	33	// 16 * 2 + 1
-#define	MAX_PET_NAME	17	// 한글 8자
-#endif	// __PET_1024
+#define	MAX_PET_NAME	17 // 8 korean characters
 
 class CPet final {
 private:
@@ -122,7 +110,7 @@ public:
 //	Attributions
 	void	SetAvailLevel( BYTE nLevel, BYTE nAvailLevel );
 
-	DWORD	GetIndex( void );
+	[[nodiscard]] DWORD GetIndex() const;
 	BYTE	GetAvailLevel( BYTE nLevel );
 
 	[[nodiscard]] SINGLE_DST GetAvailDestParam() const;
@@ -142,11 +130,9 @@ public:
 	int		GetEnergyPercent( void )	{	return GetEnergy() * 100 / GetMaxEnergy();	}
 	int		GetExpPercent( void )	{	return( GetExp() * 100 / GetMaxExp() );		}
 	int		GetMaxExp( void )	{	return ( m_nLevel == PL_EGG? MAX_PET_EGG_EXP: MAX_PET_EXP );	}
-#ifdef __PET_1024
 	void	SetName( const char* szName );
 	const char*	GetName()	{	return m_szName;	}
 	BOOL	HasName()	{	return strlen( m_szName ) > 0;	}
-#endif	// __PET_1024
 	void	InitEgg( void );
 	DWORD	GetItemId( void )
 		{
@@ -156,15 +142,13 @@ public:
 		}
 
 private:
-	BYTE	m_nKind = 0;	// 종류 : 0~6
-	BYTE	m_nLevel = PL_EGG;	// 레벨 : e		// e = 0, d = 1, c = 2, b = 3, a = 4, s = 5
-	DWORD	m_dwExp = 0;	// 경험치 : 0
-	WORD	m_wEnergy = 0;		// 기력 : 0
-	WORD	m_wLife = 0;	// 생명 :  0 ~ 99	// 디폴트 : 1	// 생명이 0인 상태에서 사망 시 객체 제거
-	std::array<BYTE, PL_MAX> m_anAvailLevel = { 0, 0, 0, 0, 0, 0 };	// 능력치
-#ifdef __PET_1024
+	BYTE	m_nKind = 0;	// 0~6
+	BYTE	m_nLevel = PL_EGG;	// Pet level : e		// e = 0, d = 1, c = 2, b = 3, a = 4, s = 5
+	DWORD	m_dwExp = 0;
+	WORD	m_wEnergy = 0;
+	WORD	m_wLife = 0;	// Life: 0 ~ 99 // Default: 1 // Remove object when death with 0 life
+	std::array<BYTE, PL_MAX> m_anAvailLevel = { 0, 0, 0, 0, 0, 0 };	// Stats
 	char	m_szName[MAX_PET_NAME] = "";
-#endif	// __PET_1024
 };
 
 #ifdef __CLIENT
@@ -172,8 +156,8 @@ private:
 class CAIEgg: public CAIInterface
 {
 private:
-	OBJID m_idOwner;	// 주인님
-	int		m_nState;	// 현재 상태.
+	OBJID m_idOwner;
+	int		m_nState;
 	void MoveToDst(	OBJID idTarget );
 	void MoveToDst(	D3DXVECTOR3 vDst );
 	BOOL  MoveProcessIdle( const AIMSG & msg );
@@ -197,130 +181,97 @@ public:
 };
 #endif	// __CLIENT
 
-
-// 변환 시 필요한 개별 아이템 요소
-typedef	struct	_TransformStuffComponent
-{
-	static constexpr bool Archivable = true;
-	int		nItem;
-	short	nNum;
-	_TransformStuffComponent()
-	{
-		nItem	= 0;
-		nNum	= 0;
-	}
-	_TransformStuffComponent( int nItem, short nNum )
-	{
-		this->nItem	= nItem;
-		this->nNum	= nNum;
-	}
-}	TransformStuffComponent, *PTransformStuffComponent;
-typedef	std::vector<TransformStuffComponent>	VTSC;
-
-// 변환 시 필요한 아이템 집합
-class CTransformStuff final
-{
+// Set of items required for conversion
+class CTransformStuff final {
 public:
-	CTransformStuff();
-	CTransformStuff( int nTransform );
-	virtual	~CTransformStuff();
-	void	AddComponent( int nItem, short nNum );		// 필요 아이템 요소 추가
+	// Individual item elements required for conversion
+	struct Component {
+		static constexpr bool Archivable = true;
+		int		nItem;
+		short	nNum;
+
+		Component(int nItem = 0, short nNum = 0)
+			: nItem(nItem), nNum(nNum) {
+		}
+	};
+
+	explicit CTransformStuff(int nTransform = 0);
+
+	void	AddComponent( int nItem, short nNum );		// Add required item element
 	friend CAr & operator<<(CAr & ar, const CTransformStuff & self);
 	friend CAr & operator>>(CAr & ar, CTransformStuff & self);
-	int		GetTransform( void )		{	return m_nTransform;	}	// 변환 종류를 반환
-	size_t	GetSize( void )		{	return m_vComponents.size();		}
-	TransformStuffComponent*	GetComponent( int i )	{	return &m_vComponents[i];	}
+	
+	[[nodiscard]] int GetTransform() const { return m_nTransform; }	// Return the conversion type
+	[[nodiscard]] std::span<const Component> GetSpan() const { return m_vComponents; }
+
+#ifdef __WORLDSERVER
+	// Remove conversion material from user
+	void RemoveItem(CUser * pUser) const;
+#endif
+
 private:
-	int	m_nTransform;	// 변환 종류
-	VTSC	m_vComponents;	// 필요 아이템 집합
+	int	m_nTransform;	// conversion type
+	std::vector<Component> m_vComponents;	// set of necessary items
 };
 
 #ifdef __WORLDSERVER
-class ITransformer
-{
-protected:
-	ITransformer()	{}
+
+// Manage all conversions
+class CTransformItemProperty final {
 public:
-	virtual	~ITransformer()	= 0;
-	static	ITransformer*	Transformer( int nTransform );
-	virtual	BOOL	IsValidStuff( CUser* pUser, CTransformStuff & stuff );
-	// 사용자의 아이템을 변환한다
-	void	Transform( CUser* pUser, CTransformStuff& stuff );
-	// 사용자로부터 변환 재료를 제거한다
-	void	RemoveItem( CUser* pUser, CTransformStuff& stuff );
-	// 사용자에게 변환 결과 아이템을 만들어준다
-	void	CreateItem( CUser* pUser, CTransformStuff& stuff );
-};
+	using UsedItemChecker = std::function<bool(CItemElem *)>;
 
-// 알변환 클래스
-class CTransformerEgg
-	: public ITransformer
-{
+	// Conversion Result Item Element
+	// Using a deformed circular pattern
+	struct ProducedItem {
+		std::unique_ptr<CItemElem> pItem;
+		std::uint32_t nProb;
+	};
+
+	// It is an element that signifies one concrete transformation.
+	class Transformer final {
+	private:
+		static constexpr DWORD eMaxProb = 1000000;
+
+	public:
+		explicit Transformer( int nTransform );
+
+		void LoadScript(CScript & s);
+		
+		void Transform(CUser * pUser, const CTransformStuff & stuff) const;
+		[[nodiscard]] u_int	GetStuffSize() const { return m_nStuffSize; }
+		[[nodiscard]] int GetTransform() const { return m_nTransform; }
+		[[nodiscard]] CItemElem * GetItem() const;
+	private:
+		void AddElement(std::unique_ptr<CItemElem> item, std::uint32_t prob);
+		static std::unique_ptr<CItemElem> CreateItemGeneric(CScript & s);
+		static std::unique_ptr<CItemElem> CreateItemPet(CScript & s);
+
+		// Convert user's item
+		[[nodiscard]] bool IsValidStuff(CUser * pUser, const CTransformStuff & stuff) const;
+
+		// Creates a conversion result item for the user
+		void CreateItem(CUser * pUser) const;
+
+	private:
+		int m_nTransform;
+		u_int	m_nStuffSize = 0;
+		std::uint32_t m_nTotalProb = 0;
+		std::vector<ProducedItem>	m_vTransformItemElements;
+		UsedItemChecker m_transformer;
+	};
+
 public:
-	CTransformerEgg();
-	virtual	~CTransformerEgg();
-	virtual	BOOL	IsValidStuff( CUser* pUser, CTransformStuff & stuff );
-	static	CTransformerEgg*	Instance( void );
-};
+	static CTransformItemProperty * Instance();
+	
+	bool  LoadScript(const char * szFile);
 
-// 변환 결과 아이템 요소
-// 변형된 원형 패턴 사용
-typedef	struct _TransformItemElement
-{
-	CItemElem*	pItem;	// 변환 결과 아이템
-	int		nProb;	// 확률
-	_TransformItemElement( CItemElem* pItem, int nProb )
-	{
-		this->pItem	= pItem;
-		this->nProb	= nProb;
-	}
-}	TransformItemElement;
+	void  Transform(CUser * pUser, const CTransformStuff & stuff) const;
+	[[nodiscard]] u_int GetStuffSize(int nTransform) const;
 
-typedef	std::vector<TransformItemElement>	VTIE;
-
-// 하나의 구체적인 변환을 의미하는 요소이다
-class CTransformItemComponent
-{
 private:
-	enum	{	eMaxProb	= 1000000	};
-public:
-	CTransformItemComponent( int nTransform );
-	virtual	~CTransformItemComponent();
-	void	Clear( void );
-	void	AddElement( TransformItemElement element );
-	void	AdjustmentProbability( TransformItemElement & element );
-	CItemElem*	GetItem( void );
-	void	SetStuffSize( u_int nStuffSize )	{	m_nStuffSize	= nStuffSize;	}
-	u_int	GetStuffSize( void )	{	return m_nStuffSize;	}
-	int		GetTransform( void )	{	return m_nTransform;	}
-private:
-	const	int		m_nTransform;
-	u_int	m_nStuffSize;
-	int		m_nTotalProb;
-	VTIE	m_vTransformItemElements;
-};
-
-typedef	std::map<int, CTransformItemComponent*>	MPTIC;
-// 모든 변환을 관리한다
-class CTransformItemProperty
-{
-public:
-	CTransformItemProperty();
-	virtual	~CTransformItemProperty();
-	static	CTransformItemProperty*	Instance( void );
-	void	AddComponent( CTransformItemComponent* pComponent );
-	u_int	GetStuffSize( int nTransform );
-	CItemElem*	GetItem( int nTransform );
-	BOOL	LoadScript( const char* szFile );
-	CItemElem*	CreateItemGeneric( CScript& s );
-	CItemElem*	CreateItemPet( CScript& s );
-private:
-	CTransformItemComponent* GetComponent( int nTransform );
-private:
-	MPTIC	m_mapComponents;
+	std::map<int, Transformer> m_mapComponents;
 };
 
 #endif	// __WORLDSERVER
 
-
-#endif	// __PET_H__

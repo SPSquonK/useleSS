@@ -144,21 +144,6 @@ enum TRADE_STATE
 // struct
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Player appearance struct
-typedef struct tagPLAYER
-{
-	EQUIP_INFO	m_aEquipInfo[MAX_HUMAN_PARTS];
-	char		m_byCostume;
-	char		m_bySkinSet;
-	char		m_byFace;
-	char		m_byHairMesh;
-	char		m_byHairColor;
-	char		m_byHeadMesh;
-	char		m_bySex;
-	char		m_byJob;
-	u_short		m_uSlot;
-} PLAYER,* LPPLAYER;
-
 /// Quest structure
 typedef struct tagQuest
 {
@@ -180,6 +165,19 @@ typedef struct tagQuest
 	QuestProp* GetProp() const { return prj.m_aPropQuest.GetAt( m_wId.get() ); }
 
 } QUEST,* LPQUEST;
+
+#include "MoverCommon.h" // Requires QUEST to be defined
+
+/// Player appearance struct
+struct PLAYER {
+	EQUIP_INFO	m_aEquipInfo[MAX_HUMAN_PARTS];
+	char		m_byCostume;
+	MoverSub::SkinMeshs m_skin;
+	char		m_byHairColor;
+	char		m_bySex;
+	char		m_byJob;
+	u_short		m_uSlot;
+};
 
 /// Structs used in synchronization
 typedef	struct tagCORR_ACTION
@@ -328,22 +326,16 @@ public:
 	CMover*	GetObj()	{	return m_pObj;		}
 	void	SetLevelup( BYTE nLevelup )		{	m_nLevelup	= nLevelup;		}
 	BYTE	GetLevelup()	{	return m_nLevelup;	}
-#ifdef __PET_1024
 	void	SetName( const char* szName );
 	char*	GetName()	{	return m_szName;	}
 	BOOL	HasName()	{	return strlen( m_szName ) > 0;	}
-#endif	// __PET_1024
 private:
 	CMover*	m_pObj;
 	BYTE	m_nLevelup;		// PLU_LEVEL_UP 이면, 펫 생성 시 펫 레벨업 효과 생성하고 0으로 초기화
 	
-#ifdef __PET_1024
 	char	m_szName[MAX_PET_NAME];
-#endif	// __PET_1024
 };
 #endif	// __CLIENT
-
-#include "MoverCommon.h"
 
 /// 플레이어와 NPC
 class CMover : public CCtrl
@@ -440,7 +432,8 @@ public:
 	LONG			m_nDefenseMin, m_nDefenseMax;	/// 방어력 min, 방어력 max
 	int				m_nAdjHitRate, m_nAdjParry;		/// 수정치 
 	BYTE			m_bySex;						/// 성별 
-	DWORD			m_dwSkinSet, m_dwFace, m_dwHairMesh, m_dwHairColor, m_dwHeadMesh;	/// 외양 
+	MoverSub::SkinMeshs m_skin;
+	DWORD			m_dwHairColor;	/// 외양 
 	FLOAT			m_fHairColorR, m_fHairColorG, m_fHairColorB;						/// 머리색 
 	LONG			m_nJob;						/// 직업 
 	DWORD			m_dwAuthorization;			/// 유저 권한 (일반에서 최고 관리자까지 )
@@ -751,21 +744,24 @@ protected:
 	int				m_nCount;					/// 무버가 범용으로 쓰는 순차적 카운터. 생성자 외엔 0으로 초기화 하지 말것.
 	DWORD			m_dwGold;					/// 페냐 
 	DWORD			m_dwRideItemIdx;			/// 비행체의 아이템 인덱스
-	CModelObject*	m_pRide;					/// 비행체 객체 포인터 
+	sqktd::maybe_owned_ptr<CModelObject>	m_pRide;					/// 비행체 객체 포인터 
 	TCHAR			m_szName[MAX_NAME];			/// 이름 
 	
 public:
 	static	int		GetHairCost( CMover* pMover, BYTE nR, BYTE nG, BYTE nB, BYTE nHair );
-	static void		UpdateParts( int nSex, int nSkinSet, int nFace, int nHairMesh, int nHeadMesh, EQUIP_INFO * pEquipInfo, CModelObject* pModel, CItemContainer* pInventory, BOOL bIfParts = TRUE, CMover* pMover = NULL );
+	static void		UpdateParts(int nSex, MoverSub::SkinMeshs skin, EQUIP_INFO * pEquipInfo, CModelObject * pModel, CItemContainer * pInventory, BOOL bIfParts = TRUE, CMover * pMover = NULL);
+	static void		UpdateParts(int nSex, MoverSub::SkinMeshs skin, EQUIP_INFO * pEquipInfo, const std::unique_ptr<CModelObject> & pModel, CItemContainer * pInventory, BOOL bIfParts = TRUE, CMover * pMover = NULL) {
+		UpdateParts(nSex, skin, pEquipInfo, pModel.get(), pInventory, bIfParts, pMover);
+	}
 	static BOOL		DoEquip( int nSex, int nSkinSet, CItemElem* pItemElem, int nPart, const EQUIP_INFO & rEquipInfo, CItemContainer* pInventory, EQUIP_INFO * pEquipeInfo, CModelObject* pModel, BOOL bEquip, CMover *pMover );
 	static	float	GetItemEnduranceInfluence( int nEndurance );	
 	static	int		GetItemEnduranceWeight( int nEndurance );	
 
-	virtual	BOOL	SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwIndex, BOOL bInitProp = FALSE, BOOL bDestParam = TRUE );
+	virtual	BOOL	SetIndex( DWORD dwIndex, BOOL bInitProp = FALSE, BOOL bDestParam = TRUE );
 	virtual BOOL	Read( CFileIO* pFile );
 	virtual void	Process();
 	virtual	void	Serialize( CAr & ar ); // 시리얼라이즈 ; 네트웍 상태에서 서버와 클라이언트, 클라이언트 서버가 주고받을 패킷 내용 
-	virtual	CModel* LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex );
+	virtual	CModel* LoadModel( DWORD dwType, DWORD dwIndex );
 	virtual void	InitProp( BOOL bInitAI = TRUE );		// 객체를 프로퍼티 내용으로 초기화 	
 //	virtual int		OnActCollecting();				// User만 사용되는 것이므로 CUser가서 찾을것.
 	virtual int		SendDamage( DWORD dwAtkFlag, OBJID idAttacker, int nParam = 0, BOOL bTarget = TRUE ) { return m_pActMover->SendDamage( dwAtkFlag, idAttacker, nParam, bTarget );  }
@@ -832,7 +828,7 @@ public:
 	BOOL			IsRegionAttr( DWORD dwAttribite ) { return ( m_dwRegionAttr & dwAttribite ) == dwAttribite ? TRUE : FALSE; }
 	const REGIONELEM * UpdateRegionAttr();
 	DWORD			GetRideItemIdx()	{ return m_dwRideItemIdx; }
-	void			SetRide( CModel *pModel, int nRideItemIdx = 0 ) { m_dwRideItemIdx = nRideItemIdx; m_pRide = (CModelObject*)pModel; 	};
+	void      SetRide(DWORD itemIdx);
 	void			ClearDuel();
 	void			ClearDuelParty();		
 	int				SendActMsg( OBJMSG dwMsg, int nParam1 = 0, int nParam2 = 0, int nParam3 = 0, int nParam4 = 0 ); 		
@@ -846,7 +842,7 @@ public:
 	CItemElem*		GetLWeaponItem();					// 왼손에 장착한 무기 얻기.
 	CItemElem*		GetEquipItem( int nParts );			// 장착한 아이템 얻기 
 	[[nodiscard]] const CItemElem * GetEquipItem(int nParts) const;
-	ItemProp*		GetEquipItemProp( CItemContainer * pInventory, EQUIP_INFO * pEquipInfo, int nParts );
+	[[nodiscard]] static const ItemProp * GetEquipItemProp(const CItemContainer * pInventory, const EQUIP_INFO * pEquipInfo, int nParts);
 	[[nodiscard]] bool IsDualWeapon() const;
 	void			RedoEquip( BOOL fFakeParts, BOOL bDestParam = TRUE );	
 	void			UpdateParts( BOOL bFakeParts  = FALSE ); // normal or fake
@@ -896,8 +892,8 @@ public:
 	void			RemoveAllQuest();
 	void			RemoveCompleteQuest();
 	BOOL            IsDisguise();
-	BOOL			NoDisguise( LPDIRECT3DDEVICE9 pd3dDevice = NULL );
-	BOOL			Disguise( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwMoverIndex );
+	BOOL			NoDisguise( );
+	BOOL			Disguise( DWORD dwMoverIndex );
 	DWORD			IsAuthorization( DWORD dwAuthorization ) { return dwAuthorization == m_dwAuthorization; }
 	DWORD			IsAuthHigher( DWORD dwAuthorization ) { return dwAuthorization <= m_dwAuthorization; }
 	void			UpdateParam();		
@@ -927,7 +923,6 @@ public:
 	void			SetHairColor( DWORD dwHairColor );
 	void			SetHairColor( FLOAT r, FLOAT g, FLOAT b );
 	void			SetHead( int nHead );
-	void			SetSkinSet( int nSkinSet );
 	void			SetName( const char* lpszName )		{	lstrcpy( m_szName, lpszName );	}
 	LPCTSTR			GetName( BOOL bNickname = FALSE );	// 객체의 이름 얻기
 	[[nodiscard]] BYTE GetSex() const { return m_bySex; }
@@ -1340,7 +1335,7 @@ public:
 	void			Abrade( CMover* pAttacker, int nParts = PARTS_RWEAPON );
 	DWORD			GetRandomPartsAbraded();
 	void			SetMarkingPos();
-	void			RemoveSFX( OBJID idTarget, int id, BOOL bForce, DWORD dwSkill );
+	void			RemoveSFX( OBJID idTarget, DWORD dwSkill );
 	int				GetSFXCount( OBJID idTarget );
 	void			IncSFXCount( OBJID idTarget, DWORD dwSkill );
 	void			AddSFXInfo( OBJID idTarget, SFXHIT_INFO& info );
@@ -1350,7 +1345,7 @@ public:
 #endif // __WORLDSERVER
 
 #ifdef __CLIENT
-	virtual void	Render( LPDIRECT3DDEVICE9 pd3dDevice );
+	virtual void	Render( );
 
 	void			InitInterpolation();
 	void			Interpolate();
@@ -1369,23 +1364,23 @@ public:
 	[[nodiscard]] LPCTSTR GetJobString() const;						// 직업 이름 얻기 
 	void			DialogOut( LPCTSTR lpszText );		// 말풍선에 의한 대사 출력
 	BOOL			DoFakeEquip( const EQUIP_INFO & rEquipInfo, BOOL bEquip, int nPart, CModelObject* pModel = NULL ); // for Fake
-	void			RenderGauge( LPDIRECT3DDEVICE9 pd3dDevice, int nValue );
-	void			RenderTurboGauge( LPDIRECT3DDEVICE9 pd3dDevice, DWORD nColor, int nValue, int nMaxValue );
+	void			RenderGauge( int nValue );
+	void			RenderTurboGauge( DWORD nColor, int nValue, int nMaxValue );
 	void			SetRenderPartsEffect( int nParts );
-	void			RenderPartsEffect( LPDIRECT3DDEVICE9 pd3dDevice );
-	void			RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor = 0xffffffff );
-	void			RenderHP(LPDIRECT3DDEVICE9 pd3dDevice);
-	void			RenderCltGauge(LPDIRECT3DDEVICE9 pd3dDevice);
-	void			RenderChrState(LPDIRECT3DDEVICE9 pd3dDevice);
+	void			RenderPartsEffect( );
+	void			RenderName( CD3DFont* pFont, DWORD dwColor = 0xffffffff );
+	void			RenderHP();
+	void			RenderCltGauge();
+	void			RenderChrState();
 	void			RenderFlag( int nType );
-	void			RenderCasting( LPDIRECT3DDEVICE9 pd3dDevice );
-	void			RenderCtrlCasting( LPDIRECT3DDEVICE9 pd3dDevice );
-	void			RenderSkillCasting( LPDIRECT3DDEVICE9 pd3dDevice );
-	void			RenderPVPCount( LPDIRECT3DDEVICE9 pd3dDevice );
-	void			RenderQuestEmoticon( LPDIRECT3DDEVICE9 pd3dDevice );
-	void			RenderGuildNameLogo( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor );
+	void			RenderCasting( );
+	void			RenderCtrlCasting( );
+	void			RenderSkillCasting( );
+	void			RenderPVPCount( );
+	void			RenderQuestEmoticon( );
+	void			RenderGuildNameLogo( CD3DFont* pFont, DWORD dwColor );
 	
-	void			RenderAngelStatus(LPDIRECT3DDEVICE9 pd3dDevice);
+	void			RenderAngelStatus();
 #endif	// __CLIENT
 
 

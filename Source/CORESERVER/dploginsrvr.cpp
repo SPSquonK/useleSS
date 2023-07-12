@@ -8,7 +8,6 @@
 
 CDPLoginSrvr::CDPLoginSrvr() 
 {
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_QUERYTICKCOUNT, &CDPLoginSrvr::OnQueryTickCount );
 	ON_MSG( PACKETTYPE_PRE_JOIN, &CDPLoginSrvr::OnPreJoin );
 	ON_MSG( PACKETTYPE_LEAVE, &CDPLoginSrvr::OnLeave );
@@ -41,12 +40,9 @@ void CDPLoginSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 void CDPLoginSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )
-		=	GetHandler( dw );
+	DWORD dw; ar >> dw;
 	
-	if( pfn ) {
-		( this->*( pfn ) )( ar );
+	if( Handle(ar, dw) ) {
 		if (ar.IsOverflow()) Error("Core-Login: Packet %08x overflowed", dw);
 	}
 	else {

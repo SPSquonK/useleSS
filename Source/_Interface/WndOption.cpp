@@ -30,9 +30,9 @@ void CWndTotalOption::OnInitialUpdate()
 	MoveParentCenter();	
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndTotalOption::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndTotalOption::Initialize( CWndBase* pWndParent ) 
 { 
-	return CWndNeuz::InitDialog( dwWndId, pWndParent, 0, CPoint( 0, 0 ) );
+	return CWndNeuz::InitDialog( APP_OPTIONEX, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 BOOL CWndTotalOption::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -71,210 +71,6 @@ BOOL CWndTotalOption::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			break;
 	}
 		
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-
-CWndOption::CWndOption() 
-{ 
-} 
-CWndOption::~CWndOption() 
-{ 
-} 
-void CWndOption::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-void CWndOption::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-
-	CWndButton* pWndAlpha = (CWndButton*)GetDlgItem( WIDC_CHECK1 );
-	pWndAlpha->SetCheck( g_Option.m_nWindowAlpha == 255 ? FALSE : TRUE);
-	CWndButton* pWndHelp = (CWndButton*)GetDlgItem( WIDC_CHECK2 );
-	pWndHelp->SetCheck( g_Option.m_nInstantHelp );
-	
-	CWndButton* pWndButton[ 4 ];
-
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_RADIO1 );
-	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_RADIO2 );
-	pWndButton[ 0 ]->SetGroup( TRUE );
-	pWndButton[ g_Option.m_nSlangWord ]->SetCheck( TRUE );
-
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_RADIO3 );
-	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_RADIO4 );
-	pWndButton[ 2 ] = (CWndButton*)GetDlgItem( WIDC_RADIO5 );
-	pWndButton[ 3 ] = (CWndButton*)GetDlgItem( WIDC_RADIO6 );
-	pWndButton[ 0 ]->SetGroup( TRUE );
-	pWndButton[ g_Option.m_nChatCommand ]->SetCheck( TRUE );
-
-	// 인터페이스 방식(구버전이 디폴트)
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_RADIO7 );
-	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_RADIO8 );
-#ifdef __Y_INTERFACE_VER3
-	pWndButton[ 2 ] = (CWndButton*)GetDlgItem( WIDC_RADIO12 );
-#endif //__Y_INTERFACE_VER3
-	pWndButton[ 0 ]->SetGroup( TRUE );
-	pWndButton[ g_Option.m_nInterface ]->SetCheck( TRUE );
-
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_RADIO9 );
-	pWndButton[ 1 ] = (CWndButton*)GetDlgItem( WIDC_RADIO10 );
-	pWndButton[ 2 ] = (CWndButton*)GetDlgItem( WIDC_RADIO11 );
-	pWndButton[ 0 ]->SetGroup( TRUE );
-	pWndButton[ *g_Option.m_pGuide ]->SetCheck( TRUE );
-
-	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_CHECK4 );
-	if(pWndButton[ 0 ])
-	pWndButton[ 0 ]->SetCheck( g_Option.m_bCameraLock );
-
-	// 비행시 롤링 효과.
-	CWndButton* pWndRoll = (CWndButton*)GetDlgItem( WIDC_CHECK3 );		
-	pWndRoll->SetCheck( g_Option.m_bRollEffect );
-
-	CWndButton* pWndZoom = (CWndButton*)GetDlgItem( WIDC_CHECK5 );		
-	pWndZoom->SetCheck(!g_Option.m_bZoomLimit);
-	
-	MoveParentCenter();
-} 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndOption::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_OPTION_ETC, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndOption::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndOption::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndOption::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndOption::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndOption::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndOption::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	CWndButton* pWndAlpha = (CWndButton*)GetDlgItem( WIDC_CHECK1 );
-	CWndButton* pWndHelp = (CWndButton*)GetDlgItem( WIDC_CHECK2 );
-	CWndButton* pWndRoll = (CWndButton*)GetDlgItem( WIDC_CHECK3 );
-	CWndButton* pWndCamearaLock = (CWndButton*)GetDlgItem( WIDC_CHECK4 );
-	CWndButton* pWndZoomLimit   = (CWndButton*)GetDlgItem( WIDC_CHECK5 );
-
-	switch( nID )
-	{
-	case WIDC_CHECK1: // 윈도 반투명 옵션 
-		if( pWndAlpha->GetCheck() )
-			CWndBase::m_nAlpha = g_Option.m_nWindowAlpha = 128;
-		else
-			CWndBase::m_nAlpha = g_Option.m_nWindowAlpha = 255;
-		break;
-	case WIDC_CHECK2: // 초보자 도움말 옵션 
-		if( pWndHelp->GetCheck() )
-			g_Option.m_nInstantHelp = TRUE;
-		else
-			g_Option.m_nInstantHelp = FALSE;
-		break;
-	case WIDC_CHECK3:	// 비행시 롤링 효과.
-		if( pWndRoll->GetCheck() )
-			g_Option.m_bRollEffect = TRUE;
-		else
-			g_Option.m_bRollEffect = FALSE;
-		break;
-	case WIDC_CHECK4:
-		{
-			if( pWndCamearaLock->GetCheck() )
-				g_Option.m_bCameraLock = TRUE;
-			else
-				g_Option.m_bCameraLock = FALSE;			
-		}
-		break;
-	case WIDC_CHECK5:
-		{
-			if( pWndZoomLimit->GetCheck() )
-				g_Option.m_bZoomLimit = FALSE;
-			else
-				g_Option.m_bZoomLimit = TRUE;			
-		}	
-		break;
-
-	case WIDC_RADIO1:
-		g_Option.m_nSlangWord = 0;
-		break;
-	case WIDC_RADIO2:
-		g_Option.m_nSlangWord = 1;
-		break;
-	case WIDC_RADIO3:
-		g_Option.m_nChatCommand = 0;
-		break;
-	case WIDC_RADIO4:
-		g_Option.m_nChatCommand = 1;
-		break;
-	case WIDC_RADIO5:
-		g_Option.m_nChatCommand = 2;
-		break;
-	case WIDC_RADIO6:
-		g_Option.m_nChatCommand = 3;
-		break;
-	case WIDC_RADIO7:	// 휠로 카메라 / 우클릭 스킬의 고전방식
-		g_Option.m_nInterface = 0;
-		break;
-	case WIDC_RADIO8:	// 우클릭 카메라 / 좌클릭+X 스킬의 신방식.
-		g_Option.m_nInterface = 1;
-		break;
-#ifdef __Y_INTERFACE_VER3
-	case WIDC_RADIO12:
-		g_Option.m_nInterface = 2;
-		break;
-#endif //__Y_INTERFACE_VER3
-	case WIDC_RADIO9:
-		*g_Option.m_pGuide = 0;
-		break;
-	case WIDC_RADIO10:
-		*g_Option.m_pGuide = 1;
-		break;
-	case WIDC_RADIO11:
-		*g_Option.m_pGuide = 2;
-		break;
-	case 10000:
-		{
-			CWndGuideSystem* pWndGuide = (CWndGuideSystem*)GetWndBase( APP_GUIDE );
-			
-			if( pWndGuide )
-			{
-				pWndGuide->m_dwGuideLevel = *(g_Option.m_pGuide);
-				
-				if( pWndGuide->m_dwGuideLevel == 0 )
-				{
-					if( g_pPlayer )
-					{
-						pWndGuide->m_bVisible = TRUE;
-						pWndGuide->ChangeModel( g_pPlayer->GetJob() );
-						pWndGuide->SetAni( g_pPlayer->GetJob(), CWndGuideSystem::ANI_IDLE );
-					}
-				}
-				else
-				{
-					if(g_pPlayer)
-					{
-						pWndGuide->SetAni( g_pPlayer->GetJob(), CWndGuideSystem::ANI_BYTE );
-					}
-				}
-			}
-		}
-		break;
-	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
@@ -340,28 +136,19 @@ void CWndOptSound::OnInitialUpdate()
 		pWndButton[ 1 ]->SetVisible(FALSE);
 		pWndButton[ 0 ]->SetVisible(FALSE);
 	}
-	m_Texture.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
-	m_TexturePt.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );		
+	m_Texture.LoadTexture( MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
+	m_TexturePt.LoadTexture( MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );		
 	m_nStep[0] = (int)( g_Option.m_fEffectVolume * 10 );
 	m_nStep[1] = (int)( g_Option.m_fBGMVolume * 10 );
 
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndOptSound::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndOptSound::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_OPTEX_SOUND, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndOptSound::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
+
 BOOL CWndOptSound::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
 { 
 	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
@@ -493,16 +280,6 @@ void CWndOptSound::GetRangeSlider(DWORD dwWndId, int &nStep, CPoint point)
 		nStep = MAX_SLIDER;
 }
 
-HRESULT CWndOptSound::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-HRESULT CWndOptSound::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
-
-
 CWndOptVideo::CWndOptVideo() 
 { 
 	m_bLButtonClick = FALSE;
@@ -525,14 +302,6 @@ CWndOptVideo::~CWndOptVideo()
 { 
 	g_Option.Save( "neuz.ini" );	
 } 
-HRESULT CWndOptVideo::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-HRESULT CWndOptVideo::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
 
 CPoint CWndOptVideo::GetStepPos(int nStep, int nWidth, int nDivision)
 {
@@ -676,8 +445,8 @@ void CWndOptVideo::OnInitialUpdate()
 	pWndButton[ 0 ] = (CWndButton*)GetDlgItem( WIDC_CHECK5 );
 	if(pWndButton[ 0 ])
 	pWndButton[ 0 ]->SetCheck( g_Option.m_bCameraLock );
-	m_Texture.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
-	m_TexturePt.LoadTexture( g_Neuz.GetDevice(), MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );		
+	m_Texture.LoadTexture( MakePath( DIR_THEME, "WndVolumeBar.tga" ), 0xffff00ff, TRUE );
+	m_TexturePt.LoadTexture( MakePath( DIR_THEME, "ButtSpin.tga" ), 0xffffffff, TRUE );		
 #ifdef __SFX_OPT
 	m_nStep[0] = g_Option.m_nSfxLevel;
 	m_nStep[1] = !g_Option.m_bSFXRenderOff;
@@ -726,12 +495,6 @@ void CWndOptVideo::OnInitialUpdate()
 			widget->SetVisible(FALSE);
 		}
 	}
-} 
-// 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndOptVideo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
-{ 
-	// Daisy에서 설정한 리소스로 윈도를 연다.
-	return CWndNeuz::InitDialog( APP_OPTION_VIDEO, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
 void CWndOptVideo::OnLButtonUp( UINT nFlags, CPoint point ) 
@@ -950,11 +713,11 @@ BOOL CWndOptVideo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 	case WIDC_SHADOW_HIGH:
 		g_Option.m_nShadow = 0;
-		CreateShadowMap( m_pApp->m_pd3dDevice, g_Neuz.m_d3dpp.BackBufferFormat );
+		CreateShadowMap( g_Neuz.m_d3dpp.BackBufferFormat );
 		break;
 	case WIDC_SHADOW_MID:
 		g_Option.m_nShadow = 1;
-		CreateShadowMap( m_pApp->m_pd3dDevice, g_Neuz.m_d3dpp.BackBufferFormat );
+		CreateShadowMap( g_Neuz.m_d3dpp.BackBufferFormat );
 		break;
 	case WIDC_SHADOW_LOW:
 		g_Option.m_nShadow = 2;
@@ -967,7 +730,7 @@ BOOL CWndOptVideo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			if(pWndButton)
 			{
 				g_Option.m_bStartFullScreen = !(pWndButton->GetCheck());
-				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GAME_RESETTING), MB_OK, this );
+				g_WndMng.OpenMessageBox( prj.GetText(TID_GAME_GAME_RESETTING), MB_OK );
 			}
 		}
 		break;
@@ -976,7 +739,7 @@ BOOL CWndOptVideo::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		if( g_Neuz.m_d3dCaps.PixelShaderVersion >= D3DPS_VERSION(1,1) )
 		{
 			g_Option.m_nBloom = 1; 
-			g_Glare.Create( D3DDEVICE, D3DFMT_R5G6B5, g_Option.m_nResWidth, g_Option.m_nResHeight - 48 );
+			g_Glare.Create( D3DFMT_R5G6B5, g_Option.m_nResWidth, g_Option.m_nResHeight - 48 );
 		}
 		break;
 	case WIDC_GLOWOFF:
@@ -1137,7 +900,7 @@ void CWndOptWindow::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndOptWindow::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndOptWindow::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_OPTION_WINDOW, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1146,7 +909,7 @@ BOOL CWndOptWindow::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
   직접 윈도를 열때 사용 
 BOOL CWndOptWindow::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+	CRect rectWindow = g_WndMng.GetWindowRect(); 
 	CRect rect( 50 ,50, 300, 300 ); 
 	SetTitle( _T( "title" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
@@ -1198,7 +961,7 @@ void CWndOptMyInfo::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndOptMyInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndOptMyInfo::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_OPTION_MYINFO, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1207,7 +970,7 @@ BOOL CWndOptMyInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
   직접 윈도를 열때 사용 
 BOOL CWndOptMyInfo::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+	CRect rectWindow = g_WndMng.GetWindowRect(); 
 	CRect rect( 50 ,50, 300, 300 ); 
 	SetTitle( _T( "title" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 

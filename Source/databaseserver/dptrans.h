@@ -8,11 +8,6 @@
 
 #include "lord.h"
 
-#undef	theClass
-#define theClass	CDPTrans
-#undef	theParameters
-#define theParameters	CAr & ar, DPID, DPID, DPID, LPBYTE lpBuf, u_long uBufSize
-
 class CMail;
 class CMailBox;
 
@@ -27,7 +22,8 @@ class CCoupleMgr;
 #include "Quiz.h"
 #endif // __QUIZ
 class CDPTrans : public CDPMng,
-	public DPMngFeatures::BroadcastPacketDual
+	public DPMngFeatures::BroadcastPacketDual,
+	public DPMngFeatures::PacketHandler<CDPTrans, DPID, DPID, DPID, LPBYTE, u_long>
 {
 public:
 //	Constructions
@@ -60,7 +56,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	void	OnQueryMailBoxCount( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnQueryMailBoxReq( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	void	SendMailBoxReq( u_long idReceiver, DPID dpid, BOOL bHaveMailBox, CMailBox* pMailBox );
+	void	SendMailBoxReq( u_long idReceiver, DPID dpid, CMailBox* pMailBox );
 	//////////////////////////////////////////////////////////////////////////
 
 
@@ -83,13 +79,9 @@ public:
 	void	SendEventLuaChanged( void );
 	void	OnEventLuaChanged( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 
-#ifdef __S_RECOMMEND_EVE
-	void	OnEveRecommend( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-#endif // __S_RECOMMEND_EVE
-	// ³ªÁß¿¡ USES_PFNENTRIES; ¹ØÀ¸·Î ¿Å±âÀÚ 
 	void	OnSaveConcurrentUserNumber( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	
-	USES_PFNENTRIES;
+private:
 //	Handlers
 	void	OnRemoveConnection( DPID dpid );
 	void	OnJoin( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
@@ -115,7 +107,7 @@ public:
 	void	OnLogSchool( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnPing( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnLogSkillPoint( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	// WorldServer¿¡°Ô ±æµåÃ¢°í¸¦ Äõ¸®ÇÏ¶ó´Â ÆĞÅ¶À» ¹Ş°í Äõ¸®¸¦ ÁøÇàÇÏ´Â ÇÔ¼ö
+	// WorldServerì—ê²Œ ê¸¸ë“œì°½ê³ ë¥¼ ì¿¼ë¦¬í•˜ë¼ëŠ” íŒ¨í‚·ì„ ë°›ê³  ì¿¼ë¦¬ë¥¼ ì§„í–‰í•˜ëŠ” í•¨ìˆ˜
 	void	OnQueryGuildBank( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnGuildBankUpdate( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnGuildRealPay( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
@@ -133,7 +125,6 @@ public:
 	void	OnUpdateGuildQuest( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 
 	void	OnQuerySetPlayerName( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	void	OnItemTBLUpdate( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 	void	OnPreventLogin( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 
 	void	OnCalluspPetLog( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
@@ -172,51 +163,51 @@ public:
 	void	SendQueryRemoveGuildBankTbl( int nNo, u_long idGuild, DWORD dwItemId, SERIALNUMBER iSerialNumber, DWORD dwItemNum );
 
 public:
-	// ¿ùµå ¼­¹ö¿¡ ±ºÁÖÀÔÂû °á°ú Àü¼Û
+	// ì›”ë“œ ì„œë²„ì— êµ°ì£¼ì…ì°° ê²°ê³¼ ì „ì†¡
 	void	SendElectionAddDeposit( u_long idPlayer, __int64 iDeposit, time_t tCreate, BOOL bRet );
-	// ¿ùµå ¼­¹ö¿¡ °ø¾à ¼³Á¤ °á°ú Àü¼Û
+	// ì›”ë“œ ì„œë²„ì— ê³µì•½ ì„¤ì • ê²°ê³¼ ì „ì†¡
 	void	SendElectionSetPledge( u_long idPlayer, const char* szPledge, BOOL bRet );
-	// ¿ùµå ¼­¹ö¿¡ ÅõÇ¥ °á°ú Àü¼Û
+	// ì›”ë“œ ì„œë²„ì— íˆ¬í‘œ ê²°ê³¼ ì „ì†¡
 	void	SendElectionIncVote( u_long idPlayer, u_long idElector, BOOL bRet );
-	// ¿ùµå ¼­¹ö¿¡ ÀÔÈÄº¸ ½ÃÀÛ »óÅÂ Àü¼Û
+	// ì›”ë“œ ì„œë²„ì— ì…í›„ë³´ ì‹œì‘ ìƒíƒœ ì „ì†¡
 	void	SendElectionBeginCandidacy( void );
-	// ¿ùµå ¼­¹ö¿¡ ÅõÇ¥ ½ÃÀÛ »óÅÂ Àü¼Û
+	// ì›”ë“œ ì„œë²„ì— íˆ¬í‘œ ì‹œì‘ ìƒíƒœ ì „ì†¡
 	void	SendElectionBeginVote( int nRequirement );
-	// ¿ùµå ¼­¹ö¿¡ ÅõÇ¥ Á¾·á »óÅÂ Àü¼Û
+	// ì›”ë“œ ì„œë²„ì— íˆ¬í‘œ ì¢…ë£Œ ìƒíƒœ ì „ì†¡
 	void	SendElectionEndVote( u_long idPlayer );
-	// ¸ğµç ±ºÁÖ ½Ã½ºÅÛ Á¤º¸¸¦ ¿ùµå ¼­¹ö¿¡ Àü¼Û
+	// ëª¨ë“  êµ°ì£¼ ì‹œìŠ¤í…œ ì •ë³´ë¥¼ ì›”ë“œ ì„œë²„ì— ì „ì†¡
 	void	SendLord( DPID dpid );
-	// ¿ùµå ¼­¹ö¿¡ ±ºÁÖ ÀÌº¥Æ® ÇöÀç »óÅÂ¸¦ Àü¼Û
+	// ì›”ë“œ ì„œë²„ì— êµ°ì£¼ ì´ë²¤íŠ¸ í˜„ì¬ ìƒíƒœë¥¼ ì „ì†¡
 	void	SendLEventCreate( CLEComponent* pComponent, BOOL bResult );
-	// ¿ùµå ¼­¹ö¿¡ ±ºÁÖ ÀÌº¥Æ® ÃÊ±âÈ­¸¦ Àü¼Û
+	// ì›”ë“œ ì„œë²„ì— êµ°ì£¼ ì´ë²¤íŠ¸ ì´ˆê¸°í™”ë¥¼ ì „ì†¡
 	void	SendLEventInitialize( void );
-	// ¿ùµå ¼­¹ö¿¡ ±ºÁÖ ½ºÅ³ »ç¿ë °á°ú¸¦ Àü¼Û
-	// °á°ú°¡ ÂüÀÌ¸é ¿ùµå ¼­¹ö´Â ½ÇÁ¦ ±ºÁÖ ½ºÅ³ È¿°ú¸¦ Àû¿ë
+	// ì›”ë“œ ì„œë²„ì— êµ°ì£¼ ìŠ¤í‚¬ ì‚¬ìš© ê²°ê³¼ë¥¼ ì „ì†¡
+	// ê²°ê³¼ê°€ ì°¸ì´ë©´ ì›”ë“œ ì„œë²„ëŠ” ì‹¤ì œ êµ°ì£¼ ìŠ¤í‚¬ íš¨ê³¼ë¥¼ ì ìš©
 	void	SendLordSkillUse( u_long idPlayer, u_long idTarget, int nSkill, int nRet );
-	// ÇØ´ç ±ºÁÖ ½ºÅ³ÀÇ Àç»ç¿ë ´ë±â ½Ã°£À» Àü¼Û
+	// í•´ë‹¹ êµ°ì£¼ ìŠ¤í‚¬ì˜ ì¬ì‚¬ìš© ëŒ€ê¸° ì‹œê°„ì„ ì „ì†¡
 	void	SendLordSkillTick( CLordSkill* pSkills );
-	// ÇØ´ç ±ºÁÖ ÀÌº¥Æ®ÀÇ ³²¾ÆÀÖ´Â Æ½À» Àü¼Û
+	// í•´ë‹¹ êµ°ì£¼ ì´ë²¤íŠ¸ì˜ ë‚¨ì•„ìˆëŠ” í‹±ì„ ì „ì†¡
 	void	SendLEventTick( ILordEvent* pEvent ); 
 private:
-	// /±ºÁÖÀÔÂû
+	// /êµ°ì£¼ì…ì°°
 	void	OnElectionAddDeposit( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	// /°ø¾à¼³Á¤
+	// /ê³µì•½ì„¤ì •
 	void	OnElectionSetPledge( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	// /±ºÁÖÅõÇ¥
+	// /êµ°ì£¼íˆ¬í‘œ
 	void	OnElectionIncVote( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	// /±ºÁÖÀÌº¥Æ®½ÃÀÛ
+	// /êµ°ì£¼ì´ë²¤íŠ¸ì‹œì‘
 	void	OnLEventCreate( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	// /±ºÁÖ½ºÅ³
+	// /êµ°ì£¼ìŠ¤í‚¬
 	void	OnLordSkillUse( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	// /±ºÁÖÇÁ·Î¼¼½º
+	// /êµ°ì£¼í”„ë¡œì„¸ìŠ¤
 	void	OnElectionProcess( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	// /ÀÔÈÄº¸½ÃÀÛ
+	// /ì…í›„ë³´ì‹œì‘
 	void	OnElectionBeginCandidacy( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	// /ÅõÇ¥½ÃÀÛ
+	// /íˆ¬í‘œì‹œì‘
 	void	OnElectionBeginVote( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	// /ÅõÇ¥Á¾·á
+	// /íˆ¬í‘œì¢…ë£Œ
 	void	OnElectionEndVote( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
-	// /±ºÁÖÀÌº¥Æ®ÃÊ±âÈ­
+	// /êµ°ì£¼ì´ë²¤íŠ¸ì´ˆê¸°í™”
 	void	OnLEventInitialize( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );
 
 public:

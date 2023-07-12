@@ -207,9 +207,9 @@ void IBuff::CreateSFX( CMover* pMover )
 		if( pProp->dwSfxObj4 != NULL_ID )
 		{
 			if( GetTotal() == 0 )
-				CreateSfx( g_Neuz.m_pd3dDevice, pProp->dwSfxObj4, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3( 0, 0, 0), pMover->GetId(), 0 );
+				CreateSfx( pProp->dwSfxObj4, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3( 0, 0, 0), pMover->GetId(), 0 );
 			else
-				CreateSfx( g_Neuz.m_pd3dDevice, pProp->dwSfxObj4, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3( 0, 0, 0), pMover->GetId(), (int)( fSkillTime ) );
+				CreateSfx( pProp->dwSfxObj4, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3( 0, 0, 0), pMover->GetId(), (int)( fSkillTime ) );
 		}
 	}
 }

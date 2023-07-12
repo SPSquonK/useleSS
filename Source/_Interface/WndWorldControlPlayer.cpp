@@ -76,7 +76,7 @@ int CWndWorld::ControlPlayer( DWORD dwMessage, CPoint point )
 	if( bGlare && !bGlare2 )
 	{
 		g_Option.m_nBloom ^= 1;
-		g_Glare.Create( D3DDEVICE, D3DFMT_R5G6B5, g_Option.m_nResWidth, g_Option.m_nResHeight - 48 );
+		g_Glare.Create( D3DFMT_R5G6B5, g_Option.m_nResWidth, g_Option.m_nResHeight - 48 );
 	}
 	bGlare2 = bGlare;
 #endif
@@ -330,7 +330,7 @@ int		CWndWorld::ControlGround( DWORD dwMessage, CPoint point )
 
 						if( g_pMoveMark && g_pMoveMark->m_pSfxObj )
 							g_pMoveMark->m_pSfxObj->m_nCurFrame		= 180;
-						CSfx *pObj = CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_MOVEMARK01,vRayEnd);
+						CSfx *pObj = CreateSfx(XI_GEN_MOVEMARK01,vRayEnd);
 						
 						
 						D3DXVECTOR3 vVector1 = vec3Tri[2] - vec3Tri[0];
@@ -747,18 +747,14 @@ int		CWndWorld::ControlFlying( DWORD dwMessage, CPoint point )
 		// 타겟선택 키
 		if( g_bKeyTable[VK_TAB] && !s_bSelectKeyed )
 		{
-			if( m_aFlyTarget.GetSize() > 0 )		// 선택된 타겟있을때.
-			{
-				if( m_nSelect >= m_aFlyTarget.GetSize() )
-					m_nSelect = 0;
-				OBJID idSelect = m_aFlyTarget.GetAt( m_nSelect++ );
-				CMover *pSelectMover = prj.GetMover( idSelect );
-				if( IsValidObj(pSelectMover) )
-				{
-					CWorld *pWorld = pMover->GetWorld();
-					if( pWorld )
-					{
-						pWorld->SetObjFocus( pSelectMover );			// 이놈을 타겟으로 설정함.
+			std::optional<OBJID> pIdSelect = m_flyTarget.GetNext();
+
+			if (pIdSelect) {
+				CMover * pSelectMover = prj.GetMover(*pIdSelect);
+				if (IsValidObj(pSelectMover)) {
+					CWorld * pWorld = pMover->GetWorld();
+					if (pWorld) {
+						pWorld->SetObjFocus(pSelectMover);			// 이놈을 타겟으로 설정함.
 						pMover->m_idTracking = pSelectMover->GetId();	// 탭으로 타겟을 바꾸면 자동추적타겟도 그놈으로 바뀐다.
 					}
 				}
@@ -784,9 +780,8 @@ int		CWndWorld::ControlFlying( DWORD dwMessage, CPoint point )
 
 					if( pWeapon->dwItemKind3 == IK3_WAND )
 					{
-						D3DXVECTOR3 vFront, vTarget;
-						AngleToVector( &vFront, g_pPlayer->GetAngle(), -g_pPlayer->GetAngleX(), 1.0f );
-						vTarget = pObj->GetPos() - g_pPlayer->GetPos();
+						const D3DXVECTOR3 vFront = AngleToVector( g_pPlayer->GetAngle(), -g_pPlayer->GetAngleX(), 1.0f );
+						D3DXVECTOR3 vTarget = pObj->GetPos() - g_pPlayer->GetPos();
 						D3DXVec3Normalize( &vTarget, &vTarget );		// 타겟쪽으로의 벡터의 유닛벡터.
 						FLOAT fDot = D3DXVec3Dot( &vFront, &vTarget );
 						if( fDot >= cosf(D3DXToRadian(60.0f)) )	// 타겟이 내가 보는 방향의 +-30도 안에 있으면 발사할수 있다.
@@ -889,7 +884,7 @@ int		CWndWorld::ControlFlying( DWORD dwMessage, CPoint point )
 		pMover->SetAngleX( fAngX );
 
 		if( fAdd || fAddX )
-			g_DPlay.PostPlayerAngle( TRUE );
+			g_DPlay.PostPlayerAngle( true );
 	}
 	
 
@@ -918,6 +913,13 @@ int		CWndWorld::ControlFlying( DWORD dwMessage, CPoint point )
 	}
 	
 	return nMsg;
+}
+
+std::optional<OBJID> WndWorld::FlyTargets::GetNext() {
+	if (targets.empty()) return std::nullopt;
+
+	if (current >= targets.size()) current = 0;
+	return targets[current++];
 }
 
 //

@@ -761,11 +761,11 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 		}
 		if( dwLinkSfxDouble != NULL_ID )
 		{
-			CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, dwLinkSfxDouble, GetPos(), GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
+			CSfx *pSfx = CreateSfx( dwLinkSfxDouble, GetPos(), GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
 			if( pSfx )
 			{
 				pSfx->SetPartLink( 0 );		// 오른손에 링크.
-				pSfx = CreateSfx( g_Neuz.m_pd3dDevice, dwLinkSfxDouble, GetPos(), GetId() );  // 링크이펙 하나더 생성.
+				pSfx = CreateSfx( dwLinkSfxDouble, GetPos(), GetId() );  // 링크이펙 하나더 생성.
 				if( pSfx )
 					pSfx->SetPartLink( 1 );		// 손에 링크.
 			}
@@ -795,7 +795,7 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 	
 	if( dwLinkSfxLeft != NULL_ID )
 	{
-		CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, dwLinkSfxLeft, GetPos(), GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
+		CSfx *pSfx = CreateSfx( dwLinkSfxLeft, GetPos(), GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
 		if( pSfx )
 			pSfx->SetPartLink( 1 );		// 왼손에 링크.
 	}
@@ -817,7 +817,7 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 	
 	if( dwLinkSfxRight != NULL_ID )
 	{
-		CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, dwLinkSfxRight, GetPos(), GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
+		CSfx *pSfx = CreateSfx( dwLinkSfxRight, GetPos(), GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
 		if( pSfx )
 			pSfx->SetPartLink( 0 );		// 오른손에 링크.
 	}
@@ -827,7 +827,7 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 	// 타겟id idFocusObj
 	if( pSkillProp->dwSfxObj != NULL_ID )
 	{
-		CreateSfx( g_Neuz.m_pd3dDevice, pSkillProp->dwSfxObj, GetPos(), GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
+		CreateSfx( pSkillProp->dwSfxObj, GetPos(), GetId() );  // 시전동작이기때문에 무조건 자기에게 나타난다.
 	}	
 	// 공격스킬과 타겟이 몬스터 이면 화면에 출력을 안함
 	if( pSkillProp->dwExeTarget != EXT_MELEEATK && 
@@ -1544,13 +1544,13 @@ int		CMover::DoAttackSP( CObj *pTargetObj, DWORD dwItemID )
 #if 0 //2009_12_18 기획에서 제거 요청 : 발동타임에 타겟에 대해 이펙트 필요없음 
 		DWORD dwSfxObj = pItemProp->dwSfxObj3;		// 특수공격에 발동이펙트가 있다면 3번사용.
 		if( dwSfxObj != NULL_ID )
-			CreateSfx( D3DDEVICE, dwSfxObj, GetPos(), GetId(), D3DXVECTOR3(0,0,0), idTarget );
+			CreateSfx( dwSfxObj, GetPos(), GetId(), D3DXVECTOR3(0,0,0), idTarget );
 #endif 
 
 	//gmpbigsun: 발동시 공격자에 대한 발동 effect
 	DWORD dwSfxObj = pItemProp->dwSfxObj;
 	if( NULL_ID != dwSfxObj )
-		CreateSfx( D3DDEVICE, dwSfxObj, GetPos() );
+		CreateSfx( dwSfxObj, GetPos() );
 
 		
 #endif	// __WORLDSERVER
@@ -1955,11 +1955,7 @@ void CMover::ActivateSystemPet( CItemElem* pItemElem )
 //#endif	// __PET_0519
 	g_dpDBClient.CalluspPetLog( m_idPlayer, pItemElem->GetSerialNumber(), 0, PETLOGTYPE_CALL, pItemElem->m_pPet );
 	// pet, log
-#ifdef __PET_1024
 	g_UserMng.AddPetCall( this, pItemElem->m_dwObjId, pItemElem->m_pPet->GetIndex(), (BYTE)pItemElem->m_pPet->GetLevel(), pItemElem->m_pPet->GetName() );
-#else	// __PET_1024
-	g_UserMng.AddPetCall( this, pItemElem->m_dwObjId, pItemElem->m_pPet->GetIndex(), (BYTE)pItemElem->m_pPet->GetLevel() );
-#endif	// __PET_1024
 	
 	if( bFirst )
 		static_cast<CUser*>(this )->AddPet( pItemElem->m_pPet, PF_PET );

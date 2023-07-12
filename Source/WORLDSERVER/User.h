@@ -36,7 +36,32 @@ class CMail;
 class CMailBox;
 
 //////////////////////////////////////////////////////////////////////////
-#define CHECK_TICK_FROM_CLIENT	SEC(3)
+
+namespace Users {
+	class MailBoxRequest {
+	private:
+		static constexpr DWORD CHECK_TICK_FROM_CLIENT = SEC(3);
+
+		bool			m_bCheckTransMailBox = false;
+		int				m_nCountFromClient = 0;
+		DWORD			m_dwTickFromClient = 0;
+
+	public:
+		void Init() { *this = MailBoxRequest(); }
+
+		void CheckTransMailBox() { m_bCheckTransMailBox = true; }
+		[[nodiscard]] bool GetCheckTransMailBox() const noexcept {
+			return m_bCheckTransMailBox;
+		}
+
+		void			ResetCheckClientReq();
+		int				GetCountClientReq();
+
+	private:
+		bool			CheckClientReq();
+	};
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 class CLordSkill;
@@ -51,9 +76,6 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 
 private:
-	BOOL			m_bCheckTransMailBox;
-	int				m_nCountFromClient;
-	DWORD			m_dwTickFromClient;
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -157,6 +179,8 @@ public:
 	DWORD	m_dwLastBuyItemTick;
 #endif // __PERIN_BUY_BUG
 
+	Users::MailBoxRequest mailBoxRequest;
+
 public:
 	virtual void	Process();
 	void			DoSMItemEquip( CItemElem* pItemElem, DWORD dwParts );
@@ -242,6 +266,12 @@ public:
 	void OnAfterUseItem(const ItemProp * pItemProp);
 #pragma endregion
 
+#ifdef __S_RECOMMEND_EVE
+	void GiveRecommendEveItems(int nValue = 0);
+#endif // __S_RECOMMEND_EVE
+	enum class CreateOrSendResult { Inventory, Post };
+	CreateOrSendResult CreateOrSendItem(CItemElem & itemElem, DWORD textIDForMail);
+
 	enum class SummonState {
 		Ok_0, Trade_1, Die_2, Vendor_3, Attack_4,
 		Fly_5, Duel_6
@@ -257,22 +287,9 @@ public:
 
 
 
-	void			AddPostMail( CMail* pMail );
 	void			AddRemoveMail( u_long nMail, int nType );
-	void			AddMailBox( CMailBox* pMailBox );
-
-
-
-
-	//////////////////////////////////////////////////////////////////////////
-    void			SendCheckMailBoxReq( BOOL bCheckTransMailBox );
-	void			CheckTransMailBox( BOOL bCheckTransMailBox );
-	BOOL			GetCheckTransMailBox();
-	bool			CheckClientReq();
-	void			ResetCheckClientReq();
-	int				GetCountClientReq();
-	//////////////////////////////////////////////////////////////////////////
-
+	void			AddMailBox(const CMailBox * pMailBox);
+	void			SendCheckMailBoxReq(bool bCheckTransMailBox);
 
 	void			SetPosting( BOOL bPosting )		{	m_bPosting	= bPosting;	}
 	BOOL			IsPosting( void )	{	return m_bPosting;	}
@@ -325,7 +342,6 @@ public:
 	void			AddGoldText( int nPlus );
 	void			AddExpBoxInfo( OBJID objid, DWORD dwSet, DWORD dwTime, u_long idPlayer );
 	void			AddSetQuest( LPQUEST lpQuest );
-	void			AddSetChangeJob( int nJob );
 	void			AddReturnSay( int ReturnFlag, const CHAR* lpszPlayer );
 	void			AddDoEquip( BYTE nId, DWORD dwItemId, BYTE fEquip );
 	void			AddCancelQuest(QuestId dwQuestCancelID );
@@ -518,9 +534,7 @@ public:
 	DoUseSystemAnswer DoUseItemInput(ItemProp * pProp, CItemElem * pItem);
 #endif	// __AZRIA_1023
 
-#ifdef __PET_1024
 	CUser::DoUseSystemAnswer DoUseItemPetNaming();
-#endif	// __PET_1024
 
 #ifdef __SYS_TICKET
 private:
@@ -771,7 +785,7 @@ public:
 	void			AddCreateSfxAllow( CMover *pMover, DWORD dwSfxObjArrow, DWORD dwSfxObjHit, D3DXVECTOR3 vPosDest, int idTarget );
 	void			AddCreateSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x = 0, float y = 0, float z = 0, BOOL bFlag = FALSE );
 	void			AddRemoveSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x = 0, float y = 0, float z = 0, BOOL bFlag = FALSE );
-	void			AddNearSetChangeJob(CMover * pMover, int nJob);
+	void			AddNearSetChangeJob(CUser * pMover);
 	void			AddModifyMode( CUser* pUser );
 	void			AddStateMode( CUser* pUser, BYTE nFlag );
 	void			AddSetFame( CMover* pMover, int nFame );
@@ -876,12 +890,8 @@ public:
 #ifdef __EVENT_1101
 	void	CallTheRoll( int nBit );
 #endif	// __EVENT_1101
-#ifdef __PET_1024
 	void	AddPetCall( CMover* pMover, DWORD dwPetId, DWORD dwIndex, BYTE nPetLevel, const char* szPetName );
 	void	AddSetPetName( CUser* pUser, const char* szPetName );
-#else	// __PET_1024
-	void	AddPetCall( CMover* pMover, DWORD dwPetId, DWORD dwIndex, BYTE nPetLevel );
-#endif	// __PET_1024
 	void	AddPetRelease( CMover* pMover );
 	void	AddPetLevelup( CMover* pMover, DWORD dwPetId );
 	void	AddPetFeed( CMover* pMover, WORD wEnergy );

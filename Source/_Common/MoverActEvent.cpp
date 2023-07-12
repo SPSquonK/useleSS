@@ -567,7 +567,7 @@ BOOL CMover::OnMagicSkill( int nType, int nCount )
 		pModel->m_SparkInfo.m_nCnt = 0;
 		pModel->m_SparkInfo.m_fLerp= 1.0f;
 		
-		AngleToVectorXZ( &pModel->m_SparkInfo.m_v3SparkDir, GetAngle(), -1.0f );
+		pModel->m_SparkInfo.m_v3SparkDir = AngleToVectorXZ( GetAngle(), -1.0f );
 	}
 #endif //defined(__CLIENT)
 
@@ -637,7 +637,7 @@ BOOL	CMover::OnAttackRange()
 		if( dwSfxObj == NULL_ID )	
 			return FALSE;
 	#ifdef __CLIENT		
-		pSfx = CreateSfx( D3DDEVICE, dwSfxObj, vPosSrc,GetId(), vPosDest ,idTarget );
+		pSfx = CreateSfx( dwSfxObj, vPosSrc,GetId(), vPosDest ,idTarget );
 	#endif
 	}
 
@@ -712,7 +712,7 @@ BOOL	CMover::OnAttackMagic()
 	CSfx* pSfx = NULL;
 	if( m_pActMover->IsFly() )
 	{
-		pSfx = CreateSfx( D3DDEVICE, XI_FIR_WAND02, vPosSrc, GetId(), vPosDest, idTarget );
+		pSfx = CreateSfx( XI_FIR_WAND02, vPosSrc, GetId(), vPosDest, idTarget );
 		if( pSfx )
 			pSfx->ShootSfx( GetAngle(), -GetAngleX(), 0.75f );		 
 	} 
@@ -722,7 +722,7 @@ BOOL	CMover::OnAttackMagic()
 		if( pHandItemProp )
 			dwSfxObj2 = pHandItemProp->dwSfxObj2;
 
-		pSfx = CreateSfx( D3DDEVICE, dwSfxObj2, vPosSrc,GetId(), vPosDest ,idTarget );
+		pSfx = CreateSfx( dwSfxObj2, vPosSrc,GetId(), vPosDest ,idTarget );
 		if( pSfx )
 		{
 			switch(nMagicPower) 
@@ -758,7 +758,7 @@ BOOL	CMover::OnAttackMagic()
 		pModel->m_SparkInfo.m_nCnt = 0;
 		pModel->m_SparkInfo.m_fLerp= 1.0f;
 		
-		AngleToVectorXZ( &pModel->m_SparkInfo.m_v3SparkDir, GetAngle(), -1.0f );
+		pModel->m_SparkInfo.m_v3SparkDir = AngleToVectorXZ( GetAngle(), -1.0f );
 	}
 #endif // __WORLDSERVER
 	return TRUE;
@@ -786,7 +786,7 @@ void	CMover::OnAttackMelee_ClockWorks( DWORD dwState, CMover *pHitObj )
 			OnDamage( nItemID, dwState, NULL, &vPos );		// 이펙트가 발생하는 위치에 데미지를 주고
 #ifdef __CLIENT
 			GetWorld()->m_pCamera->SetQuake( 15, 0.5f );
-			CSfx *pSfx = CreateSfx( D3DDEVICE, XI_NPCSP1DIRFIRESP, vPos );	// 이펙트를 발생 - 서버에선 생성 안됨.
+			CSfx *pSfx = CreateSfx( XI_NPCSP1DIRFIRESP, vPos );	// 이펙트를 발생 - 서버에선 생성 안됨.
 			if( pSfx )
 				pSfx->SetAngle( -GetAngle() );
 #endif 
@@ -799,7 +799,7 @@ void	CMover::OnAttackMelee_ClockWorks( DWORD dwState, CMover *pHitObj )
 			pModel->GetEventPos( &vPos, 1 );	// 왼손 집게발 위치.
 			D3DXVec3TransformCoord( &vPos, &vPos, GetMatrixWorldPtr() );
 #ifdef __CLIENT
-			CSfx *pSfx = CreateSfx( D3DDEVICE, XI_NPCSP1DIRCANNON, vPos, GetId() );	// 발사이펙트.
+			CSfx *pSfx = CreateSfx( XI_NPCSP1DIRCANNON, vPos, GetId() );	// 발사이펙트.
 			if( pSfx )
 			{
 				pSfx->SetAngle( -GetAngle() );
@@ -812,7 +812,7 @@ void	CMover::OnAttackMelee_ClockWorks( DWORD dwState, CMover *pHitObj )
 				const auto targetPos = pTarget->GetPos();
 				OnDamage( nItemID, dwState, NULL, &targetPos );		// 타겟의 좌표를 중심으로 데미지를 줌.
 #ifdef __CLIENT
-				pSfx = CreateSfx( D3DDEVICE, XI_NPCSP1RANBALL, vPos, GetId(), pTarget->GetPos(), pTarget->GetId(), -1 );		// 포탄
+				pSfx = CreateSfx( XI_NPCSP1RANBALL, vPos, GetId(), pTarget->GetPos(), pTarget->GetId(), -1 );		// 포탄
 				if( pSfx )
 				{
 					pSfx->SetScale( D3DXVECTOR3(4.0f, 4.0f, 4.0f) );
@@ -849,13 +849,13 @@ void	CMover::OnAttackMelee_ClockWorks( DWORD dwState, CMover *pHitObj )
 #ifdef __CLIENT
 			GetWorld()->m_pCamera->SetQuake( 60, 1.5f );
 
-			CSfx *pSfx = CreateSfx( D3DDEVICE, XI_NPCSP1DIRCIRCLE, vPos );
+			CSfx *pSfx = CreateSfx( XI_NPCSP1DIRCIRCLE, vPos );
 			if( pSfx )
 				pSfx->SetScale( D3DXVECTOR3(2.0f, 2.0f, 2.0f) );
 			pModel->GetEventPos( &vPos, 4 );
 			D3DXVec3TransformCoord( &vPos, &vPos, GetMatrixWorldPtr() );
 
-			pSfx = CreateSfx( D3DDEVICE, XI_NPCSP1DIRCIRCLE, vPos );
+			pSfx = CreateSfx( XI_NPCSP1DIRCIRCLE, vPos );
 			if( pSfx )
 				pSfx->SetScale( D3DXVECTOR3(2.0f, 2.0f, 2.0f) );
 #endif
@@ -900,7 +900,7 @@ void	CMover::OnAttackMelee_BigMuscle( DWORD dwState, CMover *pHitObj )
 			
 		#ifdef __CLIENT
 			// 땅치고 끝날때 이펙트 왼손
-			CSfx *pSfx = CreateSfx( D3DDEVICE, XI_SKILL_CIRCLE_DUST, v2 );			
+			CSfx *pSfx = CreateSfx( XI_SKILL_CIRCLE_DUST, v2 );			
 			if( pSfx )
 				pSfx->SetScale( D3DXVECTOR3( 12.0f, 12.0f, 12.0f ) );
 
@@ -916,7 +916,7 @@ void	CMover::OnAttackMelee_BigMuscle( DWORD dwState, CMover *pHitObj )
 			
 		#ifdef __CLIENT
 			// 땅치고 끝날때 이펙트 오른손
-			pSfx = CreateSfx( D3DDEVICE, XI_SKILL_CIRCLE_DUST, v3 );			
+			pSfx = CreateSfx( XI_SKILL_CIRCLE_DUST, v3 );			
 			if( pSfx )
 				pSfx->SetScale( D3DXVECTOR3( 12.0f, 12.0f, 12.0f ) );
 		#endif //__CLIENT 			
@@ -975,11 +975,11 @@ void	CMover::OnAttackMelee_BigMuscle( DWORD dwState, CMover *pHitObj )
 				
 			#ifdef __CLIENT
 				// 땅치고 끝날때 이펙트 왼손
-				CSfx *pSfx = CreateSfx( D3DDEVICE, XI_SKILL_CIRCLE_DUST, v2 );
+				CSfx *pSfx = CreateSfx( XI_SKILL_CIRCLE_DUST, v2 );
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3( 9.0f, 9.0f, 9.0f ) );
 				
-				pSfx = CreateSfx( D3DDEVICE, XI_SKILL_MAG_EARTH_ROCKCRASH01, v3OldPos );
+				pSfx = CreateSfx( XI_SKILL_MAG_EARTH_ROCKCRASH01, v3OldPos );
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 				
@@ -1049,7 +1049,7 @@ void	CMover::OnAttackMelee_Krrr( DWORD dwState, CMover *pHitObj )
 	case OBJSTA_ATK3:		// 두손으로 도끼 내려치기
 		{
 		#ifdef __CLIENT
-			CSfx *pSfx = CreateSfx( D3DDEVICE, XI_NPCSP1DIRFIRESP, pHitObj->GetPos() );	// 이펙트를 발생 - 서버에선 생성 안됨.
+			CSfx *pSfx = CreateSfx( XI_NPCSP1DIRFIRESP, pHitObj->GetPos() );	// 이펙트를 발생 - 서버에선 생성 안됨.
 			if( pSfx )
 				pSfx->SetAngle( -GetAngle() );
 
@@ -1079,7 +1079,7 @@ void	CMover::OnAttackMelee_Krrr( DWORD dwState, CMover *pHitObj )
 				PLAYSND( SND_PC_BOSS_SUMMONS );
 		#endif //__CLIENT
 				
-				AngleToVectorXZ( &vLocal, GetAngle(), 5.0f );	// 때리는방향 5미터앞.
+				vLocal = AngleToVectorXZ( GetAngle(), 5.0f );	// 때리는방향 5미터앞.
 				vLocal += GetPos();
 
 				FLOAT fHeight = GetWorld()->GetLandHeight( vLocal.x, vLocal.z );
@@ -1125,18 +1125,18 @@ void	CMover::OnAttackMelee_Krrr( DWORD dwState, CMover *pHitObj )
 			{	
 #ifdef __CLIENT
 				D3DXVECTOR3 v3Pos = vLocal;
-				CSfx *pSfx = CreateSfx( D3DDEVICE, XI_SKILL_ELE_MULTI_METEOSHOWER02, v3Pos );	// 이펙트를 발생 - 서버에선 생성 안됨.
+				CSfx *pSfx = CreateSfx( XI_SKILL_ELE_MULTI_METEOSHOWER02, v3Pos );	// 이펙트를 발생 - 서버에선 생성 안됨.
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3( 0.8f, 0.8f, 0.8f ) );
 				
 				v3Pos.x += ( xRandomF( 12.0f ) + -6.0f );
-				pSfx = CreateSfx( D3DDEVICE, XI_SKILL_ELE_MULTI_METEOSHOWER02, v3Pos );	// 이펙트를 발생 - 서버에선 생성 안됨.
+				pSfx = CreateSfx( XI_SKILL_ELE_MULTI_METEOSHOWER02, v3Pos );	// 이펙트를 발생 - 서버에선 생성 안됨.
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3( 0.8f, 0.8f, 0.8f ) );
 				
 				v3Pos = vLocal;
 				v3Pos.z += ( xRandomF( 12.0f ) + -6.0f );
-				pSfx = CreateSfx( D3DDEVICE, XI_SKILL_ELE_MULTI_METEOSHOWER02, v3Pos );	// 이펙트를 발생 - 서버에선 생성 안됨.
+				pSfx = CreateSfx( XI_SKILL_ELE_MULTI_METEOSHOWER02, v3Pos );	// 이펙트를 발생 - 서버에선 생성 안됨.
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3( 0.8f, 0.8f, 0.8f ) );
 				
@@ -1204,7 +1204,7 @@ void	CMover::OnAttackMelee_Meteonyker( DWORD dwState, CMover *pHitObj )
 					}
 
 	#ifdef __CLIENT
-					CSfx *pSfx = CreateSfx( D3DDEVICE, XI_NPCSP1RANBALL, vPos, GetId(), pTarget->GetPos(), pTarget->GetId(), -1 );		// 포탄
+					CSfx *pSfx = CreateSfx( XI_NPCSP1RANBALL, vPos, GetId(), pTarget->GetPos(), pTarget->GetId(), -1 );		// 포탄
 					if( pSfx )
 					{
 						pSfx->SetScale( D3DXVECTOR3(4.0f, 4.0f, 4.0f) );
@@ -1235,7 +1235,7 @@ void	CMover::OnAttackMelee_Meteonyker( DWORD dwState, CMover *pHitObj )
 					MoverProp* pProp	= GetProp();
 					OnDamage( pProp->dwAtk4, OBJSTA_ATK4, NULL, &vPos );
 #ifdef __CLIENT
-					CSfx *pSfx = CreateSfx( D3DDEVICE, XI_NPCMETEONYKER, vPos );
+					CSfx *pSfx = CreateSfx( XI_NPCMETEONYKER, vPos );
 #endif	// __CLIENT
 				}
 			}
@@ -1282,7 +1282,7 @@ void	CMover::OnAttackMelee_Bear( DWORD dwState, CMover *pHitObj )
 			if( m_pActMover->m_nMotionHitCount == 0 )
 			{				
 	#ifdef __CLIENT
-				CSfx *pSfx = CreateSfx( D3DDEVICE, XI_SKILL_CIRCLE_DUST, GetPos() );			
+				CSfx *pSfx = CreateSfx( XI_SKILL_CIRCLE_DUST, GetPos() );			
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3( 12.0f, 12.0f, 12.0f ) );
 				
@@ -1570,7 +1570,7 @@ BOOL	CMover::OnAttackMelee( DWORD dwState, CMover *pHitObj )
 /*		#ifndef __Y_DRAGON_FIRE
 			if( pItemProp->dwSfxObj2 != NULL_ID )
 			{
-				CSfx *pSfx = CreateSfx( D3DDEVICE, pItemProp->dwSfxObj2,  GetPos(), GetId(), this->GetPos(), this->GetId(), 0 ); 
+				CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj2,  GetPos(), GetId(), this->GetPos(), this->GetId(), 0 ); 
 			}
 		#endif //__Y_DRAGON_FIRE
 */
@@ -1659,7 +1659,7 @@ BOOL	CMover::OnAttackMeleeContinue( DWORD dwState )
 						OnDamage( nItemID, dwState, NULL, &vOut );		// 이펙트가 터지는 위치에 데미지를 줌.
 
 					#ifdef __CLIENT
-						CSfx *pSfx = CreateSfx( D3DDEVICE,  XI_NPCSP1RANSPARK, vOut );
+						CSfx *pSfx = CreateSfx(  XI_NPCSP1RANSPARK, vOut );
 						if( pSfx )
 							pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 					#endif // __CLIENT
@@ -1715,7 +1715,7 @@ BOOL	CMover::OnAttackMeleeContinue( DWORD dwState )
 						vTemp.y -= (xRandomF( 0.05f ) + 0.01f );
 						
 						extern CPartsFireDragon	g_FireDragon;
-						g_FireDragon.Create( D3DDEVICE, v1, XI_NAT_FIRE01_ADV, vScal, vTemp );
+						g_FireDragon.Create( v1, XI_NAT_FIRE01_ADV, vScal, vTemp );
 					}
 
 			#endif
@@ -1733,7 +1733,7 @@ BOOL	CMover::OnAttackMeleeContinue( DWORD dwState )
 							OnDamage( nItemID, dwState, NULL, &vOut );		// 이펙트가 터지는 위치에 데미지를 줌.
 	/*
 						#ifdef __CLIENT
-							CSfx *pSfx = CreateSfx( D3DDEVICE,  XI_NPCSP1RANSPARK, vOut );
+							CSfx *pSfx = CreateSfx(  XI_NPCSP1RANSPARK, vOut );
 							if( pSfx )
 								pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 						#endif // __CLIENT
@@ -2032,7 +2032,7 @@ int		CMover::OnActCollecting()
 			D3DXVECTOR3 vSrc, vLocal = D3DXVECTOR3(0, 0.5f, 0);
 			((CModelObject *)m_pModel)->GetForcePos( &vLocal, 0, PARTS_RWEAPON, GetMatrixWorld() );
 			vSrc = vLocal;
-			CSfx *pSfx = CreateSfx( D3DDEVICE, pHandProp->dwSfxObj2, vSrc, GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );
+			CSfx *pSfx = CreateSfx( pHandProp->dwSfxObj2, vSrc, GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );
 			if( pSfx )
 			{
 				pSfx->SetAngle( -GetAngle() + 90.0f );

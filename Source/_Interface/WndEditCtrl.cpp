@@ -984,7 +984,7 @@ void CWndCandList::OnInitialUpdate()
 	SetWndRect( CRect( 0, 0, 150, nNum * ( GetFontHeight() + 3 ) + 8 ) );
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndCandList::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndCandList::Initialize( CWndBase* pWndParent )
 { 
 	SetTitle( _T( "World" ) );
 	CRect rect( 0, 0, 150, 200 );
@@ -1057,7 +1057,7 @@ void CWndHCandList::UpdateCandList(CPoint windowPos)
 	rect.OffsetRect( windowPos.x, windowPos.y - rect.Height() );
 	SetWndRect( rect );
 }
-BOOL CWndHCandList::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndHCandList::Initialize( CWndBase* pWndParent )
 {
 	CRect rect( 0, 0, 100, 100 );
 	CWndBase::Create( WBS_TOPMOST | WBS_NOFRAME, rect, pWndParent, APP_COMMAND );
@@ -1067,7 +1067,7 @@ void CWndHCandList::PaintFrame(C2DRender* p2DRender)
 {
 	CRect rect = GetWindowRect();
 	
-	m_pTheme->RenderWndTextFrame( p2DRender, &rect );
+	m_Theme.RenderWndTextFrame( p2DRender, &rect );
 }
 void CWndHCandList::OnDraw( C2DRender* p2DRender )
 {
@@ -1119,7 +1119,7 @@ void CReadingList::UpdateReading(CPoint windowPos)
 	rect.OffsetRect( windowPos.x, windowPos.y - rect.Height() );
 	SetWndRect( rect );
 }
-BOOL CReadingList::Initialize( CWndBase* pWndParent, DWORD nType)
+BOOL CReadingList::Initialize( CWndBase* pWndParent )
 {
 	CRect rect( 0, 0, 100, 100 );
 	CWndBase::Create( WBS_TOPMOST | WBS_NOFRAME, rect, pWndParent, APP_COMMAND );
@@ -1205,9 +1205,6 @@ CWndEdit::CWndEdit()
 	m_bImeNativeMode = FALSE;
 	m_bKeepComposition = FALSE;
 
-
-	m_string.m_bWordAlign = FALSE;
-	m_stringBack.m_bWordAlign = FALSE;
 	m_dwMaxStringNumber = 0xffffffff;
 }
 
@@ -1221,8 +1218,9 @@ CWndEdit::~CWndEdit()
 	SAFE_DELETE( m_pWndReadingList );
 }
 // 창을 생성한다.
-BOOL CWndEdit::Create(HWND hwnd,DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID)
+BOOL CWndEdit::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT nID)
 {
+	HWND hwnd = g_Neuz.GetSafeHwnd();
 	if(hwnd) m_hWnd = hwnd;
 
 	g_imeMgr.InputLangChange(m_hWnd, GetKeyboardLayout(0));
@@ -1324,14 +1322,14 @@ void CWndEdit::PaintFrame(C2DRender* p2DRender)
 {
 	return;
 	CRect rect = GetWindowRect();
-	m_pTheme->RenderWndEditFrame( p2DRender, &rect );
+	m_Theme.RenderWndEditFrame( p2DRender, &rect );
 }
-BOOL CWndEdit::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
-{
-	if( !IsWndStyle( EBS_READONLY ) )
-		m_pApp->SetDeviceCursor( m_hEditCursor );
-	return TRUE;
+
+void CWndEdit::OnSetCursor() {
+	if (!IsWndStyle(EBS_READONLY))
+		g_Neuz.SetDeviceCursor(m_hEditCursor);
 }
+
 // 마우스 왼쪽 버튼을 에디트 창에 누르면 조합이 완료된다.
 // 이는 조합시 다른 오동작을 방지하기 위해 클릭하면 무조건 조합을 완료하게 한 것이다.
 void CWndEdit::OnLButtonDown( UINT nFlags, CPoint point )

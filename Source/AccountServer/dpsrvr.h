@@ -7,14 +7,9 @@
 #include "ListedServer.h"
 #include "sqktd/mutexed_object.h"
 
-#undef	theClass
-#define theClass	CDPSrvr_AccToCert
-#undef theParameters
-#define theParameters	CAr & ar, DPID, DPID
-
-typedef std::map<std::string, int>	STRING2INT;
-
-class CDPSrvr_AccToCert : public CDPMng
+class CDPSrvr_AccToCert : public CDPMng, 
+	public DPMngFeatures::BroadcastPacketSole<CDPSrvr_AccToCert>,
+	public DPMngFeatures::PacketHandler<CDPSrvr_AccToCert, DPID, DPID>
 {
 public:
 	static constexpr size_t MAX_IP = 10240;
@@ -27,10 +22,9 @@ public:
 	int		m_nSizeofAddrPmttd;
 	
 
-	CMclCritSec		m_csIPCut;
-	STRING2INT m_sIPCut;
-	int		m_nIPCut[MAX_IP][3];
-	int		m_nSizeofIPCut;
+	struct IPRange { std::uint32_t from; std::uint32_t to; };
+	sqktd::mutexed_object<std::vector<IPRange>> m_IPCut;
+	bool m_IPCutIsEmpty = false; // If true, m_ipCut is guaranteed to be empty
 
 	sqktd::mutexed_on_write_object<CListedServers> m_servers;
 
@@ -48,7 +42,7 @@ public:
 // Operations
 	void	CloseExistingConnection( LPCTSTR lpszAccount, LONG lError );
 	bool	LoadAddrPmttd( LPCTSTR lpszFileName );
-	BOOL	LoadIPCut( LPCSTR lpszFileName );
+	bool	LoadIPCut( LPCSTR lpszFileName );
 	void	DestroyPlayer( DPID dpid1, DPID dpid2 );
 
 	void	OnAddConnection( DPID dpid );
@@ -75,11 +69,13 @@ public:
 	};
 
 	void OnAfterChecking(DPID dpid1, DPID dpid2, const OnAfterCheckingParams & params);
-	BOOL	IsABClass( LPCSTR lpszIP );
-	void	GetABCClasstoString( LPCSTR lpszIP, char * lpABClass, int &nCClass );
-	void	InitIPCut( void );
+
+	static std::optional<std::uint32_t> IPStringToUInt32(const char * string);
 //	Handlers
-	USES_PFNENTRIES;
+private:
+	bool IsBanned(LPCSTR lpszIP);
+
+private:
 	void	OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 );
 	void	OnRemoveAccount( CAr & ar, DPID dpid1, DPID dpid2 );
 	void	OnPing( CAr & ar, DPID dpid1, DPID dpid2 );

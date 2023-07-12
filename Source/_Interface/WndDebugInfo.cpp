@@ -91,7 +91,7 @@ void CWndDebugInfo::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndDebugInfo::Initialize(CWndBase* pWndParent,DWORD dwWndId)
+BOOL CWndDebugInfo::Initialize(CWndBase* pWndParent)
 {
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_DEBUGINFO, pWndParent, 0, CPoint( 0, 0 ) );
@@ -116,9 +116,6 @@ BOOL CWndDebugInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 			break;
 		}
 			/*
-		case 1003: // skinset
-			g_pPlayer->SetSkinSet( _ttoi( m_wndEditExp.GetString() ) );
-			break;
 		case 1004: // hair
 			g_pPlayer->SetHair( _ttoi( m_wndEditExp.GetString() ) );
 			break;
@@ -159,7 +156,7 @@ BOOL CWndDebugInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 //		case 104: g_World.m_bViewObject    = !g_World.m_bViewObject    ; break;
 //		case 105: 
 //			g_World.m_bViewFog = !g_World.m_bViewFog; 			    
-//			g_World.SetFogEnable( g_Neuz.m_pd3dDevice, g_World.m_bViewFog ); 
+//			g_World.SetFogEnable( g_World.m_bViewFog ); 
 //			break;
 //		case 106: g_World.m_bViewLOD       = !g_World.m_bViewLOD       ; break;
 //		case 107: g_World.m_bViewWater     = !g_World.m_bViewWater     ; break;
@@ -170,7 +167,7 @@ BOOL CWndDebugInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 		case WIDC_OBJECT: g_WorldMng()->m_bViewAllObjects   = !g_WorldMng()->m_bViewAllObjects   ; break;
 		case 105: 
 			g_WorldMng()->m_bViewFog = !g_WorldMng()->m_bViewFog; 			    
-			g_WorldMng()->SetFogEnable( g_Neuz.m_pd3dDevice, g_WorldMng()->m_bViewFog ); 
+			g_WorldMng()->SetFogEnable( g_WorldMng()->m_bViewFog ); 
 			break;
 		case WIDC_LOD_TERRAIN: g_WorldMng()->m_bViewLODTerrain       = !g_WorldMng()->m_bViewLODTerrain       ; break;
 		case WIDC_LOD_OBJ: g_WorldMng()->m_bViewLODObj      = !g_WorldMng()->m_bViewLODObj       ; break;
@@ -189,7 +186,7 @@ BOOL CWndDebugInfo::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 		case WIDC_WEATHER: g_WorldMng()->m_bViewWeather = !g_WorldMng()->m_bViewWeather; break;
 		case WIDC_ATTRIBUTE: g_WorldMng()->m_bViewHeightAttribute = !g_WorldMng()->m_bViewHeightAttribute; break;
 		case WIDC_HIDE: g_pPlayer->SetVisible( !g_pPlayer->IsVisible() ); break;
-		//case WIDC_114: m_pTheme->m_bNudeSkin = !m_pTheme->m_bNudeSkin; break;
+		//case WIDC_114: m_Theme.m_bNudeSkin = !m_Theme.m_bNudeSkin; break;
 		case WIDC_BOUNDBOX: 
 //			g_World.m_bViewBoundBox = !g_World.m_bViewBoundBox;
 			g_WorldMng()->m_bViewBoundBox = !g_WorldMng()->m_bViewBoundBox;

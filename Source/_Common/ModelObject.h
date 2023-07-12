@@ -8,7 +8,7 @@
 #include "ModelGlobal.h"
 #include <optional>
 #ifdef __ATTACH_MODEL
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #endif //__ATTACH_MODEL
 
 #define		MAX_SF_SLERP		3		// 키와키 사이를 몇단계로 보간할 것인가
@@ -60,7 +60,7 @@ public:
 
 	void	Add( D3DXVECTOR3 v1, D3DXVECTOR3 v2 );
 	void	Process( void );
-	void	Draw( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
+	void	Draw( const D3DXMATRIX *mWorld );
 	void	MakeSpline( void );
 
 };
@@ -99,12 +99,6 @@ struct O3D_ELEMENT
 
 #define		MAX_ELEMENT		21
 
-#ifdef __ATTACH_MODEL
-class CModelObject;
-typedef	boost::shared_ptr<CModelObject>	SpModelObject;
-typedef	map<int, SpModelObject> MapSpModelObject;
-#endif //__ATTACH_MODEL
-
 // 애니메이션 개체. 게임내 오브젝트의 최소단위.
 // 모션이 여기에 포함되어 있기때문에 바이페드든 일반이든 애니메이션을 시킨다면
 // 반드시 이것으로 생성시켜서 쓸것.
@@ -124,7 +118,7 @@ public:
 	// Bone / animation
 	// 원래 Motion은 Element안에 있어야 맞는것이지만 문제를 간략화 하기 위해서 
 	// CModelObject로 빼냈다.  1뼈대 n메쉬 구조가 더 이해하기가 쉽기 때문이다.
-	CBones				*m_pBone;						// 뼈대 클래스 - 이것을 직접 파괴시키면 안된다.
+	const CBones	*m_pBone;						// 뼈대 클래스 - 이것을 직접 파괴시키면 안된다.
 	CMotion				*m_pMotionOld;					// 이전 모션
 	CMotion				*m_pMotion;						// 현재 로딩된 모션 포인터 - 직접 파괴시키면 안된다.
 	CSwordForce			*m_pForce;						// 검광
@@ -142,7 +136,7 @@ public:
 
 #ifdef __ATTACH_MODEL
 private:
-	MapSpModelObject	m_mapAttachModel;
+	std::map<int, std::shared_ptr<CModelObject>>	m_mapAttachModel;
 #endif //__ATTACH_MODEL
 
 private:
@@ -164,11 +158,11 @@ public:
 #ifdef __ATTACH_MODEL
 	void				SetAttachModel(int nEventIndex, CModelObject* pModelObject);
 	void				SetDetachModel(int nEventIndex);
-	void				RenderAttachModel(LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld);
-	int					RenderAttachModelElem(LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld);
+	void				RenderAttachModel(const D3DXMATRIX *mWorld);
+	int					RenderAttachModelElem(const D3DXMATRIX *mWorld);
 	void				FrameMoveAttachModel( D3DXVECTOR3 *pvSndPos = NULL, float fSpeed = 1.0f );
 
-	void				InitAttachModelDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
+	void				InitAttachModelDeviceObjects();
 	void				RestoreAttachModelDeviceObjects();
 	void				InvalidateAttachModelDeviceObjects();
 	void				DeleteAttachModelDeviceObjects();
@@ -327,6 +321,8 @@ public:
 	HRESULT	CreateDeviceBuffer( O3D_ELEMENT *pElem );
 	int		LoadBone( LPCTSTR szFileName );
 	int		LoadMotion( LPCTSTR szFileName );
+	void	LoadMotion(int dwMotion) = delete;
+	void	LoadMotionId(DWORD dwMotion);
 	int		LoadElement( LPCTSTR szFileName, int nParts = 0 );
 	void	SetParent( int nParts, int nBoneIdx );
 	void	SetTextureMulti( LPCTSTR szBitmap, int nParts );
@@ -338,12 +334,12 @@ public:
 	void	RenderItemElec_Adv( int nParts, const D3DXMATRIX *pmWorld, int nLevel );
 
 #ifndef __WORLDSERVER
-	BOOL	Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
-	void	RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld, DWORD dwItemKind3 = NULL_ID, int nLevelL = 0, int nLeveR = 0);
+	BOOL	Render( const D3DXMATRIX *mWorld );
+	void	RenderEffect( const D3DXMATRIX *mWorld, DWORD dwItemKind3 = NULL_ID, int nLevelL = 0, int nLeveR = 0);
 #ifdef __SHADOW
-	BOOL	RenderShadow( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX *mWorld );
-	void	SetStateShadow( LPDIRECT3DDEVICE9 pd3dDevice );
-	void	ResetStateShadow( LPDIRECT3DDEVICE9 pd3dDevice );
+	BOOL	RenderShadow( const D3DXMATRIX *mWorld );
+	void	SetStateShadow( );
+	void	ResetStateShadow( );
 #endif
 
 	int LoadClonedElement( LPCTSTR szFileName );		//gmpbigsun:복제본 생성 
@@ -356,12 +352,8 @@ public:
 	void	FrameMove( D3DXVECTOR3 *pvSndPos = NULL, float fSpeed = 1.0f );
 
 	// collision detect
-	BOOL	Intersect( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bColl = FALSE  ) 
-	{ 
-		if( IntersectRayTri( vRayOrig, vRayDir, mWorld, pvIntersect, pfDist, bColl ) ) 
-			return TRUE; 
-		else 
-			return FALSE; 
+	bool Intersect(const D3DXVECTOR3 & vRayOrig, const D3DXVECTOR3 & vRayDir, const D3DXMATRIX & mWorld, D3DXVECTOR3 * pvIntersect, FLOAT * pfDist, BOOL bColl = FALSE) override {
+		return IntersectRayTri(vRayOrig, vRayDir, mWorld, pvIntersect, pfDist, bColl);
 	}
 
 	D3DXVECTOR3 *IntersectRayTri( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bColl = FALSE ) 
@@ -400,7 +392,7 @@ public:
 #endif
 
 	// 디바이스 초기화 및 삭제 
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT InitDeviceObjects( );
 	HRESULT RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();

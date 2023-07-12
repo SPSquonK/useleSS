@@ -273,9 +273,6 @@
     <ClCompile Include="..\_Database\DBConvertNew.cpp">
       <Filter>Database Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Database\DbItemUpdate.cpp">
-      <Filter>Database Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\_database\DbManager.cpp">
       <Filter>Database Files</Filter>
     </ClCompile>
@@ -311,6 +308,9 @@
     </ClCompile>
     <ClCompile Include="..\_Common\ProjectCmn.cpp">
       <Filter>Source Files\Project</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Common\NameValidation.cpp">
+      <Filter>Neuz Files\Common Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -586,6 +586,9 @@
     </ClInclude>
     <ClInclude Include="..\_Common\ProjectCmn.h">
       <Filter>Source Files\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\NameValidation.h">
+      <Filter>Neuz Files\Common Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

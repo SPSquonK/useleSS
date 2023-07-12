@@ -9,15 +9,12 @@ class CItemElem;
 class CWndVendorCtrl : public CWndBase
 {
 	CTexture*		   m_pTex;
-	void	InterpretScript( CScanner & s, CPtrArray & ptrArray );
 	CItemElem *	m_pFocusItem;
 	int		m_nCurSel;
 	int		m_nFontHeight;
 	DWORD	m_nWndColor;
 	DWORD	m_nFontColor;
 	DWORD	m_nSelectColor;
-//	CPtrArray	m_aItems;
-//	CPtrArray	m_aColumns;
 
 public:
 //	Constructions

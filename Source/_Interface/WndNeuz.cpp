@@ -32,18 +32,18 @@ void CWndTitleBar::OnInitialUpdate() {
 	if(m_pParentWnd->IsWndStyle( WBS_HELP ) )
 	{
 		m_awndButton[ WTBID_HELP - 10000 ].Create( _T( "?" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax * 16 + 16, 20), this, WTBID_HELP ), m_nButtonMax++;
-		m_awndButton[ WTBID_HELP - 10000 ].SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtWndHelp.tga" ), TRUE );
+		m_awndButton[ WTBID_HELP - 10000 ].SetTexture( MakePath( DIR_THEME, "ButtWndHelp.tga" ), TRUE );
 		m_awndButton[ WTBID_HELP - 10000 ].FitTextureSize();
 	}
 	if(m_pParentWnd->IsWndStyle( WBS_MINIMIZEBOX ) )
 		m_awndButton[ WTBID_MIN - 10000 ].Create( _T( "_" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax* 16 + 16, 20), this, WTBID_MIN ), m_nButtonMax++;
-	m_awndButton[ WTBID_MIN - 10000 ].SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtWndMin.tga" ), TRUE );
+	m_awndButton[ WTBID_MIN - 10000 ].SetTexture( MakePath( DIR_THEME, "ButtWndMin.tga" ), TRUE );
 	m_awndButton[ WTBID_MIN - 10000 ].FitTextureSize();
 
 	if(m_pParentWnd->IsWndStyle( WBS_MAXIMIZEBOX ) )
 	{
 		m_awndButton[ WTBID_MAX - 10000 ].Create( _T( "|" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax* 16 + 16, 20), this, WTBID_MAX ), m_nButtonMax++;
-		m_awndButton[ WTBID_MAX - 10000 ].SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtWndMax.tga" ), TRUE );
+		m_awndButton[ WTBID_MAX - 10000 ].SetTexture( MakePath( DIR_THEME, "ButtWndMax.tga" ), TRUE );
 		m_awndButton[ WTBID_MAX - 10000 ].FitTextureSize();
 	}
 
@@ -52,7 +52,7 @@ void CWndTitleBar::OnInitialUpdate() {
 		if( m_pParentWnd->m_bNoCloseButton == FALSE )
 		{
 			m_awndButton[ WTBID_CLOSE - 10000 ].Create( _T( "x" ), 0, CRect( m_nButtonMax * 16, 1 , m_nButtonMax * 16 + 16, 20), this, WTBID_CLOSE ), m_nButtonMax++;
-			m_awndButton[ WTBID_CLOSE - 10000 ].SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtWndExit.tga" ), TRUE );
+			m_awndButton[ WTBID_CLOSE - 10000 ].SetTexture( MakePath( DIR_THEME, "ButtWndExit.tga" ), TRUE );
 			m_awndButton[ WTBID_CLOSE - 10000 ].FitTextureSize();
 		}
 	}
@@ -97,8 +97,10 @@ CWndNeuz::CWndNeuz()
 CWndNeuz::~CWndNeuz()
 {
 	// PLAYSND( SND_INF_CLOSE );
-	for( int i = 0; i < m_wndArrayTemp.GetSize(); i++ )
-		safe_delete( (CWndBase*)m_wndArrayTemp.GetAt( i ) );
+	for (CWndBase * child : m_wndArrayTemp) {
+		safe_delete(child);
+	}
+
 	// 타일 형태의 윈도는 윈도가 종료할 때 텍스춰를 파괴해야한다.
 	if( m_strTexture.IsEmpty() == FALSE )
 	{
@@ -144,7 +146,6 @@ void CWndNeuz::OnInitialUpdate()
 		m_wndTitleBar.Replace(); 
 	}
 //	m_wndButton.Create("OK",0,CRect(0,0,0+size.cx,0+size.cy),this,IDOK);//,m_pSprPack,9);
-//	m_wndClose.SetDefault(TRUE);
 
 	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( GetWndId() );
 	if( lpWndApplet )
@@ -159,7 +160,7 @@ void CWndNeuz::OnInitialUpdate()
 
 
 		for (WNDCTRL * pWndCtrl : lpWndApplet->ptrCtrlArray) {
-			m_wndArrayTemp.Add(CreateControl(m_pApp->GetSafeHwnd(), pWndCtrl));
+			m_wndArrayTemp.emplace_back(CreateControl(pWndCtrl));
 		}
 	}
 
@@ -180,7 +181,7 @@ void CWndNeuz::AdjustWndBase( D3DFORMAT d3dFormat )
 
 	if( m_bTile == FALSE )
 	{
-		SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, m_strTexture ), TRUE );
+		SetTexture( MakePath( DIR_THEME, m_strTexture ), TRUE );
 		return;
 	}
 	CWndBase::AdjustWndBase( m_d3dFormat );
@@ -256,13 +257,9 @@ void CWndNeuz::AdditionalSkinTexture( LPWORD pDest, CSize size1, D3DFORMAT d3dFo
 	}
 
 }
-BOOL CWndNeuz::Initialize(CWndBase* pWndParent,DWORD dwStyle)
-{
-	CRect rect(0,0,300,300);
-	//m_strMessage = lpszMessage;
-	//m_nType = nType;
-	//SetTitle("메지시 윈도");
-	return CWndBase::Create(dwStyle | WBS_MOVE|/*WBS_MODAL|*/WBS_SOUND|WBS_CAPTION,rect,m_pWndRoot,10);
+BOOL CWndNeuz::DefaultInitialize(CWndBase * pWndParent) {
+	CRect rect(0, 0, 300, 300);
+	return CWndBase::Create(WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, &g_WndMng, 10);
 }
 
 BOOL CWndNeuz::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
@@ -324,7 +321,7 @@ void CWndNeuz::SetSizeMax()
 		{
 			m_rectBackup = GetWindowRect(TRUE);
 			CRect rect;
-			CWndBase * pWndFull = m_pWndRoot->FindFullWnd();
+			CWndBase * pWndFull = g_WndMng.FindFullWnd();
 			if(pWndFull)
 				rect = pWndFull->GetWindowRect(TRUE);
 			else
@@ -332,7 +329,7 @@ void CWndNeuz::SetSizeMax()
 					rect = m_pParentWnd->GetClientRect(TRUE);
 				else
 				{
-					rect = m_pWndRoot->GetLayoutRect();
+					rect = g_WndMng.GetLayoutRect();
 				}
 				m_wndTitleBar.GetDlgItem( WTBID_MAX )->SetTitle( _T( "#" ) );
 				m_bFullWnd = TRUE;
@@ -346,7 +343,7 @@ void CWndNeuz::SetSizeMax()
 		m_rectBackup = GetWindowRect(TRUE);
 		CRect rect;
 		CWndBase* pWndFull 
-			= m_pWndRoot->FindFullWnd();
+			= g_WndMng.FindFullWnd();
 		if(pWndFull)
 			rect = pWndFull->GetWindowRect(TRUE);
 		else
@@ -354,8 +351,7 @@ void CWndNeuz::SetSizeMax()
 				rect = m_pParentWnd->GetClientRect(TRUE);
 			else
 			{
-				//rect = m_pWndRoot->GetWindowRect();
-				rect = m_pWndRoot->GetLayoutRect();
+				rect = g_WndMng.GetLayoutRect();
 				rect.left = rect.Width() - 200;
 			}
 			SetWndRect(rect);
@@ -432,7 +428,7 @@ void CWndNeuz::SetWndRect( CRect rectWnd, BOOL bOnSize )
 	else
 		CWndBase::SetWndRect( rectWnd, bOnSize );
 }
-CWndBase* CWndNeuz::CreateControl( HWND hWnd, LPWNDCTRL lpWndCtrl ) 
+CWndBase* CWndNeuz::CreateControl( LPWNDCTRL lpWndCtrl ) 
 {
 	DWORD dwWndStyle = lpWndCtrl->dwWndStyle;
 	CWndBase* pWndBase = NULL;
@@ -442,7 +438,7 @@ CWndBase* CWndNeuz::CreateControl( HWND hWnd, LPWNDCTRL lpWndCtrl )
 		pWndBase = new CWndButton;
 		((CWndButton*)pWndBase)->Create( lpWndCtrl->strTitle, dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId );
 		if( lpWndCtrl->strTexture.IsEmpty() == FALSE )
-			((CWndButton*)pWndBase)->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, lpWndCtrl->strTexture ), TRUE );
+			((CWndButton*)pWndBase)->SetTexture( MakePath( DIR_THEME, lpWndCtrl->strTexture ), TRUE );
 
 		pWndBase->m_bTile = (lpWndCtrl->bTile != FALSE);
 
@@ -469,7 +465,7 @@ CWndBase* CWndNeuz::CreateControl( HWND hWnd, LPWNDCTRL lpWndCtrl )
 		break;
 	case WTYPE_EDITCTRL:
 		pWndBase = new CWndEdit;
-		((CWndEdit*)pWndBase)->Create( hWnd, dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId );
+		((CWndEdit*)pWndBase)->Create( dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId );
 		//((CWndButton*)pWndBase)->Create( _T( "Button" ), 0, CRect( 0, 0, 100, 20), &m_dialogWnd, 10 );
 
 		if( lpWndCtrl->strTexture.IsEmpty() == FALSE )
@@ -486,13 +482,7 @@ CWndBase* CWndNeuz::CreateControl( HWND hWnd, LPWNDCTRL lpWndCtrl )
 		pWndBase->m_bTile = (lpWndCtrl->bTile != FALSE);
 		break;
 	case WTYPE_LISTCTRL:
-		pWndBase = new CWndListCtrl;
-		((CWndListCtrl*)pWndBase)->Create( dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId );
-		
-		if( lpWndCtrl->strTexture.IsEmpty() == FALSE )
-			((CWndStatic*)pWndBase)->m_strTexture = lpWndCtrl->strTexture;
-		pWndBase->m_bTile = (lpWndCtrl->bTile != FALSE);
-		break;
+		throw std::exception("WTYPE_LISTCTRL / CWndListCtrl is not supported anymore");
 	case WTYPE_COMBOBOX:
 		pWndBase = new CWndComboBox;
 		((CWndComboBox*)pWndBase)->Create( dwWndStyle, lpWndCtrl->rect, this, lpWndCtrl->dwWndId );
@@ -525,7 +515,7 @@ BOOL CWndNeuz::InitDialog( HWND hWnd, LPWNDAPPLET LPWNDAPPLET )
 	SetTitle( LPWNDAPPLET->strTitle );
 	BOOL bResult = CWndNeuz::Create( 0 | WBS_MOVE | WBS_SOUND | WBS_THICKFRAME | WBS_CAPTION, rect, NULL, LPWNDAPPLET->dwWndId);
 	for( int i = 0; i < LPWNDAPPLET->ptrCtrlArray.GetSize(); i++ )
-		CreateControl( hWnd, (LPWNDCTRL)LPWNDAPPLET->ptrCtrlArray.GetAt( i ) );
+		CreateControl( (LPWNDCTRL)LPWNDAPPLET->ptrCtrlArray.GetAt( i ) );
 	return bResult;
 }
 */
@@ -534,7 +524,7 @@ BOOL CWndNeuz::InitDialog( DWORD dwWID, CWndBase * pWndParent, DWORD dwStyle, CP
 	LPWNDAPPLET lpWndApplet = m_resMng.GetAt ( dwWID );
 	if (!lpWndApplet) throw Windows::CWndNeuzBadAppId(dwWID);
 	
-	CRect rect = CRect(ptLeftTop.x, ptLeftTop.y, ptLeftTop.x + lpWndApplet->size.cx, ptLeftTop.y + lpWndApplet->size.cy);
+	CRect rect = CRect(ptLeftTop, lpWndApplet->size);
 
 	if (dwWID == APP_LOGIN) {
 		rect.bottom = rect.top + 200;
@@ -542,8 +532,7 @@ BOOL CWndNeuz::InitDialog( DWORD dwWID, CWndBase * pWndParent, DWORD dwStyle, CP
 
 	if( m_ptMouseCenter.x != -1 )
 	{
-		HWND hWnd = g_Neuz.GetSafeHwnd();
-		GET_CLIENT_POINT( hWnd, point );
+		CPoint point = GetClientPoint();
 		rect.OffsetRect( -point );
 	}
 
@@ -554,7 +543,7 @@ BOOL CWndNeuz::InitDialog( DWORD dwWID, CWndBase * pWndParent, DWORD dwStyle, CP
 	return CWndNeuz::Create( lpWndApplet->dwWndStyle | dwStyle, rect, pWndParent, lpWndApplet->dwWndId );
 }  
 
-BOOL CWndNeuz::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
+void CWndNeuz::OnSetCursor()
 {
 	if( IsWndStyle( WBS_THICKFRAME ) && ( IsFullMax() == FALSE || m_nWinSize != WSIZE_MAX ) )
 	{
@@ -565,8 +554,9 @@ BOOL CWndNeuz::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 			CRect rectWindow = GetWindowRect( TRUE );
 			point -= rectWindow.TopLeft();
 			int nResizeDir = GetResizeDir( point );
-			if( nResizeDir )
-			{
+			if (nResizeDir == 0) {
+				CWndBase::OnSetCursor();
+			} else {
 				// 1 = top
 				// 2 = bottom
 				// 3 = left
@@ -596,13 +586,9 @@ BOOL CWndNeuz::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
 						
 				}
 			}
-			else
-				CWndBase::OnSetCursor( pWndBase, nHitTest, message );
 		}
 	}
 	else
-		CWndBase::OnSetCursor( pWndBase, nHitTest, message );
-
-	return TRUE;
+		CWndBase::OnSetCursor();
 }
 //enum { IDD = IDD_PROP_APPLET_GENERAL };

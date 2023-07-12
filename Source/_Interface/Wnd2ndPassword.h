@@ -2,14 +2,14 @@
 #define __WND_2ND_PASSWORD__
 
 #if defined( __CLIENT )
-class CWnd2ndPassword : public CWndNeuz
+class CWnd2ndPassword final : public CWndNeuz
 {
 public:
 	CWnd2ndPassword( void );
 	~CWnd2ndPassword( void );
 
 public:
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual	void OnInitialUpdate( void );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 

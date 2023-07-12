@@ -54,7 +54,7 @@ void CModel::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 	m_fFrameCurrent = (float)nCurrFrame + m_fSlp;	// 편의상 시각적으로 보기 쉽도록 수치 보정
 }
 
-BOOL CModel::Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld )
+BOOL CModel::Render( const D3DXMATRIX* pmWorld )
 {
 	return TRUE;
 }
@@ -95,12 +95,9 @@ float CModel::GetRadius( void )
 	return fLen / 2.0f;
 }
 
-BOOL CModel::IntersectBB( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist )
+bool CModel::IntersectBB( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist ) const
 {
 	// Collect all intersections
-	D3DXVECTOR3 v1, v2, v3;
-	D3DXVECTOR4 vOut;
-	D3DXVECTOR3 vPos;
 
 	//  3|2  
 	//  -+-
@@ -110,7 +107,7 @@ BOOL CModel::IntersectBB( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDi
 	//  -+-
 	//	4|5
 
-	static int anIntexTable[ 12 * 3 ] =
+	static constexpr int anIntexTable[ 12 * 3 ] =
 	{
 		0, 1, 2,  0, 2, 3,
 		0, 4, 5,  0, 5, 1,
@@ -119,20 +116,20 @@ BOOL CModel::IntersectBB( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDi
 		0, 3, 7,  0, 7, 4,
 		1, 2, 6,  1, 6, 5
 	};
-	const BOUND_BOX* pBB = GetBBVector();
+
+	D3DXVECTOR3 bbTransformedVertices[8];
+	for (size_t i = 0; i != 8; ++i) {
+		D3DXVec3TransformCoord(&i[bbTransformedVertices], i + m_BB.m_vPos, &mWorld);
+	}
 
 	for( int i = 0; i < 12 * 3; i += 3 )
 	{
-		v1 = pBB->m_vPos[ anIntexTable[ i + 0 ] ];
-		v2 = pBB->m_vPos[ anIntexTable[ i + 1 ] ];
-		v3 = pBB->m_vPos[ anIntexTable[ i + 2 ] ];					
-
-		D3DXVec3TransformCoord( &v1, &v1, &mWorld ); 
-		D3DXVec3TransformCoord( &v2, &v2, &mWorld ); 
-		D3DXVec3TransformCoord( &v3, &v3, &mWorld ); 
+		const D3DXVECTOR3 & v1 = bbTransformedVertices[anIntexTable[i + 0]];
+		const D3DXVECTOR3 & v2 = bbTransformedVertices[anIntexTable[i + 1]];
+		const D3DXVECTOR3 & v3 = bbTransformedVertices[anIntexTable[i + 2]];
 		
 		if( IntersectTriangle( v1, v2, v3, vRayOrig, vRayDir, pvIntersect, pfDist ) ) 
-			return TRUE;
+			return true;
 	}
-	return FALSE;
+	return false;
 }

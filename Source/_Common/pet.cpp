@@ -13,64 +13,57 @@
 
 #include "xutil.h"
 
-
-const	int		nDefaultLife	= 1;
+static constexpr int nDefaultLife = 1;
 
 CPetProperty::CPetProperty()
 {
 	memset( (void*)m_aPetAvailParam, 0, sizeof(PETAVAILPARAM) * PK_MAX );
-	memset( (void*)m_anLevelupAvailLevelMax, 0, sizeof(BYTE) * PL_MAX );
-	memset( (void*)m_adwLevelupAvailLevelProbability, 0, sizeof(DWORD) * PL_MAX * MAX_PET_AVAIL_LEVEL );
-	memset( (void*)m_adwIncrementExp, 0, sizeof(DWORD) * PL_MAX );
-	memset( (void*)m_awMaxEnergy, 0, sizeof(WORD) * PL_MAX );
-	memset( (void*)m_aPenalty, 0, sizeof(PETPENALTY) * PL_MAX );
 }
 
-CPetProperty::~CPetProperty()
-{
-	m_aFeedEnergy[0].clear();
-	m_aFeedEnergy[1].clear();
-	m_awAddLifeProbability.clear();
+const CPetProperty::PETPENALTY * CPetProperty::GetPenalty(BYTE nLevel) const {
+	if (nLevel < PL_MAX) {
+		return &m_levelInfos[nLevel].penalty;
+	} else {
+		return nullptr;
+	}
 }
 
-PPETPENALTY CPetProperty::GetPenalty( BYTE nLevel )
-{
-	if( nLevel >= PL_MAX )
-		return NULL;
-	return &m_aPenalty[nLevel];
-}
-
-PPETAVAILPARAM	CPetProperty::GetAvailParam( BYTE nKind )
-{
-	if( nKind >= PK_TIGER && nKind < PK_MAX )
+const CPetProperty::PETAVAILPARAM * CPetProperty::GetAvailParam(BYTE nKind) const {
+	if (nKind >= PK_TIGER && nKind < PK_MAX) {
 		return &m_aPetAvailParam[nKind];
-	return NULL;
+	} else {
+		return nullptr;
+	}
 }
 
-BYTE	CPetProperty::GetLevelupAvailLevel( BYTE wLevel )
-{
+BYTE	CPetProperty::GetLevelupAvailLevel( BYTE wLevel ) {
+	if (wLevel >= PL_MAX) {
+		return 0;
+	}
+
+	const LevelInfo & info = m_levelInfos[wLevel];
+
 	DWORD dwTotal	= 0;
 	DWORD dwRandom	= xRandom( 1, 10001 );	// 1 ~ 10000
-	for( int i = 0; i <= m_anLevelupAvailLevelMax[wLevel]; i++ )
-	{
-		dwTotal		+= m_adwLevelupAvailLevelProbability[wLevel][i];
-		if(  dwTotal >= dwRandom )
+	for (int i = 0; i <= info.availMax; i++) {
+		dwTotal += info.availProb[i];
+		if (dwTotal >= dwRandom) {
 			return i + 1;
+		}
 	}
 	return 0;
 }
 
-WORD	CPetProperty::GetFeedEnergy( DWORD dwCost, int nIndex )
-{
-	if( nIndex < 0 || nIndex > 1 )
+WORD CPetProperty::GetFeedEnergy(DWORD dwCost, int nIndex) const {
+	if (nIndex < 0 || nIndex > 1)
 		return 0;
 
-	auto * pArr	= &m_aFeedEnergy[nIndex];
-	for( auto i = pArr->begin(); i != pArr->end(); ++i )
-	{
-		if( dwCost >= i->dwCostMin && dwCost <= i->dwCostMax )
-			return (WORD)xRandom( i->wEnergyMin, i->wEnergyMax + 1 );	// wEnergyMin ~ wEnergyMax
+	for (const FEEDENERGY & feedEnergy : m_aFeedEnergy[nIndex]) {
+		if (dwCost >= feedEnergy.dwCostMin && dwCost <= feedEnergy.dwCostMax) {
+			return (WORD)xRandom(feedEnergy.wEnergyMin, feedEnergy.wEnergyMax + 1);	// wEnergyMin ~ wEnergyMax
+		}
 	}
+
 	return 0;
 }
 
@@ -90,14 +83,14 @@ BYTE	CPetProperty::Hatch( void )
 DWORD	CPetProperty::GetIncrementExp( BYTE nLevel )
 {
 	if( nLevel >= PL_D && nLevel <= PL_A )
-		return m_adwIncrementExp[nLevel-1];
+		return m_levelInfos[nLevel-1].incrementExp;
 	return 0;
 }
 
 WORD CPetProperty::GetMaxEnergy( BYTE nLevel )
 {
 	if( nLevel >= PL_D && nLevel <= PL_S )
-		return m_awMaxEnergy[nLevel-1];
+		return m_levelInfos[nLevel-1].maxEnergy;
 	return 1;	// 0 나누기 방지
 }
 
@@ -151,22 +144,7 @@ BOOL CPetProperty::LoadScript( LPCTSTR szFile )
 		}
 		else if( s.Token == _T( "LevelupAvail" ) )
 		{
-			// 	10000	0	0	0	0	0	0	0	0
-			int	nLevel	= (int)PL_D;
-			s.GetToken();	// {{
-			DWORD	dwProbability	= s.GetNumber();
-			while( *s.token != '}' )
-			{
-				m_adwLevelupAvailLevelProbability[nLevel][0]	= dwProbability;
-				for( int i = 1; i < MAX_PET_AVAIL_LEVEL; i++ )
-				{
-					m_adwLevelupAvailLevelProbability[nLevel][i]	= s.GetNumber();
-					if( m_adwLevelupAvailLevelProbability[nLevel][i] > 0 )
-						m_anLevelupAvailLevelMax[nLevel]	= i;
-				}
-				nLevel++;
-				dwProbability	= s.GetNumber();
-			}
+			LoadLevelupAvail(s);
 		}
 		else if( s.Token == _T( "FeedEnergy" ) )
 		{
@@ -196,7 +174,7 @@ BOOL CPetProperty::LoadScript( LPCTSTR szFile )
 			while( *s.token != '}' )
 			{
 				ASSERT( nLevel < PL_S );
-				m_adwIncrementExp[nLevel++]	= dwIncrementExp;
+				m_levelInfos[nLevel++].incrementExp	= dwIncrementExp;
 				dwIncrementExp	= s.GetNumber();
 			}
 		}
@@ -209,7 +187,7 @@ BOOL CPetProperty::LoadScript( LPCTSTR szFile )
 			while( *s.token != '}' )
 			{
 				ASSERT( nLevel <= PL_S );
-				m_awMaxEnergy[nLevel++]	= (WORD)( dwMaxEnergy );
+				m_levelInfos[nLevel++].maxEnergy = (WORD)( dwMaxEnergy );
 				dwMaxEnergy		= s.GetNumber();
 			}
 		}
@@ -235,8 +213,8 @@ BOOL CPetProperty::LoadScript( LPCTSTR szFile )
 			int nLevel	= PL_D;
 			while( *s.token != '}' )
 			{
-				m_aPenalty[nLevel].fExp		= fExp;
-				m_aPenalty[nLevel].wEnergy	= (WORD)s.GetNumber();
+				m_levelInfos[nLevel].penalty.fExp		= fExp;
+				m_levelInfos[nLevel].penalty.wEnergy	= (WORD)s.GetNumber();
 				nLevel++;
 				fExp	= s.GetFloat();
 			}
@@ -244,48 +222,26 @@ BOOL CPetProperty::LoadScript( LPCTSTR szFile )
 		s.GetToken();
 	}
 
-/*
-#ifdef _DEBUG
-	TRACE( "GetAvailParam\n" );
-	for( int i = 0; i < PK_MAX; i++ )
-	{
-		PPETAVAILPARAM pPetAvailParam	= GetAvailParam( i );
-		TRACE( "dwDstParam=%d, nBase=%d, nParam=%d\n", pPetAvailParam->dwDstParam, pPetAvailParam->nBase, pPetAvailParam->nParam );
-	}
-	TRACE( "GetLevelupAvailLevel\n" );
-	// 0은 모두 0이어야 한다.
-	for( i = PL_EGG; i < PL_MAX; i++ )
-	{
-		for( int j = 0; j < 100; j++ )
-		{
-			BYTE nAvailLevel	= GetLevelupAvailLevel( i );
-			TRACE( "PetLevel=%d, AvailLevel=%d\n", i, nAvailLevel );
-		}
-	}
-
-	TRACE( "\nGetFeedEnergy\n" );
-	for( i = 1; i <= 100; i++ )
-	{
-		DWORD dwCost	= i * 120;
-		WORD wEnergy	= GetFeedEnergy( dwCost );
-		TRACE( "dwCost=%d, wEnergy=%d\n", dwCost, wEnergy );
-	}
-	TRACE( "\nGetIncrementExp\n" );
-	for( i = PL_D; i < PL_MAX; i++ )
-		TRACE( "nLevel=%d, IncrementExp=%d\n", i, GetIncrementExp( (PETLEVEL)i ) );
-
-	TRACE( "\nGetMaxEnergy\n" );
-	for( i = PL_D; i < PL_MAX; i++ )
-		TRACE( "nLevel=%d, MaxEnergy=%d\n", i, GetMaxEnergy( (PETLEVEL)i ) );
-
-	TRACE( "\nGetAddLife\n" );
-	for( i = 0; i < 100; i++ )
-	{
-		TRACE( "AddLife=%d\n", GetAddLife() );
-	}
-#endif	// _DEBUG
-*/
 	return TRUE;
+}
+
+void CPetProperty::LoadLevelupAvail(CScript & s) {
+	// 	10000	0	0	0	0	0	0	0	0
+	int	nLevel	= (int)PL_D;
+	s.GetToken();	// {{
+	DWORD	dwProbability	= s.GetNumber();
+	while( *s.token != '}' )
+	{
+		m_levelInfos[nLevel].availProb[0]	= dwProbability;
+		for( int i = 1; i < MAX_PET_AVAIL_LEVEL; i++ )
+		{
+			m_levelInfos[nLevel].availProb[i]	= s.GetNumber();
+			if( m_levelInfos[nLevel].availProb[i] > 0 )
+				m_levelInfos[nLevel].availMax = i;
+		}
+		nLevel++;
+		dwProbability	= s.GetNumber();
+	}
 }
 
 #ifdef __CLIENT
@@ -319,9 +275,7 @@ CAr & operator<<(CAr & ar, const CPet & pet) {
 	ar << pet.m_wEnergy;
 	ar << pet.m_wLife;
 	ar << pet.m_anAvailLevel;
-#ifdef __PET_1024
 	ar.WriteString(pet.m_szName);
-#endif	// __PET_1024
 	return ar;
 }
 
@@ -332,9 +286,7 @@ CAr & operator>>(CAr & ar, CPet & pet) {
 	ar >> pet.m_wEnergy;
 	ar >> pet.m_wLife;
 	ar >> pet.m_anAvailLevel;
-#ifdef __PET_1024
 	ar.ReadString(pet.m_szName, MAX_PET_NAME);
-#endif	// __PET_1024
 	return ar;
 }
 
@@ -344,7 +296,7 @@ void CPet::SetEnergy( WORD wEnergy )
 	m_wEnergy	= wEnergy;		// trans서버에서는 pet.inc를 읽지 않는다.
 #else	// __DBSERVER
 	WORD wMaxEnergy		= GetMaxEnergy();
-	m_wEnergy	= wEnergy > wMaxEnergy? wMaxEnergy: wEnergy;
+	m_wEnergy	= std::max(wEnergy, wMaxEnergy);
 #endif	// __DBSERVER
 }
 
@@ -371,12 +323,8 @@ BYTE CPet::GetAvailLevel( BYTE nLevel )
 	return 0;
 }
 
-#ifdef _DEBUG
-#include "defineattribute.h"
-#endif	// _DEBUG
-
 SINGLE_DST CPet::GetAvailDestParam() const {
-	PETAVAILPARAM * pAvailParam	= CPetProperty::GetInstance()->GetAvailParam( m_nKind );
+	const CPetProperty::PETAVAILPARAM * pAvailParam = CPetProperty::GetInstance()->GetAvailParam(m_nKind);
 	if (!pAvailParam) return { 0, 0 };
 
 	int dst = static_cast<int>(pAvailParam->dwDstParam);
@@ -387,17 +335,18 @@ SINGLE_DST CPet::GetAvailDestParam() const {
 	return SINGLE_DST{ dst, nParam };
 }
 
-DWORD CPet::GetIndex( void )
-{
-	PPETAVAILPARAM pPetAvailParam	= CPetProperty::GetInstance()->GetAvailParam( m_nKind );
+DWORD CPet::GetIndex() const {
 	if( m_nLevel == PL_EGG )
 		return MI_PET_EGG;
-	else if( m_nLevel > PL_EGG && m_nLevel < PL_B )
+
+	const CPetProperty::PETAVAILPARAM * pPetAvailParam = CPetProperty::GetInstance()->GetAvailParam(m_nKind);
+	if (m_nLevel > PL_EGG && m_nLevel < PL_B) {
 		return pPetAvailParam->m_adwIndex[0];
-	else if( m_nLevel < PL_S )
+	} else if (m_nLevel < PL_S) {
 		return pPetAvailParam->m_adwIndex[1];
-	else
+	} else {
 		return pPetAvailParam->m_adwIndex[2];
+	}
 }
 
 void CPet::InitEgg( void )
@@ -493,34 +442,30 @@ BOOL CAIEgg::MoveProcessIdle( const AIMSG & msg )
 	if( m_nState == PETSTATE_IDLE )
 	{
 		FLOAT fAngXZ	= pOwner->GetAngle();
-		FLOAT fAngH		= pOwner->GetAngleX();
+		const FLOAT fAngH		= pOwner->GetAngleX();
 
-		D3DXVECTOR3 vPos;
-//		AngleToVector( &vPos, fAngXZ, -fAngH, 1.0f );
-//		vPos	+= pOwner->GetPos();
-		vPos	= pOwner->GetPos();
+		D3DXVECTOR3 vPos	= pOwner->GetPos();
 		vPos.y	= pOwner->GetWorld()->GetLandHeight( pOwner->GetPos() );
 
-		D3DXVECTOR3 vPos1, vPos2;
 		fAngXZ	= pOwner->GetAngle();
-		fAngH  = pOwner->GetAngleX();
+
 		fAngXZ -= 90.0f;
 		if( fAngXZ < 0 )
 			fAngXZ += 360.0f;
-		AngleToVector( &vPos1, fAngXZ, -fAngH, 1.0f );
+		D3DXVECTOR3 vPos1 = AngleToVector( fAngXZ, -fAngH, 1.0f );
 		vPos1 += vPos;
 		fAngXZ	= pOwner->GetAngle();
-		fAngH  = pOwner->GetAngleX();
+
 		fAngXZ += 90.0f;
 		if( fAngXZ > 360.0f )
 			fAngXZ -= 360.0f;
-		AngleToVector( &vPos2, fAngXZ, -fAngH, 1.0f );
+		D3DXVECTOR3 vPos2 = AngleToVector( fAngXZ, -fAngH, 1.0f );
 		vPos2	+= vPos;
 		
-		D3DXVECTOR3 v1	= vPos1 - pMover->GetPos();
-		D3DXVECTOR3 v2	= vPos2 - pMover->GetPos();
-		double d1	= (double)D3DXVec3LengthSq( &v1 );
-		double d2	= (double)D3DXVec3LengthSq( &v2 );
+		const D3DXVECTOR3 v1	= vPos1 - pMover->GetPos();
+		const D3DXVECTOR3 v2	= vPos2 - pMover->GetPos();
+		const float d1	= D3DXVec3LengthSq( &v1 );
+		const float d2	= D3DXVec3LengthSq( &v2 );
 		if( d1 < d2 )
 			vPos	= vPos1;
 		else
@@ -651,33 +596,20 @@ BOOL CAIEgg::StateRage( const AIMSG & msg )
 
 // 알변환 일반적인 아이템 변환에 이용할 수 있도록 확장을 고려하여 만들었으나 아직 구체적이지 않다.
 // 비슷한 변환이 추가될 때, 나머지 작업을 하자
-CTransformStuff::CTransformStuff()
-:
-m_nTransform( 0 )
-{
+
+CTransformStuff::CTransformStuff(int nTransform)
+	: m_nTransform(nTransform) {
 }
 
-CTransformStuff::CTransformStuff( int nTransform )
-:
-m_nTransform( nTransform )
-{
-}
-
-CTransformStuff::~CTransformStuff()
-{
-}
-
-void CTransformStuff::AddComponent( int nItem, short nNum )
-{
-	TransformStuffComponent component( nItem, nNum );
-	m_vComponents.push_back( component );
+void CTransformStuff::AddComponent(int nItem, short nNum) {
+	m_vComponents.emplace_back(nItem, nNum);
 }
 
 CAr & operator<<(CAr & ar, const CTransformStuff & self) {
 	ar << self.m_nTransform;
 
 	ar << static_cast<std::uint32_t>(self.m_vComponents.size());
-	for (const TransformStuffComponent & component : self.m_vComponents) {
+	for (const auto & component : self.m_vComponents) {
 		ar << component;
 	}
 
@@ -692,241 +624,187 @@ CAr & operator>>(CAr & ar, CTransformStuff & self) {
 	if (nSize != CTransformItemProperty::Instance()->GetStuffSize(self.m_nTransform))
 		return ar;
 #endif	// __WORLDSERVER
+
+	self.m_vComponents.clear();
 	for (std::uint32_t i = 0; i < nSize; i++) {
-		TransformStuffComponent component;
+		auto & component = self.m_vComponents.emplace_back();
 		ar >> component;
-		self.AddComponent(component.nItem, component.nNum);
 	}
 
 	return ar;
 }
 
 #ifdef __WORLDSERVER
-// 변환 객체
-ITransformer::~ITransformer()
-{
+
+void CTransformItemProperty::Transform(
+	CUser * pUser, const CTransformStuff & stuff
+) const {
+	const auto pTransformItem = m_mapComponents.find(stuff.GetTransform());
+	if (pTransformItem == m_mapComponents.end()) return;
+
+	pTransformItem->second.Transform(pUser, stuff);
 }
 
-ITransformer* ITransformer::Transformer( int nTransformer )
-{
-	if( nTransformer == 0 )
-		return CTransformerEgg::Instance();
-	assert( 0 );
-	return NULL;
+void CTransformItemProperty::Transformer::Transform(
+	CUser * pUser, const CTransformStuff & stuff
+) const {
+	if (IsValidStuff(pUser, stuff)) {
+		stuff.RemoveItem(pUser);
+		CreateItem(pUser);
+	}
 }
 
-void ITransformer::Transform( CUser* pUser, CTransformStuff& stuff )
-{
-	if( !IsValidStuff( pUser, stuff ) )
-		return;
-	RemoveItem( pUser, stuff );
-	CreateItem( pUser, stuff );
-}
-
-void ITransformer::RemoveItem( CUser* pUser, CTransformStuff & stuff )
-{
-	for( DWORD i = 0; i < stuff.GetSize(); i++ )
-	{
-		TransformStuffComponent* pComponent	= stuff.GetComponent( i );
-		CItemElem * pItem = pUser->GetItemId(pComponent->nItem);
-		if( pItem )
-		{
-			g_DPSrvr.PutItemLog( pUser, "X", "transform-removestuff", pItem, pComponent->nNum );
-			pUser->RemoveItem( pComponent->nItem, pComponent->nNum );
+void CTransformStuff::RemoveItem(CUser * pUser) const {
+	for (const Component & pComponent : m_vComponents) {
+		CItemElem * pItem = pUser->GetItemId(pComponent.nItem);
+		if (pItem) {
+			g_DPSrvr.PutItemLog(pUser, "X", "transform-removestuff", pItem, pComponent.nNum);
+			pUser->RemoveItem(pComponent.nItem, pComponent.nNum);
 		}
 	}
 }
 
-void ITransformer::CreateItem( CUser* pUser, CTransformStuff &stuff )
-{
-	CItemElem* pItem	= CTransformItemProperty::Instance()->GetItem( stuff.GetTransform() );
-	if( pItem && pUser->CreateItem( pItem ) )
-	{
+void CTransformItemProperty::Transformer::CreateItem(CUser * pUser) const {
+	CItemElem* pItem = GetItem();
+	if (pItem) {
+		pUser->CreateOrSendItem(*pItem, TID_GAME_TRANSFORM_S00);
 		pUser->AddDefinedText( TID_GAME_TRANSFORM_S00 );
 		g_DPSrvr.PutCreateItemLog( pUser, pItem, "X", "transform" );
+	} else {
+		pUser->AddDefinedText(TID_GAME_TRANSFORM_S01);
 	}
-	else
-		pUser->AddDefinedText( TID_GAME_TRANSFORM_S01 );
 }
 
-BOOL ITransformer::IsValidStuff( CUser* pUser, CTransformStuff & stuff )
-{
+bool CTransformItemProperty::Transformer::IsValidStuff(
+	CUser* pUser,
+	const CTransformStuff & stuff
+) const {
+	const std::span<const CTransformStuff::Component> components = stuff.GetSpan();
+
 	// 사용자가 보내온 재료와 실제 필요한 재료 개수가 다르면 부적합 재료
-	if( stuff.GetSize() != CTransformItemProperty::Instance()->GetStuffSize( stuff.GetTransform() ) )
-		return FALSE;
+	if (components.size() != GetStuffSize()) {
+		return false;
+	}
+
+	std::set<int> seenSlots;
 
 	// 사용자가 보내온 재료를 사용자가 가지고 있고
 	// 사용가능한 상태인지를 검사한다
-	for( DWORD i = 0; i < stuff.GetSize(); i++ )
-	{
-		TransformStuffComponent* pComponent		= stuff.GetComponent( i );
-		CItemElem * pItem = pUser->GetItemId(pComponent->nItem);
-		if( !pItem || pUser->IsUsing( pItem ) )
-			return FALSE;
+	for (const CTransformStuff::Component & pComponent : components) {
+		CItemElem * pItem = pUser->GetItemId(pComponent.nItem);
+		if (!pItem) return false;
+		if (pUser->IsUsing(pItem)) return false;
+		if (pUser->m_Inventory.IsEquip(pComponent.nItem)) return false;
+		if (!m_transformer(pItem)) return false;
+
+		if (seenSlots.contains(pComponent.nItem)) return false;
+		seenSlots.emplace(pComponent.nItem);
 	}
-	return TRUE;
-}
 
-CTransformerEgg::CTransformerEgg()
-{
-}
-
-CTransformerEgg::~CTransformerEgg()
-{
-}
-
-CTransformerEgg*	CTransformerEgg::Instance( void )
-{
-	static CTransformerEgg sTransformerEgg;
-	return &sTransformerEgg;
-}
-
-BOOL CTransformerEgg::IsValidStuff( CUser* pUser, CTransformStuff & stuff )
-{
-	// 기본 재료 조건을 만족하지 않으면 부적합 재료
-	if( !ITransformer::IsValidStuff( pUser, stuff ) )
-		return FALSE;
-
-	std::set<int> setItems;
-	for( DWORD i = 0; i < stuff.GetSize(); i++ )
-	{
-		TransformStuffComponent* pComponent		= stuff.GetComponent( i );
-		// 중복된 재료를 가지고 있다면 조작된 것이다
-		if( setItems.insert( pComponent->nItem ).second == false )
-			return FALSE;
-		CItemElem * pItem = pUser->GetItemId(pComponent->nItem);
-		ASSERT( pItem );
-		// 알이 아니면 부적합 재료
-		if( !pItem->IsEgg() )
-			return FALSE;
-	}
-	return TRUE;
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-CTransformItemComponent::CTransformItemComponent( int nTransform )
-:
-m_nTransform( nTransform ),
-m_nTotalProb( 0 )
-{
+CTransformItemProperty::Transformer::Transformer(const int nTransform)
+	: m_nTransform(nTransform) {
+	
+	if (nTransform == 0) {
+		m_transformer = [](const CItemElem * pItem) { return pItem->IsEgg(); };
+	} else {
+		Error(__FUNCTION__"(%d) called but no handler exists for this transformer", nTransform);
+		m_transformer = [](const CItemElem *) { return false; };
+	}
 }
 
-CTransformItemComponent::~CTransformItemComponent()
-{
-	Clear();
+void CTransformItemProperty::Transformer::AddElement(std::unique_ptr<CItemElem> item, std::uint32_t prob) {
+	m_nTotalProb += prob;
+
+	m_vTransformItemElements.emplace_back(
+		ProducedItem{
+			.pItem = std::move(item),
+			.nProb = m_nTotalProb
+		}
+	);
 }
 
-void CTransformItemComponent::Clear( void )
-{
-	for( VTIE::iterator i  = m_vTransformItemElements.begin(); i != m_vTransformItemElements.end(); ++i )
-		safe_delete( ( *i ).pItem );
-	m_vTransformItemElements.clear();
-}
-
-void CTransformItemComponent::AddElement( TransformItemElement element )
-{
-	AdjustmentProbability( element );
-	m_vTransformItemElements.push_back( element );
-}
-
-void CTransformItemComponent::AdjustmentProbability( TransformItemElement & element )
-{
-	m_nTotalProb	+= element.nProb;
-	element.nProb	= m_nTotalProb;
-}
-
-CItemElem* CTransformItemComponent::GetItem( void )
-{
-	int nProb	= xRandom( 0, eMaxProb );
-	for( VTIE::iterator i  = m_vTransformItemElements.begin(); i != m_vTransformItemElements.end(); ++i )
-	{
-		if( nProb < ( *i ).nProb )
-		{
-			( *i ).pItem->SetSerialNumber( xRand() );
-			return ( *i ).pItem;
+CItemElem * CTransformItemProperty::Transformer::GetItem() const {
+	DWORD nProb = xRandom(0, eMaxProb);
+	for (const ProducedItem & transformElement : m_vTransformItemElements) {
+		if (nProb < transformElement.nProb) {
+			transformElement.pItem->SetSerialNumber();
+			return transformElement.pItem.get();
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-CTransformItemProperty::CTransformItemProperty()
-{
-}
-
-CTransformItemProperty::~CTransformItemProperty()
-{
-	for( MPTIC::iterator i = m_mapComponents.begin(); i != m_mapComponents.end(); ++i )
-		safe_delete( i->second );
-	m_mapComponents.clear();
-}
-
-CTransformItemProperty*	CTransformItemProperty::Instance( void )
-{
-	static	CTransformItemProperty	sTransformItemProperty;
+CTransformItemProperty * CTransformItemProperty::Instance() {
+	static CTransformItemProperty	sTransformItemProperty;
 	return &sTransformItemProperty;
 }
 
-BOOL CTransformItemProperty::LoadScript( const char* szFile )
-{
+bool CTransformItemProperty::LoadScript(const char * szFile) {
 	CScript s;
-	if( s.Load( szFile ) == FALSE )
-		return FALSE;
+	if (!s.Load(szFile)) return false;
 
-	int nTransform	= s.GetNumber();		// subject or FINISHED
-	while( s.tok != FINISHED )
-	{
-		CTransformItemComponent* pComponent		= new CTransformItemComponent( nTransform );
-		AddComponent( pComponent );
+	while (true) {
+		const int nTransform = s.GetNumber();		// subject or FINISHED
+		if (s.tok == FINISHED) break;
+
+		Transformer & transformer
+			= m_mapComponents.emplace(nTransform, nTransform)
+			.first->second;
+
 		s.GetToken();	// {
-		s.GetToken();	// subject or '}'
-		while( *s.token != '}' )
-		{
-			if( s.Token == _T( "stuff" ) )
-			{
-				pComponent->SetStuffSize( s.GetNumber() );
-			}
-			else if( s.Token == _T( "item" ) )
-			{
-				s.GetToken();	// {
-				int nProb	= s.GetNumber();
-				while( *s.token != '}' )
-				{
-					int nType	= s.GetNumber();
-					CItemElem* pItem;
-					if( nType == TI_GENERIC )
-						pItem	= CreateItemGeneric( s );
-					else if( nType == TI_PET )
-						pItem	= CreateItemPet( s );
-					assert( pItem );
-					pComponent->AddElement( TransformItemElement( pItem, nProb ) );
-					nProb	= s.GetNumber();
-				}
-				AddComponent( pComponent );
-			}
-			s.GetToken();
-		}
-		nTransform	= s.GetNumber();
+
+		transformer.LoadScript(s);
 	}
-	return TRUE;
+
+	return true;
 }
 
-CItemElem* CTransformItemProperty::CreateItemGeneric( CScript & s )
+void CTransformItemProperty::Transformer::LoadScript(CScript & s) {
+	while (true) {
+		s.GetToken();	// subject or '}'
+		if (*s.token == '}') break;
+
+		if (s.Token == _T("stuff")) {
+			m_nStuffSize = static_cast<u_int>(s.GetNumber());
+		} else if (s.Token == _T("item")) {
+			s.GetToken();	// {
+			
+			while (true) {
+				const int nProb = s.GetNumber();
+				if (*s.token == '}') break;
+
+				const int nType = s.GetNumber();
+				std::unique_ptr<CItemElem> pItem;
+				if (nType == TI_GENERIC)  pItem = CreateItemGeneric(s);
+				else if (nType == TI_PET) pItem = CreateItemPet(s);
+				assert(pItem);
+
+				if (pItem) pItem->SetSerialNumber(0);
+				AddElement(std::move(pItem), nProb);
+			}
+		}
+	}
+}
+
+std::unique_ptr<CItemElem> CTransformItemProperty::Transformer::CreateItemGeneric( CScript & s )
 {
-	CItemElem* pItem	= new CItemElem;
+	std::unique_ptr<CItemElem> pItem = std::make_unique<CItemElem>();
 	pItem->m_dwItemId	= s.GetNumber();
-	if( !pItem->GetProp() )
-	{
-		safe_delete( pItem );
-		return NULL;
+	if (!pItem->GetProp()) {
+		Error(__FUNCTION__"(): Item %lu has no props", pItem->m_dwItemId);
+		return nullptr;
 	}
 	pItem->m_nItemNum	= s.GetNumber();
 	return pItem;
 }
 
-CItemElem* CTransformItemProperty::CreateItemPet( CScript & s )
-{
-	CItemElem* pItem	= new CItemElem;
+std::unique_ptr<CItemElem> CTransformItemProperty::Transformer::CreateItemPet( CScript & s ) {
+	std::unique_ptr<CItemElem> pItem = std::make_unique<CItemElem>();
 	pItem->m_nItemNum	= 1;
 	CPet* pPet	= pItem->m_pPet	= new CPet;
 	pPet->SetKind( s.GetNumber() );
@@ -942,8 +820,8 @@ CItemElem* CTransformItemProperty::CreateItemPet( CScript & s )
 		anAvail[i]	= atoi( sAvail );
 		if( anAvail[i] < 1 || anAvail[i] > 9 )
 		{
-			safe_delete( pItem );
-			return NULL;
+			Error(__FUNCTION__"(): Bad avail %d", anAvail[i]);
+			return nullptr;
 		}
 	}
 	for( int i = PL_D; i <= pPet->GetLevel(); i++ )
@@ -957,42 +835,21 @@ CItemElem* CTransformItemProperty::CreateItemPet( CScript & s )
 	return pItem;
 }
 
-void CTransformItemProperty::AddComponent( CTransformItemComponent* pComponent )
-{
-	bool bResult	= m_mapComponents.insert( MPTIC::value_type( pComponent->GetTransform(), pComponent ) ).second;
+u_int CTransformItemProperty::GetStuffSize(int nTransform) const {
+	const auto ppComponent = m_mapComponents.find(nTransform);
+	if (ppComponent == m_mapComponents.end()) {
+		return 0;
+	}
+
+	return ppComponent->second.GetStuffSize();
 }
 
-CTransformItemComponent* CTransformItemProperty::GetComponent( int nTransform )
-{
-	MPTIC::iterator i	= m_mapComponents.find( nTransform );
-	if( i != m_mapComponents.end() )
-		return i->second;
-	return NULL;
-}
-
-u_int CTransformItemProperty::GetStuffSize( int nTransform )
-{
-	CTransformItemComponent* pComponent	= GetComponent( nTransform );
-	if( pComponent )
-		return pComponent->GetStuffSize();
-	return 0;
-}
-
-CItemElem* CTransformItemProperty::GetItem( int nTransform )
-{
-	CTransformItemComponent* pComponent	= GetComponent( nTransform );
-	if( pComponent )
-		return pComponent->GetItem();
-	return NULL;
-}
 
 #endif	// __WORLDSERVER
 
 
-#ifdef __PET_1024
 void CPet::SetName( const char* szName )
 {
 	strncpy( m_szName, szName, MAX_PET_NAME - 1 );
 	m_szName[MAX_PET_NAME-1]	= '\0';
 }
-#endif	// __PET_1024

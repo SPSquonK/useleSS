@@ -29,7 +29,6 @@
 CDPTrans::CDPTrans()
 :m_bPCBangApply( TRUE )
 {
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_JOIN, &CDPTrans::OnJoin );
 	ON_MSG( PACKETTYPE_SAVE_PLAYER, &CDPTrans::OnSavePlayer ); 
 	ON_MSG( PACKETTYPE_SAVE_CONCURRENT_USER_NUMBER, &CDPTrans::OnSaveConcurrentUserNumber );
@@ -64,14 +63,13 @@ CDPTrans::CDPTrans()
 	ON_MSG( PACKETTYPE_INSERTGUILDQUEST, &CDPTrans::OnInsertGuildQuest );
 	ON_MSG( PACKETTYPE_UPDATEGUILDQUEST, &CDPTrans::OnUpdateGuildQuest );
 	ON_MSG( PACKETTYPE_QUERYSETPLAYERNAME, &CDPTrans::OnQuerySetPlayerName );
-	ON_MSG( PACKETTYPE_ITEM_TBL_UPDATE, &CDPTrans::OnItemTBLUpdate );
 	ON_MSG( PACKETTYPE_PING, &CDPTrans::OnPing );
-	ON_MSG( PACKETTYPE_QUERYMAILBOX, &CDPTrans::OnQueryMailBox );
 
 
 	//////////////////////////////////////////////////////////////////////////
+	ON_MSG( PACKETTYPE_QUERYMAILBOX      , &CDPTrans::OnQueryMailBox );
 	ON_MSG( PACKETTYPE_QUERYMAILBOX_COUNT, &CDPTrans::OnQueryMailBoxCount );
-	ON_MSG( PACKETTYPE_QUERYMAILBOX_REQ, &CDPTrans::OnQueryMailBoxReq );
+	ON_MSG( PACKETTYPE_QUERYMAILBOX_REQ  , &CDPTrans::OnQueryMailBoxReq );
 	//////////////////////////////////////////////////////////////////////////
 	
 
@@ -81,7 +79,7 @@ CDPTrans::CDPTrans()
 	ON_MSG( PACKETTYPE_QUERYGETMAILGOLD, &CDPTrans::OnQueryGetMailGold );
 	ON_MSG( PACKETTYPE_READMAIL, &CDPTrans::OnReadMail );
 
-	ON_MSG( PACKETTYPE_START_GUILDCOMBAT, &CDPTrans::OnStartGuildCombat )
+	ON_MSG( PACKETTYPE_START_GUILDCOMBAT, &CDPTrans::OnStartGuildCombat );
 	ON_MSG( PACKETTYPE_IN_GUILDCOMBAT, &CDPTrans::OnGuidCombatInGuild );
 	ON_MSG( PACKETTYPE_OUT_GUILDCOMBAT, &CDPTrans::OnGuidCombatOutGuild );
 	ON_MSG( PACKETTYPE_RESULT_GUILDCOMBAT, &CDPTrans::OnResultGuildCombat );
@@ -97,9 +95,6 @@ CDPTrans::CDPTrans()
 	ON_MSG( PACKETTYPE_CALL_USP_PET_LOG, &CDPTrans::OnCalluspPetLog );
 	
 	ON_MSG( PACKETTYPE_EVENTLUA_CHANGED, &CDPTrans::OnEventLuaChanged);
-#ifdef __S_RECOMMEND_EVE
-	ON_MSG( PACKETTYPE_EVE_RECOMMEND, &CDPTrans::OnEveRecommend );
-#endif // __S_RECOMMEND_EVE
 
 	ON_MSG( PACKETTYPE_GC1TO1_STATETODB, &CDPTrans::OnGC1to1StateToDBSrvr );
 	ON_MSG( PACKETTYPE_GC1TO1_TENDERTODB, &CDPTrans::OnGC1to1Tender );
@@ -288,11 +283,10 @@ void CDPTrans::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID 
 	static size_t	nSize	= sizeof(DPID);
 
 	CAr ar( (LPBYTE)lpMsg + ( nSize + nSize ), dwMsgSize - ( nSize + nSize ) );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
+	DWORD dw; ar >> dw;
 	
-	if( pfn ) {
-		( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)( (LPBYTE)lpMsg + nSize ), (LPBYTE)lpMsg + nSize + nSize + nSize, dwMsgSize - ( nSize + nSize + nSize ) );
+	if( Handle(ar, dw, idFrom, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + nSize), (LPBYTE)lpMsg + nSize + nSize + nSize, dwMsgSize - (nSize + nSize + nSize)) ) {
+		
 		if (ar.IsOverflow()) Error("Database-World: Packet %08x overflowed", dw);
 	}
 	else {
@@ -941,26 +935,6 @@ void CDPTrans::OnQuerySetPlayerName( CAr & ar, DPID dpid, DPID dpidCache, DPID d
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPPut, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
 
-void CDPTrans::OnItemTBLUpdate( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	if( prj.m_bItemUpdate == FALSE )
-		return;
-
-	int nQuestCount;
-	ar >> nQuestCount;
-
-	int nQuestID;
-	char szQuestName[64];
-	for( int i = 0 ; i < nQuestCount ; ++i )
-	{
-		ZeroMemory( szQuestName, sizeof( szQuestName ) );
-		ar >> nQuestID;
-		ar.ReadString( szQuestName, 64 );
-		g_DbManager.m_int2StrItemUpdate.emplace(nQuestID, szQuestName);
-	}
-	g_DbManager.m_nItemUpdate = 1;
-}
-
 void CDPTrans::OnPing( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	time_t tSend;
@@ -975,58 +949,28 @@ void CDPTrans::OnPing( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYT
 
 void CDPTrans::OnQueryMailBox( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
-#ifdef __JEFF_FIX_0
 	LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus		= g_DbManager.AllocRequest();
 	g_DbManager.MakeRequest( lpDbOverlappedPlus, lpBuf, uBufSize );
 	lpDbOverlappedPlus->nQueryMode	= QM_QUERY_MAIL_BOX;
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPGuild, 1, NULL, &lpDbOverlappedPlus->Overlapped );
-#else	// __JEFF_FIX_0
-	u_long idReceiver;
-	ar >> idReceiver;
-
-	CPost *pPost    = CPost::GetInstance();
-
-	CMclAutoLock	Lock( pPost->m_csPost );
-
-	CMailBox* pMailBox	= NULL;
-	pMailBox = pPost->GetMailBox( idReceiver );
-	
-	if( pMailBox != NULL )
-	{
-		SendMailBox( pMailBox, dpid );
-	}
-	else
-	{
-		SendMailBoxReq( idReceiver, dpid, FALSE, pMailBox );
-	}
-
-#endif	// __JEFF_FIX_0
 }
 
 
-void CDPTrans::OnQueryMailBoxCount( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
+void CDPTrans::OnQueryMailBoxCount( CAr & ar, DPID dpid, DPID, DPID, LPBYTE , u_long )
 {
 	u_long idReceiver;
-	int nCount;
-	ar >> idReceiver >> nCount;
+	ar >> idReceiver;
 
-	CPost *pPost    = CPost::GetInstance();
+	CPost * pPost = CPost::GetInstance();
 
-	CMclAutoLock	Lock( pPost->m_csPost );
+	CMclAutoLock	Lock(pPost->m_csPost);
 
-	CMailBox* pMailBox	= NULL;
-	pMailBox = pPost->GetMailBox( idReceiver );
-	
-	if( pMailBox != NULL )
-	{
-		SendMailBox( pMailBox, dpid );
+	CMailBox * pMailBox = pPost->GetMailBox(idReceiver);
+	if (pMailBox) {
+		SendMailBox(pMailBox, dpid);
+	} else {
+		SendMailBoxReq(idReceiver, dpid, nullptr);
 	}
-	else
-	{
-		SendMailBoxReq( idReceiver, dpid, FALSE, pMailBox );
-	}
-
-	return;
 }
 
 void CDPTrans::OnQueryMailBoxReq( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -1034,41 +978,34 @@ void CDPTrans::OnQueryMailBoxReq( CAr & ar, DPID dpid, DPID dpidCache, DPID dpid
 	u_long idReceiver;
 	ar >> idReceiver;
 
-	CPost *pPost    = CPost::GetInstance();
+	CPost * pPost = CPost::GetInstance();
 
-	CMclAutoLock	Lock( pPost->m_csPost );
+	CMclAutoLock	Lock(pPost->m_csPost);
 
-	CMailBox* pMailBox	= NULL;
-	pMailBox = pPost->GetMailBox( idReceiver );
-
-	BOOL	bHaveMailBox = FALSE;
-	if( pMailBox != NULL )
-	{
-		bHaveMailBox = TRUE;
-	}
-
-	SendMailBoxReq( idReceiver, dpid, bHaveMailBox, pMailBox );
-
-	return;
+	CMailBox * pMailBox = pPost->GetMailBox(idReceiver);
+	SendMailBoxReq(idReceiver, dpid, pMailBox);
 }
 
 void CDPTrans::SendMailBox( CMailBox* pMailBox, DPID dpid )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_QUERYMAILBOX, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << pMailBox->m_idReceiver;
-	pMailBox->Write( ar );
+	pMailBox->WriteMailContent( ar );
 	SEND( ar, this, dpid );
 }
 
-void CDPTrans::SendMailBoxReq( u_long idReceiver, DPID dpid, BOOL bHaveMailBox, CMailBox* pMailBox )
+void CDPTrans::SendMailBoxReq( u_long idReceiver, DPID dpid, CMailBox* pMailBox )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_QUERYMAILBOX_REQ, DPID_UNKNOWN, DPID_UNKNOWN );
 	ar << idReceiver;
-	ar << bHaveMailBox;
-	if( pMailBox != NULL )
-	{
-		pMailBox->Write( ar );
+	
+	if (pMailBox) {
+		ar << true;
+		pMailBox->WriteMailContent(ar);
+	} else {
+		ar << false;
 	}
+
 	SEND( ar, this, dpid );
 }
 
@@ -1112,15 +1049,8 @@ void CDPTrans::OnReadMail( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, L
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPGuild, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
 
-void CDPTrans::SendPostMail( BOOL bResult, u_long idReceiver, CMail* pMail )
-{
-// 	//	BEGINTEST
-// 	Error( "CDPTrans::SendPostMail Result[%d], Receiver[%d]", bResult, idReceiver );
-
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYPOSTMAIL, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << bResult << idReceiver;
-	pMail->Serialize( ar );
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendPostMail(BOOL bResult, u_long idReceiver, CMail * pMail) {
+	BroadcastPacket<PACKETTYPE_QUERYPOSTMAIL, BOOL, u_long, CMail>(bResult, idReceiver, *pMail);
 }
 
 void CDPTrans::SendRemoveMail( u_long idReceiver, u_long nMail )
@@ -1162,7 +1092,7 @@ void CDPTrans::SendAllMail( DPID dpid )
 	ar << DPID_UNKNOWN << DPID_UNKNOWN << PACKETTYPE_ALLMAIL;
 
 	CPost::GetInstance()->m_csPost.Enter();
-	CPost::GetInstance()->Serialize( ar, FALSE );
+	ar << CPost::GetInstance()->AsStructure();
 	CPost::GetInstance()->m_csPost.Leave();
 
 	SEND( ar, this, dpid );
@@ -1341,16 +1271,6 @@ void CDPTrans::OnEventLuaChanged( CAr & ar, DPID dpid, DPID dpidCache, DPID dpid
 		SendEventLuaState( prj.m_EventLua.m_mapState, FALSE );
 	prj.m_EventLua.m_Access.Leave();
 }
-
-#ifdef __S_RECOMMEND_EVE
-void CDPTrans::OnEveRecommend( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
-{
-	LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus = g_DbManager.AllocRequest();
-	g_DbManager.MakeRequest( lpDbOverlappedPlus, lpBuf, uBufSize );
-	lpDbOverlappedPlus->nQueryMode	= RECOMMEND_EVE;
-	PostQueuedCompletionStatus( g_DbManager.m_hIOCPGuild, 1, NULL, &lpDbOverlappedPlus->Overlapped );	
-}
-#endif // __S_RECOMMEND_EVE
 
 void CDPTrans::OnCalluspLoggingQuest( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {

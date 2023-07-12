@@ -15,10 +15,10 @@ CCamera::CCamera()
 	m_fQuakeSize = 0.06f;
 	m_dwCamStyle = 0;
 }
-void CCamera::Process( LPDIRECT3DDEVICE9 pd3dDevice ,float fFactor )
+void CCamera::Process( float fFactor )
 {
 }
-void CCamera::Transform( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWorld )
+void CCamera::Transform( CWorld* pWorld )
 {
 	D3DXVECTOR3	vTempPos = m_vPos;
 	if( m_nQuakeSec > 0 )
@@ -43,7 +43,7 @@ void CCamera::Transform( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWorld )
 		if( g_pPlayer && g_Option.m_bRollEffect )
 		{
 			D3DXMATRIX mRot;
-			FLOAT	fRollAng = ((CWndWorld *)g_WndMng.m_pWndWorld)->m_fRollAng;
+			FLOAT	fRollAng = g_WndMng.m_pWndWorld->m_fRollAng;
 			D3DXMatrixRotationYawPitchRoll( &mRot, D3DXToRadian(-g_pPlayer->GetAngle()), 0/*D3DXToRadian(g_pPlayer->GetAngleX())*/, D3DXToRadian(fRollAng) );
 			D3DXVec3TransformCoord( &vUp, &vUp, &mRot );
 		}
@@ -177,7 +177,7 @@ BOOL CBackCamera::SetCamMode(int nType)
 }
 #endif
 
-void CBackCamera::Process( LPDIRECT3DDEVICE9 pd3dDevice ,float fFactor )
+void CBackCamera::Process( float fFactor )
 {
 #ifdef __CLIENT
 	CMover *pMover = g_pPlayer;
@@ -438,10 +438,10 @@ CToolCamera::CToolCamera()
 	m_fPitchVelocity = 0;
 	//m_matOrientation = 0;
 }
-void CToolCamera::Process( LPDIRECT3DDEVICE9 pd3dDevice, float fFactor )
+void CToolCamera::Process( float fFactor )
 {
 }
-void CToolCamera::Transform( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWorld )
+void CToolCamera::Transform( CWorld* pWorld )
 {
     D3DXQUATERNION qR;
     D3DXQuaternionRotationYawPitchRoll( &qR, m_fYaw, m_fPitch, 0.0f );

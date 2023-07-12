@@ -18,7 +18,7 @@ CWndHelperWebBox::~CWndHelperWebBox( void )
 	Release();
 }
 //-----------------------------------------------------------------------------
-BOOL CWndHelperWebBox::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndHelperWebBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_WEBBOX2, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
 }

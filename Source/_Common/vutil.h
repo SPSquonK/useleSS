@@ -11,8 +11,6 @@
 #include <D3DX9Math.h>
 
 BOOL IsFontInstalled( LPCTSTR pszFace );
-void RepairString( TCHAR* lpStr );
-void RepairString( CString& string );
 void SetStrNull( TCHAR* lpStr, int nNullLength );
 void SetStrNull( CString& string, int nNullLength );
 //size_t WCharToMBChar( char *mbstr, const wchar_t *wcstr, size_t count )
@@ -26,8 +24,11 @@ BOOL IsHangul( WORD word );
 BOOL IsNative( LPCTSTR lpszStr );
 
 // 모든언어의 문자관련
+[[deprecated("Use ComputeShortenName instead of GetStrCut + GetStrLen")]]
 int GetStrCut( const CHAR* pSrc, CHAR* pDest, int nCount );
-int GetStrLen( const CHAR* pSrc );
+int GetStrLen(const CHAR * pSrc);
+
+void ComputeShortenName(CHAR * pDest, const CHAR * pSrc, size_t nCount);
 
 
 #define IMGBIT_8   0  
@@ -54,14 +55,12 @@ struct IMAGE final {
 typedef IMAGE* LPIMAGE;
 
 HRESULT LoadTextureFromRes( 
-	LPDIRECT3DDEVICE9 pd3dDevice, 
 	LPCTSTR strTexture,
 	LPDIRECT3DTEXTURE9* ppTexture,
 	DWORD MipFilter = 1,
 	D3DFORMAT d3dFormat = D3DFMT_UNKNOWN 
 	);
 HRESULT LoadTextureFromRes( 
-	LPDIRECT3DDEVICE9 pDevice,
 	LPCTSTR pFileName,
 	UINT Width,
 	UINT Height,
@@ -83,7 +82,7 @@ BOOL LoadImage( LPCTSTR lpszFileName, LPIMAGE lppImage );//LPBYTE* lppData, SIZE
 BOOL LoadBMP( LPCTSTR lpszFileName, LPIMAGE lppImage );
 BOOL LoadTGA( LPCTSTR lpszFileName, LPIMAGE lppImage );
 BOOL SaveBMP( LPCTSTR lpszFileName, LPBYTE lpData, SIZE size );
-void GetPickRay( CRect rect,POINT ptCursor,D3DXMATRIX* pmatProj,D3DXMATRIX* pmatView,D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir );
+std::pair<D3DXVECTOR3, D3DXVECTOR3> GetPickRay(CRect rect, POINT ptCursor, const D3DXMATRIX * pmatProj, const D3DXMATRIX * pmatView);
 void GetRayEnd( D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir,D3DXVECTOR3* pvPickRayEnd );
 
 //-----------------------------------------------------------------------------
@@ -93,7 +92,11 @@ void GetRayEnd( D3DXVECTOR3* pvPickRayOrig,D3DXVECTOR3* pvPickRayDir,D3DXVECTOR3
 //       또한 삼각형과의 거리를 fDist에 돌려준다.
 //-----------------------------------------------------------------------------
 
-BOOL IntersectTriangle(D3DXVECTOR3& v0,D3DXVECTOR3& v1, D3DXVECTOR3& v2, const D3DXVECTOR3& orig,const D3DXVECTOR3& d, D3DXVECTOR3* pIntersect,FLOAT* pfDist );
+bool IntersectTriangle(
+	const D3DXVECTOR3 & v0, const D3DXVECTOR3 & v1, const D3DXVECTOR3 & v2,
+	const D3DXVECTOR3 & orig, const D3DXVECTOR3 & d,
+	D3DXVECTOR3 * pIntersect, FLOAT * pfDist
+);
 inline DWORD FtoDW( FLOAT f ) { return *((DWORD*)&f); }
 
 

@@ -60,11 +60,11 @@ int CFileIO::PutWideString( LPCTSTR lpszString )
 #if defined( __CLIENT )
 /////////////////////////////////////////////////////////////////////////////
 // CResFile
-CMapStringToPtr CResFile::m_mapResource;
+std::map<std::string, std::unique_ptr<RESOURCE>, std::less<>> CResFile::m_mapResource;
 
 #ifdef __SECURITY_0628
 char	CResFile::m_szResVer[100];
-map<string, string>	CResFile::m_mapAuth;
+std::map<std::string, std::string>	CResFile::m_mapAuth;
 #endif	// __SECURITY_0628
 
 CResFile::CResFile( LPCTSTR lpszFileName, TCHAR *mode ) 
@@ -105,7 +105,6 @@ BOOL CResFile::Close( void )
 
 void CResFile::AddResource( TCHAR* lpszResName )
 {
-	//m_mapResource.Add( )
 	int nFileHeaderSize = 0;
 	int nFileNumber = 0;
 	short	nFileNameLength = 0;
@@ -157,8 +156,9 @@ void CResFile::AddResource( TCHAR* lpszResName )
 		memcpy( &nFileSize, &pHeader[ nHeaderPosition ], sizeof( int ) ); nHeaderPosition += sizeof( int );
 		memcpy( &time_, &pHeader[ nHeaderPosition ], sizeof( __int32 ) ); nHeaderPosition += sizeof( __int32 );
 		memcpy( &nFilePosition, &pHeader[ nHeaderPosition ], sizeof( int ) ); nHeaderPosition += sizeof( int );
-		RESOURCE* lpRes = new RESOURCE;
-		ZeroMemory( lpRes, sizeof( RESOURCE ) );
+		
+		std::unique_ptr<RESOURCE> lpRes = std::make_unique<RESOURCE>();
+		ZeroMemory( lpRes.get(), sizeof(RESOURCE));
 		lpRes->dwOffset = nFilePosition;
 		lpRes->dwFileSize = nFileSize;
 		lpRes->byEncryptionKey = byEncryptionKey;
@@ -176,8 +176,7 @@ void CResFile::AddResource( TCHAR* lpszResName )
 		CString strFullFileName	= szFullFileName;
 		if( strFullFileName.Find( "\\", 0 ) < 0 )
 		{
-			RESOURCE* ptr;
-			if( m_mapResource.Lookup( szFullFileName, (void*&)ptr ) )
+			if( m_mapResource.contains( szFullFileName) )
 			{
 				::Error( "killed by CResFile::AddResource() %s, %s, 1", prj.GetText(TID_GAME_RESOURCE_MODIFIED), szFullFileName );
 				ExitProcess( -1 );
@@ -185,22 +184,8 @@ void CResFile::AddResource( TCHAR* lpszResName )
 		}
 #endif	// __SECURITY_0628
 #endif	// __CLIENT
-		m_mapResource.SetAt( szFullFileName, lpRes );
+		m_mapResource.insert_or_assign(szFullFileName, std::move(lpRes));
 
-		/*
-		// 찾았다면
-		if( 0 == strcmpi( lpszFileName, szFileName ) )
-		{
-			bFind = TRUE;
-			//strcpy( m_szFileName, szFileName );
-			//m_nFileSize = nFileSize;
-			//m_nFileBeginPosition = nFilePosition;
-			//m_nFileCurrentPosition = nFilePosition;
-			//m_nFileEndPosition = nFilePosition + nFileSize;
-			//m_File.Seek( m_nFileCurrentPosition, CFile::begin );
-			break;
-		}
-		*/
 		ZeroMemory( szFileName, sizeof( szFileName ) );
 	}
 	safe_delete_array( pHeader );
@@ -258,18 +243,8 @@ void CResFile::ScanResource( LPCTSTR lpszRootPath )
 }
 
 
-void CResFile::FreeResource()
-{
-	CString strNameName;
-	RESOURCE* lpRes;
-	POSITION pos;
-	pos = m_mapResource.GetStartPosition();
-	while( pos )
-	{
-		m_mapResource.GetNextAssoc( pos, strNameName, (void*&) lpRes );
-		safe_delete( lpRes );
-	}
-}
+void CResFile::FreeResource() { m_mapResource.clear(); }
+
 BOOL CResFile::Open( LPCTSTR lpszFileName, const TCHAR *mode )
 {
 //	TRACE("CResFile::Open( %s )\n", lpszFileName );
@@ -295,42 +270,43 @@ BOOL CResFile::Open( LPCTSTR lpszFileName, const TCHAR *mode )
 	_splitpath( lpszFileName, drive, dir, name, ext );
 	
 	TCHAR szFileName[ MAX_PATH ];
-	RESOURCE* lpRes;
 	strcpy( szFileName, lpszFileName );
 	strlwr( szFileName );
 	m_bResouceInFile = FALSE;
-	if( m_mapResource.Lookup( szFileName, (void*&) lpRes ) )
+	const auto it = m_mapResource.find(szFileName);
+	if (it == m_mapResource.end()) return FALSE;
+
+	RESOURCE * lpRes = it->second.get();
+
+	CFileException fileExc;
+	if( m_File.Open( lpRes->szResourceFile, CFile::modeRead | CFile::shareDenyNone, &fileExc ) )
 	{
-		CFileException fileExc;
-		if( m_File.Open( lpRes->szResourceFile, CFile::modeRead | CFile::shareDenyNone, &fileExc ) )
-		{
-			m_nFileSize = lpRes->dwFileSize;
-			m_nFileBeginPosition = lpRes->dwOffset;
-			m_nFileCurrentPosition = lpRes->dwOffset;
-			m_nFileEndPosition = lpRes->dwOffset + m_nFileSize;
-			m_byEncryptionKey = lpRes->byEncryptionKey;
-			m_bEncryption = lpRes->bEncryption;
-			m_File.Seek( m_nFileCurrentPosition, CFile::begin );
-			m_bResouceInFile = TRUE;
+		m_nFileSize = lpRes->dwFileSize;
+		m_nFileBeginPosition = lpRes->dwOffset;
+		m_nFileCurrentPosition = lpRes->dwOffset;
+		m_nFileEndPosition = lpRes->dwOffset + m_nFileSize;
+		m_byEncryptionKey = lpRes->byEncryptionKey;
+		m_bEncryption = lpRes->bEncryption;
+		m_File.Seek( m_nFileCurrentPosition, CFile::begin );
+		m_bResouceInFile = TRUE;
 #ifdef __SECURITY_0628
-			lstrcpy( m_szFileName, szFileName );
+		lstrcpy( m_szFileName, szFileName );
 #endif	// __SECURITY_0628
-			//m_File.Close();
-			return TRUE;
-		}
-		
-		TCHAR szCause[255];
-		fileExc.GetErrorMessage(szCause, 255);
-
-		::Error( "CResFile Open Error %s FileName = %s, Resource = %s, CurrentDir = %s\n", 
-			szCause,
-			szFileName, 
-			lpRes->szResourceFile, 
-			szSerchPath );
-
-		return FALSE;
+		//m_File.Close();
+		return TRUE;
 	}
+		
+	TCHAR szCause[255];
+	fileExc.GetErrorMessage(szCause, 255);
+
+	::Error( "CResFile Open Error %s FileName = %s, Resource = %s, CurrentDir = %s\n", 
+		szCause,
+		szFileName, 
+		lpRes->szResourceFile, 
+		szSerchPath );
+
 	return FALSE;
+
 }
 /*
 BOOL CResFile::FindFile(char *szSerchPath, LPCTSTR lpszFileName, TCHAR *mode, int f )
@@ -521,7 +497,7 @@ size_t CResFile::Read( void *ptr, size_t size, size_t n /* = 1  */ )
 			char sData[100]	= { 0,};
 			md5( sFile, m_szFileName );
 			md5( sData, (BYTE*)ptr, size );
-			map<string, string>::iterator i	= CResFile::m_mapAuth.find( sFile );
+			const auto i	= CResFile::m_mapAuth.find( sFile );
 			if( i != CResFile::m_mapAuth.end() )
 			{
 				if( lstrcmp( sData, i->second.data() ) != 0 )
@@ -666,162 +642,6 @@ int	CResFile::Flush( void )
 }
 #endif	// __CLIENT
 
-CFileFinder::CFileFinder()
-{
-	m_pos = 0;
-	m_lHandle = 0;
-	m_bResFile = FALSE;
-}
-CFileFinder::~CFileFinder()
-{
-}
-
-BOOL CFileFinder::WildCmp( LPCTSTR lpszWild, LPCTSTR lpszString ) 
-{
-	char* wild = (char*)lpszWild;
-    char* string = (char*)lpszString;
-	char* cp,* mp;
-
-	while ((*string) && (*wild != '*')) 
-	{
-		if ((*wild != *string) && (*wild != '?')) 
-		{
-			return 0;
-		}
-		wild++;
-		string++;
-	}
-	while (*string) 
-	{
-		if (*wild == '*') 
-		{
-			if (!*++wild) 
-			{
-				return 1;
-			}
-			mp = wild;
-			cp = string+1;
-		} 
-		else 
-		if ((*wild == *string) || (*wild == '?')) 
-		{
-			wild++;
-			string++;
-		} 
-		else 
-		{
-			wild = mp;
-			string = cp++;
-		}
-	}
-	while (*wild == '*') 
-	{
-		wild++;
-	}
-	return !*wild;
-}
-
-BOOL CFileFinder::FindFirst( LPCTSTR lpFilespec, struct _finddata_t *fileinfo )
-{
-#if defined( __CLIENT )
-	CHAR filespec[ MAX_PATH ];
-	strcpy( filespec, lpFilespec );
-	strlwr( filespec );
-
-	CHAR szPath [ MAX_PATH ];
-	CHAR szFile[ MAX_PATH ];
-
-	TCHAR drive[_MAX_DRIVE], dir[_MAX_DIR], name[ _MAX_FNAME ], ext[_MAX_EXT];
-	_splitpath( lpFilespec, drive, dir, name, ext );
-
-	// 드라이브명이 들어 있으면 완전한 path다. 그러므로 그냥 카피 
-	if( drive[ 0 ] )
-	{
-		_tcscpy( m_szFilespec, lpFilespec );
-	}
-	// 드리이브명이 없으면 현재 path의 연장이다. 
-	else
-	{
-		::GetCurrentDirectory( MAX_PATH, szPath );
-		_tcscpy( m_szFilespec, szPath );
-		_tcscat( m_szFilespec, "\\" );
-		_tcscat( m_szFilespec, lpFilespec );
-	}
-	strlwr( m_szFilespec );
-
-	CString strNameName;
-	RESOURCE* lpRes;
-	m_pos = CResFile::m_mapResource.GetStartPosition();
-	while( m_pos )
-	{
-		CResFile::m_mapResource.GetNextAssoc( m_pos, strNameName, (void*&) lpRes );
-		_tcscpy( szFile, szPath );
-		_tcscat( szFile, "\\" );
-		_tcscat( szFile, strNameName );
-		strlwr( szFile );
-
-		if( WildCmp( m_szFilespec, szFile ) )
-		{
-			_splitpath( strNameName, drive, dir, name, ext );
-			strcpy( fileinfo->name, name );
-			strcat( fileinfo->name, ext );
-			fileinfo->size = lpRes->dwFileSize;
-			fileinfo->attrib = _A_NORMAL;
-			m_bResFile = TRUE;
-			return TRUE;
-		}
-	}
-#endif	// __CLIENT
-	m_bResFile = 0;
-	m_lHandle = _findfirst( lpFilespec, fileinfo );
-	if( m_lHandle == -1 ) 
-		return FALSE;
-	return TRUE;
-}
-BOOL CFileFinder::FindNext( struct _finddata_t *fileinfo )
-{
-#if defined( __CLIENT )
-	if( m_bResFile == 1 )
-	{
-		TCHAR drive[_MAX_DRIVE], dir[_MAX_DIR], name[ _MAX_FNAME ], ext[_MAX_EXT];
-		CHAR szPath [MAX_PATH];
-		CHAR szFile[MAX_PATH];
-		CString strNameName;
-		RESOURCE* lpRes;
-		::GetCurrentDirectory( MAX_PATH, szPath );
-
-		while( m_pos )
-		{
-			CResFile::m_mapResource.GetNextAssoc( m_pos, strNameName, (void*&) lpRes );
-			_tcscpy( szFile, szPath );
-			_tcscat( szFile, "\\" );
-			_tcscat( szFile, strNameName );
-			strlwr( szFile );
-
-			if( WildCmp( m_szFilespec, szFile ) )
-			{
-				_splitpath( strNameName, drive, dir, name, ext );
-				strcpy( fileinfo->name, name );
-				strcat( fileinfo->name, ext );
-				fileinfo->size = lpRes->dwFileSize;
-				fileinfo->attrib = _A_NORMAL;
-				return TRUE;
-			}
-		}
-		return FALSE;
-	}
-#endif	// __CLIENT
-	if( _findnext( m_lHandle, fileinfo ) == 0 )
-		return TRUE;
-	return FALSE;
-}
-void CFileFinder::FindClose()
-{
-	if( m_bResFile == 0 && m_lHandle != -1 )
-		_findclose( m_lHandle );
-}
-
-
 #ifdef __SECURITY_0628
 #ifdef __CLIENT
 void	CResFile::LoadAuthFile( void )
@@ -844,7 +664,7 @@ void	CResFile::LoadAuthFile( void )
 		sData[32]	= '\0';
 		nOffset	+= 32;
 		TRACE( "%s%s\n", sFile, sData );
-		bool bResult	= CResFile::m_mapAuth.insert( map<string, string>::value_type( sFile, sData ) ).second;
+		bool bResult	= CResFile::m_mapAuth.emplace( sFile, sData ).second;
 //		if( bResult == false )
 //		{
 //			MessageBox( g_Neuz.GetSafeHwnd(), prj.GetText(TID_GAME_RESOURCE_MODIFIED), "error", MB_OK );

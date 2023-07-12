@@ -1,9 +1,8 @@
 #ifndef __WNDCREDIT__H
 #define __WNDCREDIT__H
 
-class CWndCredit : public CWndNeuz 
+class CWndCredit final : public CWndNeuz 
 { 
-	void LoadScreenShot();
 public: 
 	float   m_fOldMusicVolume;
 	CTimer m_Starttimer;
@@ -12,7 +11,7 @@ public:
 	CWndCredit(); 
 	~CWndCredit(); 
 	
-	CStringArray m_strArray;
+	std::vector<CString> m_strArray;
 	int m_nLine;
 	CTimer m_timer;
 	CString m_strWord;
@@ -30,14 +29,10 @@ public:
 	CD3DFont* m_pFont;
 
 	virtual	BOOL Process();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void SetWndRect( CRect rectWnd, BOOL bOnSize );
 	
 	virtual HRESULT InitDeviceObjects();
@@ -48,21 +43,15 @@ public:
 	
 }; 
 
-class CWndAbout : public CWndNeuz 
+class CWndAbout final : public CWndNeuz 
 { 
 public: 
 	CD3DFont* m_pFont;
-	CWndAbout(); 
-	~CWndAbout(); 
+	CWndAbout();
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual HRESULT InitDeviceObjects();
 	virtual HRESULT RestoreDeviceObjects();
 	virtual HRESULT InvalidateDeviceObjects();

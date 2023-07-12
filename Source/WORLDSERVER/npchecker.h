@@ -30,5 +30,4 @@ private:
 	std::set<OBJID> m_all;
 
 	static bool HasNear(const std::set<OBJID> & objIds, const CObj * pObj, double maxDistance);
-	static void RemoveFrom(std::set<OBJID> & set, OBJID id);
 };

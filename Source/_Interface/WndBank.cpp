@@ -79,13 +79,13 @@ void CWndBank::OnInitialUpdate()
 	CPoint ptInventory = rectInventory.TopLeft();
 	CPoint ptMove;
 
-	if( ptInventory.x > m_pWndRoot->GetWndRect().Width() / 2 )
+	if( ptInventory.x > g_WndMng.GetWndRect().Width() / 2 )
 		ptMove = ptInventory - CPoint( (int)( rectInventory.Width() * 2.525 ), 0 );
 	else
 		ptMove = ptInventory + CPoint( rectInventory.Width(), 0 );
 	Move( ptMove );
 
-	m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice,  MakePath( DIR_THEME, "WndCommonBankNotUse.tga" ), 0xffff00ff );
+	m_pTexture = m_textureMng.AddTexture( MakePath( DIR_THEME, "WndCommonBankNotUse.tga" ), 0xffff00ff );
 } 
 
 void CWndBank::ReSetBank() {
@@ -111,7 +111,7 @@ void CWndBank::ReSetBank() {
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndBank::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndBank::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	if( g_pPlayer == NULL )
@@ -162,126 +162,62 @@ BOOL CWndBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			if( pWndFrame->GetWndId() == APP_INVENTORY )
 			{
-				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 				if( lpShortcut->m_dwData != 0 )
 				{
 					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 					UINT SelectCount = pWndItemCtrl->GetSelectedCount();
-					if( SelectCount != 1)
-					{
+					if (SelectCount != 1) {
 						g_WndMng.PutString(TID_GAME_EQUIPPUT);
-						
-					}
-					else
-					{
-
-						CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-						if( itemElem->m_nItemNum > 1 )
-						{ 
-							g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-							memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-							g_WndMng.m_pWndTradeGold->m_dwGold = itemElem->m_nItemNum;
-							g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_BANK;
-							g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-							g_WndMng.m_pWndTradeGold->m_nSlot = nSlot;
-							
-							g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-							g_WndMng.m_pWndTradeGold->MoveParentCenter();
-							CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-							CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-							pStatic->m_strTitle = prj.GetText(TID_GAME_MOVECOUNT);
-							pStaticCount->m_strTitle = prj.GetText(TID_GAME_NUMCOUNT);
-						}
-						else
-						{
-							g_DPlay.SendPutItemBank( nSlot, (BYTE)( lpShortcut->m_dwId ), 1 );
-						}
-						
+					} else {
+						CWndTradeGold::Create<SHORTCUT::Source::Inventory>(
+							{ lpShortcut->m_dwId },
+							[nSlot](auto source, int quantity) {
+								g_DPlay.SendPutItemBank(nSlot, source.itemPos, quantity);
+							}
+						);
 					}
 				}
 				else
 				{
-					// 페냐 (돈)
-					g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-					memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-					g_WndMng.m_pWndTradeGold->m_dwGold = g_pPlayer->GetGold();
-					g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_BANK;
-					g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-					g_WndMng.m_pWndTradeGold->m_nSlot = nSlot;
-					
-					g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-					g_WndMng.m_pWndTradeGold->MoveParentCenter();
-					CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-					CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-
-					pStatic->m_strTitle = prj.GetText(TID_GAME_MOVEPENYA);
-					pStaticCount->m_strTitle = prj.GetText(TID_GAME_PENYACOUNT);
+					CWndTradeGold::Create<SHORTCUT::Source::Penya>(
+						{},
+						[nSlot](auto, int quantity) {
+							g_DPlay.SendPutGoldBank(nSlot, quantity);
+						}
+					);
 				}
 			}
 			else if( pWndFrame->GetWndId() == APP_COMMON_BANK )
 			{
 				BYTE nPutSolt;
 			
-				SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 				if( lpShortcut->m_dwData != 0 )
 				{
 					nPutSolt = GetPosOfItemCtrl(pWndPut);
 
 					CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 					UINT SelectCount = pWndItemCtrl->GetSelectedCount();
-					if( SelectCount != 1)
-					{
+					if ( SelectCount != 1) {
 						g_WndMng.PutString(TID_GAME_EQUIPPUT);
-						
-					}
-					else
-					{
-
-						CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-						if( itemElem->m_nItemNum > 1 )
-						{ 
-							g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-							memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-							g_WndMng.m_pWndTradeGold->m_dwGold = itemElem->m_nItemNum;
-							g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_COMMON_BANK;
-							g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-							g_WndMng.m_pWndTradeGold->m_nSlot = nSlot;
-							g_WndMng.m_pWndTradeGold->m_nPutSlot = nPutSolt;
-							
-							g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-							g_WndMng.m_pWndTradeGold->MoveParentCenter();
-							CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-							CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-							pStatic->m_strTitle = prj.GetText(TID_GAME_MOVECOUNT);
-							pStaticCount->m_strTitle = prj.GetText(TID_GAME_NUMCOUNT);
-						}
-						else
-						{
-							g_DPlay.SendPutItemBankToBank( nPutSolt, nSlot, (BYTE)( lpShortcut->m_dwId ), 1 );
-						}
-						
+					} else {
+						CWndTradeGold::Create<SHORTCUT::Source::Bank>(
+							{ nPutSolt, lpShortcut->m_dwId },
+							[nSlot](auto source, int quantity) {
+								g_DPlay.SendPutItemBankToBank(source.slot, nSlot, source.itemPos, quantity);
+							}
+						);
 					}
 				}
 				else
 				{
 					nPutSolt = GetPosOfGold(pWndPut);
-					
-					// 페냐 (돈)
-					g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-					memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-					g_WndMng.m_pWndTradeGold->m_dwGold = g_pPlayer->m_dwGoldBank[nPutSolt];
-					g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_COMMON_BANK;
-					g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-					g_WndMng.m_pWndTradeGold->m_nSlot = nSlot;
-					g_WndMng.m_pWndTradeGold->m_nPutSlot = nPutSolt;
-					
-					g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-					g_WndMng.m_pWndTradeGold->MoveParentCenter();
-					CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-					CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
 
-					pStatic->m_strTitle = prj.GetText(TID_GAME_MOVEPENYA);
-					pStaticCount->m_strTitle = prj.GetText(TID_GAME_PENYACOUNT);
+					CWndTradeGold::Create<SHORTCUT::Source::BankPenya>(
+						{ nPutSolt },
+						[nSlot](auto source, int quantity) {
+							g_DPlay.SendPutGoldBankToBank(source.slot, nSlot, quantity);
+						}
+					);
 				}
 			}
 		}
@@ -327,7 +263,7 @@ void CWndConfirmBank::OnInitialUpdate() {
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndConfirmBank::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndConfirmBank::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_CONFIRM_BANK, pWndParent, 0, CPoint( 0, 0 ) );
@@ -351,7 +287,7 @@ BOOL CWndConfirmBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		}
 	} else if( nID == WIDC_CHANGE_PASS ) {
 		g_WndMng.m_pWndBankPassword = new CWndBankPassword(true, m_dwId);
-		g_WndMng.m_pWndBankPassword->Initialize( NULL );	
+		g_WndMng.m_pWndBankPassword->Initialize();	
 
 		Destroy();
 	} else if( nID == WIDC_CANCEL ) {
@@ -395,7 +331,7 @@ void CWndBankPassword::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndBankPassword::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndBankPassword::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_BANK_PASSWORD, pWndParent, 0, CPoint( 0, 0 ) );

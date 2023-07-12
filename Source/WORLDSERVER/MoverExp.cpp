@@ -538,9 +538,7 @@ bool CUser::AddRawExperience(EXPINTEGER nExp) {
 			g_dpDBClient.SendLogSkillPoint(LOG_SKILLPOINT_GET_HUNT, nGetPoint, this, NULL);
 		}
 
-		if (g_eLocal.GetState(EVE_RECOMMEND) && IsPlayer()) {
-			g_dpDBClient.SendRecommend(this);
-		}
+		GiveRecommendEveItems();
 
 		m_nExpLog = 0;
 

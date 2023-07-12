@@ -21,13 +21,9 @@ public:
 public:
 	CItemContainer* m_pItemContainer;
 
-	static CTextureMng	m_textureMng;
-
 	void	Create( DWORD m_dwListCtrlStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID );
 	void	InitItem( CItemContainer* pItemContainer, DWORD SendToId );
 	CItemElem* GetItem( DWORD dwIndex );
-	int		GetItemCount() const;
-	BOOL	SetItem(const LVITEM* pItem);
 
 	int		GetSelectedItem( int i );
 	UINT	GetSelectedCount();
@@ -56,7 +52,7 @@ public:
 	virtual	void PaintFrame(C2DRender* p2DRender);
 	virtual void OnMouseMove(UINT nFlags, CPoint point);
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point = 0 );
-	virtual BOOL OnSetCursor ( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	void OnSetCursor() override;
 	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
 	
 protected:
@@ -67,12 +63,7 @@ protected:
 	CItemElem*		m_pFocusItem;
 	int				m_nCurSelect;
 	int				m_nFontHeight;
-	DWORD			m_nWndColor;
-	DWORD			m_nFontColor; 
-	DWORD			m_nSelectColor;
 	CWndScrollBar	m_wndScrollBar;
-	CPtrArray		m_aItems;
-	CPtrArray		m_aColumns;
 	int				m_nOnSelect;
 	CItemElem*		m_pArrayItemElem[100];
 	int				m_nArrayCount;

@@ -49,7 +49,7 @@ public:
 	virtual void	AddItToGlobalId();
 	virtual	void	RemoveItFromGlobalId();
 	virtual void	Process();
-	virtual void	Render(LPDIRECT3DDEVICE9 pd3dDevice);
+	virtual void	Render();
 	virtual BOOL	Read( CFileIO* pFile );
 	virtual	void	Serialize( CAr & ar );
 

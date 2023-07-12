@@ -6,6 +6,7 @@
 #include "dpsock.h"
 #include "ar.h"
 #include "mymap.h"
+#include <sqktd/flatter_map.hpp>
 
 extern void UninitializeNetLib();
 extern BOOL InitializeNetLib();
@@ -42,28 +43,6 @@ extern	void	TestNetLib( const char* lpAddr, u_short uPort );
 #define	SEND( ar, pDPMng, idTo ) \
 	LPBYTE lpBuf	= ar.GetBuffer( &nBufSize );	\
 	(pDPMng)->Send( (LPVOID)lpBuf, nBufSize, idTo );
-
-#define GETTYPE(ar)		\
-	DWORD dw;	\
-	ar >> dw;
-
-	#define	USES_PFNENTRIES	\
-		private:	\
-		std::map<DWORD, void (theClass::*)( theParameters )>	m_pfnEntries;	\
-		void ( theClass::*GetHandler( DWORD dwType ) )( theParameters )	\
-			{	\
-				const auto i = m_pfnEntries.find( dwType );	\
-				if( i != m_pfnEntries.end() )	\
-					return i->second;	\
-				return NULL;	\
-			}
-				
-	#define BEGIN_MSG	\
-		void ( theClass::*pfn )( theParameters );
-
-	#define	ON_MSG( dwKey, hndlr )	\
-		pfn		= hndlr;	\
-		m_pfnEntries.emplace(dwKey, pfn);
 
 
 class CDPMng
@@ -216,6 +195,48 @@ public:
 		BEFORESENDDUAL(ar, PacketId, DPID_ALLPLAYERS, DPID_ALLPLAYERS);
 		ar.Accumulate(ts...);
 		SEND(ar, &self, DPID_ALLPLAYERS);
+	}
+};
+
+// Packet Handler Component: give it a list of handlers, and call them from the id.
+template<typename Self, typename ... ExtraTypes>
+class PacketHandlerComponent {
+public:
+	using Handler = void (Self :: *)(CAr &, ExtraTypes...);
+
+private:
+	sqktd::flatter_map<DWORD, Handler> m_handlers;
+
+public:
+	void Add(DWORD packetId, Handler handler) {
+		m_handlers.emplace(packetId, handler);
+	}
+
+	bool Handle(Self * self, CAr & ar, DWORD packetId, ExtraTypes ... extra) {
+		const auto handler = m_handlers.get_at(packetId);
+
+		if (handler) {
+			((*self).*(*handler))(ar, extra...);
+			return true;
+		} else {
+			return false;
+		}
+	}
+};
+
+
+// CRTP PacketHandler with an ON_MSG method (for backward compatibility)
+template<typename Self, typename ... ExtraTypes>
+class PacketHandler {
+private:
+	PacketHandlerComponent<Self, ExtraTypes...> m_handlers;
+public:
+	void ON_MSG(DWORD packetId, typename PacketHandlerComponent<Self, ExtraTypes...>::Handler handler) {
+		m_handlers.Add(packetId, handler);
+	}
+
+	bool Handle(CAr & ar, DWORD packetId, ExtraTypes ... extra) {
+		return m_handlers.Handle(static_cast<Self *>(this), ar, packetId, extra...);
 	}
 };
 

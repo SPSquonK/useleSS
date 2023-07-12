@@ -1,13 +1,10 @@
-#ifndef __WNDGUILDMERIT__H
-#define __WNDGUILDMERIT__H
-
+#pragma once
 
 class C2DRender;
 class CItemElem;
 
 class CWndGuildMeritCtrl : public CWndBase
 {
-	void	InterpretScript( CScanner & s, CPtrArray & ptrArray );
 	CItemElem *	m_pFocusItem;
 	int		m_nCurSel;
 	int		m_nFontHeight;
@@ -54,31 +51,17 @@ public:
 	void ClearItem();
 	void AddItem(CItemElem * pItemContainer);
 
-protected:
-protected:
 };
 
-class CWndGuildMerit : public CWndNeuz 
-{ 
+class CWndGuildMerit final : public CWndNeuz {
 	CWndGuildMeritCtrl	m_wndctrlMerit;
 
-	int		m_nItem;
-	int		m_nPenya;	// Æä³Ä °øÇå·®.
+	bool m_hasItemContribution = false;
+	int  m_nPenya = 0;
 public: 
-	CWndGuildMerit(); 
-	~CWndGuildMerit(); 
-	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+
+	void MeritResultMsg(CONTRIBUTION_RESULT cbResult);
 }; 
-
-
-
-
-#endif

@@ -1,49 +1,19 @@
-
-#ifndef __WNDGUILDSECRETROOM__H
-#define __WNDGUILDSECRETROOM__H
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////
 // Secret Room 
 //////////////////////////////////////////////////////////////////////////
 
-class CWndSecretRoomSelection : public CWndNeuz
-{
-protected:	
-	std::multimap<int, CGuildMember*>	m_mapSelectPlayer;   // 정렬된 길드원 리스트
-
-	std::vector<u_long>					m_vecGuildList   ;   // 길드원 리스트
-	std::vector<u_long>					m_vecSelectPlayer;   // 참가자 리스트
-	
+class CWndSecretRoomSelection final : public CWndNeuz {
 public: 
-	void Reset();
-	CWndSecretRoomSelection();
-	virtual ~CWndSecretRoomSelection();
-	
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
-	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
-	virtual	void	OnInitialUpdate();
-	virtual	BOOL	OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
-	virtual	void	OnSize( UINT nType, int cx, int cy );
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
-	void			EnableFinish( BOOL bFlag );		
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
+	BOOL	OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void	OnInitialUpdate() override;
 
-	void			UpDateGuildListBox();
-
-	void			AddCombatPlayer( u_long uiPlayer );
-	void			AddGuildPlayer( u_long uiPlayer );
-
-	void			RemoveCombatPlayer( int nIndex ) ;
-	void			RemoveGuildPlayer( int nIndex ) ;
-
-	u_long			FindCombatPlayer( u_long uiPlayer );
-	u_long			FindGuildPlayer( u_long uiPlayer );
-
-//	void			SetMaster();
+	void ResetLineup(std::span<const u_long> lineup = {});
 }; 
 
-class CWndSecretRoomOffer : public CWndNeuz
+class CWndSecretRoomOffer final : public CWndNeuz
 {
 protected:
 	DWORD			m_dwReqGold;
@@ -54,7 +24,7 @@ public:
 	CWndSecretRoomOffer();
 	virtual ~CWndSecretRoomOffer();
 	
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
@@ -69,7 +39,7 @@ public:
 	void			EnableAccept( BOOL bFlag );	
 }; 
 
-class CWndSecretRoomOfferState : public CWndNeuz 
+class CWndSecretRoomOfferState final : public CWndNeuz
 { 
 private: 
 	CTimeSpan		m_ct;
@@ -84,7 +54,7 @@ public:
 	int          GetSelectIndex( const CPoint& point );	
 	void		 Init( time_t lTime );
 	void		 InsertGuild( const char szGuild[], const char szName[], int nNum );	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -101,13 +71,13 @@ public:
 	void	 	 SetTime( time_t tTime ) { m_tCurrentTime = 0; m_tEndTime = time_null() + tTime; }
 };
 
-class CWndSecretRoomBoard : public CWndNeuz
+class CWndSecretRoomBoard final : public CWndNeuz
 {
 public: 
 	CWndSecretRoomBoard();
 	virtual ~CWndSecretRoomBoard();
 	
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
@@ -116,74 +86,11 @@ public:
 	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
 	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 	void			SetString();
-}; 
-/*
-class CWndSecretRoomGuildMember : public CWndNeuz
-{
-public:
-	BOOL m_bSelect;
-	u_long m_uGuildMemberId;
-	CTexture m_texGauHPEmptyNormal;
-	CTexture m_texGauHPFillNormal;
-
-	LPDIRECT3DVERTEXBUFFER9 m_pVBHPGauge;
-public:
-	CWndSecretRoomGuildMember();
-	~CWndSecretRoomGuildMember();
-
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
-	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void	OnDraw( C2DRender* p2DRender );
-	virtual	void	OnInitialUpdate();
-	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
-	virtual HRESULT RestoreDeviceObjects();
-	virtual HRESULT InvalidateDeviceObjects();
-	virtual HRESULT DeleteDeviceObjects();
-	virtual void	OnDestroy();
-	virtual void	OnMouseWndSurface( CPoint point );
-
-	void SetSelectColor(BOOL bSet) {m_bSelect = bSet;};
 };
 
 #define MAX_SECRETROOM_MEMBER 11
 
-typedef struct __SECRETROOM_GUILDMEMBER
-{
-	u_long m_uGuildMemberId;
-	CWndSecretRoomGuildMember* m_pWndGuildMember;
-} __SECRETROOM_GUILDMEMBER;
-
-class CWndSecretRoomGuildMemMng : public CWndNeuz
-{
-private:
-	CWndListBox* m_pWndListBox;
-	int m_nGuildMemCount;
-	CWndSecretRoomGuildMember* m_pWndSelectMember;
-	CWndSecretRoomGuildMember* m_pWndLastMember;
-	vector<__SECRETROOM_GUILDMEMBER> m_vecGuildMember;
-
-public:
-	CWndSecretRoomGuildMemMng();
-	~CWndSecretRoomGuildMemMng();
-
-	virtual	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
-	virtual	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual	void OnDraw( C2DRender* p2DRender );
-	virtual	void OnInitialUpdate();
-
-	void SetGuildMemCount(int nGuildMemCount) {m_nGuildMemCount = nGuildMemCount;};
-	void SetGuildMember(u_long uGuildMemberId);
-	void SetSelect(CWndSecretRoomGuildMember* pWndSelectMember);
-	BOOL IsSelect(CWndSecretRoomGuildMember* pWndMember);
-	void DestroyMemberWnd(u_long uMember);
-	CWndSecretRoomGuildMember* GetBeforeWnd();
-	void SetVisibleMng(BOOL bVisible);
-};
-*/
-
-#define MAX_SECRETROOM_MEMBER 11
-
-class CWndSecretRoomQuick : public CWndNeuz 
+class CWndSecretRoomQuick final : public CWndNeuz
 { 
 public:
 	std::array<int, MAX_SECRETROOM_MEMBER> m_StaticID;
@@ -203,7 +110,7 @@ public:
 	CWndSecretRoomQuick(); 
 	~CWndSecretRoomQuick(); 
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -218,7 +125,7 @@ public:
 	void SortMemberList();
 };
 
-class CWndSecretRoomChangeTaxRate : public CWndNeuz 
+class CWndSecretRoomChangeTaxRate final : public CWndNeuz
 {
 public:
 	int m_nDefaultSalesTax;
@@ -234,7 +141,7 @@ public:
 	CWndSecretRoomChangeTaxRate();
 	virtual ~CWndSecretRoomChangeTaxRate(); 
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate();
@@ -242,7 +149,7 @@ public:
 	void SetDefaultTax(int nMinTax, int nMaxTax, BYTE nCont);
 }; 
 
-class CWndSecretRoomCheckTaxRate : public CWndNeuz 
+class CWndSecretRoomCheckTaxRate final : public CWndNeuz
 { 
 public:
 	int m_nSalesTax;
@@ -253,7 +160,7 @@ public:
 	CWndSecretRoomCheckTaxRate();
 	virtual ~CWndSecretRoomCheckTaxRate(); 
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate();
@@ -263,25 +170,25 @@ public:
 // Message Box Class
 //////////////////////////////////////////////////////////////////////////
 
-class CWndSecretRoomSelectionResetConfirm : public CWndMessageBox
+class CWndSecretRoomSelectionResetConfirm : public CWndCustomMessageBox
 { 
 public: 
 	CString m_strMsg;
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-class CWndSecretRoomOfferMessageBox : public CWndMessageBox
+class CWndSecretRoomOfferMessageBox : public CWndCustomMessageBox
 { 
 public: 
 	DWORD m_nCost;
 	void	SetValue( CString str, DWORD nCost );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 
-class CWndSecretRoomInfoMsgBox : public CWndNeuz
+class CWndSecretRoomInfoMsgBox final : public CWndNeuz
 {
 public:
 	CWndSecretRoomInfoMsgBox();
@@ -289,11 +196,11 @@ public:
 	virtual ~CWndSecretRoomInfoMsgBox();
 	void	SetString( const CHAR* szChar );
 	virtual	void OnInitialUpdate();
-	virtual	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 };
 
-class CWndSecretRoomChangeTaxRateMsgBox : public CWndMessageBox
+class CWndSecretRoomChangeTaxRateMsgBox : public CWndCustomMessageBox
 { 
 public: 
 	int m_nSalesTax;
@@ -302,7 +209,7 @@ public:
 
 public:
 	void	SetValue( CString str, int nSalesTax, int nPurchaseTax, BYTE nCont );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 };
 
@@ -312,7 +219,7 @@ public:
 	CWndSecretRoomCancelConfirm();
 	virtual ~CWndSecretRoomCancelConfirm();
 	
-	virtual	BOOL	Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK );
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual	BOOL	OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
 	virtual	void	OnDraw( C2DRender* p2DRender );
 	virtual	void	OnInitialUpdate();
@@ -321,5 +228,3 @@ public:
 	virtual void	OnLButtonUp( UINT nFlags, CPoint point );
 	virtual	void	OnLButtonDown( UINT nFlags, CPoint point );
 };
-
-#endif //__WNDGUILDSECRETROOM__H

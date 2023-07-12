@@ -14,7 +14,7 @@ public:
 	void OnInitialUpdate() override;
 };
 
-class CWndGuildTabApp : public CWndNeuz {
+class CWndGuildTabApp final : public CWndNeuz {
 public:
 	void UpdateData();
 	CWndGuildTabApp();
@@ -25,7 +25,6 @@ public:
 
 	void SetPenya();
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnDraw(C2DRender * p2DRender) override;
 	void OnInitialUpdate() override;

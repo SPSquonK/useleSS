@@ -974,7 +974,7 @@ CUser::DoUseSystemAnswer CUser::DoUseItemSystem(ItemProp * pItemProp, CItemElem 
 		break;
 		case II_SYS_SYS_SCR_CUSTODY2:
 		{
-			CMover * pMover = (CMover *)CreateObj(D3DDEVICE, OT_MOVER, MI_INFO_PENG);
+			CMover * pMover = (CMover *)CreateObj(OT_MOVER, MI_INFO_PENG);
 			lstrcpy(pMover->m_szCharacterKey, "MaFl_InstantBank");
 			pMover->InitNPCProperty();
 			pMover->InitCharacter(pMover->GetCharacter());
@@ -1324,7 +1324,7 @@ bool CUser::DoUseItemSexChange(int nFace) {
 		SetSex(SEX_MALE);
 	}
 
-	SetTypeIndex(D3DDEVICE, OT_MOVER, dwIndex);
+	SetTypeIndex(OT_MOVER, dwIndex);
 	ResetScale();
 	SetMotion(MTI_WALK);
 	//RedoEquip( FALSE );		// chipi_091125 Á¦°Å
@@ -1335,7 +1335,7 @@ bool CUser::DoUseItemSexChange(int nFace) {
 	g_UserMng.AddSexChange(this);
 
 	// 4.
-	m_dwHeadMesh = (DWORD)nFace;
+	m_skin.headMesh = static_cast<std::uint8_t>(nFace);
 	g_UserMng.AddChangeFace(*this, (DWORD)nFace);
 
 	g_dpDBClient.SendUpdatePlayerData(this);

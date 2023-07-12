@@ -14,7 +14,6 @@
 #include "WndCollecting.h"
 
 #include "WndAwakening.h"
-#include "WndLvReqDown.h"
 #include "WndBlessingCancel.h"
 
 #include "WndLord.h"
@@ -85,6 +84,11 @@ class CWndGuildBank;
 class CWndGuildNickName;
 class CWndCommercialElem; class CWndRemoveElem;
 class CWndReSkillWarning;
+class CWndPost;
+class CWndTradeGold;
+
+class CWndGuildCombat1to1Offer; class CWndGuildCombat1to1Selection;
+class CWndLvReqDown;
 
 #define REG_VERSION 1
 
@@ -193,9 +197,7 @@ namespace WndMgr {
 		CWndBeautyShop * m_pWndBeautyShop = nullptr;
 		CWndFaceShop * m_pWndFaceShop = nullptr;
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 		CWndUseCouponConfirm * m_pWndUseCouponConfirm = nullptr;
-#endif //__NEWYEARDAY_EVENT_COUPON
 
 		CWndSummonAngel * m_pWndSummonAngel = nullptr;
 		CWndDialog * m_pWndDialog = nullptr;
@@ -357,9 +359,7 @@ namespace WndMgr {
 		CWndRoomList * m_pWndRoomList = nullptr;
 		CWndQuitRoom * m_pWndQuitRoom = nullptr;
 
-#ifdef __PET_1024
 		CWndChangePetName * m_pWndChangePetName = nullptr;
-#endif
 		CWndSmeltSafety * m_pWndSmeltSafety = nullptr;
 		CWndSmeltSafetyConfirm * m_pWndSmeltSafetyConfirm = nullptr;
 		CWndEquipBindConfirm * m_pWndEquipBindConfirm = nullptr;
@@ -555,45 +555,43 @@ public:
 	boost::container::flat_map<CString, std::unique_ptr<CWndMessage>>    m_mapMessage;
 
 	BOOL m_bAutoRun;
-	
+
 	DWORD m_dwSavePlayerTime;
-	
-	TCHAR m_szTimerChat[ 128 ];
+
+	TCHAR m_szTimerChat[128];
 	CTimer m_timerChat;
-	
+
 	BOOL   m_bConnect;
 
-	BOOL	m_bTitle        ;
+	BOOL	m_bTitle;
 	boost::container::flat_map<DWORD, AppletFunc *> m_mapAppletFunc;
 	std::vector<int> m_tempWndId;
 	BOOL m_clearFlag;
 
-	AppletFunc*		GetAppletFunc( DWORD dwIdApplet );
+	AppletFunc * GetAppletFunc(DWORD dwIdApplet);
 	void	AddAllApplet();
 	BOOL ScreenCapture();
-	BOOL SaveBitmap( LPCTSTR lpszName );
-	BOOL SaveJPG( LPCTSTR lpszName );
+	BOOL SaveBitmap(LPCTSTR lpszName);
+	BOOL SaveJPG(LPCTSTR lpszName);
 	void InitSetItemTextColor();
 	void Free();
 
 public:
 	DWORD		   m_dwSkillTime[MAX_SKILL];
-	
-	CWndBase*      m_pWndActiveDesktop; // Dead field
+
 	CWndTradeConfirm * m_pWndTradeConfirm; // Memory leak? (Original pos: just after CWndConfirmTrade)
 
-	CWndBank*	   m_pWndBank; // also destroys tradegold
-	CWndWorld*     m_pWndWorld;
+	CWndBank * m_pWndBank; // also destroys tradegold
+	CWndWorld * m_pWndWorld;
 
-	CWndSelectVillage*		m_pWndSelectVillage; // Native memleak
-	CWndRepairItem* m_pWndRepairItem; // Native memleak
+	CWndSelectVillage * m_pWndSelectVillage; // Native memleak
+	CWndRepairItem * m_pWndRepairItem; // Native memleak
 
-	CWndGuildBank*	m_pWndGuildBank;
+	CWndGuildBank * m_pWndGuildBank;
 
-#ifdef __MAIL_REQUESTING_BOX
 	BOOL	m_bWaitRequestMail;
-#endif
-	CWndGuildNickName* m_pWndGuildNickName;
+
+	CWndGuildNickName * m_pWndGuildNickName;
 
 
 
@@ -601,47 +599,39 @@ public:
 
 
 
-	CWndCloseExistingConnection*	m_pWndCloseExistingConnection; // CWndBase def is not included by default
-	
+	CWndCloseExistingConnection * m_pWndCloseExistingConnection; // CWndBase def is not included by default
+
 
 #ifdef __S_SERVER_UNIFY
 	BOOL							m_bAllAction;
 #endif // __S_SERVER_UNIFY
 
-	CWndGHMainMenu* m_pWndGHMain;
+	CWndGHMainMenu * m_pWndGHMain;
 
 #ifdef __PROTECT_AWAKE
-	CWndSelectAwakeCase* m_pWndSelectAwakeCase;
+	CWndSelectAwakeCase * m_pWndSelectAwakeCase;
 #endif 
 	CWndTaskBar * m_pWndTaskBar;
 	CWndTaskMenu * m_pWndMenu;
-	CWndQuestItemInfo * m_pQuestItemInfo;
 
 
 
 
 	// 인터페이스 텍스춰
 	CTexturePack  m_texture;
-	CTexturePack  m_texCommand;
-	CTexturePack  m_texIcon;
-	CTexturePack  m_texWnd;
 
 	// 메지시 윈도
 
 	//	퀘스트 아이템 정보
 
-	void OpenQuestItemInfo(CWndBase* pWndParent, CItemElem * pItemBase);
-	void ChangeQuestItemInfo(CItemElem * pItemBase);
-
+	enum class ItemInfoType { Book, Scroll, Letter, QuestItem };
 	CWndTextFromItem * m_pWndTextBook;
 	CWndTextFromItem * m_pWndTextScroll;
 	CWndTextFromItem * m_pWndTextLetter;
-	void OpenTextBook    (CWndBase* pWndParent, CItemElem * pItemBase);
-	void OpenTextScroll  (CWndBase* pWndParent, CItemElem * pItemBase);
-	void OpenTextLetter  (CWndBase* pWndParent, CItemElem * pItemBase);
-	void ChangeTextBook  (CItemElem * pItemBase);
-	void ChangeTextScroll(CItemElem * pItemBase);
-	void ChangeTextLetter(CItemElem * pItemBase);
+	CWndQuestItemInfo * m_pQuestItemInfo;
+
+	void OpenItemInfo(CWndBase * pWndParent, ItemInfoType type, CItemElem * pItemBase);
+
 	// Field
 
 	std::map<DWORD, CWndNeuz *> m_mapWndApplet;
@@ -658,7 +648,7 @@ public:
 		PutString(text.GetString(), nullptr, prj.GetTextColor(textId));
 	}
 	void ParsingChat( CString string );
-	void WordChange( CString& rString );
+	static void WordChange( CString& rString );
 
 	BOOL	IsTitle()	{	return m_bTitle;	}
 
@@ -686,9 +676,9 @@ public:
 	CWndInstantMsg* OpenInstantMsg( LPCTSTR lpszFrom );
 
 	// MessageBox
-	BOOL	OpenCustomBox( LPCTSTR strMessage, CWndMessageBox* pWndMessageBox, CWndBase* pWndParent = NULL );
-	BOOL	OpenMessageBox( LPCTSTR strMessage, UINT nType = MB_OK, CWndBase* pWndParent = NULL );
-	BOOL	OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTitle, UINT nType = MB_OK, CWndBase* pWndParent = NULL );
+	BOOL	OpenCustomBox( CWndCustomMessageBox * pWndMessageBox );
+	BOOL	OpenMessageBox( LPCTSTR strMessage, UINT nType = MB_OK );
+	BOOL	OpenMessageBoxWithTitle( LPCTSTR lpszMessage, const CString& strTitle, UINT nType = MB_OK );
 	BOOL    OpenMessageBoxUpper( LPCTSTR lpszMessage, UINT nType = MB_OK, BOOL bPostLogoutMsg = FALSE );
 		
 	void	CloseMessageBox();
@@ -703,7 +693,6 @@ public:
 	virtual	~CWndMgr();
 
 	void	DestroyApplet();
-	void	AlighWindow( CRect rcOld, CRect rcNew );
 
 	//virtual CItem* GetFocusItem();
 	virtual	BOOL    Process();
@@ -749,11 +738,13 @@ public:
 
 protected:
 	void __HotKeyChange( DWORD dwId, char* pch );
-	void	FormalizeChatString( CString & str );
+	static void FormalizeChatString( CString & str );
 };
 
-extern CPtrArray      m_wndOrder;
+extern std::vector<CWndBase *> m_wndOrder;
 extern CWndMgr          g_WndMng; // 윈도 매니저 클래스 
+
+inline bool CWndBase::IsWndRoot() const { return this == &g_WndMng; }
 
 extern void RenderEnchant( C2DRender* p2DRender, CPoint pt );
 extern void RenderRadar( C2DRender* p2DRender, CPoint pt, DWORD dwValue, DWORD dwDivisor );

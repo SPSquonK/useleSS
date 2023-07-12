@@ -38,7 +38,7 @@ public:
 	BOOL isVisibile( ) { return m_bVisible; } // 컬링된 결과를 돌려준다.
 	BOOL isDirty( ) { return m_bDirty; } // 하이트맵의 내용 등이 변경된 경우 버텍스 버퍼, 라이트맵을 수정한다.
 	void SetDirty( BOOL bDirty ) { m_bDirty=bDirty; }
-	void Render(LPDIRECT3DDEVICE9 pd3dDevice,int X,int Y);
+	void Render(int X,int Y);
 
 	void CalculateBound();
 	void Cull();

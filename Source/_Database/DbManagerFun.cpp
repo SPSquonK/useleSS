@@ -28,7 +28,7 @@ extern const char NullStr[2];
 extern	CProject			prj;
 
 #define	VERIFYSTRING_RETURN( lpString, lpszPlayer )	\
-	if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer, lpDbOverlappedPlus ) )		return FALSE;
+	if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer ) )		return FALSE;
 
 #define	VERIFYSTRING_BANK( lpString, lpszPlayer )	\
 	if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer ) )		return FALSE;
@@ -49,7 +49,6 @@ CTime CDbManager::GetStrTime(const char * strbuf) {
 	return CTime(atoi(cYear), atoi(cMonth), atoi(cDay), atoi(cHour), atoi(cMin), 0);
 }
 
-#ifdef __PET_1024
 void CDbManager::GetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc )
 {
 	char szDigit[3] = {0, };
@@ -97,675 +96,153 @@ void CDbManager::SetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc )
 	}
 	*pCur	= '\0';
 }
-#endif	// __PET_1024
 
-
-// szSrc - 16진수로 변환된 문자열, szDst - ascii문자열, n - szSrc에서 현재작업 index 
-void CDbManager::GetStrFromDBFormat( char* szDst, const char* szSrc, int& n )
+BOOL CDbManager::GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS, int nSlot )
 {
-	char szDigit[3] = {0, };
-	char ch;
-	int ch2;
-	
-	const char* pCur = szSrc + n;
-	while( *pCur != '/' && *pCur )		// 문자열은 '/' 로 끝난다. 안전하게 NULL도 검사 
-	{
-		szDigit[0] = pCur[0];
-		szDigit[1] = pCur[1];
-		pCur += 2;
-		
-		sscanf( szDigit, "%2X", &ch2 );
-		ch = ch2;
-		*szDst++ = ch;
-	}
-	*szDst = '\0';
-	n = (pCur - szSrc) + 1;				// +1은 '/'를 무시하기 위해서 
-}
-
-BOOL CDbManager::GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, int nSlot )
-{
-	int CountStr				= 0;
-	int itemCount				= 0;
-	int	IndexItem				= 0;
-	int IndexObjIndex			= 0;
-	int nExtBankCount			= 0;
-	int nPirecingBankCount		= 0;
-	char Bank[7500]				= { 0, };
-	char m_apIndexBank[512]		= { 0, };
-	char ObjIndexBank[512]		= { 0, };
-	char ExtBank[2000]			= {0,};	
-	char PirecingBank[4000]		= {0,};
-#ifdef __PET_1024
-	char szPet[4200]	= { 0,};
-#else	// __PET_1024
-	char szPet[2688]	= { 0,};
-#endif	// __PET_1024
-
 	u_long uPlayerid	= (u_long)qry->GetInt( "m_idPlayer" );
 	DWORD dwGold = qry->GetInt( "m_dwGoldBank" );
 
-	qry->GetStr( "m_Bank", Bank );
-	qry->GetStr( "m_apIndex_Bank", m_apIndexBank );
-	qry->GetStr( "m_dwObjIndex_Bank", ObjIndexBank );
-	qry->GetStr( "m_extBank", ExtBank );
-	qry->GetStr( "m_BankPiercing", PirecingBank );
-	qry->GetStr( "szBankPet", szPet );
-
-	VERIFYSTRING_RETURN( Bank, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	VERIFYSTRING_RETURN( m_apIndexBank, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	VERIFYSTRING_RETURN( ObjIndexBank, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	VERIFYSTRING_RETURN( ExtBank, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	VERIFYSTRING_RETURN( PirecingBank, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	VERIFYSTRING_RETURN( szPet, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	
 	pMover->m_idPlayerBank[nSlot] = uPlayerid;
-	pMover->m_dwGoldBank[nSlot]	= dwGold;
-	
-	CountStr	= 0;	IndexItem	= 0;			
-	while( '$' != Bank[CountStr] )
-	{
-		CItemElem BufItemElem;
-		IndexItem = GetOneItem( &BufItemElem, Bank, &CountStr );
-		if( IndexItem == -1 )
-		{
-			Error( "Join::Bank : << Not Prop. %d, %d \nBank = %s", uPlayerid, BufItemElem.m_dwItemId, Bank );
-		}
-		else
-		{
-			if( IndexItem >= MAX_BANK )
-			{
-				Error( "Join::Bank : << MAX_BANK %d\nBank = %s", uPlayerid, Bank );
-				return FALSE;
-			}
-			pMover->m_Bank[nSlot].m_apItem[IndexItem] = BufItemElem;
-		}
-	}
-	
-	CountStr	= 0;	itemCount	= 0;
-	while( '$' != m_apIndexBank[CountStr] )
-	{
-		pMover->m_Bank[nSlot].m_apIndex[itemCount]						= (DWORD)GetIntFromStr( m_apIndexBank, &CountStr );
-		itemCount++;
-	}
-	
-	CountStr	= 0;	IndexObjIndex	= 0;
-	while( '$' != ObjIndexBank[CountStr] )
-	{
-		pMover->m_Bank[nSlot].m_apItem[IndexObjIndex].m_dwObjIndex		= (DWORD)GetIntFromStr( ObjIndexBank, &CountStr );
-		IndexObjIndex++;
-	}
+	pMover->m_dwGoldBank[nSlot] = dwGold;
 
-	CountStr	= 0;	nExtBankCount	= 0;
-	while( '$' != ExtBank[CountStr] )
-	{
-		GetIntPaFromStr( ExtBank, &CountStr );
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_dwKeepTime		= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
-		__int64 iRandomOptItemId	= GetInt64PaFromStr( ExtBank, &CountStr );
-		if( iRandomOptItemId == -102 )
-			iRandomOptItemId	= 0;
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].SetRandomOptItemId( iRandomOptItemId );
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
-		++CountStr;
-
-		++nExtBankCount;
-	}
-
-	CountStr	= 0;	nPirecingBankCount = 0;
-	while( '$' != PirecingBank[CountStr] )
-	{
-		LoadPiercingInfo( pMover->m_Bank[nSlot].m_apItem[nPirecingBankCount], PirecingBank, &CountStr );
-		++nPirecingBankCount;
-	}
-
-	CountStr	= 0;
-	int	nId	= 0;
-	while( '$' != szPet[CountStr] )
-	{
-		BOOL bPet	= (BOOL)GetIntFromStr( szPet, &CountStr );
-		if( bPet )
-		{
-			SAFE_DELETE( pMover->m_Bank[nSlot].m_apItem[nId].m_pPet );
-			CPet* pPet	= pMover->m_Bank[nSlot].m_apItem[nId].m_pPet		= new CPet;
-			BYTE nKind	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetKind( nKind );
-			BYTE nLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLevel( nLevel );
-			DWORD dwExp	= (DWORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetExp( dwExp );
-			WORD wEnergy	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetEnergy( wEnergy );
-#ifdef __PET_1024
-			WORD wLife	= (WORD)GetIntPaFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntPaFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-			char szFmt[MAX_PET_NAME_FMT]	= { 0,};
-			GetStrFromStr( szPet, szFmt, &CountStr );
-			char szName[MAX_PET_NAME]	= { 0,};
-			GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
-			pPet->SetName( szName );
-#else	// __PET_1024
-			WORD wLife	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-#endif	// __PET_1024
-		}
-		nId++;
-	}
-	return TRUE;
+	return GetBankMover(pMover, qry, nSlot);
 }
 
-BOOL CDbManager::GetBankMover( CMover* pMover, CQuery *qry, int nSlot )
+bool CDbManager::GetBankMover( CMover* pMover, CQuery *qry, int nSlot )
 {
-	int CountStr	= 0;
-	int itemCount	= 0;
-	int	IndexItem	= 0;
-	int IndexObjIndex	= 0;
-	int nExtBankCount = 0;
-	int nPirecingBankCount = 0;
-	char Bank[7500]		= { 0, };
-	char m_apIndexBank[512]		= { 0, };
-	char ObjIndexBank[512]	= { 0, };
-	char ExtBank[2000] = {0,};	
-	char PirecingBank[4000] = {0,};
-#ifdef __PET_1024
-	char szPet[4200]	= { 0,};
-#else	// __PET_1024
-	char szPet[2688]	= { 0,};
-#endif	// __PET_1024
-	
-	qry->GetStr( "m_Bank", Bank );
-	qry->GetStr( "m_apIndex_Bank", m_apIndexBank );
-	qry->GetStr("m_dwObjIndex_Bank", ObjIndexBank );
-	qry->GetStr( "m_extBank", ExtBank );
-	qry->GetStr( "m_BankPiercing", PirecingBank );
-	qry->GetStr( "szBankPet", szPet );
+	char debugString[256];
+	std::sprintf(debugString, __FUNCTION__" - Player Bank %s Slot %d", pMover->m_szName, nSlot);
 
-	CountStr	= 0;	IndexItem	= 0;			
-	VERIFYSTRING_BANK( Bank, pMover->m_szName );
-	while( '$' != Bank[CountStr] )
-	{
-		CItemElem BufItemElem;
-		IndexItem = GetOneItem( &BufItemElem, Bank, &CountStr );
-		if( IndexItem == -1 )
-		{
-			Error( "Bank = %s", Bank );
-		}
-		else
-		{
-			if( IndexItem >= MAX_BANK )
-			{
-				Error( "Bank = %s", Bank );
-				return FALSE;
-			}
-			pMover->m_Bank[nSlot].m_apItem[IndexItem] = BufItemElem;
-		}
-	}
-	
-	CountStr	= 0;	itemCount	= 0;
-	VERIFYSTRING_BANK( m_apIndexBank, pMover->m_szName );
-	while( '$' != m_apIndexBank[CountStr] )
-	{
-		pMover->m_Bank[nSlot].m_apIndex[itemCount]		= (DWORD)GetIntFromStr( m_apIndexBank, &CountStr );
-		itemCount++;
-	}
-	
-	CountStr	= 0;	IndexObjIndex	= 0;
-	VERIFYSTRING_BANK( ObjIndexBank, pMover->m_szName );
-	while( '$' != ObjIndexBank[CountStr] )
-	{
-		pMover->m_Bank[nSlot].m_apItem[IndexObjIndex].m_dwObjIndex		= (DWORD)GetIntFromStr( ObjIndexBank, &CountStr );
-		IndexObjIndex++;
-	}
-	
-	CountStr	= 0; 	nExtBankCount	= 0;
-	VERIFYSTRING_BANK( ExtBank, pMover->m_szName );
-	while( '$' != ExtBank[CountStr] )
-	{
-		GetIntPaFromStr( ExtBank, &CountStr );
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_dwKeepTime		= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].SetRandomOptItemId( GetInt64PaFromStr( ExtBank, &CountStr ) );
-		pMover->m_Bank[nSlot].m_apItem[nExtBankCount].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
-		++CountStr;
-		++nExtBankCount;
-	}
-	
-	CountStr	= 0;
-	nPirecingBankCount = 0;
-	VERIFYSTRING_BANK( PirecingBank, pMover->m_szName );
-	while( '$' != PirecingBank[CountStr] )
-	{
-		LoadPiercingInfo( pMover->m_Bank[nSlot].m_apItem[nPirecingBankCount], PirecingBank, &CountStr );
-		++nPirecingBankCount;
-	}
+	ItemContainerSerialization serialization = {
+		.main = qry->GetStrPtr("m_Bank"),
+		.apIndex = qry->GetStrPtr("m_apIndex_Bank"),
+		.dwObjIndex = qry->GetStrPtr("m_dwObjIndex_Bank"),
+		.ext = qry->GetStrPtr("m_extBank"),
+		.piercing = qry->GetStrPtr("m_BankPiercing"),
+		.szPet = qry->GetStrPtr("szBankPet"),
 
-	CountStr	= 0;
-	int	nId	= 0;
-	VERIFYSTRING_BANK( szPet, pMover->m_szName );
-	while( '$' != szPet[CountStr] )
-	{
-		BOOL bPet	= (BOOL)GetIntFromStr( szPet, &CountStr );
-		if( bPet )
-		{
-			SAFE_DELETE( pMover->m_Bank[nSlot].m_apItem[nId].m_pPet );
-			CPet* pPet	= pMover->m_Bank[nSlot].m_apItem[nId].m_pPet		= new CPet;
-			BYTE nKind	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetKind( nKind );
-			BYTE nLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLevel( nLevel );
-			DWORD dwExp	= (DWORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetExp( dwExp );
-			WORD wEnergy	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetEnergy( wEnergy );
-#ifdef __PET_1024
-			WORD wLife	= (WORD)GetIntPaFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntPaFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-			char szFmt[MAX_PET_NAME_FMT]	= { 0,};
-			GetStrFromStr( szPet, szFmt, &CountStr );
-			char szName[MAX_PET_NAME]	= { 0,};
-			GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
-			pPet->SetName( szName );
-#else	// __PET_1024
-			WORD wLife	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-#endif	// __PET_1024
-		}
-		nId++;
-	}
-	return TRUE;
+		.debugString = debugString
+	};
+
+	if (!serialization.CheckValidity()) return FALSE;
+	return ReadItemContainer(pMover->m_Bank[nSlot], serialization);
 }
 
-void CDbManager::GetGuildBank( CItemContainer*  GuildBank, CQuery *qry )
-{
-	int CountStr		= 0;
-	int IndexItem		= 0;
-	char	Bank[7500]		= { 0, };
-	qry->GetStr( "m_GuildBank", Bank );
-	while( '$' != Bank[CountStr] )
-	{
-		CItemElem BufItemElem;
-		IndexItem = GetOneItem( &BufItemElem, Bank, &CountStr );
-		if( IndexItem == -1 )
-		{
-			
-		}
-		else
-		{
-			if( IndexItem >= MAX_GUILDBANK )
-			{
-				Error( "GuildBank = %s", Bank );
-				return;
-			}
-			GuildBank->m_apItem[IndexItem] = BufItemElem;
-		}
-	}
-	CountStr	= 0;
-	int nExtBank = 0;
-	char ExtBank[2000] = {0,};
-	qry->GetStr( "m_extGuildBank", ExtBank );
-	while( '$' != ExtBank[CountStr] )
-	{
-		GetIntPaFromStr( ExtBank, &CountStr );
-		GuildBank->m_apItem[nExtBank].m_dwKeepTime				= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
-		__int64 iRandomOptItemId	= GetInt64PaFromStr( ExtBank, &CountStr );
-		if( iRandomOptItemId == -102 )
-			iRandomOptItemId	= 0;
-		GuildBank->m_apItem[nExtBank].SetRandomOptItemId( iRandomOptItemId );
-		GuildBank->m_apItem[nExtBank].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
-		++CountStr; 		++nExtBank;
-	}
-	
-	CountStr	= 0;
-	int nPirecingBank = 0;
-	char PirecingBank[4000] = {0,};
-	qry->GetStr( "m_GuildBankPiercing", PirecingBank );
-	while( '$' != PirecingBank[CountStr] )
-	{
-		LoadPiercingInfo( GuildBank->m_apItem[nPirecingBank], PirecingBank, &CountStr );
-		++nPirecingBank;
-	}
+void CDbManager::GetGuildBank( CItemContainer*  GuildBank, CQuery *qry ) {
+	ItemContainerSerialization serialization = {
+		.main = qry->GetStrPtr("m_GuildBank"),
+		.apIndex = "$",
+		.dwObjIndex = "$",
+		.ext = qry->GetStrPtr("m_extGuildBank"),
+		.piercing = qry->GetStrPtr("m_GuildBankPiercing"),
+		.szPet = qry->GetStrPtr("szGuildBankPet"),
 
-	CountStr	= 0;
-	int	nId	= 0;
-#ifdef __PET_1024
-	char szPet[4200]	= { 0, };
-#else	// __PET_1024
-	char szPet[2688]	= { 0, };
-#endif	// __PET_1024
-	qry->GetStr( "szGuildBankPet", szPet );
-	while( '$' != szPet[CountStr] )
-	{
-		BOOL bPet	= (BOOL)GetIntFromStr( szPet, &CountStr );
-		if( bPet )
-		{
-			SAFE_DELETE( GuildBank->m_apItem[nId].m_pPet );
-			CPet* pPet	= GuildBank->m_apItem[nId].m_pPet		= new CPet;
-			BYTE nKind	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetKind( nKind );
-			BYTE nLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLevel( nLevel );
-			DWORD dwExp	= (DWORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetExp( dwExp );
-			WORD wEnergy	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetEnergy( wEnergy );
-#ifdef __PET_1024
-			WORD wLife	= (WORD)GetIntPaFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntPaFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-			char szFmt[MAX_PET_NAME_FMT]	= { 0,};
-			GetStrFromStr( szPet, szFmt, &CountStr );
-			char szName[MAX_PET_NAME]	= { 0,};
-			GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
-			pPet->SetName( szName );
-#else	// __PET_1024
-			WORD wLife	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-#endif	// __PET_1024
-		}
-		nId++;
-	}
+		.debugString = __FUNCTION__
+	};
+
+	if (!serialization.CheckValidity()) return;
+	ReadItemContainer(*GuildBank, serialization);
 }
 
-BOOL CDbManager::GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
-{
-	char	szItem[7500]	= { 0,};
-	char	szIndex[512]	= { 0,};
-	char	szObjIndex[512]	= { 0,};
-	char	szExt[2000]		= { 0,};
-	char	szPiercing[4000]	= { 0,};
-#ifdef __PET_1024
-	char	szPet[4200]	= { 0,};
-#else	// __PET_1024
-	char	szPet[2688]	= { 0,};
-#endif	// __PET_1024
+BOOL CDbManager::GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus ) {
+	const int nPocket = pQuery->GetInt("nPocket");
+	const BOOL bExpired = (BOOL)pQuery->GetInt("bExpired");
 
-	pQuery->GetStr( "szItem", szItem );
-	pQuery->GetStr( "szIndex", szIndex );
-	pQuery->GetStr( "szObjIndex", szObjIndex );
-	pQuery->GetStr( "szExt", szExt );
-	pQuery->GetStr( "szPiercing", szPiercing );
-	pQuery->GetStr( "szPet", szPet );
-
-	char szPlayerName[64] = {0, };
-	if( lpDbOverlappedPlus != NULL )
-	{
-		_tcscpy( szPlayerName, lpDbOverlappedPlus->AccountInfo.szPlayer );
+	const char * szPlayerName;
+	if (lpDbOverlappedPlus) {
+		szPlayerName = lpDbOverlappedPlus->AccountInfo.szPlayer;
+	} else {
+		szPlayerName = pMover->m_szName;
 	}
-	else
-	{
-		_tcscpy( szPlayerName, pMover->m_szName );
-	}
-	VERIFYSTRING_RETURN( szItem, szPlayerName );
-	VERIFYSTRING_RETURN( szIndex, szPlayerName );
-	VERIFYSTRING_RETURN( szObjIndex, szPlayerName );
-	VERIFYSTRING_RETURN( szExt, szPlayerName );
-	VERIFYSTRING_RETURN( szPiercing, szPlayerName );
-	VERIFYSTRING_RETURN( szPet, szPlayerName );
 
-	int nPocket	= pQuery->GetInt( "nPocket" );
-	BOOL bExpired	= (BOOL)pQuery->GetInt( "bExpired" );
+	char debugString[256];
+	std::sprintf(debugString, __FUNCTION__" Player %s Pocket %d", szPlayerName, nPocket);
 
-	if( szItem[0] != '$' || !bExpired )
-	{
+	ItemContainerSerialization serialization = {
+		.main = pQuery->GetStrPtr("szItem"),
+		.apIndex = pQuery->GetStrPtr("szIndex"),
+		.dwObjIndex = pQuery->GetStrPtr("szObjIndex"),
+		.ext = pQuery->GetStrPtr("szExt"),
+		.piercing = pQuery->GetStrPtr("szPiercing"),
+		.szPet = pQuery->GetStrPtr("szPet"),
+
+		.debugString = debugString
+	};
+
+	if (!serialization.CheckValidity()) return FALSE;
+
+	if( serialization.main[0] != '$' || !bExpired ) {
 		pMover->m_Pocket.Avail( nPocket );
 		CPocket* pPocket	= pMover->m_Pocket.GetPocket( nPocket );
 		pPocket->SetExpired( bExpired );
 		pPocket->SetExpirationDate( (time_t)pQuery->GetInt( "tExpirationDate" ) );
-		int nOffset	= 0, i	= 0;
-		while( '$' != szItem[nOffset] )
-		{
-			CItemElem itemElem;
-			i	= GetOneItem( &itemElem, szItem, &nOffset );
-			if( i == -1 )
-			{
-				Error( "Join:Pocket:Property not found" );
-			}
-			else
-			{
-				if( i >= POCKET_SLOT_SIZE_1_2 )
-				{
-					Error( "Join:Pocket:POCKET_SLOT_SIZE_1_2" );
-					return FALSE;
-				}
-				pPocket->m_apItem[i]	= itemElem;
-			}
-		}
-		nOffset		= i	= 0;
-		while( '$' != szIndex[nOffset] )
-			pPocket->m_apIndex[i++]		= (DWORD)GetIntFromStr( szIndex, &nOffset );
-		nOffset		= i	= 0;
-		while( '$' != szObjIndex[nOffset] )
-			pPocket->m_apItem[i++].m_dwObjIndex	= (DWORD)GetIntFromStr( szObjIndex, &nOffset );
-		nOffset		= i	= 0;
-		while( '$' != szExt[nOffset] )
-		{
-			GetIntPaFromStr( szExt, &nOffset );
-			pPocket->m_apItem[i].m_dwKeepTime	= (DWORD)GetIntPaFromStr( szExt, &nOffset );
-			__int64 iRandomOptItemId	= GetInt64PaFromStr( szExt, &nOffset );
-			pPocket->m_apItem[i].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( szExt, &nOffset ) );
-			if( iRandomOptItemId == -102 )
-				iRandomOptItemId	= 0;
-			pPocket->m_apItem[i++].SetRandomOptItemId( iRandomOptItemId );
-			nOffset++;
-		}
-		nOffset		= i	= 0;
-		while( '$' != szPiercing[nOffset] )
-		{
-			LoadPiercingInfo( pPocket->m_apItem[i], szPiercing, &nOffset );
-			i++;
-		}
-		nOffset		= i	= 0;
-		while( '$' != szPet[nOffset] )
-		{
-			BOOL bPet	= (BOOL)GetIntFromStr( szPet, &nOffset );
-			if( bPet )
-			{
-				SAFE_DELETE( pPocket->m_apItem[i].m_pPet );
-				CPet* pPet	= pPocket->m_apItem[i].m_pPet	= new CPet;
-				BYTE nKind	= (BYTE)GetIntFromStr( szPet, &nOffset );
-				pPet->SetKind( nKind );
-				BYTE nLevel	= (BYTE)GetIntFromStr( szPet, &nOffset );
-				pPet->SetLevel( nLevel );
-				DWORD dwExp	= (DWORD)GetIntFromStr( szPet, &nOffset );
-				pPet->SetExp( dwExp );
-				WORD wEnergy	= (WORD)GetIntFromStr( szPet, &nOffset );
-				pPet->SetEnergy( wEnergy );
-#ifdef __PET_1024
-				WORD wLife	= (WORD)GetIntPaFromStr( szPet, &nOffset );
-				pPet->SetLife( wLife );
-				for( int j = PL_D; j <= pPet->GetLevel(); j++ )
-				{
-					BYTE nAvailLevel	= (BYTE)GetIntPaFromStr( szPet, &nOffset );
-					pPet->SetAvailLevel( j, nAvailLevel );
-				}
-				char szFmt[MAX_PET_NAME_FMT]	= { 0,};
-				GetStrFromStr( szPet, szFmt, &nOffset );
-				char szName[MAX_PET_NAME]	= { 0,};
-				GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
-				pPet->SetName( szName );
-#else	// __PET_1024
-				WORD wLife	= (WORD)GetIntFromStr( szPet, &nOffset );
-				pPet->SetLife( wLife );
-				for( int j = PL_D; j <= pPet->GetLevel(); j++ )
-				{
-					BYTE nAvailLevel	= (BYTE)GetIntFromStr( szPet, &nOffset );
-					pPet->SetAvailLevel( j, nAvailLevel );
-				}
-#endif	// __PET_1024
-			}
-			i++;
-		}
+
+		ReadItemContainer(*pPocket, serialization);
 	}
+
 	return TRUE;
 }
 
 BOOL CDbManager::GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
-	int CountStr	= 0;
-	int IndexItem	= 0;
-	char Inven[6000]	= { 0, };
-	char szPlayerName[64] = {0, };
-	if( lpDbOverlappedPlus != NULL )
-	{
-		_tcscpy( szPlayerName, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	}
-	else
-	{
-		_tcscpy( szPlayerName, pMover->m_szName );
-	}
-	qry->GetStr("m_Inventory", Inven);
-	VERIFYSTRING_RETURN( Inven, szPlayerName );	// if false, return
-	while('$' != Inven[CountStr])
-	{
-		CItemElem BufItemElem;
-		IndexItem = GetOneItem( &BufItemElem, Inven, &CountStr );
-		if( IndexItem == -1 )
-		{
-			Error( "Inventory : << 프로퍼티 없음. %s, %d", pMover->m_szName, BufItemElem.m_dwItemId );
-		}
-		else
-		{
-			if( IndexItem >= MAX_INVENTORY + MAX_HUMAN_PARTS)
-			{
-				Error( "Join::Inventory : << IndexItem %s, %d", pMover->m_szName, IndexItem );
-				Error( "Inventory = %s", Inven );
-				return FALSE;
-			}
-			pMover->m_Inventory.m_apItem[IndexItem] = BufItemElem;
-		}
-	}
-	
-	CountStr	= 0;
-	int itemCount	= 0;
-	char m_apIndex[512]		= { 0, };
-	qry->GetStr( "m_apIndex", m_apIndex );
-	VERIFYSTRING_RETURN( m_apIndex, szPlayerName );
-	while( '$' != m_apIndex[CountStr] )
-	{
-		pMover->m_Inventory.m_apIndex[itemCount]	= (DWORD)GetIntFromStr( m_apIndex, &CountStr );
-		itemCount++;
-	}
-	
-	CountStr	= 0;
-	int IndexObjIndex	= 0;
-	char ObjIndex[512]	= {0,};
-	qry->GetStr( "m_dwObjIndex", ObjIndex );
-	VERIFYSTRING_RETURN( ObjIndex, szPlayerName );
-	while( '$' != ObjIndex[CountStr] )
-	{
-		pMover->m_Inventory.m_apItem[IndexObjIndex].m_dwObjIndex	= (DWORD)GetIntFromStr( ObjIndex, &CountStr );
-		IndexObjIndex++;
+	const char * szPlayerName;
+	if (lpDbOverlappedPlus) {
+		szPlayerName = lpDbOverlappedPlus->AccountInfo.szPlayer;
+	} else {
+		szPlayerName = pMover->m_szName;
 	}
 
-	CountStr	= 0;
-	int nExtInven = 0;
-	char ExtInven[2000] = {0,};
-	qry->GetStr( "m_extInventory", ExtInven );
-	VERIFYSTRING_RETURN( ExtInven, szPlayerName );
-	while( '$' != ExtInven[CountStr] )
-	{
-		GetIntPaFromStr( ExtInven, &CountStr );
-		pMover->m_Inventory.m_apItem[nExtInven].m_dwKeepTime				= (DWORD)GetIntPaFromStr( ExtInven, &CountStr );
-		__int64 iRandomOptItemId	= GetInt64PaFromStr( ExtInven, &CountStr );
-		if( iRandomOptItemId == -102 )
-			iRandomOptItemId	= 0;
-		pMover->m_Inventory.m_apItem[nExtInven].SetRandomOptItemId( iRandomOptItemId );
-		pMover->m_Inventory.m_apItem[nExtInven].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtInven, &CountStr ) );
-		++CountStr; 	++nExtInven;
-	}
+	char debugString[256];
+	std::sprintf(debugString, __FUNCTION__" Player %s Pocket %d", szPlayerName);
 
-	CountStr	= 0;
-	int nPirecingInven = 0;
-	char PirecingInven[4000] = {0,};
-	qry->GetStr( "m_InventoryPiercing", PirecingInven );
-	VERIFYSTRING_RETURN( PirecingInven, szPlayerName );
-	while( '$' != PirecingInven[CountStr] )
-	{
-		LoadPiercingInfo( pMover->m_Inventory.m_apItem[nPirecingInven], PirecingInven, &CountStr );
-		++nPirecingInven;
-	}
+	ItemContainerSerialization serialization = {
+		.main = qry->GetStrPtr("m_Inventory"),
+		.apIndex = qry->GetStrPtr("m_apIndex"),
+		.dwObjIndex = qry->GetStrPtr("m_dwObjIndex"),
+		.ext = qry->GetStrPtr("m_extInventory"),
+		.piercing = qry->GetStrPtr("m_InventoryPiercing"),
+		.szPet = qry->GetStrPtr("szInventoryPet"),
 
-	CountStr	= 0;
-	int	nId	= 0;
-#ifdef __PET_1024
-	char szPet[4200]	= { 0, };
-#else	// __PET_1024
-	char szPet[2688]	= { 0, };
-#endif	// __PET_1024
-	qry->GetStr( "szInventoryPet", szPet );
-	VERIFYSTRING_RETURN( szPet, szPlayerName );
-	while( '$' != szPet[CountStr] )
-	{
-		BOOL bPet	= (BOOL)GetIntFromStr( szPet, &CountStr );
-		if( bPet )
-		{
-			SAFE_DELETE( pMover->m_Inventory.m_apItem[nId].m_pPet );
-			CPet* pPet	= pMover->m_Inventory.m_apItem[nId].m_pPet		= new CPet;
-			BYTE nKind	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetKind( nKind );
-			BYTE nLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLevel( nLevel );
-			DWORD dwExp	= (DWORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetExp( dwExp );
-			WORD wEnergy	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetEnergy( wEnergy );
-#ifdef __PET_1024
-			WORD wLife	= (WORD)GetIntPaFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntPaFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-			char szFmt[MAX_PET_NAME_FMT]	= { 0,};
-			GetStrFromStr( szPet, szFmt, &CountStr );
-			char szName[MAX_PET_NAME]	= { 0,};
-			GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
-			pPet->SetName( szName );
-#else	// __PET_1024
-			WORD wLife	= (WORD)GetIntFromStr( szPet, &CountStr );
-			pPet->SetLife( wLife );
-			for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-			{
-				BYTE nAvailLevel	= (BYTE)GetIntFromStr( szPet, &CountStr );
-				pPet->SetAvailLevel( i, nAvailLevel );
-			}
-#endif	// __PET_1024
-		}
-		nId++;
-	}
-	return TRUE;
+		.debugString = debugString
+	};
+
+	if (!serialization.CheckValidity()) return FALSE;
+	return ReadItemContainer(pMover->m_Inventory, serialization) ? TRUE : FALSE;
 }
 
-void CDbManager::LoadPiercingInfo( CItemElem & itemElem, char* szPirecingInven, int* pLocation )
+std::vector<std::pair<DWORD, CPet *>> CDbManager::GetPets(const char * szPet) {
+	std::vector<std::pair<DWORD, CPet *>> res;
+
+	for (auto splitter : DBDeserialize::SplitBySlash(szPet)) {
+		const bool isPet = splitter.NextBool();
+
+		if (isPet) {
+			CPet * pPet = new CPet;
+			pPet->SetKind(static_cast<BYTE>(splitter.NextInt()));
+			pPet->SetLevel(static_cast<BYTE>(splitter.NextInt()));
+			pPet->SetExp(splitter.NextDWORD());
+			pPet->SetEnergy(splitter.NextUShort());
+			pPet->SetLife(splitter.NextUShort());
+
+			for (int i = PL_D; i <= pPet->GetLevel(); i++) {
+				pPet->SetAvailLevel(i, static_cast<BYTE>(splitter.NextInt()));
+			}
+
+			char szName[MAX_PET_NAME] = { 0, };
+			splitter.NextStringInBuffer(szName);
+
+			pPet->SetName(szName);
+
+			res.emplace_back(splitter.Index(), pPet);
+		}
+	}
+
+	return res;
+}
+
+void CDbManager::LoadPiercingInfo( CItemElem & itemElem, const char* szPirecingInven, int* pLocation )
 {
-	ItemProp* itemProp = itemElem.GetProp();
+	const ItemProp* itemProp = itemElem.GetProp();
 	if( itemProp && itemProp->IsUltimate() )
 	{
 		itemElem.SetUltimatePiercingSize( GetIntPaFromStr( szPirecingInven, pLocation ) );
@@ -831,16 +308,16 @@ BOOL CDbManager::GetEquipment( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS
 
 BOOL CDbManager::GetTaskBar( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
-	static constexpr auto ReadShortcut = [](const char * serialization, int & CountStr) -> SHORTCUT {
+	static constexpr auto ReadShortcut = [](DBDeserialize::WordSplitter & splitter) -> SHORTCUT {
 		SHORTCUT retval;
-		retval.m_dwShortcut = static_cast<ShortcutType>(GetIntFromStr(serialization, &CountStr));
-		retval.m_dwId = (DWORD)GetIntFromStr(serialization, &CountStr);
-		const int type = GetIntFromStr(serialization, &CountStr);
-		retval.m_dwIndex = (DWORD)GetIntFromStr(serialization, &CountStr);
-		retval.m_dwUserId = (DWORD)GetIntFromStr(serialization, &CountStr);
-		retval.m_dwData = (DWORD)GetIntFromStr(serialization, &CountStr);
+		retval.m_dwShortcut = splitter.NextEnum<ShortcutType>();
+		retval.m_dwId = splitter.NextDWORD();
+		const int type = splitter.NextInt();
+		retval.m_dwIndex = splitter.NextDWORD();
+		/* m_dwUserId */ splitter.NextDWORD();
+		retval.m_dwData = splitter.NextDWORD();
 		if (retval.m_dwShortcut == ShortcutType::Chat) {
-			GetStrFromDBFormat(retval.m_szString, serialization, CountStr);
+			splitter.NextStringInBuffer(retval.m_szString);
 		} else {
 			retval.m_szString[0] = '\0';
 		}
@@ -852,32 +329,30 @@ BOOL CDbManager::GetTaskBar( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS l
 		return retval;
 	};
 
-	int CountStr	= 0;
 	const char * AppletTaskBar = qry->GetStrPtr( "m_aSlotApplet");
 	VERIFYSTRING_RETURN( AppletTaskBar, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	while( '$' != AppletTaskBar[CountStr] )
-	{
-		const int nIndex = GetIntFromStr( AppletTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotApplet[nIndex] = ReadShortcut(AppletTaskBar, CountStr);
+
+	for (auto splitter : DBDeserialize::SplitBySlash(AppletTaskBar)) {
+		const int nIndex = splitter.NextInt();
+		pMover->m_UserTaskBar.m_aSlotApplet[nIndex] = ReadShortcut(splitter);
 	}
 	
-	CountStr	= 0;
 	const char * ItemTaskBar = qry->GetStrPtr("m_aSlotItem");
 	VERIFYSTRING_RETURN( ItemTaskBar, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	while( '$' != ItemTaskBar[CountStr] )
-	{
-		const int nSlotIndex	= GetIntFromStr( ItemTaskBar, &CountStr );
-		const int nIndex	= GetIntFromStr( ItemTaskBar, &CountStr );
-		pMover->m_UserTaskBar.m_aSlotItem[nSlotIndex][nIndex] = ReadShortcut(ItemTaskBar, CountStr);
+
+	for (auto splitter : DBDeserialize::SplitBySlash(ItemTaskBar)) {
+		const int nSlotIndex = splitter.NextInt();
+		const int nIndex     = splitter.NextInt();
+		pMover->m_UserTaskBar.m_aSlotItem[nSlotIndex][nIndex] = ReadShortcut(splitter);
 	}
 	
-	CountStr	= 0;
 	const char * SkillTaskBar = qry->GetStrPtr("m_aSlotQueue");
 	VERIFYSTRING_RETURN( SkillTaskBar, lpDbOverlappedPlus->AccountInfo.szPlayer );
-	while ('$' != SkillTaskBar[CountStr]) {
-		const int nIndex = GetIntFromStr(SkillTaskBar, &CountStr);
-		pMover->m_UserTaskBar.m_aSlotQueue[nIndex] = ReadShortcut(SkillTaskBar, CountStr);
+	for (auto splitter : DBDeserialize::SplitBySlash(SkillTaskBar)) {
+		const int nIndex = splitter.NextInt();
+		pMover->m_UserTaskBar.m_aSlotQueue[nIndex] = ReadShortcut(splitter);
 	}
+
 	pMover->m_UserTaskBar.m_nActionPoint = qry->GetInt( "m_SkillBar" );
 	return TRUE;
 }
@@ -901,10 +376,10 @@ void CDbManager::GetBaseCharacter( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_
 	pMover->m_nHitPoint		= (LONG)qry->GetInt( "m_nHitPoint" );
 	pMover->m_nManaPoint	= (LONG)qry->GetInt( "m_nManaPoint" );
 	pMover->m_nFatiguePoint		= (LONG)qry->GetInt( "m_nFatiguePoint" );
-	pMover->m_dwSkinSet		= (DWORD)qry->GetInt( "m_dwSkinSet" );
-	pMover->m_dwHairMesh	= (DWORD)qry->GetInt( "m_dwHairMesh" );
+	pMover->m_skin.skinSet  = static_cast<std::uint8_t>(qry->GetInt("m_dwSkinSet"));
+	pMover->m_skin.hairMesh = static_cast<std::uint8_t>(qry->GetInt("m_dwHairMesh"));
 	pMover->m_dwHairColor	= (DWORD)qry->GetInt( "m_dwHairColor" );
-	pMover->m_dwHeadMesh	= (DWORD)qry->GetInt( "m_dwHeadMesh" );
+	pMover->m_skin.headMesh = static_cast<std::uint8_t>(qry->GetInt("m_dwHeadMesh"));
 	pMover->SetSex( (BYTE)qry->GetInt( "m_dwSex" ) );
 	pMover->m_dwRideItemIdx		= (DWORD)qry->GetInt( "m_dwRideItemIdx" );
 	pMover->SetGold( qry->GetInt("m_dwGold") );
@@ -955,107 +430,38 @@ void CDbManager::GetBaseCharacter( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_
 	pMover->m_nHonor	= qry->GetInt( "m_nHonor" );
 
 }
-void	CDbManager::GetHonor( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
+bool	CDbManager::GetHonor( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	// 내가 등록한 아이디 가지고 오기
 	char szQuery[QUERY_SIZE]	= { 0,};
-	sprintf( szQuery,
-		"usp_Master_Select '%02d','%07d'",
-		g_appInfo.dwSys, pMover->m_idPlayer );
-	if( FALSE == qry->Exec( szQuery ) )
-	{
-		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-		return;
+	sprintf( szQuery, "usp_Master_Select '%02d','%07d'", g_appInfo.dwSys, pMover->m_idPlayer );
+	if (!qry->Exec(szQuery)) {
+		WriteLog("%s, %d\t%s", __FILE__, __LINE__, szQuery);
+		return false;
 	}
 	
-	int aTempHonor[3][50]={0,};
-	int nSec = 0;
-	while( qry->Fetch() )
-	{
-		int nSec = qry->GetInt( "sec" );
-		nSec--;
-		if(nSec > 2 || nSec < 0 )
-			return;
+	const char * serialized = qry->GetStrPtr("progress");
+	
+	std::ranges::fill(pMover->m_aHonorTitle, 0);
 
-		aTempHonor[nSec][0] = qry->GetInt( "c01" );
-		aTempHonor[nSec][1] = qry->GetInt( "c02" );
-		aTempHonor[nSec][2] = qry->GetInt( "c03" );
-		aTempHonor[nSec][3] = qry->GetInt( "c04" );
-		aTempHonor[nSec][4] = qry->GetInt( "c05" );
-		aTempHonor[nSec][5] = qry->GetInt( "c06" );
-		aTempHonor[nSec][6] = qry->GetInt( "c07" );
-		aTempHonor[nSec][7] = qry->GetInt( "c08" );
-		aTempHonor[nSec][8] = qry->GetInt( "c09" );
-		aTempHonor[nSec][9] = qry->GetInt( "c10" );
+	VERIFYSTRING_RETURN(serialized, lpDbOverlappedPlus->AccountInfo.szPlayer);
 
-		aTempHonor[nSec][10] = qry->GetInt( "c11" );
-		aTempHonor[nSec][11] = qry->GetInt( "c12" );
-		aTempHonor[nSec][12] = qry->GetInt( "c13" );
-		aTempHonor[nSec][13] = qry->GetInt( "c14" );
-		aTempHonor[nSec][14] = qry->GetInt( "c15" );
-		aTempHonor[nSec][15] = qry->GetInt( "c16" );
-		aTempHonor[nSec][16] = qry->GetInt( "c17" );
-		aTempHonor[nSec][17] = qry->GetInt( "c18" );
-		aTempHonor[nSec][18] = qry->GetInt( "c19" );
-		aTempHonor[nSec][19] = qry->GetInt( "c20" );
+	for (auto splitter : DBDeserialize::SplitBySlash(serialized)) {
+		const int nIndex = splitter.NextInt();
+		const int progress = splitter.NextInt();
 
-		aTempHonor[nSec][20] = qry->GetInt( "c21" );
-		aTempHonor[nSec][21] = qry->GetInt( "c22" );
-		aTempHonor[nSec][22] = qry->GetInt( "c23" );
-		aTempHonor[nSec][23] = qry->GetInt( "c24" );
-		aTempHonor[nSec][24] = qry->GetInt( "c25" );
-		aTempHonor[nSec][25] = qry->GetInt( "c26" );
-		aTempHonor[nSec][26] = qry->GetInt( "c27" );
-		aTempHonor[nSec][27] = qry->GetInt( "c28" );
-		aTempHonor[nSec][28] = qry->GetInt( "c29" );
-		aTempHonor[nSec][29] = qry->GetInt( "c30" );
-
-		aTempHonor[nSec][30] = qry->GetInt( "c31" );
-		aTempHonor[nSec][31] = qry->GetInt( "c32" );
-		aTempHonor[nSec][32] = qry->GetInt( "c33" );
-		aTempHonor[nSec][33] = qry->GetInt( "c34" );
-		aTempHonor[nSec][34] = qry->GetInt( "c35" );
-		aTempHonor[nSec][35] = qry->GetInt( "c36" );
-		aTempHonor[nSec][36] = qry->GetInt( "c37" );
-		aTempHonor[nSec][37] = qry->GetInt( "c38" );
-		aTempHonor[nSec][38] = qry->GetInt( "c39" );
-		aTempHonor[nSec][39] = qry->GetInt( "c40" );
-
-		aTempHonor[nSec][40] = qry->GetInt( "c41" );
-		aTempHonor[nSec][41] = qry->GetInt( "c42" );
-		aTempHonor[nSec][42] = qry->GetInt( "c43" );
-		aTempHonor[nSec][43] = qry->GetInt( "c44" );
-		aTempHonor[nSec][44] = qry->GetInt( "c45" );
-		aTempHonor[nSec][45] = qry->GetInt( "c46" );
-		aTempHonor[nSec][46] = qry->GetInt( "c47" );
-		aTempHonor[nSec][47] = qry->GetInt( "c48" );
-		aTempHonor[nSec][48] = qry->GetInt( "c49" );
-		aTempHonor[nSec][49] = qry->GetInt( "c50" );
-	}
-
-	int nMonster = 0,nItem = 0,nEtc = 0;
-	int nType = 0;
-	int nCurrentTitleCount =  CTitleManager::Instance()->m_nCurrentTitleCount;
-	ASSERT( nCurrentTitleCount <= MAX_HONOR_TITLE );
-	for(int i=0;i<nCurrentTitleCount;i++)
-	{
-		nType = CTitleManager::Instance()->GetIdxType(i);
-		if( nType == HI_HUNT_MONSTER)
-		{
-			pMover->SetHonorCount(i,aTempHonor[2][nMonster]);
-			nMonster++;
-		}
-		else if( nType == HI_USE_ITEM)
-		{
-			pMover->SetHonorCount(i,aTempHonor[1][nItem]);
-			nItem++;
-		}
-		else
-		{
-			pMover->SetHonorCount(i,aTempHonor[0][nEtc]);
-			nEtc++;
+		if (nIndex >= 0 && std::cmp_less_equal(nIndex, std::span(pMover->m_aHonorTitle).size())) {
+			pMover->m_aHonorTitle[nIndex] = progress;
+		} else {
+			Error(__FUNCTION__": %s has the success (id=%d, progress=%d) but the maximum id is supposed to be %lu",
+				lpDbOverlappedPlus->AccountInfo.szPlayer,
+				nIndex, progress, 
+				std::span(pMover->m_aHonorTitle).size()
+				);
 		}
 	}
+
+	return true;
 }
 
 
@@ -1230,7 +636,7 @@ BOOL CDbManager::GetSKillInfluence( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED
 	return TRUE;
 }
 
-int CDbManager::GetOneItem( CItemElem* pItemElem, char* pstrItem, int *pLocation )
+int CDbManager::GetOneItem( CItemElem* pItemElem, const char* pstrItem, int *pLocation )
 {
 	int IndexItem		= 0;
 	IndexItem	= GetIntPaFromStr( pstrItem, pLocation );

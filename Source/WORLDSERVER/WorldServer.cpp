@@ -19,9 +19,7 @@
 #include "Chatting.h"
 #include "MiniDumper.h"
 #include "spevent.h"
-#include "ItemScript.h"
 #include "WorldDialog.h"
-#include "WScript.h"
 #include "DisplayedInfo.h"
 
 
@@ -249,9 +247,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	if( InitializeNetLib() == FALSE )
 		return FALSE;
 
-	if( InitializeScriptLib() == FALSE )
-		return FALSE;
-
 	xSRand( timeGetTime()  );	// 속도를 요하는 랜덤은 xRandom()을 쓰도록...
 
 	if( Script( g_szINI ) == TRUE )
@@ -268,9 +263,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 		g_DisplayedInfo.Redraw();
 		SetTitle();
-
-		if( CompileItemScript( "ItemScript.lua" ) == FALSE )
-			return FALSE;
 
 	#if defined(__REMOVE_SCIRPT_060712)
 		if( CWorldDialog::GetInstance().Init() == FALSE )
@@ -342,7 +334,6 @@ void ExitInstance( void )
 #endif	// __MEM_TRACE
 #endif	// __VM_0820
 	UninitializeNetLib();
-	UninitializeScriptLib();
 
 #ifndef __VM_0820
 #ifndef __MEM_TRACE

@@ -8,13 +8,8 @@
 #include "ListedServer.h"
 #include "sqktd/mutexed_object.h"
 
-#undef	theClass
-#define theClass	CDPCertifier
-#undef theParameters
-#define theParameters	CAr & ar, DPID, LPBYTE, u_long
-
-
-class CDPCertifier : public CDPMng
+class CDPCertifier : public CDPMng,
+	public DPMngFeatures::PacketHandler<CDPCertifier, DPID>
 {
 public:
 	sqktd::mutexed_on_write_object<CListedServers> m_servers;
@@ -30,34 +25,39 @@ public:
 // Operations
 	virtual void	SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpid );
 	virtual void	UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpid );
+
+	struct SendServerListArgs {
+		DWORD dwAuthKey;
+		BYTE cbAccountFlag;
+		long lTimeSpan;
 #ifdef __GPAUTH_01
+		const char * szGPotatoNo;
 #ifdef __GPAUTH_02
+		const char * szCheck;
 #ifdef __EUROPE_0514
-	void	SendServerList( DPID dpid, DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan, const char* szGPotatoNo, const char* szCheck, const char* szBak );
-#else	// __EUROPE_0514
-	void	SendServerList( DPID dpid, DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan, const char* szGPotatoNo, const char* szCheck );
-#endif	// __EUROPE_0514
-#else	// __GPAUTH_02
-	void	SendServerList( DPID dpid, DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan, const char* szGPotatoNo );
-#endif	// __GPAUTH_02
-#else	// __GPAUTH_01
-	void	SendServerList( DPID dpid, DWORD dwAuthKey, BYTE cbAccountFlag, long lTimeSpan );
-#endif	// __GPAUTH_01
+		const char * szBak;
+#endif
+#endif
+#endif
+	};
+
+	void	SendServerList(DPID dpid, SendServerListArgs args);
+
 	void	SendError( LONG lError, DPID dpid );
 #ifdef __GPAUTH
 	void	SendErrorString( const char* szError, DPID dpid );
 #endif	// __GPAUTH
 
-	USES_PFNENTRIES;
 
+private:
 	// Handlers
 	void	OnAddConnection( DPID dpid );
 	void	OnRemoveConnection( DPID dpid );
-	void	OnCertify( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-	void	OnPing( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-	void	OnCloseExistingConnection( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-	void	OnKeepAlive( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
-	void	OnError( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );
+	void	OnCertify( CAr & ar, DPID dpid );
+	void	OnPing( CAr & ar, DPID dpid );
+	void	OnCloseExistingConnection( CAr & ar, DPID dpid );
+	void	OnKeepAlive( CAr & ar, DPID dpid );
+	void	OnError( CAr & ar, DPID dpid );
 };
 
 extern CDPCertifier g_dpCertifier;

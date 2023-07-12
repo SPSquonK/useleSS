@@ -10,7 +10,7 @@ struct TUTORIAL_STRING
 // typedef map<int, TUTORIAL_STRING>::value_type mgValType;
 // typedef map<int, TUTORIAL_STRING>::iterator mgMapItor;
 
-class CWndTutorial : public CWndNeuz 
+class CWndTutorial final : public CWndNeuz 
 { 
 public: 
 
@@ -20,7 +20,7 @@ public:
 	CWndTutorial(); 
 	~CWndTutorial(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

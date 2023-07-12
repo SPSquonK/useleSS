@@ -15,7 +15,7 @@ CWndChattingBlockingList::~CWndChattingBlockingList( void )
 {
 }
 //-----------------------------------------------------------------------------
-BOOL CWndChattingBlockingList::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndChattingBlockingList::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_CHATTING_BLOCKING_LIST, pWndParent, 0, CPoint( 0, 0 ) );
 }

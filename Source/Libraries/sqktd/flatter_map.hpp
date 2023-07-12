@@ -47,7 +47,7 @@ namespace sqktd {
       }
 
       m_keys.insert(m_keys.begin() + i, key);
-      m_values.emplace(m_values.begin() + i, std::forward(args) ...);
+      m_values.emplace(m_values.begin() + i, args ...);
 
       return true;
     }
@@ -57,8 +57,9 @@ namespace sqktd {
      * Else returns nullptr.
     */
     [[nodiscard]] const Value * get_at(Key key) const {
-      const auto it = std::binary_search(m_keys.begin(), m_keys.end(), key);
+      const auto it = std::lower_bound(m_keys.begin(), m_keys.end(), key);
       if (it == m_keys.end()) return nullptr;
+      if (*it != key) return nullptr;
       return &*(m_values.begin() + (it - m_keys.begin()));
     }
   };

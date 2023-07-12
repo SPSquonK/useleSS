@@ -6,12 +6,12 @@ public:
 	BOOL OnDropIcon(LPSHORTCUT pShortcut, CPoint point = 0) override;
 };
 
-class CWndConfirmBuy : public CWndNeuz
+class CWndConfirmBuy final : public CWndNeuz
 {
 public:
 	[[nodiscard]] static std::uint32_t GetBuyLimitForItem(const ItemProp & itemProp);
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnDraw(C2DRender * p2DRender) override;
 
@@ -32,17 +32,17 @@ public:
 	int				   m_nBuyType    = 0;
 };
 
-class CWndWarning : public CWndNeuz
+class CWndWarning final : public CWndNeuz
 {
 public:
 	CMover * m_pMover = nullptr;
 	CItemElem * m_pItemElem = nullptr;
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 };
 
-class CWndConfirmSell : public CWndNeuz 
+class CWndConfirmSell final : public CWndNeuz 
 { 
 public: 
 	CMover* m_pMover = nullptr;
@@ -51,14 +51,14 @@ public:
 	CWndStatic* m_pStatic = nullptr;
 	CWndStatic* m_pStaticGold = nullptr;
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual BOOL Process( void );
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 }; 
 
-class CWndShop : public CWndNeuz 
+class CWndShop final : public CWndNeuz 
 { 
 public:
 	CWndConfirmSell * m_pWndConfirmSell = nullptr;
@@ -71,7 +71,7 @@ public:
 	CWndItemCtrlVendor m_wndItemCtrl[ MAX_VENDOR_INVENTORY_TAB ];
 	~CWndShop() override;
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -83,11 +83,9 @@ private:
 }; 
 
 class CWndBeautyShopConfirm;
-#ifdef __NEWYEARDAY_EVENT_COUPON
 class CWndUseCouponConfirm;
-#endif //__NEWYEARDAY_EVENT_COUPON
 
-class CWndBeautyShop : public CWndNeuz 
+class CWndBeautyShop final : public CWndNeuz 
 { 
 public:
 	CTexture         m_Texture;
@@ -95,6 +93,7 @@ public:
 	CModelObject*	 m_pModel;
 
 	DWORD			 m_dwHairMesh;
+	DWORD			 m_dwSelectHairMesh;
 	BOOL			 m_bLButtonClick;
 	CRect			 m_ColorRect[3];
 	FLOAT			 m_fColor[3];
@@ -111,13 +110,10 @@ public:
 	int				 m_ChoiceBar;
 	CModelObject*	 m_pHairModel;
 	DWORD			 m_nHairNum[4];
-	DWORD			 m_dwSelectHairMesh;
 	CWndBeautyShopConfirm* m_pWndBeautyShopConfirm;
 	
-#ifdef __NEWYEARDAY_EVENT_COUPON
 	BOOL m_bUseCoupon;
 	CWndUseCouponConfirm* m_pWndUseCouponConfirm;
-#endif //__NEWYEARDAY_EVENT_COUPON
 	
 public: 
 	CWndBeautyShop(); 
@@ -129,12 +125,10 @@ public:
 	virtual HRESULT DeleteDeviceObjects();
 	
 	virtual void OnMouseWndSurface( CPoint point );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
@@ -145,14 +139,11 @@ public:
 	void DrawHairKind(C2DRender* p2DRender, D3DXMATRIX matView);
 	void UpdateModels();
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 	void UseHairCoupon(BOOL isUse);
-#endif //__NEWYEARDAY_EVENT_COUPON
 }; 
 
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
-class CWndUseCouponConfirm : public CWndNeuz 
+class CWndUseCouponConfirm final : public CWndNeuz 
 {	
 public:
 	BOOL  m_bUseCoupon;
@@ -164,7 +155,7 @@ public:
 	virtual ~CWndUseCouponConfirm(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -175,9 +166,8 @@ public:
 
 	void SetInfo(DWORD targetWndId, int flag);
 }; 
-#endif //__NEWYEARDAY_EVENT_COUPON
 
-class CWndBeautyShopConfirm : public CWndNeuz 
+class CWndBeautyShopConfirm final : public CWndNeuz 
 {
 public:
 	int m_ParentId;
@@ -187,7 +177,7 @@ public:
 	virtual ~CWndBeautyShopConfirm(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -197,48 +187,59 @@ public:
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 }; 
 
-class CWndFaceShop : public CWndNeuz
+class CWndFaceShop final : public CWndNeuz
 {
 public:
-	CModelObject* m_pMainModel;
-	CModelObject* m_pApplyModel;
-	CModelObject* m_pFriendshipFace;
-	CModelObject* m_pNewFace;
+	static constexpr int MaxFriendlyFace = MAX_DEFAULT_HEAD;
+
+	template<DWORD MinInclusive, DWORD MaxExclusive>
+	static DWORD RingPlus(DWORD value) {
+		value += 1;
+		if (value == MaxExclusive) return MinInclusive;
+		return value;
+	}
+
+	template<DWORD MinInclusive, DWORD MaxExclusive>
+	static DWORD RingMinus(DWORD value) {
+		if (value == MinInclusive) return MaxExclusive - 1;
+		return value - 1;
+	}
+
+	std::unique_ptr<CModelObject> m_pMainModel;
+	std::unique_ptr<CModelObject> m_pApplyModel;
+	std::unique_ptr<CModelObject> m_pFriendshipFace;
 
 	DWORD m_dwFriendshipFace;
 	DWORD m_dwNewFace;
 	DWORD m_nSelectedFace;
-	DWORD m_nFriendshipFaceNum[4];
-	DWORD m_nNewFaceNum[4];
+	std::array<DWORD, 4> m_nFriendshipFaceNum;
+	std::array<DWORD, 4> m_nNewFaceNum;
 	int m_nCost;
 	int m_ChoiceBar;
 	
 	CWndBeautyShopConfirm* m_pWndBeautyShopConfirm;
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 	BOOL m_bUseCoupon;
 	CWndUseCouponConfirm* m_pWndUseCouponConfirm;	
-#endif //__NEWYEARDAY_EVENT_COUPON
 
 public:
 	CWndFaceShop(); 
 	~CWndFaceShop();
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual	void OnDestroy( void );
 	virtual void OnDestroyChildWnd( CWndBase* pWndChild );
 		
-	void DrawFaces(int ChoiceFlag, C2DRender* p2DRender, D3DXMATRIX matView);
+	
 	void UpdateModels();
 
-#ifdef __NEWYEARDAY_EVENT_COUPON
 	void UseFaceCoupon(BOOL isUse);
-#endif //__NEWYEARDAY_EVENT_COUPON
+
+private:
+	void InitializeCurrentHead();
+	void DrawFaces(bool ChoiceFlag, C2DRender * p2DRender, D3DXMATRIX matView);
 };

@@ -4,41 +4,21 @@
 #include "dpcoreclient.h"
 #include "msghdr.h"
 
-CDPCoreClient::CDPCoreClient()
-{
-	BEGIN_MSG;
+CDPCoreClient::CDPCoreClient() {
 	ON_MSG( PACKETTYPE_QUERYTICKCOUNT, &CDPCoreClient::OnQueryTickCount );
-	ON_MSG( PACKETTYPE_PRE_JOIN, &CDPCoreClient::OnPreJoin );
+	ON_MSG( PACKETTYPE_PRE_JOIN      , &CDPCoreClient::OnPreJoin );
 	ON_MSG( PACKETTYPE_DESTROY_PLAYER, &CDPCoreClient::OnQueryRemovePlayer );
 }
 
-CDPCoreClient::~CDPCoreClient()
-{
-
+void CDPCoreClient::SysMessageHandler(LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom) {
 }
 
-void CDPCoreClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
-{
-	switch( lpMsg->dwType )
-	{
-		case DPSYS_DESTROYPLAYERORGROUP:
-			{
-				break;
-			}
-	}
-}
-
-void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
-{
+void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID ) {
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
-	
-	if( pfn ) {
-		( this->*( pfn ) )( ar );
+	DWORD dw; ar >> dw;
+
+	if (Handle(ar, dw)) {
 		if (ar.IsOverflow()) Error("Login-Core: Packet %08x overflowed", dw);
-	}
-	else {
 	}
 }
 

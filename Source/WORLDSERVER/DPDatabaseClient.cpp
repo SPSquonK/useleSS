@@ -5,7 +5,7 @@
 #include "User.h"
 #include "WorldMng.h"
 #include "misc.h"
-
+#include "sqktd/util.hpp"
 #include "playerdata.h"
 
 #include "eveschool.h"
@@ -46,7 +46,6 @@ CDPDatabaseClient	g_dpDBClient;
 
 CDPDatabaseClient::CDPDatabaseClient()
 {
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_JOIN, &CDPDatabaseClient::OnJoin );
 	ON_MSG( PACKETTYPE_ALL_PLAYER_DATA, &CDPDatabaseClient::OnAllPlayerData );
 	ON_MSG( PACKETTYPE_ADD_PLAYER_DATA, &CDPDatabaseClient::OnAddPlayerData );
@@ -79,10 +78,11 @@ CDPDatabaseClient::CDPDatabaseClient()
 	ON_MSG( PACKETTYPE_QUERYGETMAILGOLD,	&CDPDatabaseClient::OnGetMailGold );
 	ON_MSG( PACKETTYPE_READMAIL,	&CDPDatabaseClient::OnReadMail );
 	ON_MSG( PACKETTYPE_ALLMAIL, &CDPDatabaseClient::OnAllMail );
-	ON_MSG( PACKETTYPE_QUERYMAILBOX, &CDPDatabaseClient::OnMailBox );
+	
 	
 
 	//////////////////////////////////////////////////////////////////////////
+	ON_MSG( PACKETTYPE_QUERYMAILBOX    , &CDPDatabaseClient::OnMailBox );
 	ON_MSG( PACKETTYPE_QUERYMAILBOX_REQ, &CDPDatabaseClient::OnMailBoxReq );
 	//////////////////////////////////////////////////////////////////////////
 
@@ -183,7 +183,7 @@ void CDPDatabaseClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSiz
 void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
 	CAr ar( (LPBYTE)lpMsg + sizeof(DPID) + sizeof(DPID), dwMsgSize - ( sizeof(DPID) + sizeof(DPID) ) );
-	GETTYPE( ar );
+	DWORD dw; ar >> dw;
 
 	static std::map<DWORD, CString> mapstrProfile;
 	auto it = mapstrProfile.find( dw );
@@ -194,11 +194,8 @@ void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSi
 		it = mapstrProfile.emplace( dw, strTemp ).first;
 	}
 	_PROFILE( it->second );
-
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
-	
-	if (pfn) {
-		(this->*(pfn))(ar, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + sizeof(DPID)));
+		
+	if (Handle(ar, dw, *(UNALIGNED LPDPID)lpMsg, *(UNALIGNED LPDPID)((LPBYTE)lpMsg + sizeof(DPID)))) {
 		if (ar.IsOverflow()) Error("World-Database: Packet %08x overflowed", dw);
 	} else {
 		Error("Handler not found(%08x)\n", dw);
@@ -290,40 +287,94 @@ void CDPDatabaseClient::SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVEC
 }
 
 #ifdef __S_RECOMMEND_EVE
-void CDPDatabaseClient::SendRecommend( CUser* pUser, int nValue )
+void CUser::GiveRecommendEveItems( int nValue )
 {
-	BEFORESENDDUAL( ar, PACKETTYPE_EVE_RECOMMEND, DPID_UNKNOWN, DPID_UNKNOWN );  
-	ar.WriteString( pUser->m_playAccount.lpszAccount );
-	ar << pUser->m_idPlayer;
-	ar << pUser->GetLevel();
-	ar << pUser->GetSex();
-	ar << nValue;
-	SEND( ar, this, DPID_SERVERPLAYER );	
+	if (!g_eLocal.GetState(EVE_RECOMMEND)) return;
+
+	struct Item { DWORD id; short quantity = 1; BYTE flag = 0; };
+
+	boost::container::small_vector<Item, 4> items;
+
+	if (nValue == 0) {
+		const int nLevel = GetLevel();
+
+		if (nLevel == 5 || nLevel == 15) {
+			items.emplace_back(Item{ II_CHR_SYS_SCR_UPCUTSTONE, 1, 2 });
+		} else if (nLevel == 10 || nLevel == 1) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESA, 3, 2 });
+		} else if (nLevel == 20) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESB, 3, 2 });
+			items.emplace_back(Item{ II_CHR_SYS_SCR_UPCUTSTONE, 2, 2 });
+		} else if (nLevel == 23 || nLevel == 29 || nLevel == 35 || nLevel == 43 || nLevel == 47 || nLevel == 51) {
+			items.emplace_back(Item{ II_CHR_SYS_SCR_UPCUTSTONE, 2, 2 });
+		} else if (nLevel == 26 || nLevel == 32 || nLevel == 38) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESB, 3, 2 });
+		} else if (nLevel == 40 || nLevel == 50) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESC, 2, 2 });
+			items.emplace_back(Item{ II_CHR_REF_REF_HOLD, 3, 2 });
+			items.emplace_back(Item{ II_CHR_POT_DRI_VITALX, 3, 2 });
+		} else if (nLevel == 45) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESC, 2, 2 });
+			items.emplace_back(Item{ II_CHR_REF_REF_HOLD, 1, 2 });
+			items.emplace_back(Item{ II_CHR_POT_DRI_VITALX, 1, 2 });
+		} else if (nLevel == 55) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESC, 2, 2 });
+			items.emplace_back(Item{ II_CHR_SYS_SCR_UPCUTSTONE, 2, 2 });
+		} else if (nLevel == 58) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESC, 2, 2 });
+			items.emplace_back(Item{ II_CHR_REF_REF_HOLD, 3, 2 });
+			items.emplace_back(Item{ II_CHR_POT_DRI_VITALX, 3, 2 });
+			items.emplace_back(Item{ II_CHR_SYS_SCR_UPCUTSTONE, 2, 2 });
+		} else if (nLevel == 60) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_AMPESS, 10, 2 });
+		}
+	} else if (sqktd::is_among(nValue, JOB_MERCENARY, JOB_MAGICIAN, JOB_ACROBAT, JOB_ASSIST)) {
+		items.emplace_back(Item{ II_SYS_SYS_SCR_BXCOSTUME01 });
+	} else if (sqktd::is_among(nValue, JOB_KNIGHT, JOB_BLADE)) {
+		if (GetSex() == SEX_MALE) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXMMER60SET });
+		} else {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXFMER60SET });
+		}
+
+		items.emplace_back(Item{ II_SYS_SYS_SCR_BXSUHO01 });
+
+	} else if (sqktd::is_among(nValue, JOB_RANGER, JOB_JESTER)) {
+		if (GetSex() == SEX_MALE) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXMACR60SET });
+		} else {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXFACR60SET });
+		}
+
+		items.emplace_back(Item{ II_SYS_SYS_SCR_BXSUHO01 });
+	} else if (sqktd::is_among(nValue, JOB_RINGMASTER, JOB_BILLPOSTER)) {
+		if (GetSex() == SEX_MALE) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXMASS60SET });
+		} else {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXFASS60SET });
+		}
+
+		items.emplace_back(Item{ II_SYS_SYS_SCR_BXSUHO01 });
+	} else if (sqktd::is_among(nValue, JOB_PSYCHIKEEPER, JOB_ELEMENTOR)) {
+		if (GetSex() == SEX_MALE) {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXMMAG60SET });
+		} else {
+			items.emplace_back(Item{ II_SYS_SYS_SCR_BXFMAG60SET });
+		}
+
+		items.emplace_back(Item{ II_SYS_SYS_SCR_BXSUHO01 });
+	}
+
+	for (const Item & item : items) {
+		CItemElem itemElem;
+		itemElem.m_dwItemId = item.id;
+		itemElem.m_nItemNum = item.quantity;
+		itemElem.m_byFlag = item.flag;
+
+		CreateOrSendItem(itemElem, TID_GAME_LEVELUP_CAPTION);
+	}
 }
 #endif // __S_RECOMMAED_EVE
-
-void CDPDatabaseClient::SendITEM_TBL_Update()
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ITEM_TBL_UPDATE, DPID_UNKNOWN, DPID_UNKNOWN );
-	int nQuestCount = 0;
-	u_long uOffset	= ar.GetOffset();
-	ar << nQuestCount;
-	for( int i = 0; i < prj.m_aPropQuest.GetSize(); i++ )
-	{
-		QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( i );
-		if( pQuestProp )
-		{
-			ar << i;
-			ar.WriteString( pQuestProp->m_szTitle );
-			nQuestCount++;
-		}
-	}
-	int nBufSize1;
-	LPBYTE lpBuf1	= ar.GetBuffer( &nBufSize1 );
-	*(UNALIGNED int*)( lpBuf1 + uOffset )	= nQuestCount;
-
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
 
 void CDPDatabaseClient::SendPreventLogin( LPCTSTR szAccount, DWORD dwPreventTime )
 {
@@ -499,7 +550,7 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 		nOnError	= 1;
 #endif	// __ON_ERROR
 
-		pUser->SetIndex( NULL, dwIndex, FALSE );
+		pUser->SetIndex( dwIndex, FALSE );
 		CObj::SetMethod( METHOD_NONE );
 		pUser->Serialize( ar );
 		pUser->InitMotion( pUser->m_dwMotion );
@@ -1291,8 +1342,6 @@ void CDPDatabaseClient::OnContinueGC( CAr & ar, DPID, DPID )
 void CDPDatabaseClient::OnAllPlayerData( CAr & ar , DPID, DPID )
 {
 	CPlayerDataCenter::GetInstance()->Serialize( ar );
-//	if( g_uKey == 101 )
-//		SendITEM_TBL_Update();
 }
 
 void CDPDatabaseClient::OnAddPlayerData( CAr & ar, DPID, DPID )
@@ -1984,28 +2033,20 @@ void CDPDatabaseClient::OnPing( CAr & ar, DPID, DPID )
 	m_bAlive	= TRUE;
 }
 
-void CDPDatabaseClient::SendQueryMailBox( u_long idReceiver )
-{
-// 	//	BEGINTEST
-// 	Error( "SendQueryMailBox [%d]", idReceiver );
-
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYMAILBOX, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryMailBox(u_long idReceiver) {
+	// Load the mailbox through guild's completion queue, suppose
+	// that the box already exists in WorldServer
+	SendPacket<PACKETTYPE_QUERYMAILBOX, u_long>(idReceiver);
 }
 
-void CDPDatabaseClient::SendQueryMailBoxReq( u_long idReceiver )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYMAILBOX_REQ, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryMailBoxReq(u_long idReceiver) {
+	// Load the mail box and send it through Req (does not exist in WorldServer)
+	SendPacket<PACKETTYPE_QUERYMAILBOX_REQ, u_long>(idReceiver);
 }
 
-void CDPDatabaseClient::SendQueryMailBoxCount( u_long idReceiver, int nCount )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYMAILBOX_COUNT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver << nCount;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryMailBoxCount(u_long idReceiver) {
+	// Load the mail box and send it through normal (already exists in WorldServer)
+	SendPacket<PACKETTYPE_QUERYMAILBOX_COUNT, u_long>(idReceiver);
 }
 
 void CDPDatabaseClient::OnMailBox( CAr & ar, DPID, DPID )
@@ -2013,86 +2054,58 @@ void CDPDatabaseClient::OnMailBox( CAr & ar, DPID, DPID )
 	u_long idReceiver;
 	ar >> idReceiver;
 	CMailBox* pMailBox	= CPost::GetInstance()->GetMailBox( idReceiver );
-	if( pMailBox )
-	{
-// 		//	BEGINTEST
-// 		Error( "OnMailBox [%d]", idReceiver );
-
-		pMailBox->Read( ar );	// pMailBox->m_nStatus	= CMailBox::data;
-		CUser* pUser	= g_UserMng.GetUserByPlayerID( idReceiver );
-		if( IsValidObj( pUser ) )
-		{
-// 			//	BEGINTEST
-// 			Error( "OnMailBox AddMailBox [%d]", idReceiver );
-
-			pUser->AddMailBox( pMailBox );
-			pUser->ResetCheckClientReq();
-		}
+	if (!pMailBox) {
+		Error("GetMailBox - pMailBox is NULL. idReceiver : %d", idReceiver);
+		return;
 	}
-	else
+
+	pMailBox->ReadMailContent( ar );
+	CUser* pUser	= g_UserMng.GetUserByPlayerID( idReceiver );
+	if( IsValidObj( pUser ) )
 	{
-		Error( "GetMailBox - pMailBox is NULL. idReceiver : %d", idReceiver );
+		pUser->AddMailBox( pMailBox );
+		pUser->mailBoxRequest.ResetCheckClientReq();
 	}
 }
 
-void CDPDatabaseClient::OnMailBoxReq( CAr & ar, DPID, DPID )
-{
-	u_long idReceiver;
-	BOOL bHaveMailBox = FALSE;
-	ar >> idReceiver >> bHaveMailBox;
+void CDPDatabaseClient::OnMailBoxReq( CAr & ar, DPID, DPID ) {
+	const auto [idReceiver, bHaveMailBox] = ar.Extract<u_long, bool>();
 
 	CUser* pUser	= g_UserMng.GetUserByPlayerID( idReceiver );
 	if( IsValidObj( pUser ) )
 	{
-		pUser->CheckTransMailBox( TRUE );
+		pUser->mailBoxRequest.CheckTransMailBox();
 		pUser->SendCheckMailBoxReq( bHaveMailBox );
 	}
-
-	if( bHaveMailBox == TRUE )
-	{
-		CMailBox* pMailBox	= NULL;
-		pMailBox	= CPost::GetInstance()->GetMailBox( idReceiver );
-
-		if( pMailBox == NULL )
-		{
-			CMailBox* pNewMailBox = new CMailBox( idReceiver );
-			if( pNewMailBox != NULL )
-			{
-				if( CPost::GetInstance()->AddMailBox( pNewMailBox ) == TRUE )
-				{
-					pNewMailBox->ReadReq( ar );	// pMailBox->m_nStatus	= CMailBox::data;
-
-					CUser* pUser	= g_UserMng.GetUserByPlayerID( idReceiver );
-					if( IsValidObj( pUser ) )
-					{
-						pUser->AddMailBox( pNewMailBox );
-						pUser->ResetCheckClientReq();
-					}
-				}
-				else
-				{
-					Error( "CDPDatabaseClient::OnMailBoxReq - AddMailBox Failed. idReceiver : %d", idReceiver );
-				}
-			}
-			else
-			{
-				Error( "CDPDatabaseClient::OnMailBoxReq - MailBox Create Failed" );
-			}
+	
+	if (!bHaveMailBox) {
+		if (IsValidObj(pUser)) {
+			pUser->mailBoxRequest.ResetCheckClientReq();
 		}
-		else
-		{
-			//////////////////////////////////////////////////////////////////////////
-			//	??????????
-			Error( "CDPDatabaseClient::OnMailBoxReq - pMailBox is NOT NULL. idReceiver : %d", idReceiver );
-		}
+
+		return;
 	}
-	else
+	
+	if (CPost::GetInstance()->GetMailBox(idReceiver)) {
+		Error("CDPDatabaseClient::OnMailBoxReq - pMailBox is NOT NULL. idReceiver : %d", idReceiver);
+		return;
+	}
+	
+	CMailBox* pNewMailBox = new CMailBox( idReceiver );
+
+	const bool added = CPost::GetInstance()->AddMailBox(pNewMailBox);
+
+	if (!added) {
+		Error("CDPDatabaseClient::OnMailBoxReq - AddMailBox Failed. idReceiver : %d", idReceiver);
+		return;
+	}
+
+	pNewMailBox->ReadMailContent( ar );	// pMailBox->m_nStatus	= CMailBox::data;
+
+	if( IsValidObj( pUser ) )
 	{
-		CUser* pUser	= g_UserMng.GetUserByPlayerID( idReceiver );
-		if( IsValidObj( pUser ) )
-		{
-			pUser->ResetCheckClientReq();
-		}
+		pUser->AddMailBox( pNewMailBox );
+		pUser->mailBoxRequest.ResetCheckClientReq();
 	}
 }
 
@@ -2148,51 +2161,35 @@ void CDPDatabaseClient::SendQueryReadMail( u_long idReceiver, u_long nMail )
 
 void CDPDatabaseClient::OnPostMail( CAr & ar, DPID, DPID )
 {
-// 	//	BEGINTEST
-// 	Error( "CDPDatabaseClient::OnPostMail" );
+	const auto [bResult, idReceiver] = ar.Extract<BOOL, u_long>();
+	CMail * pMail = new CMail; ar >> *pMail;
 
-	BOOL	bResult;
-	u_long idReceiver;
-	ar >> bResult >> idReceiver;
-	CMail* pMail	= new CMail;
-	pMail->Serialize( ar );
-
-	BOOL bBuying	= FALSE;
-
-	if( TRUE == bResult )
+	if( bResult )
 	{
 		if( CPost::GetInstance()->AddMail( idReceiver, pMail ) <= 0 )
 		{
 			Error( "OnPostMail - pMail->m_nMail : %d", pMail->m_nMail );
 		}
-		else	//SUCCESS
-		{
-// 			//	BEGINTEST
-// 			Error( "CDPDatabaseClient::OnPostMail Receiver[%d] nMail[%d]", idReceiver, pMail->m_nMail );
-		}
 
-		CUser* pUser	= (CUser*)prj.GetUserByID( idReceiver );
-		if( IsValidObj( pUser ) )
-		{
-			if( pUser->IsPosting() )
-			{
-				pUser->AddPostMail( pMail );
+		CUser * pReceiver = prj.GetUserByID(idReceiver);
+		if (IsValidObj(pReceiver)) {
+			if (pReceiver->IsPosting()) {
+				pReceiver->SendSnapshotNoTarget<SNAPSHOTTYPE_POSTMAIL, CMail>(*pMail);
 			}
 
-//			if( pUser->IsMode( MODE_MAILBOX ) == FALSE )
-			{
-				pUser->SetMode( MODE_MAILBOX );
-				g_UserMng.AddModifyMode( pUser );
-			}
+			pReceiver->SetMode(MODE_MAILBOX);
+			g_UserMng.AddModifyMode(pReceiver);
 		}
-		pUser	= (CUser*)prj.GetUserByID( pMail->m_idSender );
-		if( IsValidObj( pUser ) && !bBuying )
-			pUser->AddDiagText( prj.GetText(TID_MAIL_SEND_OK) );
-	}	// FAIL
+
+		CUser * pSender = prj.GetUserByID(pMail->m_idSender);
+		if (IsValidObj(pSender)) {
+			pSender->AddDiagText(prj.GetText(TID_MAIL_SEND_OK));
+		}
+	}
 	else
 	{
 		Error( "OnPostMail - Send Mail Failed. idSender : %d, idReceiver : %d", pMail->m_idSender, idReceiver );
-		CUser* pUser	= (CUser*)prj.GetUserByID( pMail->m_idSender );
+		CUser* pUser	= prj.GetUserByID( pMail->m_idSender );
 		if( IsValidObj( pUser ) )
 		{
 			if( pMail->m_pItemElem )
@@ -2212,10 +2209,7 @@ void CDPDatabaseClient::OnPostMail( CAr & ar, DPID, DPID )
 				g_dpDBClient.SavePlayer( pUser, pWorld->GetID(), pUser->GetPos() );
 #endif	// __LAYER_1015
 		}
-		else
-		{
-			// ˬ
-		}
+
 		SAFE_DELETE( pMail );
 	}
 }
@@ -2234,7 +2228,7 @@ void CDPDatabaseClient::OnRemoveMail( CAr & ar, DPID, DPID )
 		if( IsValidObj( pUser ) )
 		{
 			pUser->AddRemoveMail( nMail, CMail::mail );
-			if( pMailBox->IsStampedMailExists() == FALSE && pUser->IsMode( MODE_MAILBOX ) )
+			if( !pMailBox->IsStampedMailExists() && pUser->IsMode( MODE_MAILBOX ) )
 			{
 				pUser->SetNotMode( MODE_MAILBOX );
 				g_UserMng.AddModifyMode( pUser );
@@ -2321,40 +2315,31 @@ void CDPDatabaseClient::OnGetMailGold( CAr & ar, DPID, DPID )
 	}
 }
 
-void CDPDatabaseClient::OnReadMail( CAr & ar, DPID, DPID )
-{
+void CDPDatabaseClient::OnReadMail( CAr & ar, DPID, DPID ) {
 	u_long idReceiver, nMail;
 	ar >> idReceiver >> nMail;
+	
 	CMailBox* pMailBox	= CPost::GetInstance()->GetMailBox( idReceiver );
+	if (!pMailBox) return;
 
-	if( pMailBox )
-	{
-		pMailBox->ReadMail( nMail );
-		CUser* pUser	= (CUser*)prj.GetUserByID( idReceiver );
-		if( IsValidObj( pUser ) )
-		{
-			pUser->ResetCheckClientReq();
-			pUser->AddRemoveMail( nMail, CMail::read );
-			if( pMailBox->IsStampedMailExists() == FALSE && pUser->IsMode( MODE_MAILBOX ) )
-			{
-				pUser->SetNotMode( MODE_MAILBOX );
-				g_UserMng.AddModifyMode( pUser );
-			}
+	pMailBox->ReadMail( nMail );
+
+	CUser * pUser = prj.GetUserByID(idReceiver);
+
+	if (IsValidObj(pUser)) {
+		pUser->mailBoxRequest.ResetCheckClientReq();
+		pUser->AddRemoveMail(nMail, CMail::read);
+
+		if (!pMailBox->IsStampedMailExists() && pUser->IsMode(MODE_MAILBOX)) {
+			pUser->SetNotMode(MODE_MAILBOX);
+			g_UserMng.AddModifyMode(pUser);
 		}
 	}
+
 }
 
-void CDPDatabaseClient::OnAllMail( CAr & ar , DPID, DPID )
-{
-#ifdef __CHIPI_ITEMUPDATE_080804
-	if( ::GetLanguage() == LANG_KOR && g_uKey == 601 )
-		SendITEM_TBL_Update();
-	else
-#endif // __CHIPI_ITEMUPDATE_080804
-	if( g_uKey == 101 )
-		SendITEM_TBL_Update();
-
-	CPost::GetInstance()->Serialize( ar, FALSE );
+void CDPDatabaseClient::OnAllMail(CAr & ar, DPID, DPID) {
+	ar >> CPost::GetInstance()->AsStructure();
 }
 
 void CDPDatabaseClient::OnQueryRemoveGuildBankTbl( CAr & ar, DPID, DPID )
@@ -2439,18 +2424,14 @@ void CDPDatabaseClient::OnEventGeneric( CAr & ar, DPID, DPID )
 	DWORD dwFlag;
 	ar >> *CEventGeneric::GetInstance();
 	ar >> dwFlag;
-	std::list<PEVENT_GENERIC>* pList	= CEventGeneric::GetInstance()->GetEventList();
-	for( auto i = pList->begin(); i != pList->end(); ++i )
-	{
-		PEVENT_GENERIC pEvent	= *i;
 
-		// ˬ
+	for (const EVENT_GENERIC & pEvent : CEventGeneric::GetInstance()->GetEventList()) {
 		char lpOutputString[512]	= { 0, };
-		sprintf( lpOutputString, "dwFlag=0x%08x, nId=%d, nFlag=%d", dwFlag, pEvent->nId, pEvent->nFlag );
+		sprintf( lpOutputString, "dwFlag=0x%08x, nId=%d, nFlag=%d", dwFlag, pEvent.nId, pEvent.nFlag );
 		OutputDebugString( lpOutputString );
 
-		if( dwFlag & pEvent->nFlag )
-			g_eLocal.SetState( pEvent->nId, 1 );
+		if( dwFlag & pEvent.nFlag )
+			g_eLocal.SetState( pEvent.nId, 1 );
 	}
 }
 
@@ -2464,33 +2445,30 @@ void CDPDatabaseClient::OnEventFlag( CAr & ar, DPID, DPID )
 	sprintf( lpOutputString, "OnEventFlag: dwFlag=0x%08x", dwFlag );
 	OutputDebugString( lpOutputString );
 
-	auto * pList	= CEventGeneric::GetInstance()->GetEventList();
-	for( auto i = pList->begin(); i != pList->end(); ++i )
-	{
-		PEVENT_GENERIC pEvent	= *i;
+	for (const EVENT_GENERIC & pEvent : CEventGeneric::GetInstance()->GetEventList()) {
 		char lpOutputString[100]	= { 0, };
-		sprintf( lpOutputString, "OnEventFlag: nId=%d, nFlag=%d", pEvent->nId, pEvent->nFlag );
+		sprintf( lpOutputString, "OnEventFlag: nId=%d, nFlag=%d", pEvent.nId, pEvent.nFlag );
 		OutputDebugString( lpOutputString );
 
-		if( dwFlag & pEvent->nFlag )
+		if( dwFlag & pEvent.nFlag )
 		{
-			if( g_eLocal.GetState( pEvent->nId ) == 0 )
+			if( g_eLocal.GetState( pEvent.nId ) == 0 )
 			{
-				if( g_eLocal.SetState( pEvent->nId, 1 ) )
+				if( g_eLocal.SetState( pEvent.nId, 1 ) )
 				{
-					g_UserMng.AddSetLocalEvent( pEvent->nId, 1 );
-					Error( "event: %d: 1", pEvent->nId );
+					g_UserMng.AddSetLocalEvent( pEvent.nId, 1 );
+					Error( "event: %d: 1", pEvent.nId );
 				}
 			}
 		}
 		else
 		{
-			if( g_eLocal.GetState( pEvent->nId ) == 1 )
+			if( g_eLocal.GetState( pEvent.nId ) == 1 )
 			{
-				if( g_eLocal.ClearEvent( pEvent->nId ) )
+				if( g_eLocal.ClearEvent( pEvent.nId ) )
 				{
-					g_UserMng.AddSetLocalEvent( pEvent->nId, 0 );
-					Error( "OnEvent: %d: 0", pEvent->nId );
+					g_UserMng.AddSetLocalEvent( pEvent.nId, 0 );
+					Error( "OnEvent: %d: 0", pEvent.nId );
 				}
 			}
 		}

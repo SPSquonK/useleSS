@@ -72,43 +72,8 @@ BOOL CRectClip::RectInRect(CRect rect) const
 //   2D 평면에 그림을 그리거나 텍스춰 출력 
 //
 
-
-/*
-struct TextureSprite
-{
-	LPDIRECT3DVERTEXBUFFER9 pVertexBuffer;
-	LPDIRECT3DTEXTURE9      pTexture[8];
-}
-*/
-#define MAX_NUM_VERTICES 50*6
-
-struct FONT2DVERTEX { D3DXVECTOR4 p;   DWORD color;     FLOAT tu, tv; };
-struct FONT3DVERTEX { D3DXVECTOR3 p;   D3DXVECTOR3 n;   FLOAT tu, tv; };
-
-#define D3DFVF_FONT2DVERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1)
-#define D3DFVF_FONT3DVERTEX (D3DFVF_XYZ|D3DFVF_NORMAL|D3DFVF_TEX1)
-
-inline DRAWVERTEX Init2DVertex( int x,int y, D3DCOLOR color )
-{
-	DRAWVERTEX v;	
-	v.vec.x = (FLOAT)x;
-	v.vec.y = (FLOAT)y;
-	v.vec.z = 0;
-	v.rhw = 1.0f;
-	v.color = color;  
-	return v;
-}
-/*
-inline FONT2DVERTEX Init2DVertex( const D3DXVECTOR4& p, D3DCOLOR color,
-                                      FLOAT tu, FLOAT tv )
-{
-    FONT2DVERTEX v;   v.p = p;   v.color = color;   v.tu = tu;   v.tv = tv;
-    return v;
-}
-*/
 C2DRender::C2DRender()
 {
-	m_pd3dDevice = NULL;
 	m_pVBFillTriangle = NULL;
 	m_pVBTriangle = NULL;
 	m_pVBFillRect = NULL;
@@ -116,7 +81,6 @@ C2DRender::C2DRender()
 	m_pVBRoundRect = NULL; 
 	m_pVBLine = NULL;
 	m_pVBPixel = NULL;
-	//m_pVBTexture = NULL;
 	m_pFont = NULL;
 	m_ptOrigin = 0;
 	m_clipRect.SetRect(0,0,800,600);
@@ -126,27 +90,12 @@ C2DRender::~C2DRender()
 {
 	DeleteDeviceObjects();
 }
-HRESULT C2DRender::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
-{
-	HRESULT hr = S_OK;
-	m_pd3dDevice = pd3dDevice;
-	return hr;
-}
+
 HRESULT C2DRender::RestoreDeviceObjects( D3DSURFACE_DESC*  pd3dsdBackBuffer )
 {
-	if( m_pd3dDevice == NULL ) return S_OK;
+	if( m_pd3dDevice.IsMissing() ) return S_OK;
 	m_clipRect.SetRect( 0, 0, pd3dsdBackBuffer->Width, pd3dsdBackBuffer->Height );
 	HRESULT hr = S_OK;
-	/*
-	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX   )*4, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX   , D3DPOOL_SYSTEMMEM, &m_pVBFillRect     , NULL);
-	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX   )*5, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX   , D3DPOOL_SYSTEMMEM, &m_pVBRect         , NULL);
-	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX   )*8, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX   , D3DPOOL_SYSTEMMEM, &m_pVBRoundRect    , NULL);
-	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX   )*2, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX   , D3DPOOL_SYSTEMMEM, &m_pVBLine         , NULL);
-	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX   )*2, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX   , D3DPOOL_SYSTEMMEM, &m_pVBPixel        , NULL);
-	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX   )*3, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX   , D3DPOOL_SYSTEMMEM, &m_pVBFillTriangle , NULL);
-	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX   )*4, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX   , D3DPOOL_SYSTEMMEM, &m_pVBTriangle     , NULL);
-	m_pd3dDevice->CreateVertexBuffer( sizeof(TEXTUREVERTEX)*4, D3DUSAGE_WRITEONLY| D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_SYSTEMMEM, &m_pVBTexture      , NULL);
-*/
 	
 	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX   )*4, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX   , D3DPOOL_DEFAULT, &m_pVBFillRect, NULL );
 	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX   )*5, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX   , D3DPOOL_DEFAULT, &m_pVBRect, NULL );
@@ -155,14 +104,7 @@ HRESULT C2DRender::RestoreDeviceObjects( D3DSURFACE_DESC*  pd3dsdBackBuffer )
 	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX   )*2, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX   , D3DPOOL_DEFAULT, &m_pVBPixel, NULL );
 	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX   )*3, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX   , D3DPOOL_DEFAULT, &m_pVBFillTriangle, NULL );
 	m_pd3dDevice->CreateVertexBuffer( sizeof(DRAWVERTEX   )*4, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_DRAWVERTEX   , D3DPOOL_DEFAULT, &m_pVBTriangle, NULL );
-	//m_pd3dDevice->CreateVertexBuffer( sizeof(TEXTUREVERTEX)*4, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_DEFAULT, &m_pVBTexture, NULL );
 
-
-//D3DPOOL_SYSTEMMEM
-//r( MAX_NUM_VERTICES*sizeof(FONT2DVERTEX),
-  //                                                     D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, 0,
-    //                                                   D3DPOOL_DEFAULT, &m_pVB ) ) )
-    //{
 	return hr;
 }
 HRESULT C2DRender::InvalidateDeviceObjects()
@@ -177,7 +119,6 @@ HRESULT C2DRender::DeleteDeviceObjects()
 	SAFE_RELEASE(m_pVBRoundRect);
 	SAFE_RELEASE(m_pVBLine     );
 	SAFE_RELEASE(m_pVBPixel    );
-	//SAFE_RELEASE(m_pVBTexture  );
 	SAFE_RELEASE(m_pVBFillTriangle);
 	SAFE_RELEASE(m_pVBTriangle );
 	return hr;
@@ -194,7 +135,6 @@ void C2DRender::SetViewport(CRect rect)
 	viewport.MaxZ   = 1.0f;
 	m_pd3dDevice->SetViewport(&viewport);
 	m_clipRect = rect;
-	//SetViewportOrg(rect.left,rect.top);
 }
 void C2DRender::SetViewport(int nLeft,int nTop,int nRight,int nBottom)
 {
@@ -207,14 +147,13 @@ void C2DRender::SetViewport(int nLeft,int nTop,int nRight,int nBottom)
 	viewport.MinZ   = 0.0f;
 	viewport.MaxZ   = 1.0f;
 	m_pd3dDevice->SetViewport(&viewport);
-	//SetViewportOrg(nLeft,nTop);
 }
 BOOL C2DRender::ResizeFillRectVB( CRect* pRect, DWORD dwColorLT, DWORD dwColorRT, DWORD dwColorLB, DWORD dwColorRB, LPDIRECT3DVERTEXBUFFER9 pVB, LPDIRECT3DTEXTURE9 m_pTexture )
 {
 	DRAWVERTEX* pDrawVertices;
 	HRESULT hr = pVB->Lock( 0,sizeof(DRAWVERTEX)*4,(void**)&pDrawVertices, D3DLOCK_DISCARD );
 	if(hr != D3D_OK) return FALSE;
-//	dwColor |=  0xff000000;
+
 	pDrawVertices->vec.x     = (FLOAT)pRect->left;
 	pDrawVertices->vec.y     = (FLOAT)pRect->top;
 	pDrawVertices->vec.z     = 0.0f;
@@ -245,7 +184,7 @@ BOOL C2DRender::ResizeFillRectVB( CRect* pRect, DWORD dwColorLT, DWORD dwColorRT
 }
 BOOL C2DRender::RenderFillRect( CRect rect, DWORD dwColorLT, DWORD dwColorRT, DWORD dwColorLB, DWORD dwColorRB, LPDIRECT3DTEXTURE9 m_pTexture )
 {
-	if( m_pd3dDevice == NULL )
+	if( m_pd3dDevice.IsMissing() )
 		return FALSE;
 	
 	if( rect.left == 0 && rect.right == 0 && rect.top == 0 && rect.bottom == 0 )
@@ -256,42 +195,16 @@ BOOL C2DRender::RenderFillRect( CRect rect, DWORD dwColorLT, DWORD dwColorRT, DW
 		// 알파값이 하나라도 0xff가 아닌게 있다면 반투명 처리.
         if( ( dwColorLT & 0xff000000 ) != 0xff000000 || ( dwColorRT & 0xff000000 ) != 0xff000000 || ( dwColorLB & 0xff000000 ) != 0xff000000 || ( dwColorRB & 0xff000000 ) != 0xff000000 ) ////bSupportsAlphaBlend )
         {
-			m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-            //m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,   D3DBLEND_SRCALPHA );
-            //m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND,  D3DBLEND_INVSRCALPHA );
+						m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
         }
         else
         {
             m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, FALSE );
         }
-        //m_pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE,  TRUE );
-        //m_pd3dDevice->SetRenderState( D3DRS_ALPHAREF,         0x08 );
-        //m_pd3dDevice->SetRenderState( D3DRS_ALPHAFUNC,  D3DCMP_GREATEREQUAL );
-        //m_pd3dDevice->SetRenderState( D3DRS_FILLMODE,   D3DFILL_SOLID );
-        //m_pd3dDevice->SetRenderState( D3DRS_CULLMODE,   D3DCULL_CCW );
-        //m_pd3dDevice->SetRenderState( D3DRS_STENCILENABLE,    FALSE );
-        //m_pd3dDevice->SetRenderState( D3DRS_CLIPPING,         TRUE );
-        //m_pd3dDevice->SetRenderState( D3DRS_CLIPPLANEENABLE,  FALSE );
-        //m_pd3dDevice->SetRenderState( D3DRS_VERTEXBLEND,      D3DVBF_DISABLE );
-        //m_pd3dDevice->SetRenderState( D3DRS_INDEXEDVERTEXBLENDENABLE, FALSE );
-        //m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE,        FALSE );
-        //m_pd3dDevice->SetRenderState( D3DRS_COLORWRITEENABLE,
-          //  D3DCOLORWRITEENABLE_RED  | D3DCOLORWRITEENABLE_GREEN |
-            //D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA );
 
-        //m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
-        //m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-        //m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-        m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
+				m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
         m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
         m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
-        //m_pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0 );
-        //m_pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
-        //m_pd3dDevice->SetTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_DISABLE );
-        //m_pd3dDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
-        //m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_POINT );
-        //m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_POINT );
-        //m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_NONE );
 
 	m_pd3dDevice->SetTexture( 0, m_pTexture );
 	m_pd3dDevice->SetFVF( D3DFVF_DRAWVERTEX );
@@ -321,18 +234,7 @@ BOOL C2DRender::RenderResizeRect( CRect rect, int nThick )
 
 	return TRUE;
 }
-/*
-		CRect rect = m_pWndFocusChild->GetWindowRect( TRUE );
-		rect.InflateRect( 1, 1 );
-		p2DRender->RenderRect( rect, 0x80808080 );
-		rect.InflateRect( 1, 1 );
-		p2DRender->RenderRect( rect, 0xaf808080 );
-		rect.InflateRect( 1, 1 );
-		p2DRender->RenderRect( rect, 0x80808080 );
-		rect.InflateRect( 1, 1 );
-		p2DRender->RenderRect( rect, 0xaf808080 );
-*/		
-		
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 BOOL C2DRender::ResizeRectVB( CRect* pRect, DWORD dwColorLT, DWORD dwColorRT, DWORD dwColorLB, DWORD dwColorRB, LPDIRECT3DVERTEXBUFFER9 pVB)
@@ -340,7 +242,7 @@ BOOL C2DRender::ResizeRectVB( CRect* pRect, DWORD dwColorLT, DWORD dwColorRT, DW
 	DRAWVERTEX* pDrawVertices;
 	HRESULT hr = pVB->Lock( 0,sizeof(DRAWVERTEX)*5,(void**)&pDrawVertices, D3DLOCK_DISCARD );
 	if(hr != D3D_OK) return FALSE;
-	//dwColor |=  0xff000000;
+
 	pDrawVertices->vec.x     = (FLOAT)pRect->left;
 	pDrawVertices->vec.y     = (FLOAT)pRect->top;
 	pDrawVertices->vec.z     = 0.0f;
@@ -391,7 +293,7 @@ BOOL C2DRender::ResizeRoundRectVB( CRect* pRect, DWORD dwColorLT, DWORD dwColorR
 	DRAWVERTEX* pDrawVertices;
 	HRESULT hr = pVB->Lock( 0,sizeof(DRAWVERTEX)*8,(void**)&pDrawVertices, D3DLOCK_DISCARD );
 	if(hr != D3D_OK) return FALSE;
-//	dwColor |=  0xff000000;
+
 	//////////////////////////////////////
 	pDrawVertices->vec.x     = (FLOAT)pRect->left + 1;
 	pDrawVertices->vec.y     = (FLOAT)pRect->top;
@@ -507,8 +409,6 @@ void C2DRender::TextOut_EditString( int x,int y, CEditString& strEditString, int
 		if( nMax > (int)( strEditString.GetLineCount() ) )
 			nMax = strEditString.GetLineCount();
 
-			//nLines = nLength;
-		//for( int i = nPos; i < nPos + nLength; i++ )
 		for( int i = nPos; i < nMax; i++ )
 		{
 			CString string = strEditString.GetLine( i );
@@ -585,7 +485,7 @@ void C2DRender::TextOut( int x,int y, LPCTSTR pszString, DWORD dwColor, DWORD dw
 	if( m_pFont )
 	{
 		SIZE size = m_pFont->GetTextExtent( pszString );
-		//size.cx = 8;
+
 		CRect rect( x + m_ptOrigin.x, y + m_ptOrigin.y, x + m_ptOrigin.x + size.cx, y + m_ptOrigin.y + size.cy );
 		if( m_clipRect.RectLapRect( rect ) )
 		{
@@ -894,8 +794,6 @@ BOOL C2DRender::RenderTextureRotate( CPoint pt, CTexture* pTexture, DWORD dwBlen
 	FLOAT _right  = pt.x + ( fScaleX * pTexture->m_size.cx );
 	FLOAT _bottom = pt.y + ( fScaleY * pTexture->m_size.cy );
 	
-//	FLOAT cx = _left + ((_right - _left) / 2);		// 중심점(절대좌표)
-//	FLOAT cy = _top  + ((_bottom - _top) / 2);
 	FLOAT cx = _left + ptCenter.x;		// 중심점(절대좌표)
 	FLOAT cy = _top  + ptCenter.y;
 	
@@ -1139,14 +1037,9 @@ BOOL CTexture::DeleteDeviceObjects()
 	SAFE_RELEASE( m_pTexture );
 	return TRUE;
 }
-BOOL CTexture::CreateTexture( LPDIRECT3DDEVICE9 pd3dDevice, 
+BOOL CTexture::CreateTexture( 
 	 int nWidth, int nHeight, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool )
 {
-	if( Pool != 0 && Pool != 1 )
-	{
-		int a = 0;
-	}
-
 	HRESULT hr = pd3dDevice->CreateTexture( nWidth, nHeight, 1, Usage, Format, Pool, &m_pTexture, NULL );
 	
 	if( hr != D3D_OK )	
@@ -1186,7 +1079,7 @@ BOOL CTexture::CreateTexture( LPDIRECT3DDEVICE9 pd3dDevice,
 	return TRUE;
 }
 
-BOOL CTexture::LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader )
+BOOL CTexture::LoadTexture( LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader )
 {
 #ifndef __WORLDSERVER
 	// 여기서 텍스춰 생성 
@@ -1213,7 +1106,7 @@ BOOL CTexture::LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3D
 		//dKeyColor = 0;
 		D3DXIMAGE_INFO imageInfo;
 		  // Create the texture using D3DX
-		HRESULT hr = ::LoadTextureFromRes( pd3dDevice, pFileName, 
+		HRESULT hr = ::LoadTextureFromRes( pFileName, 
 			D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_A1R5G5B5,//D3DFMT_UNKNOWN,//D3DFMT_A1R5G5B5, 
 			D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 			D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );
@@ -1242,9 +1135,9 @@ BOOL CTexture::LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3D
 
 		//#define BMP32BIT
 		#ifdef BMP32BIT
-			CreateTexture( pd3dDevice, m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED );
+			CreateTexture( m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED );
 		#else
-			CreateTexture( pd3dDevice, m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A1R5G5B5, D3DPOOL_MANAGED );
+			CreateTexture( m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A1R5G5B5, D3DPOOL_MANAGED );
 		#endif
 			HRESULT hr;
 			D3DLOCKED_RECT lockedRect;
@@ -1303,9 +1196,9 @@ BOOL CTexture::LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3D
 			int nDestLine = m_size.cx - size.cx;
 		#define BMP32BIT
 		#ifdef BMP32BIT
-			CreateTexture( pd3dDevice, m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED );// == FALSE )
+			CreateTexture( m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED );// == FALSE )
 		#else
-			CreateTexture( pd3dDevice, m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A4R4G4B4, D3DPOOL_MANAGED );
+			CreateTexture( m_size.cx, m_size.cy, D3DX_DEFAULT, 0, D3DFMT_A4R4G4B4, D3DPOOL_MANAGED );
 		#endif
 			HRESULT hr;
 			D3DLOCKED_RECT lockedRect;
@@ -1356,9 +1249,6 @@ BOOL CTexture::LoadTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3D
 	if(m_pTexture == NULL )
 		return FALSE;
 #undef BMP32BIT
-	//D3DUtil_SetColorKey( m_pTexture, d3dKeyColor );
-	//D3DSURFACE_DESC surfaceDesc;
-	//m_pTexture->GetLevelDesc( 0,&surfaceDesc );
 
 	m_fuLT = 0.0f;
 	m_fvLT = 0.0f;
@@ -1407,8 +1297,6 @@ void CTexturePack::MakeVertex( C2DRender* p2DRender, CPoint point, int nIndex, T
 	
 	point += p2DRender->m_ptOrigin;
 	CPoint ptCenter = pTexture->m_ptCenter;
-	//ptCenter.x *= fScaleX;
-	//ptCenter.y *= fScaleY;
 	point -= ptCenter;
 	
 	FLOAT left   = (FLOAT)( point.x );
@@ -1436,8 +1324,6 @@ void CTexturePack::MakeVertex( C2DRender* p2DRender, CPoint point, int nIndex, T
 	
 	point += p2DRender->m_ptOrigin;
 	CPoint ptCenter = pTexture->m_ptCenter;
-	//ptCenter.x *= fScaleX;
-	//ptCenter.y *= fScaleY;
 	point -= ptCenter;
 	
 	FLOAT left   = (FLOAT)( point.x );
@@ -1459,7 +1345,7 @@ void CTexturePack::MakeVertex( C2DRender* p2DRender, CPoint point, int nIndex, T
 	SetTextureVertex2( *ppVertices, right, bottom, pTexture->m_fuRB, pTexture->m_fvRB, dwColor );
 	(*ppVertices)++;
 }
-void CTexturePack::Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX* pVertices, int nVertexNum )
+void CTexturePack::Render( TEXTUREVERTEX* pVertices, int nVertexNum )
 {
 	if( nVertexNum == 0 )
 		return;
@@ -1473,7 +1359,6 @@ void CTexturePack::Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX* pVertice
 	
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-	//pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
@@ -1486,7 +1371,7 @@ void CTexturePack::Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX* pVertice
 	pd3dDevice->SetFVF( D3DFVF_TEXTUREVERTEX );
 	pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLELIST, nVertexNum / 3, pVertices, sizeof( TEXTUREVERTEX ) );
 }
-void CTexturePack::Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX2* pVertices, int nVertexNum )
+void CTexturePack::Render( TEXTUREVERTEX2* pVertices, int nVertexNum )
 {
 	if( nVertexNum == 0 )
 		return;
@@ -1504,23 +1389,13 @@ void CTexturePack::Render( LPDIRECT3DDEVICE9 pd3dDevice, TEXTUREVERTEX2* pVertic
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
-/*	
-	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );
-	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
-	
-	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
-	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
-	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR  );
-	
-	pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB( 255, 0, 0, 0 ) );
-*/	
+
 	pd3dDevice->SetVertexShader( NULL );
 	pd3dDevice->SetTexture( 0, m_pTexture );
 	pd3dDevice->SetFVF( D3DFVF_TEXTUREVERTEX2 );
 	pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLELIST, nVertexNum / 3, pVertices, sizeof( TEXTUREVERTEX2 ) );
 }
-BOOL CTexturePack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName )
+BOOL CTexturePack::LoadScript( LPCTSTR pszFileName )
 {
 	CScanner scanner;
 	if( scanner.Load( pszFileName ) == FALSE )
@@ -1558,14 +1433,14 @@ BOOL CTexturePack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName
 
 			if( bMultiLang )
 			{
-				LoadTextureFromRes( pd3dDevice, MakePath( DIR_THEME, strFileName ), 
+				LoadTextureFromRes( MakePath( DIR_THEME, strFileName ), 
 										D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 										D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 										D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );
 			}
 			else
 			{
-				LoadTextureFromRes( pd3dDevice, strFileName, 
+				LoadTextureFromRes( strFileName, 
 					D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 					D3DPOOL_MANAGED, D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, 
 					D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR, d3dKeyColor, &imageInfo, NULL, &m_pTexture );
@@ -1729,7 +1604,7 @@ BOOL CTexturePack::LoadScript( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pszFileName
 	return TRUE;
 }
 
-CTexture * CTextureMng::AddTexture(LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader) {
+CTexture * CTextureMng::AddTexture(LPCTSTR pFileName, D3DCOLOR d3dKeyColor, BOOL bMyLoader) {
 	const std::string key = pFileName;
 	
 	if (const auto mapTexItor = m_mapTexture.find(key); mapTexItor != m_mapTexture.end()) {
@@ -1739,7 +1614,7 @@ CTexture * CTextureMng::AddTexture(LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR pFileNa
 	}
 
 	CTexture * pTexture = new CTexture;
-	if (pTexture->LoadTexture(pd3dDevice, pFileName, d3dKeyColor, bMyLoader)) {
+	if (pTexture->LoadTexture(pFileName, d3dKeyColor, bMyLoader)) {
 		m_mapTexture.emplace(key, pTexture);
 		return pTexture;
 	} else {
@@ -1768,7 +1643,6 @@ void CDamageNum::Process()
 		}
 		break;
 	case 1:	// 올라가는중.
-//		m_fDy -= 2.0f;
 		if( m_nCnt >= 8 )
 		{
 			m_nState ++;
@@ -1826,15 +1700,9 @@ void CDamageNum::Render(CTexturePack *textPackNum)
 	D3DXVec3Project( &vTemp, &pos, &g_DamageNumMng.m_viewport, &g_DamageNumMng.m_matProj, &g_DamageNumMng.m_matView, &g_DamageNumMng.m_matWorld );
 	// 현재 애니메이션 진행 상황에 맞추어 위치, 크기, opacity 등을 설정한다.
 	fX = vTemp.x;
-//	if( m_nFrame == 1 )
-//		m_fY = vTemp.y;
-//	fY = vTemp.y - m_nFrame * 3;`
-//	if( m_nFrame < 35 )
-//		m_fY -= s_fY[ m_nFrame ];
 
 	fY = m_fY;
-//	FLOAT fScaleX = ( m_nFrame < 4 ) ? 30.5f - ( 29.0f / 10.0f ) * m_nFrame : 1.5f + ( 1.0f / 100.0f ) * ( m_nFrame - 10 );
-//	FLOAT fScaleY = ( m_nFrame < 4 ) ? 0.1f + ( 0.3f / 10.0f ) * m_nFrame : 1.5f + ( 1.0f / 100.0f ) * ( m_nFrame - 10 );
+
 	FLOAT fScaleX = 2.0f;
 	FLOAT fScaleY = 2.0f;
 	int nAlpha = 255;
@@ -1844,8 +1712,6 @@ void CDamageNum::Render(CTexturePack *textPackNum)
 		nAlpha = 75 - (m_nCnt * 2);
 		if( nAlpha < 0 )	nAlpha = 0;
 	}
-//	if( m_nFrame < 40 )		nAlpha = 255;
-//	else nAlpha = 255 - ( 255.0f / 80 ) * ( m_nFrame - 40 );
 	
 	fScaleX /= 4;
 	fScaleY /= 4;
@@ -1902,8 +1768,8 @@ void CDamageNum::Render(CTexturePack *textPackNum)
 	
 }
 
-void CDamageNumMng::LoadTexture(LPDIRECT3DDEVICE9 pd3dDevice) {
-	m_textPackNum.LoadScript(pd3dDevice, MakePath(DIR_SFX, _T("DmgEffect.inc")));
+void CDamageNumMng::LoadTexture() {
+	m_textPackNum.LoadScript(MakePath(DIR_SFX, _T("DmgEffect.inc")));
 }
 
 CDamageNumMng::~CDamageNumMng() {

@@ -1,14 +1,14 @@
 #pragma once
 
-class CReturnScrollMsgBox : public CWndMessageBox {
+class CReturnScrollMsgBox : public CWndCustomMessageBox {
 public: 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD dwWndId = 0) override;
+	BOOL Initialize(CWndBase * pWndParent = nullptr) final;
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 }; 
 
-class CWndSelectVillage : public CWndNeuz {
+class CWndSelectVillage final : public CWndNeuz {
 public: 
-	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override; 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override; 
 	void OnInitialUpdate() override; 
 }; 

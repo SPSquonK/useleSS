@@ -18,7 +18,7 @@ public:
 	void SetCurTab(size_t index);
 	void UpdateDataAll();
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	void OnInitialUpdate() override;
 }; 
 
@@ -26,7 +26,7 @@ class CWndGuildConfirm final : public CWndNeuz {
 public:
 	static void OpenWindow(u_long idMaster, const CGuild & guild);
 
-	BOOL Initialize(CWndBase * pWndParent = NULL, DWORD nType = MB_OK) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
 	void OnInitialUpdate() override;
 

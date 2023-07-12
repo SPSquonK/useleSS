@@ -168,11 +168,6 @@ m_nMaxSequence( 0 )
 
 CProject::~CProject()
 {
-#ifdef __CLIENT
-	m_mapHelp.RemoveAll();
-	m_mapWordToolTip.RemoveAll();
-#endif	// __CLIENT
-
 	int i, j;
 	POSITION pos = m_mapCharacter.GetStartPosition();
 	LPCHARACTER lpCharacter;
@@ -186,12 +181,6 @@ CProject::~CProject()
 
 	m_mapCharacter.RemoveAll();
 
-	for( i = 0; i < m_colorText.GetSize(); i++ )
-	{
-		tagColorText* lpText = m_colorText.GetAt(i);
-		if( lpText && lpText->lpszData )
-			free( lpText->lpszData ); 
-	}
 	for( i = 0; i < m_aPropQuest.GetSize(); i++ )
 	{
 		QuestProp* pQuestProp = (QuestProp*)m_aPropQuest.GetAt( i );
@@ -414,9 +403,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	LoadFilter( GetLangFileName( ::GetLanguage(), FILE_FILTER ) );
 #endif	// __CLIENT
 
-#ifdef __RULE_0615
 	if (!nameValider.Load()) return FALSE;
-#endif	// __RULE_0615
 
 	CPetProperty::GetInstance()->LoadScript( "pet.inc" );
 	CCollectingProperty::GetInstance()->LoadScript( "collecting.inc" );
@@ -840,80 +827,52 @@ BOOL CProject::LoadHelp( LPCTSTR lpszFileName )
 			 string		+= "\n\n   ";
 			s.GetToken();
 		}
-		m_mapHelp.SetAt( strKeyword, string );
+		m_mapHelp[strKeyword.GetString()] = string.GetString();
 		s.GetToken();
 	}
 	return TRUE;
 }
-CString CProject::GetHelp( LPCTSTR lpStr )
-{
-	CString string;
-	m_mapHelp.Lookup( lpStr, string );
-	return string;
-}
-CString CProject::GetWordToolTip( LPCTSTR lpStr )
-{
-	CString string;
-	m_mapWordToolTip.Lookup( lpStr, string );
-	return string;
+LPCTSTR CProject::GetHelp(LPCTSTR lpStr) const {
+	const auto it = m_mapHelp.find(lpStr);
+	if (it == m_mapHelp.end()) return "";
+	return it->second.c_str();
 }
 BOOL CProject::LoadFilter( LPCTSTR lpszFileName )
 {	
 	CScanner scanner;
 	if( scanner.Load( lpszFileName, FALSE ) == FALSE )
 		return FALSE;
-	FILTER filter;
+
 	scanner.GetToken();
 
 	while( scanner.tok != FINISHED )
 	{
-#ifdef __FILTER_0705
-		BOOL bAlpha		= TRUE;
+		bool bAlpha = true;
 		int nLen	= lstrlen( scanner.token );
 		for( int i = 0; i < nLen; i++ )
 		{
 			if( !iswalpha( scanner.token[i] ) )
 			{
-				bAlpha	= FALSE;
+				bAlpha = false;
 				break;
 			}
 		}
 		if( bAlpha )
 			scanner.Token.MakeLower();
-#endif	// __FILTER_0705
-		strcpy( filter.m_szSrc, scanner.Token );
+
+		TCHAR szSrc[64];
+		strcpy(szSrc, scanner.Token );
 		scanner.GetToken();
-		strcpy( filter.m_szDst, scanner.Token );
-#ifdef __FILTER_0705
-		if( bAlpha )
-			m_mapAlphaFilter.emplace( filter.m_szSrc, filter.m_szDst );
-		else
-			m_mapNonalphaFilter.emplace( filter.m_szSrc, filter.m_szDst );
-#else	// __FILTER_0705
-		m_aWordFilter.Add( &filter );
-#endif	// __FILTER_0705
+
+		if (bAlpha) {
+			m_mapAlphaFilter.emplace(szSrc, scanner.Token);
+		} else {
+			m_mapNonalphaFilter.emplace_back(szSrc, scanner.Token);
+		}
+
 		scanner.GetToken(); 
 	}
-#ifndef __FILTER_0705
-	m_aWordFilter.Optimize();
-#endif	// __FILTER_0705
-	return TRUE;
-}
-BOOL CProject::LoadWordToolTip( LPCTSTR lpszFileName )
-{
-	CScanner scanner;
-	if(scanner.Load(lpszFileName)==FALSE)
-		return FALSE;
-	CString strWord;
-	CString strToolTip;
-	scanner.GetToken();
-	while( scanner.tok != FINISHED )
-	{
-		strWord = scanner.Token;
-		scanner.GetToken();
-		m_mapWordToolTip.SetAt( strWord, scanner.token );
-		scanner.GetToken(); 
-	}
+
 	return TRUE;
 }
 #endif
@@ -2447,7 +2406,7 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 					Error( "%s : %s�� defineItem.h�� ���ǵ��� �ʾ���", szFileName, script.token );
 				ASSERT( di.dwIndex != 0 );
 				script.GetToken();	// ,
-				di.dwProbability	= script.GetNumber();	// probability
+				di.dwProbability	= script.GetDWORD();	// probability
 				script.GetToken();	// ,
 				di.dwLevel	= script.GetNumber();	// level
 				script.GetToken();	// ,
@@ -2681,7 +2640,6 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 				script.GetToken(); // ,
 				lpCharacter->m_vendor.m_venderSlot[ nSlot ] = GetLangScript( script );
 			}
-#ifdef __RULE_0615
 			// ������ �Ǹ� ������ ���
 			else if( script.Token == "AddVendorSlotLang" )
 			{
@@ -2716,7 +2674,6 @@ BOOL CProject::LoadCharacter( LPCTSTR szFileName )
 					);
 				}
 			}
-#endif	// __RULE_0615
 			else
 			if( script.Token == "AddVenderItem" || script.Token == "AddVendorItem")
 			{
@@ -3130,7 +3087,7 @@ BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
 			s.GetToken();	// (
 			di.dwIndex	= s.GetNumber();	// specific item index
 			s.GetToken();	// ,
-			di.dwProbability	= s.GetNumber();	// probability
+			di.dwProbability	= s.GetDWORD();	// probability
 			s.GetToken();	// ,
 			di.dwLevel	= s.GetNumber();	// level
 			s.GetToken();	// ,
@@ -4270,36 +4227,14 @@ BOOL	CProject::LoadServerScript( const char* sFile )
 		}
 		else if( s.Token == _T( "Pet_LevelupAvail" ) )
 		{
-			CPetProperty* pProperty		= CPetProperty::GetInstance();
-			LPDWORD ptr1	= pProperty->GetLevelupAvailLevelProbabilityPtr();
-			LPBYTE ptr2		= pProperty->GetLevelupAvailLevelMaxPtr();
-			// 	10000	0	0	0	0	0	0	0	0
-			int	nLevel	= (int)PL_D;
-			s.GetToken();	// {{
-			DWORD	dwProbability	= s.GetNumber();
-			while( *s.token != '}' )
-			{
-//				ptr1[nLevel][0]	= dwProbability;
-				ptr1[nLevel*MAX_PET_AVAIL_LEVEL]	= dwProbability;
-				for( int i = 1; i < MAX_PET_AVAIL_LEVEL; i++ )
-				{
-//					ptr1[nLevel][i]	= s.GetNumber();
-					ptr1[nLevel*MAX_PET_AVAIL_LEVEL+i]	= s.GetNumber();
-//					if( ptr1[nLevel][i] > 0 )
-					if( ptr1[nLevel*MAX_PET_AVAIL_LEVEL+i] > 0 )
-						ptr2[nLevel]	= i;
-				}
-				nLevel++;
-				dwProbability	= s.GetNumber();
-			}
+			CPetProperty::GetInstance()->LoadLevelupAvail(s);
 		}
 		else if( s.Token == _T( "Pet_AddLifeProbability" ) )
 		{
 			CPetProperty* pProperty		= CPetProperty::GetInstance();
-			std::vector<WORD>* ptr	= pProperty->GetAddLifeProbabilityPtr();
 			// ���� ȸ���� Ȯ��	// �߰� �� ��� ���� 100�� �ǵ��� Ȯ��
 			// 	50	// +1
-			*ptr = s.GetNumbers<WORD>('}');
+			pProperty->m_awAddLifeProbability = s.GetNumbers<WORD>('}');
 		}
 		s.GetToken();
 	}

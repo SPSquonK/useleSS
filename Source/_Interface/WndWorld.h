@@ -14,32 +14,29 @@
 extern vector<CString> g_vecHelpInsKey;
 #endif //__HELP_BUG_FIX
 
+#include <boost/container/stable_vector.hpp>
 #include "buff.h"
 
-typedef struct tagCAPTION
+
+class CCaption final
 {
-	TCHAR m_szCaption[ 512 ];
-	CD3DFontAPI* m_pFont;
+private:
+	struct CAPTION {
+		TCHAR m_szCaption[512];
+		CD3DFontAPI * m_pFont;
 
-	CTexture m_texture;
-	CSize m_size;
-	FLOAT m_fXScale;
-	FLOAT m_fYScale;
-	FLOAT m_fAddScale;
-	int m_nAlpha;
+		CTexture m_texture;
+		CSize m_size;
+		FLOAT m_fScale;
+		FLOAT m_fAddScale;
+	};
 
-} CAPTION,* LPCAPTION;
-
-class CCaption
-{
-public:
-	BOOL m_bEnd;
+	bool m_bEnd = false;
 	CTimer m_timer;
-	int m_nCount;
-	CPtrArray m_aCaption;
-	CCaption();
-	~CCaption();
+	int m_nAlpha = 255;
+	boost::container::stable_vector<CAPTION> m_aCaption;
 
+public:
 	void RemoveAll();
 	void Process();
 
@@ -47,9 +44,7 @@ public:
 	void AddCaption( LPCTSTR lpszCaption, CD3DFontAPI* pFont, BOOL bChatLog = TRUE, DWORD dwColor = D3DCOLOR_ARGB(  255, 255, 255, 255 ) );
 
     // Initializing and destroying device-dependent objects
-    HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
     HRESULT DeleteDeviceObjects();
-    HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();
 };
 
@@ -73,9 +68,7 @@ public:
 	void Process();
 	void Render( CPoint ptBegin, C2DRender* p2DRender );
 	void SetTime( int nTime, CD3DFontAPI* pFont );
-    HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
     HRESULT DeleteDeviceObjects();
-    HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();
 };
 
@@ -95,18 +88,6 @@ struct BUFFSKILL {
 	CTexture * m_pTexture = nullptr;
 };
 
-typedef	struct	_SET_NAVIGATOR
-{
-	DWORD dwWorldId;
-	D3DXVECTOR3 vPos;
-	_SET_NAVIGATOR()
-	{
-		dwWorldId	= 0;
-	}
-}
-SET_NAVIGATOR;
-
-
 struct BUFFICON_INFO
 {
 	CPoint	pt;			// render위치 
@@ -121,44 +102,80 @@ struct BUFFICONRECT_INFO
 };
 
 // 버튼형식의 도움말( 클릭시 지정된 창 실행 )
-#define MAX_ADVBUTTON	10
 
-typedef struct BUTTON_INFO
-{
-	CWndButton*		m_pwndButton;
-	DWORD			m_dwRunWindow;
-} BUTTON_INFO, *PBUTTON_INFO;
+class CAdvMgr final {
+public:
+	struct BUTTON_INFO {
+		std::unique_ptr<CWndButton> m_pwndButton;
+		DWORD			m_dwRunWindow;
+	};
 
-class CAdvMgr
-{
-	int						m_nIndex;
-	CWndBase*				m_pParentWnd;
-	std::vector<BUTTON_INFO>		m_vecButton;
+private:
+	static constexpr size_t MAX_ADVBUTTON = 10;
+
+	int        m_nIndex;
+	CWndBase * m_pParentWnd;
+	std::vector<BUTTON_INFO> m_vecButton;
 	
 public:
 	CAdvMgr();
-	~CAdvMgr();
 
-	void RemoveButton();
 	void Init( CWndBase* pParentWnd );
 	void AddAdvButton( DWORD dwid );	
-	BOOL RunButton( DWORD dwID );
-	void SortButton();
-	BUTTON_INFO* FindRunWindowButton( DWORD dwID );
+	bool RunButton( DWORD dwID );
+	void MoveButtons();
 };
 
-typedef struct __GUILDRATE
-{
-	u_long m_uidPlayer;
-	int    nLife;
-	BOOL   bJoinReady;
-} __GUILDRATE;
+namespace WndWorld {
+	struct GuildCombatInfo {
+		struct GUILDRATE {
+			u_long m_uidPlayer;
+			int    nLife;
+			bool   bJoinReady;
+		};
 
-typedef struct __GCWARSTATE
-{
-	u_long m_uidPlayer;
-	BOOL   m_bWar;
-} __GCWARSTATE;
+		std::vector<GUILDRATE> GuildStatus;
+		std::set<u_long> m_gc_defenders;
+		boost::container::flat_map<u_long, int> m_gc_warstates;
+
+		void OnGuildStatus(CAr & ar);
+		void ClearGuildStatus();
+		void OnPlayerList(CAr & ar);
+		void ClearPlayerList();
+		bool IsGCStatusDefender(u_long uidDefender) const;
+		int  IsGCStatusPlayerWar(u_long uidPlayer) const;
+
+		void RenderMyGuildStatus(C2DRender * p2DRender);
+	};
+
+	struct GuildCombatPrecedence {
+		std::map<u_long, std::string> idToGuildName;
+		std::multimap<int, u_long> guilds;
+		std::multimap<int, u_long> players;
+
+		void Clear();
+		void OnGuildPrecedence(CAr & ar);
+		void OnPlayerPrecedence(CAr & ar);
+
+		void Render(C2DRender * p2DRender, CRect clientRect);
+
+		[[nodiscard]] LPCTSTR GetGuildName(u_long guildId) const;
+	};
+
+	class FlyTargets {
+	private:
+		size_t current = 0;
+		std::vector<OBJID> targets;
+
+	public:
+		void Clear() { targets.clear(); }
+		void Add(OBJID idMover) { targets.emplace_back(idMover); }
+
+		[[nodiscard]] std::optional<OBJID> GetNext();
+		[[nodiscard]] std::span<const OBJID> GetAll() const { return targets; }
+	};
+
+}
 
 struct __PGUEST_TIME_TEXT {
 	BOOL bFlag;
@@ -189,7 +206,7 @@ namespace TimeSpanToString {
 	[[nodiscard]] CString DHMmSs(CTimeSpan timeSpan);
 }
 
-class CWndWorld : public CWndNeuz
+class CWndWorld final : public CWndNeuz
 {
 	BOOL m_bBGM;
 	FLOAT m_fHigh;
@@ -210,7 +227,6 @@ public:
 
 	CAdvMgr*	GetAdvMgr() { return &m_AdvMgr; }
 	
-	BOOL	m_IsMailTexRender;
 	BOOL	m_bCtrlInfo;
 	BOOL	m_bCtrlPushed;
 	BOOL	m_bRenderFPS;
@@ -268,7 +284,6 @@ public:
 	CTexture m_texGauFillNormal ;
 	LPDIRECT3DVERTEXBUFFER9 m_pVBGauge;
 
-	//CWndTradeGold* m_pWndTradeGold;
 	int		m_nMouseMode;		// 비행중일때. 0:우버튼+드래그 빗자루회전   1:걍드래그 빗자루회전.
 	
 	int		ControlPlayer( DWORD dwMessage, CPoint point );
@@ -289,32 +304,22 @@ public:
 	BOOL UseSkillToFocusObj( CCtrl* pFocusObj );
 	void GetBoundRect( CObj* pObj, CRect* pRect );
 
-	void RenderArrow_Text( LPDIRECT3DDEVICE9 pDevice, const D3DXVECTOR3& vDest, const D3DXMATRIX& mat );	//gmpbigsun : refactoring
+	void RenderArrow_Text( const D3DXVECTOR3& vDest, const D3DXMATRIX& mat );	//gmpbigsun : refactoring
 	
-	CDWordArray		m_aFlyTarget;
+	WndWorld::FlyTargets m_flyTarget;
 
 	DWORD	m_dwNextSkill;		// 치고있는중에 스킬치기 예약.
 	std::vector <BUFFICONRECT_INFO> m_rcCheck;
 
 	CTexture		m_TexGuildWinner;
 	CTexture		m_TexGuildBest;
-	std::multimap< int, CString >	m_mmapGuildCombat_GuildPrecedence;
-	std::multimap< int, u_long >		m_mmapGuildCombat_PlayerPrecedence;
-	std::vector  < __GUILDRATE >		m_vecGuildCombat_GuildStatus;
-	std::map< u_long, std::vector<__GCWARSTATE> >  m_mapGC_GuildStatus;
+	WndWorld::GuildCombatPrecedence m_GCprecedence;
+	WndWorld::GuildCombatInfo       m_infoGC;
+
 	CWndBase* m_pWndBuffStatus;
 
 public:
 	void InitEyeFlash();
-	void AddGuildPrecedence( int, CString );
-	void AddPlayerPrecedence( int, u_long );
-	void AddGuildStatus( u_long uidPlayer, int nLife, BOOL bJoinReady );
-	void AddGCStatus( u_long uidDefender, u_long uidPlayer, BOOL bWar );
-	u_long GetGCStatusDefender( u_long uidDefender );
-	int  IsGCStatusPlayerWar( u_long uidPlayer );
-	void ClearGuildPrecedence()   { m_mmapGuildCombat_GuildPrecedence.clear(); }
-	void ClearPlayerPrecedence()  { m_mmapGuildCombat_PlayerPrecedence.clear(); }
-	void ClearGuildStatus()		  { m_vecGuildCombat_GuildStatus.clear(); }
 	void SetViewMap(BOOL bViewMap){ m_bViewMap = bViewMap; }
 	BOOL IsViewMap()			  { return m_bViewMap; }
 	BOOL GetBuffIconRect( DWORD dwID, const CPoint& point );
@@ -328,7 +333,6 @@ public:
 	CD3DFontAPI* m_pFontAPITime;
 
 	CTexturePack	m_texMsgIcon;
-	SET_NAVIGATOR	m_stnv;
 	CTexturePack	m_texAttrIcon;
 	CTexturePack	m_texPlayerDataIcon;
 
@@ -394,22 +398,11 @@ public:
 	}
 	int	GetMouseMode( void ) { return m_nMouseMode; }
 
-	void Projection( LPDIRECT3DDEVICE9 pd3dDevice );
+	void Projection( );
 
 	CObj* PickObj( POINT point, BOOL bOnlyNPC = FALSE );
 	CObj* SelectObj( POINT point );
 	CObj* HighlightObj( POINT point );
-
-	int		m_nSelect;		// 현재 선택된 타겟 인덱스.
-	void	ClearFlyTarget( void )
-	{
-		m_aFlyTarget.RemoveAll();
-	}
-
-	void	AddFlyTarget( OBJID idMover )
-	{
-		m_aFlyTarget.Add( idMover );
-	}
 	
 	OBJID	m_objidTracking;
 
@@ -436,7 +429,6 @@ public:
 	void	RenderEventIcon( C2DRender* p2DRender, BUFFICON_INFO* pInfo, CPoint ptMouse );
 
 	void PutPetTooltipInfo( CItemElem* pItemElem, CEditString* pEdit );
-	void DrawGuildCombat1to1Info(C2DRender *p2DRender);
 	void DrawGuildCombat1to1PlayerInfo(C2DRender *p2DRender);
 	void DrawGuildCombat1ot1GuildInfo(C2DRender *p2DRender);
 	BOOL m_bGuildCombat1to1Wait;
@@ -458,10 +450,10 @@ public:
 
 	virtual void OnDraw(C2DRender* p2DRender); 
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	// message
 	virtual BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
+	void OnSetCursor() override;
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase );
 	virtual void OnSize(UINT nType, int cx, int cy);
 	virtual void OnLButtonUp(UINT nFlags, CPoint point);
@@ -479,7 +471,6 @@ public:
 	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual	BOOL Process();
 	virtual BOOL OnEraseBkgnd(C2DRender* p2DRender);
-	virtual LRESULT WndMsgProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point = 0 );
 	virtual	void SetWndRect( CRect rectWnd, BOOL bOnSize = TRUE);
 	virtual void OnMouseWndSurface( CPoint point );

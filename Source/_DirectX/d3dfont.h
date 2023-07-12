@@ -10,6 +10,7 @@
 #include <tchar.h>
 #include <D3D9.h>
 #include <d3dx9core.h>
+#include <vector>
 
 // Font creation flags
 #define D3DFONT_BOLD        0x0001
@@ -72,7 +73,6 @@ class CD3DFontAPI
     DWORD   m_dwFontFlags;
 
 	DWORD   m_bCaption;
-    LPDIRECT3DDEVICE9       m_pd3dDevice; // A D3DDevice used for rendering
     FLOAT   m_fTextScale;
     DWORD   m_dwSpacing;                  // Character pixel spacing per side
 
@@ -119,7 +119,7 @@ public:
     virtual HRESULT GetTextExtent( const TCHAR* strText, SIZE* pSize );
 
     // Initializing and destroying device-dependent objects
-    virtual HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+    virtual HRESULT InitDeviceObjects();
     virtual HRESULT RestoreDeviceObjects();
     virtual HRESULT InvalidateDeviceObjects();
     virtual HRESULT DeleteDeviceObjects();
@@ -141,7 +141,6 @@ class CD3DFont //: public CD3DFontAPI
     DWORD   m_dwFontFlags;
 
 	DWORD   m_bCaption;
-    LPDIRECT3DDEVICE9       m_pd3dDevice; // A D3DDevice used for rendering
 	LPDIRECT3DVERTEXBUFFER9 m_pVB;        // VertexBuffer for rendering text
     DWORD   m_dwTexWidth;                 // Texture dimensions
     DWORD   m_dwTexHeight;
@@ -168,7 +167,7 @@ class CD3DFont //: public CD3DFontAPI
 	void MakeOutLine( int nWidth, WORD* pDst16 );	
 	LPDIRECT3DTEXTURE9 CreateTexture();
 public:
-	CPtrArray m_apTexture;
+	std::vector<LPDIRECT3DTEXTURE9> m_apTexture;
     
 	DWORD  m_dwColor;
 	DWORD  m_dwBgColor;
@@ -211,7 +210,7 @@ public:
     CSize GetTextExtent( LPCTSTR pszText ) { SIZE size; GetTextExtent( pszText, &size ); return size; }
 
     // Initializing and destroying device-dependent objects
-    HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+    HRESULT InitDeviceObjects();
     HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();
     HRESULT DeleteDeviceObjects();
@@ -247,7 +246,7 @@ public:
     HRESULT GetTextExtent( const TCHAR* strText, SIZE* pSize );
 
     // Initializing and destroying device-dependent objects
-    HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+    HRESULT InitDeviceObjects();
     HRESULT RestoreDeviceObjects();
     HRESULT InvalidateDeviceObjects();
     HRESULT DeleteDeviceObjects();

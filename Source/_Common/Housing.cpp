@@ -338,7 +338,7 @@ BOOL CHousing::AddFurnitureControl( int nIndex )
 			}
 			else
 			{
-				CCtrl* pCtrl	= (CCtrl*)CreateObj( D3DDEVICE, OT_CTRL, pItemProp->dwLinkKind );
+				CCtrl* pCtrl	= (CCtrl*)CreateObj( OT_CTRL, pItemProp->dwLinkKind );
 				if( !pCtrl )
 					return FALSE;
 
@@ -685,9 +685,9 @@ CDeployManager::CDeployManager(void)
 {
 	if( g_Neuz.m_pd3dDevice )	//gmpbigsun(20100421) : 사운드 초기화등이 실패등으로 메시지가 발생할때  CNeuzApp에서 이놈의 생성자를 호출하고있다. 아직 디바이스는 노생성 
 	{
-		m_pRed		  = ((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T("red.tga")), 0xffff00ff ))->m_pTexture;
-		m_pOriginWall = ((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T("Obj_MiniWall01.dds")), 0xffff00ff ))->m_pTexture;
-		m_pOriginTile = ((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_WORLDTEX, _T("Miniroom_floor01.dds")), 0xffff00ff ))->m_pTexture;
+		m_pRed		  = CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T("red.tga")), 0xffff00ff )->m_pTexture;
+		m_pOriginWall = CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T("Obj_MiniWall01.dds")), 0xffff00ff )->m_pTexture;
+		m_pOriginTile = CWndBase::m_textureMng.AddTexture( MakePath( DIR_WORLDTEX, _T("Miniroom_floor01.dds")), 0xffff00ff )->m_pTexture;
 	}
 
 	m_fAngle		= 0.0f;
@@ -726,7 +726,7 @@ BOOL	CDeployManager::LoadToDeploy(int nItemId, HOUSINGINFO housingInfo)
 	m_ItemInfo.tKeepTime = housingInfo.tKeepTime;
 	m_ItemInfo.vPos      = housingInfo.vPos;
 
-	m_pTargetObj = CreateObj( g_Neuz.m_pd3dDevice,OT_CTRL, nItemId);
+	m_pTargetObj = CreateObj( OT_CTRL, nItemId);
 	
 	if(m_pTargetObj)
 	{	
@@ -743,10 +743,9 @@ BOOL	CDeployManager::LoadToDeploy(int nItemId, HOUSINGINFO housingInfo)
 		for(int i = 0; i < m_nNumTex; ++i)
 		{
 			LPDIRECT3DTEXTURE9 pTexture = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_pMtrlBlkTexture[0];
-			int nMrt = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_nMaxMtrlBlk;
-			LPDIRECT3DTEXTURE9	*pMtrlBlkTexture = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_pMtrlBlkTexture;
+
 			if(pTexture)
-			m_vecOriginal.push_back(pTexture);
+				m_vecOriginal.push_back(pTexture);
 		}
 		return TRUE;
 	}
@@ -893,7 +892,7 @@ BOOL	CDeployManager::ChangeWallTex(TCHAR* pTexName)
 		if(pObj)
 		{
 			if(pTexName)
-				((CModelObject*)pObj->m_pModel)->GetObject3D()->SetTexture(((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture);
+				((CModelObject*)pObj->m_pModel)->GetObject3D()->SetTexture(((CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture);
 			else
 				((CModelObject*)pObj->m_pModel)->GetObject3D()->SetTexture(m_pOriginWall);
 			return TRUE;
@@ -912,7 +911,7 @@ BOOL	CDeployManager::ChangeTileTex(TCHAR* pTexName)
 	if(pWorld)
 	{
 		if(pTexName)
-			pWorld->ForceTexture(((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture);
+			pWorld->ForceTexture(((CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture);
 		else
 			pWorld->ForceTexture(m_pOriginTile);
 		return TRUE;
@@ -975,9 +974,8 @@ BOOL	CGuildDeployManager::LoadToDeploy(int nItemId, const HOUSING_ITEM& housingI
 	if( !pWorld )
 		return FALSE;
 
-	//um...
-	std::string strHouseObjName = GetNameHouseObj( );
-	m_pWallObj = pWorld->GetObjByName( (TCHAR*)strHouseObjName.c_str() );
+	const char * strHouseObjName = GetNameHouseObj( );
+	m_pWallObj = pWorld->GetObjByName( strHouseObjName );
 
 	if( !m_pWallObj )
 	{
@@ -994,7 +992,7 @@ BOOL	CGuildDeployManager::LoadToDeploy(int nItemId, const HOUSING_ITEM& housingI
 	*m_pItem = housingInfo;
 	m_pItem->m_bDeploy = TRUE;
 
-	m_pTargetObj = CreateObj( g_Neuz.m_pd3dDevice,OT_CTRL, nItemId, TRUE );
+	m_pTargetObj = CreateObj( OT_CTRL, nItemId, TRUE );
 	if( !m_pTargetObj )
 	{
 		assert( 0 && "CreateObj failed" );
@@ -1002,43 +1000,40 @@ BOOL	CGuildDeployManager::LoadToDeploy(int nItemId, const HOUSING_ITEM& housingI
 	}
 
 // gmpbigun:  clone model!!
+// squonk: ok. But:
+// - Why is the cloning model relevant? Why should I pay attention to it?
+// - Why is the m_pClonedModel not deleted? It is in comment so you removed
+// it later. Is there a bug related to it?
+
 	MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem( OT_CTRL, nItemId );
  
 //	SAFE_DELETE( m_pClonedModel );
  	m_pClonedModel = new CModelObject;
  	m_pClonedModel->SetModelType( OT_CTRL ); 
  	m_pClonedModel->m_pModelElem = lpModelElem;
- 	HRESULT hr = m_pClonedModel->InitDeviceObjects( D3DDEVICE );
+ 	HRESULT hr = m_pClonedModel->InitDeviceObjects();
  	TCHAR szFileName[ MAX_PATH ];
  	prj.m_modelMng.MakeModelName( szFileName, OT_CTRL, nItemId );
 	m_pClonedModel->LoadClonedElement( szFileName );
 	m_pTargetObj->m_pModel = m_pClonedModel;
+	m_pTargetObj->m_dwIndex = nItemId;
 
-	if(m_pTargetObj)
-	{	
-		m_nBlendFactor = 80;
-		CWorld* pWorld	= g_WorldMng.Get();
-		pWorld->AddObj(m_pTargetObj, FALSE);
-		m_pTargetObj->SetWorld( pWorld);
-		m_pTargetObj->SetAngle(m_pItem->m_fAngle);
-		m_pTargetObj->ResetScale();
-		m_pTargetObj->UpdateBoundBox();
+	m_nBlendFactor = 80;
+	pWorld->AddObj(m_pTargetObj, FALSE);
+	m_pTargetObj->SetWorld( pWorld);
+	m_pTargetObj->SetAngle(m_pItem->m_fAngle);
+	m_pTargetObj->ResetScale();
+	m_pTargetObj->UpdateBoundBox();
 
-		m_nNumTex = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetMaxObject();
-		for(int i = 0; i < m_nNumTex; ++i)
-		{
-			LPDIRECT3DTEXTURE9 pTexture = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_pMtrlBlkTexture[0];
-			int nMrt = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_nMaxMtrlBlk;
-			LPDIRECT3DTEXTURE9	*pMtrlBlkTexture = ((CModelObject*)m_pTargetObj->m_pModel)->GetObject3D()->GetGMOBJECT(i)->m_pMtrlBlkTexture;
-			if(pTexture)
+	m_nNumTex = m_pClonedModel->GetObject3D()->GetMaxObject();
+	for(int i = 0; i < m_nNumTex; ++i)
+	{
+		LPDIRECT3DTEXTURE9 pTexture = m_pClonedModel->GetObject3D()->GetGMOBJECT(i)->m_pMtrlBlkTexture[0];
+		if(pTexture)
 			m_vecOriginal.push_back(pTexture);
-		}
-
-		return TRUE;
 	}
 
-	return FALSE;
-
+	return TRUE;
 }
 
 HOUSING_ITEM*	CGuildDeployManager::EndDeploy()
@@ -1068,7 +1063,7 @@ BOOL	CGuildDeployManager::IsReady()
 BOOL	CGuildDeployManager::ChangeObjMode(int nType)
 {
 	if( !m_pRed )
-		m_pRed		  = ((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T("red.tga")), 0xffff00ff ))->m_pTexture;
+		m_pRed		  = ((CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T("red.tga")), 0xffff00ff ))->m_pTexture;
 
 	if(m_pTargetObj)
 	{
@@ -1181,7 +1176,7 @@ BOOL	CGuildDeployManager::ChangeWallTex(TCHAR* pTexName)
 	if( !m_pOriginWall )
 	{
 		std::string filename = GetNameHouseWallTex( );
-		CTexture* pCTex = (CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, (LPCTSTR)filename.c_str() ), 0xffff00ff );
+		CTexture* pCTex = (CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, (LPCTSTR)filename.c_str() ), 0xffff00ff );
 		m_pOriginWall = pCTex->m_pTexture;
 		assert( m_pOriginWall );
 	}
@@ -1195,7 +1190,7 @@ BOOL	CGuildDeployManager::ChangeWallTex(TCHAR* pTexName)
 		if(pObj)
 		{
 			if(pTexName)
-				((CModelObject*)pObj->m_pModel)->GetObject3D()->SetTexture(((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture);
+				((CModelObject*)pObj->m_pModel)->GetObject3D()->SetTexture(((CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture);
 			else
 				((CModelObject*)pObj->m_pModel)->GetObject3D()->SetTexture(m_pOriginWall);
 			return TRUE;
@@ -1211,7 +1206,7 @@ BOOL	CGuildDeployManager::ChangeTileTex(TCHAR* pTexName)
 	if( !m_pOriginTile )
 	{
 		std::string filename = GetNameHouseTileTex( );
-		CTexture* pCTex = (CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_WORLDTEX, (LPCTSTR)filename.c_str() ), 0xffff00ff );
+		CTexture* pCTex = (CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_WORLDTEX, (LPCTSTR)filename.c_str() ), 0xffff00ff );
 		m_pOriginTile = pCTex->m_pTexture;
 
 		assert( m_pOriginTile );
@@ -1223,7 +1218,7 @@ BOOL	CGuildDeployManager::ChangeTileTex(TCHAR* pTexName)
 	{
 		if(pTexName)
 		{
-			IDirect3DTexture9* pApplyTex = ((CTexture*)CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture;
+			IDirect3DTexture9* pApplyTex = ((CTexture*)CWndBase::m_textureMng.AddTexture( MakePath( DIR_MODELTEX, _T(pTexName)), 0xffff00ff ))->m_pTexture;
 			pWorld->ForceTexture( pApplyTex );
 		}
 		else
@@ -1234,19 +1229,14 @@ BOOL	CGuildDeployManager::ChangeTileTex(TCHAR* pTexName)
 	return FALSE;
 }
 
-std::string CGuildDeployManager::GetNameHouseObj( )
-{
-	std::string str;
+const char * CGuildDeployManager::GetNameHouseObj() {
+	const DWORD dwGHouseType = GuildHouse->GetType();
 
-	DWORD dwGHouseType = GuildHouse->GetType( );
-
-	switch( dwGHouseType )
-	{
-	case WI_GUILDHOUSE_SMALL: str = "obj_miniwall01.o3d";	break;
-	case WI_GUILDHOUSE_MIDDLE: str = "obj_miniwall02.o3d";	break;
+	switch (dwGHouseType) {
+		case WI_GUILDHOUSE_SMALL:  return "obj_miniwall01.o3d";
+		case WI_GUILDHOUSE_MIDDLE: return "obj_miniwall02.o3d";
+		default:                   return "";
 	}
-
-	return str;
 }
 
 std::string CGuildDeployManager::GetNameHouseWallTex( )
@@ -1316,10 +1306,6 @@ BOOL CGuildDeployManager::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 				break;
 
 			int nVirtKey = (int) wParam;    // virtual-key code
-
-		//	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetApplet( APP_WORLD );
-		//	if( pWndWorld && pWndWorld->IsFocusWnd() == FALSE )
-		//		pWndWorld->OnKeyUp( nVirtKey, 0, 0 );
 
 			if(g_bKeyTable[VK_NEXT])
 			{

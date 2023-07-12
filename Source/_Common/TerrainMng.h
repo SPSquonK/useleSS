@@ -23,7 +23,6 @@ struct WaterTexList {
 class CTerrainMng
 {
 //	int m_nSize;
-	LPDIRECT3DDEVICE9 m_pd3dDevice;
 	std::vector<TERRAIN> m_terrains;
 	TERRAIN m_defaultTerrain;
 
@@ -42,7 +41,6 @@ public:
 	}
 	BOOL LoadScript( LPCTSTR lpszFileName );
 
-	HRESULT InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
 	HRESULT DeleteDeviceObjects();
 };
 

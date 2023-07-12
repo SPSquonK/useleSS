@@ -75,19 +75,19 @@ DWORD CActionMover::OnDamageMsgC( DWORD dwMsg, CMover* pAttacker, DWORD dwAtkFla
 		}
 		else
 		{
-			AngleToVectorXZ( &vLocal, pAttacker->GetAngle(), 1.0f );
+			vLocal = AngleToVectorXZ( pAttacker->GetAngle(), 1.0f );
 			vLocal += pMover->GetPos();		//gmpbigsun : 피격자 일반 effect 09_12_17
 			vLocal.y += 1.0f;			// 2006/6/20 xuzhu
 		}
 
 		if( pAttackerProp && pAttackerProp->dwSfxObj3 != NULL_ID )
-			CreateSfx( g_Neuz.m_pd3dDevice, pAttackerProp->dwSfxObj3, vLocal );
+			CreateSfx( pAttackerProp->dwSfxObj3, vLocal );
 
 		
 		if( pAttackerProp && pAttackerProp->dwSfxObj5 != NULL_ID ) //gmpbigsun: 공격자 일반 effect 09_12_17
 		{
 			vLocal = pAttacker->GetPos( );		
-			CreateSfx( g_Neuz.m_pd3dDevice, pAttackerProp->dwSfxObj5, vLocal );
+			CreateSfx( pAttackerProp->dwSfxObj5, vLocal );
 		}
 		
 	}
@@ -98,12 +98,12 @@ DWORD CActionMover::OnDamageMsgC( DWORD dwMsg, CMover* pAttacker, DWORD dwAtkFla
 		assert( pAttackerProp );
 		DWORD dwSfxObj = pAttackerProp->dwSfxObj3;		// gmpbigsun:특수공격에 이펙트가 있다면 3번사용.
 		if( dwSfxObj != NULL_ID )
-			CreateSfx( D3DDEVICE, dwSfxObj, pMover->GetPos() );
+			CreateSfx( dwSfxObj, pMover->GetPos() );
 
 		// attacker
 		dwSfxObj = pAttackerProp->dwSfxObj5;
 		if( NULL_ID != dwSfxObj )
-			CreateSfx( D3DDEVICE, dwSfxObj, pAttacker->GetPos() );
+			CreateSfx( dwSfxObj, pAttacker->GetPos() );
 	}
 
 	pMover->m_nDmgCnt = 10;								// 흔들리는 시간이다.

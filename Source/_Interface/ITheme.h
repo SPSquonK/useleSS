@@ -22,8 +22,6 @@ class CWndBase;
 
 class CTheme
 {
-	LPDIRECT3DDEVICE9 m_pd3dDevice; 
-
 	// Owning pointers to fonts
 	std::map<std::string, CD3DFont *, std::less<>> m_mapFont;
 	CTheme(const CTheme &) = delete; CTheme & operator=(const CTheme &) = delete;
@@ -125,7 +123,7 @@ public:
 	CTheme();
 	~CTheme();
 
-	BOOL LoadTheme( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName );
+	BOOL LoadTheme( LPCTSTR lpszFileName );
 
 	void DeleteTheme();
 	void RenderTitle( C2DRender* p2DRender );
@@ -135,7 +133,7 @@ public:
 	void RenderGameGradeMark( C2DRender* p2DRender, DWORD dwAlpha );
 #endif // __GAME_GRADE_SYSTEM
 
-	HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT InitDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
 	HRESULT FrameMove();
@@ -178,8 +176,8 @@ public:
 	void RenderWndGauge          ( C2DRender* p2DRender, CRect* pRect, DWORD dwColor );
 	void RenderWndGauge2         ( C2DRender* p2DRender, CRect* pRect, DWORD dwColor );
 
-	BOOL MakeGaugeVertex         ( LPDIRECT3DDEVICE9 pd3dDevice, CRect* pRect, DWORD dwColor, LPDIRECT3DVERTEXBUFFER9 pVB, CTexture* pTexture );
-	void RenderGauge             ( LPDIRECT3DDEVICE9 pd3dDevice, LPDIRECT3DVERTEXBUFFER9 pVB, CTexture* pTexture );
+	BOOL MakeGaugeVertex         ( CRect* pRect, DWORD dwColor, LPDIRECT3DVERTEXBUFFER9 pVB, CTexture* pTexture );
+	void RenderGauge             ( LPDIRECT3DVERTEXBUFFER9 pVB, CTexture* pTexture );
 	void RenderGauge             ( C2DRender* p2DRender, CRect* pRect, DWORD dwColor, LPDIRECT3DVERTEXBUFFER9 pVBGauge, CTexture* pTexture );
 
 #ifdef __FLYFF_INITPAGE_EXT

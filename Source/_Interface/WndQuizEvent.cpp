@@ -27,7 +27,7 @@ void CWndQuizEventConfirm::OnDraw( C2DRender* p2DRender )
 {
 }
 
-BOOL CWndQuizEventConfirm::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndQuizEventConfirm::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_QUIZ_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -81,7 +81,7 @@ CWndQuizEventQuestionOX::~CWndQuizEventQuestionOX()
 {
 }
 
-BOOL CWndQuizEventQuestionOX::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndQuizEventQuestionOX::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_QUIZ_QUESTION_OX, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -95,7 +95,7 @@ void CWndQuizEventQuestionOX::OnInitialUpdate( void )
 		pWndBase->Destroy();
 	
 	m_texChar.DeleteDeviceObjects();
-	m_texChar.LoadTexture( g_Neuz.m_pd3dDevice, MakePath( "char\\", "char_Juria_JAP.tga" ), 0xffff00ff, TRUE );
+	m_texChar.LoadTexture( MakePath( "char\\", "char_Juria_JAP.tga" ), 0xffff00ff, TRUE );
 	
 	MoveParentCenter();
 }
@@ -163,7 +163,7 @@ CWndQuizEventQuestion4C::~CWndQuizEventQuestion4C()
 {
 }
 
-BOOL CWndQuizEventQuestion4C::Initialize( CWndBase* pWndParent, DWORD nType )
+BOOL CWndQuizEventQuestion4C::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_QUIZ_QUESTION_4C, pWndParent, 0, CPoint( 0, 0 ) );
 }
@@ -177,7 +177,7 @@ void CWndQuizEventQuestion4C::OnInitialUpdate( void )
 		pWndBase->Destroy();
 	
 	m_texChar.DeleteDeviceObjects();
-	m_texChar.LoadTexture( g_Neuz.m_pd3dDevice, MakePath( "char\\", "char_Juria_JAP.tga" ), 0xffff00ff, TRUE );
+	m_texChar.LoadTexture( MakePath( "char\\", "char_Juria_JAP.tga" ), 0xffff00ff, TRUE );
 	
 	MoveParentCenter();
 }
@@ -280,16 +280,6 @@ HRESULT CWndQuizEventButton::DeleteDeviceObjects()
 	return CWndNeuz::DeleteDeviceObjects();
 }
 
-HRESULT CWndQuizEventButton::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
-
-HRESULT CWndQuizEventButton::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-
 void CWndQuizEventButton::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate();
@@ -297,7 +287,7 @@ void CWndQuizEventButton::OnInitialUpdate()
 	this->DelWndStyle(WBS_CAPTION);
 	m_wndTitleBar.SetVisible( FALSE );
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point;
 	
@@ -307,7 +297,7 @@ void CWndQuizEventButton::OnInitialUpdate()
 
 	Move( point );
 
-	m_bLoadTexMap = m_BtnTexture.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "texMapQuizEventButton.inc" ) ) );
+	m_bLoadTexMap = m_BtnTexture.LoadScript( MakePath( DIR_THEME, _T( "texMapQuizEventButton.inc" ) ) );
 } 
 
 void CWndQuizEventButton::PaintFrame( C2DRender* p2DRender )
@@ -408,7 +398,7 @@ BOOL CWndQuizEventButton::Process()
 	return TRUE;
 }
 
-BOOL CWndQuizEventButton::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndQuizEventButton::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_QUIZ_BUTTON, pWndParent, WBS_NOFOCUS, CPoint( 0, 0 ) );

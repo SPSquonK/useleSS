@@ -14,7 +14,7 @@ struct PETCAMTABLE
 
 #define MAX_PET_CLASS 7
 
-class CWndPetAwakCancel : public CWndNeuz 
+class CWndPetAwakCancel final : public CWndNeuz
 { 
 public: 	
 	class CEatPetReceiver : public CWndItemReceiver {
@@ -25,12 +25,12 @@ public:
 	CEatPetReceiver m_receiver;
 	static constexpr UINT WIDC_Receiver = 900;
 
-	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override; 
 	void OnInitialUpdate() override; 
 }; 
 
-class CWndPetStatus : public CWndNeuz
+class CWndPetStatus final : public CWndNeuz
 {
 public:
 	BOOL m_bHPVisible;
@@ -78,7 +78,7 @@ public:
 	virtual ~CWndPetStatus();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	// message
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
 	virtual void OnSize(UINT nType, int cx, int cy);
@@ -98,7 +98,7 @@ public:
 };
 
 
-class CWndConfirmVis : public CWndNeuz 
+class CWndConfirmVis final : public CWndNeuz
 { 
 public: 
 	enum ConfirmVisSection
@@ -115,7 +115,7 @@ public:
 	CWndConfirmVis(); 
 	virtual ~CWndConfirmVis(); 
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
@@ -135,7 +135,7 @@ public:
 	ConfirmVisSection m_eSection;
 };
 
-class CWndBuffPetStatus : public CWndNeuz
+class CWndBuffPetStatus final : public CWndNeuz
 {
 public:
 	//gmpbigsun: 버프펫 상태 윈도우
@@ -145,7 +145,7 @@ public:
 	virtual void OnDestroy();
 	virtual void OnDraw(C2DRender* p2DRender);
 	virtual	void OnInitialUpdate();
-	virtual BOOL Initialize(CWndBase* pWndParent = NULL,DWORD dwWndId = 0);
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	virtual BOOL Process();
 	
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase = NULL );
@@ -186,7 +186,7 @@ protected:
 };
 
 
-class CWndFoodConfirm : public CWndNeuz 
+class CWndFoodConfirm final : public CWndNeuz
 { 
 public: 
 	CItemElem* m_pItemElem;
@@ -197,7 +197,7 @@ public:
 	CWndFoodConfirm(int nParent);
 	virtual ~CWndFoodConfirm(); 
 	
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate();
@@ -210,7 +210,7 @@ public:
 	void SetItem(DWORD dwObjId);
 };
 
-class CWndPetMiracle : public CWndNeuz 
+class CWndPetMiracle final : public CWndNeuz
 {
 public:
 	int m_nMiracleLv[2];
@@ -239,7 +239,7 @@ public:
 	virtual ~CWndPetMiracle(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK); 
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -251,7 +251,7 @@ public:
 	void SetItem(DWORD dwObjId);
 }; 
 
-class CWndPetFoodMill : public CWndNeuz
+class CWndPetFoodMill final : public CWndNeuz
 {
 public:
 	OBJID m_dwObjId;		//상용화 아이템 objid
@@ -265,7 +265,7 @@ public:
 	virtual ~CWndPetFoodMill(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate();
@@ -276,37 +276,28 @@ public:
 	void ReceiveResult(int nResult, int nCount);
 };
 
-class CWndPetLifeConfirm : public CWndNeuz 
+class CWndPetLifeConfirm final : public CWndNeuz
 {	
 public:
 	CWndButton m_wndButton1;
 	CWndButton m_wndButton2;
-	int m_nId;
+	int m_nId = -1;
 	
 protected:
-	CString m_strText;
 	CWndText m_wndText;
 	
 public:
-	CWndPetLifeConfirm();
-	~CWndPetLifeConfirm();
-	
-	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
+	void OnDestroy() override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr);
+	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
+	void OnInitialUpdate() override; 
 
 	void SetItem(int nId);
 }; 
 
 #define MAX_TRANS_EGG 10
 
-class CWndPetTransEggs : public CWndNeuz 
+class CWndPetTransEggs final : public CWndNeuz
 {
 public:
 	CItemElem*	m_pItemElem[MAX_TRANS_EGG];
@@ -319,7 +310,7 @@ public:
 	virtual ~CWndPetTransEggs(); 
 	
 	virtual void OnDestroy();
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK); 
+	BOOL Initialize( CWndBase * pWndParent = nullptr );
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 

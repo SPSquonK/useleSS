@@ -9,6 +9,7 @@
 #include "Mymap.h"
 #include "EventLua.h"
 #include "GuildCombat1to1.h"
+#include <optional>
 
 
 #define	MAX_WORLD	256
@@ -116,14 +117,11 @@ public:
 	char			m_chBackEndSystemChatTime[15];
 	char			m_chGMChat[10][256];
 
-	BOOL			m_bItemUpdate;		// 
 	TCHAR	m_apszWorld[MAX_WORLD][64];
 	TCHAR	m_apszWorldName[MAX_WORLD][64];
 	std::map<std::string, std::vector<D3DXVECTOR3>> m_mapBeginPos;
 
-#ifdef __RULE_0615
 	CNameValider nameValider;
-#endif	// __RULE_0615
 
 public:
 	void	LoadDefines();
@@ -140,7 +138,7 @@ public:
 	{ 
 		if( m_colorText.GetAt( dwIndex ) == NULL )
 			return "";
-		return m_colorText.GetAt( dwIndex )->lpszData; 
+		return m_colorText.GetAt( dwIndex )->lpszData.GetString(); 
 	}
 	DWORD GetTextColor( DWORD dwIndex ) 
 	{ 

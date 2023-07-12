@@ -22,6 +22,8 @@
 #include "..\_Network\Objects\Obj.h"
 #include "AccountCacheMgr.h"
 #include "sqktd/mutexed_object.h"
+#include <source_location>
+#include <span>
 
 #ifdef __TRANS_0413
 	const int	MAX_GETTHREAD_SIZE		= 8;
@@ -94,9 +96,6 @@ enum QUERYMODE
 	SAVE_SKILL,
 #endif // __S_NEW_SKILL_2
 	QM_CALL_USP_PET_LOG,
-#ifdef __S_RECOMMEND_EVE
-	RECOMMEND_EVE,
-#endif // __S_RECOMMEND_EVE
 #ifdef __GETMAILREALTIME
 	QM_GETMAIL_REALTIME,
 #endif // __GETMAILREALTIME
@@ -160,94 +159,6 @@ typedef struct tagDB_OVERLAPPED_PLUS
 		uBufSize = 0;
 	}
 }	DB_OVERLAPPED_PLUS,	*LPDB_OVERLAPPED_PLUS;
-
-struct	MAIL_QUERYINFO
-{
-	LPCTSTR		pszType;
-	int		nMail;
-	u_long	idReceiver;
-	u_long	idSender;
-	int		nGold;
-	time_t	tmCreate;
-	BYTE	byRead;
-	LPCTSTR		szTitle;
-	LPCTSTR	szText;
-	DWORD	dwItemId;
-	int		nItemNum;
-	int		nRepairNumber;
-	int		nHitPoint;
-	int		nMaxHitPoint;
-	int		nMaterial;
-	BYTE	byFlag;
-	SERIALNUMBER	iSerialNumber;
-	int		nOption;
-	int		bItemResist;
-	int		nResistAbilityOption;
-	u_long	idGuild;
-	int		nResistSMItemId;
-	BYTE	bCharged;
-	DWORD	dwKeepTime;
-	__int64	iRandomOptItemId;
-	int		nPiercedSize;
-	DWORD	dwItemId1;
-	DWORD	dwItemId2;
-	DWORD	dwItemId3;
-	DWORD	dwItemId4;
-	DWORD	dwItemId5;
-	BOOL	bPet;
-	BYTE	nKind;
-	BYTE	nLevel;
-	DWORD	dwExp;
-	WORD	wEnergy;
-	WORD	wLife;
-	BYTE	anAvailLevel[PL_MAX];
-#ifdef __PET_1024
-	char	szPetName[MAX_PET_NAME];
-#endif	// __PET_1024
-
-	MAIL_QUERYINFO( LPCTSTR pszQueryType )
-		{
-			pszType	= pszQueryType;
-			nMail	= 0;
-			idReceiver	= 0;
-			idSender	= 0;
-			nGold	= 0;
-			tmCreate	= 0;
-			byRead	= 0;
-			szTitle	= "";
-			szText	= "";
-			dwItemId	= 0;
-			nItemNum	= 0;
-			nRepairNumber	= 0;
-			nHitPoint	= 0;
-			nMaxHitPoint	= 0;
-			nMaterial	= 0;
-			byFlag	= 0;
-			iSerialNumber	= 0;
-			nOption	= 0;
-			bItemResist	= 0;
-			nResistAbilityOption	= 0;
-			idGuild	= 0;
-			nResistSMItemId	= 0;
-			bCharged	= 0;
-			dwKeepTime	= 0;
-			iRandomOptItemId	= 0;
-			nPiercedSize	= 0;
-			dwItemId1	= 0;
-			dwItemId2	= 0;
-			dwItemId3	= 0;
-			dwItemId4	= 0;
-			dwItemId5	= 0;
-			bPet	= FALSE;
-			nKind	= nLevel	= 0;
-			dwExp	= 0;
-			wEnergy	= wLife	= 0;
-			memset( anAvailLevel, 0, sizeof(BYTE) * PL_MAX );
-#ifdef __PET_1024
-			szPetName[0]	= '\0';
-#endif // __PET_1024
-		}
-};
 
 // 길드쿼리문장을 만든다.
 struct GUILD_QUERYINFO
@@ -352,60 +263,6 @@ struct GUILDLOG_QUERYINFO
 		pszState = "";
 	};
 }; 
-
-struct ADDBANK_QUERYINFO
-{
-	LPCTSTR		pszType;
-	u_long		idPlayer;
-	LPCTSTR		pszBank;
-	LPCTSTR		pszBankIndex;
-	LPCTSTR		pszObjIndexBank;
-	LPCTSTR		pszExtBank;
-	LPCTSTR		pszPirecingBank;
-	DWORD		dwGoldBank;
-	LPCTSTR		pszBankPet;
-
-	ADDBANK_QUERYINFO( LPCTSTR pszQueryType )
-	{
-		pszType = pszQueryType;
-		idPlayer = 0;
-		pszBank = "";
-		pszBankIndex = "";
-		pszObjIndexBank = "";
-		pszExtBank = "";
-		pszPirecingBank = "";
-		dwGoldBank = 0;
-		pszBankPet	= "";
-	};
-};
-
-typedef	struct	_PocketParam
-{
-	u_long		idPlayer;
-	int		nPocket;
-	const char*	pszItem;
-	const char* pszIndex;
-	const char* pszObjIndex;
-	const char* pszExt;
-	const char* pszPiercing;
-	const char* pszPet;
-	BOOL	bExpired;
-	time_t	tExpirationDate;
-
-	_PocketParam()
-	{
-		idPlayer	= 0;
-		nPocket		= 0;
-		pszItem		= "";
-		pszIndex	= "";
-		pszObjIndex		= "";
-		pszExt	= "";
-		pszPiercing		= "";
-		pszPet	= "";
-		bExpired	= TRUE;
-		tExpirationDate		= 0;
-	}
-}	PocketParam;
 
 struct WAR_QUERYINFO
 {
@@ -534,61 +391,39 @@ inline BOOL ACCOUNT_CACHE::IsReleaseable()
 
 #define	MAX_QUERY_RESERVED	2
 
-//typedef CMyMap2<CMover*>	C2Mover;
-//typedef CMyBucket2<CMover*> CMoverBucket;
-typedef	std::set<std::string>			SET_STRING;
 typedef std::map<u_long, std::string>	ULONG2STRING;
-typedef std::map<int, std::string>	INT2STRING;
 
-typedef	struct	_ItemStruct
-{
-	char	szItem[512];
-	char	szExt[64];
-	char	szPiercing[256];
+struct ItemStruct {
+	char	szItem[512] = "";
+	bool hasExt = false;
+	char	szExt[64] = "";
+	bool hasPiercing = false;
+	char	szPiercing[256] = "";
+	bool hasPet = false;
+	char	szPet[100] = "";
+};
 
-#ifdef __PET_1024
-	char	szPet[100];
-#else	// __PET_1024
-	char	szPet[64];
-#endif	// __PET_1024
+struct ItemContainerStruct {
+	char	szItem[6144] = "";
+	char	szIndex[512] = "";
+	char	szObjIndex[512] = "";
+	char	szExt[2048] = "";
+	char	szPiercing[8000] = "";
+	char	szPet[4200] = "";	// 42 * 100
 
-	_ItemStruct()
-		{
-			szItem[0]	= '\0';
-			szExt[0]	= '\0';
-			szPiercing[0]	= '\0';
-			szPet[0]	= '\0';
-		}
-}	ItemStruct, *PItemStruct;
+	void Accumulate(const ItemStruct & is, DWORD apIndex, DWORD objIndex);
+	void Clear() {
+		szItem[0] = szIndex[0] = szObjIndex[0] = '\0';
+		szExt[0] = szPiercing[0] = szPet[0] = '\0';
+	}
+};
 
-typedef	struct	_ItemContainerStruct
-{
-	char	szItem[6144];
-	char	szIndex[512];
-	char	szObjIndex[512];
-	char	szExt[2048];
-	char	szPiercing[8000];
-#ifdef __PET_1024
-	char	szPet[4200];	// 42 * 100
-#else	// __PET_1024
-	char	szPet[2688];	// 42 * 64
-#endif	// __PET_1024
-	_ItemContainerStruct()
-		{
-			*szItem	= '\0';
-			*szIndex	= '\0';
-			*szObjIndex	= '\0';
-			*szExt	= '\0';
-			*szPiercing	= '\0';
-			*szPet	= '\0';
-		}
-}	ItemContainerStruct, *PItemContainerStruct;
+using PItemContainerStruct = ItemContainerStruct *;
 
-typedef	struct	_PocketStruct : public ItemContainerStruct
-{
+struct PocketStruct : public ItemContainerStruct {
 	BOOL	bExpired = TRUE;
 	time_t	tExpirationDate = 0;
-}	PocketStruct,	*PPocketStruct;
+};
 
 
 typedef	struct	_CONV_RESULT_ITEM
@@ -598,7 +433,7 @@ typedef	struct	_CONV_RESULT_ITEM
 }	CONV_RESULT_ITEM;
 
 class CGuildMng;
-class CMail;
+class CMailBox; class CMail;
 
 typedef	std::map<DWORD, CONV_RESULT_ITEM>	MDC;
 
@@ -637,20 +472,11 @@ class CDbManager
 		int		nJob = 0;
 		int		nPoint = 0;
 	};
-	
-	struct __MAIL_REALTIME
-	{
-		int nMail_Before;
-		int nMail_After;
-		SERIALNUMBER m_liSerialNumber;
-		int m_nHitPoint;
-	};
 
 public:
 #ifdef __ITEM_REMOVE_LIST
-	SET_STRING	m_RemoveItem_List;
+	std::set<std::string>	m_RemoveItem_List;
 #endif // __ITEM_REMOVE_LIST
-	INT2STRING		m_int2StrItemUpdate;
 
 	CAccountCacheMgr m_AccountCacheMgr;
 	CMclCritSec		m_AddRemoveLock;
@@ -666,9 +492,6 @@ public:
 	HANDLE			m_hIOCPGuild;			// 길드 업뎃용 
 	HANDLE			m_hWorker;
 	HANDLE			m_hCloseWorker;
-	HANDLE			m_hItemUpdateWorker;
-	HANDLE			m_hItemUpdateCloseWorker;
-	int				m_nItemUpdate;
 
 	DB_OVERLAPPED_PLUS*		AllocRequest( void );
 	void	FreeRequest( DB_OVERLAPPED_PLUS* pOverlappedPlus);
@@ -696,7 +519,6 @@ public:
 	char DB_ADMIN_PASS_LOG[256];
 	char DB_ADMIN_PASS_CHARACTER01[256];
 	char DB_ADMIN_PASS_BACKSYSTEM[256];
-	char DB_ADMIN_PASS_ITEMUPDATE[256]; 
 
 public:
 	static CDbManager & GetInstance();
@@ -707,24 +529,21 @@ public:
 	void	PostSavePlayer( u_long idPlayer, BYTE nSlot );
 	void	SavePlayer( CQuery *qry, CQuery* pQueryLog, CMover* pMover, char* szQuery );
 	void	SavePlayTime( CQuery *qry, CAr & arRead, const char * szPlayer);
-	void	SaveHonor( CQuery *qry, u_long uidPlayer, int * aHonor, char* szQuery );
+	void	SaveHonor( CQuery *qry, u_long uidPlayer, std::span<const int> aHonor, char* szQuery );
 
 	void	SaveSkill( CQuery *qry, u_long uidPlayer, const MoverSkills & aJobSkill, char* szQuery );
 	void	SaveJobLv( CMover* pMover, char* szJobLv );
 	void	SaveQuest( CMover* pMover, char* szQuestCnt, char* szm_aCompleteQuest, char* szCheckedQuest );
 
-	void	SaveInventory( CMover* pMover, PItemContainerStruct pItemContainerStruct );
-	void	SaveBank( CMover* pMover, CItemContainer* pPlayerBank, PItemContainerStruct pItemContainerStruct );
-	void	SaveGuildBank( CItemContainer*  pGuildBank, PItemContainerStruct pItemContainerStruct );
+	static void	SaveItemContainer(CItemContainer & itemContainer, ItemContainerStruct & stringified);
 
 	void	SaveEquipment( CMover* pMover, char* szEquipmen );
-	void	SaveCardCube( CMover* pMover, char* szCard, char* szsCardIndex, char* szsCardObjIndex, char* szCube, char* szsCubeIndex, char* szsCubeObjIndex );
 	void	SaveTaskBar( CMover* pMover, char* szAppletTaskBar, char* szItemTaskBar, char* szSkillTaskBar );
 	void	SaveSMCode( CMover* pMover, char* szszSMTime );
 	void	SaveSkillInfluence( CMover* pMover, char* szszSkillInfluence );
-	void	MakeQueryPocket( char* szQuery, const PocketParam & p );
-	void	DBQryAddBankSave( char* szSql, const ADDBANK_QUERYINFO & info );
-	void	SaveOneItem( CItemElem* pItemElem, PItemStruct pItemStruct );
+	void	MakeQueryPocket( char* szQuery, u_long idPlayer );
+	void	DBQryAddBankSave( char* szSql, u_long idPlayer);
+	static void SaveOneItem( CItemElem* pItemElem, ItemStruct * pItemStruct );
 	void	SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	SendJoin( CMover* pMover, LPDB_OVERLAPPED_PLUS lpDBOP, DWORD dwAuthKey, 
 						  DWORD dwBillingClass, LPCTSTR szPartyName, LPCTSTR szBankPass, 
@@ -745,12 +564,10 @@ public:
 	void	SerializePlayerPoint( CAr & ar );
 	BOOL	OpenGuildCombat( void );
 	BOOL	LoadPost( void );
-	void	GetItemFromMail( CQuery* pQuery, CItemElem* pItemElem );
-#ifdef __POST_1204
-	void	RemoveMail(std::list<CMail*> & lspMail, time_t t );
-#else	// __POST_1204
-	void	RemoveMail(std::list<CMail*> & lspMail );
-#endif	// __POST_1204
+	std::unique_ptr<CItemElem> GetItemFromMail( const CQuery* pQuery );
+
+	void	RemoveMail(std::span<const std::pair<CMailBox *, CMail *>> lspMail);
+
 	CQuery*	m_apQuery[MAX_QUERY_RESERVED];
 	BOOL	QueryRemoveGuildBankTbl( void );
 	void	DeleteRemoveGuildBankTbl( CQuery* pQueryChar, CAr & ar );
@@ -844,20 +661,12 @@ public:
 	void	UpdateThread( void );
 	void	GuildThread( void );
 	void	BackSystem( void );
-	void	ItemUpdateThread( void );
-	void	ChangeItemUpdate( CQuery* pQuery );
-	void	ChangeSkillUpdate( CQuery* pQuery );
-	void	ChangeMonsterUpdate( CQuery* pQuery );
-	void	ChangeQuestUpdate( CQuery* pQuery );
-	void	ChangeJobNameUpdate( CQuery* pQuery );
-	void	ChangeSexUpdate( CQuery* pQuery );
-	//void	GetBank( BOOL bCache, ACCOUNT_CACHE* AccountCache, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, int nMySlot, char* pszBankPW );
 	BOOL	GetBank( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus, int nSlot );
 	BOOL	GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	LoadPiercingInfo( CItemElem & itemElem, char* szPirecingInven, int* pLocation );
+	void	LoadPiercingInfo( CItemElem & itemElem, const char* szPirecingInven, int* pLocation );
 	void	GetPiercingInfoFromMail( CQuery* pQuery, CItemElem* pItemElem );
 	BOOL	GetPocket( CMover* pMover, CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
-	void	SavePocket( CMover* pMover, PPocketStruct pPocketStruct );
+	void	SavePocket( CMover* pMover, std::span<PocketStruct, MAX_POCKET> pPocketStruct );
 	BOOL	GetEquipment( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	BOOL	GetTaskBar( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	GetCardCube( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
@@ -867,7 +676,7 @@ public:
 	BOOL	GetQuest( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	BOOL	GetSMMode( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	BOOL	GetSKillInfluence( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-	void	GetHonor( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
+	bool	GetHonor( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 
 	static	UINT	_GetThread( LPVOID pParam );
 	static	UINT	_PutThread( LPVOID pParam );
@@ -875,7 +684,6 @@ public:
 	static	UINT	_UpdateThread( LPVOID pParam );
 	static	UINT	_GuildThread( LPVOID pParam );
 	static  UINT	_BackSystem( LPVOID pParam );
-	static	UINT	_ItemUpdateThread( LPVOID pParam );
 
 	void	Clear( void );
 
@@ -900,15 +708,31 @@ public:
 	void	DBQryWar( char* szSql, const WAR_QUERYINFO & info );
 	void	DBQryNewItemLog( char* qryLog, const LogItemInfo& info );
 
-	int		GetOneItem( CItemElem* pItemElem, char* pstrItem, int *pLocation );
+	int		GetOneItem( CItemElem* pItemElem, const char* pstrItem, int *pLocation );
 	void	GetOneSkill( LPSKILL pSkill, char* pstrSkill, int *pLocation );
 	QUEST GetOneQuest( const char* pstrQuest, int *pLocation );
 	
-	BOOL	GetBankMover( CMover* pMover, CQuery *qry, int nSlot );
+	bool	GetBankMover( CMover* pMover, CQuery *qry, int nSlot );
 	void	GetGuildBank( CItemContainer*  GuildBank, CQuery *qry );
-	BOOL	RemoveItemInvenBank( CMover* pMover, int* nCountItem0, int* nCountItem1 );
-	BOOL	RemoveItemGuildBank( int nGuildId, CItemContainer*  GuildBank, int* nCountItem0, int* nCountItem1 );
-	DWORD	GetRemoveItemPanya( int nItem0, int nItem1 );
+
+	struct ItemContainerSerialization {
+		// /!\ Pay attention to if you initialized the 6 first values
+		const char * main;
+		const char * apIndex;
+		const char * dwObjIndex;
+		const char * ext;
+		const char * piercing;
+		const char * szPet;
+
+		const char * debugString = "";
+
+		[[nodiscard]] bool CheckValidity() const;
+	};
+	bool ReadItemContainer(CItemContainer & container, ItemContainerSerialization serialization);
+	std::vector<std::pair<DWORD, CPet *>> GetPets(const char * szPet);
+
+	bool RemoveItemInvenBank( CMover* pMover );
+	bool RemoveItemGuildBank( int nGuildId, CItemContainer*  GuildBank );
 
 #ifdef __ITEM_REMOVE_LIST
 	void	InitConvItemDialog( void );
@@ -923,22 +747,20 @@ public:
 	BOOL	GetInventoryBankView( char* pszSQL, CQuery* pQueryChar, CQuery* pQuerySave );
 	BOOL	GetGuildBankView( char* pszSQL, CQuery* pQueryChar, CQuery* pQuerySave );
 	BOOL	GetUserInventoryBank( CMover* pMover, CQuery* pQueryChar );	
-	BOOL	InventoryBankConv( char* pszSQL, CMover* pMover, CQuery* pQueryChar, CQuery* pQuerySave );
-	BOOL	GuildBankConv( char* pszSQL, int nGuildId, CItemContainer* GuildBank, CQuery* pQueryChar, CQuery* pQuerySave );
-	BOOL	RemoveGuildBankList( char* pszSQL, int nGuildId, CItemContainer*  GuildBank, int* nCountItem0, int* nCountItem1 );
-	BOOL 	RemoveInventoryBankList( char* pszSQL, CMover* pMover, int* nCountItem0, int* nCountItem1 );
-	BOOL	RemoveGuildBankListPanya( char* pszSQL, int nGuildId, CQuery* pQueryChar, CQuery* pQuerySave, int nCountItem0, int nCountItem1 );
-	BOOL	RemoveInventoryBankListPanya( char* pszSQL, CMover* pMover, CQuery* pQueryChar, CQuery* pQuerySave, int nCountItem0, int nCountItem1 );
+	bool	InventoryBankConv( char* pszSQL, CMover* pMover );
+	bool GuildBankConv( char* pszSQL, int nGuildId, CItemContainer* GuildBank );
+	bool	RemoveGuildBankList( char* pszSQL, int nGuildId, CItemContainer*  GuildBank );
+	bool 	RemoveInventoryBankList( char* pszSQL, CMover* pMover );
 	BOOL	SaveUserInventoryBank( char* pszSQL, CMover* pMover, CQuery* pQueryChar, CQuery* pQuerySave );
 	BOOL	SaveConvGuildBank( char* pszSQL, int nGuildId, CItemContainer* GuildBank, CQuery* pQueryChar, CQuery* pQuerySave );
 	BOOL	PiercingConfirmInventoryBank( CMover* pMover );
-	BOOL	PiercingConfirmGuildBank( int nGuildId, CItemContainer* GuildBank );
+	bool PiercingConfirmGuildBank(int nGuildId, CItemContainer * GuildBank);
 	BOOL	ConvItemStart( void );
 #endif // __ITEM_REMOVE_LIST
 
 	BOOL	OpenWanted( CAr& ar );
 
-	static	void	MakeQueryAddMail( char* szSql, CMail* pMail, u_long idReceiver );
+	[[nodiscard]] static ItemContainerStruct MakeQueryAddMail(char * szSql, CMail * pMail, u_long idReceiver);
 
 private:
 			CDbManager();
@@ -952,7 +774,7 @@ private:
 	void	WriteTag( CAr &ar, int count, const TAG_ENTRY* tags );
 	void	InsertTag( CQuery *qry, CAr & arRead);
 	[[nodiscard]] static CTime GetStrTime(const char * strbuf);
-	BOOL	VerifyString( const char* lpString, const char* lpFileName, int nLine, const char* lpName, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus = NULL );
+	BOOL	VerifyString( const char* lpString, const char* lpFileName, int nLine, const char* lpName );
 	
 	void	LogPlayConnect(CQuery *qry, CAr & arRead);
 	void	LogPlayDeath(CQuery *qry, CAr & arRead);
@@ -1000,10 +822,6 @@ private:
 	BOOL	ItemLogQuery( CQuery *pQryLog, const char *szQueryState, const LogItemInfo& info, u_long uIdPlayer, int nNo, const char *szItemName );
 	BOOL	RemoveItemDeleteQuery( CQuery *pQry, char* szSql, int nNo );
 
-#ifdef __S_RECOMMEND_EVE
-	void	RecommendEve( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
-#endif // __S_RECOMMEND_EVE
-
 	void	LogGetHonorTime(CQuery *qry, CAr & arRead);
 	CQuery	m_qryPostProc;
 	void	AddMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
@@ -1011,7 +829,8 @@ private:
 	void	RemoveMailItem( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
 	void	RemoveMailGold( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
 	void	ReadMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov );
-	void	DbQryMail( char* szSql, const MAIL_QUERYINFO & info );
+	static void DbQryMail(char * szSql, LPCTSTR pszType, int nMail = 0);
+
 	void	LogExpBox( CQuery *pQuery, CAr & ar );
 
 	void	GetGemeSettingtime( CQuery* pQuery, int nChat = 0 );
@@ -1038,12 +857,9 @@ private:
 	void	ContinueGC( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 
 private:
-	static void	GetStrFromDBFormat( char* szDst, const char* szSrc, int& n );
 	static void SetStrDBFormat(char * szDst, const char * szSrc);
-#ifdef __PET_1024
 	void	GetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc );
-	void	SetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc );
-#endif	// __PET_1024
+	static void	SetDBFormatStr( char* szDst, int nMaxLen, const char* szSrc );
 
 	void	LoginProtectCert( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	
@@ -1057,7 +873,7 @@ private:
 	HANDLE			m_hWait;
 };
 
-inline BOOL CDbManager::VerifyString( const char* lpString, const char* lpFileName, int nLine, const char* lpName, LPDB_OVERLAPPED_PLUS lpOverlapped )
+inline BOOL CDbManager::VerifyString( const char* lpString, const char* lpFileName, int nLine, const char* lpName )
 {
 	int len		= strlen( lpString );
 	if( len > 0 && lpString[len-1] == '$' )

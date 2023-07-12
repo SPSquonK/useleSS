@@ -73,13 +73,13 @@ void CWndGuildTabWar::OnDraw( C2DRender* p2DRender )
 		
 		CPoint point = lpWndCtrl->rect.TopLeft();
 		
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ONE );
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ZERO );
+		D3DDEVICE->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ONE );
+		D3DDEVICE->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ZERO );
 		
 		pWndWorld->m_pTextureLogo[dwEnemyLogo-1].Render( &g_Neuz.m_2DRender, point, 255 );
 		
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
-		p2DRender->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+		D3DDEVICE->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
+		D3DDEVICE->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 	}
 } 
 
@@ -94,16 +94,12 @@ void CWndGuildTabWar::OnInitialUpdate()
 	if(pWndButton)
 	{
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtGuildDuel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtGuildDuel.bmp" ), 0xffff00ff );
 	}
 
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 } 
-
-BOOL CWndGuildTabWar::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
-	return CWndNeuz::InitDialog(APP_GUILD_TABGUILDWAR, pWndParent, 0, CPoint(0, 0));
-}
 
 BOOL CWndGuildTabWar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -191,7 +187,7 @@ void CWndGuildWarRequest::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndGuildWarRequest::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndGuildWarRequest::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_WARREQUEST, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -223,7 +219,7 @@ void CWndGuildWarPeaceConfirm::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndGuildWarPeaceConfirm::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndGuildWarPeaceConfirm::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_WARPEACECONFIRM, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -253,7 +249,7 @@ void CWndGuildWarPeace::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndGuildWarPeace::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndGuildWarPeace::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_WARPEACE, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -282,7 +278,7 @@ void CWndGuildWarGiveUp::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndGuildWarGiveUp::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndGuildWarGiveUp::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_WARGIVEUP, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -318,15 +314,15 @@ void CWndGuildWarDecl::OnInitialUpdate() {
 	CWndEdit * pWndName = (CWndEdit *)GetDlgItem(WIDC_EDIT1);	// 상대길드명.
 	CWndEdit * pWndPenya = (CWndEdit *)GetDlgItem(WIDC_EDIT2);	// 전쟁자금.
 
-	pWndName->SetTabStop(TRUE);
-	pWndPenya->SetTabStop(TRUE);
+	pWndName->SetTabStop();
+	pWndPenya->SetTabStop();
 	pWndName->SetFocus();
 
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 }
 
-BOOL CWndGuildWarDecl::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndGuildWarDecl::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILD_WAR, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -338,7 +334,7 @@ BOOL CWndGuildWarDecl::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult)
 			if (g_pPlayer) {
 				CString strGuild = pWndEdit->GetString();
 				if (strGuild.GetLength() >= 3 && strGuild.GetLength() < MAX_G_NAME) {
-					strGuild.TrimLeft();	strGuild.TrimRight();
+					strGuild.Trim();
 					g_DPlay.SendDeclWar(g_pPlayer->m_idPlayer, strGuild.GetString());
 					Destroy();
 				}

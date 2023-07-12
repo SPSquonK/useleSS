@@ -40,10 +40,7 @@
 extern	CProject			prj;
 
 #define	VERIFYSTRING( lpString, lpszPlayer )	\
-		if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer, lpDbOverlappedPlus ) )		return;
-
-#define	VERIFY_GUILD_STRING( lpString, lpszGuild )	\
-if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszGuild ) )		return;
+		if( FALSE == VerifyString( lpString, __FILE__, __LINE__, lpszPlayer ) )		return;
 
 CDbManager & g_DbManager = CDbManager::GetInstance();							// CDbManager 클래스 생성
 
@@ -79,17 +76,11 @@ CDbManager::CDbManager()
 
 	m_hWorker	= m_hCloseWorker	= NULL;
 
-	m_hItemUpdateWorker = m_hItemUpdateCloseWorker = NULL;
-	m_nItemUpdate = 0;
-#ifdef __ITEM_REMOVE_LIST
-	m_RemoveItem_List.clear();
-#endif // __ITEM_REMOVE_LIST
 	memset( m_apQuery, 0, sizeof(m_apQuery) );
 
 	DB_ADMIN_PASS_LOG[0] = '\0';
 	DB_ADMIN_PASS_CHARACTER01[0] = '\0';
 	DB_ADMIN_PASS_BACKSYSTEM[0] = '\0';
-	DB_ADMIN_PASS_ITEMUPDATE[0] = '\0';
 	m_cbTrade	= 0;
 }
 
@@ -120,56 +111,51 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 	arRead.ReadString( lpDbOverlappedPlus->AccountInfo.szAccount, MAX_ACCOUNT );
 	arRead.ReadString( lpDbOverlappedPlus->AccountInfo.szPassword, MAX_PASSWORD );
 
-	BYTE nSlot, nFace, nCostume, nSkinSet, nHairMesh;
-	DWORD dwHairColor;
-	BYTE nSex, nJob, nHeadMesh;
-	int nBankPW = 0;
-
 	//	 CHARACTER_STR 'I1',@im_idPlayer,@iserverindex,@iaccount,@im_szName,@iplayerslot,@idwWorldID,@im_dwIndex,@im_vPos_x,@im_vPos_y,@im_vPos_z,
 	//	 @im_szCharacterKey,@im_dwSkinSet,@im_dwHairMesh,@im_dwHairColor,@im_dwHeadMesh,@im_dwSex
 	// 	 CHARACTER_STR 'I1','','01','beat','샛별공주',0,0,0,0,0,0,'',0,0,0,0,0
-	arRead >> nSlot;
+	
+	BYTE nSlot; arRead >> nSlot;
 	arRead.ReadString( lpDbOverlappedPlus->AccountInfo.szPlayer, MAX_PLAYER );
 
-#ifdef __RULE_0615
 	// 해킹이므로 무시
 	if (prj.nameValider.IsNotAllowedName(lpDbOverlappedPlus->AccountInfo.szPlayer)) {
 		return;
 	}
 	prj.nameValider.Formalize( lpDbOverlappedPlus->AccountInfo.szPlayer );
-#endif	// __RULE_0615
 
-	arRead >> nFace >> nCostume >> nSkinSet >> nHairMesh;
-	arRead >> dwHairColor;
-	arRead >> nSex >> nJob >> nHeadMesh;
-	arRead >> nBankPW;
-
-	DWORD dwAuthKey;
-	arRead >> dwAuthKey;
+	const auto [
+		skin, dwHairColor, nSex,
+		nBankPW,
+		dwAuthKey
+	] = arRead.Extract<
+		MoverSub::SkinMeshs, DWORD, BYTE,
+		int,
+		DWORD
+	>();
+	
 	DWORD dwIndex	= ( nSex == SEX_FEMALE ? MI_FEMALE : MI_MALE );
 	DWORD dwWorldID	= WI_WORLD_MADRIGAL;
 	if( !g_appInfo.dwSys )
 		dwWorldID	= WI_WORLD_EVENT01;
 
 	const auto startingPosOpt = prj.GetRandomBeginPos(dwWorldID);
-	if (!startingPosOpt) { ASSERT(0); }
-
 	D3DXVECTOR3 vPos = startingPosOpt.value();
 
-	if( nSex != SEX_FEMALE && nSex != SEX_MALE )
-	{
-		return;
-	}
+	if (skin.skinSet != 0) return;
+	if (skin.hairMesh >= MAX_BASE_HAIR) return;
+	if (skin.headMesh >= MAX_DEFAULT_HEAD) return;
 
-	if( nBankPW < 0 || nBankPW > 9999 )
-	{
-		Error( "nBankPW is Invalid! szPlayer : %s, nBankPW : %d", lpDbOverlappedPlus->AccountInfo.szPlayer, nBankPW );
+	if (nSex != SEX_FEMALE && nSex != SEX_MALE) return;
+
+	if (nBankPW < 0 || nBankPW > 9999) {
+		Error("nBankPW is Invalid! szPlayer : %s, nBankPW : %d", lpDbOverlappedPlus->AccountInfo.szPlayer, nBankPW);
 		return;
 	}
 
 	char szQuery[QUERY_SIZE]	= { 0,};
 	DBQryCharacter( szQuery, "I1", 0, g_appInfo.dwSys, lpDbOverlappedPlus->AccountInfo.szAccount, lpDbOverlappedPlus->AccountInfo.szPlayer, nSlot, dwWorldID,
-		dwIndex, vPos.x, vPos.y, vPos.z, "", nSkinSet, nHairMesh,	dwHairColor, nHeadMesh, nSex );
+		dwIndex, vPos.x, vPos.y, vPos.z, "", skin.skinSet, skin.hairMesh,	dwHairColor, skin.headMesh, nSex );
 
 	if( FALSE == qry->Exec( szQuery ) )
 	{
@@ -191,8 +177,6 @@ void CDbManager::CreatePlayer( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedP
 		{
 			nidPlayer = qry->GetInt( "m_idPlayer" );	
 			PlayerData pd;
-//			pd.nJob	= 0;
-//			pd.dwState	= 0;
 			pd.data.nLevel	= 1;
 			pd.data.nSex	= nSex;
 			pd.data.nVer	= 1;
@@ -441,9 +425,9 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 			mover.m_idGuild		= (DWORD)qry->GetInt( "m_idGuild" );
 			mover.m_idWar	= WarId(qry->GetInt( "m_idWar" ));
 
-			mover.m_dwSkinSet = (DWORD)qry->GetInt("m_dwSkinSet");
-			mover.m_dwHairMesh = (DWORD)qry->GetInt("m_dwHairMesh");
-			mover.m_dwHeadMesh = (DWORD)qry->GetInt("m_dwHeadMesh");
+			mover.m_skin.skinSet = (std::uint8_t)qry->GetInt("m_dwSkinSet");
+			mover.m_skin.hairMesh = (std::uint8_t)qry->GetInt("m_dwHairMesh");
+			mover.m_skin.headMesh = (std::uint8_t)qry->GetInt("m_dwHeadMesh");
 			mover.m_dwHairColor = (DWORD)qry->GetInt("m_dwHairColor");
 			mover.SetSex( (BYTE) qry->GetInt("m_dwSex") );
 			mover.m_nJob = (LONG)qry->GetInt("m_nJob");
@@ -511,10 +495,8 @@ void CDbManager::SendPlayerList( CQuery* qry, LPDB_OVERLAPPED_PLUS lpDbOverlappe
 			arbuf << mover.m_idparty;
 			arbuf << mover.m_idGuild;
 			arbuf << mover.m_idWar;
-			arbuf << mover.m_dwSkinSet;
-			arbuf << mover.m_dwHairMesh;
+			arbuf << mover.m_skin;
 			arbuf << mover.m_dwHairColor;
-			arbuf << mover.m_dwHeadMesh;
 			arbuf << mover.GetSex();
 			arbuf << mover.m_nJob;
 			arbuf << mover.m_nLevel;
@@ -1394,10 +1376,6 @@ BOOL CDbManager::CreateDbWorkers( void )
 	m_hWorker	= chBEGINTHREADEX( NULL, 0, _BackSystem, this, 0, &dwThreadId );
 	ASSERT( m_hWorker );
 	
-	m_hItemUpdateCloseWorker	= CreateEvent( NULL, FALSE, FALSE, NULL );
-	m_hItemUpdateWorker	= chBEGINTHREADEX( NULL, 0, _ItemUpdateThread, this, 0, &dwThreadId );
-	ASSERT( m_hWorker );
-
 	for( int i = 0; i < MAX_QUERY_RESERVED; i++ )
 	{
 		m_apQuery[i]	= new CQuery;
@@ -1442,8 +1420,6 @@ void CDbManager::CloseDbWorkers( void )
 	}
 
 	CLOSE_THREAD( m_hWorker, m_hCloseWorker );
-
-	CLOSE_THREAD( m_hItemUpdateWorker, m_hItemUpdateCloseWorker );
 
 	CLOSE_THREAD( m_hSPThread, m_hCloseSPThread );
 
@@ -1492,13 +1468,6 @@ UINT CDbManager::_BackSystem( LPVOID pParam )
 {
 	CDbManager* pDbManager	= (CDbManager*)pParam;
 	pDbManager->BackSystem();
-	return 0;
-}
-
-UINT CDbManager::_ItemUpdateThread( LPVOID pParam )
-{
-	CDbManager* pDbManager	= (CDbManager*)pParam;
-	pDbManager->ItemUpdateThread();
 	return 0;
 }
 
@@ -2465,6 +2434,107 @@ void CDbManager::UpdateGuildSetName( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 	}
 }
 
+bool CDbManager::ReadItemContainer(CItemContainer & container, ItemContainerSerialization serialization) {
+	bool allValid = true;
+
+	{
+		int CountStr = 0;
+		int itemCount = 0;
+		while ('$' != serialization.apIndex[CountStr]) {
+			container.m_apIndex[itemCount] = static_cast<DWORD>(GetIntFromStr(serialization.apIndex, &CountStr));
+			itemCount++;
+		}
+	}
+
+	{
+		int CountStr = 0;
+		int IndexObjIndex = 0;
+		while ('$' != serialization.dwObjIndex[CountStr]) {
+			container.m_apItem[IndexObjIndex].m_dwObjIndex = (DWORD)GetIntFromStr(serialization.dwObjIndex, &CountStr);
+			IndexObjIndex++;
+		}
+	}
+
+	{
+		int iterationId = 0;
+		int CountStr = 0;
+		int IndexItem = 0;
+		while ('$' != serialization.main[CountStr])
+		{
+			CItemElem BufItemElem;
+			IndexItem = GetOneItem(&BufItemElem, serialization.main, &CountStr);
+			if (IndexItem == -1) {
+				Error("ReadItemContainer(%s) : IndexIdem == -1 [iteration=%d, itemId=%lu]",
+					serialization.debugString, iterationId, BufItemElem.m_dwItemId
+				);
+				allValid = false;
+			} else if (IndexItem >= container.GetMax()) {
+				Error("ReadItemContainer(%s) : IndexIdem = %d >= Max(%d) [iteration=%d, itemId=%lu]",
+					serialization.debugString,
+					IndexItem, container.GetMax(),
+					iterationId, BufItemElem.m_dwItemId
+				);
+				return false;
+			} else {
+				// Note: m_dwObjIndex is not overwritten by this operator= implementation
+				container.m_apItem[IndexItem] = BufItemElem;
+			}
+
+			++iterationId;
+		}
+	}
+
+	for (auto splitter : DBDeserialize::SplitBySlash(serialization.ext)) {
+		CItemElem & itemElem = container.m_apItem[splitter.Index()];
+
+		splitter.Skip(); // charged
+		itemElem.m_dwKeepTime = splitter.NextDWORD();
+
+		std::int64_t iRandomOptItemId = splitter.NextInt64();
+		if (iRandomOptItemId == -102) iRandomOptItemId = 0;
+		itemElem.SetRandomOptItemId(iRandomOptItemId);
+
+		itemElem.m_bTranformVisPet = splitter.NextBool() ? TRUE : FALSE;
+	}
+
+	{
+		int CountStr = 0;
+		int nPirecingBank = 0;
+		while ('$' != serialization.piercing[CountStr]) {
+			LoadPiercingInfo(container.m_apItem[nPirecingBank], serialization.piercing, &CountStr);
+			++nPirecingBank;
+		}
+	}
+
+	for (const auto & [nGuildBankPet, pPet] : GetPets(serialization.szPet)) {
+		SAFE_DELETE(container.m_apItem[nGuildBankPet].m_pPet);
+		container.m_apItem[nGuildBankPet].m_pPet = pPet;
+	}
+
+	return allValid;
+}
+
+bool CDbManager::ItemContainerSerialization::CheckValidity() const {
+	constexpr auto IndividualCheck = [](const char * debugString, const char * key, const char * content) -> bool {
+		size_t size = std::strlen(content);
+		const bool valid = size > 0 && content[size - 1] == '$';
+		if (!valid) {
+			WriteLog("Item Bad Serialization - %s\tkey= %s\tvalue=%s", debugString, key, content);
+		}
+		return valid;
+	};
+
+	// Using a single & to continue after the first error
+	return static_cast<bool>(
+		IndividualCheck(debugString, "main", main)
+		& IndividualCheck(debugString, "apIndex", apIndex)
+		& IndividualCheck(debugString, "dwObjIndex", dwObjIndex)
+		& IndividualCheck(debugString, "ext", ext)
+		& IndividualCheck(debugString, "piercing", piercing)
+		& IndividualCheck(debugString, "szPet", szPet)
+		);
+}
+
 void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
 {
 	CAr	ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
@@ -2476,179 +2546,62 @@ void CDbManager::OpenQueryGuildBank( CQuery* pQuery, LPDB_OVERLAPPED_PLUS lpDbOv
 		return;
 	}
 
-	while( 1 )
+	while( true )
 	{
-	// 3. 월드 서버에 전송할 패킷을 생성한다.
-	BEFORESENDDUAL( ar2, PACKETTYPE_GUILD_BANK, DPID_UNKNOWN, DPID_UNKNOWN );
+		// 3. 월드 서버에 전송할 패킷을 생성한다.
+		BEFORESENDDUAL( ar2, PACKETTYPE_GUILD_BANK, DPID_UNKNOWN, DPID_UNKNOWN );
 
-	// 4. 로딩할 길드창고 데이터를 스택에 생성한다.
-//	CItemContainer<CItemElem>	GuildBank;	// 길드 창고
-	int							nGoldGuild; // 길드 Credit
-	int							nGuildId	= 0;
-	int							nBufsize	= 0;
-	int							nCount		= 0;
-	u_long						ulOffSet	= ar2.GetOffset();
+		// 4. 로딩할 길드창고 데이터를 스택에 생성한다.
+		int							nBufsize	= 0;
+		int							nCount		= 0;
+		u_long						ulOffSet	= ar2.GetOffset();
 
-	// 5. 쿼리한 결과를 저장한다.
-	ar2 << static_cast<int>(0);
-	BOOL bFetch	= FALSE;
-	while( bFetch = pQuery->Fetch() )
-	{
-		nCount++;
-		CItemContainer	GuildBank;	// 길드 창고
-		GuildBank.SetItemContainer( CItemContainer::ContainerTypes::GUILDBANK );
-//		GuildBank.Clear();
-		
-		nGuildId		= pQuery->GetInt( "m_idGuild" );
-		nGoldGuild		= pQuery->GetInt( "m_nGuildGold" );
-		
-		int		CountStr		= 0;
-		int		IndexItem		= 0;
-		int		itemCount		= 0;
-		
-		char m_apIndex[512]		= { 0, };
-		pQuery->GetStr( "m_apIndex", m_apIndex );
-		VERIFY_GUILD_STRING( m_apIndex, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
-		while( '$' != m_apIndex[CountStr] )
+		// 5. 쿼리한 결과를 저장한다.
+		ar2 << static_cast<int>(0);
+		BOOL bFetch	= FALSE;
+		while( bFetch = pQuery->Fetch() )
 		{
-			GuildBank.m_apIndex[itemCount]	= (DWORD)GetIntFromStr( m_apIndex, &CountStr );
-			itemCount++;
-		}
+			nCount++;
+			CItemContainer	GuildBank;	// 길드 창고
+			GuildBank.SetItemContainer( CItemContainer::ContainerTypes::GUILDBANK );
+	//		GuildBank.Clear();
 		
-		CountStr	= 0;
-		int IndexObjIndex	= 0;
-		char ObjIndex[512]	= {0,};
-		pQuery->GetStr( "m_dwObjIndex", ObjIndex );
-		VERIFY_GUILD_STRING( ObjIndex, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
-		while( '$' != ObjIndex[CountStr] )
-		{
-			GuildBank.m_apItem[IndexObjIndex].m_dwObjIndex	= (DWORD)GetIntFromStr( ObjIndex, &CountStr );
-			IndexObjIndex++;
-		}
+			const int nGuildId   = pQuery->GetInt( "m_idGuild" );
+			const int nGoldGuild = pQuery->GetInt( "m_nGuildGold" );
 		
-		
-		CountStr		= 0;
-		IndexItem		= 0;
-		char	Bank[7500]		= { 0, };
-		pQuery->GetStr( "m_GuildBank", Bank );
-		VERIFY_GUILD_STRING( Bank, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
-		while( '$' != Bank[CountStr] )
-		{
-			CItemElem BufItemElem;
-			IndexItem = GetOneItem( &BufItemElem, Bank, &CountStr );
-			if( IndexItem == -1 )
-			{
-				Error( "OpenQuery::GuildBank : << 프로퍼티 없음. %d, %d", nGuildId, BufItemElem.m_dwItemId );
-			}
-			else
-			{
-				if( IndexItem >= MAX_GUILDBANK )
-				{
-					Error( "OpenQueryGuildBank::GuildBank : << IndexItem %d, %d", nGuildId, IndexItem );
-					Error( "GuildBank = %s", Bank );
-					return;
-				}
-				GuildBank.m_apItem[IndexItem] = BufItemElem;
-			}
+			char debugString[256];
+			std::sprintf(debugString, __FUNCTION__" - Guild #%d %s", nGuildId, g_GuildMng.GetGuild(nGuildId)->m_szGuild);
 
+			ItemContainerSerialization serialization = {
+				.main = pQuery->GetStrPtr("m_GuildBank"),
+				.apIndex = pQuery->GetStrPtr("m_apIndex"),
+				.dwObjIndex = pQuery->GetStrPtr("m_dwObjIndex"),
+				.ext = pQuery->GetStrPtr("m_extGuildBank"),
+				.piercing = pQuery->GetStrPtr("m_GuildBankPiercing"),
+				.szPet = pQuery->GetStrPtr("szGuildBankPet"),
+
+				.debugString = debugString
+			};
+
+			if (!serialization.CheckValidity()) return;
+
+			ReadItemContainer(GuildBank, serialization);
+
+			ar2 << nGuildId << nGoldGuild << GuildBank;
+
+			if( nCount >= 1000 )
+				break;
 		}
+		// 패킷 헤더를 설정한다.
+		BYTE* pBuf = ar2.GetBuffer( &nBufsize );
 
-		CountStr	= 0;
-		int nExtBank = 0;
-		char ExtBank[2000] = {0,};
-		pQuery->GetStr( "m_extGuildBank", ExtBank );
-		VERIFYSTRING( ExtBank, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
-		while( '$' != ExtBank[CountStr] )
-		{
-			GetIntPaFromStr(ExtBank, &CountStr);
-			GuildBank.m_apItem[nExtBank].m_dwKeepTime				= (DWORD)GetIntPaFromStr( ExtBank, &CountStr );
-			GuildBank.m_apItem[nExtBank].SetRandomOptItemId( GetInt64PaFromStr( ExtBank, &CountStr ) );
-			GuildBank.m_apItem[nExtBank].m_bTranformVisPet = static_cast<BOOL>( GetIntPaFromStr( ExtBank, &CountStr ) );
+		*(UNALIGNED int*)( pBuf + ulOffSet )	= nCount;
+		// 패킷을 월드서버에 전송한다.
+		SEND( ar2, CDPTrans::GetInstance(), lpDbOverlappedPlus->dpid );
 
-			++CountStr;
-			++nExtBank;
-		}
-		
-		CountStr	= 0;
-		int nPirecingBank = 0;
-		char PirecingBank[4000] = {0,};
-		pQuery->GetStr( "m_GuildBankPiercing", PirecingBank );
-		VERIFYSTRING( PirecingBank, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
-		while( '$' != PirecingBank[CountStr] )
-		{
-			LoadPiercingInfo( GuildBank.m_apItem[nPirecingBank], PirecingBank, &CountStr );
-			++nPirecingBank;
-		}
-
-		CountStr	= 0;
-		int nGuildBankPet = 0;
-#ifdef __PET_1024
-		char szGuildBankPet[4200] = {0,};
-#else	// __PET_1024
-		char szGuildBankPet[2688] = {0,};
-#endif	// __PET_1024
-		pQuery->GetStr( "szGuildBankPet", szGuildBankPet );
-		VERIFYSTRING( szGuildBankPet, g_GuildMng.GetGuild(nGuildId)->m_szGuild );
-		while( '$' != szGuildBankPet[CountStr] )
-		{
-//			SAFE_DELETE( GuildBank.m_apItem[nGuildBankPet].m_pPet );
-			BOOL bPet	= (BOOL)GetIntFromStr( szGuildBankPet, &CountStr );
-			if( bPet )
-			{
-				CPet* pPet	= GuildBank.m_apItem[nGuildBankPet].m_pPet	= new CPet;
-				BYTE nKind	= (BYTE)GetIntFromStr( szGuildBankPet, &CountStr );
-				pPet->SetKind( nKind );
-				BYTE nLevel	= (BYTE)GetIntFromStr( szGuildBankPet, &CountStr );
-				pPet->SetLevel( nLevel );
-				DWORD dwExp	= (DWORD)GetIntFromStr( szGuildBankPet, &CountStr );
-				pPet->SetExp( dwExp );
-				WORD wEnergy	= (WORD)GetIntFromStr( szGuildBankPet, &CountStr );
-				pPet->SetEnergy( wEnergy );
-#ifdef __PET_1024
-				WORD wLife	= (WORD)GetIntPaFromStr( szGuildBankPet, &CountStr );
-				pPet->SetLife( wLife );
-				for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-				{
-					BYTE nAvailLevel	= (BYTE)GetIntPaFromStr( szGuildBankPet, &CountStr );
-					pPet->SetAvailLevel( i, nAvailLevel );
-				}
-				char szFmt[MAX_PET_NAME_FMT]	= { 0,};
-				GetStrFromStr( szGuildBankPet, szFmt, &CountStr );
-				char szName[MAX_PET_NAME]	= { 0,};
-				GetDBFormatStr( szName, MAX_PET_NAME, szFmt );
-				pPet->SetName( szName );
-#else	// __PET_1024
-				WORD wLife	= (WORD)GetIntFromStr( szGuildBankPet, &CountStr );
-				pPet->SetLife( wLife );
-				for( int i = PL_D; i <= pPet->GetLevel(); i++ )
-				{
-					BYTE nAvailLevel	= (BYTE)GetIntFromStr( szGuildBankPet, &CountStr );
-					pPet->SetAvailLevel( i, nAvailLevel );
-				}
-#endif	// __PET_1024
-			}
-//			++CountStr;
-			++nGuildBankPet;
-		}
-
-		ar2 << nGuildId;
-		ar2 << nGoldGuild;
-		ar2 << GuildBank;
-
-		if( nCount >= 1000 )
+		if( bFetch == FALSE )
 			break;
 	}
-	// 패킷 헤더를 설정한다.
-	BYTE* pBuf = ar2.GetBuffer( &nBufsize );
-
-	*(UNALIGNED int*)( pBuf + ulOffSet )	= nCount;
-	// 패킷을 월드서버에 전송한다.
-	SEND( ar2, CDPTrans::GetInstance(), lpDbOverlappedPlus->dpid );
-
-	if( bFetch == FALSE )
-		break;
-	}
-
 }
 
 void CDbManager::UpdateGuildBankUpdate( CQuery* pQuery, CQuery* pQueryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
@@ -2685,7 +2638,7 @@ void CDbManager::UpdateGuildBankUpdate( CQuery* pQuery, CQuery* pQueryLog, LPDB_
 
 	char NullStr[2]				= "$";
 	ItemContainerStruct icsGuildBank;
-	SaveGuildBank( &GuildBank, &icsGuildBank );
+	SaveItemContainer( GuildBank, icsGuildBank );
 
 	char szQuery[QUERY_SIZE]	= { 0,};
 	sprintf( szQuery, 
@@ -3116,40 +3069,6 @@ void CDbManager::InsertTag( CQuery *qry, CAr & arRead)
 	}
 }
 
-#ifdef __S_RECOMMEND_EVE
-void CDbManager::RecommendEve( CQuery *qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
-{
-	CAr arRead( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
-
-	char szAccount[MAX_ACCOUNT];
-	u_long idPlayer;
-	LONG nLevel;
-	BYTE nSex;
-	int nValue;
-	
-	arRead.ReadString( szAccount, MAX_ACCOUNT );
-	arRead >> idPlayer >> nLevel >> nSex >> nValue;
-
-#ifndef __GETMAILREALTIME
-	return;
-#endif // __GETMAILREALTIME
-
-	char szQuery[QUERY_SIZE]	= { 0,};
-	sprintf( szQuery, "MAIL_STR_REALTIME 'I1', '%02d', %d, %d, '%07d', %d, '%s', %d", g_appInfo.dwSys, nSex, nValue, idPlayer, nLevel, szAccount, time(NULL) );
-
-	if( FALSE == qry->Exec( szQuery ) )
-	{
-		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
-		TRACE("CDbManager::RecommendEve -> qry->Exec %s\n", szQuery);
-		return;
-	}
-
-	if( qry->Fetch() )
-	{
-	}
-}
-#endif // __S_RECOMMEND_EVE
-
 void CDbManager::SchoolReport( CQuery* pQuery, CAr & ar)
 {
 	TRACE( "SCHOOL_REPORT\n" );
@@ -3238,98 +3157,35 @@ void CDbManager::DBQryVote( char* szSql, const VOTE_QUERYINFO& info )
 	TRACE("%s\n", szSql);
 }
 
-void CDbManager::DbQryMail( char* szSql, const MAIL_QUERYINFO& info )
-{
-	sprintf( szSql, "MAIL_STR '%s', @nMail=%d, @serverindex='%02d', @idReceiver='%07d', @idSender='%07d', @nGold=%d, @tmCreate=%d, @byRead=%d, @szTitle='%s', @szText='%s',"
-		"@dwItemId=%d, @nItemNum=%d, @nRepairNumber=%d, @nHitPoint=%d, @nMaxHitPoint=%d, @nMaterial=%d, @byFlag=%d, @dwSerialNumber=%d,"
-		"@nOption=%d, @bItemResist=%d, @nResistAbilityOption=%d, @idGuild=%d, @nResistSMItemId=%d, @bCharged=%d, @dwKeepTime=%d,"
-		"@nRandomOptItemId=%I64d,"
-		"@nPiercedSize=%d, @dwItemId1=%d, @dwItemId2=%d, @dwItemId3=%d, @dwItemId4=%d"
-		", @bPet=%d, @nKind=%d, @nLevel=%d, @dwExp=%d, @wEnergy=%d, @wLife=%d,"
-		"@anAvailLevel_D=%d, @anAvailLevel_C=%d, @anAvailLevel_B=%d, @anAvailLevel_A=%d, @anAvailLevel_S=%d"
-		", @dwItemId5=%d"
-		,info.pszType, info.nMail, g_appInfo.dwSys, info.idReceiver, info.idSender, info.nGold, info.tmCreate, info.byRead, info.szTitle, info.szText, 
-		info.dwItemId, info.nItemNum, info.nRepairNumber, info.nHitPoint, info.nMaxHitPoint, info.nMaterial, info.byFlag, info.iSerialNumber,
-		info.nOption, info.bItemResist, info.nResistAbilityOption, info.idGuild, info.nResistSMItemId, info.bCharged, info.dwKeepTime,
-		info.iRandomOptItemId,
-		info.nPiercedSize, info.dwItemId1, info.dwItemId2, info.dwItemId3, info.dwItemId4
-		, info.bPet, info.nKind, info.nLevel, info.dwExp, info.wEnergy, info.wLife,
-		info.anAvailLevel[PL_D], info.anAvailLevel[PL_C], info.anAvailLevel[PL_B], info.anAvailLevel[PL_A], info.anAvailLevel[PL_S]
-		,info.dwItemId5
-		);
+void CDbManager::DbQryMail(char * szSql, LPCTSTR pszType, int nMail) {
+	sprintf(szSql,
+		"MAIL_STR '%s', @nMail=%d, @serverindex='%02d'",
+		pszType, nMail, g_appInfo.dwSys
+	);
 }
 
-void CDbManager::MakeQueryAddMail( char* szSql, CMail* pMail, u_long idReceiver )
+ItemContainerStruct CDbManager::MakeQueryAddMail( char* szSql, CMail* pMail, u_long idReceiver )
 {
-	CItemElem item;
-	CPet pet;
-	BOOL bPet	= FALSE;
-	if( pMail->m_pItemElem )
-	{
-		item	= *pMail->m_pItemElem;
-		if( pMail->m_pItemElem->m_pPet )
-		{
-			pet		= *pMail->m_pItemElem->m_pPet;
-			bPet	= TRUE;
-		}
-	}
-	else
-		item.m_nItemNum = 0;
+	ItemContainerStruct ics;
 
-	if( item.GetProp() && item.GetProp()->IsUltimate() )
-	{
-		sprintf( szSql, "{call MAIL_STR('A1', %d, '%02d', '%07d', '%07d', %d, %d, %d, ?, ?,"
-			"%d, %d, %d, %d, %d, %d, %d, %d,"
-			"%d, %d, %d, %d, %d, %d, %d,"
-			"%I64d,"
-			"%d, %d, %d, %d, %d"
-			",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d"
-			",%d"
-			",%d, %d, %d, %d, %d"	// 추가 피어싱 아이템
-			",%d, %d, %d, %d, %d"	// 추가 피어싱 아이템
-			",%d"	// 추가 피어싱 사이즈
-			")}",
-
-			pMail->m_nMail, g_appInfo.dwSys, idReceiver, pMail->m_idSender, pMail->m_nGold, pMail->m_tmCreate, pMail->m_byRead,
-			item.m_dwItemId, item.m_nItemNum, item.m_nRepairNumber, item.m_nHitPoint, item.m_nRepair, 0, item.m_byFlag, item.GetSerialNumber(),
-			item.GetOption(), item.m_bItemResist, item.m_nResistAbilityOption, item.m_idGuild, item.m_nResistSMItemId, 0, item.m_dwKeepTime,
-			item.GetRandomOptItemId(),
-			item.GetUltimatePiercingSize(), item.GetUltimatePiercingItem( 0 ), item.GetUltimatePiercingItem( 1 ), item.GetUltimatePiercingItem( 2 ), item.GetUltimatePiercingItem( 3 ),
-			bPet, pet.GetKind(), pet.GetLevel(), pet.GetExp(), pet.GetEnergy(), pet.GetLife(),
-			pet.GetAvailLevel( PL_D ), pet.GetAvailLevel( PL_C ), pet.GetAvailLevel( PL_B ), pet.GetAvailLevel( PL_A ), pet.GetAvailLevel( PL_S )
-			, item.GetUltimatePiercingItem( 4 )
-			, item.GetPiercingItem( 0 ), item.GetPiercingItem( 1 ), item.GetPiercingItem( 2 ), item.GetPiercingItem( 3 ),  item.GetPiercingItem( 4 )
-			, item.GetPiercingItem( 5 ), item.GetPiercingItem( 6 ), item.GetPiercingItem( 7 ), item.GetPiercingItem( 8 ),  item.GetPiercingItem( 9 )
-			, item.GetPiercingSize()
-			);
+	if (pMail->m_pItemElem) {
+		CItemContainer itemContainer;
+		itemContainer.SetItemContainer(CItemContainer::ContainerTypes::POCKET0);
+		itemContainer.SetAtId(0, pMail->m_pItemElem);
+		SaveItemContainer(itemContainer, ics);
 	}
-	else
-	{
-		sprintf( szSql, "{call MAIL_STR('A1', %d, '%02d', '%07d', '%07d', %d, %d, %d, ?, ?,"
-			"%d, %d, %d, %d, %d, %d, %d, %d,"
-			"%d, %d, %d, %d, %d, %d, %d,"
-			"%I64d,"
-			"%d, %d, %d, %d, %d"
-			",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d"
-			",%d"
-			",%d, %d, %d, %d, %d"	// 추가 피어싱 아이템
-			",%d, %d, %d, %d, %d"	// 추가 피어싱 아이템
-			",%d"	// 추가 피어싱 사이즈
-			")}",
 
-			pMail->m_nMail, g_appInfo.dwSys, idReceiver, pMail->m_idSender, pMail->m_nGold, pMail->m_tmCreate, pMail->m_byRead,
-			item.m_dwItemId, item.m_nItemNum, item.m_nRepairNumber, item.m_nHitPoint, item.m_nRepair, 0, item.m_byFlag, item.GetSerialNumber(),
-			item.GetOption(), item.m_bItemResist, item.m_nResistAbilityOption, item.m_idGuild, item.m_nResistSMItemId, 0, item.m_dwKeepTime,
-			item.GetRandomOptItemId(),
-			item.GetPiercingSize(), item.GetPiercingItem( 0 ), item.GetPiercingItem( 1 ), item.GetPiercingItem( 2 ), item.GetPiercingItem( 3 ),
-			bPet, pet.GetKind(), pet.GetLevel(), pet.GetExp(), pet.GetEnergy(), pet.GetLife(),
-			pet.GetAvailLevel( PL_D ), pet.GetAvailLevel( PL_C ), pet.GetAvailLevel( PL_B ), pet.GetAvailLevel( PL_A ), pet.GetAvailLevel( PL_S )
-			, item.GetPiercingItem( 4 )
-			, item.GetPiercingItem( 5 ), item.GetPiercingItem( 6 ), item.GetPiercingItem( 7 ), item.GetPiercingItem( 8 ), item.GetPiercingItem( 9 )
-			, 0, 0, 0, 0, 0
-			, 0
-			);
-	}
+	sprintf(szSql, "{call MAIL_STR_ADDMAIL("
+		"%d, '%02d',"
+		"'%07d', '%07d', %d, %d, %d,"
+		"?, ?," // szTitle, szText
+		"?, ?, ?, ?" // is.szItem/szExt/szPiercing/szPet
+		")}",
+		pMail->m_nMail, g_appInfo.dwSys,
+		idReceiver, pMail->m_idSender, pMail->m_nGold, pMail->m_tmCreate, pMail->m_byRead
+		);
+
+	return ics;
 }
 
 void CDbManager::DBQryGuildLog( char* szSql, const GUILDLOG_QUERYINFO& info )
@@ -3622,11 +3478,6 @@ void CDbManager::GuildThread( void )
 			case READ_MAIL:
 				ReadMail( pQuery, lpDbOverlappedPlus );
 				break;
-#ifdef __S_RECOMMEND_EVE
-			case RECOMMEND_EVE:
-				RecommendEve( pQuery, lpDbOverlappedPlus );
-				break;
-#endif // __S_RECOMMEND_EVE
 #ifdef __GETMAILREALTIME
 			case QM_GETMAIL_REALTIME:
 				QueryGetMailRealTime( pQuery );
@@ -3674,25 +3525,21 @@ void CDbManager::GuildThread( void )
 				}
 			case QM_QUERY_MAIL_BOX:
 				{
-// 					//	BEGINTEST
-// 					Error( "QM_QUERY_MAIL_BOX");
-
 					CAr ar( lpDbOverlappedPlus->lpBuf, lpDbOverlappedPlus->uBufSize );
+
+					// From here, the code is identical to CDPTrans::OnQueryMailBoxCount
 					u_long idReceiver;
 					ar >> idReceiver;
-					CPost *pPost    = CPost::GetInstance();
-					CMclAutoLock	Lock( pPost->m_csPost );
 
-					CMailBox* pMailBox	= NULL;
-					pMailBox = pPost->GetMailBox( idReceiver );
-					
-					if( pMailBox != NULL )
-					{
-						CDPTrans::GetInstance()->SendMailBox( pMailBox, lpDbOverlappedPlus->dpid );
-					}
-					else
-					{
-						CDPTrans::GetInstance()->SendMailBoxReq( idReceiver, lpDbOverlappedPlus->dpid, FALSE, pMailBox );
+					CPost * pPost = CPost::GetInstance();
+
+					CMclAutoLock	Lock(pPost->m_csPost);
+
+					CMailBox * pMailBox = pPost->GetMailBox(idReceiver);
+					if (pMailBox) {
+						CDPTrans::GetInstance()->SendMailBox(pMailBox, lpDbOverlappedPlus->dpid);
+					} else {
+						CDPTrans::GetInstance()->SendMailBoxReq(idReceiver, lpDbOverlappedPlus->dpid, nullptr);
 					}
 
 					break;
@@ -4356,90 +4203,11 @@ void CDbManager::DBQryCharacter( char* qryCharacter, const char* Gu, u_long idPl
 		szName, nPlayerslot, dwWorldID, dwIndex, vPos_x, vPos_y );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
 
-	sprintf( strCharacter, ",@im_vPos_z=%f,@im_szCharacterKey='%s',@im_dwSkinSet=%d,@im_dwHairMesh=%d,@im_dwHairColor=%d,@im_dwHeadMesh=%d,@im_dwSex=%d,@im_vScale_x=%f,@im_dwMotion=%d,@im_fAngle=%f",
-		vPos_z,szCharacterKey, dwSkinSet, dwHairMesh, dwHairColor, dwHeadMesh, dwSex, 0.0f, 0, 0.0f );
+	sprintf( strCharacter, ",@im_vPos_z=%f,@im_szCharacterKey='%s',@im_dwSkinSet=%d,@im_dwHairMesh=%d,@im_dwHairColor=%d,@im_dwHeadMesh=%d,@im_dwSex=%d",
+		vPos_z,szCharacterKey, dwSkinSet, dwHairMesh, dwHairColor, dwHeadMesh, dwSex );
 	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
 
-	sprintf( strCharacter, ",@im_nHitPoint=%d,@im_nManaPoint=%d,@im_nFatiguePoint=%d,@im_dwRideItemIdx=%d,@im_dwGold=%d,@im_nJob=%d,@im_pActMover='%s',@im_nStr=%d,@im_nSta=%d,@im_nDex=%d",
-		0, 0, 0, 0, 0, 0, "", 0, 0, 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_nInt=%d,@im_nLevel=%d,@im_nExp1=%I64d,@im_nExp2=%I64d,@im_aJobSkill='%s',@im_aLicenseSkill='%s',@im_aJobLv='%s',@im_dwExpertLv=%d,@im_idMarkingWorld=%d,@im_vMarkingPos_x=%f",
-		0, 0, (EXPINTEGER)0, (EXPINTEGER)0, "", "", "", 0, 0, 0.0f );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-	
-	sprintf( strCharacter, ",@im_vMarkingPos_y=%f,@im_vMarkingPos_z=%f,@im_nRemainGP=%d,@im_nRemainLP=%d,@im_nFlightLv=%d,@im_nFxp=%d,@im_nTxp=%d,@im_lpQuestCntArray='%s',@im_chAuthority='%c',@im_dwMode=%d",
-		0.0f, 0.0f, 0, 0,	0, 0, 0, "", 'F', 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_idparty=%d,@im_idMuerderer=%d,@im_nFame=%d,@im_nDeathExp=%I64d,@im_nDeathLevel=%d,@im_dwFlyTime=%d,@im_nMessengerState=%d,@iTotalPlayTime=%d",
-		0, 0, 0, int64_t(0), 0, 0, 0, 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_Card='%s',@im_Index_Card='%s',@im_ObjIndex_Card='%s',@im_Cube='%s',@im_Index_Cube='%s',@im_ObjIndex_Cube='%s',@im_Inventory='%s',@im_apIndex='%s',@im_adwEquipment='%s',@im_dwObjIndex='%s'",
-		"", "", "", "", "", "", "", "", "", "" );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_aSlotApplet='%s',@im_aSlotItem='%s',@im_aSlotQueue='%s',@im_SkillBar=%d,@im_Bank='%s',@im_apIndex_Bank='%s',@im_dwObjIndex_Bank='%s',@im_dwGoldBank=%d,@im_nFuel=%d",
-		"", "", "", 0, "", "", "", 0, 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_tmAccFuel=%d", 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );	
-
-	sprintf( strCharacter, ",@im_dwSMTime='%s'", "" );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );	
-
-	sprintf( strCharacter, ",@iSkillInfluence='%s'", "" );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );	
-
-	sprintf( strCharacter, ",@im_aCompleteQuest='%s'", "" );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );	
-
-	sprintf( strCharacter, ",@im_extInventory='%s',@im_InventoryPiercing='%s',@im_extBank='%s',@im_BankPiercing ='%s'",
-		"", "", "", ""
-	);
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_dwReturnWorldID=%d,@im_vReturnPos_x=%f,@im_vReturnPos_y=%f,@im_vReturnPos_z=%f",
-		                     0, 0.0f, 0.0f, 0.0f );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-	
-	sprintf( strCharacter, ",@im_nPKValue=%d,@im_dwPKPropensity=%d,@im_dwPKExp=%d", 0, 0, 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-	sprintf( strCharacter, ",@im_nAngelExp=%I64d,@im_nAngelLevel=%d", int64_t(0), 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@iszInventoryPet='%s',@iszBankPet='%s', @im_dwPetId=%d", "", "", 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#ifdef __EXP_ANGELEXP_LOG
-	sprintf( strCharacter, ",@im_nExpLog=%d, @im_nAngelExpLog=%d", 0, 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#endif // __EXP_ANGELEXP_LOG
-#ifdef __EVENTLUA_COUPON
-	sprintf( strCharacter, ",@im_nCoupon=%d", 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#endif // __EVENTLUA_COUPON
-	sprintf(strCharacter, ",@im_nHonor=%d", -1);
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#ifdef __LAYER_1015
-	sprintf( strCharacter, ",@im_nLayer=%d", 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-#endif	// __LAYER_1015
-	
-	sprintf( strCharacter, ",@im_nCampusPoint=%d", 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_idCampus=%d", 0 );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	sprintf( strCharacter, ",@im_aCheckedQuest='%s'", "" );
-	strncat( qryCharacter, strCharacter, sizeof(strCharacter) );
-
-	if( strlen(qryCharacter) > 40960 )
-	{
-		ASSERT(0);
-	}
+	ASSERT(strlen(qryCharacter) <= 40960);
 }
 
 BOOL CDbManager::BankToItemSendTbl( LPCSTR lpFileName )
@@ -4537,7 +4305,7 @@ BOOL CDbManager::BankToItemSendTbl( LPCSTR lpFileName )
 				}
 			}
 			ItemContainerStruct icsBank;
-			SaveBank( pMover, &pMover->m_Bank[0], &icsBank );
+			SaveItemContainer( pMover->m_Bank[0], icsBank );
 
 			sprintf( szSql, "UPDATE BANK_TBL"
 				" SET m_Bank = '%s', m_apIndex_Bank = '%s', m_dwObjIndex_Bank = '%s'"
@@ -4705,7 +4473,7 @@ BOOL CDbManager::InventoryToItemSendTbl( LPCSTR lpFileName )
 				}
 			}
 			ItemContainerStruct icsInventory;
-			SaveInventory( pMover, &icsInventory );
+			SaveItemContainer( pMover->m_Inventory, icsInventory );
 
 			sprintf( szSql, "UPDATE INVENTORY_TBL"
 				" SET m_Inventory = '%s', m_apIndex = '%s', m_dwObjIndex = '%s'"
@@ -4770,14 +4538,11 @@ BOOL CDbManager::LoadPost( void )
 		return FALSE;
 	}
 
-#ifdef __POST_DUP_1209
 	std::set<int>	setnMail;
 	int	nTotal	= 0;
-#endif	// __POST_DUP_1209
 
-	MAIL_QUERYINFO info( "S1" );
-	char szQuery[QUERY_SIZE]	= { 0, };
-	DbQryMail( szQuery, info );
+	char szQuery[1024]	= { 0, };
+	DbQryMail(szQuery, "S1");
 	if( FALSE == m_qryPostProc.Exec( szQuery ) )
 	{
 		AfxMessageBox( "QUERY: MAIL_STR 'S1'" );
@@ -4819,41 +4584,34 @@ BOOL CDbManager::LoadPost( void )
 
 		m_qryPostProc.GetStr( "szText", pMail->m_szText );
 
-		int nItemFlag	= m_qryPostProc.GetInt( "ItemFlag" );
-		DWORD dwItemId	= m_qryPostProc.GetInt( "dwItemId" );
+		const char * szItem = m_qryPostProc.GetStrPtr("szItem");
 
-		if( dwItemId && nItemFlag == 0 )
-		{
-			pMail->m_pItemElem	= new CItemElem;
-			pMail->m_pItemElem->m_dwItemId	= dwItemId;
-			GetItemFromMail( &m_qryPostProc, pMail->m_pItemElem );
+		if (szItem[0] != '\0') {
 
-			if( CheckValidItem( dwItemId, pMail->m_pItemElem->m_nItemNum ) == FALSE )
+			pMail->m_pItemElem	= GetItemFromMail( &m_qryPostProc ).release();
+
+			if( CheckValidItem(pMail->m_pItemElem->m_dwItemId, pMail->m_pItemElem->m_nItemNum ) == FALSE )
 			{
-#ifdef __POST_DUP_1209
 				nTotal++;
-#endif // __POST_DUP_1209
 				SAFE_DELETE( pMail );
 				continue;
 			}
 		}
-#ifdef __POST_DUP_1209
+
 		bool bResult	= setnMail.insert( pMail->m_nMail ).second;
 		if( !bResult )
 		{
 			AfxMessageBox( "CDbManager.LoadPost: duplicated" );
 			return FALSE;
 		}
-#endif	// __POST_DUP_1209
 
 		if( FALSE == CPost::GetInstance()->AddMail( idReceiver, pMail ) )
 		{
 			AfxMessageBox( "ERROR: LoadPost: AddMail" );
 			return FALSE;
 		}
-#ifdef __POST_DUP_1209
+
 		nTotal++;
-#endif	// __POST_DUP_1209
 	}
 
 	sprintf( szQuery, "uspLoadMaxMailID @pserverindex='%02d'", g_appInfo.dwSys );
@@ -4865,7 +4623,7 @@ BOOL CDbManager::LoadPost( void )
 	if( m_qryPostProc.Fetch() )
 	{
 		int nMaxMailID	= m_qryPostProc.GetInt( "MaxMailID" );
-#ifdef __POST_DUP_1209
+
 		int nCount	= m_qryPostProc.GetInt( "nCount" );
 		if( nTotal != nCount )
 		{
@@ -4874,7 +4632,7 @@ BOOL CDbManager::LoadPost( void )
 			AfxMessageBox( szTemp );
 			return FALSE;
 		}
-#endif	// __POST_DUP_1209
+
 		if( (int)( CMail::s_nMail ) > nMaxMailID )
 		{
 			AfxMessageBox( "MaxMailID is not valid" );
@@ -4885,70 +4643,28 @@ BOOL CDbManager::LoadPost( void )
 	return TRUE;
 }
 
-void CDbManager::GetItemFromMail( CQuery* pQuery, CItemElem* pItemElem )
+std::unique_ptr<CItemElem> CDbManager::GetItemFromMail( const CQuery* pQuery )
 {
-	pItemElem->m_bItemResist	= pQuery->GetInt( "bItemResist" );
-	pItemElem->m_byFlag	= pQuery->GetInt( "byFlag" );
-	pItemElem->m_dwKeepTime	= pQuery->GetInt( "dwKeepTime" );
-	pItemElem->SetSerialNumber( pQuery->GetSerialNumber( "dwSerialNumber" ) );
-	pItemElem->m_idGuild	= pQuery->GetInt( "idGuild" );
-	pItemElem->SetOption( pQuery->GetInt( "nOption" ) );
-	pItemElem->m_nHitPoint	= pQuery->GetInt( "nHitPoint" );
-	pItemElem->m_nRepair = pQuery->GetInt( "nMaxHitPoint" );
-	pItemElem->m_nItemNum	= pQuery->GetInt( "nItemNum" );
-	__int64 iRandomOptItemId	= pQuery->GetInt64( "nRandomOptItemId" );
-	if( iRandomOptItemId == -102 )
-		iRandomOptItemId	= 0;
-	pItemElem->SetRandomOptItemId( iRandomOptItemId );
-	pItemElem->m_nRepairNumber	= pQuery->GetInt( "nRepairNumber" );
-	pItemElem->m_nResistAbilityOption	= pQuery->GetInt( "nResistAbilityOption" );
-	pItemElem->m_nResistSMItemId	= pQuery->GetInt( "nResistSMItemId" );
-	GetPiercingInfoFromMail( pQuery, pItemElem );
-	if( pItemElem->m_dwItemId == II_SYS_SYS_SCR_SEALCHARACTER )
-	{
-		CPlayerDataCenter::GetInstance()->m_Access.Enter();
-		const char*	lpszPlayer	= CPlayerDataCenter::GetInstance()->GetPlayerString( pItemElem->m_nHitPoint );
-		if(lpszPlayer != NULL)
-			memcpy(pItemElem->m_szItemText,lpszPlayer,sizeof(pItemElem->m_szItemText));
-		CPlayerDataCenter::GetInstance()->m_Access.Leave();
-	}
+	ItemContainerSerialization ics{
+		.main = pQuery->GetStrPtr("szItem"),
+		.apIndex = "$",
+		.dwObjIndex = "$",
+		.ext = pQuery->GetStrPtr("szExt"),
+		.piercing = pQuery->GetStrPtr("szPiercing"),
+		.szPet = pQuery->GetStrPtr("szPet"),
+	};
 
-	BOOL bPet	= pQuery->GetInt( "bPet" );
-	if( bPet )
-	{
-		SAFE_DELETE( pItemElem->m_pPet );
-		CPet* pPet	= pItemElem->m_pPet	= new CPet;
-		BYTE nKind	= (BYTE)pQuery->GetInt( "nKind" );
-		BYTE nLevel		= (BYTE)pQuery->GetInt( "nLevel" );
-		DWORD dwExp	= (DWORD)pQuery->GetInt( "dwExp" );
-		WORD wEnergy	= (WORD)pQuery->GetInt( "wEnergy" );
-		WORD wLife	= (WORD)pQuery->GetInt( "wLife" );
-		BYTE anAvailLevel[PL_MAX];
-		anAvailLevel[PL_D]	= (BYTE)pQuery->GetInt( "anAvailLevel_D" );
-		anAvailLevel[PL_C]	= (BYTE)pQuery->GetInt( "anAvailLevel_C" );
-		anAvailLevel[PL_B]	= (BYTE)pQuery->GetInt( "anAvailLevel_B" );
-		anAvailLevel[PL_A]	= (BYTE)pQuery->GetInt( "anAvailLevel_A" );
-		anAvailLevel[PL_S]	= (BYTE)pQuery->GetInt( "anAvailLevel_S" );
-#ifdef __PET_1024
-		char szPetName[MAX_PET_NAME]	= { 0,};
-		pQuery->GetStr( "szPetName", szPetName );
-		if( strcmp( szPetName, "NULL" ) == 0 )
-			szPetName[0]	= '\0';
-#endif	// __PET_1024
-		pPet->SetKind( nKind );
-		pPet->SetLevel( nLevel );
-		pPet->SetExp( dwExp );
-		pPet->SetEnergy( wEnergy );
-		pPet->SetLife( wLife );
-		pPet->SetAvailLevel( PL_D, anAvailLevel[PL_D] );
-		pPet->SetAvailLevel( PL_C, anAvailLevel[PL_C] );
-		pPet->SetAvailLevel( PL_B, anAvailLevel[PL_B] );
-		pPet->SetAvailLevel( PL_A, anAvailLevel[PL_A] );
-		pPet->SetAvailLevel( PL_S, anAvailLevel[PL_S] );
-#ifdef __PET_1024
-		pPet->SetName( szPetName );
-#endif	// __PET_1024
-	}
+	CItemContainer container;
+	container.SetItemContainer(CItemContainer::ContainerTypes::POCKET0);
+	ReadItemContainer(container, ics);
+
+	CItemElem * firstItem = container.GetAt(0);
+	if (!firstItem) return nullptr;
+
+	CItemElem * pItemElem = new CItemElem;
+	*pItemElem = *firstItem;
+
+	return std::unique_ptr<CItemElem>(pItemElem);
 }
 
 void CDbManager::AddMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
@@ -4982,10 +4698,16 @@ void CDbManager::AddMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	if( bResult )
 	{
 		char szQuery[QUERY_SIZE]	= { 0,};
-		CDbManager::MakeQueryAddMail( szQuery, pMail, idReceiver );
+		ItemContainerStruct is = CDbManager::MakeQueryAddMail( szQuery, pMail, idReceiver );
 
-		if( !pQuery->BindParameter( 1, pMail->m_szTitle, 128)
-			|| !pQuery->BindParameter( 2, pMail->m_szText, 1024) )
+		const bool bindingResult = pQuery->BindParameter(1, pMail->m_szTitle, 128)
+			&& pQuery->BindParameter(2, pMail->m_szText, 1024)
+			&& pQuery->BindParameter(3, is.szItem, 0)
+			&& pQuery->BindParameter(4, is.szExt, 0)
+			&& pQuery->BindParameter(5, is.szPiercing, 0)
+			&& pQuery->BindParameter(6, is.szPet, 0);
+
+		if( !bindingResult)
 		{
 			Error( "QUERY: PACKETTYPE_QUERYPOSTMAIL" );
 			CDPTrans::GetInstance()->SendPostMail( FALSE, idReceiver, pMail );
@@ -5031,10 +4753,8 @@ void CDbManager::RemoveMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	{
 		pMailBox->RemoveMail( nMail );
 		pPost->m_csPost.Leave();	// u
-		MAIL_QUERYINFO info( "D1" );
-		info.nMail	= nMail;
 		char szQuery[QUERY_SIZE]	= { 0,};
-		DbQryMail( szQuery, info );
+		DbQryMail(szQuery, "D1", nMail);
 		if( FALSE == pQuery->Exec( szQuery ) )
 			Error( "QUERY: PACKETTYPE_QUERYREMOVEMAIL" );
 		else
@@ -5044,45 +4764,22 @@ void CDbManager::RemoveMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 		pPost->m_csPost.Leave();	// u
 }
 
-#ifdef __POST_1204
-void CDbManager::RemoveMail( list<CMail*> & lspMail, time_t t )
-{
-	char szQuery[QUERY_SIZE]	= { 0,};
-	MAIL_QUERYINFO info( "D2" );
-	info.tmCreate	= t;
-	DbQryMail( szQuery, info );
-	if( m_qryPostProc.Exec( szQuery ) )
-	{
-		for( list<CMail*>::iterator i = lspMail.begin(); i != lspMail.end(); ++i )
-		{
-			CMail* pMail	= *i;
-			CMailBox* pMailBox	= pMail->GetMailBox();
-			CDPTrans::GetInstance()->SendRemoveMail( pMailBox->m_idReceiver, pMail->m_nMail );
-			pMailBox->RemoveMail( pMail->m_nMail );
+void CDbManager::RemoveMail(std::span<const std::pair<CMailBox *, CMail *>> lspMail) {
+	if (lspMail.empty()) return;
+
+	char szQuery[1024] = { 0,};
+
+	for (const auto & [pMailBox, pMail] : lspMail) {
+		const int nMail = pMail->m_nMail;
+		DbQryMail(szQuery, "D1", nMail);
+
+		if (m_qryPostProc.Exec(szQuery)) {
+			pMailBox->RemoveMail(nMail);
+			CDPTrans::GetInstance()->SendRemoveMail(pMailBox->m_idReceiver, nMail);
 		}
 	}
 }
-#else	// __POST_1204
-//{{AFX
-void CDbManager::RemoveMail(std::list<CMail*> & lspMail )
-{
-	char szQuery[QUERY_SIZE]	= { 0,};
-	for( auto i = lspMail.begin(); i != lspMail.end(); ++i )
-	{
-		CMail* pMail	= *i;
-		MAIL_QUERYINFO info( "D1" );
-		info.nMail	= pMail->m_nMail;
-		DbQryMail( szQuery, info );
-		if( m_qryPostProc.Exec( szQuery ) )
-		{
-			CMailBox* pMailBox	= pMail->GetMailBox();
-			pMailBox->RemoveMail( info.nMail );
-			CDPTrans::GetInstance()->SendRemoveMail( pMailBox->m_idReceiver, info.nMail );
-		}
-	}
-}
-//}}AFX
-#endif	// __POST_1204
+
 
 void CDbManager::RemoveMailItem( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 {
@@ -5100,10 +4797,8 @@ void CDbManager::RemoveMailItem( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	{
 		pMailBox->RemoveMailItem( nMail );
 		pPost->m_csPost.Leave();	// u
-		MAIL_QUERYINFO info( "U1" );
-		info.nMail	= nMail;
 		char szQuery[QUERY_SIZE]	= { 0,};
-		DbQryMail( szQuery, info );
+		DbQryMail(szQuery, "U1", nMail);
 		if( FALSE == pQuery->Exec( szQuery ) )
 			Error( "QUERY: PACKETTYPE_QUERYGETMAILITEM" );
 		else
@@ -5129,10 +4824,9 @@ void CDbManager::RemoveMailGold( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	{
 		pMailBox->RemoveMailGold( nMail );
 		pPost->m_csPost.Leave();	// u
-		MAIL_QUERYINFO info( "U2" );
-		info.nMail	= nMail;
+		
 		char szQuery[QUERY_SIZE]	= { 0,};
-		DbQryMail( szQuery, info );
+		DbQryMail( szQuery, "U2", nMail );
 		if( FALSE == pQuery->Exec( szQuery ) )
 			Error( "QUERY: PACKETTYPE_QUERYGETMAILITEM" );
 		else
@@ -5158,10 +4852,9 @@ void CDbManager::ReadMail( CQuery* pQuery, LPDB_OVERLAPPED_PLUS pov )
 	{
 		pMailBox->ReadMail( nMail );
 		pPost->m_csPost.Leave();	// u
-		MAIL_QUERYINFO info( "U3" );
-		info.nMail	= nMail;
+		
 		char szQuery[QUERY_SIZE]	= { 0,};
-		DbQryMail( szQuery, info );
+		DbQryMail( szQuery, "U3", nMail );
 		if( FALSE == pQuery->Exec( szQuery ) )
 			Error( "QUERY: PACKETTYPE_READMAIL" );
 		else
@@ -5352,7 +5045,7 @@ BOOL CDbManager::RemoveInvalidItem( void )
 		if( bUpdate )
 		{
 			ItemContainerStruct is;
-			SaveInventory( pMover, &is );
+			SaveItemContainer( pMover->m_Inventory, is );
 			FILEOUT( "../INVENTORY_TBL.txt", "%07d\t%02d\t%s\t%s\t%s",
 				pMover->m_idPlayer,
 				nServer,
@@ -5397,7 +5090,7 @@ BOOL CDbManager::RemoveInvalidItem( void )
 		if( bUpdate )
 		{
 			ItemContainerStruct is;
-			SaveBank( pMover, &pMover->m_Bank[0], &is );
+			SaveItemContainer( pMover->m_Bank[0], is );
 			FILEOUT( "../BANK_TBL.txt", "%07d\t%02d\t%s\t%s\t%s",
 				pMover->m_idPlayer,
 				nServer,
@@ -5445,7 +5138,7 @@ BOOL CDbManager::RemoveInvalidItem( void )
 		if( bUpdate )
 		{
 			ItemContainerStruct is;
-			SaveGuildBank( &GuildBank, &is );
+			SaveItemContainer( GuildBank, is );
 			FILEOUT( "../GUILD_BANK_TBL.txt", "%06d\t%02d\t%s\t%s\t%s",
 				nGuildId,
 				nServer,
@@ -5656,7 +5349,7 @@ BOOL CDbManager::ConvInventory(std::map<DWORD, CONV_RESULT_ITEM> & mConv )
 		if( bUpdate )
 		{
 			ItemContainerStruct icsInventory;
-			SaveInventory( pMover, &icsInventory );
+			SaveItemContainer( pMover->m_Inventory, icsInventory );
 
 //			FILEOUT( "../queryItemid.txt", "UPDATE INVENTORY_TBL SET m_Inventory = '%s' where m_idPlayer = '%06d' and serverindex = '%02d'",
 //				szInventory, pMover->m_idPlayer, g_appInfo.dwSys );
@@ -5726,7 +5419,7 @@ BOOL CDbManager::ConvBank(std::map<DWORD, CONV_RESULT_ITEM> & mConv )
 		if( bUpdate )
 		{
 			ItemContainerStruct icsBank;
-			SaveBank( pMover, &pMover->m_Bank[0], &icsBank );
+			SaveItemContainer( pMover->m_Bank[0], icsBank );
 
 //			FILEOUT( "../queryItemId.txt", "UPDATE BANK_TBL SET m_Bank = '%s' where m_idPlayer = '%06d' and serverindex = '%02d'",
 //				szBank, pMover->m_idPlayer, g_appInfo.dwSys );
@@ -5801,7 +5494,7 @@ BOOL CDbManager::ConvGuildBank(std::map<DWORD, CONV_RESULT_ITEM> & mConv )
 		if( bUpdate )
 		{
 			ItemContainerStruct icsGuildBank;
-			SaveGuildBank( &GuildBank, &icsGuildBank );
+			SaveItemContainer( GuildBank, icsGuildBank );
 			
 //			FILEOUT( "../queryItemid.txt", "UPDATE GUILD_BANK_TBL SET m_GuildBank = '%s' where m_idGuild = '%06d' and serverindex = '%02d'",
 //				szBank, nGuildId, g_appInfo.dwSys );
@@ -5903,7 +5596,7 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 		if( f )
 		{
 			ItemContainerStruct icsInventory;
-			SaveInventory( pMover, &icsInventory );
+			SaveItemContainer( pMover->m_Inventory, icsInventory );
 
 			sprintf( szSql, "UPDATE INVENTORY_TBL"
 				" SET m_Inventory = '%s', m_apIndex = '%s', m_dwObjIndex = '%s'"
@@ -5968,7 +5661,7 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 		if( f )
 		{
 			ItemContainerStruct icsBank;
-			SaveBank( pMover, &pMover->m_Bank[0], &icsBank );
+			SaveItemContainer( pMover->m_Bank[0], icsBank );
 
 			sprintf( szSql, "UPDATE BANK_TBL"
 				" SET m_Bank = '%s', m_apIndex_Bank = '%s', m_dwObjIndex_Bank = '%s'"
@@ -6042,7 +5735,7 @@ BOOL CDbManager::ItemRemove0203( LPCSTR lpFileName )
 		if( f )
 		{
 			ItemContainerStruct icsGuildBank;
-			SaveGuildBank( &GuildBank, &icsGuildBank );
+			SaveItemContainer( GuildBank, icsGuildBank );
 					
 			sprintf( szSql, "UPDATE GUILD_BANK_TBL"
 				" SET m_GuildBank = '%s'"
@@ -6076,19 +5769,29 @@ BOOL CDbManager::QueryGetMailRealTime( CQuery* pQuery )
 	if( NULL == pQuery )
 		return FALSE;
 
-	char szQuery[QUERY_SIZE]	= { 0, };
+	char szQuery[2048]	= { 0, };
 	sprintf( szQuery, "MAIL_STR_REALTIME 'S1', '%02d'", g_appInfo.dwSys );
 	if( FALSE == pQuery->Exec( szQuery ) )
 	{
 		AfxMessageBox( szQuery );
+		
+		static bool firstRealTimePopup = true;
+		
+		if (firstRealTimePopup) {
+			AfxMessageBox("You probably need to set your ODBC connection to english");
+			firstRealTimePopup = false;
+		}
+
 		return FALSE;
 	}
 
-	__MAIL_REALTIME OneMail;
+	struct __MAIL_REALTIME { int nMail_Before; int nMail_After; };
+
 	std::vector< __MAIL_REALTIME > vecMailRT;
 
 	while( pQuery->Fetch() )
 	{
+		__MAIL_REALTIME OneMail;
 		u_long idReceiver	= pQuery->GetInt( "idReceiver" );
 		CMail* pMail	= new CMail;
 		OneMail.nMail_Before = pQuery->GetInt( "nMail" );
@@ -6112,22 +5815,13 @@ BOOL CDbManager::QueryGetMailRealTime( CQuery* pQuery )
 
 		pQuery->GetStr( "szText", pMail->m_szText );
 
-		int nItemFlag	= pQuery->GetInt( "ItemFlag" );
-		DWORD dwItemId	= pQuery->GetInt( "dwItemId" );
 
-		if( dwItemId && nItemFlag == 0 )
-		{
-			ItemProp* pItemProp	= prj.GetItemProp( dwItemId );
-			if( !pItemProp )
-			{
-				Error( "CDbManager::QueryGetMailRealTime: Not ItemProp = %d", dwItemId );
-				continue;
-			}
-			pMail->m_pItemElem	= new CItemElem;
-			pMail->m_pItemElem->m_dwItemId	= dwItemId;
-			GetItemFromMail( pQuery, pMail->m_pItemElem );
+		const char * szItem = m_qryPostProc.GetStrPtr("szItem");
+
+		if (szItem[0] != '\0') {
+			pMail->m_pItemElem	= GetItemFromMail( pQuery ).release();
 			
-			if( CheckValidItem( dwItemId, pMail->m_pItemElem->m_nItemNum ) == FALSE )
+			if( CheckValidItem(pMail->m_pItemElem->m_dwItemId, pMail->m_pItemElem->m_nItemNum ) == FALSE )
 			{
 				SAFE_DELETE( pMail );
 				continue;
@@ -6137,7 +5831,6 @@ BOOL CDbManager::QueryGetMailRealTime( CQuery* pQuery )
 
 			pPost->m_csPost.Enter();
 			OneMail.nMail_After	= CPost::GetInstance()->AddMail( idReceiver, pMail );
-
 			pPost->m_csPost.Leave();
 			CDPTrans::GetInstance()->SendPostMail( TRUE, idReceiver, pMail );
 
@@ -6145,10 +5838,12 @@ BOOL CDbManager::QueryGetMailRealTime( CQuery* pQuery )
 		}
 	}
 
-	for( DWORD i = 0 ; i < vecMailRT.size() ; ++i )
-	{
-		sprintf( szQuery, "MAIL_STR_REALTIME 'U1', '%02d', %d, %d, '%07d', %d, '%s', %d, %d, %d", 
-							g_appInfo.dwSys, vecMailRT[i].nMail_Before, vecMailRT[i].nMail_After, 0, 0, "", 0, vecMailRT[i].m_liSerialNumber, vecMailRT[i].m_nHitPoint );
+
+	for (const __MAIL_REALTIME & mail : vecMailRT) {
+		sprintf( szQuery,
+			"MAIL_STR_REALTIME 'U1', '%02d', %d, %d", 
+			g_appInfo.dwSys, mail.nMail_Before, mail.nMail_After
+		);
 
 		if( FALSE == pQuery->Exec( szQuery ) )
 		{
@@ -6423,7 +6118,7 @@ BOOL CDbManager::RestorePetInventory(std::map<DWORD, int> & mRestore )
 		if( bUpdate )
 		{
 			ItemContainerStruct icsInventory;
-			SaveInventory( pMover, &icsInventory );
+			SaveItemContainer( pMover->m_Inventory, icsInventory );
 			FILEOUT( "../queryRestorePet.txt", "UPDATE INVENTORY_TBL SET m_Inventory = '%s' where m_idPlayer = '%07d' and serverindex = '%02d'",
 				icsInventory.szItem, pMover->m_idPlayer, nServer );
 			FILEOUT( "../queryRestorePet.txt", "UPDATE INVENTORY_EXT_TBL SET szInventoryPet = '%s' where m_idPlayer = '%07d' and serverindex = '%02d'",
@@ -6496,7 +6191,7 @@ BOOL CDbManager::RestorePetBank(std::map<DWORD, int> & mRestore )
 		if( bUpdate )
 		{
 			ItemContainerStruct icsBank;
-			SaveBank( pMover, &pMover->m_Bank[0], &icsBank );
+			SaveItemContainer( pMover->m_Bank[0], icsBank );
 			FILEOUT( "../queryRestorePet.txt", "UPDATE BANK_TBL SET m_Bank = '%s' where m_idPlayer = '%07d' and serverindex = '%02d'",
 				icsBank.szItem, pMover->m_idPlayer, nServer );
 			FILEOUT( "../queryRestorePet.txt", "UPDATE BANK_EXT_TBL SET szBankPet = '%s' where m_idPlayer = '%07d' and serverindex = '%02d'",
@@ -6575,7 +6270,7 @@ BOOL CDbManager::RestorePetGuildBank(std::map<DWORD, int> & mRestore )
 		if( bUpdate )
 		{
 			ItemContainerStruct icsGuildBank;
-			SaveGuildBank( &GuildBank, &icsGuildBank );
+			SaveItemContainer( GuildBank, icsGuildBank );
 			FILEOUT( "../queryRestorePet.txt", "UPDATE GUILD_BANK_TBL SET m_GuildBank = '%s' where m_idGuild = '%06d' and serverindex = '%02d'",
 				icsGuildBank.szItem, nGuildId, nServer );
 			FILEOUT( "../queryRestorePet.txt", "UPDATE GUILD_BANK_EXT_TBL SET szGuildBankPet = '%s' where m_idGuild = '%06d' and serverindex = '%02d'",

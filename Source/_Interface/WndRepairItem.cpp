@@ -5,7 +5,6 @@
 #include "dpclient.h"
 #include "WndManager.h"
 
-
 /****************************************************
   WndId : APP_REPAIR - 수리창
   CtrlId : WIDC_EDIT1 - 
@@ -23,23 +22,9 @@ CWndRepairItem::CWndRepairItem()
 
 CWndRepairItem::~CWndRepairItem() 
 {
-	for( int i = 0; i < MAX_REPAIRINGITEM; i++ )
-	{
-		if( m_adwIdRepair[i] != NULL_ID )
-		{
-			CItemElem* pItemElem	= g_pPlayer->m_Inventory.GetAtId( m_adwIdRepair[i] );
-			if( pItemElem )
-			{
-				pItemElem->m_bRepair	= FALSE;
-			}
-		}
-	}
+	OnInit();
 }
 
-void CWndRepairItem::OnDraw( C2DRender* p2DRender ) 
-{ 
-}
- 
 void CWndRepairItem::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -47,8 +32,6 @@ void CWndRepairItem::OnInitialUpdate()
 
 	memset( m_adwIdRepair, 0xff, sizeof(m_adwIdRepair) );
 	m_dwCost = 0;
-
-//	CWndTabCtrl* pTabCtrl = (CWndTabCtrl*) GetDlgItem( WIDC_INVENTORY );
 
 	CWndEdit* pWndEdit = (CWndEdit*) GetDlgItem( WIDC_EDIT1 );
 	pWndEdit->EnableWindow( FALSE );
@@ -63,34 +46,17 @@ void CWndRepairItem::OnInitialUpdate()
 	CPoint ptInventory = rectInventory.TopLeft();
 	CPoint ptMove;
 	
-	if( ptInventory.x > m_pWndRoot->GetWndRect().Width() / 2 )
+	if( ptInventory.x > g_WndMng.GetWndRect().Width() / 2 )
 		ptMove = ptInventory - CPoint( rectInventory.Width(), 0 );
 	else
 		ptMove = ptInventory + CPoint( rectInventory.Width(), 0 );
 	Move( ptMove );
 } 
 
-BOOL CWndRepairItem::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRepairItem::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_REPAIR, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-
-BOOL CWndRepairItem::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndRepairItem::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-}
-
-void CWndRepairItem::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-}
- 
-void CWndRepairItem::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-}
 
 BOOL CWndRepairItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -102,90 +68,8 @@ BOOL CWndRepairItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			if( pWndFrame->GetWndId() == APP_INVENTORY )
 			{
-				CItemElem * pItemBase	= g_pPlayer->GetItemId( lpShortcut->m_dwId );
-				if( pItemBase )
-				{
-					if( g_pPlayer->m_Inventory.IsEquip( pItemBase->m_dwObjId ) == FALSE )
-					{
-						// 아이템인가?
-						// 방어구 혹은 무기인가?
-						// 수리할 필요가 있는가?
-						ItemProp* pItemProp	= pItemBase->GetProp();
-						if( pItemProp )
-						{
-							if( pItemProp->dwItemKind2 >= IK2_WEAPON_HAND && pItemProp->dwItemKind2 <= IK2_ARMORETC && pItemBase->m_nRepair < pItemProp->nMaxRepair )
-							{
-								if(pItemBase->m_nHitPoint < 0 )
-									pItemBase->m_nHitPoint = 0;
-
-								if(pItemBase->m_nHitPoint < (int)( pItemProp->dwEndurance ) )
-								{
-									int nRepair	= 100 - ( (pItemBase->m_nHitPoint * 100 ) / pItemProp->dwEndurance );
-									DWORD dwSumCost = m_dwCost + nRepair * ( pItemProp->dwCost / 1000 + 1 );
-									if( g_pPlayer->GetGold() >= (int)( dwSumCost ) )
-									{
-										m_dwCost = dwSumCost;
-										char szCost[MAX_PATH] = {0,};
-										sprintf( szCost, "%-d", m_dwCost );
-										pWndStaticCost->SetTitle( szCost );
-										int iIndex	= lpShortcut->m_dwData - 100;
-										m_adwIdRepair[iIndex]	= pItemBase->m_dwObjId;
-										pItemBase->m_bRepair	= TRUE;
-									}
-									else
-									{
-										// 페냐가 부족하여 수리를 할수 없습니다.
-										g_WndMng.PutString(TID_GAME_REPAIR_NOTENOUGHPENYA);
-									}									
-								}
-								else
-								{
-									// 수리할 필요가 없는 아이템
-									g_WndMng.PutString(TID_GAME_REPAIR_FULLENDURANCE);
-								}
-							}
-							else
-							{
-								// 수리할수 없는 아이템
-								g_WndMng.PutString(TID_GAME_REPAIR_DONOT);
-							}
-						}
-					}
-					else
-					{
-						// 장착되어 있음.
-						g_WndMng.PutString(TID_GAME_REPAIR_EQUIP);
-					}
-				}
-//				if( itemElem )
-//				{
-//					pRepairItem.Add( itemElem->m_dwItemId, itemElem->m_nItemNum, itemElem->m_nAbilityOption, itemElem->m_dwSerialNumber );
-//				}
-
-				/*
-				CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
-				UINT SelectCount = pWndItemCtrl->GetSelectedCount();
-				if( SelectCount != 1)
-				{
-					//g_WndMng.PutString( "장착 되어 있는것은 넣을수 없습니다", NULL, 0xffffff00 );
-					g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor( TID_GAME_EQUIPPUT ) );
-					
-				}
-				else
-				{
-					for( int i = 0; i < SelectCount; i++ )
-					{
-						int nItem = pWndItemCtrl->GetSelectedItem( i );
-						pWndItemCtrl->GetItem( nItem );
-					}
-					CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-					if( itemElem )
-					{
-						pRepairItem.Add( itemElem->m_dwItemId, itemElem->m_nItemNum, itemElem->m_nAbilityOption, itemElem->m_dwSerialNumber );
-					}
-				}
-				int aaa = 0;				
-				*/
+				CItemElem * pItemBase = g_pPlayer->GetItemId(lpShortcut->m_dwId);
+				OnItemElemDrop(pItemBase, lpShortcut->m_dwData - 100);
 			}
 		}
 	}
@@ -205,6 +89,54 @@ BOOL CWndRepairItem::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
+void CWndRepairItem::OnItemElemDrop(CItemElem * pItemBase, DWORD targetSlot) {
+	if (!pItemBase) return;
+	
+	if (g_pPlayer->m_Inventory.IsEquip(pItemBase->m_dwObjId)) {
+		g_WndMng.PutString(TID_GAME_REPAIR_EQUIP);
+		return;
+	}
+
+	// 아이템인가?
+	// 방어구 혹은 무기인가?
+	// 수리할 필요가 있는가?
+	const ItemProp * pItemProp = pItemBase->GetProp();
+	if (!pItemProp) {
+		return;
+	}
+
+	const bool repairable = pItemProp->dwItemKind2 >= IK2_WEAPON_HAND && pItemProp->dwItemKind2 <= IK2_ARMORETC && pItemBase->m_nRepair < pItemProp->nMaxRepair;
+	if (!repairable) {
+		// 수리할수 없는 아이템
+		g_WndMng.PutString(TID_GAME_REPAIR_DONOT);
+		return;
+	}
+	
+	if(pItemBase->m_nHitPoint < 0 )
+		pItemBase->m_nHitPoint = 0;
+
+	if (pItemBase->m_nHitPoint >= (int)(pItemProp->dwEndurance)) {
+		// 수리할 필요가 없는 아이템
+		g_WndMng.PutString(TID_GAME_REPAIR_FULLENDURANCE);
+	}
+
+	const int nRepair = 100 - ((pItemBase->m_nHitPoint * 100) / pItemProp->dwEndurance);
+	const DWORD dwSumCost = m_dwCost + nRepair * (pItemProp->dwCost / 1000 + 1);
+
+	if (g_pPlayer->GetGold() < (int)(dwSumCost)) {
+		// 페냐가 부족하여 수리를 할수 없습니다.
+		g_WndMng.PutString(TID_GAME_REPAIR_NOTENOUGHPENYA);
+		return;
+	}
+
+	m_dwCost = dwSumCost;
+	char szCost[MAX_PATH] = {0,};
+	sprintf( szCost, "%-d", m_dwCost );
+	pWndStaticCost->SetTitle( szCost );
+	m_adwIdRepair[targetSlot]	= pItemBase->m_dwObjId;
+	pItemBase->m_bRepair	= TRUE;
+}
+
 void CWndRepairItem::OnDestroy( void )
 {
 	OnInit();
@@ -223,5 +155,156 @@ void CWndRepairItem::OnInit( void )
 			}
 		}
 	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+CWndRepairItemCtrl::CWndRepairItemCtrl()
+{
+	m_nCurSel	= -1;
+	m_pFocusItem	= NULL;
+
+	m_pdwIdRepair	= NULL;
+}
+
+void CWndRepairItemCtrl::Create( DWORD dwListCtrlStyle, const RECT & rect, CWndBase* pParentWnd, UINT nID )
+{
+	CWndBase::Create(dwListCtrlStyle | WBS_CHILD, rect, pParentWnd, nID );
+}
+
+
+void CWndRepairItemCtrl::InitItem( DWORD* pdwIdRepair )
+{
+
+	m_pdwIdRepair	= pdwIdRepair;
+	m_pFocusItem	= NULL;
+}
+
+void CWndRepairItemCtrl::OnInitialUpdate( void )
+{
+
+}
+	
+void CWndRepairItemCtrl::OnDraw( C2DRender* p2DRender )
+{
+	if( NULL == m_pdwIdRepair )
+		return;
+
+	if (!g_pPlayer)
+		return;
+
+	for( int i = 0; i < MAX_REPAIRINGITEM; i++ )
+	{
+		int x	= i % 5;
+		int y	= i / 5;
+
+		if( m_pdwIdRepair[i] != NULL_ID )
+		{
+
+			CItemElem* pItemElem	= g_pPlayer->m_Inventory.GetAtId( m_pdwIdRepair[i] );
+			if( pItemElem )
+			{
+				pItemElem->GetTexture()->Render( p2DRender, CPoint( x * 32 + 6, y * 32 + 10 ) );
+				CRect rectHittest	= CRect( x * 32, y * 32 + 3, x * 32 + 32, y * 32 + 32 + 3 );
+				CPoint point	= GetMousePoint();
+				if( rectHittest.PtInRect( point ) )
+				{
+					CPoint point2 = point;
+					ClientToScreen( &point2 );
+					ClientToScreen( &rectHittest );
+					g_WndMng.PutToolTip_Item( pItemElem, point2, &rectHittest, 276 ); // APP_REPAIR
+				}
+				if( i == m_nCurSel )
+					p2DRender->RenderRect( CRect( x * 32 + 7, y * 32 + 11, x * 32 + 32 + 5, y * 32 + 32 + 9 ), 0xff00ffff );
+			}
+		}
+	}
+}
+
+BOOL CWndRepairItemCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
+{
+	if( pShortcut->m_dwData != 0 ) {
+		CItemElem * pItemBase = g_pPlayer->GetItemId( pShortcut->m_dwId );
+		if( pItemBase )
+		{
+			const int i = HitTest(point);
+
+			if (i != -1 && m_pdwIdRepair[i] == NULL_ID )
+			{
+				pShortcut->m_dwData		= i + 100;
+				CWndBase* pParent	= GetParentWnd();
+				pParent->OnChildNotify( WIN_ITEMDROP, m_nIdWnd, (LRESULT*)pShortcut );
+			}
+			
+		}
+	}
+	return TRUE;
+}
+
+void CWndRepairItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
+{
+	if( GetAsyncKeyState( VK_LCONTROL ) & 0x8000 )
+		return;
+
+	if( CWndBase::m_GlobalShortcut.IsEmpty() == FALSE )
+		return;
+
+	int nItem	= HitTest( point );
+	if( nItem == -1 )
+		return;
+
+	CItemElem*	pItemElem	= g_pPlayer->m_Inventory.GetAtId( m_pdwIdRepair[nItem] );
+	if( pItemElem )
+	{
+		m_pFocusItem	= pItemElem;
+		m_nCurSel	= nItem;
+	}
+}
+
+void CWndRepairItemCtrl::SetWndRect( CRect rectWnd, BOOL bOnSize )
+{
+	m_rectWindow	= rectWnd;
+	m_rectClient	= m_rectWindow;
+
+	if( bOnSize )
+		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
+}
+
+void CWndRepairItemCtrl::PaintFrame( C2DRender* p2DRender )
+{
+	CRect rect	= GetWindowRect();
+
+	static constexpr DWORD dwColor1	= D3DCOLOR_ARGB( 100, 0, 0,  0 );
+	static constexpr DWORD dwColor2	= D3DCOLOR_ARGB( 255, 240, 240,  240 );
+	static constexpr DWORD dwColor3	= D3DCOLOR_ARGB( 100, 200, 200,  200 );
+
+	p2DRender->RenderFillRect ( rect, dwColor1 );
+	p2DRender->RenderRoundRect( rect, dwColor2 );
+	rect.DeflateRect( 1 , 1 );
+	p2DRender->RenderRect( rect, dwColor2 );
+	rect.DeflateRect( 1 , 1 );
+	p2DRender->RenderRect( rect, dwColor3 );
+}
+
+BOOL CWndRepairItemCtrl::OnEraseBkgnd( C2DRender* p2DRender )
+{
+	return TRUE;
+}
+
+int CWndRepairItemCtrl::HitTest( CPoint point )
+{
+	for (int i = 0; i < MAX_VENDITEM; i++) {
+		const int x = i % 5;
+		const int y = i / 5;
+
+		const CRect hitRect{ CPoint(x * 32, y * 32), CSize(32, 32) };
+
+		if (hitRect.PtInRect(point)) {
+			return i;
+		}
+	}
+
+	return -1;
 }
 

@@ -100,7 +100,7 @@ void CMover::SetDestPos( const D3DXVECTOR3 & vDestPos, bool bForward, BOOL fTran
 #ifdef __CLIENT
 	if( IsActiveMover() && fTransfer ) 
 	{
-		g_DPlay.PutPlayerDestPos( vDestPos, bForward );
+		g_DPlay.PutPlayerDestPos(PLAYERDESTPOS{ vDestPos, bForward });
 	}
 #endif
 }
@@ -126,7 +126,7 @@ void CMover::SetDestPos( CShip *pIAObj, const D3DXVECTOR3 &vDestPos )
 #ifdef __CLIENT
 	if( IsActiveMover() )
 	{
-		g_DPlay.PutPlayerDestPos( vLocal, true, 0, pIAObj->GetId() );
+		g_DPlay.PutPlayerDestPos(PLAYERDESTPOS{ vLocal, true, pIAObj->GetId() }, 0);
 	}
 #endif	// __CLIENT
 }

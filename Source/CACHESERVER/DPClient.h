@@ -4,11 +4,6 @@
 #include "ServerDesc.h"
 #include <memory>
 
-#undef	theClass
-#define	theClass	CDPClient
-#undef theParameters
-#define theParameters	CAr & ar, DPID dpidUser, LPVOID lpBuffer, u_long uBufSize
-
 class CCachePlayer;
 class CDPClient final : public CDPMng {
 public:

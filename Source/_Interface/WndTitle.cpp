@@ -14,13 +14,11 @@
 #include "WndManager.h"
 #include "Network.h"
 #include "Vector3Helper.h"
+#include "NameValidation.h"
 
 extern BYTE  nMaleHairColor[10][3];
 extern BYTE  nFeMaleHairColor[10][3];
 
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-#include "DPCollectClient.h"
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 
 BOOL GetIePath( LPSTR lpPath )
 {	
@@ -44,44 +42,44 @@ BOOL GetIePath( LPSTR lpPath )
 	return TRUE;
 }
 
-BOOL CWndConnectingBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
+BOOL CWndConnectingBox::Initialize( CWndBase* pWndParent  ) 
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
 	Create( _T( prj.GetText(TID_DIAG_0068) ), /*MB_CANCEL*/0xFFFFFFFF, rect, APP_MESSAGEBOX );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0064) ) );
 	
 	m_wndText.ResetString();
-	return CWndMessageBox::Initialize( pWndParent, 0 );
+	return TRUE;
 }
 BOOL CWndConnectingBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
 	return TRUE;
 }
 
-BOOL CWndCharBlockBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
+BOOL CWndCharBlockBox::Initialize( CWndBase* pWndParent  ) 
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+	CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
 	Create( _T( prj.GetText(TID_DIAG_0068) ), MB_CANCEL, rect, APP_MESSAGEBOX );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0073) ) );
 
 	m_wndText.ResetString();
-	return CWndMessageBox::Initialize( pWndParent, 0 );
+	return TRUE;
 }
 BOOL CWndCharBlockBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
 	return CWndMessageBox::OnChildNotify( message, nID, pLResult );
 }
-BOOL CWndAllCharBlockBox::Initialize( CWndBase* pWndParent, DWORD nType  ) 
+BOOL CWndAllCharBlockBox::Initialize( CWndBase* pWndParent  ) 
 {
-    CRect rect = m_pWndRoot->MakeCenterRect( 250, 130 );
+    CRect rect = g_WndMng.MakeCenterRect( 250, 130 );
 
 	Create( _T( prj.GetText(TID_DIAG_0068) ), MB_CANCEL, rect, APP_MESSAGEBOX );
 	m_wndText.SetString( _T( prj.GetText(TID_DIAG_0074) ) );
 
 	m_wndText.ResetString();
-	return CWndMessageBox::Initialize( pWndParent, 0 );
+	return TRUE;
 }
 BOOL CWndAllCharBlockBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 {
@@ -249,16 +247,16 @@ void CWndLogin::OnInitialUpdate()
 	}
 	
 	pAccount->EnableModeChange( FALSE );
-	pAccount->SetTabStop( TRUE );
+	pAccount->SetTabStop( );
 
 	pPassword->AddWndStyle( EBS_PASSWORD );
-	pPassword->SetTabStop( TRUE );
+	pPassword->SetTabStop( );
 	pPassword->EnableModeChange( FALSE );
 
 	CWndButton* pOk   = (CWndButton*)GetDlgItem( WIDC_OK );
 	CWndButton* pQuit = (CWndButton*)GetDlgItem( WIDC_QUIT );
 
-	pOk->SetDefault( TRUE );
+	pOk->SetDefault();
 
 	pAccount->SetString( g_Option.m_szAccount );
 	pSaveAccount->SetCheck( g_Option.m_bSaveAccount );
@@ -297,7 +295,7 @@ void CWndLogin::OnInitialUpdate()
 	{
 		CRect HanrectWindow = GetWindowRect( TRUE );
 		SetWndRect( CRect( HanrectWindow.left, HanrectWindow.top, HanrectWindow.right - 120, HanrectWindow.bottom - 115 ) );
-		CRect rectLayout = m_pWndRoot->GetLayoutRect();
+		CRect rectLayout = g_WndMng.GetLayoutRect();
 		Move( (int)( rectLayout.Width() / 2 - m_rectWindow.Width() / 2 ), (int)( rectLayout.Height() * 0.65 ) );
 	}
 #endif	// __THROUGHPORTAL0810
@@ -314,7 +312,7 @@ void CWndLogin::OnInitialUpdate()
 		case LANG_FRE:
 		case LANG_GER:
 			{
-				CRect rectRoot = m_pWndRoot->GetLayoutRect();
+				CRect rectRoot = g_WndMng.GetLayoutRect();
 				CRect rectWindow = GetWindowRect( TRUE );
 				rectWindow.top = 400 * rectRoot.Height() / 768;
 				Move( rectWindow.TopLeft() );
@@ -357,7 +355,7 @@ void CWndLogin::OnInitialUpdate()
 	g_Neuz.m_dwTimeOutDis = 0xffffffff;
 	m_bDisconnect = FALSE;
 }
-BOOL CWndLogin::Initialize(CWndBase* pWndParent,DWORD dwStyle)
+BOOL CWndLogin::Initialize(CWndBase* pWndParent)
 {
 	return CWndNeuz::InitDialog( APP_LOGIN, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
@@ -440,7 +438,6 @@ BOOL CWndLogin::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				{
 					// Can't connect to server
 					g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0043) ) );
-//					g_WndMng.OpenMessageBox( _T( "접속할 수 없습니다. 네트워크 상태를 확인하십시오." ) );
 					CNetwork::GetInstance().OnEvent( CERT_CONNECT_FAIL );
 					break;
 				}
@@ -452,21 +449,15 @@ BOOL CWndLogin::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				CWndEdit* pAccount = (CWndEdit*) GetDlgItem( WIDC_ACCOUNT );
 				CWndEdit* pPassword = (CWndEdit*) GetDlgItem( WIDC_PASSWORD );
 
-				CString strAccount, strPassword;
-				strAccount	= pAccount->GetString();
-				strPassword	= pPassword->GetString();
-				
-				if( IsAcValid( pAccount->GetString() ) == FALSE )
+				if( !IsAcValid( pAccount->GetString() ) )
 				{
 					g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0005) ) );
-//					g_WndMng.OpenMessageBox( _T( "계정은 3~16자 영어, 숫자를 사용할 수 있고, 숫자로 시작할 수 없습니다." ) );
 					pButton->EnableWindow( TRUE );
 					return TRUE;
 				}
-				if( IsPwdValid( pPassword->GetString() ) == FALSE )
+				if( !IsPwdValid( pPassword->GetString() ) )
 				{
 					g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DIAG_0030) ) );
-//					g_WndMng.OpenMessageBox( _T( "암호는 3~16자 영어, 숫자를 사용할 수 있습니다." ) );
 					pButton->EnableWindow( TRUE );
 					return TRUE;
 				}
@@ -480,7 +471,7 @@ BOOL CWndLogin::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 					g_Neuz.SetAccountInfo( pAccount->GetString(), pPassword->GetString() );
 				g_dpCertified.SendCertify();
 
-				g_WndMng.OpenCustomBox( NULL, new CWndConnectingBox );
+				g_WndMng.OpenCustomBox( new CWndConnectingBox );
 				break;
 			}
 
@@ -532,7 +523,7 @@ void CWndSelectServer::OnInitialUpdate()
 	CRect rect = GetClientRect();
 
 	CWndButton* pNext = (CWndButton*)GetDlgItem( WIDC_NEXT );
-	pNext->SetDefault( TRUE );
+	pNext->SetDefault();
 
 	CWndListBox* pWndList = (CWndListBox*)GetDlgItem( WIDC_CONTROL0 );
 	CRect ReRect = pWndList->GetWindowRect(TRUE);
@@ -600,7 +591,7 @@ void CWndSelectServer::OnInitialUpdate()
 
 	if( ::GetLanguage() == LANG_JAP )
 	{
-		CRect rect2 = m_pWndRoot->GetLayoutRect();
+		CRect rect2 = g_WndMng.GetLayoutRect();
 		
 		int width = (rect2.right-rect2.left) / 2;
 		
@@ -672,7 +663,7 @@ BOOL CWndSelectServer::Process()
 	
 	return TRUE;
 }
-BOOL CWndSelectServer::Initialize(CWndBase* pWndParent,DWORD dwStyle)
+BOOL CWndSelectServer::Initialize(CWndBase* pWndParent)
 {
 	return CWndNeuz::InitDialog( APP_SELECT_SERVER, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
@@ -823,7 +814,7 @@ BOOL CWndSelectServer::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				g_dpLoginClient.DeleteDPObject();	// 2004^04^19
 				break;
 			}
-			g_WndMng.OpenCustomBox( NULL, new CWndConnectingBox );
+			g_WndMng.OpenCustomBox( new CWndConnectingBox );
 
 			CWndListBox* pWndList	= (CWndListBox*)GetDlgItem( WIDC_CONTROL0 );
 			CListedServers::Server * pTServerDesc	= (CListedServers::Server *)pWndList->GetItemData( pWndList->GetCurSel() );
@@ -926,7 +917,7 @@ void CWndDeleteChar::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3D
 	CWndNeuz::AdditionalSkinTexture( pDest, sizeSurface, d3dFormat );
 }
 
-BOOL CWndDeleteChar::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
+BOOL CWndDeleteChar::Initialize( CWndBase* pWndParent ) 
 { 
 	InitDialog( APP_DELETE_CHAR, nullptr, WBS_MODAL );
 	CWndEdit *WndEdit   = (CWndEdit*)GetDlgItem( WIDC_EDIT1 );
@@ -1084,7 +1075,6 @@ CWndSelectChar::CWndSelectChar()
 {
 	m_pWndDeleteChar = NULL;
 	m_pWnd2ndPassword = NULL;
-	ZeroMemory( m_pBipedMesh, sizeof( m_pBipedMesh ) );	
 	m_dwMotion[ 0 ] = MTI_SITSTAND;
 	m_dwMotion[ 1 ] = MTI_SITSTAND;
 	m_dwMotion[ 2 ] = MTI_SITSTAND;
@@ -1095,10 +1085,6 @@ CWndSelectChar::~CWndSelectChar()
 {
 	InvalidateDeviceObjects();
 	DeleteDeviceObjects();
-	for( int i = 0; i < MAX_CHARACTER_LIST; i++ )
-	{
-		SAFE_DELETE( m_pBipedMesh[ i ] );
-	}
 	SAFE_DELETE( m_pWndDeleteChar );
 	SAFE_DELETE( m_pWnd2ndPassword );
 }
@@ -1142,7 +1128,7 @@ HRESULT CWndSelectChar::InitDeviceObjects()
 	for( int i = 0; i < MAX_CHARACTER_LIST; i++ )
 	{
 		if( m_pBipedMesh[ i ] )
-			m_pBipedMesh[ i ]->InitDeviceObjects( m_pApp->m_pd3dDevice );
+			m_pBipedMesh[ i ]->InitDeviceObjects( );
 	}
 
 	return S_OK;
@@ -1192,7 +1178,7 @@ BOOL CWndSelectChar::Process()
 	for( int i = 0; i < MAX_CHARACTER_LIST; i++ )
 	{
 		CRect rect = m_aRect[ i ];
-		CModelObject* pModel = (CModelObject*)m_pBipedMesh[ i ];
+		CModelObject* pModel = m_pBipedMesh[ i ].get();
 		CMover* pMover = g_Neuz.m_apPlayer[ i ];
 	
 		if( g_Neuz.m_apPlayer[i] != NULL && pModel )
@@ -1205,7 +1191,7 @@ BOOL CWndSelectChar::Process()
 				{
 					if( pModel->IsEndFrame() && pModel->m_nLoop == ANILOOP_1PLAY )
 					{
-						SetMotion( pModel, nMover, MTI_STAND, ANILOOP_LOOP, 0 );
+						SetMotion( pModel, MTI_STAND, ANILOOP_LOOP, 0 );
 						m_dwMotion[ i ] = MTI_STAND;
 					}
 				}
@@ -1217,13 +1203,13 @@ BOOL CWndSelectChar::Process()
 				{
 					if( pModel->IsEndFrame() && pModel->m_nLoop == ANILOOP_1PLAY )
 					{
-						SetMotion( pModel, nMover, MTI_SITSTAND, ANILOOP_LOOP, 0 );
+						SetMotion( pModel, MTI_SITSTAND, ANILOOP_LOOP, 0 );
 						m_dwMotion[ i ] = MTI_SITSTAND;
 					}
 					else
 					if( m_dwMotion[ i ] != MTI_SIT )
 					{
-						SetMotion( pModel, nMover, MTI_SIT, ANILOOP_1PLAY, 0 );
+						SetMotion( pModel, MTI_SIT, ANILOOP_1PLAY, 0 );
 						m_dwMotion[ i ] = MTI_SIT;
 					}
 				}
@@ -1303,8 +1289,7 @@ void CWndSelectChar::OnDraw( C2DRender* p2DRender )
 			else
 				p2DRender->TextOut( rect.left, rect.bottom + 10, g_Neuz.m_apPlayer[i]->GetName(), 0xff505050 );
 
-			CModelObject* pModel = (CModelObject*)m_pBipedMesh[ i ];
-			LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
+			CModelObject* pModel = m_pBipedMesh[ i ].get();
 
 			pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 			pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
@@ -1472,10 +1457,10 @@ void CWndSelectChar::OnDraw( C2DRender* p2DRender )
 			SetLightVec( D3DXVECTOR3( 0.0f, 0.0f, 1.0f ) );
 #endif //__YENV
 			
-			pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+			pModel->Render( &matWorld );
 
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-			p2DRender->m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+			D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+			D3DDEVICE->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 		
 			
 			viewport.X      = p2DRender->m_ptOrigin.x;// + 5;
@@ -1520,7 +1505,7 @@ void CWndSelectChar::DeleteCharacter()
 		{
 			m_pBipedMesh[ i ]->InvalidateDeviceObjects();
 			m_pBipedMesh[ i ]->DeleteDeviceObjects();
-			SAFE_DELETE( m_pBipedMesh[ i ] );
+			m_pBipedMesh[ i ] = nullptr;
 		}
 	}
 }
@@ -1532,72 +1517,43 @@ void CWndSelectChar::UpdateCharacter()
 		if( pMover )
 		{
 			// 장착, 게이지에 나올 캐릭터 오브젝트 설정 
-			int nMover = (pMover->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-			m_pBipedMesh[ i ] = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-			if( i == m_nSelectCharacter )
-			{
-				prj.m_modelMng.LoadMotion( m_pBipedMesh[ i ],  OT_MOVER, nMover, MTI_STAND );
-				m_dwMotion[ i ] = MTI_STAND;
-			}
-			else
-			{
-				prj.m_modelMng.LoadMotion( m_pBipedMesh[ i ],  OT_MOVER, nMover, MTI_SITSTAND );
-				m_dwMotion[ i ] = MTI_SITSTAND;
-			}
-			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, m_pBipedMesh[ i ], NULL/*&pMover->m_Inventory*/ );
+			const int nMover = (pMover->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
+			
+			m_dwMotion[i] = (i == m_nSelectCharacter ? MTI_STAND : MTI_SITSTAND);
+			
+			m_pBipedMesh[i] = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>(
+				OT_MOVER, nMover, TRUE
+			);
+			m_pBipedMesh[i]->LoadMotionId(m_dwMotion[i]);
+
+			CMover::UpdateParts( pMover->GetSex(), pMover->m_skin, pMover->m_aEquipInfo, m_pBipedMesh[ i ].get(), NULL );
 		}
 	}
 }
 void CWndSelectChar::OnInitialUpdate()
 {
 	CWndNeuz::OnInitialUpdate();
-
-	CRect rect = GetClientRect();
-
-	LPWNDCTRL lpText1 = GetWndCtrl( WIDC_CUSTOM1 );
-	LPWNDCTRL lpText2 = GetWndCtrl( WIDC_CUSTOM2 );
-	LPWNDCTRL lpText3 = GetWndCtrl( WIDC_CUSTOM3 );
-		
-	CWndButton* pWndButton = (CWndButton*)GetDlgItem( WIDC_DELETE );
-
+			
 	CWndButton* pWndAccept = (CWndButton*)GetDlgItem( WIDC_ACCEPT );
-	pWndAccept->SetDefault( TRUE );
+	pWndAccept->SetDefault();
 	CWndButton* pWndBack = (CWndButton*)GetDlgItem( WIDC_BACK );
 	pWndBack->SetFocus( );
 	
 	m_bDisconnect = FALSE;
 
-	rect = CRect( 16, 16, 174, 254 );
+	CRect rect = CRect( 16, 16, 174, 254 );
 	for( int i = 0; i < MAX_CHARACTER_LIST; i++ )
 	{
 		m_aRect[ i ] = rect;
 		rect.OffsetRect( 170, 0 );
 	}
-	
-	//서버통합 관련 특정 기간 캐릭터 생성 금지. 2007/01/02 ~ 2007/01/11 에만 사용.
-#if defined( __MAINSERVER )
-/*	if(g_Option.m_nSer != 1)
-	{
-		CTime time = CTime::GetCurrentTime();
-		int year, month, day;
-		year = time.GetYear();
-		month = time.GetMonth();
-		day = time.GetDay();
-		if(year == 2007 && month == 1)
-		{
-			if(day > 1 && day < 12)
-				m_CreateApply = FALSE;
-		}
-	}
-*/
-#endif //( __MAINSERVER )
-	
+		
 	MoveParentCenter();
 }
 
-BOOL CWndSelectChar::Initialize(CWndBase* pWndParent,DWORD dwStyle)
+BOOL CWndSelectChar::Initialize(CWndBase* pWndParent)
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 590, 400 );
+	CRect rect = g_WndMng.MakeCenterRect( 590, 400 );
 	SetTitle( _T( "Select Character" ) );
 	return CWndNeuz::InitDialog( APP_SELECT_CHAR, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
@@ -1607,9 +1563,7 @@ void CWndSelectChar::Connected()
 	if( m_nSelectCharacter < 0 || m_nSelectCharacter >= 5 )
 	{
 		LPCTSTR szErr = Error( "CWndSelectChar::Connected : 범위초과 %d", m_nSelectCharacter );
-		//ADDERRORMSG( szErr );
-		int *p = NULL;
-		*p = 1;
+		throw std::exception(szErr);
 	}
 #ifdef __USE_IDPLAYER0519
 	#ifdef __GPAUTH_01
@@ -1644,9 +1598,6 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 		case 10000: // close msg
 		case WIDC_BACK: // Back
 			{
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-				DPCollectClient->DeleteDPObject();
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 				g_dpLoginClient.DeleteDPObject();
 				Sleep( 1000 );	// 임시.
 #			ifdef __CRC
@@ -1694,7 +1645,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 			{
 				SAFE_DELETE( m_pWndDeleteChar );
 				m_pWndDeleteChar = new CWndDeleteChar;
-				m_pWndDeleteChar->Initialize( this, APP_DELETE_CHAR );
+				m_pWndDeleteChar->Initialize( this );
 			}
 			break;
 		case WIDC_ACCEPT: // Accept
@@ -1717,13 +1668,10 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				CWndButton* pWndAccept = (CWndButton*)GetDlgItem( WIDC_ACCEPT );
 				pWndAccept->EnableWindow( FALSE );
 			}
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-			DPCollectClient->DeleteDPObject();
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 			
 			if( g_Neuz.m_nCharacterBlock[m_nSelectCharacter] == 0 )
 			{
-				g_WndMng.OpenCustomBox( NULL, new CWndCharBlockBox );
+				g_WndMng.OpenCustomBox( new CWndCharBlockBox );
 			}
 			else
 			{
@@ -1742,7 +1690,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 					if( m_pWnd2ndPassword )
 						SAFE_DELETE( m_pWnd2ndPassword );
 					m_pWnd2ndPassword = new CWnd2ndPassword();
-					m_pWnd2ndPassword->Initialize( this, APP_2ND_PASSWORD_NUMBERPAD );
+					m_pWnd2ndPassword->Initialize( this );
 					m_pWnd2ndPassword->SetInformation( g_dpLoginClient.GetNumberPad(), m_nSelectCharacter );
 #ifdef __CON_AUTO_LOGIN
 					for( int i = 0; i < 4; ++i )
@@ -1752,8 +1700,7 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				}
 				else
 				{
-					g_WndMng.OpenCustomBox( _T( prj.GetText(TID_DIAG_0064) ), new CWndConnectingBox );
-					//g_WndMng.OpenCustomBox( _T( "로딩중입니다. 잠시만 기다려 주십시오." ), new CWndConnectingBox );
+					g_WndMng.OpenCustomBox( new CWndConnectingBox );
 
 					if( g_DPlay.Connect( g_Neuz.m_lpCacheAddr, g_Neuz.m_uCachePort ) )
 					{						
@@ -1776,23 +1723,9 @@ BOOL CWndSelectChar::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
 }
 
-BOOL CWndSelectChar::SetMotion( CModelObject* pModel, DWORD dwIndex, DWORD dwMotion, int nLoop, DWORD dwOption )
+BOOL CWndSelectChar::SetMotion( CModelObject* pModel, DWORD dwMotion, int nLoop, DWORD dwOption )
 {
-	//CModelObject* pModel = (CModelObject*)pModel;
-	DWORD	dwOrigMotion = dwMotion;
-	/*
-static DWORD m_dwOrigMotion = MTI_STAND;
-	if( dwMotion == m_dwOrigMotion )	// 같은 모션을 하라고 했는데...
-	{
-		if( nLoop == ANILOOP_LOOP )		return FALSE;	// 루핑모드 이면 걍 리턴
-		if( pModel->m_bEndFrame == FALSE )		// 아직 애니메이션중일때는 
-			return FALSE;						// 취소.
-		if( pModel->m_bEndFrame && nLoop == ANILOOP_CONT )	// 애니메이션이 끝난상태고 지속모드면 마지막 프레임으로 지속
-			return FALSE;
-	}
-	*/
-	prj.m_modelMng.LoadMotion( pModel, OT_MOVER, dwIndex, dwMotion );
-	//m_dwOrigMotion = dwMotion;
+	pModel->LoadMotionId(dwMotion);
 
 	pModel->m_bEndFrame = FALSE;
 	pModel->SetLoop( nLoop );
@@ -1810,11 +1743,10 @@ void CWndSelectChar::SelectCharacter( int i )
 		if( pMover )
 		{
 			int nMover = (pMover->GetSex() == SEX_MALE ? MI_MALE : MI_FEMALE);
-			CModelObject* pModel = (CModelObject*)m_pBipedMesh[ m_nSelectCharacter ];
+			CModelObject* pModel = m_pBipedMesh[ m_nSelectCharacter ].get();
 			if( pModel )
-				SetMotion( pModel, nMover, MTI_GETUP, ANILOOP_1PLAY, 0 );
+				SetMotion( pModel, MTI_GETUP, ANILOOP_1PLAY, 0 );
 			m_dwMotion[ i ] = MTI_GETUP;
-			//pModel->SetMotion( MTI_SIT, ANILOOP_1PLAY ); // idle2 액션 
 
 			if( ::GetLanguage() == LANG_JAP && g_Option.m_bVoice )
 			{
@@ -1843,7 +1775,7 @@ void CWndSelectChar::OnLButtonUp(UINT nFlags, CPoint point)
 		{
 			if( g_Neuz.m_nCharacterBlock[i] == 0 )
 			{
-				g_WndMng.OpenCustomBox( NULL, new CWndCharBlockBox );
+				g_WndMng.OpenCustomBox( new CWndCharBlockBox );
 					
 			}
 			else
@@ -1853,8 +1785,6 @@ void CWndSelectChar::OnLButtonUp(UINT nFlags, CPoint point)
 		}
 	}
 }
-//pMover->SetMotion( MTI_STAND );
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -1863,10 +1793,8 @@ void CWndSelectChar::OnLButtonUp(UINT nFlags, CPoint point)
 CWndCreateChar::CWndCreateChar()
 {
 	m_pModel = NULL;
-	m_Player.m_bySkinSet = SKINSET_01;
-	m_Player.m_byHairMesh = HAIRMESH_01;
+	m_Player.m_skin = MoverSub::SkinMeshs();
 	m_Player.m_byHairColor = 0;
-	m_Player.m_byHeadMesh = 0;
 	m_Player.m_bySex = SEX_FEMALE;
 	m_Player.m_byCostume = 0;
 	SetPutRegInfo( FALSE );
@@ -1881,7 +1809,7 @@ HRESULT CWndCreateChar::InitDeviceObjects()
 {
 	CWndBase::InitDeviceObjects();
 	if( m_pModel )
-		m_pModel->InitDeviceObjects( m_pApp->m_pd3dDevice );
+		m_pModel->InitDeviceObjects( );
 	return S_OK;
 }
 HRESULT CWndCreateChar::RestoreDeviceObjects()
@@ -1909,58 +1837,9 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 	CRect rect = GetClientRect();
 
 	CPoint pt( 20, 15 );
-/*
-	for( int i = 0; i < 5; i++)
-	{
-		p2DRender->RenderLine( pt, CPoint( pt.x + 200, pt. y ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-		p2DRender->RenderLine( CPoint( pt.x - 10, pt.y + 20 ), CPoint( pt.x + 200 - 10, pt. y + 20 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
 
-		p2DRender->RenderLine( pt, CPoint( pt.x - 10, pt.y + 20 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-		p2DRender->RenderLine( CPoint( pt.x + 200, pt. y ), CPoint( pt.x + 200 - 10, pt. y + 20 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-		p2DRender->RenderLine( CPoint( pt.x + 100, pt. y ), CPoint( pt.x + 100 - 10, pt. y + 20 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-
-
-		pt.y += 30;
-	}
-	*/
 	pt = CPoint( 260, 15 );
 
-//	p2DRender->RenderLine( pt, CPoint( pt.x + 300, pt. y ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-//	p2DRender->RenderLine( CPoint( pt.x - 10, pt.y + 220 ), CPoint( pt.x + 300 - 10, pt. y + 220 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-
-//	p2DRender->RenderLine( pt, CPoint( pt.x - 10, pt.y + 20 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-//	p2DRender->RenderLine( CPoint( pt.x + 300, pt. y ), CPoint( pt.x + 300 - 10, pt. y + 20 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-/*
-	rect = CRect( 30, 10, 115, 230 );
-	int y = 50;
-	p2DRender->TextOut( rect.left, rect.top + y, _T( "Name" ) ); y += 50;
-	p2DRender->TextOut( rect.left, rect.top + y, _T( "Job" ) ); y += 30;
-	p2DRender->TextOut( rect.left, rect.top + y, _T( "Gender" ) ); y += 30;
-	p2DRender->TextOut( rect.left, rect.top + y, _T( "Hair Style" ) ); y += 30; // 머리카락 모양 
-	p2DRender->TextOut( rect.left, rect.top + y, _T( "Hair Color" ) ); y += 30; // 피부색 및 얼굴 
-	p2DRender->TextOut( rect.left, rect.top + y, _T( "Face" ) ); y += 30; // 피부색 및 얼굴 
-	*/
-	//p2DRender->TextOut( rect.left, rect.top + y, _T( "Costume" ) ); y += 30; // 피부색 및 얼굴 
-	//p2DRender->TextOut( rect.left, rect.top +130, _T( "Skin Color" ) );
-	//DRender->TextOut( rect.left, rect.top +220, _T( "Underwear" ) );
-	//p2DRender->TextOut( rect.left, rect.top +130, _T( "Underwear" ) );
-	
-	//p2DRender->RenderRoundRect(CRect(4,     4,128*2+6,       96+6),D3DCOLOR_TEMP(255,150,150,250));
-/*
-	CRect rect = CRect( 4, 96 + 6 + 4, 128 * 2 + 6, 96 + 6 + 4 + 96 + 6 );
-	p2DRender->RenderRoundRect( rect, D3DCOLOR_TEMP( 255, 150, 150, 250 ) );
-	rect.DeflateRect( 1, 1 );
-	p2DRender->RenderFillRect( rect, D3DCOLOR_TEMP( 255, 200, 200, 240 ) );
-
-	CRect rect = CRect( 4, 96 + 6 + 4, 128 * 2 + 6, 96 + 6 + 4 + 96 + 6 );
-	p2DRender->RenderRoundRect( rect, D3DCOLOR_TEMP( 255, 150, 150, 250 ) );
-	rect.DeflateRect( 1, 1 );
-	p2DRender->RenderFillRect( rect, D3DCOLOR_TEMP( 255, 200, 200, 240 ) );
-*/
-	//p2DRender->TextOut(10,60,"aaaa",D3DCOLOR_TEMP(255,100,100,200));
-
-
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
@@ -1971,8 +1850,7 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );
-	//pd3dDevice->SetTextureStageState( 0, D3DTSS_MINFILTER, D3DTEXF_LINEAR );
-	//pd3dDevice->SetTextureStageState( 0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR );
+
 	pd3dDevice->SetSamplerState ( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR );
 	pd3dDevice->SetSamplerState ( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR );
 
@@ -1982,30 +1860,6 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 
 	rect = GetClientRect();
-
-//	p2DRender->RenderRect( CRect( 280, 15, 550, 320 ), D3DCOLOR_ARGB( 200, 50, 150, 250 ) );
-/*
-	pd3dDevice->SetRenderState( D3DRS_FOGENABLE, TRUE );
-	//pd3dDevice->SetRenderState( D3DRS_FOGENABLE, bEnable );
-	if(1)
-	{
-		pd3dDevice->SetRenderState( D3DRS_FOGCOLOR,  0xffffffff ) ;//CWorld::m_dwBgColor );
-
-		//pd3dDevice->SetRenderState( D3DRS_FOGSTART,   FtoDW(m_fFogStartValue) );
-		//pd3dDevice->SetRenderState( D3DRS_FOGEND,     FtoDW(m_fFogEndValue) );
-		//pd3dDevice->SetRenderState( D3DRS_FOGDENSITY, FtoDW(m_fFogDensity) );
-		if( 1) //m_bUsingTableFog )
-		{
-			pd3dDevice->SetRenderState( D3DRS_FOGVERTEXMODE,  D3DFOG_NONE );
-//			pd3dDevice->SetRenderState( D3DRS_FOGTABLEMODE,   D3DFOG_NONE );
-//			pd3dDevice->SetRenderState( D3DRS_RANGEFOGENABLE, FALSE );
-			pd3dDevice->SetRenderState( D3DRS_FOGTABLEMODE,   D3DFOG_LINEAR );
-		}
-	}
-	pd3dDevice->SetRenderState( D3DRS_FOGVERTEXMODE,  D3DFOG_NONE );
-	pd3dDevice->SetRenderState( D3DRS_FOGTABLEMODE,   D3DFOG_NONE );
-	*/
-
 
 	// 뷰포트 세팅 
 	D3DVIEWPORT9 viewport;
@@ -2025,16 +1879,7 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 	point.y -= 15;
 
 	CRect rectViewport( 0, 0, viewport.Width, viewport.Height );
-/*
-	// 프로젝션 
-	D3DXMATRIX matProj;
-	D3DXMatrixIdentity( &matProj );
-	pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 
-	FLOAT fAspect = ((FLOAT)viewport.Width) / (FLOAT)viewport.Height;
-	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4.0f, fAspect, CWorld::m_fNearPlane - 0.01f, CWorld::m_fFarPlane );
-	pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
-*/
 	D3DXMATRIX matProj;
 	D3DXMatrixIdentity( &matProj );
 	FLOAT fAspect = ( (FLOAT) viewport.Width ) / (FLOAT) viewport.Height ;
@@ -2047,22 +1892,7 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 	// 카메라 
 	D3DXVECTOR3 vecLookAt( 0.0f, 0.0f, 3.0f );
 	D3DXVECTOR3 vecPos(  0.0f, 0.0f, -5.0f );
-/*
-	if( rectViewport.PtInRect( point ) )
-	{
-		// height : 100 = point.y = ?
-		int x = 100 * point.x / rectViewport.Width();
-		int y = 100 * point.y / rectViewport.Height(); 
 
-		x -= 50;
-		y -= 50;
-
-		//vecPos.x = x; vecLookAt.x = x;
-		vecPos.y = (FLOAT)-y / 60.0f; vecLookAt.y = (FLOAT)-y / 60.0f;
-		vecPos.z += (FLOAT)-y / 20.0f; vecLookAt.z += (FLOAT)-y / 20.0f;
-
-	}
-	*/
 	const D3DXMATRIX matView = D3DXR::LookAtLH010(vecPos, vecLookAt);
 
 	pd3dDevice->SetTransform( D3DTS_VIEW, &matView );
@@ -2112,22 +1942,22 @@ void CWndCreateChar::OnDraw( C2DRender* p2DRender )
 	{
 		if( m_Player.m_bySex == SEX_MALE )
 		{
-			pElem->m_pObject3D->m_fAmbient[0] = (nMaleHairColor[m_Player.m_byHairMesh][0])/255.f;
-			pElem->m_pObject3D->m_fAmbient[1] = (nMaleHairColor[m_Player.m_byHairMesh][1])/255.f;
-			pElem->m_pObject3D->m_fAmbient[2] = (nMaleHairColor[m_Player.m_byHairMesh][2])/255.f;
+			pElem->m_pObject3D->m_fAmbient[0] = (nMaleHairColor[m_Player.m_skin.hairMesh][0])/255.f;
+			pElem->m_pObject3D->m_fAmbient[1] = (nMaleHairColor[m_Player.m_skin.hairMesh][1])/255.f;
+			pElem->m_pObject3D->m_fAmbient[2] = (nMaleHairColor[m_Player.m_skin.hairMesh][2])/255.f;
 		}
 		else
 		{
-			pElem->m_pObject3D->m_fAmbient[0] = (nFeMaleHairColor[m_Player.m_byHairMesh][0])/255.f;
-			pElem->m_pObject3D->m_fAmbient[1] = (nFeMaleHairColor[m_Player.m_byHairMesh][1])/255.f;
-			pElem->m_pObject3D->m_fAmbient[2] = (nFeMaleHairColor[m_Player.m_byHairMesh][2])/255.f;
+			pElem->m_pObject3D->m_fAmbient[0] = (nFeMaleHairColor[m_Player.m_skin.hairMesh][0])/255.f;
+			pElem->m_pObject3D->m_fAmbient[1] = (nFeMaleHairColor[m_Player.m_skin.hairMesh][1])/255.f;
+			pElem->m_pObject3D->m_fAmbient[2] = (nFeMaleHairColor[m_Player.m_skin.hairMesh][2])/255.f;
 		}
 	}
 	
-	m_pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+	m_pModel->Render( &matWorld );
 
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-	p2DRender->m_pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+	D3DDEVICE->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+	D3DDEVICE->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 
 	viewport.X      = p2DRender->m_ptOrigin.x;// + 5;
 	viewport.Y      = p2DRender->m_ptOrigin.y;// + 5;
@@ -2163,7 +1993,7 @@ void CWndCreateChar::OnInitialUpdate()
 	pWndHairColorRight->EnableWindow( FALSE );
 
 	CWndButton* pWndOk = (CWndButton*)GetDlgItem( WIDC_OK );
-	pWndOk->SetDefault( TRUE );
+	pWndOk->SetDefault();
 
 	
 	SetSex( m_Player.m_bySex );
@@ -2172,9 +2002,9 @@ void CWndCreateChar::OnInitialUpdate()
 	CWndEdit* pWndName = (CWndEdit*) GetDlgItem( WIDC_NAME );
 	pWndName->SetFocus();
 
-	m_Player.m_byHairMesh = (char)( xRandom( 0, MAX_BASE_HAIR ) );
-	m_Player.m_byHeadMesh = (char)( xRandom( 0, MAX_DEFAULT_HEAD ) );
-	CMover::UpdateParts( m_Player.m_bySex, m_Player.m_bySkinSet, m_Player.m_byFace, m_Player.m_byHairMesh, m_Player.m_byHeadMesh, m_Player.m_aEquipInfo, m_pModel, NULL );
+	m_Player.m_skin.hairMesh = (std::uint8_t)( xRandom( 0, MAX_BASE_HAIR ) );
+	m_Player.m_skin.headMesh = (std::uint8_t)( xRandom( 0, MAX_DEFAULT_HEAD ) );
+	CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 
 	CWndStatic* pWnd2ndPasswordText =  ( CWndStatic* )GetDlgItem( WIDC_STATIC_2ND_PASSWORD_TEXT );
 	assert( pWnd2ndPasswordText );
@@ -2197,12 +2027,10 @@ void CWndCreateChar::SetSex( int nSex )
 	int nMover = m_Player.m_bySex == SEX_MALE ? MI_MALE : MI_FEMALE;
 
 	SAFE_DELETE( m_pModel );
-	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
+	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( OT_MOVER, nMover, TRUE );
 
-	if( nSex == SEX_MALE )
-		prj.m_modelMng.LoadMotion( m_pModel,  OT_MOVER, nMover, MTI_STAND );
-	else
-		prj.m_modelMng.LoadMotion( m_pModel,  OT_MOVER, nMover, MTI_STAND2 ); // 포니테일 앞으로 
+	const DWORD dwMotion = nSex == SEX_MALE ? MTI_STAND : MTI_STAND2;
+	m_pModel->LoadMotionId(dwMotion);
 
 	memset( m_Player.m_aEquipInfo, 0, sizeof(EQUIP_INFO) * MAX_HUMAN_PARTS );
 	{
@@ -2215,118 +2043,15 @@ void CWndCreateChar::SetSex( int nSex )
 		m_Player.m_aEquipInfo[pItemProp->dwParts].dwId = dwEquip;
 	}
 
-	CMover::UpdateParts( m_Player.m_bySex, 0, m_Player.m_bySkinSet, m_Player.m_byHairMesh, m_Player.m_byHeadMesh, m_Player.m_aEquipInfo, m_pModel, NULL );
+	CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 }
 
-BOOL CWndCreateChar::Initialize( CWndBase* pWndParent, DWORD dwStyle )
+BOOL CWndCreateChar::Initialize( CWndBase* pWndParent )
 {
-	CRect rect = m_pWndRoot->MakeCenterRect( 590, 400 );
+	CRect rect = g_WndMng.MakeCenterRect( 590, 400 );
 	return CWndNeuz::InitDialog( APP_CREATE_CHAR, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
 
-
-DWORD IsValidPlayerNameTWN( CString& string )
-{
-	const char* begin	= string;
-	const char* end		= begin + string.GetLength();
-	const char* iter	= begin;
-	char bytes[16];
-	
-	while( *iter && iter < end ) 
-	{ 
-		const char* next = CharNext(iter);
-
-		memcpy( bytes, iter, next-iter );
-		bytes[next-iter] = 0;
-
-		if( IsMultiByte( iter ) ) 
-		{
-			wchar_t ch = MAKEWORD( bytes[1], bytes[0] );
-			
-			if( ch >= 0xA259 && ch <= 0xA261 || ch == 0xA2CD || ch >= 0xA440 && ch <= 0xC67E || ch >= 0xC940 && ch <= 0xF9D5 )
-				;
-			else
-				return TID_DIAG_0014;
-		}
-		else if( isalnum( bytes[0] ) == FALSE || iscntrl( bytes[0] ) )
-			return TID_DIAG_0013;
-
-		iter = next;
-	}
-	return 0;
-}
-
-// return 0   : OK
-//        0 > : error
-DWORD IsValidPlayerName( CString& strName )
-{
-	strName.TrimLeft();
-	strName.TrimRight();
-
-	LPCTSTR lpszString = strName;
-	if( strName.IsEmpty() )
-		return TID_DIAG_0031;			// "이름을 입력하십시오."
-
-#ifdef __RULE_0615
-	// "이름은 한글 2자 이상, 8자 이하로 입력하십시오."
-	// "이름은 영문 4자 이상, 16자 이하로 입력하십시오."
-	if( strName.GetLength() < 4 || strName.GetLength() > 16 )
-		return TID_DIAG_RULE_0;
-#else	// __RULE_0615
-	if( strName.GetLength() < 3 || strName.GetLength() > 16 )
-		return TID_DIAG_0011;			// "명칭에 3글자 이상, 16글자 이하로 입력 입력하십시오."
-#endif	// __RULE_0615
-
-	char c = strName[ 0 ];
-
-	if( ( c >= '0' && c <= '9' ) && !IsMultiByte( lpszString ) )
-		return TID_DIAG_0012;			// "명칭에 첫글자를 숫자로 사용할 수 없습니다."
-
-	int j;
-	switch( ::GetLanguage() )
-	{
-	case LANG_THA:
-		for( j = 0; j < strName.GetLength(); ++j )
-		{
-			c = strName[ j ];
-			if( IsNative( &lpszString[ j ] ) == FALSE && ( isalnum( c ) == FALSE || iscntrl( c ) ) )		
-				return TID_DIAG_0013;	// 명칭에 콘트롤이나 스페이스, 특수 문자를 사용할 수 없습니다.	
-		}
-		break;
-	case LANG_TWN:
-	case LANG_HK:
-		return IsValidPlayerNameTWN( strName );
-
-	default:
-		for( j = 0; j < strName.GetLength(); ++j )
-		{
-			c = strName[ j ];
-			if( IsDBCSLeadByte(c) ) 
-			{
-				++j;
-				if( ::GetLanguage() == LANG_KOR )
-				{
-					char c2 = strName[ j ];
-					WORD word = ( ( c << 8 ) & 0xff00 ) | ( c2 & 0x00ff );
-					if( IsHangul( word ) == FALSE ) 
-						return TID_DIAG_0014;
-				}					
-			}
-			else if( isalnum( c ) == FALSE || iscntrl( c ) )
-			{
-				char szLetter[2]	= { c, '\0' };
-				if( (		::GetLanguage() == LANG_GER 
-						||	::GetLanguage() == LANG_RUS
-					) && prj.nameValider.IsAllowedLetter( szLetter ) )
-					continue;
-				return TID_DIAG_0013;
-			}
-		}
-		break;
-	}
-
-	return 0;
-}
 
 BOOL CWndCreateChar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 {
@@ -2343,29 +2068,33 @@ BOOL CWndCreateChar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			SetSex( SEX_FEMALE );
 			break;
 		case WIDC_HAIRSTYLE_LEFT: // hair
-			m_Player.m_byHairMesh--;
-			if( m_Player.m_byHairMesh < 0 )
-				m_Player.m_byHairMesh = MAX_BASE_HAIR - 1;
-			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_bySkinSet, m_Player.m_byFace, m_Player.m_byHairMesh, m_Player.m_byHeadMesh, m_Player.m_aEquipInfo, m_pModel, NULL );
+			if (m_Player.m_skin.hairMesh == 0) {
+				m_Player.m_skin.hairMesh = MAX_BASE_HAIR - 1;
+			} else {
+				m_Player.m_skin.hairMesh--;
+			}
+			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 			break;
 		case WIDC_HAIRSTYLE_RIGHT: // hair
-			m_Player.m_byHairMesh++;
-			if( m_Player.m_byHairMesh >= MAX_BASE_HAIR )
-				m_Player.m_byHairMesh = 0;
-			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_bySkinSet, m_Player.m_byFace, m_Player.m_byHairMesh, m_Player.m_byHeadMesh, m_Player.m_aEquipInfo, m_pModel, NULL );
+			m_Player.m_skin.hairMesh++;
+			if( m_Player.m_skin.hairMesh >= MAX_BASE_HAIR )
+				m_Player.m_skin.hairMesh = 0;
+			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 			break;
 		case WIDC_FACE_LEFT: // head
-			m_Player.m_byHeadMesh--;
-			if( m_Player.m_byHeadMesh < 0 )
-				m_Player.m_byHeadMesh = MAX_DEFAULT_HEAD - 1;
-			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_bySkinSet, m_Player.m_byFace, m_Player.m_byHairMesh, m_Player.m_byHeadMesh, m_Player.m_aEquipInfo, m_pModel, NULL );
+			if (m_Player.m_skin.headMesh == 0) {
+				m_Player.m_skin.headMesh = MAX_DEFAULT_HEAD - 1;
+			} else {
+				m_Player.m_skin.headMesh--;
+			}
+			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 			break;
 		case WIDC_FACE_RIGHT: // head
-			m_Player.m_byHeadMesh++;
+			m_Player.m_skin.headMesh++;
 
-			if( m_Player.m_byHeadMesh >= MAX_DEFAULT_HEAD )
-				m_Player.m_byHeadMesh = 0;
-			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_bySkinSet, m_Player.m_byFace, m_Player.m_byHairMesh, m_Player.m_byHeadMesh, m_Player.m_aEquipInfo, m_pModel, NULL );
+			if( m_Player.m_skin.headMesh >= MAX_DEFAULT_HEAD )
+				m_Player.m_skin.headMesh = 0;
+			CMover::UpdateParts( m_Player.m_bySex, m_Player.m_skin, m_Player.m_aEquipInfo, m_pModel, NULL );
 			break;
 
 		case WIDC_CANCEL: // Cancel 
@@ -2438,23 +2167,23 @@ BOOL CWndCreateChar::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				
 				if( m_Player.m_bySex == SEX_MALE )
 				{
-					dwHairColor = D3DCOLOR_ARGB( 255, nMaleHairColor[m_Player.m_byHairMesh][0],
-													nMaleHairColor[m_Player.m_byHairMesh][1],
-													nMaleHairColor[m_Player.m_byHairMesh][2] );
+					dwHairColor = D3DCOLOR_ARGB( 255, nMaleHairColor[m_Player.m_skin.hairMesh][0],
+													nMaleHairColor[m_Player.m_skin.hairMesh][1],
+													nMaleHairColor[m_Player.m_skin.hairMesh][2] );
 				}
 				else
 				{
-					dwHairColor = D3DCOLOR_ARGB( 255, nFeMaleHairColor[m_Player.m_byHairMesh][0],
-													nFeMaleHairColor[m_Player.m_byHairMesh][1],
-													nFeMaleHairColor[m_Player.m_byHairMesh][2] );
+					dwHairColor = D3DCOLOR_ARGB( 255, nFeMaleHairColor[m_Player.m_skin.hairMesh][0],
+													nFeMaleHairColor[m_Player.m_skin.hairMesh][1],
+													nFeMaleHairColor[m_Player.m_skin.hairMesh][2] );
 				}
 
-				g_dpLoginClient.SendCreatePlayer( (BYTE)( m_Player.m_uSlot ), string, m_Player.m_byFace, m_Player.m_byCostume, m_Player.m_bySkinSet, m_Player.m_byHairMesh, dwHairColor, m_Player.m_bySex, m_Player.m_byJob, m_Player.m_byHeadMesh, atoi( pWnd2ndPassword->GetString() ) );
+				g_dpLoginClient.SendCreatePlayer( (BYTE)( m_Player.m_uSlot ), string, m_Player.m_skin, m_Player.m_byCostume, dwHairColor, m_Player.m_bySex, m_Player.m_byJob, atoi( pWnd2ndPassword->GetString() ) );
 			}
 			break;
 		case 10002: // Accept
 			{
-			g_WndMng.OpenCustomBox( NULL, new CWndConnectingBox );
+			g_WndMng.OpenCustomBox( new CWndConnectingBox );
 			g_Neuz.m_dwTempMessage = 1;
 			g_Neuz.m_timerConnect.Set( 1 );
 			}

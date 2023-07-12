@@ -115,7 +115,7 @@ void	CActionMover::ProcessState1( CMover* pMover,  DWORD dwState, float fSpeed )
 				{
 					FLOAT fAngXZ = pMover->GetAngle();
 					FLOAT fAngH  = pMover->GetAngleX();
-					AngleToVector( &m_vDelta, fAngXZ, -fAngH, fSpeed );
+					m_vDelta = AngleToVector( fAngXZ, -fAngH, fSpeed );
 				} else
 				{
 					m_vDelta.x = sinf(fT) * fSpeed;
@@ -163,7 +163,7 @@ void	CActionMover::ProcessState1( CMover* pMover,  DWORD dwState, float fSpeed )
 				{
 					FLOAT fAngXZ = pMover->GetAngle();
 					FLOAT fAngH  = pMover->GetAngleX();
-					AngleToVector( &m_vDelta, fAngXZ, -fAngH, fSpeed );
+					m_vDelta = AngleToVector( fAngXZ, -fAngH, fSpeed );
 				} else
 				{
 					m_vDelta.x = sinf(fT) * fSpeed;
@@ -195,9 +195,8 @@ void	CActionMover::ProcessState1( CMover* pMover,  DWORD dwState, float fSpeed )
 			{
 				FLOAT fAngXZ = pMover->GetAngle();
 				FLOAT fAngH  = pMover->GetAngleX();
-				AngleToVector( &m_vDelta, fAngXZ, -fAngH, fSpeed/4.0f );
-			} else
-			{
+				m_vDelta = AngleToVector( fAngXZ, -fAngH, fSpeed/4.0f );
+			} else {
 				m_vDelta.x = sinf(fTheta) * (fSpeed/4.0f);		// 걷는다....
 				m_vDelta.z = -cosf(fTheta) * (fSpeed/4.0f);
 			}
@@ -212,7 +211,7 @@ void	CActionMover::ProcessState1( CMover* pMover,  DWORD dwState, float fSpeed )
 			{
 				FLOAT fAngXZ = pMover->GetAngle();
 				FLOAT fAngH  = pMover->GetAngleX();
-				AngleToVector( &m_vDelta, fAngXZ, -fAngH, fSpeed );
+				m_vDelta = AngleToVector( fAngXZ, -fAngH, fSpeed );
 			} else
 			{
 				m_vDelta.x = sinf(fTheta) * fSpeed;
@@ -268,7 +267,7 @@ void	CActionMover::ProcessState1( CMover* pMover,  DWORD dwState, float fSpeed )
 					
 					ItemProp* pItemProp = prj.GetPartySkill( ST_STRETCHING );
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -622,14 +621,12 @@ void	CActionMover::ProcessStateMeleeSkill( DWORD dwState, int nParam )
 		{
 			if( nSkill == SI_BLD_DOUBLESW_SILENTSTRIKE )	// 싸이런 스트라이크는 예외다.
 			{
-				D3DXVECTOR3 vForce;
-				AngleToVectorXZ( &vForce, pMover->GetAngle(), 0.75f );		// 앞쪽으로 돌진하는 힘 설정.
+				D3DXVECTOR3 vForce = AngleToVectorXZ( pMover->GetAngle(), 0.75f );		// 앞쪽으로 돌진하는 힘 설정.
 				SetExternalForce( vForce );
 			} 
 			else if( nSkill == SI_BIL_KNU_BELIALSMESHING )	// 베리알 스매싱도 앞으로 전진.
 			{
-				D3DXVECTOR3 vForce;
-				AngleToVectorXZ( &vForce, pMover->GetAngle(), 0.35f );		// 앞쪽으로 돌진하는 힘 설정.
+				D3DXVECTOR3 vForce = AngleToVectorXZ( pMover->GetAngle(), 0.35f );		// 앞쪽으로 돌진하는 힘 설정.
 				SetExternalForce( vForce );
 			}
 
@@ -703,7 +700,7 @@ void	CActionMover::ProcessStateMagicCasting( DWORD dwState, int nParam )
 	pModel->m_SparkInfo.m_nCnt = 0;
 	pModel->m_SparkInfo.m_fLerp= 1.0f;
 	
-	AngleToVectorXZ( &pModel->m_SparkInfo.m_v3SparkDir, pMover->GetAngle(), -1.0f );
+	pModel->m_SparkInfo.m_v3SparkDir = AngleToVectorXZ( pMover->GetAngle(), -1.0f );
 #endif //defined(__CLIENT)
 }
 
@@ -798,7 +795,7 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 				#ifdef __CLIENT
 					if( GetMover()->IsActiveMover() )
 					{
-						if( (pMover->GetLevel() >= nReqLevel) && ((m_dwCtrlMsg & CTRLMSG_LDOWN) || ((CWndWorld *)g_WndMng.m_pWndWorld)->m_bAutoAttack) )	// 직업레벨 X이상이면 다음연타가능
+						if( (pMover->GetLevel() >= nReqLevel) && ((m_dwCtrlMsg & CTRLMSG_LDOWN) || g_WndMng.m_pWndWorld->m_bAutoAttack) )	// 직업레벨 X이상이면 다음연타가능
 						{
 							const ItemProp* pItemProp = pMover->GetActiveHandItemProp();
 							if( pItemProp && pItemProp->dwItemKind3 == IK3_YOYO )
@@ -842,7 +839,7 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 					if( (pMover->m_dwFlag & MVRF_LASERCHARGE) == 0 )	// 레이저충전 이펙트가 아직 생성 안되었음.
 					{
 						// 이마에서 기 모으기 이펙트.
-						CSfx *pSfx = CreateSfx( D3DDEVICE, XI_NPCSP1DIRAMP, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
+						CSfx *pSfx = CreateSfx( XI_NPCSP1DIRAMP, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
 						if( pSfx )
 						{
 							pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
@@ -867,7 +864,7 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 					if( (pMover->m_dwFlag & MVRF_LASERCHARGE) == 0 )	// 레이저충전 이펙트가 아직 생성 안되었음.
 					{
 						// 이마에서 기 모으기 이펙트.
-						CSfxMushmootCharge *pSfx = (CSfxMushmootCharge*)CreateSfx( D3DDEVICE, XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
+						CSfxMushmootCharge *pSfx = (CSfxMushmootCharge*)CreateSfx( XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
 						if( pSfx )
 						{
 							pSfx->m_nEventPos = 0;
@@ -883,28 +880,28 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 					{
 						CSfxMushmootCharge *pSfx = NULL;
 						// 이마에서 기 모으기 이펙트.
-						pSfx = (CSfxMushmootCharge*)CreateSfx( D3DDEVICE, XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
+						pSfx = (CSfxMushmootCharge*)CreateSfx( XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
 						if( pSfx )
 						{
 							pSfx->m_nEventPos = 1;
 							pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 							pMover->m_dwFlag |= MVRF_LASERCHARGE;
 						}
-						pSfx = (CSfxMushmootCharge*)CreateSfx( D3DDEVICE, XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
+						pSfx = (CSfxMushmootCharge*)CreateSfx( XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
 						if( pSfx )
 						{
 							pSfx->m_nEventPos = 2;
 							pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 							pMover->m_dwFlag |= MVRF_LASERCHARGE;
 						}
-						pSfx = (CSfxMushmootCharge*)CreateSfx( D3DDEVICE, XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
+						pSfx = (CSfxMushmootCharge*)CreateSfx( XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
 						if( pSfx )
 						{
 							pSfx->m_nEventPos = 3;
 							pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 							pMover->m_dwFlag |= MVRF_LASERCHARGE;
 						}
-						pSfx = (CSfxMushmootCharge*)CreateSfx( D3DDEVICE, XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
+						pSfx = (CSfxMushmootCharge*)CreateSfx( XI_SKILL_MUSHMOOT_CHARGE, pMover->GetPos(), pMover->GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );			
 						if( pSfx )
 						{
 							pSfx->m_nEventPos = 4;
@@ -935,40 +932,28 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 		
 		if( pModel->m_nPause > 0 )
 		{
-			CMover* pHitObj	= prj.GetMover( m_idTarget );
 		#ifdef __CLIENT
-			D3DXVECTOR3 vDist = pMover->GetPos() - g_pPlayer->GetPos();
-			float fDistSq = D3DXVec3LengthSq( &vDist );
+			CMover* pHitObj	= prj.GetMover( m_idTarget );
+
+			const D3DXVECTOR3 vDist = pMover->GetPos() - g_pPlayer->GetPos();
+			const float fDistSq = D3DXVec3LengthSq( &vDist );
 			if( pHitObj && pMover->IsPlayer() && fDistSq < 32.0f * 32.0f )		// 멀리있는놈은 파티클 생성안함.
 			{
-				int i;
-				D3DXVECTOR3	vPos = pHitObj->GetPos();
-
-				D3DXVECTOR3 vLocal;
-				AngleToVectorXZ( &vLocal, pMover->GetAngle(), 1.0f );		// 모션 방향쪽으로 1미터지점에 파티클 생성.
-				vLocal += pMover->GetPos();
-				vPos = vLocal;
-
+				D3DXVECTOR3 vPos = AngleToVectorXZ( pMover->GetAngle(), 1.0f );		// 모션 방향쪽으로 1미터지점에 파티클 생성.
+				vPos += pMover->GetPos();
 				vPos.y += 0.7f;
-				D3DXVECTOR3 vVel;
-				float	fAngXZ, fAngH;
-				float	fSpeed;
-				float	fDist;
-				float	fMoverAngle = pMover->GetAngle();
-				CParticles *pParticles = NULL;
 
 				int nOption = 0;
-				int nEffLevel = 0;
-				if( pMover->IsActiveMover() )
-				{
-					CItemElem *pItemElem = pMover->GetWeaponItem();
-					if( pItemElem )
+				if( pMover->IsActiveMover() ) {
+					if (const CItemElem * pItemElem = pMover->GetWeaponItem()) {
 						nOption = pItemElem->GetAbilityOption();
-				} else
-				{	// 타 플레이어는 페이크아이템이므로 여기서에서 값을 빼온다.
+					}
+				} else {
+					// 타 플레이어는 페이크아이템이므로 여기서에서 값을 빼온다.
 					nOption = pMover->m_aEquipInfo[PARTS_RWEAPON].nOption & 0xFF;
 				}
 
+				int nEffLevel = 0;
 				if( nOption == 10 )
 					nEffLevel = 5;
 				else if( nOption == 9 )
@@ -982,28 +967,23 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 				else 
 					nEffLevel = 0;
 					
-				for( i = 0; i < 1; i ++ )
+				const float fAngXZ = xRandomF(360);
+					
+				const float fAngH = 15.0f + xRandomF(45);
+				const float fSpeed = (0.1f + xRandomF(0.03f));// / 1.0f;
+
+				const D3DXVECTOR3 vVel = AngleToVector(fAngXZ, fAngH, fSpeed);
+
+				if( g_Option.m_bSFXRenderOff != TRUE )
 				{
-					fAngXZ = xRandomF(360);
-					
-					fAngXZ = D3DXToRadian( fAngXZ );
-					fAngH = 15.0f + xRandomF(45);
-					fAngH = D3DXToRadian( fAngH );
-					fSpeed = (0.1f + xRandomF(0.03f));// / 1.0f;
-					
-					fDist = cosf(-fAngH) * fSpeed;
-					vVel.x = sinf(fAngXZ) * fDist;
-					vVel.z = -cosf(fAngXZ) * fDist;
-					vVel.y = -sinf(-fAngH) * fSpeed;
-					if( g_Option.m_bSFXRenderOff != TRUE )
-					{
-						if( nEffLevel == 5 )
-						{
-							pParticles = g_ParticleMng.CreateParticle( nEffLevel + xRandom(6), vPos, vVel, g_pPlayer->GetPos().y );
-						} else
-							pParticles = g_ParticleMng.CreateParticle( nEffLevel, vPos, vVel, g_pPlayer->GetPos().y );
+					CParticles * pParticles;
+					if( nEffLevel == 5 ) {
+						pParticles = g_ParticleMng.CreateParticle( nEffLevel + xRandom(6), vPos, vVel, g_pPlayer->GetPos().y );
+					} else {
+						pParticles = g_ParticleMng.CreateParticle( nEffLevel, vPos, vVel, g_pPlayer->GetPos().y );
 					}
-					if( pParticles )
+
+					if (pParticles)
 						pParticles->m_bGravity = true;
 				}
 			}
@@ -1038,8 +1018,6 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 					break;
 				
 				D3DXVECTOR3 vPos;
-				D3DXVECTOR3 vLocal;
-				D3DXVECTOR3 vPosSrc   = pMover->GetPos() + D3DXVECTOR3( 0.0f, 1.0f, 0.0f ); // 발사 지점을 임의로 올려준다. 땜빵 
 				D3DXVECTOR3 vPosDest  = pHitObj->GetPos() + D3DXVECTOR3( 0.0f, 1.0f, 0.0f ); // 목표 지점을 임의로 올려준다. 땜빵 
 				
 				CSfx* pSfx = NULL;
@@ -1047,14 +1025,14 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 				if( pMover->m_dwMotion == MTI_ATK1 )
 				{
 					pModel->GetHandPos( &vPos, PARTS_RWEAPON, pMover->GetMatrixWorld() );
-					pSfx = CreateSfxYoYo( D3DDEVICE, dwSfxObj, vPos, pMover->GetId(), vPosDest );	
+					pSfx = CreateSfxYoYo( dwSfxObj, vPos, pMover->GetId(), vPosDest );	
 					((CSfxItemYoyoAtk*)pSfx)->MakePath(PARTS_RWEAPON);					
 				}
 				else
 				if( pMover->m_dwMotion == MTI_ATK2 )
 				{
 					pModel->GetHandPos( &vPos, PARTS_LWEAPON, pMover->GetMatrixWorld() );
-					pSfx = CreateSfxYoYo( D3DDEVICE, dwSfxObj, vPos, pMover->GetId(), vPosDest );	
+					pSfx = CreateSfxYoYo( dwSfxObj, vPos, pMover->GetId(), vPosDest );	
 					((CSfxItemYoyoAtk*)pSfx)->MakePath(PARTS_LWEAPON);
 				}
 			}

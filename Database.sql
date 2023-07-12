@@ -1296,62 +1296,22 @@ CREATE TABLE [dbo].[MAIL_TBL](
 	[idReceiver] [char](7) NULL,
 	[idSender] [char](7) NULL,
 	[nGold] [bigint] NOT NULL,
-	[tmCreate] [int] NULL,
-	[byRead] [int] NULL,
+	[tmCreate] [int] NULL DEFAULT 0,
+	[byRead] [int] NULL DEFAULT 0,
 	[szTitle] [varchar](128) NOT NULL,
 	[szText] [varchar](255) NOT NULL,
-	[dwItemId] [int] NOT NULL,
-	[nItemNum] [int] NOT NULL,
-	[nRepairNumber] [int] NOT NULL,
-	[nHitPoint] [int] NOT NULL,
-	[nMaxHitPoint] [int] NOT NULL,
-	[nMaterial] [int] NOT NULL,
-	[byFlag] [int] NOT NULL,
-	[dwSerialNumber] [int] NOT NULL,
-	[nOption] [int] NOT NULL,
-	[bItemResist] [int] NOT NULL,
-	[nResistAbilityOption] [int] NOT NULL,
-	[idGuild] [int] NOT NULL,
-	[nResistSMItemId] [int] NOT NULL,
-	[bCharged] [int] NOT NULL,
-	[dwKeepTime] [int] NOT NULL,
-	[nRandomOptItemId] [bigint] NULL,
-	[nPiercedSize] [int] NOT NULL,
-	[dwItemId1] [int] NOT NULL,
-	[dwItemId2] [int] NOT NULL,
-	[dwItemId3] [int] NOT NULL,
-	[dwItemId4] [int] NOT NULL,
+	[szItem] [varchar](max) NOT NULL DEFAULT '',
+	[szExt] [varchar](max) NOT NULL DEFAULT '',
+	[szPiercing] [varchar](max) NOT NULL DEFAULT '',
+	[szPet] [varchar](max) NOT NULL DEFAULT '',
 	[SendDt] [datetime] NULL,
 	[ReadDt] [datetime] NULL,
 	[GetGoldDt] [datetime] NULL,
 	[DeleteDt] [datetime] NULL,
-	[ItemFlag] [int] NOT NULL,
+	[ItemFlag] [int] NOT NULL DEFAULT 0,
 	[ItemReceiveDt] [datetime] NULL,
-	[GoldFlag] [int] NOT NULL,
-	[bPet] [int] NULL,
-	[nKind] [int] NULL,
-	[nLevel] [int] NULL,
-	[dwExp] [int] NULL,
-	[wEnergy] [int] NULL,
-	[wLife] [int] NULL,
-	[anAvailLevel_D] [int] NULL,
-	[anAvailLevel_C] [int] NULL,
-	[anAvailLevel_B] [int] NULL,
-	[anAvailLevel_A] [int] NULL,
-	[anAvailLevel_S] [int] NULL,
-	[dwItemId5] [int] NULL,
-	[dwItemId6] [int] NULL,
-	[dwItemId7] [int] NULL,
-	[dwItemId8] [int] NULL,
-	[dwItemId9] [int] NULL,
-	[dwItemId10] [int] NULL,
-	[dwItemId11] [int] NULL,
-	[dwItemId12] [int] NULL,
-	[dwItemId13] [int] NULL,
-	[dwItemId14] [int] NULL,
-	[dwItemId15] [int] NULL,
-	[nPiercedSize2] [int] NULL,
-	[szPetName] [varchar](32) NULL,
+	[GoldFlag] [int] NOT NULL DEFAULT 0,
+
  CONSTRAINT [PK_MAIL_No] PRIMARY KEY CLUSTERED 
 (
 	[serverindex] ASC,
@@ -1997,59 +1957,10 @@ GO
 SET ANSI_PADDING ON
 GO
 CREATE TABLE [dbo].[tblMaster_all](
-	[serverindex] [char](2) NULL,
-	[m_idPlayer] [char](7) NULL,
-	[sec] [tinyint] NULL,
-	[c01] [int] NULL,
-	[c02] [int] NULL,
-	[c03] [int] NULL,
-	[c04] [int] NULL,
-	[c05] [int] NULL,
-	[c06] [int] NULL,
-	[c07] [int] NULL,
-	[c08] [int] NULL,
-	[c09] [int] NULL,
-	[c10] [int] NULL,
-	[c11] [int] NULL,
-	[c12] [int] NULL,
-	[c13] [int] NULL,
-	[c14] [int] NULL,
-	[c15] [int] NULL,
-	[c16] [int] NULL,
-	[c17] [int] NULL,
-	[c18] [int] NULL,
-	[c19] [int] NULL,
-	[c20] [int] NULL,
-	[c21] [int] NULL,
-	[c22] [int] NULL,
-	[c23] [int] NULL,
-	[c24] [int] NULL,
-	[c25] [int] NULL,
-	[c26] [int] NULL,
-	[c27] [int] NULL,
-	[c28] [int] NULL,
-	[c29] [int] NULL,
-	[c30] [int] NULL,
-	[c31] [int] NULL,
-	[c32] [int] NULL,
-	[c33] [int] NULL,
-	[c34] [int] NULL,
-	[c35] [int] NULL,
-	[c36] [int] NULL,
-	[c37] [int] NULL,
-	[c38] [int] NULL,
-	[c39] [int] NULL,
-	[c40] [int] NULL,
-	[c41] [int] NULL,
-	[c42] [int] NULL,
-	[c43] [int] NULL,
-	[c44] [int] NULL,
-	[c45] [int] NULL,
-	[c46] [int] NULL,
-	[c47] [int] NULL,
-	[c48] [int] NULL,
-	[c49] [int] NULL,
-	[c50] [int] NULL
+	[serverindex] [char](2),
+	[m_idPlayer] [char](7),
+	[progress] [varchar](max) DEFAULT '',
+	CONSTRAINT PK_tblMaster_all PRIMARY KEY (serverindex, m_idPlayer)
 ) ON [PRIMARY]
 GO
 SET ANSI_PADDING OFF
@@ -5364,35 +5275,16 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 create proc [dbo].[usp_Master_Update]
-@serverindex char(2),
-@m_idPlayer char(7),
-@sec tinyint,
-@c01 int = 0, @c02 int = 0, @c03 int = 0, @c04 int = 0, @c05 int = 0,
-@c06 int = 0, @c07 int = 0, @c08 int = 0, @c09 int = 0, @c10 int = 0,
-@c11 int = 0, @c12 int = 0, @c13 int = 0, @c14 int = 0, @c15 int = 0,
-@c16 int = 0, @c17 int = 0, @c18 int = 0, @c19 int = 0, @c20 int = 0,
-@c21 int = 0, @c22 int = 0, @c23 int = 0, @c24 int = 0, @c25 int = 0,
-@c26 int = 0, @c27 int = 0, @c28 int = 0, @c29 int = 0, @c30 int = 0,
-@c31 int = 0, @c32 int = 0, @c33 int = 0, @c34 int = 0, @c35 int = 0,
-@c36 int = 0, @c37 int = 0, @c38 int = 0, @c39 int = 0, @c40 int = 0,
-@c41 int = 0, @c42 int = 0, @c43 int = 0, @c44 int = 0, @c45 int = 0,
-@c46 int = 0, @c47 int = 0, @c48 int = 0, @c49 int = 0, @c50 int = 0
+	@serverindex char(2),
+	@m_idPlayer char(7),
+	@progress varchar(max)
 as
 set nocount on
 set xact_abort on
 
 update tblMaster_all
-set	c01 = @c01, c02 = @c02, c03 = @c03, c04 = @c04, c05 = @c05,
-	c06 = @c06, c07 = @c07, c08 = @c08, c09 = @c09, c10 = @c10,
-	c11 = @c11, c12 = @c12, c13 = @c13, c14 = @c14, c15 = @c15,
-	c16 = @c16, c17 = @c17, c18 = @c18, c19 = @c19, c20 = @c20,
-	c21 = @c21, c22 = @c22, c23 = @c23, c24 = @c24, c25 = @c25,
-	c26 = @c26, c27 = @c27, c28 = @c28, c29 = @c29, c30 = @c30,
-	c31 = @c31, c32 = @c32, c33 = @c33, c34 = @c34, c35 = @c35,
-	c36 = @c36, c37 = @c37, c38 = @c38, c39 = @c39, c40 = @c40,
-	c41 = @c41, c42 = @c42, c43 = @c43, c44 = @c44, c45 = @c45,
-	c46 = @c46, c47 = @c47, c48 = @c48, c49 = @c49, c50 = @c50
-where serverindex = @serverindex and m_idPlayer = @m_idPlayer and sec = @sec
+  set   progress = @progress
+  where serverindex = @serverindex and m_idPlayer = @m_idPlayer
 GO
 /****** Object:  StoredProcedure [dbo].[usp_Master_Select]    Script Date: 04/03/2010 12:42:39 ******/
 SET ANSI_NULLS ON
@@ -5406,15 +5298,9 @@ create proc [dbo].[usp_Master_Select]
 as
 set nocount on
 
-select 	serverindex, m_idPlayer, sec,
-	c01, c02, c03, c04, c05, c06, c07, c08, c09, c10,
-	c11, c12, c13, c14, c15, c16, c17, c18, c19, c20,
-	c21, c22, c23, c24, c25, c26, c27, c28, c29, c30,
-	c31, c32, c33, c34, c35, c36, c37, c38, c39, c40,
-	c41, c42, c43, c44, c45, c46, c47, c48, c49, c50
-from tblMaster_all with (nolock)
-where serverindex = @serverindex and m_idPlayer = @m_idPlayer
-order by sec
+select 	serverindex, m_idPlayer, progress
+  from tblMaster_all with (nolock)
+  where serverindex = @serverindex and m_idPlayer = @m_idPlayer
 GO
 /****** Object:  StoredProcedure [dbo].[uspAttendance]    Script Date: 04/03/2010 12:42:39 ******/
 SET ANSI_NULLS OFF
@@ -7302,13 +7188,12 @@ while @i <= @j
 set nocount off
 return
 GO
-/****** Object:  StoredProcedure [dbo].[MAIL_STR]    Script Date: 04/03/2010 12:42:39 ******/
+/****** Object:  StoredProcedure [dbo].[MAIL_STR_ADDMAIL]    Script Date: 2023-06-04 18:41:39 ******/
 SET ANSI_NULLS OFF
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE  proc [dbo].[MAIL_STR]
-	@iGu		CHAR(2),
+CREATE  proc [dbo].[MAIL_STR_ADDMAIL]
 	@nMail		INT,
 	@serverindex	CHAR(2),
 	@idReceiver	CHAR(7)	= '0000000',
@@ -7318,47 +7203,52 @@ CREATE  proc [dbo].[MAIL_STR]
 	@byRead	INT	= 0,
 	@szTitle		VARCHAR(128)	= '',
 	@szText		VARCHAR(1024)	= '',
-	@dwItemId	INT	= 0,
-	@nItemNum	INT	= 0,
-	@nRepairNumber	INT	= 0,
-	@nHitPoint	INT	= 0,
-	@nMaxHitPoint	INT	= 0,
-	@nMaterial	INT	= 0,
-	@byFlag		INT	= 0,
-	@dwSerialNumber	INT	= 0,
-	@nOption	INT	= 0,
-	@bItemResist	INT	= 0,
-	@nResistAbilityOption	INT	= 0,
-	@idGuild		INT	= 0,
-	@nResistSMItemId	INT	= 0,
-	@bCharged	INT	= 0,
-	@dwKeepTime	INT	= 0,
-	@nRandomOptItemId	BIGINT	= 0,
-	@nPiercedSize	INT	= 0,
-	@dwItemId1	INT	= 0,
-	@dwItemId2	INT	= 0,
-	@dwItemId3	INT	= 0,
-	@dwItemId4	INT	= 0
-	------------------- Version9 Pet
-	,@bPet    int = 0,
-	@nKind  int = 0,
-	@nLevel int = 0,
-	@dwExp              int = 0,
-	@wEnergy          int = 0,
-	@wLife   int = 0,
-	@anAvailLevel_D int = 0, 
-	@anAvailLevel_C int = 0,
-	@anAvailLevel_B int = 0,
-	@anAvailLevel_A int = 0,
-	@anAvailLevel_S int = 0,
+	@szItem VARCHAR(max) = '',
+	@szExt VARCHAR(max) = '',
+	@szPiercing VARCHAR(max) = '',
+	@szPet VARCHAR(max) = ''
+AS
+set nocount on
 
-	@dwItemId5 int = 0
-	---------------- ver.12
-	,@dwItemId6 int = 0, @dwItemId7 int = 0, @dwItemId8 int = 0, @dwItemId9 int = 0, @dwItemId10 int = 0
-	,@dwItemId11 int = 0, @dwItemId12 int = 0, @dwItemId13 int = 0, @dwItemId14 int = 0, @dwItemId15 int = 0
-	,@nPiercedSize2 int = 0
-	----------- Ver. 13
-	, @szPetName varchar(32) = ''
+
+		INSERT MAIL_TBL
+			(
+				nMail,
+				serverindex,
+				idReceiver, idSender,
+				nGold,
+				tmCreate,
+				byRead,
+				szTitle, szText,
+				SendDt,
+				szItem, szExt, szPiercing, szPet
+			)
+			VALUES 
+			(
+				@nMail,
+				@serverindex,
+				@idReceiver, @idSender,
+				@nGold,
+				@tmCreate,
+				@byRead,
+				@szTitle, @szText,
+				getdate(),
+				@szItem, @szExt, @szPiercing, @szPet
+			)
+
+set nocount off
+GO
+
+/****** Object:  StoredProcedure [dbo].[MAIL_STR]    Script Date: 04/03/2010 12:42:39 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE  proc [dbo].[MAIL_STR]
+	@iGu		CHAR(2),
+	@nMail		INT,
+	@serverindex	CHAR(2),
+	@tmCreate	INT	= 0
 
 AS
 set nocount on
@@ -7368,88 +7258,6 @@ IF @iGu	= 'S1'
 	RETURN
 	END
 ELSE
-IF @iGu	= 'A1'
-	BEGIN
-		INSERT MAIL_TBL
-			(
-				nMail,
-				serverindex,
-				idReceiver,
-				idSender,
-				nGold,
-				tmCreate,
-				byRead,
-				szTitle,
-				szText,
-				dwItemId,
-				nItemNum,
-				nRepairNumber,
-				nHitPoint,
-				nMaxHitPoint,
-				nMaterial,
-				byFlag,
-				dwSerialNumber,
-				nOption,
-				bItemResist,
-				nResistAbilityOption,
-				idGuild,
-				nResistSMItemId,
-				bCharged,
-				dwKeepTime,
-				nRandomOptItemId,
-				nPiercedSize,
-				dwItemId1,
-				dwItemId2,
-				dwItemId3,
-				dwItemId4,
-				SendDt
-				,bPet, nKind, nLevel, dwExp, wEnergy, wLife, anAvailLevel_D, anAvailLevel_C, anAvailLevel_B, anAvailLevel_A, anAvailLevel_S
-				,dwItemId5
-				, dwItemId6, dwItemId7, dwItemId8, dwItemId9, dwItemId10, dwItemId11
-				, dwItemId12, dwItemId13, dwItemId14, dwItemId15, nPiercedSize2
-				, szPetName
-			)
-			VALUES 
-			(
-				@nMail,
-				@serverindex,
-				@idReceiver,
-				@idSender,
-				@nGold,
-				@tmCreate,
-				@byRead,
-				@szTitle,
-				@szText,
-				@dwItemId,
-				@nItemNum,
-				@nRepairNumber,
-				@nHitPoint,
-				@nMaxHitPoint,
-				@nMaterial,
-				@byFlag,
-				@dwSerialNumber,
-				@nOption,
-				@bItemResist,
-				@nResistAbilityOption,
-				@idGuild,
-				@nResistSMItemId,
-				@bCharged,
-				@dwKeepTime,
-				@nRandomOptItemId,
-				@nPiercedSize,
-				@dwItemId1,
-				@dwItemId2,
-				@dwItemId3,
-				@dwItemId4,
-				getdate()
-				,@bPet, @nKind, @nLevel, @dwExp, @wEnergy, @wLife, @anAvailLevel_D, @anAvailLevel_C, @anAvailLevel_B, @anAvailLevel_A, @anAvailLevel_S
-				,@dwItemId5
-				, @dwItemId6, @dwItemId7, @dwItemId8, @dwItemId9, @dwItemId10, @dwItemId11
-				, @dwItemId12, @dwItemId13, @dwItemId14, @dwItemId15, @nPiercedSize2
-				, @szPetName
-			)
-	RETURN
-	END
 IF @iGu	= 'D1'
 	BEGIN
 		UPDATE MAIL_TBL SET byRead=90, DeleteDt=getdate() WHERE nMail = @nMail AND serverindex = @serverindex
@@ -8994,124 +8802,10 @@ CREATE proc [dbo].[CHARACTER_STR]
 	@im_dwHairMesh 		INT						= 0,
 	@im_dwHairColor 		INT						= 0,
 	@im_dwHeadMesh 		INT						= 0,
-	@im_dwSex 					INT						= 0,
-	/**********************************************
-	 UPDATE Â¢Â¯e
-	**********************************************/
-	-- CHARACTER_TBL
-	@im_vScale_x				REAL					=	0,
-	@im_dwMotion				INT						=	0,
-	@im_fAngle					REAL					=	0,
-	@im_nHitPoint				INT						=	0,
-	@im_nManaPoint			INT						=	0,
-	@im_nFatiguePoint		INT						=	0,
-	@im_dwRideItemIdx		INT						=	0,
-	@im_dwGold					INT						=	0,
-	@im_nJob						INT						=	0,
-	@im_pActMover				VARCHAR(50)	=	'',
-	@im_nStr						INT						=	0,
-	@im_nSta						INT						=	0,
-	@im_nDex						INT						=	0,
-	@im_nInt							INT						=	0,
-	@im_nLevel					INT						=	0,
-	@im_nExp1					BIGINT						=	0,
-	@im_nExp2					BIGINT						=	0,
-	@im_aJobSkill				VARCHAR(500)	='',
-	@im_aLicenseSkill		VARCHAR(500)	='',
-	@im_aJobLv					VARCHAR(500)	='',
-	@im_dwExpertLv			INT						=	0,
-	@im_idMarkingWorld	INT						=	0,
-	@im_vMarkingPos_x	REAL					=	0,
-	@im_vMarkingPos_y	REAL					=	0,
-	@im_vMarkingPos_z	REAL					=	0,
-	@im_nRemainGP			INT						=	0,
-	@im_nRemainLP			INT						=	0,
-	@im_nFlightLv				INT						=	0,
-	@im_nFxp						INT						=	0,
-	@im_nTxp						INT						=	0,
-	@im_lpQuestCntArray	VARCHAR(3072)= '',
-	@im_chAuthority			CHAR(1)				= '',
-	@im_dwMode				INT						=	0,
-	@im_idparty					INT						=	0,
-	@im_idMuerderer			INT						=	0,
-	@im_nFame					INT						=	0,
-	@im_nDeathExp				BIGINT					=  0,
-	@im_nDeathLevel				INT					=  0,
-	@im_dwFlyTime					INT					=  0,
-	@im_nMessengerState 	INT					=  0,
-	@iTotalPlayTime			INT						= 	0
-	-------------- (ADD : Version8-PK System)
-	,@im_nPKValue    		int=0
-	,@im_dwPKPropensity    	int=0
-	,@im_dwPKExp     		int=0
-	-- CARD_CUBE_TBL
-	,@im_Card 						VARCHAR(1980)= '',
-	@im_Index_Card 			VARCHAR(215) 	= '',
-	@im_ObjIndex_Card 	VARCHAR(215) 	= '',
-	@im_Cube 						VARCHAR(1980)= '',
-	@im_Index_Cube 			VARCHAR(215) 	= '',
-	@im_ObjIndex_Cube 	VARCHAR(215) 	= '',
-	-- INVENTORY_TBL
-	@im_Inventory 				VARCHAR(6940)= '',
-	@im_apIndex 				VARCHAR(345) 	= '',
-	@im_adwEquipment 	VARCHAR(135) 	= '',
-	@im_dwObjIndex 			VARCHAR(345) 	= '',
-	-- TASKBAR_TBL
-	@im_aSlotApplet 			VARCHAR(3100)= '',
-	-- TASKBAR_ITEM_TBL
-	@im_aSlotItem 				VARCHAR(6885)= '',
-	-- TASKBAR_TBL
-	@im_aSlotQueue 			VARCHAR(225)= '',
-	@im_SkillBar					SMALLINT			= 0,
-	-- BANK_TBL
-	@im_Bank						VARCHAR(4290)= '',
-	@im_apIndex_Bank		VARCHAR(215)= '',
-	@im_dwObjIndex_Bank VARCHAR(215)= '',
-	@im_dwGoldBank			INT						= 0,
-	@im_nFuel						INT						= -1,
-	@im_tmAccFuel				INT 						= 0,
-	@im_dwSMTime			VARCHAR(2560)='',
-	@iSkillInfluence				varchar(2048) ='',
-	@im_dwSkillPoint			INT 						= 0,
-	@im_aCompleteQuest	varchar(3072) = '',
-	@im_extInventory			varchar(2000) = '',
-	@im_extBank					varchar(2000) = '',
-	@im_InventoryPiercing varchar(8000) = '',
-	@im_BankPiercing		varchar(8000) = '',
-	@im_dwReturnWorldID INT		 				= 1,
-	@im_vReturnPos_x 		REAL					= 0,
-	@im_vReturnPos_y 		REAL					= 0,
-	@im_vReturnPos_z 		REAL					= 0,
-	-------------- ( Version 7 : Skill Update)
-	@im_SkillPoint			int=0,
-	@im_SkillLv				int=0,
-	@im_SkillExp			bigint=0,
-	-------------- (AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ : 2006 11 13 Attendant Class)
-	@idwEventFlag                   bigint=0,
-	@idwEventTime          int=0,
+	@im_dwSex 					INT						= 0
 
 
-	@idwEventElapsed                int=0
-	-------------- (ADD : Version8-Angel System)
-	,@im_nAngelExp		bigint=0
-	,@im_nAngelLevel		int=0
-	--------------- Version 9 AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ PetÂ¡Ã†uÂ¡Â¤A
-,@iszInventoryPet	varchar(4200)     = '$'
 
-,@iszBankPet	varchar(4200)     = '$'
-,@im_dwPetId int = -1
-
-,@im_nExpLog int = 0
-,@im_nAngelExpLog int = 0
-,@im_nCoupon int = 0
---------------- ver. 13
-, @im_nHonor int = -1
-, @im_nLayer int = 0
----------- Ver 15
---, @im_BankPW char(4) = '0000'
-, @im_aCheckedQuest varchar(100) =''
-, @im_nCampusPoint int = 0
-, @im_idCampus int = 0
 
 /*******************************************************
 	Gu Â¡Â¾Â¢Â¬Â¨Â¬Â¨Â¢
@@ -9545,201 +9239,8 @@ end
 	 CHARACTER_STR 'S8',@im_idPlayer,@iserverindex,@iaccount
 	 CHARACTER_STR 'S8','425120','01','ata3k'
 */
-ELSE
-IF @iGu = 'U1' -- AÂ©Ã¸Â¢Â¬?AI AuAa
-	BEGIN
-		UPDATE CHARACTER_TBL
-		      SET	dwWorldID 				= @idwWorldID,
-						m_dwIndex 				= @im_dwIndex,			
-						m_dwSex	 				= @im_dwSex,
-						m_vScale_x 				= @im_vScale_x,						
-						m_dwMotion 				= @im_dwMotion,
-						m_vPos_x 					= @im_vPos_x,
-						m_vPos_y 					= @im_vPos_y,
-						m_vPos_z 					= @im_vPos_z,
-						m_dwHairMesh    	= @im_dwHairMesh,
-						m_dwHairColor	    	= @im_dwHairColor,
-						m_dwHeadMesh	   	= @im_dwHeadMesh,  -- 2004/11/08   AÂ©Â¬Â¡Ã†Â¢Â®  
-						m_fAngle 					= 0, --@im_fAngle,
-						m_szCharacterKey 	= @im_szCharacterKey,
-						m_nHitPoint 				= @im_nHitPoint,
-						m_nManaPoint 			= @im_nManaPoint,
-						m_nFatiguePoint 		= @im_nFatiguePoint,
-						m_nFuel						= @im_nFuel,
-						m_dwRideItemIdx 		= @im_dwRideItemIdx,
-						m_dwGold 					= @im_dwGold,
-						m_nJob 						= @im_nJob,
-						m_pActMover 			= @im_pActMover,
-						m_nStr 						= @im_nStr,
-						m_nSta 						= @im_nSta,
-						m_nDex 						= @im_nDex,
-						m_nInt 						= @im_nInt,
-						m_nLevel 					= @im_nLevel,
-						m_nMaximumLevel	= CASE WHEN m_nMaximumLevel < @im_nLevel THEN @im_nLevel ELSE m_nMaximumLevel END,
-						m_nExp1	 				= @im_nExp1,
-						m_nExp2 					= @im_nExp2,
-						m_aJobSkill 				= @im_aJobSkill,
-						m_aLicenseSkill 		= @im_aLicenseSkill,
-						m_aJobLv 					= @im_aJobLv,
-						m_dwExpertLv 			= @im_dwExpertLv,
-						m_idMarkingWorld 	= @im_idMarkingWorld,
-						m_vMarkingPos_x 	= @im_vMarkingPos_x,
-						m_vMarkingPos_y 	= @im_vMarkingPos_y,
-						m_vMarkingPos_z 	= @im_vMarkingPos_z,
-						m_nRemainGP 			= @im_nRemainGP,
-						m_nRemainLP 			= @im_nRemainLP,
-						m_nFlightLv 				= @im_nFlightLv,
-						m_nFxp 						= @im_nFxp,
-						m_nTxp 						= @im_nTxp,
-						m_lpQuestCntArray 	= @im_lpQuestCntArray,
-						m_aCompleteQuest = @im_aCompleteQuest,
-						m_dwMode 				= @im_dwMode,
-						m_idparty 					= @im_idparty,
-						m_idMuerderer 		= @im_idMuerderer,
-						m_nFame 					= @im_nFame,	
-						m_nDeathExp			= @im_nDeathExp,
-						m_nDeathLevel			= @im_nDeathLevel,
-						--m_dwFlyTime				= m_dwFlyTime + @im_dwFlyTime,
-						m_dwFlyTime = @im_dwFlyTime,
-						m_nMessengerState = @im_nMessengerState,
-						TotalPlayTime 			= TotalPlayTime + @iTotalPlayTime,
-						m_tmAccFuel 			= @im_tmAccFuel,
-						m_dwSkillPoint			= @im_dwSkillPoint,
-						m_dwReturnWorldID= @im_dwReturnWorldID,
-						m_vReturnPos_x		= @im_vReturnPos_x,
-						m_vReturnPos_y		= @im_vReturnPos_y,
-						m_vReturnPos_z		= @im_vReturnPos_z,
-						m_SkillPoint		=@im_SkillPoint,
-						m_SkillLv			=@im_SkillLv,
-				        m_SkillExp                      =@im_SkillExp
-				      -------------- (AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ : 2006 11 13 Attendant Event)
-				        , dwEventFlag                     =@idwEventFlag
-				        , dwEventTime                     =@idwEventTime
-				        , dwEventElapsed          =@idwEventElapsed
-				      -------------- (ADD: Version8-PK System)
-
-						, PKValue        	= @im_nPKValue
-						, PKPropensity   	= @im_dwPKPropensity
-						, PKExp         	= @im_dwPKExp
-				      -------------- (ADD: Version8-Angel System)
-						, AngelExp			= @im_nAngelExp
-						, AngelLevel		= @im_nAngelLevel
-					--------------------- Version9 Pet
-						, m_dwPetId = @im_dwPetId
-
-						, m_nExpLog = @im_nExpLog
-						, m_nAngelExpLog = @im_nAngelExpLog
-						, m_nCoupon = @im_nCoupon
-						------------- ver. 13
-						, m_nHonor = @im_nHonor
-						, m_nLayer = @im_nLayer
-						---------- Ver 15
-						, m_aCheckedQuest = @im_aCheckedQuest
-						, m_nCampusPoint = @im_nCampusPoint
-						, idCampus = @im_idCampus
-				WHERE   m_idPlayer                              = @im_idPlayer  
-				AND 	serverindex 				= @iserverindex
-
--- 		if object_id('QUEST_TBL') is not null
--- 			EXEC QUEST_STR 'A1',@im_idPlayer,@iserverindex,@im_lpQuestCntArray
-
-update tblLogout_Penya
-set m_dwGold = @im_dwGold, regdate = getdate()
-where m_idPlayer = @im_idPlayer and serverindex = @iserverindex
-
-		IF @im_nLevel>=120 BEGIN
-			UPDATE 	CHARACTER_TBL 
-				SET FinalLevelDt=getdate() 
-			WHERE 	serverindex=@iserverindex 
-				AND m_idPlayer=@im_idPlayer 
-				AND FinalLevelDt='2000-01-01'
-		END
-
-		--Â¨Ã¹UCoÂ¨Ã¹Â¢Ã§ Â¢Â¯aAÂ¡Ã­Â¡Ã­cCÂ¡Â¿ Â¨Â¬oÂ¢Â¬Â¥Ã¬ Â¡Ã†uÂ¡Â¤A
-		IF @im_dwSMTime > '' 
-			BEGIN
-				IF EXISTS(SELECT * FROM BILING_ITEM_TBL WHERE m_idPlayer= @im_idPlayer  AND serverindex 	= @iserverindex)
-				UPDATE BILING_ITEM_TBL
-						SET m_dwSMTime = @im_dwSMTime
-				 WHERE	m_idPlayer   				= @im_idPlayer 	
-					  AND 	serverindex 				= @iserverindex
-				ELSE
-				INSERT BILING_ITEM_TBL
-					(m_idPlayer,serverindex,m_dwSMTime)
-				VALUES
-					(@im_idPlayer,@iserverindex,@im_dwSMTime)
-			END
-		ELSE
-			 DELETE BILING_ITEM_TBL
-			 WHERE	m_idPlayer   				= @im_idPlayer 	
-			      AND 	serverindex 				= @iserverindex
-
-			
--- 		UPDATE 	CARD_CUBE_TBL 
--- 				SET m_Card 						= @im_Card,
--- 						m_apIndex_Card 		= @im_Index_Card,
--- 						m_dwObjIndex_Card= @im_ObjIndex_Card,
--- 						m_Cube 						= @im_Cube,
--- 						m_apIndex_Cube 	= @im_Index_Cube,
--- 						m_dwObjIndex_Cube=@im_ObjIndex_Cube 
--- 		 WHERE	m_idPlayer   				= @im_idPlayer 	
--- 			  AND 	serverindex 				= @iserverindex
-		
-		UPDATE INVENTORY_TBL 
-		      SET 	m_Inventory 				= @im_Inventory,
-						m_apIndex 				= @im_apIndex,
-						m_adwEquipment 	= @im_adwEquipment,
-						m_dwObjIndex 			= @im_dwObjIndex
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-		
-
-		
-		UPDATE TASKBAR_TBL 
-			  SET 	m_aSlotApplet 			= @im_aSlotApplet,
-						m_aSlotQueue 			= @im_aSlotQueue,
-						m_SkillBar					= @im_SkillBar
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
 
 
-
-
-		UPDATE TASKBAR_ITEM_TBL 
-			  SET 	m_aSlotItem 				= @im_aSlotItem						
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-
-		UPDATE BANK_TBL 
-			  SET 	m_Bank 						= @im_Bank,
-						m_apIndex_Bank 		= @im_apIndex_Bank, 
-						m_dwObjIndex_Bank = @im_dwObjIndex_Bank, 
-						m_dwGoldBank 		= @im_dwGoldBank
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-
-		UPDATE SKILLINFLUENCE_TBL
-			 SET SkillInfluence = @iSkillInfluence
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-
-		UPDATE INVENTORY_EXT_TBL 
-		      SET 	m_extInventory 				= @im_extInventory,
-						m_InventoryPiercing= @im_InventoryPiercing
-			,szInventoryPet	= @iszInventoryPet
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-
-		UPDATE BANK_EXT_TBL 
-			  SET 	m_extBank 						= @im_extBank,
-						m_BankPiercing			= @im_BankPiercing
-			, szBankPet = @iszBankPet
-		 WHERE 	m_idPlayer   				= @im_idPlayer 	
-			  AND 	serverindex 				= @iserverindex
-
-		SELECT fError = '1', fText = 'OK'
-		RETURN
-	END
 /*
 	
 	AÂ¢Â´Â¨Â¬Â¢Â¬Â¨ÃºÂ¡Ã€Â¥Ã¬Â¡ÃAIÂ¨Â¡Â¢Ã§
@@ -10278,9 +9779,9 @@ IF @iGu = 'I1' -- AEÂ¡Â¾a AÂ¢Â´Â¨Â¬Â¢Â¬ AOÂ¡Â¤A
 						                            0, 
 						                            0,
 						                            0,
-							@im_SkillPoint,
-							@im_SkillLv,
-							@im_SkillExp
+							0,
+							0,
+							0
 							-- Ver 15
 							, '$'
 							, 0
@@ -10454,12 +9955,8 @@ IF @iGu = 'I1' -- AEÂ¡Â¾a AÂ¢Â´Â¨Â¬Â¢Â¬ AOÂ¡Â¤A
 	VALUES ( @iserverindex, @om_idPlayer, 2, '$', '$', '$' )
 
 	------------------- ver. 13
-	insert into tblMaster_all (serverindex, m_idPlayer, sec)
-	select @iserverindex, @om_idPlayer, 1
-	insert into tblMaster_all (serverindex, m_idPlayer, sec)
-	select @iserverindex, @om_idPlayer, 2
-	insert into tblMaster_all (serverindex, m_idPlayer, sec)
-	select @iserverindex, @om_idPlayer, 3
+	insert into tblMaster_all (serverindex, m_idPlayer, progress)
+	  select @iserverindex, @om_idPlayer, ''
 
 	------------------- ver. 15
 	insert into tblRestPoint (serverindex, m_idPlayer)
@@ -10490,6 +9987,298 @@ IF @iGu = 'I1' -- AEÂ¡Â¾a AÂ¢Â´Â¨Â¬Â¢Â¬ AOÂ¡Â¤A
 set nocount off
 RETURN
 
+GO
+
+/****** Object:  StoredProcedure [dbo].[[CHARACTER_STR_SAVEPLAYER]]    Script Date: 03.06.2023 21:43:09 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE proc [dbo].[CHARACTER_STR_SAVEPLAYER]
+	@im_idPlayer   				CHAR(7) 			= '0000001',
+	@iserverindex  				CHAR(2) 			= '01',
+	/**********************************************
+	 INSERT Â¢Â¯e
+	**********************************************/
+	-- CHARACTER_TBL
+	-- 1
+	@im_szName 				VARCHAR(32)	= '',
+	@idwWorldID 				INT 						= 0,
+	@im_dwIndex 				INT 						= 0,
+	@im_vPos_x 					REAL 					= 0,
+	@im_vPos_y 					REAL 					= 0,
+	@im_vPos_z 					REAL 					= 0,
+	@im_szCharacterKey 	VARCHAR(32)	= '',
+	@im_dwSkinSet 			INT						= 0,
+	@im_dwHairMesh 		INT						= 0,
+	@im_dwHairColor 		INT						= 0,
+	@im_dwHeadMesh 		INT						= 0,
+	@im_dwSex 					INT						= 0,
+	/**********************************************
+	 UPDATE Â¢Â¯e
+	**********************************************/
+	-- CHARACTER_TBL
+	-- 2
+	@im_vScale_x				REAL					=	0,
+	@im_dwMotion				INT						=	0,
+	@im_fAngle					REAL					=	0,
+	@im_nHitPoint				INT						=	0,
+	@im_nManaPoint			INT						=	0,
+	@im_nFatiguePoint		INT						=	0,
+	@im_dwRideItemIdx		INT						=	0,
+	@im_dwGold					INT						=	0,
+	@im_nJob						INT						=	0,
+	@im_pActMover				VARCHAR(50)	=	'',
+	-- 3
+	@im_nStr						INT						=	0,
+	@im_nSta						INT						=	0,
+	@im_nDex						INT						=	0,
+	@im_nInt							INT						=	0,
+	@im_nLevel					INT						=	0,
+	@im_nExp1					BIGINT						=	0,
+	@im_aJobLv					VARCHAR(500)	='',
+	-- 4
+	@im_idMarkingWorld	INT						=	0,
+	@im_vMarkingPos_x	REAL					=	0,
+	@im_vMarkingPos_y	REAL					=	0,
+	@im_vMarkingPos_z	REAL					=	0,
+	@im_nRemainGP			INT						=	0,
+	@im_nFlightLv				INT						=	0,
+	@im_nFxp						INT						=	0,
+	@im_nTxp						INT						=	0,
+	@im_lpQuestCntArray	VARCHAR(3072)= '',
+	-- 5
+	@im_dwMode				INT						=	0,
+	@im_idparty					INT						=	0,
+	@im_idMuerderer			INT						=	0,
+	@im_nFame					INT						=	0,
+	@im_nDeathExp				BIGINT					=  0,
+	@im_nDeathLevel				INT					=  0,
+	@im_dwFlyTime					INT					=  0,
+	@im_nMessengerState 	INT					=  0
+	-------------- (ADD : Version8-PK System)
+	-- 6
+	,@im_nPKValue    		int=0
+	,@im_dwPKPropensity    	int=0
+	,@im_dwPKExp     		int=0
+	,@im_Inventory 				VARCHAR(6940)= ''
+	,@im_apIndex 				VARCHAR(345) 	= ''
+	,@im_dwObjIndex 			VARCHAR(345) 	= ''
+	,@im_extInventory			varchar(2000) = ''
+	,@im_InventoryPiercing varchar(8000) = ''
+	,@iszInventoryPet	varchar(4200)     = '$'
+	,@im_adwEquipment 	VARCHAR(135) 	= '',
+	-- TASKBAR_TBL
+	-- 7
+	@im_aSlotApplet 			VARCHAR(3100)= '',
+	@im_aSlotItem 				VARCHAR(6885)= '',
+	@im_aSlotQueue 			VARCHAR(225)= '',
+	@im_SkillBar					SMALLINT			= 0,
+	@im_nFuel						INT						= -1,
+	@im_tmAccFuel				INT 						= 0,
+	@im_dwSMTime			VARCHAR(2560)='',
+	@iSkillInfluence				varchar(2048) ='',
+	@im_aCompleteQuest	varchar(3072) = '',
+	-- 8
+	@im_dwReturnWorldID INT		 				= 1,
+	@im_vReturnPos_x 		REAL					= 0,
+	@im_vReturnPos_y 		REAL					= 0,
+	@im_vReturnPos_z 		REAL					= 0,
+	-------------- ( Version 7 : Skill Update)
+	-- 9
+	@im_SkillPoint			int=0,
+	@im_SkillLv				int=0,
+	-------------- (AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ : 2006 11 13 Attendant Class)
+	@idwEventFlag                   bigint=0,
+	@idwEventTime          int=0,
+	@idwEventElapsed                int=0
+	-------------- (ADD : Version8-Angel System)
+	,@im_nAngelExp		bigint=0
+	,@im_nAngelLevel		int=0
+	--------------- Version 9 AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ PetÂ¡Ã†uÂ¡Â¤A
+
+,@im_dwPetId int = -1
+
+,@im_nExpLog int = 0
+,@im_nAngelExpLog int = 0
+,@im_nCoupon int = 0
+--------------- ver. 13
+	-- 10
+, @im_nHonor int = -1
+, @im_nLayer int = 0
+---------- Ver 15
+--, @im_BankPW char(4) = '0000'
+, @im_aCheckedQuest varchar(100) =''
+, @im_nCampusPoint int = 0
+, @im_idCampus int = 0
+
+AS
+set nocount on
+	BEGIN
+		UPDATE CHARACTER_TBL
+		      SET	dwWorldID 				= @idwWorldID,
+						m_dwIndex 				= @im_dwIndex,			
+						m_dwSex	 				= @im_dwSex,
+						m_vScale_x 				= @im_vScale_x,						
+						m_dwMotion 				= @im_dwMotion,
+						m_vPos_x 					= @im_vPos_x,
+						m_vPos_y 					= @im_vPos_y,
+						m_vPos_z 					= @im_vPos_z,
+						m_dwHairMesh    	= @im_dwHairMesh,
+						m_dwHairColor	    	= @im_dwHairColor,
+						m_dwHeadMesh	   	= @im_dwHeadMesh,  -- 2004/11/08   AÂ©Â¬Â¡Ã†Â¢Â®  
+						m_fAngle 					= 0, --@im_fAngle,
+						m_szCharacterKey 	= @im_szCharacterKey,
+						m_nHitPoint 				= @im_nHitPoint,
+						m_nManaPoint 			= @im_nManaPoint,
+						m_nFatiguePoint 		= @im_nFatiguePoint,
+						m_nFuel						= @im_nFuel,
+						m_dwRideItemIdx 		= @im_dwRideItemIdx,
+						m_dwGold 					= @im_dwGold,
+						m_nJob 						= @im_nJob,
+						m_pActMover 			= @im_pActMover,
+						m_nStr 						= @im_nStr,
+						m_nSta 						= @im_nSta,
+						m_nDex 						= @im_nDex,
+						m_nInt 						= @im_nInt,
+						m_nLevel 					= @im_nLevel,
+						m_nMaximumLevel	= CASE WHEN m_nMaximumLevel < @im_nLevel THEN @im_nLevel ELSE m_nMaximumLevel END,
+						m_nExp1	 				= @im_nExp1,
+						m_nExp2 					= 0,
+						m_aJobSkill 				= '',
+						m_aLicenseSkill 		= '',
+						m_aJobLv 					= @im_aJobLv,
+						m_dwExpertLv 			= 0,
+						m_idMarkingWorld 	= @im_idMarkingWorld,
+						m_vMarkingPos_x 	= @im_vMarkingPos_x,
+						m_vMarkingPos_y 	= @im_vMarkingPos_y,
+						m_vMarkingPos_z 	= @im_vMarkingPos_z,
+						m_nRemainGP 			= @im_nRemainGP,
+						m_nRemainLP 			= 0,
+						m_nFlightLv 				= @im_nFlightLv,
+						m_nFxp 						= @im_nFxp,
+						m_nTxp 						= @im_nTxp,
+						m_lpQuestCntArray 	= @im_lpQuestCntArray,
+						m_aCompleteQuest = @im_aCompleteQuest,
+						m_dwMode 				= @im_dwMode,
+						m_idparty 					= @im_idparty,
+						m_idMuerderer 		= @im_idMuerderer,
+						m_nFame 					= @im_nFame,	
+						m_nDeathExp			= @im_nDeathExp,
+						m_nDeathLevel			= @im_nDeathLevel,
+						m_dwFlyTime = @im_dwFlyTime,
+						m_nMessengerState = @im_nMessengerState,
+						m_tmAccFuel 			= @im_tmAccFuel,
+						m_dwSkillPoint			= 0,
+						m_dwReturnWorldID= @im_dwReturnWorldID,
+						m_vReturnPos_x		= @im_vReturnPos_x,
+						m_vReturnPos_y		= @im_vReturnPos_y,
+						m_vReturnPos_z		= @im_vReturnPos_z,
+						m_SkillPoint		=@im_SkillPoint,
+						m_SkillLv			=@im_SkillLv,
+				        m_SkillExp          = 0
+				      -------------- (AÂ©Â¬Â¡Ã†Â¢Â® Â¨Â¬IÂ¨Â¬Â¨Â¢ : 2006 11 13 Attendant Event)
+				        , dwEventFlag                     =@idwEventFlag
+				        , dwEventTime                     =@idwEventTime
+				        , dwEventElapsed          =@idwEventElapsed
+				      -------------- (ADD: Version8-PK System)
+
+						, PKValue        	= @im_nPKValue
+						, PKPropensity   	= @im_dwPKPropensity
+						, PKExp         	= @im_dwPKExp
+				      -------------- (ADD: Version8-Angel System)
+						, AngelExp			= @im_nAngelExp
+						, AngelLevel		= @im_nAngelLevel
+					--------------------- Version9 Pet
+						, m_dwPetId = @im_dwPetId
+
+						, m_nExpLog = @im_nExpLog
+						, m_nAngelExpLog = @im_nAngelExpLog
+						, m_nCoupon = @im_nCoupon
+						------------- ver. 13
+						, m_nHonor = @im_nHonor
+						, m_nLayer = @im_nLayer
+						---------- Ver 15
+						, m_aCheckedQuest = @im_aCheckedQuest
+						, m_nCampusPoint = @im_nCampusPoint
+						, idCampus = @im_idCampus
+				WHERE   m_idPlayer                              = @im_idPlayer  
+				AND 	serverindex 				= @iserverindex
+
+update tblLogout_Penya
+set m_dwGold = @im_dwGold, regdate = getdate()
+where m_idPlayer = @im_idPlayer and serverindex = @iserverindex
+
+		IF @im_nLevel>=120 BEGIN
+			UPDATE 	CHARACTER_TBL 
+				SET FinalLevelDt=getdate() 
+			WHERE 	serverindex=@iserverindex 
+				AND m_idPlayer=@im_idPlayer 
+				AND FinalLevelDt='2000-01-01'
+		END
+
+		--Â¨Ã¹UCoÂ¨Ã¹Â¢Ã§ Â¢Â¯aAÂ¡Ã­Â¡Ã­cCÂ¡Â¿ Â¨Â¬oÂ¢Â¬Â¥Ã¬ Â¡Ã†uÂ¡Â¤A
+		IF @im_dwSMTime > '' 
+			BEGIN
+				IF EXISTS(SELECT * FROM BILING_ITEM_TBL WHERE m_idPlayer= @im_idPlayer  AND serverindex 	= @iserverindex)
+				UPDATE BILING_ITEM_TBL
+						SET m_dwSMTime = @im_dwSMTime
+				 WHERE	m_idPlayer   				= @im_idPlayer 	
+					  AND 	serverindex 				= @iserverindex
+				ELSE
+				INSERT BILING_ITEM_TBL
+					(m_idPlayer,serverindex,m_dwSMTime)
+				VALUES
+					(@im_idPlayer,@iserverindex,@im_dwSMTime)
+			END
+		ELSE
+			 DELETE BILING_ITEM_TBL
+			 WHERE	m_idPlayer   				= @im_idPlayer 	
+			      AND 	serverindex 				= @iserverindex
+		
+		UPDATE INVENTORY_TBL 
+		      SET 	m_Inventory 				= @im_Inventory,
+						m_apIndex 				= @im_apIndex,
+						m_adwEquipment 	= @im_adwEquipment,
+						m_dwObjIndex 			= @im_dwObjIndex
+		 WHERE 	m_idPlayer   				= @im_idPlayer 	
+			  AND 	serverindex 				= @iserverindex
+		
+
+		
+		UPDATE TASKBAR_TBL 
+			  SET 	m_aSlotApplet 			= @im_aSlotApplet,
+						m_aSlotQueue 			= @im_aSlotQueue,
+						m_SkillBar					= @im_SkillBar
+		 WHERE 	m_idPlayer   				= @im_idPlayer 	
+			  AND 	serverindex 				= @iserverindex
+
+		UPDATE TASKBAR_ITEM_TBL 
+			  SET 	m_aSlotItem 				= @im_aSlotItem						
+		 WHERE 	m_idPlayer   				= @im_idPlayer 	
+			  AND 	serverindex 				= @iserverindex
+
+		UPDATE SKILLINFLUENCE_TBL
+			 SET SkillInfluence = @iSkillInfluence
+		 WHERE 	m_idPlayer   				= @im_idPlayer 	
+			  AND 	serverindex 				= @iserverindex
+
+		UPDATE INVENTORY_EXT_TBL 
+		      SET 	m_extInventory 				= @im_extInventory,
+						m_InventoryPiercing= @im_InventoryPiercing
+			,szInventoryPet	= @iszInventoryPet
+		 WHERE 	m_idPlayer   				= @im_idPlayer 	
+			  AND 	serverindex 				= @iserverindex
+
+		SELECT fError = '1', fText = 'OK'
+		RETURN
+	END
+
+	
+set nocount off
+RETURN
 GO
 /****** Object:  StoredProcedure [dbo].[CHARACTER_DELETE_STR]    Script Date: 04/03/2010 12:42:39 ******/
 SET ANSI_NULLS ON
@@ -11379,26 +11168,12 @@ CREATE         proc [dbo].[MAIL_STR_REALTIME]
 	@iGu		CHAR(2),
 	@serverindex 	CHAR(2),
 	@nMail_Before	INT = 0,
-	@nMail_After	INT = 0,
-	@idPlayer	CHAR(7) = '0000000',
-	@nLevel		INT = 0,
-	@iaccount 	VARCHAR(32) = '',
-	@tmCreate	INT = 0,
-	@dwSerialNumber	INT = 0,
-	@nHitPoint	INT = 0
+	@nMail_After	INT = 0
 as
 set nocount on
 
-declare @sdate datetime
-declare @edate datetime
 declare @iserverindex char(2)
 
---set @sdate = '2007-07-18 00:00:00'--'2007-07-10 00:00:00'	-- '2007-07-18 00:00:00'
---set @edate = '2007-08-31 23:59:00'--'2007-07-10 23:00:00'  -- '2007-08-31 23:59:00'
-
--- set @sdate = '2008-01-15 11:00:00'
--- set @edate = '2008-02-24 12:00:00'
-select @sdate = '2009-12-26 10:00:00', @edate = '2010-02-03 10:00:00'
 set @iserverindex = cast((cast(@serverindex as int) + 50) as char(2))
 
 IF @iGu	= 'S1'
@@ -11411,163 +11186,13 @@ IF @iGu	= 'S1'
 ELSE
 IF @iGu	= 'U1'
 	BEGIN
-		UPDATE MAIL_TBL SET nMail = @nMail_After, serverindex = @serverindex, dwSerialNumber = @dwSerialNumber, nHitPoint = @nHitPoint
+		UPDATE MAIL_TBL
+		SET nMail = @nMail_After,
+		  serverindex = @serverindex
 		WHERE serverindex = @iserverindex and nMail = @nMail_Before
 	RETURN
 	END
-ELSE
-IF @iGu  = 'I1'
 
-	BEGIN
-		-- ??? ???? ??
-		IF(getdate() < @sdate or getdate() > @edate) BEGIN
-			RETURN
-		END
-		-- ??? ??? ?? ?? 	
-		IF( NOT EXISTS(SELECT * FROM tbl_Event_NewAccount_0912 where  account  = @iaccount ) )	BEGIN
-			RETURN
-		END
-
---		if exists (select * from USELESS_ACCOUNT_DBF.dbo.ACCOUNT_TBL_DETAIL where account = @iaccount and (regdate >= @sdate and regdate <= @edate))
-		begin
-
-		declare @ItemID1 int, @ItemID2 int, @ItemID3 int, @ItemID4 int
-		declare @ItemNum1 int, @ItemNum2 int, @ItemNum3 int, @ItemNum4 int
-		declare @provide_count int, @provide_num int
-		declare @item_flag int
-
-		set @provide_num = 1
-
-		if (@nMail_After = 0)
-		begin
-			if (@nLevel = 5) or (@nLevel = 15)
-			begin
-				select @ItemID1 = 10270, @ItemNum1 = 1, @provide_count = 1, @item_flag = 2
-			end
-			if (@nLevel = 10) or (@nLevel = 1)
-			begin
-				select @ItemID1 = 26205, @ItemNum1 = 3, @provide_count = 1, @item_flag = 2
-			end
-			if (@nLevel = 20)
-			begin
-				select @ItemID1 = 26208, @ItemNum1 = 3, @ItemID2 = 10270, @ItemNum2 = 2, @provide_count = 2, @item_flag = 2
-			end
-			if (@nLevel = 23) or (@nLevel = 29) or (@nLevel = 35) or (@nLevel = 43) or (@nLevel = 47) or (@nLevel = 51)
-			begin
-				select @ItemID1 = 10270, @ItemNum1 = 2, @provide_count = 1, @item_flag = 2
-			end
-			if (@nLevel = 26) or (@nLevel = 32) or (@nLevel = 38)
-			begin
-				select @ItemID1 = 26208, @ItemNum1 = 3, @provide_count = 1, @item_flag = 2
-			end
-			if (@nLevel = 40) or (@nLevel = 50)
-			begin
-				select @ItemID1 = 26211, @ItemNum1 = 2, @ItemID2 = 10207, @ItemNum2 = 3, @ItemID3 = 10208, @ItemNum3 = 3, @provide_count = 3, @item_flag = 2
-			end
-			if (@nLevel = 45)
-			begin
-				select @ItemID1 = 26211, @ItemNum1 = 2, @ItemID2 = 10207, @ItemNum2 = 1, @ItemID3 = 10208, @ItemNum3 = 1, @provide_count = 3, @item_flag = 2
-			end
-			if (@nLevel = 55)
-			begin
-				select @ItemID1 = 26211, @ItemNum1 = 2, @ItemID2 = 10270, @ItemNum2 = 2, @provide_count = 2, @item_flag = 2
-			end
-			if (@nLevel = 58)
-			begin
-				select @ItemID1 = 26211, @ItemNum1 = 2, @ItemID2 = 10207, @ItemNum2 = 3, @ItemID3 = 10208, @ItemNum3 = 3, @ItemID4 = 10270, @ItemNum4 = 2, @provide_count = 4, @item_flag = 2
-			end
-			if (@nLevel = 60)
-			begin
-				select @ItemID1 = 30148, @ItemNum1 = 10,  @provide_count = 1, @item_flag = 2
-			end
-		end
-		if (@nMail_After in (1, 2, 3, 4))
-		begin
-				select @ItemID1 = 26650, @ItemNum1 = 1, @provide_count = 1, @item_flag = 0
-		end
-		if (@nMail_After in (6, 7))
-		begin
-			if (@nMail_Before = 0)
-			begin
-				select @ItemID1 = 22482, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-			if (@nMail_Before = 1)
-			begin
-				select @ItemID1 = 22483, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-		end
-
-		if (@nMail_After in (8, 9))
-		begin
-			if (@nMail_Before = 0)
-			begin
-				select @ItemID1 = 22484, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-			if (@nMail_Before = 1)
-			begin
-				select @ItemID1 = 22485, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-		end
-		if (@nMail_After in (10, 11))
-		begin
-			if (@nMail_Before = 0)
-			begin
-				select @ItemID1 = 22496, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-			if (@nMail_Before = 1)
-			begin
-				select @ItemID1 = 22497, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-		end
-		if (@nMail_After in (12, 13))
-		begin
-			if (@nMail_Before = 0)
-			begin
-				select @ItemID1 = 22498, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-			if (@nMail_Before = 1)
-			begin
-				select @ItemID1 = 22499, @ItemNum1 = 1, @ItemID2 = 26651, @ItemNum2 = 1, @provide_count = 2, @item_flag = 0
-			end
-		end
-
-		while @provide_num <= @provide_count
-		begin
-			-- ?? ??? ?? ??
-			DECLARE @nMaxMailID int
-			SELECT @nMaxMailID = MAX(nMail) + 1 from MAIL_TBL where serverindex = @iserverindex
-			SET @nMaxMailID = ISNULL( @nMaxMailID, 0 )
-	
-			-- ??? ??
-			DECLARE @szTitle		VARCHAR(128)
-			DECLARE @szText		VARCHAR(1024)
-			if @nMail_After = 0
-				select @szTitle = '?? ?? ???', @szText = '?? ??!! ?? UP!!'
-			else
-				select @szTitle = '?? ?? ???', @szText = '??? ?? ????.'
-	
-			if @provide_num = 1
-			begin
-				EXEC dbo.MAIL_STR 'A1', @nMaxMailID, @iserverindex, @idPlayer, '0000000', 0, @tmCreate, 0, @szTitle, @szText,@ItemID1, @ItemNum1, 0, 0, 0, 0, @item_flag
-			end
-			if @provide_num = 2
-			begin
-				EXEC dbo.MAIL_STR 'A1', @nMaxMailID, @iserverindex, @idPlayer, '0000000', 0, @tmCreate, 0, @szTitle, @szText,@ItemID2, @ItemNum2, 0, 0, 0, 0, @item_flag
-			end
-			if @provide_num = 3
-			begin
-				EXEC dbo.MAIL_STR 'A1', @nMaxMailID, @iserverindex, @idPlayer, '0000000', 0, @tmCreate, 0, @szTitle, @szText,@ItemID3, @ItemNum3, 0, 0, 0, 0, @item_flag
-			end
-			if @provide_num = 4
-			begin
-				EXEC dbo.MAIL_STR 'A1', @nMaxMailID, @iserverindex, @idPlayer, '0000000', 0, @tmCreate, 0, @szTitle, @szText,@ItemID4, @ItemNum4, 0, 0, 0, 0, @item_flag
-			end
-	
-			set @provide_num = @provide_num + 1
-		end
-
-		end
-	END
 GO
 /****** Object:  StoredProcedure [dbo].[usp_CampusMember_Load]    Script Date: 04/03/2010 12:42:39 ******/
 SET ANSI_NULLS ON
@@ -12485,87 +12110,6 @@ GO
 /****** Object:  Default [DF_ITEM_SEND_TBL_adwUMItemId4]    Script Date: 04/03/2010 12:42:44 ******/
 ALTER TABLE [dbo].[ITEM_SEND_TBL] ADD  CONSTRAINT [DF_ITEM_SEND_TBL_adwUMItemId4]  DEFAULT ((0)) FOR [adwUMItemId4]
 GO
-/****** Object:  Default [DF_MAIL_TBL_tmCreate]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_tmCreate]  DEFAULT ((0)) FOR [tmCreate]
-GO
-/****** Object:  Default [DF_MAIL_TBL_byRead]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_byRead]  DEFAULT ((0)) FOR [byRead]
-GO
-/****** Object:  Default [DF_MAIL_TBL_ItemFlag]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_ItemFlag]  DEFAULT ((0)) FOR [ItemFlag]
-GO
-/****** Object:  Default [DF_MAIL_TBL_GoldFag]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_GoldFag]  DEFAULT ((0)) FOR [GoldFlag]
-GO
-/****** Object:  Default [DF__MAIL_TBL__bPet__6C040022]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__bPet__6C040022]  DEFAULT ((0)) FOR [bPet]
-GO
-/****** Object:  Default [DF__MAIL_TBL__nKind__6CF8245B]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__nKind__6CF8245B]  DEFAULT ((0)) FOR [nKind]
-GO
-/****** Object:  Default [DF__MAIL_TBL__nLevel__6DEC4894]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__nLevel__6DEC4894]  DEFAULT ((0)) FOR [nLevel]
-GO
-/****** Object:  Default [DF__MAIL_TBL__dwExp__6EE06CCD]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__dwExp__6EE06CCD]  DEFAULT ((0)) FOR [dwExp]
-GO
-/****** Object:  Default [DF__MAIL_TBL__wEnerg__6FD49106]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__wEnerg__6FD49106]  DEFAULT ((0)) FOR [wEnergy]
-GO
-/****** Object:  Default [DF__MAIL_TBL__wLife__70C8B53F]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__wLife__70C8B53F]  DEFAULT ((0)) FOR [wLife]
-GO
-/****** Object:  Default [DF__MAIL_TBL__anAvai__71BCD978]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__anAvai__71BCD978]  DEFAULT ((0)) FOR [anAvailLevel_D]
-GO
-/****** Object:  Default [DF__MAIL_TBL__anAvai__72B0FDB1]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__anAvai__72B0FDB1]  DEFAULT ((0)) FOR [anAvailLevel_C]
-GO
-/****** Object:  Default [DF__MAIL_TBL__anAvai__73A521EA]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__anAvai__73A521EA]  DEFAULT ((0)) FOR [anAvailLevel_B]
-GO
-/****** Object:  Default [DF__MAIL_TBL__anAvai__74994623]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__anAvai__74994623]  DEFAULT ((0)) FOR [anAvailLevel_A]
-GO
-/****** Object:  Default [DF__MAIL_TBL__anAvai__758D6A5C]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__anAvai__758D6A5C]  DEFAULT ((0)) FOR [anAvailLevel_S]
-GO
-/****** Object:  Default [DF__MAIL_TBL__dwItem__7D2E8C24]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF__MAIL_TBL__dwItem__7D2E8C24]  DEFAULT ((0)) FOR [dwItemId5]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId6]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId6]  DEFAULT ((0)) FOR [dwItemId6]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId7]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId7]  DEFAULT ((0)) FOR [dwItemId7]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId8]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId8]  DEFAULT ((0)) FOR [dwItemId8]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId9]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId9]  DEFAULT ((0)) FOR [dwItemId9]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId10]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId10]  DEFAULT ((0)) FOR [dwItemId10]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId11]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId11]  DEFAULT ((0)) FOR [dwItemId11]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId12]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId12]  DEFAULT ((0)) FOR [dwItemId12]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId13]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId13]  DEFAULT ((0)) FOR [dwItemId13]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId14]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId14]  DEFAULT ((0)) FOR [dwItemId14]
-GO
-/****** Object:  Default [DF_MAIL_TBL_dwItemId15]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_dwItemId15]  DEFAULT ((0)) FOR [dwItemId15]
-GO
-/****** Object:  Default [DF_MAIL_TBL_nPiercedSize2]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[MAIL_TBL] ADD  CONSTRAINT [DF_MAIL_TBL_nPiercedSize2]  DEFAULT ((0)) FOR [nPiercedSize2]
-GO
 /****** Object:  Default [DF_TAG_CreateTime]    Script Date: 04/03/2010 12:42:44 ******/
 ALTER TABLE [dbo].[TAG_TBL] ADD  CONSTRAINT [DF_TAG_CreateTime]  DEFAULT (getdate()) FOR [CreateTime]
 GO
@@ -12700,156 +12244,6 @@ ALTER TABLE [dbo].[tblLordSkill] ADD  CONSTRAINT [DF_tblLordSkill_nTick]  DEFAUL
 GO
 /****** Object:  Default [DF_tblLordSkill_s_date]    Script Date: 04/03/2010 12:42:44 ******/
 ALTER TABLE [dbo].[tblLordSkill] ADD  CONSTRAINT [DF_tblLordSkill_s_date]  DEFAULT (getdate()) FOR [s_date]
-GO
-/****** Object:  Default [DF_tblMaster_all_c01]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c01]  DEFAULT ((0)) FOR [c01]
-GO
-/****** Object:  Default [DF_tblMaster_all_c02]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c02]  DEFAULT ((0)) FOR [c02]
-GO
-/****** Object:  Default [DF_tblMaster_all_c03]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c03]  DEFAULT ((0)) FOR [c03]
-GO
-/****** Object:  Default [DF_tblMaster_all_c04]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c04]  DEFAULT ((0)) FOR [c04]
-GO
-/****** Object:  Default [DF_tblMaster_all_c05]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c05]  DEFAULT ((0)) FOR [c05]
-GO
-/****** Object:  Default [DF_tblMaster_all_c06]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c06]  DEFAULT ((0)) FOR [c06]
-GO
-/****** Object:  Default [DF_tblMaster_all_c07]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c07]  DEFAULT ((0)) FOR [c07]
-GO
-/****** Object:  Default [DF_tblMaster_all_c08]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c08]  DEFAULT ((0)) FOR [c08]
-GO
-/****** Object:  Default [DF_tblMaster_all_c09]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c09]  DEFAULT ((0)) FOR [c09]
-GO
-/****** Object:  Default [DF_tblMaster_all_c10]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c10]  DEFAULT ((0)) FOR [c10]
-GO
-/****** Object:  Default [DF_tblMaster_all_c11]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c11]  DEFAULT ((0)) FOR [c11]
-GO
-/****** Object:  Default [DF_tblMaster_all_c12]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c12]  DEFAULT ((0)) FOR [c12]
-GO
-/****** Object:  Default [DF_tblMaster_all_c13]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c13]  DEFAULT ((0)) FOR [c13]
-GO
-/****** Object:  Default [DF_tblMaster_all_c14]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c14]  DEFAULT ((0)) FOR [c14]
-GO
-/****** Object:  Default [DF_tblMaster_all_c15]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c15]  DEFAULT ((0)) FOR [c15]
-GO
-/****** Object:  Default [DF_tblMaster_all_c16]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c16]  DEFAULT ((0)) FOR [c16]
-GO
-/****** Object:  Default [DF_tblMaster_all_c17]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c17]  DEFAULT ((0)) FOR [c17]
-GO
-/****** Object:  Default [DF_tblMaster_all_c18]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c18]  DEFAULT ((0)) FOR [c18]
-GO
-/****** Object:  Default [DF_tblMaster_all_c19]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c19]  DEFAULT ((0)) FOR [c19]
-GO
-/****** Object:  Default [DF_tblMaster_all_c20]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c20]  DEFAULT ((0)) FOR [c20]
-GO
-/****** Object:  Default [DF_tblMaster_all_c21]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c21]  DEFAULT ((0)) FOR [c21]
-GO
-/****** Object:  Default [DF_tblMaster_all_c22]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c22]  DEFAULT ((0)) FOR [c22]
-GO
-/****** Object:  Default [DF_tblMaster_all_c23]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c23]  DEFAULT ((0)) FOR [c23]
-GO
-/****** Object:  Default [DF_tblMaster_all_c24]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c24]  DEFAULT ((0)) FOR [c24]
-GO
-/****** Object:  Default [DF_tblMaster_all_c25]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c25]  DEFAULT ((0)) FOR [c25]
-GO
-/****** Object:  Default [DF_tblMaster_all_c26]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c26]  DEFAULT ((0)) FOR [c26]
-GO
-/****** Object:  Default [DF_tblMaster_all_c27]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c27]  DEFAULT ((0)) FOR [c27]
-GO
-/****** Object:  Default [DF_tblMaster_all_c28]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c28]  DEFAULT ((0)) FOR [c28]
-GO
-/****** Object:  Default [DF_tblMaster_all_c29]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c29]  DEFAULT ((0)) FOR [c29]
-GO
-/****** Object:  Default [DF_tblMaster_all_c30]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c30]  DEFAULT ((0)) FOR [c30]
-GO
-/****** Object:  Default [DF_tblMaster_all_c31]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c31]  DEFAULT ((0)) FOR [c31]
-GO
-/****** Object:  Default [DF_tblMaster_all_c32]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c32]  DEFAULT ((0)) FOR [c32]
-GO
-/****** Object:  Default [DF_tblMaster_all_c33]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c33]  DEFAULT ((0)) FOR [c33]
-GO
-/****** Object:  Default [DF_tblMaster_all_c34]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c34]  DEFAULT ((0)) FOR [c34]
-GO
-/****** Object:  Default [DF_tblMaster_all_c35]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c35]  DEFAULT ((0)) FOR [c35]
-GO
-/****** Object:  Default [DF_tblMaster_all_c36]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c36]  DEFAULT ((0)) FOR [c36]
-GO
-/****** Object:  Default [DF_tblMaster_all_c37]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c37]  DEFAULT ((0)) FOR [c37]
-GO
-/****** Object:  Default [DF_tblMaster_all_c38]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c38]  DEFAULT ((0)) FOR [c38]
-GO
-/****** Object:  Default [DF_tblMaster_all_c39]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c39]  DEFAULT ((0)) FOR [c39]
-GO
-/****** Object:  Default [DF_tblMaster_all_c40]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c40]  DEFAULT ((0)) FOR [c40]
-GO
-/****** Object:  Default [DF_tblMaster_all_c41]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c41]  DEFAULT ((0)) FOR [c41]
-GO
-/****** Object:  Default [DF_tblMaster_all_c42]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c42]  DEFAULT ((0)) FOR [c42]
-GO
-/****** Object:  Default [DF_tblMaster_all_c43]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c43]  DEFAULT ((0)) FOR [c43]
-GO
-/****** Object:  Default [DF_tblMaster_all_c44]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c44]  DEFAULT ((0)) FOR [c44]
-GO
-/****** Object:  Default [DF_tblMaster_all_c45]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c45]  DEFAULT ((0)) FOR [c45]
-GO
-/****** Object:  Default [DF_tblMaster_all_c46]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c46]  DEFAULT ((0)) FOR [c46]
-GO
-/****** Object:  Default [DF_tblMaster_all_c47]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c47]  DEFAULT ((0)) FOR [c47]
-GO
-/****** Object:  Default [DF_tblMaster_all_c48]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c48]  DEFAULT ((0)) FOR [c48]
-GO
-/****** Object:  Default [DF_tblMaster_all_c49]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c49]  DEFAULT ((0)) FOR [c49]
-GO
-/****** Object:  Default [DF_tblMaster_all_c50]    Script Date: 04/03/2010 12:42:44 ******/
-ALTER TABLE [dbo].[tblMaster_all] ADD  CONSTRAINT [DF_tblMaster_all_c50]  DEFAULT ((0)) FOR [c50]
 GO
 /****** Object:  Default [DF_tblMessenger_dwState]    Script Date: 04/03/2010 12:42:44 ******/
 ALTER TABLE [dbo].[tblMessenger] ADD  CONSTRAINT [DF_tblMessenger_dwState]  DEFAULT ((0)) FOR [bBlock]

@@ -55,7 +55,7 @@ void CWndRankInfo::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-BOOL CWndRankInfo::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndRankInfo::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_RANK_INFO, pWndParent, 0, CPoint(0, 0));
 }
 

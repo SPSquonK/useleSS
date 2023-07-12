@@ -14,14 +14,11 @@ struct FVF_3DVERTEX
 
 class CGraphic3D
 {
-	LPDIRECT3DDEVICE9 m_pd3dDevice;
 	FVF_3DVERTEX	m_aVertex[ MAX_3DVERTEX ];
 
 public:
 	CGraphic3D() { Init(); }
 	~CGraphic3D() { Destroy(); }
-
-	void	SetDevice( LPDIRECT3DDEVICE9 d3dDevice ) { m_pd3dDevice = d3dDevice; }
 
 	void	Init( void );
 	void	Destroy( void );

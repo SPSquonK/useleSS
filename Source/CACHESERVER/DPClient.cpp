@@ -38,7 +38,7 @@ void CDPClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID
 	const DPID dpidUser = *(UNALIGNED LPDPID)lpMsg;
 
 	CAr ar(lpBuf, uBufSize);
-	GETTYPE( ar );
+	DWORD dw; ar >> dw;
 		
 #ifdef __CRASH_0404
 	CCrashStatus::GetInstance()->SetLastPacket( this, dw );

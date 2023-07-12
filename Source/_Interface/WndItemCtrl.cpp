@@ -15,13 +15,8 @@
 // CWndItemCtrl
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CTextureMng CWndItemCtrl::m_textureMng;
-
 CWndItemCtrl::CWndItemCtrl() 
 {
-	m_nWndColor    = D3DCOLOR_TEMP( 255,  0x5 << 3,  0x5 << 3,  0x5 << 3 );
-	m_nFontColor   = D3DCOLOR_TEMP( 255, 255, 255, 255 );
-	m_nSelectColor = D3DCOLOR_TEMP( 255, 255, 255, 0   );
 	m_nCurSelect = -1;
 	m_pFocusItem = NULL;
 	m_pItemContainer = NULL;
@@ -370,46 +365,6 @@ void CWndItemCtrl::OnDraw(C2DRender* p2DRender)
 		return;
 	}
 
-	//
-	// 리포트 출력 
-	//
-	if( 0 ) //m_dwListCtrlStyle == WLVS_REPORT )
-	{
-		m_nFontHeight = GetFontHeight( );
-		pt.y -= ( m_nFontHeight + 3 ) * m_wndScrollBar.GetScrollPos();
-		for( int i = 0; i < (int)( m_pItemContainer->m_dwIndexNum ); i++ ) 
-		{
-			//LVITEM* pItems = (LVITEM*)m_aItems.GetAt( m_pItemContainer->m_apIndex[ i ] );
-			DWORD dwColor = 0xffffffff;
-			if( i == m_nCurSelect )
-				dwColor = 0xff00ff00; 
-			CItemElem* pItemElem = &m_pItemContainer->m_apItem[ i ];
-			if(  pItemElem->m_dwItemId )
-			{
-				for( int i2 = 0, x = 0; i2 < m_aColumns.GetSize(); i2++ ) 
-				{
-					switch( i2 )
-					{
-					case 0:
-						p2DRender->TextOut( x + 2, pt.y, pItemElem->GetName(), dwColor ); 
-						break;
-					case 1:
-						break;
-					case 2:
-						break;
-					}
-					LVCOLUMN* pColumn = (LVCOLUMN*)m_aColumns.GetAt( i2 );
-					x += pColumn->cx + 7;
-				}
-			}
-			pt.y += m_nFontHeight + 3;
-		}
-	}
-	//
-	// 아이콘 출력
-	// CCtrllist
-	if( 1 ) //m_dwListCtrlStyle == WLVS_ICON )
-	{
 		CRect rect = GetClientRect();
 		int nWidth = rect.Width() / 32;
 		int nHeight = rect.Height() / 32;
@@ -535,52 +490,24 @@ void CWndItemCtrl::OnDraw(C2DRender* p2DRender)
 
 					if( pWndBase )
 					{
-						if( pWndBase->m_bSexSort && pWndBase->m_bLevelSort )
-						{
-							if( pItemProp->dwItemSex != 0xffffffff && pItemProp->dwLimitLevel1 != 0xffffffff )
-							{
-								if( pItemProp->dwItemSex == g_pPlayer->GetSex() && !pItemElem->IsLimitLevel( g_pPlayer ) )
-									m_pArrayItemElem[m_nArrayCount++] = pItemElem;
+						bool emplaceItem = true;
+
+						if (pWndBase->m_bSexSort && pItemProp->dwItemSex != 0xffffffff) {
+							if (pItemProp->dwItemSex != g_pPlayer->GetSex()) {
+								emplaceItem = false;
 							}
-							else
-							if( pItemProp->dwItemSex != 0xffffffff )
-							{
-								if( pItemProp->dwItemSex == g_pPlayer->GetSex() )
-									m_pArrayItemElem[m_nArrayCount++] = pItemElem;
-							}
-							else
-							if( pItemProp->dwLimitLevel1 != 0xffffffff )
-							{
-								if( !pItemElem->IsLimitLevel( g_pPlayer ) )
-									m_pArrayItemElem[m_nArrayCount++] = pItemElem;
-							}
-							else
-								m_pArrayItemElem[m_nArrayCount++] = pItemElem;
 						}
-						else
-						if( pWndBase->m_bSexSort )
-						{
-							if( pItemProp->dwItemSex != 0xffffffff )
-							{
-								if( pItemProp->dwItemSex == g_pPlayer->GetSex() )
-									m_pArrayItemElem[m_nArrayCount++] = pItemElem;
+
+						if (pWndBase->m_bLevelSort && pItemProp->dwLimitLevel1 != 0xffffffff) {
+							if (pItemElem->IsLimitLevel(g_pPlayer)) {
+								emplaceItem = false;
 							}
-							else
-								m_pArrayItemElem[m_nArrayCount++] = pItemElem;
 						}
-						else
-						if( pWndBase->m_bLevelSort )
-						{
-							if( pItemProp->dwLimitLevel1 != 0xffffffff )
-							{
-								if( !pItemElem->IsLimitLevel( g_pPlayer ) )
-									m_pArrayItemElem[m_nArrayCount++] = pItemElem;
-							}
-							else
-								m_pArrayItemElem[m_nArrayCount++] = pItemElem;
-						}
-						else
+						
+						if (emplaceItem) {
 							m_pArrayItemElem[m_nArrayCount++] = pItemElem;
+						}
+
 					}
 				}
 			}
@@ -641,7 +568,7 @@ void CWndItemCtrl::OnDraw(C2DRender* p2DRender)
 				}
 			}
 		}
-	}
+	
 }
 void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 {
@@ -763,13 +690,10 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 
 					g_WndMng.m_pWndSmeltSafetyConfirm = new CWndSmeltSafetyConfirm(CWndSmeltSafetyConfirm::WND_ERROR1);
 
-					if(g_WndMng.m_pWndSmeltSafetyConfirm)
-					{
-						CWndBase::m_GlobalShortcut.Empty();
-						m_bDrag = FALSE;
-						g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
-						g_WndMng.m_pWndSmeltSafetyConfirm->Initialize(NULL);
-					}
+					CWndBase::m_GlobalShortcut.Empty();
+					m_bDrag = FALSE;
+					g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
+					g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
 				}
 				else if(!g_pPlayer->HasBuff(BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT3) && pWndInventory->m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_ORICHALCUM02 &&
 						m_pFocusItem->GetProp()->dwReferStat1 == WEAPON_ULTIMATE)
@@ -779,13 +703,10 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 
 					g_WndMng.m_pWndSmeltSafetyConfirm = new CWndSmeltSafetyConfirm(CWndSmeltSafetyConfirm::WND_ERROR2);
 
-					if(g_WndMng.m_pWndSmeltSafetyConfirm)
-					{
-						CWndBase::m_GlobalShortcut.Empty();
-						m_bDrag = FALSE;
-						g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
-						g_WndMng.m_pWndSmeltSafetyConfirm->Initialize(NULL);
-					}
+					CWndBase::m_GlobalShortcut.Empty();
+					m_bDrag = FALSE;
+					g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
+					g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
 				}
 				else if(!g_pPlayer->HasBuff(BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT4) && m_pFocusItem->GetAbilityOption() >= 3 && 
 						(pWndInventory->m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_MOONSTONE || pWndInventory->m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_MOONSTONE_1) &&
@@ -796,13 +717,10 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 
 					g_WndMng.m_pWndSmeltSafetyConfirm = new CWndSmeltSafetyConfirm(CWndSmeltSafetyConfirm::WND_ERROR3);
 
-					if(g_WndMng.m_pWndSmeltSafetyConfirm)
-					{
-						CWndBase::m_GlobalShortcut.Empty();
-						m_bDrag = FALSE;
-						g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
-						g_WndMng.m_pWndSmeltSafetyConfirm->Initialize(NULL);
-					}
+					CWndBase::m_GlobalShortcut.Empty();
+					m_bDrag = FALSE;
+					g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
+					g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
 				}
 				else if( g_pPlayer->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT ) == FALSE && 
 						 m_pFocusItem->GetResistAbilityOption() >= 3 && 
@@ -813,13 +731,11 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 						SAFE_DELETE( g_WndMng.m_pWndSmeltSafetyConfirm )
 
 					g_WndMng.m_pWndSmeltSafetyConfirm = new CWndSmeltSafetyConfirm( CWndSmeltSafetyConfirm::WND_ERROR1 );
-					if( g_WndMng.m_pWndSmeltSafetyConfirm )
-					{
-						CWndBase::m_GlobalShortcut.Empty();
-						m_bDrag = FALSE;
-						g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode( m_pFocusItem );
-						g_WndMng.m_pWndSmeltSafetyConfirm->Initialize( NULL );
-					}
+
+					CWndBase::m_GlobalShortcut.Empty();
+					m_bDrag = FALSE;
+					g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode( m_pFocusItem );
+					g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
 				}
 				else
 					pWndInventory->RunUpgrade(m_pFocusItem);
@@ -993,31 +909,7 @@ int CWndItemCtrl::HitTest( CPoint point )
 		return -1;
 
 	int nDstId = -1;
-	CPoint pt( 3, 3 );
-	CRect rect;
-	//
-	// 리포트  
-	//
-	if( 0 ) //m_dwListCtrlStyle == WLVS_REPORT )
-	{
-		pt.y -= (m_nFontHeight + 3) * m_wndScrollBar.GetScrollPos();
-		for( int i = 0; i < (int)( m_pItemContainer->m_dwIndexNum ); i++ ) 
-		{
-			CItemElem* pItemElem = &m_pItemContainer->m_apItem[ m_pItemContainer->m_apIndex[ i ] ] ;
-			rect.SetRect( pt.x, pt.y, pt.x + m_rectWindow.Width() - m_wndScrollBar.GetClientRect().Width(), pt.y + m_nFontHeight );
-			if( rect.PtInRect( point ) )
-			{
-				nDstId = i;
-				break;
-			}
-			pt.y += m_nFontHeight + 3;
-		}
-	}
-	//
-	// 아이콘 
-	//
-	if( 1 ) //m_dwListCtrlStyle == WLVS_ICON )
-	{
+
 		CRect rect = GetClientRect();
 		int nWidth = rect.Width() / 32;
 		int nHeight = rect.Height() / 32;
@@ -1070,7 +962,7 @@ int CWndItemCtrl::HitTest( CPoint point )
 				}
 			}
 		}
-	}
+	
 	return nDstId;
 }
 BOOL CWndItemCtrl::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
@@ -1224,59 +1116,33 @@ void CWndItemCtrl::OnRButtonDown( UINT nFlags, CPoint point )
 			CPoint point2 = point;
 			ClientToScreen( &point2 );
 			ClientToScreen( &rectHittest );
-			ItemProp* pItemProp = pItemElem->GetProp();
+			const ItemProp* pItemProp = pItemElem->GetProp();
 
-			if (pItemElem == NULL )
-				continue;
 			if( pItemProp->dwItemKind2 == IK2_TEXT ) 
 			{
 				CString strText = pItemProp->szTextFileName;
-				//strText = strText.Left( 5 );
 				strText.MakeLower();
-				if( strText.Find( "book_" ) != -1 )
-				{
-					if ( !g_WndMng.m_pWndTextBook || g_WndMng.m_pWndTextBook->IsVisible() == FALSE)
-						g_WndMng.OpenTextBook(this, pItemElem) ;
-					else
-						g_WndMng.ChangeTextBook(pItemElem) ;
-				}
-				else
-				if( strText.Find( "scroll_" ) != -1  )
-				{
-					if ( !g_WndMng.m_pWndTextScroll || g_WndMng.m_pWndTextScroll->IsVisible() == FALSE)
-						g_WndMng.OpenTextScroll(this, pItemElem) ;
-					else
-						g_WndMng.ChangeTextScroll(pItemElem) ;
-				}
-				else
-				if( strText.Find( "letter_" ) != -1 )
-				{
-					if ( !g_WndMng.m_pWndTextLetter || g_WndMng.m_pWndTextLetter->IsVisible() == FALSE)
-						g_WndMng.OpenTextLetter(this, pItemElem) ;
-					else
-						g_WndMng.ChangeTextLetter(pItemElem) ;
+
+				if (strText.Find("book_") != -1) {
+					g_WndMng.OpenItemInfo(this, CWndMgr::ItemInfoType::Book, pItemElem);
+				} else if (strText.Find("scroll_") != -1) {
+					g_WndMng.OpenItemInfo(this, CWndMgr::ItemInfoType::Scroll, pItemElem);
+				} else if (strText.Find("letter_") != -1) {
+					g_WndMng.OpenItemInfo(this, CWndMgr::ItemInfoType::Letter, pItemElem);
 				}
 
-			}
-			else
-			if( pItemProp->dwItemKind3 == IK3_QUEST )
-			{
-				if ( !g_WndMng.m_pQuestItemInfo || g_WndMng.m_pQuestItemInfo->IsVisible() == FALSE)
-					g_WndMng.OpenQuestItemInfo(this, pItemElem) ;
-				else
-					g_WndMng.ChangeQuestItemInfo(pItemElem) ;
+			} else if (pItemProp->dwItemKind3 == IK3_QUEST) {
+				g_WndMng.OpenItemInfo(this, CWndMgr::ItemInfoType::QuestItem, pItemElem);
 			}
 		}
 	}
 }
-BOOL CWndItemCtrl::OnSetCursor ( CWndBase* pWndBase, UINT nHitTest, UINT message )
-{
+
+void CWndItemCtrl::OnSetCursor() {
 	// 인벤창이 열려있고 인첸트 모드이면 커서모양 변경
-	CWndInventory* pWndInventory	= (CWndInventory*)GetWndBase( APP_INVENTORY );	
-	if( pWndInventory )
+	CWndInventory * pWndInventory = GetWndBase<CWndInventory>(APP_INVENTORY);
+	if (pWndInventory)
 		pWndInventory->SetEnchantCursor();
-	
-	return TRUE;
 }
 
 void CWndItemCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
@@ -1334,107 +1200,22 @@ void CWndItemCtrl::SetWndRect( CRect rectWnd, BOOL bOnSize )
 
 	if( m_pItemContainer ) 
 	{
-		if( 0 ) //m_dwListCtrlStyle == WLVS_REPORT )
-		{
-			int nPage = GetClientRect().Height() / (m_nFontHeight + 3);
-			int nRange = m_pItemContainer->m_dwIndexNum;// - nPage;
-			if( !( nRange - nPage <= 0 ) )
-				m_rectClient.right -= 15; // 스크롤 바가 보이면 
-			m_rectClient.top += 15; // 리포트 칼럼 
-		}
-		if( 1 ) //m_dwListCtrlStyle == WLVS_ICON )
-		{
-			CRect rect = GetClientRect();
-			int nWidth = rect.Width() / 32;
-			int nHeight = rect.Height() / 32;
-			int nPage = nHeight;
-			int nRange = m_pItemContainer->m_dwIndexNum / nWidth;// - nPage;
-			//if( !( nRange - nPage <= 0 ) )
-				m_rectClient.right -= 15; // 스크롤 바가 보이면 
-		}
+			m_rectClient.right -= 15; // 스크롤 바가 보이면 
 	}
 	if( bOnSize )
 		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
 }
 void CWndItemCtrl::PaintFrame( C2DRender* p2DRender )
 {
-	return;
-	CRect rect = GetWindowRect();
-	//m_pTheme->RenderWndTextFrame( p2DRender, &rect );
-	/*
-	DWORD dwColor1 = D3DCOLOR_ARGB( 100, 0, 0,  0 );//D3DCOLOR_TEMP( 255,   0,   0,  50 );//
-	DWORD dwColor2 = D3DCOLOR_ARGB( 180, 240, 240,  240 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
-	DWORD dwColor3 = D3DCOLOR_ARGB( 100, 200, 200,  200 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
-
-	p2DRender->RenderFillRect ( rect, dwColor1 );
-	p2DRender->RenderRoundRect( rect, dwColor2 );
-	rect.DeflateRect( 1 , 1 );
-	p2DRender->RenderRect( rect, dwColor3 );
-	*/
-	DWORD dwColor1 = D3DCOLOR_ARGB( 100, 0, 0,  0 );//D3DCOLOR_TEMP( 255,   0,   0,  50 );//
-	DWORD dwColor2 = D3DCOLOR_ARGB( 255, 240, 240,  240 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
-	DWORD dwColor3 = D3DCOLOR_ARGB( 100, 200, 200,  200 );//D3DCOLOR_TEMP( 255,  80,  80, 120 );//
-
-	p2DRender->RenderFillRect ( rect, dwColor1 );
-	p2DRender->RenderRoundRect( rect, dwColor2 );
-	rect.DeflateRect( 1 , 1 );
-	p2DRender->RenderRect( rect, dwColor2 );
-	rect.DeflateRect( 1 , 1 );
-	p2DRender->RenderRect( rect, dwColor3 );
-
-	int nPage, nRange;
-	if( 0 ) //m_dwListCtrlStyle == WLVS_REPORT )
-	{
-		nPage = GetClientRect().Height() / ( GetFontHeight( ) + 3 );
-		nRange = m_pItemContainer->m_dwIndexNum;// - nPage;
-	}
-	if( 1 ) //m_dwListCtrlStyle == WLVS_ICON )
-	{
-		CRect rect = GetClientRect();
-		nPage = rect.Height() / 32;
-		nRange = m_pItemContainer->m_dwIndexNum / ( rect.Width() / 32 );// - nPage;
-	}
-	m_wndScrollBar.SetScrollRange( 0, nRange );
-	m_wndScrollBar.SetScrollPage( nPage );
 }
 
 BOOL CWndItemCtrl::OnEraseBkgnd( C2DRender* p2DRender )
 {
 	return TRUE;
 }
-BOOL CWndItemCtrl::SetItem( const LVITEM* pItem )
-{
-	if( pItem->iItem < m_aItems.GetSize() && m_aItems.GetAt( pItem->iItem ) == NULL ) 
-		return FALSE; // 존재하지 않는다.
-	LVITEM* pItems = (LVITEM*)m_aItems.GetAt( pItem->iItem );
-	memcpy( &pItems[ pItem->iSubItem ], pItem, sizeof( LVITEM ) );
-	pItems[ pItem->iSubItem ].pszText = new _TCHAR[ _tcslen( pItem->pszText ) + sizeof( _TCHAR ) ];
-	_tcscpy( pItems[ pItem->iSubItem ].pszText, pItem->pszText );
-	return TRUE;
-}
 
-int CWndItemCtrl::GetItemCount() const
-{
-	return m_aItems.GetSize();
-}
-
-BOOL CWndItemCtrl::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
-{
-	if( zDelta < 0 )
-	{
-		if( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() > m_wndScrollBar.GetScrollPos() )
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetScrollPos()+1 );
-		else
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() );
-	}
-	else
-	{
-		if( m_wndScrollBar.GetMinScrollPos() < m_wndScrollBar.GetScrollPos() )
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetScrollPos()-1 );
-		else
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetMinScrollPos() );
-	}
-	
+BOOL CWndItemCtrl::OnMouseWheel(UINT, short zDelta, CPoint) {
+	m_wndScrollBar.MouseWheel(zDelta);
 	return TRUE;
 }
 

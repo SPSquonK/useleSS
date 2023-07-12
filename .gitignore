@@ -22,9 +22,9 @@ Source/**/*.i
 **/*.plg
 Source/all/.vs/
 Output/
-ServerStarter/
 error_*
 .vs/
+Resource/propItem.txt-french.txt
 
 !Source/Libraries/
 Source/Libraries/*

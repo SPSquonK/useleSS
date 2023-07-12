@@ -72,7 +72,6 @@ typedef struct _SPARKINFO
 class CModel 
 {
 protected:
-	LPDIRECT3DDEVICE9	m_pd3dDevice;        // The D3D rendering device
 	int					m_nModelType;
 	BOUND_BOX			m_BB;
 	DWORD				m_dwRenderEffect;
@@ -112,7 +111,6 @@ public:
 		m_vMax.x = m_vMax.y = m_vMax.z = 0.0f;
 		m_dwBlendFactor = 255;
 		m_dwColor = 0;
-		m_pd3dDevice = NULL;
 		m_bSkin = FALSE;
 	#if defined(__CLIENT)
 		memset( &m_SparkInfo, 0, sizeof(_SPARKINFO) );
@@ -145,7 +143,7 @@ public:
 	void	SetModelType(int nModelType) { m_nModelType = nModelType; }
 	void	SetLoop( int nLoop ) { m_nLoop = nLoop; }
 	void	SetSpeed( float fPerSlerp ) { m_fPerSlerp = fPerSlerp; }	// ÀÏ¹Ý 0.5
-	const BOUND_BOX*	GetBBVector( void ) { return &m_BB; } // ¹Ù¿îµù¹Ú½ºÀÇ 8±ÍÅüÀÌ ÁÂÇ¥¸¦ ¸®ÅÏ
+	[[nodiscard]] const BOUND_BOX*	GetBBVector() const { return &m_BB; } // ¹Ù¿îµù¹Ú½ºÀÇ 8±ÍÅüÀÌ ÁÂÇ¥¸¦ ¸®ÅÏ
 	float	GetRadius( void );
 
 	DWORD	GetRenderEffect() { return m_dwRenderEffect; }
@@ -172,23 +170,22 @@ public:
 	virtual int		IsHaveCollObj( void ) { return 0; }
 	
 	// Rendering
-	virtual BOOL	Render( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld = NULL );
-	virtual void	RenderEffect( LPDIRECT3DDEVICE9 pd3dDevice, const D3DXMATRIX* pmWorld = NULL, DWORD dwItemKind3 = NULL_ID, int nLevelL = 0, int nLeveR = 0) {}
+	virtual BOOL	Render( const D3DXMATRIX* pmWorld = NULL );
+	virtual void	RenderEffect( const D3DXMATRIX* pmWorld = NULL, DWORD dwItemKind3 = NULL_ID, int nLevelL = 0, int nLeveR = 0) {}
 	virtual void	FrameMove( D3DXVECTOR3 *pvSndPos = NULL, float fSpeed = 1.0f );
-	virtual HRESULT InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice ) { m_pd3dDevice = pd3dDevice; return S_OK; }
+	virtual HRESULT InitDeviceObjects( ) { return S_OK; }
 	virtual HRESULT RestoreDeviceObjects() { return S_OK; }
 	virtual HRESULT InvalidateDeviceObjects() { return S_OK; }
 	virtual HRESULT DeleteDeviceObjects() { return S_OK; }
 
-	BOOL			IntersectBB( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist );
+	[[nodiscard]] bool IntersectBB(const D3DXVECTOR3 & vRayOrig, const D3DXVECTOR3 & vRayDir, const D3DXMATRIX & mWorld, D3DXVECTOR3 * pvIntersect, FLOAT * pfDist) const;
 
-	virtual BOOL	Intersect( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bColl = FALSE ) { return FALSE; }
+	virtual bool	Intersect( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bColl = FALSE ) { return false; }
 	virtual D3DXVECTOR3 *IntersectRayTri( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bColl = FALSE ) { return NULL; }
 	virtual	BOOL	IsTouchOBB_Line( const D3DXVECTOR3 &vStart, const D3DXVECTOR3 &vEnd, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, BOOL bNeedCollObject = TRUE ) { return FALSE;}
 	virtual	BOOL	TestIntersectionOBB_Line( const Segment3& segment, const CObj* pObj, BOOL bNeedCollObject = TRUE ) { return FALSE;}
 
-	FLOAT GetMaxWidth() { return ( m_vMax.x - m_vMin.x > m_vMax.z - m_vMin.z ) ? m_vMax.x - m_vMin.x : m_vMax.z - m_vMin.z; }
-	FLOAT GetMaxHeight() { return m_vMax.y - m_vMin.y; }
+	[[nodiscard]] FLOAT GetMaxHeight() const { return m_vMax.y - m_vMin.y; }
 };
 
 #endif

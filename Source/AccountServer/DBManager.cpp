@@ -37,11 +37,9 @@ void CDbManager::CreateDbWorkers( void )
 
 	m_hDbCompletionPort		= CreateIoCompletionPort( INVALID_HANDLE_VALUE, NULL, 0, 0 );
 	ASSERT( m_hDbCompletionPort );
-	for( int i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++ )
-	{
-		HANDLE hThread	= chBEGINTHREADEX( NULL, 0, DbWorkerThread, (LPVOID)this, 0, NULL );
-		ASSERT( hThread );
-		m_hDbWorkerThreadTerminate[i]	= hThread;
+	
+	for (std::thread & thread : m_hDbWorkerThreadTerminate) {
+		thread = std::thread(DbWorkerThread, this);
 
 		if( WaitForSingleObject( s_hHandle, SEC( 3 ) ) == WAIT_TIMEOUT )
 			OutputDebugString( "ACCOUNTSERVER.EXE\t// TIMEOUT\t// ODBC" );
@@ -50,19 +48,16 @@ void CDbManager::CreateDbWorkers( void )
 	CloseHandle( s_hHandle );
 }
 
-void CDbManager::CloseDbWorkers( void )
-{
-	for( int i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++ )
-		PostQueuedCompletionStatus( m_hDbCompletionPort, 0, NULL, NULL );
-	
-	WaitForMultipleObjects( DEFAULT_DB_WORKER_THREAD_NUM, m_hDbWorkerThreadTerminate, TRUE, INFINITE );
-	
-	CLOSE_HANDLE( m_hDbCompletionPort );
-	
-	for( int i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++ ) {
-		CLOSE_HANDLE( m_hDbWorkerThreadTerminate[i] );
+void CDbManager::CloseDbWorkers() {
+	for (size_t i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++) {
+		PostQueuedCompletionStatus(m_hDbCompletionPort, 0, NULL, NULL);
 	}
 	
+	for (size_t i = 0; i < DEFAULT_DB_WORKER_THREAD_NUM; i++) {
+		m_hDbWorkerThreadTerminate[i].join();
+	}
+
+	CLOSE_HANDLE( m_hDbCompletionPort );
 	SAFE_DELETE( m_pDbIOData );
 }
 
@@ -185,7 +180,6 @@ void CDbManager::AccountOn( CQuery & qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlu
 	DBQryAccount( lpDbOverlappedPlus->szQuery, "A1", lpDbOverlappedPlus->szAccount );
 	if( FALSE == qry.Exec( lpDbOverlappedPlus->szQuery ) )
 		WriteLog( "%s, %d\r\n\t%s", __FILE__, __LINE__, lpDbOverlappedPlus->szQuery );
-	m_pDbIOData->Free( lpDbOverlappedPlus );
 }
 
 
@@ -201,7 +195,6 @@ void CDbManager::AccountOff( CQuery & qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPl
 	DBQryAccount( lpDbOverlappedPlus->szQuery, "A2", lpDbOverlappedPlus->szAccount );
 	if( FALSE == qry.Exec( lpDbOverlappedPlus->szQuery ) )
 		WriteLog( "%s, %d\r\n\t%s", __FILE__, __LINE__, lpDbOverlappedPlus->szQuery );
-	m_pDbIOData->Free( lpDbOverlappedPlus );
 }
 
 void CDbManager::LogSMItem( CQuery & qryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus )
@@ -240,10 +233,8 @@ void CDbManager::LogSMItem( CQuery & qryLog, LPDB_OVERLAPPED_PLUS lpDbOverlapped
 	if( FALSE == qryLog.Exec( lpDbOverlappedPlus->szQuery ) )
 	{
 		WriteLog( "%s, %d\r\n\t%s", __FILE__, __LINE__, lpDbOverlappedPlus->szQuery );
-		m_pDbIOData->Free( lpDbOverlappedPlus );
 		return;
 	}
-	m_pDbIOData->Free( lpDbOverlappedPlus );
 }
 
 /*
@@ -256,7 +247,6 @@ void CDbManager::QueryReloadProject( CQuery& query, LPDB_OVERLAPPED_PLUS pOV )
 	if( FALSE == query.Exec( szQuery ) )
 	{
 		Error( " DB Qry : Load_ReloadAccount 구문 실패 : LOGIN_RELOAD_STR" );
-		m_pDbIOData->Free( pOV );
 		return;
 	}
 
@@ -269,7 +259,6 @@ void CDbManager::QueryReloadProject( CQuery& query, LPDB_OVERLAPPED_PLUS pOV )
 		m_OutAccount_List.insert( szAccount );
 		bOutAccount = TRUE;
 	}
-	m_pDbIOData->Free( pOV );
 
 	if( bOutAccount )
 		g_dpDbSrvr.SendReloadAccount();
@@ -281,10 +270,8 @@ void CDbManager::QueryReloadProject( CQuery& query, LPDB_OVERLAPPED_PLUS pOV )
 // DbWorkerThread
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-u_int __stdcall DbWorkerThread( LPVOID lpvDbManager )
+u_int DbWorkerThread(CDbManager * pDbManager)
 {
-	CDbManager* pDbManager	= (CDbManager*)lpvDbManager;
-
 	CQuery qryLogin;
 	CQuery qryLog;
 	BOOL bLongConnect = FALSE;
@@ -346,8 +333,9 @@ u_int __stdcall DbWorkerThread( LPVOID lpvDbManager )
 				pDbManager->AccountOff( qryLogin, lpDbOverlappedPlus );
 				break;
 			case LOG_SM_ITEM:
-				if( pDbManager->m_bLogItem )
-					pDbManager->LogSMItem( qryLog, lpDbOverlappedPlus );
+				if (pDbManager->m_bLogItem) {
+					pDbManager->LogSMItem(qryLog, lpDbOverlappedPlus);
+				}
 				break;
 
 /*
@@ -360,6 +348,8 @@ u_int __stdcall DbWorkerThread( LPVOID lpvDbManager )
 			default:
 				break;
 		}
+
+		pDbManager->m_pDbIOData->Free(lpDbOverlappedPlus);
 	}
 	return( 0 );
 }

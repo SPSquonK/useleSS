@@ -124,7 +124,7 @@ public:
 
   T & Add(T item, bool isValid = true);
   void Erase(int index);
-  // TODO: Swap
+  std::pair<T *, T *> Swap(int index1, int index2);
   // TODO: GetAt
   T & operator[](int index) { return m_listed[index].item; }
   // TODO: operator[] const
@@ -431,6 +431,12 @@ void CWndTListBox<T, D>::Erase(int index) {
   if (index < 0 || std::cmp_greater_equal(index, m_listed.size())) return;
   m_listed.erase(m_listed.begin() + index);
   m_updateRectsCache = std::nullopt;
+
+  if (m_nCurSelect == index) {
+    m_nCurSelect = -1;
+  } else if (m_nCurSelect > index) {
+    m_nCurSelect -= 1;
+  }
 }
 
 template<typename T, typename D>
@@ -441,6 +447,25 @@ void CWndTListBox<T, D>::ResetContent() {
   m_listed.clear();
   m_wndScrollBar.SetScrollPos(0, FALSE);
   m_updateRectsCache = std::nullopt;
+}
+
+template<typename T, typename D>
+  requires (WndTListBox::DisplayerOf<T, D>)
+std::pair<T *, T *> CWndTListBox<T, D>::Swap(int index1, int index2) {
+  if (index1 < 0 || std::cmp_greater_equal(index1, m_listed.size())) return { nullptr, nullptr };
+  if (index2 < 0 || std::cmp_greater_equal(index2, m_listed.size())) return { nullptr, nullptr };
+  
+  if (index1 != index2) {
+    // Swap the things at the two positions
+    std::swap(m_listed[index1]     , m_listed[index2]);
+    std::swap(m_listed[index1].rect, m_listed[index2].rect);
+
+    // Change selection
+    if (m_nCurSelect == index1) m_nCurSelect = index2;
+    else if (m_nCurSelect == index2) m_nCurSelect = index1;
+  }
+
+  return { &m_listed[index1].item, &m_listed[index2].item };
 }
 
 namespace WndTListBox {

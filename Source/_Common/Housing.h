@@ -208,7 +208,7 @@ public:
 
 	BOOL	MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
-	std::string GetNameHouseObj( );
+	const char * GetNameHouseObj( );
 	std::string GetNameHouseWallTex( );
 	std::string GetNameHouseTileTex( );
 	

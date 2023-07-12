@@ -14,7 +14,6 @@ CLoginUser::CLoginUser( DPID dpid )
 	m_dwAuthKey	= 0;
 	m_idPlayer	= 0;
 	m_dpid	= dpid;
-	m_nIndexOfCache	= 0;
 	m_tPingRecvd	= m_dwTime	= timeGetTime();
 	m_bIllegal	= FALSE;
 	if( g_bNProtectAuth )
@@ -125,7 +124,6 @@ BOOL CLoginUserMng::RemoveUser( DPID dpid )
 		{
 			WriteLog( "RemoveUser(): Illegal" );
 		}
-		g_dpLoginSrvr.CacheOut( pUser->m_nIndexOfCache );
 
 		SAFE_DELETE( pUser );
 		m_uCount--;

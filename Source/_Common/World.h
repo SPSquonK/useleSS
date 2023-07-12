@@ -276,9 +276,8 @@ public:
 	int					m_nCharLandPosX;
 	int					m_nCharLandPosZ;
 
-	int                     m_nBoundBoxVertexNum;
+	static constexpr int BoundBoxVertexNum = 12;
 	LPDIRECT3DVERTEXBUFFER9 m_pBoundBoxVertexBuffer;
-    LPDIRECT3DDEVICE9       m_pd3dDevice;        
 	D3DMATERIAL9			m_baseMaterial;
 
 	// 디버그 정보 관련 
@@ -312,6 +311,7 @@ public:
 
 
 	void			Process();
+	void DeleteObjects();
 	static DWORD	GetDiffuseColor() { return D3DCOLOR_ARGB( 255,(int)(m_lightFogSky.Diffuse.r * 255),(int)(m_lightFogSky.Diffuse.g * 255),(int)(m_lightFogSky.Diffuse.b * 255) ); }
 	static DWORD	GetAmbientColor() { return D3DCOLOR_ARGB( 255,(int)(m_lightFogSky.Ambient.r * 255),(int)(m_lightFogSky.Ambient.g * 255),(int)(m_lightFogSky.Ambient.b * 255) ); }
 	[[nodiscard]] std::pair<int, int> WorldPosToLand(D3DXVECTOR3 vPos) const;
@@ -320,7 +320,7 @@ public:
 	BOOL			IsVecInRange( D3DXVECTOR3 vPos, D3DXVECTOR3 vCenterPos, FLOAT fRadius );
 	void			SetObjFocus( CObj* pObj, BOOL bSend = TRUE );
 	CObj*			GetObjFocus() { return m_pObjFocus; }
-	CObj*			GetObjByName(const TCHAR* ObjName);
+	CObj*			GetObjByName(const char * ObjName);
 	void			ForceTexture(LPDIRECT3DTEXTURE9 pNewTex);
 	BOOL			ProcessObjCollision(D3DXVECTOR3 vPos, CObj* pTargetObj,CObj* pWallObj);
 	BOOL			TestOBBIntersect(BBOX* BoxA, BBOX* BoxB);
@@ -515,9 +515,9 @@ public:
 	void			OutProcessing( );		// gmpibgsun : 현재 월드에서 퇴장시 한번 호출됨 
 
 	// Render
-	void			Projection( LPDIRECT3DDEVICE9 pd3dDevice, int nWidth, int nHeight );
-	void			Render( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont = NULL );
-	void			RenderBase( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont );
+	void			Projection( int nWidth, int nHeight );
+	void			Render( CD3DFont* pFont = NULL );
+	void			RenderBase( CD3DFont* pFont );
 		
 	// Light, Camera and etc...
 	void			AddLight( CLight* pLight );
@@ -525,7 +525,7 @@ public:
 	void			SetCamera( CCamera* pCamera ) { m_pCamera = pCamera; }
 	CCamera*		GetCamera() { return m_pCamera; }
 	void			SetLight( BOOL bLight );
-	void			SetFogEnable( LPDIRECT3DDEVICE9 pd3dDevice, BOOL bEnable );
+	void			SetFogEnable( BOOL bEnable );
 
 	// Culling
 	void			UpdateCullInfo( D3DXMATRIX* pMatView, D3DXMATRIX* pMatProj );
@@ -534,9 +534,8 @@ public:
 	// Pick and Intersect
 	BOOL			ClientPointToVector( D3DXVECTOR3 *pOut, RECT rect, POINT point, D3DXMATRIX* pmatProj, D3DXMATRIX* pmatView, D3DXVECTOR3* pVector, BOOL bObject = FALSE );
 	BOOL			IsPickTerrain(RECT rect, POINT point, D3DXMATRIX* pmatProj, D3DXMATRIX* pmatView );
-	FLOAT			IntersectRayTerrain( const D3DXVECTOR3 &vPickRayOrig, const D3DXVECTOR3 &vPickRayDir );
-	CObj*			PickObject( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj, D3DXMATRIX* pmatView, DWORD dwObjectFilter = 0xffffffff, CObj* pExceptionObj = NULL, D3DXVECTOR3* pVector = NULL, BOOL bOnlyTopPick = FALSE, BOOL bOnlyNPC = FALSE  );
-	CObj*			PickObject_Fast( RECT rectClient, POINT ptClient, D3DXMATRIX* pmatProj, D3DXMATRIX* pmatView, DWORD dwObjectFilter = 0xffffffff, CObj* pExceptionObj = NULL, BOOL bBoundBox = FALSE, BOOL bOnlyNPC = FALSE );
+	CObj*			PickObject( RECT rectClient, POINT ptClient, const D3DXMATRIX* pmatProj, const D3DXMATRIX* pmatView, DWORD dwObjectFilter = 0xffffffff, CObj* pExceptionObj = NULL, D3DXVECTOR3* pVector = NULL, BOOL bOnlyTopPick = FALSE, BOOL bOnlyNPC = FALSE  );
+	CObj*			PickObject_Fast( RECT rectClient, POINT ptClient, const D3DXMATRIX* pmatProj, const D3DXMATRIX* pmatView, DWORD dwObjectFilter = 0xffffffff, CObj* pExceptionObj = NULL, BOOL bBoundBox = FALSE, BOOL bOnlyNPC = FALSE );
 	BOOL			CheckBound( D3DXVECTOR3* vPos, D3DXVECTOR3* vDest, D3DXVECTOR3* vOut, FLOAT* fLength );
 		
 	void			RenderGrid();
@@ -544,13 +543,13 @@ public:
 	void			RenderWorldGrids(int wx,int wy,CPoint ptLT,CPoint ptRB,WORD dx,DWORD color);
 	
 	// Direct3D 관련 오브젝트 초기화및 제거, 재설정 관련 
-	HRESULT			InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
-	HRESULT			RestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT			InitDeviceObjects();
+	HRESULT			RestoreDeviceObjects();
 	HRESULT			DeleteDeviceObjects();
 	HRESULT			InvalidateDeviceObjects();
 	void			RenderTerrain();
-	static HRESULT	StaticInitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
-	static HRESULT	StaticRestoreDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice );
+	static HRESULT	StaticInitDeviceObjects();
+	static HRESULT	StaticRestoreDeviceObjects();
 	static HRESULT	StaticDeleteDeviceObjects();
 	static HRESULT	StaticInvalidateDeviceObjects();
 
@@ -560,7 +559,7 @@ private:
 	void			RenderWater();
 	void			RenderObject( CD3DFont* pFont = NULL );
 	void			RenderBoundBoxVertex( CObj* pObj );
-	void			SetBoundBoxVertex( CObj* pObj );
+	void			SetBoundBoxVertex( const CObj* pObj );
 
 	void			RenderObj(CObj* pObj);
 

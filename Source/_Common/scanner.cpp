@@ -894,6 +894,17 @@ int CScanner::GetNumber( BOOL bComma )
 	return 0;
 }
 
+DWORD CScanner::GetDWORD(BOOL bComma) {
+	const __int64 value = GetInt64(bComma);
+
+	if (value <= 0) return 0;
+	if (value >= std::numeric_limits<DWORD>::max()) {
+		return std::numeric_limits<DWORD>::max();
+	}
+
+	return static_cast<DWORD>(value);
+}
+
 __int64 CScanner::GetInt64( BOOL bComma )
 {
 	m_dwDef		= 1;

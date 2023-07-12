@@ -6,13 +6,9 @@
 #include "misc.h"
 #include "ListedServer.h"
 
-#undef	theClass
-#define theClass	CDPCertified
-#undef theParameters
-#define theParameters	CAr & ar, DPID
-
 class CDPCertified : public CDPMng,
-	public DPMngFeatures::SendPacketNone
+	public DPMngFeatures::SendPacketNone,
+	public DPMngFeatures::PacketHandler<CDPCertified, DPID>
 {
 private:
 	BOOL	m_fConn;
@@ -45,8 +41,7 @@ public:
 	BOOL	CheckNofityDisconnected();
 	void	SendCertify();
 
-	USES_PFNENTRIES;
-
+private:
 	// Handlers
 	void	OnSrvrList( CAr & ar, DPID );
 	void	OnError( CAr & ar, DPID dpid );

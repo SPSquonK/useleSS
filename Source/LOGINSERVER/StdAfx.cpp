@@ -4,8 +4,11 @@
 
 #include "stdafx.h"
 
-char	g_lpCoreAddr[16];
-char	g_lpDBAddr[16];
+ServerAddrs g_lpAddr {
+	.db = "127.0.0.1",
+	.core = "127.0.0.1",
+	.cache = "127.0.0.1"
+};
 char    g_szMSG_VER[256] = "20040706";
 BOOL	g_bNProtectAuth = FALSE;
 

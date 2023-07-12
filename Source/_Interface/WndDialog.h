@@ -4,7 +4,7 @@
 #include <memory>
 #include "WndTListBox.hpp"
 
-class CWndDialog : public CWndNeuz 
+class CWndDialog final : public CWndNeuz 
 { 
 public:
 	static constexpr UINT WIDC_NewQuests = 901;
@@ -45,10 +45,10 @@ public:
 
 	DWORD m_dwQuest = 0;// context 버튼에서 사용함 
 	BOOL m_bSay;
-	int m_nCurArray;
-	CPtrArray m_strArray;
+	size_t m_nCurArray;
+	std::vector<std::unique_ptr<CEditString>> m_strArray;
 	OBJID m_idMover;
-	CMapStringToString m_mapWordToOriginal;
+	std::map<CString, CString> m_mapWordToOriginal;
 
 	struct ListedQuest {
 		CEditString displayName;
@@ -106,12 +106,13 @@ public:
 
 private:
 	std::pair<ListedQuest, bool> MakeListedQuest(const LPCTSTR lpszWord, const LPCTSTR lpszKey, QuestId dwQuest);
+	[[nodiscard]] const char * GetOriginalOfWord(const CString & strWord) const;
 
 public:
 
 	virtual BOOL Process();
-	virtual BOOL OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message );
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ); 
+	void OnSetCursor() override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 

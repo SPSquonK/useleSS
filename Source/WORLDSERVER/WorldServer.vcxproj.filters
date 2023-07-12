@@ -66,9 +66,6 @@
     <ClCompile Include="AttackArbiter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\auction.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\Campus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -97,9 +94,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\_common\guildquest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ItemScript.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ItemUpgrade.cpp">
@@ -199,9 +193,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WorldServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WScript.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\_Network\tools.cpp">
@@ -450,9 +441,6 @@
     <ClCompile Include="..\_Common\Item.cpp">
       <Filter>Neuz Common Files\Common Files\Object</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\ItemPet.cpp">
-      <Filter>Neuz Common Files\Common Files\Object</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\modelobject.cpp">
       <Filter>Neuz Common Files\Common Files\Object</Filter>
     </ClCompile>
@@ -543,9 +531,6 @@
     <ClCompile Include="..\_Common\script.cpp">
       <Filter>Neuz Common Files\Common Files\Script</Filter>
     </ClCompile>
-    <ClCompile Include="..\_Common\scriptdialog.cpp">
-      <Filter>Neuz Common Files\Common Files\Script</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\ScriptHelper.cpp">
       <Filter>Neuz Common Files\Common Files\Script</Filter>
     </ClCompile>
@@ -606,15 +591,15 @@
     <ClCompile Include="..\_Common\ProjectJob.cpp">
       <Filter>Source Files\Project</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\NameValidation.cpp">
+      <Filter>Neuz Common Files\Common Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WantedListSnapshot.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="AttackArbiter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Common\auction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\Campus.h">
@@ -630,9 +615,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_common\dialogmsg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dpaccountclient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DPCoreClient.h">
@@ -654,9 +636,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_common\guildquest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemScript.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ItemUpgrade.h">
@@ -756,9 +735,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WorldDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WScript.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_network\CmnHdr.h">
@@ -1112,9 +1088,6 @@
     <ClInclude Include="..\_Common\script.h">
       <Filter>Neuz Common Files\Common Files\Script</Filter>
     </ClInclude>
-    <ClInclude Include="..\_Common\scriptdialog.h">
-      <Filter>Neuz Common Files\Common Files\Script</Filter>
-    </ClInclude>
     <ClInclude Include="..\_Common\ScriptHelper.h">
       <Filter>Neuz Common Files\Common Files\Script</Filter>
     </ClInclude>
@@ -1171,6 +1144,9 @@
     </ClInclude>
     <ClInclude Include="..\_Common\ScriptDefines.h">
       <Filter>Neuz Common Files\Common Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\NameValidation.h">
+      <Filter>Neuz Common Files\Common Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -100,14 +100,17 @@
     </ClCompile>
     <ClCompile Include="..\_Common\ItemContainer.cpp" />
     <ClCompile Include="..\_Common\ItemMorph.cpp" />
+    <ClCompile Include="..\_Common\NameValidation.cpp" />
     <ClCompile Include="..\_Common\ProjectJob.cpp" />
     <ClCompile Include="..\_Common\SkillsOfMover.cpp" />
+    <ClCompile Include="..\_Interface\PlayerLineup.cpp" />
     <ClCompile Include="..\_Interface\UserTaskBar.cpp" />
     <ClCompile Include="..\_Interface\WndBuffStatus.cpp" />
     <ClCompile Include="..\_Interface\WndCharacter.cpp" />
     <ClCompile Include="..\_Interface\WndComponentSlots.cpp" />
     <ClCompile Include="..\_Interface\WndEquipmentSex.cpp" />
     <ClCompile Include="..\_Interface\WndManager_Tooltip.cpp" />
+    <ClCompile Include="..\_Interface\WndPost.cpp" />
     <ClCompile Include="..\_Interface\WndRankCmn.cpp" />
     <ClCompile Include="..\_Interface\WndSkill16.cpp" />
     <ClCompile Include="..\_Interface\WndSkillTree.cpp" />
@@ -129,7 +132,6 @@
     </ClCompile>
     <ClCompile Include="DPClientGuildWar.cpp">
     </ClCompile>
-    <ClCompile Include="DPCollectClient.cpp" />
     <ClCompile Include="DPLoginClient.cpp">
     </ClCompile>
     <ClCompile Include="HelperWebBox.cpp" />
@@ -296,8 +298,6 @@
     <ClCompile Include="..\_Interface\WndRainbowRace.cpp">
     </ClCompile>
     <ClCompile Include="..\_Interface\WndRepairItem.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndRepairItemCtrl.cpp">
     </ClCompile>
     <ClCompile Include="..\_Interface\WndSealChar.cpp">
     </ClCompile>
@@ -666,17 +666,20 @@
     <ClInclude Include="..\_Common\ItemContainer.h" />
     <ClInclude Include="..\_Common\ItemElem.h" />
     <ClInclude Include="..\_Common\ItemMorph.h" />
+    <ClInclude Include="..\_Common\NameValidation.h" />
     <ClInclude Include="..\_Common\ProjectJob.h" />
     <ClInclude Include="..\_Common\ScriptDefines.h" />
     <ClInclude Include="..\_Common\SingleDst.h" />
     <ClInclude Include="..\_Common\SkillsOfMover.h" />
     <ClInclude Include="..\_Common\UpdateItem.h" />
     <ClInclude Include="..\_Common\Vector3Helper.h" />
+    <ClInclude Include="..\_Interface\PlayerLineup.h" />
     <ClInclude Include="..\_Interface\UserTaskBar.h" />
     <ClInclude Include="..\_Interface\WndBuffStatus.h" />
     <ClInclude Include="..\_Interface\WndCharacter.h" />
     <ClInclude Include="..\_Interface\WndComponentSlots.h" />
     <ClInclude Include="..\_Interface\WndEquipmentSex.h" />
+    <ClInclude Include="..\_Interface\WndPost.h" />
     <ClInclude Include="..\_Interface\WndRankCmn.h" />
     <ClInclude Include="..\_Interface\WndSkillTree.h" />
     <ClInclude Include="..\_Interface\WndSqKComponents.h" />
@@ -767,7 +770,6 @@
     <ClInclude Include="..\_Interface\WndQuestQuickInfo.h" />
     <ClInclude Include="..\_Interface\WndRainbowRace.h" />
     <ClInclude Include="..\_Interface\WndRepairItem.h" />
-    <ClInclude Include="..\_Interface\WndRepairItemCtrl.h" />
     <ClInclude Include="..\_Interface\WndSealChar.h" />
     <ClInclude Include="..\_Interface\WndSelectCh.h" />
     <ClInclude Include="..\_Interface\WndShop.h" />
@@ -944,7 +946,6 @@
     <ClInclude Include="clord.h" />
     <ClInclude Include="Cloth.h" />
     <ClInclude Include="..\_Common\collecting.h" />
-    <ClInclude Include="DPCollectClient.h" />
     <ClInclude Include="..\_Common\langman.h" />
     <ClInclude Include="..\_Common\rtmessenger.h" />
     <ClInclude Include="..\_Interface\WndQuizEvent.h" />

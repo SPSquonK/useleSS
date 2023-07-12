@@ -202,15 +202,15 @@ public:
 
 	virtual	BOOL	SetMotion(DWORD dwMotion, int nLoop = ANILOOP_LOOP, DWORD dwOption = 0 ) { return FALSE; }
 	virtual	BOOL	InitMotion(DWORD dwMotion) { return FALSE; }
-	virtual	CModel* LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex );
+	virtual	CModel* LoadModel( DWORD dwType, DWORD dwIndex );
 	virtual void	InitProp( BOOL bInitAI = TRUE );
 	virtual	LPCTSTR GetName() { return _T( "hello" ); }
 	virtual void	Process();
 	virtual BOOL	Read( CFileIO* pFile );
 	virtual void	Serialize( CAr & ar );
-	virtual void	Render( LPDIRECT3DDEVICE9 pd3dDevice );
-	virtual void	RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor = 0xffffffff );
-	virtual	BOOL	SetIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwIndex, BOOL bInitProp = FALSE ) { return SetTypeIndex( pd3dDevice, m_dwType, dwIndex, bInitProp ); }
+	virtual void	Render( );
+	virtual void	RenderName( CD3DFont* pFont, DWORD dwColor = 0xffffffff );
+	virtual	BOOL	SetIndex( DWORD dwIndex, BOOL bInitProp = FALSE ) { return SetTypeIndex( m_dwType, dwIndex, bInitProp ); }
 
 	BOOL			IsUpdateMatrix() { 	return (m_dwFlags & OBJ_FLAG_UPDATEMATRIX); }
 	void			SetUpdateMatrix( BOOL bUpdate ) { SetFlag( bUpdate, OBJ_FLAG_UPDATEMATRIX ); }
@@ -246,7 +246,7 @@ public:
 	ObjProp*		GetProp();
 	[[nodiscard]] DWORD GetType() const { return m_dwType; }
 	DWORD			GetIndex() { return m_dwIndex; }
-	BOOL			SetTypeIndex( LPDIRECT3DDEVICE9 pd3dDevice, DWORD dwType, DWORD dwIndex, BOOL bInitProp = FALSE );
+	BOOL			SetTypeIndex( DWORD dwType, DWORD dwIndex, BOOL bInitProp = FALSE );
 	void			ProcessAI();
 	void			ProcessAirShip();		
 	DWORD			GetLinkType();
@@ -262,7 +262,7 @@ public:
 	[[nodiscard]] CWorld * GetWorld() const { return m_pWorld; }
 	void			SetWorld( CWorld* pWorld );
 	CModel*			GetModel()	{ return m_pModel; }
-	BOOL			Pick( D3DXVECTOR3* pPickRayOrg, D3DXVECTOR3* pPickRayDir, D3DXVECTOR3* pvIntersect, 
+	bool			Pick( const D3DXVECTOR3* pPickRayOrg, const D3DXVECTOR3* pPickRayDir, D3DXVECTOR3* pvIntersect, 
 		                  FLOAT* pfDist, BOOL bBoundBox = FALSE, BOOL bColl = FALSE );
 	BOOL			IsDynamicObj()			{ return m_dwType != OT_OBJ && m_dwType != OT_SFX; }
 
@@ -300,6 +300,16 @@ public:
 	float			GetScrAngleX()			{ return m_fScrAngleX;	}
 
 #endif	// !__WORLDSERVER
+
+#ifdef __CLIENT
+	static constexpr DWORD PWCTSC_DoNotResetWorldTransform = 0x01;
+	static constexpr DWORD PWCTSC_UntouchedViewport        = 0x04;
+
+	[[nodiscard]] D3DXVECTOR3 ProjectWorldCoordToScreenCoord(
+		std::optional<D3DXVECTOR3> pPos = std::nullopt,
+		DWORD flags = 0
+	);
+#endif
 
 private:		
 	void			CalcLinkLevel();

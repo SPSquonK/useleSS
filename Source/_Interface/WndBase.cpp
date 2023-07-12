@@ -6,6 +6,7 @@
 #include "AppDefine.h"
 #include "resdata.h"
 #include "WndSkillTree.h"
+#include "sqktd/util.hpp"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -14,7 +15,6 @@
 BOOL      CWndBase::m_bCling   = TRUE;
 BOOL      CWndBase::m_bEdit    = FALSE;
 BOOL      CWndBase::m_bFullWnd = FALSE;
-CWndBase* CWndBase::m_pWndRoot = NULL;
 CWndBase* CWndBase::m_pWndFocus = NULL;
 CWndBase* CWndBase::m_pCurFocus = NULL;
 
@@ -58,59 +58,28 @@ IMAGE * CTileMapManager::GetImage(std::string_view lpszFileName) {
 	return image;
 }
 
-BOOL CWndBase::SetForbidTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName )
+BOOL CWndBase::SetForbidTexture( LPCTSTR lpszFileName )
 {
-	m_pTexForbid = CWndBase::m_textureMng.AddTexture( pd3dDevice, lpszFileName, 0xffff00ff );
+	m_pTexForbid = CWndBase::m_textureMng.AddTexture( lpszFileName, 0xffff00ff );
 	if( m_pTexForbid ) return TRUE;
 	return FALSE;
 }
-void CWndBase::AlighWindow( CRect rcOld, CRect rcNew )
-{
-	for(int i = 0; i < m_wndOrder.GetSize(); i++ )
-	{
-		CWndBase* pWndBase = (CWndBase*) m_wndOrder.GetAt( i );
-		CRect rcWnd = pWndBase->GetWindowRect( TRUE );
-		CPoint point = rcWnd.TopLeft();
-		if( pWndBase != m_pWndRoot )
-		{
-			if( pWndBase->m_nWinSize == WSIZE_MAX )
-			{
-				pWndBase->SetWndRect( rcNew );
-			}
-			else
-			{
-				if( rcWnd.left   < rcNew.left   ) point.x = rcNew.left;
-				if( rcWnd.top    < rcNew.top    ) point.y = rcNew.top;
-				if( rcWnd.right  > rcNew.right  ) point.x = rcNew.right - rcWnd.Width();
-				if( rcWnd.bottom > rcNew.bottom ) point.y = rcNew.bottom - rcWnd.Height();
 
-				if( rcWnd.left   < rcNew.left   ) point.x = rcNew.left;
-				if( rcWnd.top    == rcOld.top    ) point.y = rcNew.top;
-				if( rcWnd.right  > rcNew.right  ) point.x = rcNew.right - rcWnd.Width();
-				if( rcWnd.bottom == rcOld.bottom ) point.y = rcNew.bottom - rcWnd.Height();
-
-				pWndBase->Move( point );
-			}
-		}
-	}
-}
-void CWndBase::SetTexture( LPDIRECT3DDEVICE9 pd3dDevice, LPCTSTR lpszFileName, BOOL bMyLoader )
+void CWndBase::SetTexture( LPCTSTR lpszFileName, BOOL bMyLoader )
 {
-	m_pTexture = m_textureMng.AddTexture( pd3dDevice, lpszFileName, 0xffff00ff, bMyLoader );
+	m_pTexture = m_textureMng.AddTexture( lpszFileName, 0xffff00ff, bMyLoader );
 }
 
 void CWndBase::SetForbid( BOOL bForbid ) 
 { 
 	m_bForbid = bForbid; 
 	m_timerForbid.Set( 500 );  
-	GET_CLIENT_POINT( m_hWnd, point );
-	m_ptForbid = point;
+	m_ptForbid = GetClientPoint();
 }
 CWndBase::CWndBase()
 {
 	//m_bAutoFree    = FALSE;
-	m_pApp         = NULL ;
-	m_pTheme       = NULL ;
+	m_isCreated = false;
 	m_pFont        = NULL ;
 	m_nIdWnd       = 0    ;
 	m_dwStyle      = 0    ;
@@ -128,11 +97,11 @@ CWndBase::CWndBase()
 	m_pParentWnd   = NULL ;
 	m_ptMouse      = 0    ; 
 //	m_pFont        = NULL ;
-	m_bAutoFree    = FALSE;
+	m_bAutoFree    = false;
 	m_bEnable      = TRUE ;
 	m_pWndFocusChild = NULL;
-	m_bTabStop       = FALSE;
-	m_bDefault       = FALSE;
+	m_bTabStop       = false;
+	m_bDefault       = false;
 	m_bActive        = FALSE;
 	m_nToolTipPos    = 0;
 	m_nResizeDir     = 0;
@@ -184,42 +153,42 @@ void CWndBase::AddWnd( CWndBase* pWndBase )
 	// 두개가 같다면 루트 윈도다.
 	if(pWndBase != this)
 	{
-		m_wndArray.Add(pWndBase);
+		m_wndArray.emplace_back(pWndBase);
 	}
 	if(!(pWndBase->m_dwStyle & WBS_CHILD))
 	{
 		if(pWndBase->m_dwStyle & WBS_MANAGER)
 		{
-			int i = 0;
-			for( ; i < m_wndOrder.GetSize(); i++)
-			{
-				CWndBase* pWndBase = (CWndBase*)m_wndOrder.GetAt( i );
-				if( !( pWndBase->m_dwStyle & WBS_MANAGER) )
-					break;
-			}
-			m_wndOrder.InsertAt( i, pWndBase );
+			// Manager after all managers
+			const auto it = std::find_if(
+				m_wndOrder.begin(), m_wndOrder.end(),
+				[](CWndBase * pWnd) { return !(pWnd->m_dwStyle & WBS_MANAGER); }
+			);
+			m_wndOrder.insert(it, pWndBase);
 		}
 		else
 		{
-			if( m_wndOrder.GetSize() )
-			{
-				if( pWndBase->IsWndStyle( WBS_TOPMOST ) || pWndBase->IsWndStyle( WBS_MODAL ) || pWndBase->IsWndStyle( WBS_POPUP ) )
-					m_wndOrder.Add( pWndBase );
-				else
-				{
-					int i = 0;
-					for( ; i < m_wndOrder.GetSize(); i++ )
-					{
-						CWndBase* pWnd = (CWndBase*)m_wndOrder[ i ];
-						if( ( pWnd->IsWndStyle( WBS_TOPMOST ) || pWnd->IsWndStyle( WBS_POPUP ) || pWnd->IsWndStyle( WBS_MODAL ) ) && pWnd->IsVisible() )
-							break;
-					}
-					m_wndOrder.InsertAt( i, pWndBase );
-				}
+			// Insert but maintain some window style in back
+			static constexpr auto IsWindowAlwaysInBack = [](CWndBase * pWnd) {
+				return pWnd->IsWndStyle(WBS_TOPMOST)
+					|| pWnd->IsWndStyle(WBS_MODAL)
+					|| pWnd->IsWndStyle(WBS_POPUP);
+			};
+
+			if (m_wndOrder.empty()) {
+				m_wndOrder.emplace_back(pWndBase);
+			} else if (IsWindowAlwaysInBack(pWndBase)) {
+				m_wndOrder.emplace_back(pWndBase);
+			} else {
+				const auto it = std::find_if(
+					m_wndOrder.begin(), m_wndOrder.end(),
+					IsWindowAlwaysInBack
+				);
+
+				m_wndOrder.insert(it, pWndBase);
 			}
-			else
-				m_wndOrder.Add(pWndBase);
 		}
+
 		if( !( pWndBase->m_dwStyle & WBS_NOFOCUS ) )
 		{
 			if(pWndBase) pWndBase->SetFocus();
@@ -237,35 +206,27 @@ void CWndBase::AddWnd( CWndBase* pWndBase )
 }
 void CWndBase::RemoveWnd(CWndBase* pWndBase)
 {
-	for(int i = 0; i < m_wndOrder.GetSize(); i++)
-	{
-		if(m_wndOrder.GetAt(i) == pWndBase)
-		{
-			m_wndOrder.RemoveAt(i); 
-			break;
-		}
-	}
+	const auto itOrder = std::find(m_wndOrder.begin(), m_wndOrder.end(), pWndBase);
+	if (itOrder != m_wndOrder.end()) m_wndOrder.erase(itOrder);
+
 	if(pWndBase == m_pWndFocus)
 	{
 		CWndBase* pWndBaseTemp = m_pWndFocus->GetParentWnd(); 
 		if(pWndBaseTemp) 
 			pWndBaseTemp->SetFocus();
 	}
-	for( int i = 0; i < m_wndArray.GetSize(); i++)
+
 	{
-		CWndBase * pWndInArray = (CWndBase *)m_wndArray[i];
-		if(pWndInArray == pWndBase)
-		{
-			pWndInArray->OnKillFocus(NULL);
-			m_wndArray.RemoveAt(i); i--;
-			break;
+		const auto itInArray = std::find(m_wndArray.begin(), m_wndArray.end(), pWndBase);
+		if (itInArray != m_wndArray.end()) {
+			pWndBase->OnKillFocus(nullptr);
+			m_wndArray.erase(itInArray);
 		}
 	}
-	if(pWndBase == m_pWndFocusChild)
-	{
-		const int nSize = m_wndArray.GetSize();
-		if (nSize > 0) {
-			CWndBase * pWndBaseTemp = (CWndBase *)m_wndArray[nSize - 1];
+
+	if(pWndBase == m_pWndFocusChild) {
+		if (!m_wndArray.empty()) {
+			CWndBase * pWndBaseTemp = m_wndArray.back();
 			if (pWndBaseTemp) {
 				pWndBaseTemp->SetFocus();
 			}
@@ -287,25 +248,18 @@ BOOL CWndBase::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT n
 	m_rectClient = rect;
 	m_rectLayout = rect;
 	m_nIdWnd = nID;
-	if( pParentWnd )
-	{
-		m_pParentWnd = pParentWnd;
-		if( m_pParentWnd == this )
-			m_pWndRoot = m_pParentWnd;
-	}
-	else
-		m_pParentWnd = m_pWndRoot;
+	
+	m_pParentWnd = pParentWnd ? pParentWnd : &g_WndMng;
 
-	m_pTheme = m_pParentWnd->m_pTheme;
-	m_pApp = m_pParentWnd->m_pApp;
+	m_isCreated = m_pParentWnd->m_isCreated;
 	m_pFont = m_pParentWnd->m_pFont;
 
 	SetWndRect( rect, FALSE );
 
-	if( m_pWndRoot == this )
+	if( &g_WndMng == this )
 		m_dwStyle |= WBS_MANAGER;
 	m_pParentWnd->AddWnd( this );
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(), point );
+	CPoint point = GetClientPoint();
 	m_ptMouse = point - GetScreenRect().TopLeft();
 
 	OnInitialUpdate();
@@ -316,10 +270,6 @@ BOOL CWndBase::Create(DWORD dwStyle,const RECT& rect,CWndBase* pParentWnd,UINT n
 void CWndBase::OnDraw(C2DRender* p2DRender)
 {
 }
-BOOL CWndBase::OnDrawIcon(CWndBase* pWndBase,C2DRender* p2DRender)
-{
-	return FALSE; // icon을 그렸으면 TRUE로 돌려준다.
-}
 void CWndBase::PaintRoot( C2DRender* p2DRender )
 {
 	m_p2DRender = p2DRender;
@@ -327,33 +277,31 @@ void CWndBase::PaintRoot( C2DRender* p2DRender )
 	CPoint ptViewPortOld = p2DRender->GetViewportOrg();
 	m_bFullWnd = FALSE; 
 
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
-	m_pApp->m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
+	m_pd3dDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA );
+	m_pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+	m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+	m_pd3dDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
 	
 	// m_wndOrder 리스트에 있는 윈도는 차일드(종속) 윈도가 아니기 때문에
 	// 좌표계 이동이 필요 없고 단지 클립 영역만 지정해 주면 된다.
-	const int nSize = m_wndOrder.GetSize();
-	for( int i = 0; i < nSize; i++ )
+	const size_t nSize = m_wndOrder.size();
+	for( size_t i = 0; i < nSize; i++ )
 	{
-		CWndBase* pWnd = (CWndBase*)m_wndOrder[i];
-		if( pWnd->IsVisible() )
-		{
-			p2DRender->m_clipRect = pWnd->m_rectWindow;
-			if( rectOld.Clipping( p2DRender->m_clipRect ) )
-			{
-				p2DRender->SetViewportOrg( pWnd->m_rectWindow.TopLeft() );
-				p2DRender->SetViewport( p2DRender->m_clipRect );
-				pWnd->m_rectCurrentWindow = pWnd->m_rectWindow;
-				pWnd->m_rectCurrentClient = pWnd->m_rectClient;
-				pWnd->Paint(p2DRender);
-			}
-		}
+		CWndBase* pWnd = m_wndOrder[i];
+		if (!pWnd->IsVisible()) continue;
+		
+		p2DRender->m_clipRect = pWnd->m_rectWindow;
+		if( !rectOld.Clipping( p2DRender->m_clipRect ) ) continue;
+			
+		p2DRender->SetViewportOrg( pWnd->m_rectWindow.TopLeft() );
+		p2DRender->SetViewport( p2DRender->m_clipRect );
+		pWnd->m_rectCurrentWindow = pWnd->m_rectWindow;
+		pWnd->m_rectCurrentClient = pWnd->m_rectClient;
+		pWnd->Paint(p2DRender);
 	}
 	p2DRender->m_clipRect = rectOld;
 	p2DRender->SetViewportOrg( ptViewPortOld );
-	p2DRender->SetViewport( m_pApp->GetDeviceRect() );
+	p2DRender->SetViewport( g_Neuz.GetDeviceRect() );
 	if( IsForbid() )
 	{
 		CPoint point = m_ptForbid;
@@ -426,23 +374,22 @@ void CWndBase::PaintFrame(C2DRender* p2DRender)
 		else
 		if( m_strTexture.IsEmpty() )
 		{
-			m_pTheme->RenderWndBaseFrame( p2DRender, &rect );
+			m_Theme.RenderWndBaseFrame( p2DRender, &rect );
 			if( IsWndStyle( WBS_CAPTION ) )
 			{
 				// 타이틀 바 
 				rect.bottom = 21;
-					m_pTheme->RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
+				m_Theme.RenderWndBaseTitleBar( p2DRender, &rect, m_strTitle, m_dwColor );
 			}
 		}
 
 }
 void CWndBase::PaintChild(C2DRender* p2DRender)
 {
-	CRectClip rectOld = p2DRender->m_clipRect;
+	const CRectClip rectOld = p2DRender->m_clipRect;
 
-	for(int i = 0; i < m_wndArray.GetSize(); i++)
-	{
-		CWndBase* pWnd = (CWndBase*)m_wndArray[ i ];
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase* pWnd = m_wndArray[ i ];
 		if( pWnd->IsVisible() && pWnd->IsWndStyle( WBS_CHILD ) )
 		{
 			if( pWnd->IsWndStyle( WBS_DOCKING ) )
@@ -483,8 +430,8 @@ BOOL CWndBase::Process()
 		RemoveDestroyWnd();
 	}
 
-	for (int i = 0; i < m_wndArray.GetSize(); ++i) {
-		CWndBase * pWndChild = (CWndBase *)m_wndArray[i];
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase * pWndChild = m_wndArray[i];
 		if (!pWndChild->Process()) {
 			break;
 		}
@@ -497,15 +444,16 @@ BOOL CWndBase::Process()
 }
 HRESULT CWndBase::InitDeviceObjects()
 {
-	for(int i = 0; i < m_wndArray.GetSize(); i++) 
-		((CWndBase*)m_wndArray.GetAt(i))->InitDeviceObjects();
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase * pWndBase = m_wndArray[i];
+		pWndBase->InitDeviceObjects();
+	}
 	return S_OK;
 }
 void CWndBase::RenderWnd()
 {
 	if( m_pTexture == NULL || m_pVB == NULL )
 		return;
-	LPDIRECT3DDEVICE9 m_pd3dDevice = m_pApp->m_pd3dDevice;
 	m_pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSU, 1 );
 	m_pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV, 1 );
 	m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_POINT );		
@@ -531,8 +479,10 @@ void CWndBase::RenderWnd()
 }
 void CWndBase::MakeVertexBuffer()
 {
-	for(int i = 0; i < m_wndArray.GetSize(); i++) 
-		((CWndBase*)m_wndArray.GetAt(i))->MakeVertexBuffer();
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase * pWndBase = m_wndArray[i];
+		pWndBase->MakeVertexBuffer();
+	}
 	
 	if( m_pTexture == NULL || m_pVB == NULL )
 		return;
@@ -561,11 +511,13 @@ void CWndBase::MakeVertexBuffer()
 }
 HRESULT CWndBase::RestoreDeviceObjects()
 {
-	for(int i = 0; i < m_wndArray.GetSize(); i++) 
-		((CWndBase*)m_wndArray.GetAt(i))->RestoreDeviceObjects();
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase * pWndBase = m_wndArray[i];
+		pWndBase->RestoreDeviceObjects();
+	}
 	if( m_pVB == NULL )
 	{
-		m_pApp->m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX ) * 4, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_DEFAULT, &m_pVB, NULL );
+		m_pd3dDevice->CreateVertexBuffer( sizeof( TEXTUREVERTEX ) * 4, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFVF_TEXTUREVERTEX, D3DPOOL_DEFAULT, &m_pVB, NULL );
 		MakeVertexBuffer();
 	}
 
@@ -573,8 +525,10 @@ HRESULT CWndBase::RestoreDeviceObjects()
 }
 HRESULT CWndBase::InvalidateDeviceObjects()
 {
-	for(int i = 0; i < m_wndArray.GetSize(); i++) 
-		((CWndBase*)m_wndArray.GetAt(i))->InvalidateDeviceObjects();
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase * pWndBase = m_wndArray[i];
+		pWndBase->InvalidateDeviceObjects();
+	}
 	SAFE_RELEASE( m_pVB );
 		
 	return S_OK;
@@ -586,53 +540,22 @@ HRESULT CWndBase::DeleteDeviceObjects()
 		m_backgroundTextureMng.clear();
 	}
 
-	for(int i = 0; i < m_wndArray.GetSize(); i++) 
-		((CWndBase*)m_wndArray.GetAt(i))->DeleteDeviceObjects();
+	for (size_t i = 0; i < m_wndArray.size(); ++i) {
+		CWndBase * pWndBase = m_wndArray[i];
+		pWndBase->DeleteDeviceObjects();
+	}
 	SAFE_RELEASE( m_pVB );
 
 	return S_OK;
 }
-/*
-CRect CWndBase::GetRealClientRect()
-{
-	CWndBase* pWndCur = this;
-	CRect rect = pWndCur->m_rectWindow;
-	// 해당 윈도가 차일드 윈도(콘트롵타입)일 경우에만 패어런트 
-	// 윈도 좌표의 영향을 받으므로 페어런트 윈도 좌표를 더해주어야한다.
-	if(IsWndStyle(WBS_CHILD))
-	{
-		while(pWndCur != m_pWndRoot) 
-		{
-			pWndCur = pWndCur->m_pParentWnd;
-			rect += pWndCur->m_rectClient.TopLeft();
-		}
-	}
-	return rect;
-}
-CRect CWndBase::GetRealWindowRect()
-{
-	CWndBase* pWndCur = this;
-	CRect rect = pWndCur->m_rectWindow;
-	// 해당 윈도가 차일드 윈도(콘트롵타입)일 경우에만 패어런트 
-	// 윈도 좌표의 영향을 받으므로 페어런트 윈도 좌표를 더해주어야한다.
-	if(IsWndStyle(WBS_CHILD))
-	{
-		while(pWndCur != m_pWndRoot) 
-		{
-			pWndCur = pWndCur->m_pParentWnd;
-			rect += pWndCur->m_rectClient.TopLeft();
-		}
-	}
-	return rect;
-}
-*/
+
 CRect CWndBase::GetScreenRect()
 {
 	CWndBase* pWndCur = this;
 	CRect rect = pWndCur->m_rectWindow;
 	// 해당 윈도가 차일드 윈도(콘트롵타입)일 경우에만 패어런트 
 	// 윈도 좌표의 영향을 받으므로 페어런트 윈도 좌표를 더해주어야한다.
-	while( pWndCur != m_pWndRoot && pWndCur->IsWndStyle( WBS_CHILD ) )
+	while( pWndCur != &g_WndMng && pWndCur->IsWndStyle( WBS_CHILD ) )
 	{
 		if( pWndCur->IsWndStyle( WBS_DOCKING ) )
 			rect += pWndCur->m_pParentWnd->m_rectWindow.TopLeft();
@@ -651,9 +574,9 @@ void CWndBase::PostMessage(UINT message,WPARAM wParam,LPARAM lParam) {
 }
 void CWndBase::SetChildFocus( CWndBase* pWndBase, POINT point )
 {
-	for( int i = 0; i < pWndBase->m_wndArray.GetSize(); i++ )
+	for( size_t i = 0; i < pWndBase->m_wndArray.size(); i++ )
 	{
-		CWndBase* pWndCur = (CWndBase*)pWndBase->m_wndArray.GetAt( i );
+		CWndBase* pWndCur = pWndBase->m_wndArray[i];
 		if( pWndCur->IsWndStyle( WBS_CHILD ) && pWndCur->IsVisible() && pWndCur->IsWindowEnabled() )
 		{
 			if( pWndCur->GetScreenRect().PtInRect( point ) )
@@ -665,10 +588,10 @@ void CWndBase::SetChildFocus( CWndBase* pWndBase, POINT point )
 CWndBase* CWndBase::GetChildFocus( POINT point )
 {
 	CWndBase* pWndSelect = this;
-	CWndBase* pWndTemp = nullptr;
-	for( int i = 0; i < m_wndArray.GetSize(); i++ )
+
+	for( size_t i = 0; i < m_wndArray.size(); i++ )
 	{
-		CWndBase* pWndCur = (CWndBase*)m_wndArray.GetAt( i );
+		CWndBase* pWndCur = m_wndArray[i];
 		if( pWndCur->IsWndStyle( WBS_CHILD ) && pWndCur->IsVisible() && pWndCur->IsWindowEnabled() )
 		{
 			CPoint ptWindow = point;
@@ -677,7 +600,7 @@ CWndBase* CWndBase::GetChildFocus( POINT point )
 			if( pWndCur->IsPickupSpace( ptWindow ) )
 				pWndSelect = pWndCur;
 
-			pWndTemp = pWndCur->GetChildFocus( point );
+			CWndBase * pWndTemp = pWndCur->GetChildFocus( point );
 			if( pWndTemp != pWndCur )
 				pWndSelect = pWndTemp;
 		}
@@ -687,12 +610,12 @@ CWndBase* CWndBase::GetChildFocus( POINT point )
 // 이 함수는 좌표계 세팅과 메시지 필터링을 한다.
 LRESULT CWndBase::WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam )
 {
-	if( m_pApp == NULL )
-		return 0;
+	if (!m_isCreated) return 0;
+
 	m_rectCurrentWindow = m_rectWindow;
 	m_rectCurrentClient = m_rectClient;
 
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(),  point );
+	CPoint point = GetClientPoint();
 	CRect rectWnd = m_rectWindow;
 	CPoint ptClient = point - m_rectCurrentClient.TopLeft();
 	CPoint ptWindow = point - m_rectCurrentWindow.TopLeft();
@@ -724,33 +647,27 @@ LRESULT CWndBase::WindowRootProc( UINT message, WPARAM wParam, LPARAM lParam )
 		m_pWndOnMouseMove = m_pWndCapture;
 		m_pWndOnSetCursor = m_pWndCapture;
 		pWndOnMouseMain = m_pWndCapture;
-	}
-	else
-	// 클릭할 때만 윈도를 검색하는 최적화가 필요함.
-	for( int i = m_wndOrder.GetSize() - 1; i >= 0 ; i-- )
-	{
-		CWndBase* pWndBase = (CWndBase*)m_wndOrder[ i ];
-		if( pWndBase->IsVisible() )
-		{
-			CRect rect = pWndBase->GetScreenRect();
-			if( rect.PtInRect( ptClient ) ) 
-			{
-				// 마우스가 있는 윈도를 골랐다. 
-				pWndOnMouseMain = pWndBase;
-				if( m_pWndCapture == NULL )
-				{
-					// 차일드, 차일드프레임 모두 포함 
-					CWndBase* pWndChild = pWndBase->GetChildFocus( ptClient );
-					if( pWndBase != pWndChild )
-					{
-						pWndBase = pWndChild;
-						pWndOnMouseChild = pWndChild;
-					}
-					m_pWndOnSetCursor = pWndBase;
-					m_pWndOnMouseMove = pWndBase;
+	} else {
+		// 클릭할 때만 윈도를 검색하는 최적화가 필요함.
+		for (CWndBase * pWndBase : m_wndOrder | std::views::reverse) {
+			if (!pWndBase->IsVisible()) continue;
+
+			const CRect rect = pWndBase->GetScreenRect();
+			if (!rect.PtInRect(ptClient)) continue;
+
+			// 마우스가 있는 윈도를 골랐다. 
+			pWndOnMouseMain = pWndBase;
+			if (m_pWndCapture == NULL) {
+				// 차일드, 차일드프레임 모두 포함 
+				CWndBase * pWndChild = pWndBase->GetChildFocus(ptClient);
+				if (pWndBase != pWndChild) {
+					pWndBase = pWndChild;
+					pWndOnMouseChild = pWndChild;
 				}
-				break;
+				m_pWndOnSetCursor = pWndBase;
+				m_pWndOnMouseMove = pWndBase;
 			}
+			break;
 		}
 	}
 	// 시스템 처리부 
@@ -819,7 +736,7 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 		m_rectCurrentWindow = m_rectWindow;
 		m_rectCurrentClient = m_rectClient;
 	}
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(),  point );
+	CPoint point = GetClientPoint();
 	CRect rectWnd = m_rectWindow;
 	CPoint ptClient = point - m_rectCurrentClient.TopLeft();
 	CPoint ptWindow = point - m_rectCurrentWindow.TopLeft();
@@ -836,8 +753,6 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 			g_toolTip.PutToolTip((DWORD)this,m_strToolTip,m_rectCurrentClient,point,m_nToolTipPos);
 #endif
 		// 포커스 윈도이거나 || 패어런트가 포커스 윈도일 경우
-		//if(m_pWndFocus == this || IsWndRoot() || (IsParentWnd(m_pWndFocus) && m_pParentWnd->m_pWndFocusChild == this))// && (m_rectWindow.PtInRect(point) || m_bCapture))
-		//if( ( m_pWndFocus == this && m_pWndFocusChild == NULL ) || ( IsParentWnd( m_pWndFocus ) && m_pParentWnd->m_pWndFocusChild == this ) )
 		if( m_pCurFocus == this )
 		{
 
@@ -868,9 +783,9 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 			 //실제로 뒤에있는 탭 콘트롤에 걸리게 된다.라고 파악된다..-_-;
 			BOOL bMouseInChildWindow = FALSE;
 			CWndBase* pWndMouseInChildWindow = NULL;
-			for(int i = m_wndArray.GetSize() - 1; i >= 0; i--)
+			for(int i = static_cast<int>(m_wndArray.size() - 1); i >= 0; i--)
 			{
-				CWndBase* pWndBase = (CWndBase*)m_wndArray.GetAt( i );
+				CWndBase* pWndBase = m_wndArray[i];
 				pWndBase->WindowProc( message, wParam, lParam );
 				if( pWndMouseInChildWindow == NULL && pWndBase->GetWindowRect( TRUE ).PtInRect( GetMousePoint() ) )
 					pWndMouseInChildWindow = pWndBase;
@@ -878,7 +793,7 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 		}
 	}
 	if( m_pWndOnSetCursor == this )
-		m_pWndOnSetCursor->OnSetCursor( this, 0, 0);
+		m_pWndOnSetCursor->OnSetCursor();
 	switch( message )
 	{
 		case WM_SETFOCUS:
@@ -927,7 +842,7 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 		// 7 = bottomLeft
 		// 8 = bottomRigh;
 		//CPoint pt = ptWindow - m_pointOld;
-		if( point.x < 0 || point.y < 0 || point.x > m_pWndRoot->m_rectWindow.right || point.y > m_pWndRoot->m_rectWindow.bottom )
+		if( point.x < 0 || point.y < 0 || point.x > g_WndMng.m_rectWindow.right || point.y > g_WndMng.m_rectWindow.bottom )
 		{
 			m_bPush = FALSE;
 			m_nResizeDir = 0;
@@ -958,7 +873,7 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 			}
 			if( m_bCling ) //&& !IsWndStyle( WBS_NOCLING ) )
 			{
-				CRect rect = m_pWndRoot->GetLayoutRect();
+				CRect rect = g_WndMng.GetLayoutRect();
 				if( rectWnd.top < rect.top + 10 ) rectWnd.top = rect.top;
 				if( rectWnd.bottom > rect.bottom - 10 ) rectWnd.bottom = rect.bottom;
 				if( rectWnd.left < rect.left + 10 ) rectWnd.left = rect.left;
@@ -972,9 +887,9 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 			{
 				rectWnd.left += pt.x; 
 				// 다른 확대 윈도도 현재 윈도와 같은 사이즈로 맞춘다.
-				for( int i = 0; i < m_wndOrder.GetSize(); i++)
+				for( size_t i = 0; i < m_wndOrder.size(); i++)
 				{
-					CWndBase* pWnd = (CWndBase*) m_wndOrder.GetAt( i );
+					CWndBase* pWnd = m_wndOrder[i];
 					if(pWnd != this && pWnd->m_nWinSize == 2)
 						pWnd->SetWndRect(rectWnd);
 				}
@@ -994,7 +909,7 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 
 				if( m_bCling )//&& !IsWndStyle( WBS_NOCLING ) )
 				{
-					CRect rect = m_pWndRoot->GetLayoutRect();
+					CRect rect = g_WndMng.GetLayoutRect();
 
 					if( pt.x < rect.left + 10 && pt.x > rect.left ) pt.x = rect.left;
 					if( pt.y < rect.top  + 10 && pt.y > rect.top  ) pt.y = rect.top;
@@ -1026,9 +941,27 @@ LRESULT CWndBase::WindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 
 	return TRUE;
 } 
+
+
+template<typename T>
+std::vector<T>::iterator AdvanceInRing(
+	typename std::vector<T>::iterator begin,
+	typename std::vector<T>::iterator end,
+	typename std::vector<T>::iterator i,
+	bool goAhead
+) {
+	if (goAhead) {
+		if (i + 1 == end) return begin;
+		else return i + 1;
+	} else {
+		if (i == begin) return end - 1;
+		else return i - 1;
+	}
+};
+
 LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 {
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(), point);
+	CPoint point = GetClientPoint();
 	CPoint ptClient = point - m_rectCurrentClient.TopLeft();
 	CPoint ptWindow = point - m_rectCurrentWindow.TopLeft();
 	CRect rectWnd = m_rectWindow;
@@ -1210,7 +1143,6 @@ LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 		//	OnSize(m_nWinSize,0,0);
 			break;
 		case WM_MOVE:
-			OnMove(ptClient.x,ptClient.y);
 			break;
 		case WM_KEYDOWN:
 			if( m_pWndFocus->IsWndStyle( WBS_KEY ) )
@@ -1218,9 +1150,7 @@ LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 				CWndBase* pWndDefault = this;
 				if(wParam == VK_RETURN)
 				{
-					for(int i = 0; i < m_pWndFocus->m_wndArray.GetSize() ; i++)
-					{	
-						CWndBase * pWndI = (CWndBase *)m_pWndFocus->m_wndArray.GetAt(i);
+					for (CWndBase * pWndI : m_pWndFocus->m_wndArray) {
 						if(pWndI->IsDefault() )
 						{ 
 							pWndDefault = pWndI;
@@ -1257,9 +1187,7 @@ LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 				UINT idWnd = pWndDefault->m_nIdWnd;
 				if( wParam == VK_RETURN )
 				{
-					for(int i = 0; i < m_pWndFocus->m_wndArray.GetSize() ; i++)
-					{	
-						CWndBase * pWndI = (CWndBase *)m_pWndFocus->m_wndArray.GetAt(i);
+					for (CWndBase * pWndI : m_pWndFocus->m_wndArray) {
 						if(pWndI->IsDefault() )
 						{ 
 							wParam = VK_SPACE; 
@@ -1300,61 +1228,25 @@ LRESULT CWndBase::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam )
 					// 텝 스톱 처리 
 					if(wParam == VK_TAB)
 					{
-						CWndBase* pWndTemp = m_pWndFocus;//->m_pWndFocusChild;// ? this : m_pParentWnd;
-						CWndBase* pWndBase;
-						int nCurIdx = -1;
-						int i = NULL;
-						for( ; i < pWndTemp->m_wndArray.GetSize() && nCurIdx == -1; i++ )
-						{
-							if(((CWndBase*)pWndTemp->m_wndArray.GetAt(i))->IsFocusChild())
-								nCurIdx = i;
+						const auto itCurFocus = std::find_if(
+							m_pWndFocus->m_wndArray.begin(), m_pWndFocus->m_wndArray.end(),
+							[](CWndBase * pWnd) { return pWnd->IsFocusChild(); }
+						);
+
+						if (itCurFocus != m_pWndFocus->m_wndArray.end()) {
+							auto itNewFocus = itCurFocus;
+
+							do {
+								itNewFocus = AdvanceInRing<CWndBase *>(
+									m_pWndFocus->m_wndArray.begin(),
+									m_pWndFocus->m_wndArray.end(),
+									itNewFocus,
+									!(GetAsyncKeyState(VK_SHIFT) & 0x8000)
+								);
+							} while (itNewFocus != itCurFocus && !(*itNewFocus)->m_bTabStop);
+
+							(*itNewFocus)->PostMessage(WM_SETFOCUS);
 						}
-						if(nCurIdx != -1)
-						{
-							if(GetAsyncKeyState(VK_SHIFT) & 0x8000)
-							{
-								i = nCurIdx - 1;
-								if( i < 0 ) 
-									i = pWndTemp->m_wndArray.GetSize() - 1;
-								pWndBase = (CWndBase*)pWndTemp->m_wndArray.GetAt(i);
-								while(pWndBase != pWndTemp->GetFocusChild())
-								{
-									pWndBase = (CWndBase*)pWndTemp->m_wndArray.GetAt(i--);
-									if(i < 0) i = pWndTemp->m_wndArray.GetSize() - 1;
-									if(pWndBase->m_bTabStop)
-									{
-										pWndBase->PostMessage(WM_SETFOCUS);
-										//pWndBase->SetFocus();
-										//PLAYSND( pWndBase->m_strSndEffect, NULL );
-										break;
-									}
-								}
-							}
-							else
-							{
-								i = nCurIdx + 1;
-								if( i >= pWndTemp->m_wndArray.GetSize() ) i = 0;
-								pWndBase = (CWndBase*)pWndTemp->m_wndArray.GetAt(i);
-								while( pWndBase != pWndTemp->GetFocusChild() )
-								{
-									pWndBase = (CWndBase*)pWndTemp->m_wndArray.GetAt(i++);
-									if(i >= pWndTemp->m_wndArray.GetSize()) i = 0;
-									if(pWndBase->m_bTabStop)
-									{
-										pWndBase->PostMessage(WM_SETFOCUS);
-										//pWndBase->SetFocus();
-										//PLAYSND( pWndBase->m_strSndEffect, NULL );
-										break;
-									}
-								}
-							}
-						}
-					}
-					else
-					if(wParam == VK_ESCAPE)
-					{
-//						if(!IsWndRoot() && IsWndStyle(WBS_MANAGER) == FALSE)
-//							;//PostMessage(WM_CLOSE);
 					}
 				}
 			}
@@ -1383,27 +1275,41 @@ void CWndBase::SetFocus()
 	}
 	else
 	{
-		if( !IsWndStyle( WBS_CHILD ) && m_wndOrder.GetSize() )
-		{
-			if( !( m_dwStyle & WBS_MANAGER ) && this != m_pWndRoot )
-			{
-				CWndBase* pWndTop = (CWndBase*)m_wndOrder.GetAt( m_wndOrder.GetUpperBound() );
-				for( int i = m_wndOrder.GetSize()-1; i >= 0; i-- )
-				{
-					CWndBase* pWnd = (CWndBase*)m_wndOrder[i];
-					if( this == pWnd && pWnd->IsVisible() )
-					{
-						m_wndOrder.RemoveAt( i );
-						for( ; i < m_wndOrder.GetSize(); i++ )
-						{
-							CWndBase* pWnd2 = (CWndBase*)m_wndOrder[ i ];
-							if( ( pWnd2->IsWndStyle( WBS_TOPMOST ) || ( pWnd2->IsWndStyle( WBS_POPUP ) && !pWnd->IsWndStyle( WBS_POPUP ) ) || pWnd2->IsWndStyle( WBS_MODAL ) ) && pWnd2->IsVisible() )
-								break;
-						}
-						m_wndOrder.InsertAt( i, this );
+		const bool changeOrder =
+			!IsWndStyle(WBS_CHILD)
+			&& !m_wndOrder.empty()
+			&& !(m_dwStyle & WBS_MANAGER)
+			&& this != &g_WndMng
+			&& IsVisible();
+
+		if (changeOrder) {
+			int i;
+			for (i = static_cast<int>(m_wndOrder.size()) - 1; i >= 0; i--) {
+				if (m_wndOrder[i] == this) {
+					break;
+				}
+			}
+
+			if (i != -1) {
+				m_wndOrder.erase(m_wndOrder.begin() + i);
+
+				for (; i < static_cast<int>(m_wndOrder.size()); ++i) {
+					CWndBase * pWnd2 = m_wndOrder[i];
+
+					const bool insertHere =
+						pWnd2->IsVisible()
+						&& (
+							pWnd2->IsWndStyle(WBS_TOPMOST)
+							|| (pWnd2->IsWndStyle(WBS_POPUP) && !this->IsWndStyle(WBS_POPUP))
+							|| pWnd2->IsWndStyle(WBS_MODAL)
+							);
+
+					if (insertHere) {
 						break;
 					}
 				}
+
+				m_wndOrder.insert(m_wndOrder.begin() + i, this);
 			}
 		}
 
@@ -1465,29 +1371,28 @@ void CWndBase::RemoveDestroyWnd() {
 
 	m_wndRemove.clear();
 }
-void CWndBase::DestroyAllWnd()
-{
-	for(int i = 0; i < m_wndArray.GetSize(); i++)
-	{
-		CWndBase* pWndBase = (CWndBase*)m_wndArray[i];
+void CWndBase::DestroyAllWnd() {
+	size_t i = 0;
+	while (i < m_wndArray.size()) {
+		CWndBase * pWndBase = m_wndArray[i];
 
-		if(pWndBase && !pWndBase->IsWndStyle(WBS_CHILD))
-		{
+		if (pWndBase && !pWndBase->IsWndStyle(WBS_CHILD)) {
 			pWndBase->DestroyAllWnd();
-			safe_delete( pWndBase );
-			i--;
+			safe_delete(pWndBase);
+		} else {
+			++i;
 		}
 	}
-	m_wndArray.RemoveAll();
+	m_wndArray.clear();
 }
-BOOL CWndBase::IsDestroy() const {
-	return std::ranges::find(m_wndRemove, this) != m_wndRemove.end();
+
+bool CWndBase::IsDestroy() const {
+	return std::ranges::contains(m_wndRemove, this);
 }
 
 void CWndBase::Destroy(BOOL bAutoFree)
 {
-	if(bAutoFree == TRUE)
-		m_bAutoFree = true;
+	if (bAutoFree) m_bAutoFree = true;
 	
 	if (IsDestroy()) return;
 	m_wndRemove.push_back(this);
@@ -1528,7 +1433,7 @@ void CWndBase::Move(CPoint pt)
 }
 
 void CWndBase::Move70() {
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point((rectRoot.right - rectWindow.Width()) / 2, 70);
 	Move(point);
@@ -1536,7 +1441,7 @@ void CWndBase::Move70() {
 
 void CWndBase::MoveParentCenter()
 {
-	MoveRectCenter(m_pWndRoot->m_rectWindow);
+	MoveRectCenter(g_WndMng.m_rectWindow);
 }
 void CWndBase::MoveRectCenter(CRect rect)
 {
@@ -1611,89 +1516,17 @@ CRect CWndBase::GetLayoutRect(BOOL bParent)
 	return rect;
 }
 
-CWndBase* CWndBase::FindFullWnd()
-{
-	for( int i = 0; i < m_wndOrder.GetSize(); i++)
-	{
-		CWndBase* pWnd = (CWndBase*) m_wndOrder.GetAt( i );
-		if(pWnd->m_nWinSize == 2)
-			return pWnd;
-	}
-	return NULL;
+CWndBase* CWndBase::FindFullWnd() {
+	const auto it = std::find_if(
+		m_wndOrder.begin(), m_wndOrder.end(),
+		[](const CWndBase * pWnd) { return pWnd->m_nWinSize == 2; }
+	);
+
+	return it != m_wndOrder.end() ? *it : nullptr;
 }
-void CWndBase::ClipStrArray(C2DRender* p2DRender,CRect rect,int nLineHeight,CStringArray* pStringArray,CStringArray* pNewStringArray)
-{
-	int nSize = pStringArray->GetSize();
-	CString string;
-	for(int i = 0; i < nSize; i++)
-	{
-		string = pStringArray->GetAt(i);
-		int nWidth  = rect.Width();// - 20;
-		int nHeight = rect.Height();
-		CSize sizeString;
-		p2DRender->m_pFont->GetTextExtent(string,&sizeString);
-		//sizeString.cy = 13;
-		//sizeString.cx = string.GetLength() * 6;
-		int nLength = string.GetLength();
-		CString strTemp;
-		int c = 0;
-		char chr;
-		BOOL bNextLine = FALSE;
-		BOOL bHangul   = FALSE;
-		nLineHeight += sizeString.cy;
-//		sizeString.cy += nLineHeight;
-		do
-		{
-			if(bNextLine) 
-			{
-				while((string[c] == ' ' || string[c] == '\n') && c < nLength) 
-					chr = string[c++];
-			}
-			strTemp = "";
-			if(nLength)
-			{
-				do 
-				{
-					chr = string[c++];
-					// 스페이스를 발견하면? (영어식 출력을 위해)
-//					if(chr == ' ');
-					// 엔터코드면 스킵 
-					if(chr != '\r')
-						strTemp += chr;
-					// 한글 코드면 계속
-					if(chr & 0x80 && bHangul == FALSE) 
-						bHangul = TRUE;
-					else
-					{
-						bHangul = FALSE;
-						CSize sizeTemp;
-						p2DRender->m_pFont->GetTextExtent( strTemp, &sizeTemp );
-						if( sizeTemp.cx + 24 > nWidth ) 
-							break;
-						//if((strTemp.GetLength()*6) > nWidth) 
-							//break; 
-					}
-				} while(c < nLength && chr != '\0' && chr != '\r');
-			}
-			bNextLine = TRUE;
-			pNewStringArray->Add(strTemp);
-			sizeString.cy += nLineHeight;
-			if(sizeString.cy > nHeight)
-				return;
-		} 
-		while(chr != '\0' && c < nLength);
-	}
-}
-void CWndBase::GetLogFont(C2DRender* p2DRender,LOGFONT* pLogFont)
-{
-	//CFont* pFont = p2DRender->GetCurrentFont();
-	//pFont->GetLogFont(pLogFont);
-}
+
 int CWndBase::GetFontHeight()
 {
-	//CSize size;
-	//m_pFont->GetTextExtent("가",&size);
-	//return abs(size.cy);
 	return m_pFont->GetMaxHeight();
 }
 int CWndBase::GetResizeDir(CPoint ptClient)
@@ -1711,7 +1544,7 @@ int CWndBase::GetResizeDir(CPoint ptClient)
 	if(rect.PtInRect(ptClient) == FALSE)
 		return 0;
 	rect.DeflateRect( 6, 6);
-	int nDir = 0;
+
 	if(ptClient.x < rect.left && ptClient.y < rect.top)
 		return 5;
 	if(ptClient.x > rect.right && ptClient.y < rect.top)
@@ -1729,7 +1562,7 @@ int CWndBase::GetResizeDir(CPoint ptClient)
 		return 3;
 	if(ptClient.x > rect.right)
 		return 4;
-	return nDir;
+	return 0;
 }
 
 BOOL CWndBase::IsPickupSpace(CPoint ptWindow)
@@ -1740,66 +1573,65 @@ BOOL CWndBase::IsPickupSpace(CPoint ptWindow)
 
 	return rect.PtInRect(ptWindow);
 }
-CWndBase* CWndBase::GetWndBase_Sub(UINT idWnd) 
-{ 
-	for(int i = 0; i < m_wndOrder.GetSize(); i++)
-	{
-		CWndBase* pWnd = (CWndBase*)m_wndOrder.GetAt(i);
-		if(idWnd == pWnd->GetWndId())
-			return pWnd;
-	}
-	return NULL;
+CWndBase* CWndBase::GetWndBase_Sub(UINT idWnd) {
+	const auto it = std::find_if(
+		m_wndOrder.begin(), m_wndOrder.end(),
+		[idWnd](CWndBase * pWnd) { return pWnd->GetWndId() == idWnd; }
+	);
+
+	return it != m_wndOrder.end() ? *it : nullptr;
 }
 CWndBase* CWndBase::GetWndBase()
 {
-	for( int i = m_wndOrder.GetSize() - 1; i >= 0 ; i-- )
-	{
-		CWndBase* pWnd = (CWndBase*)m_wndOrder.GetAt(i);
-		if(pWnd && pWnd->IsVisible() && !pWnd->IsWndStyle(WBS_MANAGER|WBS_TOPMOST) )
+	for (CWndBase * pWnd : m_wndOrder | std::views::reverse) {
+		if (!pWnd) continue;
+		if (!pWnd->IsVisible()) continue;
+		if (pWnd->IsWndStyle(WBS_MANAGER | WBS_TOPMOST)) continue;
+
+		// 상태창과 네비게이션은 걸러낸다...
+		if( pWnd->GetWndId() == APP_SKILL_ )
 		{
-			// 상태창과 네비게이션은 걸러낸다...
-			if( pWnd->GetWndId() == APP_SKILL_ )
+			CWndBase* pWndBase = g_WndMng.GetWndBase<CWndBase>( APP_QUEITMWARNING );
+			if( pWndBase )
+				return nullptr;			// 스킬 확인창이면 스킬창을 닫을수가 없음.
+
+			if( ((CWndSkillTreeCommon*)pWnd)->GetCurrSkillPoint() != g_pPlayer->m_nSkillPoint )
 			{
-				CWndBase* pWndBase = g_WndMng.GetWndBase<CWndBase>( APP_QUEITMWARNING );
-				if( pWndBase )
-					return nullptr;			// 스킬 확인창이면 스킬창을 닫을수가 없음.
-
-				if( ((CWndSkillTreeCommon*)pWnd)->GetCurrSkillPoint() != g_pPlayer->m_nSkillPoint )
+				if( pWndBase == NULL )
 				{
-					if( pWndBase == NULL )
-					{
-						SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
-						g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(true);
-						g_WndMng.m_pWndReSkillWarning->Initialize(NULL);
-					}
-					return NULL;
+					SAFE_DELETE(g_WndMng.m_pWndReSkillWarning);
+					g_WndMng.m_pWndReSkillWarning = new CWndReSkillWarning(true);
+					g_WndMng.m_pWndReSkillWarning->Initialize();
 				}
+				return NULL;
 			}
-			if( pWnd->GetWndId() == APP_STATUS1 || pWnd->GetWndId() == APP_NAVIGATOR || pWnd->GetWndId() == APP_REVIVAL 
-				|| pWnd->GetWndId() == APP_BUFF_STATUS || pWnd->GetWndId() == APP_RAINBOWRACE_BUTTON )
-				continue;
-			if( pWnd->GetWndId() == APP_VENDOR_REVISION )
-				continue;
-#ifdef __S_SERVER_UNIFY
-			if( g_WndMng.m_bAllAction == FALSE && (pWnd->GetWndId() == APP_GUILDNAME || pWnd->GetWndId() == APP_CHANGENAME ) )
-				continue;
-#endif // __S_SERVER_UNIFY
-			return pWnd;
 		}
+
+		if (sqktd::is_among(pWnd->GetWndId(),
+			APP_STATUS1, APP_NAVIGATOR, APP_REVIVAL,
+			APP_BUFF_STATUS, APP_RAINBOWRACE_BUTTON,
+			APP_VENDOR_REVISION
+			)) {
+			continue;
+		}
+
+#ifdef __S_SERVER_UNIFY
+		if( g_WndMng.m_bAllAction == FALSE && (pWnd->GetWndId() == APP_GUILDNAME || pWnd->GetWndId() == APP_CHANGENAME ) )
+			continue;
+#endif // __S_SERVER_UNIFY
+		return pWnd;
+		
 	}
 	return NULL;
 }
 
-CWndBase* CWndBase::GetChildWnd( UINT nID )
-{
-	for(int i = 0; i < m_wndArray.GetSize(); i++)
-	{
-		CWndBase* pWnd = (CWndBase*)m_wndArray[i];
-		if( nID == pWnd->GetWndId() )
-			return pWnd;
-	}
-	return NULL;
+CWndBase * CWndBase::GetChildWnd(UINT nID) {
+	const auto it = std::find_if(m_wndArray.begin(), m_wndArray.end(),
+		[nID](const CWndBase * pWnd) { return pWnd->GetWndId() == nID; }
+	);
+	return it != m_wndArray.end() ? *it : nullptr;
 }
+
 CWndBase* CWndBase::GetFrameWnd()
 {
 	CWndBase* pWndCur = this;
@@ -1811,17 +1643,7 @@ CWndBase* CWndBase::GetFrameWnd()
 	}
 	return pWndCur;
 }
-BOOL CWndBase::IsParentWnd(CWndBase* pParentWnd) 
-{ 
-	CWndBase* pWndBase = this;
-	while(pWndBase != m_pWndRoot && pWndBase != NULL) 
-	{
-		pWndBase = pWndBase->m_pParentWnd;
-		if(pWndBase == pParentWnd) 
-			return TRUE;
-	}
-	return FALSE;
-}
+
 /*
 BOOL CWndBase::ScreenToClient(LPPOINT lpPoint)
 {
@@ -1837,23 +1659,12 @@ void CWndBase::OnInitialUpdate()
 	InitDeviceObjects();
 	RestoreDeviceObjects();
 }
-void CWndBase::OnUpdate()
-{
-
-}
 BOOL CWndBase::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 {
 
 	return TRUE;
 }
-BOOL CWndBase::OnSystemNotify(UINT message,UINT nID,LRESULT* pLResult)
-{
-	return TRUE;
-}
-BOOL CWndBase::OnParentNotify(UINT message,UINT nID,LRESULT* pLResult)
-{
-	return TRUE;
-}
+
 BOOL CWndBase::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 {
 	return TRUE;
@@ -1914,13 +1725,6 @@ void CWndBase::OnSize(UINT nType, int cx, int cy)
 	MakeVertexBuffer();
 }
 
-void CWndBase::OnPaint()
-{
-}
-void CWndBase::OnClose()
-{
-	Destroy();
-}
 void CWndBase::OnDestroy()
 {
 #ifdef __CLIENT
@@ -1930,17 +1734,11 @@ void CWndBase::OnDestroy()
 	g_toolTipSub2.CancelToolTip();
 #endif
 }
-BOOL CWndBase::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
-{
-	m_pApp->SetDeviceCursor( m_hDefaultCursor );
-	return TRUE;
+
+void CWndBase::OnSetCursor() {
+	g_Neuz.SetDeviceCursor(m_hDefaultCursor);
 }
-void CWndBase::OnTimer(UINT nIDEvent)
-{
-}
-void CWndBase::OnMove(int x,int y)
-{
-}
+
 void CWndBase::GradationRect( C2DRender* p2DRender, CRect rect, DWORD dwColor1t, DWORD dwColor1b, DWORD dwColor2b, int nMidPercent )
 {
 	int nFirstHeight = rect.Height() * nMidPercent / 100;
@@ -1967,7 +1765,7 @@ BOOL CWndBase::OnEraseBkgnd( C2DRender* p2DRender )
 	}
 	else
 	{
-		m_pTheme->RenderWndBaseBkgr( p2DRender, &rect );
+		m_Theme.RenderWndBaseBkgr( p2DRender, &rect );
 	}
 /*
 	// 테두리 박스 
@@ -2007,12 +1805,7 @@ BOOL CWndBase::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	SetForbid( TRUE );
 	return FALSE;
 }
-/*
-LRESULT CWndBase::WndMsgProc(UINT message,WPARAM wParam,LPARAM lParam)
-{
-	return TRUE;
-}
-*/
+
 void CWndBase::OnMouseWndSurface( CPoint point )
 {
 }
@@ -2021,7 +1814,7 @@ void CWndBase::SetCapture()
 { 
 	//m_bCapture = TRUE; 
 	m_pWndCapture = this;
-	::SetCapture( m_pApp->GetSafeHwnd() );
+	::SetCapture( g_Neuz.GetSafeHwnd() );
 } 
 // 캡춰 잡은 것을 풀어 놓는다.
 void CWndBase::ReleaseCapture() 
@@ -2281,7 +2074,7 @@ void CWndBase::AdjustWndBase( D3DFORMAT d3dFormat ) //= D3DFMT_A4R4G4B4 )
 	AdjustSize( &size1 );
 
 	CTexture* pTexture = new CTexture;
-	pTexture->CreateTexture( m_pApp->m_pd3dDevice, size1.cx, size1.cy, 1, 0, d3dFormat, D3DPOOL_MANAGED );
+	pTexture->CreateTexture( size1.cx, size1.cy, 1, 0, d3dFormat, D3DPOOL_MANAGED );
 
 	m_backgroundTextureMng.insert_or_assign(this, std::unique_ptr<CTexture>(pTexture));
 	m_pTexture = pTexture;
@@ -2292,14 +2085,22 @@ void CWndBase::AdjustWndBase( D3DFORMAT d3dFormat ) //= D3DFMT_A4R4G4B4 )
 	{
 		LPWORD pDest = (LPWORD)lockedRect.pBits;
 		AdditionalSkinTexture( pDest, size1, d3dFormat );
-		for( int i = 0; i < m_wndArray.GetSize(); i++ )
+		for( size_t i = 0; i < m_wndArray.size(); i++ )
 		{
-			CWndBase* pWndBase = (CWndBase*)m_wndArray[i];
-			if( pWndBase->IsDestroy() == FALSE && pWndBase->IsVisible() )
+			CWndBase* pWndBase = m_wndArray[i];
+			if( !pWndBase->IsDestroy() && pWndBase->IsVisible() )
 				pWndBase->AdditionalSkinTexture( pDest, size1, d3dFormat );
 		}
 		AfterSkinTexture( pDest, size1 );
 		SetWndRect( rect );
 		pTexture->m_pTexture->UnlockRect( 0);
 	}
+}
+
+CPoint CWndBase::GetClientPoint() {
+	HWND hwnd = g_Neuz.GetSafeHwnd();
+	CPoint pt;
+	::GetCursorPos(&pt);
+	::ScreenToClient(hwnd, &pt);
+	return pt;
 }

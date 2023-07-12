@@ -424,7 +424,7 @@ int APIENTRY  MonHuntStart( NPCDIALOG_INFO* pInfo, int nQuest, int nState, int n
 			GUILDQUESTPROP* pProp	= prj.GetGuildQuestProp( nQuest );
 			if( pProp )
 			{
-				CMover* pWormon	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, pProp->wormon.dwWormon );
+				CMover* pWormon	= (CMover*)CreateObj( OT_MOVER, pProp->wormon.dwWormon );
 				if( pWormon )
 				{
 					pWormon->SetPos( pProp->wormon.vPos );
@@ -490,7 +490,7 @@ int APIENTRY  MonHuntStartParty( NPCDIALOG_INFO*  pInfo, int nQuest, int nState,
 				BOOL bSuccess = FALSE;
 
 				for (const GroupQuest::WORMON & WorMon : pProp->vecWormon) {
-					CMover* pWormon	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, WorMon.dwWormon );
+					CMover* pWormon	= (CMover*)CreateObj( OT_MOVER, WorMon.dwWormon );
 
 					if( pWormon )
 					{
@@ -838,13 +838,11 @@ int APIENTRY ChangeJob( NPCDIALOG_INFO* pInfo, int nJob )
 	}
 	if( pUser->AddChangeJob( v1 ) )
 	{
-		pUser->AddSetChangeJob( v1 );
-		g_UserMng.AddNearSetChangeJob(pUser, v1);
+		g_UserMng.AddNearSetChangeJob(pUser);
 		// #dlvr
-		g_dpDBClient.SendLogLevelUp( (CUser*)pUser, 4 );
+		g_dpDBClient.SendLogLevelUp( pUser, 4 );
 #ifdef __S_RECOMMEND_EVE
-		if( g_eLocal.GetState( EVE_RECOMMEND ) && pUser->IsPlayer() )
-			g_dpDBClient.SendRecommend( (CUser*)pUser, v1 );
+		pUser->GiveRecommendEveItems( v1 );
 #endif // __S_RECOMMEND_EVE
 		g_dpDBClient.SendUpdatePlayerData( pUser );
 	}
@@ -911,7 +909,7 @@ int APIENTRY EquipItem( NPCDIALOG_INFO* pInfo, DWORD dwID )
 			pItem->m_pItemBase	= pItemElem;
 
 			if( pItemElem->m_dwItemId == 0 ) Error("EquipItem SetIndex\n" );
-			pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+			pItem->SetIndex( pItemElem->m_dwItemId );
 			pItem->SetPos( pUser->GetPos() );
 			pItem->SetAngle( (float)( xRandom( 360 ) ) );
 			pItem->m_idHolder	= pUser->m_idPlayer;
@@ -947,7 +945,7 @@ int APIENTRY DropQuestItem( NPCDIALOG_INFO* pInfo, DWORD dwID, DWORD dwProb )
 				CItem* pItem	= new CItem;
 				pItem->m_pItemBase	= pItemElem;
 				if( pItemElem->m_dwItemId == 0 ) Error( "DropQuestItem SetIndex\n" );
-				pItem->SetIndex( D3DDEVICE, pItemElem->m_dwItemId );
+				pItem->SetIndex( pItemElem->m_dwItemId );
 				pItem->m_idHolder	= pUser->m_idPlayer;
 				pItem->m_idOwn	= pUser->GetId();
 				pItem->m_dwDropTime	= timeGetTime();

@@ -44,7 +44,7 @@ void CWndMessengerEx::OnDraw( C2DRender* p2DRender )
 	TEXTUREVERTEX2* pVertices = vertex;
 	
 	pWndWorld->m_texPlayerDataIcon.MakeVertex( p2DRender, CPoint( 8, 8 ), statusIcon, &pVertices, 0xffffffff );	
-	pWndWorld->m_texPlayerDataIcon.Render( m_pApp->m_pd3dDevice, vertex, ( (int) pVertices - (int) vertex ) / sizeof( TEXTUREVERTEX2 ) );
+	pWndWorld->m_texPlayerDataIcon.Render( vertex, ( (int) pVertices - (int) vertex ) / sizeof( TEXTUREVERTEX2 ) );
 	
 	// Draw Name & Status
 	CString strState;
@@ -173,7 +173,7 @@ void CWndMessengerEx::OnInitialUpdate()
 	m_menuState.AddButton( static_cast<UINT>(FriendStatus::MOVE    ) , prj.GetText( TID_FRS_MOVE     ) );
 	m_menuState.AddButton( static_cast<UINT>(FriendStatus::OFFLINE ) , prj.GetText( TID_FRS_OFFLINE_STATUS  ) );
 	
-	m_TexMail.LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndMail.dds" ), 0xffff00ff );
+	m_TexMail.LoadTexture( MakePath( DIR_THEME, "WndMail.dds" ), 0xffff00ff );
 	m_mailIconFlash.Set(255);
 	
 	// 버튼 이미지 세팅
@@ -182,9 +182,9 @@ void CWndMessengerEx::OnInitialUpdate()
 	{
 //		if(::GetLanguage() == LANG_KOR || ::GetLanguage() == LANG_FRE || ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK)
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerChannel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerChannel.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerChannel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerChannel.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_STATE);
@@ -192,9 +192,9 @@ void CWndMessengerEx::OnInitialUpdate()
 	{
 //		if(::GetLanguage() == LANG_KOR || ::GetLanguage() == LANG_FRE || ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK)
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerState.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerState.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerState.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerState.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_LEVEL);
@@ -202,9 +202,9 @@ void CWndMessengerEx::OnInitialUpdate()
 	{
 //		if(::GetLanguage() == LANG_KOR || ::GetLanguage() == LANG_FRE || ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK)
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerLevel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerLevel.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerLevel.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerLevel.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_JOB);
@@ -212,9 +212,9 @@ void CWndMessengerEx::OnInitialUpdate()
 	{
 //		if(::GetLanguage() == LANG_KOR || ::GetLanguage() == LANG_FRE || ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK)
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerJob.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerJob.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerJob.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerJob.bmp" ), 0xffff00ff );
 	}
 
 	pWndButton = (CWndButton*)GetDlgItem(WIDC_NAME);
@@ -222,20 +222,20 @@ void CWndMessengerEx::OnInitialUpdate()
 	{
 //		if(::GetLanguage() == LANG_KOR || ::GetLanguage() == LANG_FRE || ::GetLanguage() == LANG_TWN || ::GetLanguage() == LANG_HK)
 		if(::GetLanguage() == LANG_ENG || ::GetLanguage() == LANG_VTN)
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerChar.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerChar.bmp" ), 0xffff00ff );
 		else
-			pWndButton->SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtMessengerChar.bmp" ), 0xffff00ff );
+			pWndButton->SetTexture( MakePath( DIR_THEME, "ButtMessengerChar.bmp" ), 0xffff00ff );
 	}
 
 	// 윈도를 중앙으로 옮기는 부분.
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point( rectRoot.right - rectWindow.Width(), rectRoot.bottom - rectWindow.Height() );
 	Move( point );
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndMessengerEx::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndMessengerEx::Initialize( CWndBase* pWndParent )
 { 
 	if( g_eLocal.GetState( EVE_SCHOOL ) )
 		return FALSE;
@@ -352,14 +352,14 @@ void CWndInstantMsg::OnInitialUpdate()
 	
 	m_timer.Set( SEC( 10 ) ); // 열리거나, 매시지를 받은 이후 10초 후에 사라진다.
 
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point( rectRoot.right - rectWindow.Width(), rectRoot.bottom  - rectWindow.Height() );
 	Move( point );
 	//MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndInstantMsg::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndInstantMsg::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_INSTANTMSG, pWndParent, WBS_NOFOCUS, CPoint( 0, 0 ) );
@@ -368,7 +368,7 @@ BOOL CWndInstantMsg::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
   직접 윈도를 열때 사용 
 BOOL CWndInstantMsg::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+	CRect rectWindow = g_WndMng.GetWindowRect(); 
 	CRect rect( 50 ,50, 300, 300 ); 
 	SetTitle( _T( "title" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
@@ -465,7 +465,7 @@ void CWndMessage::InitSize(void) {
 	MoveParentCenter();
 }
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndMessage::Initialize(CWndBase * pWndParent, DWORD) {
+BOOL CWndMessage::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_MESSAGE, pWndParent, WBS_THICKFRAME, CPoint(0, 0));
 }
 
@@ -566,7 +566,7 @@ void CWndMessageNote::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndMessageNote::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndMessageNote::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_MESSAGE_NOTE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -616,7 +616,7 @@ void CWndMessengerNote::OnInitialUpdate() {
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndMessengerNote::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndMessengerNote::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_MESSENGER_NOTE, pWndParent, 0, CPoint(0, 0));
 }
 

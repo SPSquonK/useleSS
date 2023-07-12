@@ -151,7 +151,7 @@ public:
 		
 	virtual	int		SendActMsg( OBJMSG dwMsg, int nParam1 = 0, int nParam2 = 0, int nParam3 = 0, int nParam4 = 0, int nParam5 = 0 )	{	return( 1 );	}
 	virtual	void	ProcessState( DWORD dwState, float fSpeed ) { }
-	virtual	BOOL	Render( LPDIRECT3DDEVICE9 pd3dDevice, D3DXMATRIX* pmatWorld = NULL ) { return TRUE; }
+	virtual	BOOL	Render( D3DXMATRIX* pmatWorld = NULL ) { return TRUE; }
 
 private:
 	BOOL			IsAtkMsgEmpty()	{	return( m_qMeleeAtkMsg.IsEmpty() && m_qMagicAtkMsg.IsEmpty() );	}

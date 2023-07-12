@@ -18,21 +18,21 @@ CDialogMsg::~CDialogMsg()
 	ClearAllMessage();
 }
 
-HRESULT CDialogMsg::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CDialogMsg::InitDeviceObjects( )
 {
-	m_texPack_ex[0].LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texDialogBox.inc" ) ) );
-	m_texPack_ex[1].LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texDialogBoxParty.inc" ) ) );
-	m_texPack_ex[2].LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texDialogBoxGuild.inc" ) ) );
+	m_texPack_ex[0].LoadScript( MakePath( DIR_THEME, _T( "texDialogBox.inc" ) ) );
+	m_texPack_ex[1].LoadScript( MakePath( DIR_THEME, _T( "texDialogBoxParty.inc" ) ) );
+	m_texPack_ex[2].LoadScript( MakePath( DIR_THEME, _T( "texDialogBoxGuild.inc" ) ) );
 	
-	m_texEmoticon.LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texDialogEmoticon.inc" ) ) );
+	m_texEmoticon.LoadScript( MakePath( DIR_THEME, _T( "texDialogEmoticon.inc" ) ) );
 
 
-	m_texEmoticonUser.LoadScript( pd3dDevice, MakePath( DIR_THEME, _T( "texChatEmoticon.inc" ) ) );
+	m_texEmoticonUser.LoadScript( MakePath( DIR_THEME, _T( "texChatEmoticon.inc" ) ) );
 	LoadEmotion();
 
-	m_pTex[0] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "texDialogBox_left.tga" ), 0xffff00ff );
-	m_pTex[1] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "texDialogBox_center.TGA" ), 0xffff00ff );
-	m_pTex[2] = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "texDialogBox_right.tga" ), 0xffff00ff );
+	m_pTex[0] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "texDialogBox_left.tga" ), 0xffff00ff );
+	m_pTex[1] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "texDialogBox_center.TGA" ), 0xffff00ff );
+	m_pTex[2] = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "texDialogBox_right.tga" ), 0xffff00ff );
 	
 	RemoveDeleteObjMsg();
 	
@@ -49,90 +49,49 @@ HRESULT CDialogMsg::DeleteDeviceObjects()
 	
 	return S_OK;
 }
-HRESULT CDialogMsg::RestoreDeviceObjects()
-{
-	return S_OK;
+
+void CDialogMsg::TextDeleter::operator()(CUSTOMTEXT * customText) const {
+	if (customText->m_pObj->GetType() == OT_MOVER)
+		((CMover *)customText->m_pObj)->m_bShowQuestEmoticon = TRUE;
+
+	delete customText;
 }
 
-HRESULT CDialogMsg::InvalidateDeviceObjects()
-{
-	return S_OK;
-}
-void CDialogMsg::ClearAllMessage()
-{
-	for(int i = 0; i < m_textArray.GetSize(); i++)
-	{
-		LPCUSTOMTEXT lpCustomText = (LPCUSTOMTEXT)m_textArray.GetAt(i);
-		// 퀘스트 이모티콘을 다시 보이게 한다.
-		if( lpCustomText->m_pObj->GetType() == OT_MOVER )
-			((CMover*)lpCustomText->m_pObj)->m_bShowQuestEmoticon = TRUE;
-	}
-	m_textArray.RemoveAll();
-
-	for( int i = 0; i < m_VendortextArray.GetSize(); i++)
-		safe_delete( (LPCUSTOMTEXT)m_VendortextArray.GetAt( i ) );
-	m_VendortextArray.RemoveAll();
+void CDialogMsg::ClearAllMessage() {
+	m_textArray.clear();
+	m_VendortextArray.clear();
 }
 
-void CDialogMsg::ClearMessage( CObj* pObj )
-{
-	for(int i = 0; i < m_textArray.GetSize(); i++)
-	{
-		LPCUSTOMTEXT pText	= (LPCUSTOMTEXT)m_textArray.GetAt( i );
-		if( pText->m_pObj == pObj )
-		{
-			// 퀘스트 이모티콘을 다시 보이게 한다.
-			if( pObj->GetType() == OT_MOVER )
-				((CMover*)pObj)->m_bShowQuestEmoticon = TRUE;
-			safe_delete( pText );
-			m_textArray.RemoveAt( i );
-			i--;
-		}
-	}
-
+void CDialogMsg::ClearMessage(CObj * pObj) {
+	const auto itEraseText = std::remove_if(
+		m_textArray.begin(), m_textArray.end(),
+		[pObj](auto & pText) { return pText->m_pObj == pObj; }
+	);
+	m_textArray.erase(itEraseText, m_textArray.end());
 
 	RemoveVendorMessage(pObj);
 }
 
-void CDialogMsg::RemoveDeleteObjMsg()
-{
-	for( int i = 0; i < m_textArray.GetSize(); i++ )
-	{
-		LPCUSTOMTEXT lpCustomText 
-			= (LPCUSTOMTEXT) m_textArray.GetAt( i );
-		if( !IsValidObj( lpCustomText->m_pObj ) )
-		{
-			// 퀘스트 이모티콘을 다시 보이게 한다.
-			if( lpCustomText->m_pObj->GetType() == OT_MOVER )
-				((CMover*)lpCustomText->m_pObj)->m_bShowQuestEmoticon = TRUE;
-			safe_delete( lpCustomText );
-			m_textArray.RemoveAt( i );
-			i --;
-		}
-	}
+void CDialogMsg::RemoveDeleteObjMsg() {
+	const auto itEraseText = std::remove_if(
+		m_textArray.begin(), m_textArray.end(),
+		[](auto & pText) { return !IsValidObj(pText->m_pObj); }
+	);
+	m_textArray.erase(itEraseText, m_textArray.end());
 
-
-	for( int i = 0; i < m_VendortextArray.GetSize(); i++ )
-	{
-		LPCUSTOMTEXT lpCustomText 
-			= (LPCUSTOMTEXT) m_VendortextArray.GetAt( i );
-		if( !IsValidObj( lpCustomText->m_pObj ) )
-		{
-			safe_delete( lpCustomText );
-			m_VendortextArray.RemoveAt( i );
-			i --;
+	const auto itEraseVendor = std::remove_if(
+		m_VendortextArray.begin(), m_VendortextArray.end(),
+		[](const CUSTOMTEXT & lpCustomText) {
+			return !IsValidObj(lpCustomText.m_pObj);
 		}
-	}
-	
+	);
+	m_VendortextArray.erase(itEraseVendor, m_VendortextArray.end());	
 }
 
 void CDialogMsg::Render( C2DRender* p2DRender )
 {
 	CSize size;	
-	LPCUSTOMTEXT lpCustomText;
-	
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
-	
+		
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSU, 1 );
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV, 1 );
 	pd3dDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_POINT );		
@@ -150,102 +109,53 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 	TEXTUREVERTEX vertex[ 4 * 18 ];
 	CPoint point;
 	int nIndex;
+	
+	
+	auto itTextArray = m_textArray.begin();
+	while (itTextArray != m_textArray.end()) {
+		auto & lpCustomText = *itTextArray;
 		
-	for( int i = 0; i < m_textArray.GetSize(); i++ )
-	{
-		lpCustomText = (LPCUSTOMTEXT) m_textArray.GetAt( i );
-		TEXTUREVERTEX* pVertices = vertex; 
 		if( !lpCustomText->m_bInfinite && lpCustomText->m_timer.TimeOut() )
 		{
-			// 퀘스트 이모티콘을 다시 보이게 한다.
-			if( lpCustomText->m_pObj->GetType() == OT_MOVER )
-				((CMover*)lpCustomText->m_pObj)->m_bShowQuestEmoticon = TRUE;
-			safe_delete( lpCustomText );
-			m_textArray.RemoveAt( i );
-			i --;
+			itTextArray = m_textArray.erase(itTextArray);
+			continue;
+		}
+
+		++itTextArray;
+
+		CObj * pObj = lpCustomText->m_pObj;
+		if (pObj->IsCull()) continue;
+
+
+		D3DXVECTOR3 vOut = pObj->ProjectWorldCoordToScreenCoord(
+			std::nullopt,
+			CObj::PWCTSC_DoNotResetWorldTransform | CObj::PWCTSC_UntouchedViewport
+		);
+
+		TEXTUREVERTEX * pVertices = vertex;
+
+		
+		if( lpCustomText->m_pTexture )
+		{
+			CPoint point;
+			point.x = (LONG)(vOut.x - 32 / 2);
+			point.y = (LONG)(vOut.y - 32);
+					
+			MakeEven(point.x);
+	
+			p2DRender->RenderTexture(point, lpCustomText->m_pTexture);
 		}
 		else
 		{
-			CObj* pObj = lpCustomText->m_pObj;
-			if( lpCustomText->m_pTexture )
-			{
-				if( pObj->IsCull() == FALSE )
-				{
-					// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-					D3DXVECTOR3 vOut, vPos = pObj->GetPos(), vPosHeight;
-					D3DVIEWPORT9 vp;
-					const BOUND_BOX* pBB;
-					
-					if( pObj->m_pModel )
-						pBB	= pObj->m_pModel->GetBBVector();
-					else
-						return;
-
-					pd3dDevice->GetViewport( &vp );
-
-					D3DXMATRIX matTrans;
-					D3DXMATRIX matWorld;
-					D3DXMatrixIdentity(&matWorld);
-					D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
-					
-					const auto matrixScale = pObj->GetMatrixScale();
-					D3DXMatrixMultiply( &matWorld, &matWorld, &matrixScale );
-					const auto matrixRotation = pObj->GetMatrixRotation();
-					D3DXMatrixMultiply( &matWorld, &matWorld, &matrixRotation );
-					D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
-
-					vPosHeight = pBB->m_vPos[0];
-					vPosHeight.x = 0;
-					vPosHeight.z = 0;
-					
-					D3DXVec3Project( &vOut, &vPosHeight, &vp, &pObj->GetWorld()->m_matProj,
-						&pObj->GetWorld()->m_pCamera->m_matView, &matWorld);
-
-					CPoint point;
-					point.x = (LONG)( vOut.x - 32 / 2 );
-					point.y = (LONG)( vOut.y - 32 );
-					
-					MakeEven( point.x );			
-	
-					p2DRender->RenderTexture( point, lpCustomText->m_pTexture );
-				}
-			}
-			else
-			{
 			LPCTSTR lpStr = lpCustomText->m_string;
-			lpCustomText->m_pFont->GetTextExtent( (TCHAR*)lpStr, &size );
-			if( pObj->IsCull() == FALSE )
-			{
-				int nAlpha = 200;
-				if( !lpCustomText->m_bInfinite && lpCustomText->m_timer.GetLeftTime() > 4000 )
-					nAlpha = (int)( 200 - ( ( lpCustomText->m_timer.GetLeftTime() - 4000 )* 200 / 1000 ) );
-	
-				// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-				D3DXVECTOR3 vOut, vPos = pObj->GetPos(), vPosHeight;
-				D3DVIEWPORT9 vp;
-				const BOUND_BOX* pBB;
-				
-				if( pObj->m_pModel )
-					pBB	= pObj->m_pModel->GetBBVector();
-				else
-					return;
+			CSize size = lpCustomText->m_pFont->GetTextExtent( lpStr );
 
-				pd3dDevice->GetViewport( &vp );
-
-				D3DXMATRIX matTrans;
-				D3DXMATRIX matWorld;
-				D3DXMatrixIdentity(&matWorld);
-				D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
-
-				matWorld = matWorld * pObj->GetMatrixScale() * pObj->GetMatrixRotation() * matTrans;
-
-				vPosHeight = pBB->m_vPos[0];
-				vPosHeight.x = 0;
-				vPosHeight.z = 0;
-				
-				D3DXVec3Project( &vOut, &vPosHeight, &vp, &pObj->GetWorld()->m_matProj,
-					&pObj->GetWorld()->m_pCamera->m_matView, &matWorld);
 			
+			int nAlpha = 200;
+			if( !lpCustomText->m_bInfinite && lpCustomText->m_timer.GetLeftTime() > 4000 )
+				nAlpha = (int)( 200 - ( ( lpCustomText->m_timer.GetLeftTime() - 4000 )* 200 / 1000 ) );
+	
+				
 				CRect rect = lpCustomText->m_rect;
 				vOut.x -= rect.Width() / 2;
 				vOut.y -= rect.Height();
@@ -273,39 +183,12 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 				
 
 				if( lpCustomText->m_nKind == CHAT_SHOUT )
-				{
-					char buffer[256] = { 0 };
-					
+				{					
 					// 텍스쳐렌더 버그 관련 수정
-					CTexture* pShoutTex = NULL;
+					const size_t nlen = _tcsclen(lpStr);
+					const char * buffer = GetTextDialogShout(nlen);
 
-					int nlen = _tcsclen(lpStr);
-
-					if( nlen >= 1 && nlen <= 1 )
-						strcpy( buffer, "texDialogBoxShout00.bmp" );
-					else
-						if( nlen >= 2 && nlen <= 3 )
-							strcpy( buffer, "texDialogBoxShout01.bmp" );
-						else
-							if( nlen >= 4 && nlen <= 5 )
-								strcpy( buffer, "texDialogBoxShout02.bmp" );
-							else
-								if( nlen >= 6 && nlen <= 9 )
-									strcpy( buffer, "texDialogBoxShout03.bmp" );
-								else
-									if( nlen >= 10 && nlen <= 20 )
-										strcpy( buffer, "texDialogBoxShout04.bmp" );
-									else
-										if( nlen >= 21 && nlen <= 40 )
-											strcpy( buffer, "texDialogBoxShout05.bmp" );
-										else
-											if( nlen >= 41 && nlen <= 60 )
-												strcpy( buffer, "texDialogBoxShout06.bmp" );
-											else
-												if( nlen >= 61 )
-													strcpy( buffer, "texDialogBoxShout07.bmp" );
-
-					pShoutTex = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, buffer ), 0xffff00ff );
+					CTexture * pShoutTex = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, buffer ), 0xffff00ff );
 					if( pShoutTex )
 					{
 						p2DRender->RenderTextureEx( CPoint( (int)( x-20 ), (int)( y-20 ) ), CPoint( (int)( fWidth+50.0f ), (int)( fHeight+40.0f ) ), pShoutTex, nAlpha, 1.0f, 1.0f, FALSE );
@@ -360,20 +243,20 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 				if( nWidth >= 6 )
 				{
 					point =  CPoint( (int)( x + ( 3 * nWidth / 5 ) * 8 ), (int)( y ) );
-					nIndex = 9;
 				}
 				else
 				if( nWidth == 4 || nWidth == 5 ) 
 				{
 					point =  CPoint( (int)( x + 3 * 8 ), (int)( y ) );
-					nIndex = 9;
 				}
 				else
 				if( nWidth == 3 ) 
 				{
 					point =  CPoint( (int)( x + 1 * 8 ), (int)( y ) );
-					nIndex = 9;
 				}
+
+				if (nWidth >= 3) nIndex = 9;
+
 				pTexture = m_texPack_ex[lpCustomText->m_nKind].GetAt( nIndex );
 
 				SetTextureVertex( pVertices, (FLOAT)( point.x ), (FLOAT)( point.y ), pTexture->m_fuLT, pTexture->m_fvLT );
@@ -400,166 +283,132 @@ void CDialogMsg::Render( C2DRender* p2DRender )
 
 g_ShoutChat:
 
-				/*
-				CPoint point;
-				point.x = vOut.x + 8;;		
-				point.y = vOut.y + 8;;		
-				*/
-
 				x = vOut.x + 8;
 				y = vOut.y + 8;
 				x -= ptOrigin.x;
 				y -= ptOrigin.y;
-				/*
-				point.x -= ptOrigin.x;
-				MakeEven( point.x );
-				point.y -= ptOrigin.y;
-				*/
 				
 				lpCustomText->m_string.SetAlpha( nAlpha );
-//				p2DRender->TextOut_EditString( point.x, point.y, lpCustomText->m_string, 0, 0, 0 );
 				p2DRender->TextOut_EditString( (int)( x ), (int)( y ), lpCustomText->m_string, 0, 0, 0 );
-			}
-			}
+			
 		}
+		
 	}
 	
-	for( int i = 0; i < m_VendortextArray.GetSize(); i++ )
-	{
-		lpCustomText = (LPCUSTOMTEXT) m_VendortextArray.GetAt( i );
+	for (CUSTOMTEXT & lpCustomText : m_VendortextArray) {
 		TEXTUREVERTEX* pVertices = vertex; 
 
-		LPCTSTR lpStr = lpCustomText->m_string;
-		lpCustomText->m_pFont->GetTextExtent( (TCHAR*)lpStr, &size );
-		CObj* pObj = lpCustomText->m_pObj;
-		if( pObj->IsCull() == FALSE )
-		{
-			int nAlpha = 200;
-
-			// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-			D3DXVECTOR3 vOut, vPos = pObj->GetPos(), vPosHeight;
-			D3DVIEWPORT9 vp;
-			const BOUND_BOX* pBB;
-			
-			if( pObj->m_pModel )
-				pBB	= pObj->m_pModel->GetBBVector();
-			else
-				return;
-
-			pd3dDevice->GetViewport( &vp );
-
-			D3DXMATRIX matTrans;
-			D3DXMATRIX matWorld;
-			D3DXMatrixIdentity(&matWorld);
-			D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
-
-			matWorld = matWorld * pObj->GetMatrixScale() * pObj->GetMatrixRotation() * matTrans;
-
-			vPosHeight = pBB->m_vPos[0];
-			vPosHeight.x = 0;
-			vPosHeight.z = 0;
-			
-			D3DXVec3Project( &vOut, &vPosHeight, &vp, &pObj->GetWorld()->m_matProj,
-				&pObj->GetWorld()->m_pCamera->m_matView, &matWorld);
+		LPCTSTR lpStr = lpCustomText.m_string.GetString();
+		const CSize size = lpCustomText.m_pFont->GetTextExtent(lpStr);
+		CObj* pObj = lpCustomText.m_pObj;
+		if (pObj->IsCull()) continue;
 		
-			CRect rect = lpCustomText->m_rect;
-			vOut.x -= rect.Width() / 2;
-			vOut.y -= rect.Height();
-			DWORD dwMaxHeight = lpCustomText->m_pFont->GetMaxHeight();
-			CPoint ptOrigin = p2DRender->GetViewportOrg();
+		const int nAlpha = 200;
 
-			int x = (int)( vOut.x );
-			int y = (int)( vOut.y );
-			int nHeight = rect.Height() / 8;
-			int nWidth  = rect.Width()  / 8;
+		// 월드 좌표를 스크린 좌표로 프로젝션 한다.
 
-			FLOAT fGap    = 40;
-			FLOAT fWidth  = (FLOAT)( rect.Width() );
-			FLOAT fHeight = rect.Height()*0.8f;
+		D3DXVECTOR3 vOut = pObj->ProjectWorldCoordToScreenCoord(
+			std::nullopt,
+			CObj::PWCTSC_DoNotResetWorldTransform | CObj::PWCTSC_UntouchedViewport
+		);
 
-			fGap += 2.0f;
+		CRect rect = lpCustomText.m_rect;
+		vOut.x -= rect.Width() / 2;
+		vOut.y -= rect.Height();
+		DWORD dwMaxHeight = lpCustomText.m_pFont->GetMaxHeight();
+		CPoint ptOrigin = p2DRender->GetViewportOrg();
 
-			CPoint ptTex1;
-			CPoint ptTex2;
+		int x = (int)( vOut.x );
+		int y = (int)( vOut.y );
+		int nHeight = rect.Height() / 8;
+		int nWidth  = rect.Width()  / 8;
+
+		FLOAT fGap    = 40;
+		FLOAT fWidth  = (FLOAT)( rect.Width() );
+		FLOAT fHeight = rect.Height()*0.8f;
+
+		fGap += 2.0f;
+
+		CPoint ptTex1;
+		CPoint ptTex2;
 			
-			ptTex1.x = (LONG)( vOut.x-24 );
-			ptTex1.y = (LONG)( vOut.y-fGap );
+		ptTex1.x = (LONG)( vOut.x-24 );
+		ptTex1.y = (LONG)( vOut.y-fGap );
 			
-			p2DRender->RenderTexture(ptTex1, m_pTex[0], nAlpha, 1.0f, 1.0f );
+		p2DRender->RenderTexture(ptTex1, m_pTex[0], nAlpha, 1.0f, 1.0f );
 
-			ptTex1.x = (LONG)( vOut.x+8 );
-			ptTex1.y = (LONG)( vOut.y-fGap );
+		ptTex1.x = (LONG)( vOut.x+8 );
+		ptTex1.y = (LONG)( vOut.y-fGap );
 				
-			ptTex2.x = (int)fWidth;
-			ptTex2.y = 32;
-			p2DRender->RenderTextureEx( ptTex1, ptTex2, m_pTex[1], nAlpha, 1.0f, 1.0f );
+		ptTex2.x = (int)fWidth;
+		ptTex2.y = 32;
+		p2DRender->RenderTextureEx( ptTex1, ptTex2, m_pTex[1], nAlpha, 1.0f, 1.0f );
 
-			ptTex1.x = (LONG)( (int)(vOut.x+8)+ptTex2.x );
-			ptTex1.y = (LONG)( vOut.y-fGap );
+		ptTex1.x = (LONG)( (int)(vOut.x+8)+ptTex2.x );
+		ptTex1.y = (LONG)( vOut.y-fGap );
 				
-			p2DRender->RenderTexture(ptTex1, m_pTex[2], nAlpha, 1.0f, 1.0f );
+		p2DRender->RenderTexture(ptTex1, m_pTex[2], nAlpha, 1.0f, 1.0f );
 
-			fGap -= 2.0f;
-			x = (int)( vOut.x + 8 );
-			y = (int)( vOut.y + 8 );
-			x -= ptOrigin.x;
-			y -= ptOrigin.y;
-			lpCustomText->m_string.SetAlpha( 250 );
-			p2DRender->TextOut_EditString( x, (int)( y-fGap ), lpCustomText->m_string, 0, 0, 0 );
-		}
+		fGap -= 2.0f;
+		x = (int)( vOut.x + 8 );
+		y = (int)( vOut.y + 8 );
+		x -= ptOrigin.x;
+		y -= ptOrigin.y;
+		lpCustomText.m_string.SetAlpha( 250 );
+		p2DRender->TextOut_EditString( x, (int)( y-fGap ), lpCustomText.m_string, 0, 0, 0 );
+		
 	}
+}
+
+const char * CDialogMsg::GetTextDialogShout(const size_t length) {
+	if (length <= 1) return "texDialogBoxShout00.bmp";
+	if (length <= 3) return "texDialogBoxShout01.bmp";
+	if (length <= 5) return "texDialogBoxShout02.bmp";
+	if (length <= 9) return "texDialogBoxShout03.bmp";
+	if (length <= 20) return "texDialogBoxShout04.bmp";
+	if (length <= 40) return "texDialogBoxShout05.bmp";
+	if (length <= 60) return "texDialogBoxShout06.bmp";
+	return "texDialogBoxShout07.bmp";
 }
 
 
 #define		MAX_CLIENTMSG_LEN		100
 
-void CDialogMsg::RemoveMessage( CObj* pObj )
-{
-	for( int i = 0; i < m_textArray.GetSize(); i++ )
-	{
-		LPCUSTOMTEXT lpCustomText = (LPCUSTOMTEXT) m_textArray.GetAt( i );
-		if( lpCustomText->m_pObj == pObj )
-		{
-			safe_delete( lpCustomText );
-			m_textArray.RemoveAt( i );
-			return;
-		}
-	}
+void CDialogMsg::AddEmoticonUser(CObj * pObj, int nEmoticonIdx) {
+	if (nEmoticonIdx < 0) return;
+	if (nEmoticonIdx >= (int)(m_texEmoticonUser.GetNumber())) return;
+	AddTexture(pObj, m_texEmoticonUser.GetAt(nEmoticonIdx));
 }
 
-void CDialogMsg::AddEmoticonUser( CObj* pObj, int nEmoticonIdx )
-{
-	if( nEmoticonIdx < (int)( m_texEmoticonUser.GetNumber() ) )
-		AddTexture( pObj, m_texEmoticonUser.GetAt( nEmoticonIdx ) );
-}
-
-void CDialogMsg::AddEmoticon( CObj* pObj, int nEmoticonIdx )
-{
+void CDialogMsg::AddEmoticon(CObj * pObj, int nEmoticonIdx) {
 	if (nEmoticonIdx < 0) return;
 	if (nEmoticonIdx >= m_texEmoticon.GetNumber()) return;
-	CTexture * const tex = m_texEmoticon.GetAt(nEmoticonIdx);
-	AddTexture( pObj, tex );
+	AddTexture(pObj, m_texEmoticon.GetAt(nEmoticonIdx));
 }
+
 void CDialogMsg::AddTexture( CObj* pObj, CTexture* pTexture )
 {
-	for( int i = 0; i < m_textArray.GetSize(); i++ )
-	{
-		LPCUSTOMTEXT lpCustomText = (LPCUSTOMTEXT) m_textArray.GetAt( i );
-		if( lpCustomText->m_pObj == pObj )
-		{
-			safe_delete( lpCustomText );
-			m_textArray.RemoveAt( i );
-			break;
-		}
+	const auto it = std::find_if(
+		m_textArray.begin(), m_textArray.end(),
+		[pObj](auto & lpCustomText) { return lpCustomText->m_pObj == pObj; }
+	);
+
+	if (it != m_textArray.end()) {
+		// Deleting and releasing to avoid calling the custom destructor
+		// that would set the emote to false, like in the official server.
+		// TODO: investigate if it is an intended behaviour or an oversight
+		delete it->release();
+		m_textArray.erase(it);
 	}
+
 	LPCUSTOMTEXT lpCustomText = new CUSTOMTEXT;
 	lpCustomText->m_dwRGB = 0;
 	lpCustomText->m_pFont = CWndBase::m_Theme.m_pFontText;
 	lpCustomText->m_pObj = pObj;
 	lpCustomText->m_timer.Set( 5000 );
-	lpCustomText->m_bInfinite	= FALSE;	//( pObj->GetType() == OT_MOVER && ( (CMover*)pObj )->m_vtInfo.IsVendorOpen() );
+	lpCustomText->m_bInfinite	= FALSE;
 	lpCustomText->m_pTexture = pTexture;
-	m_textArray.Add( lpCustomText );
+	m_textArray.emplace_back( lpCustomText );
 }
 
 void CDialogMsg::AddMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD RGB, int nKind, DWORD dwPStyle )
@@ -593,17 +442,13 @@ void CDialogMsg::AddMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD RGB, int nKi
 			AddEmoticon( pObj, nEmoticonIdx );
 			return;
 		}
+
+		const auto it = std::find_if(
+			m_textArray.begin(), m_textArray.end(),
+			[pObj](auto & lpCustomText) { return lpCustomText->m_pObj == pObj; }
+			);
+		if (it != m_textArray.end()) m_textArray.erase(it);
 		
-		for( int i = 0; i < m_textArray.GetSize(); i++ )
-		{
-			LPCUSTOMTEXT lpCustomText = (LPCUSTOMTEXT) m_textArray.GetAt( i );
-			if( lpCustomText->m_pObj == pObj )
-			{
-				safe_delete( lpCustomText );
-				m_textArray.RemoveAt( i );
-				break;
-			}
-		}
 	}
 	LPCUSTOMTEXT lpCustomText = new CUSTOMTEXT;
 	lpCustomText->m_dwRGB = RGB;
@@ -649,14 +494,12 @@ void CDialogMsg::AddMessage( CObj* pObj, LPCTSTR lpszMessage, DWORD RGB, int nKi
 	cy = ( ( cy / 16 ) * 16 ) + ( ( cy % 16 ) ? 16 : 0 );
 
 	lpCustomText->m_rect = CRect( 0, 0, cx, cy );
-	m_textArray.Add( lpCustomText );
+	m_textArray.emplace_back( lpCustomText );
 }
 
 void CDialogMsg::ClearVendorObjMsg()
 {
-	for(int i = 0; i < m_VendortextArray.GetSize(); i++)
-		safe_delete( (LPCUSTOMTEXT)m_VendortextArray.GetAt(i) );
-	m_VendortextArray.RemoveAll();
+	m_VendortextArray.clear();
 }
 
 void CDialogMsg::AddVendorMessage(CObj *pObj, LPCTSTR lpszMessage, DWORD RGB)
@@ -676,7 +519,7 @@ void CDialogMsg::AddVendorMessage(CObj *pObj, LPCTSTR lpszMessage, DWORD RGB)
 
 	RemoveVendorMessage(pObj);
 	
-	LPCUSTOMTEXT lpCustomText = new CUSTOMTEXT;
+	CUSTOMTEXT * lpCustomText = &m_VendortextArray.emplace_back();
 	lpCustomText->m_dwRGB = RGB;
 	lpCustomText->m_pFont = CWndBase::m_Theme.m_pFontText; //ect ? m_pFontEffect : m_pFont;
 	lpCustomText->m_pObj = pObj;
@@ -707,21 +550,15 @@ void CDialogMsg::AddVendorMessage(CObj *pObj, LPCTSTR lpszMessage, DWORD RGB)
 	cy = ( ( cy / 16 ) * 16 ) + ( ( cy % 16 ) ? 16 : 0 );
 	
 	lpCustomText->m_rect = CRect( 0, 0, cx, cy );
-	m_VendortextArray.Add( lpCustomText );
 }
 
-void CDialogMsg::RemoveVendorMessage(CObj *pObj)
-{
-	for( int i = 0; i < m_VendortextArray.GetSize(); i++ )
-	{
-		LPCUSTOMTEXT lpCustomText = (LPCUSTOMTEXT) m_VendortextArray.GetAt( i );
-		if( lpCustomText->m_pObj == pObj )
-		{
-			safe_delete( lpCustomText );
-			m_VendortextArray.RemoveAt( i );
-			return;
-		}
-	}	
+void CDialogMsg::RemoveVendorMessage(CObj *pObj) {
+	const auto it = std::find_if(
+		m_VendortextArray.begin(), m_VendortextArray.end(),
+		[pObj](const CUSTOMTEXT & customText) { return customText.m_pObj == pObj; }
+	);
+
+	if (it != m_VendortextArray.end()) m_VendortextArray.erase(it);
 }
 
 bool CDialogMsg::LoadEmotion()

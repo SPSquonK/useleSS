@@ -13,7 +13,7 @@ public:
 	CLight( LPCTSTR lpszKey, D3DLIGHTTYPE ltType, FLOAT x, FLOAT y, FLOAT z );
 	~CLight() { }
 	void SetLight( LPCTSTR lpszKey, D3DLIGHTTYPE ltType, FLOAT x, FLOAT y, FLOAT z );
-	void Appear( LPDIRECT3DDEVICE9 pd3dDevice, BOOL bEnable = TRUE );
+	void Appear( BOOL bEnable = TRUE );
 	void SetPos( D3DXVECTOR3 vPos ) { Position = vPos; }
 	void SetPos( FLOAT x, FLOAT y, FLOAT z ) { Position.x = x; Position.y = y; Position.z = z; }
 	void SetDir( D3DXVECTOR3 vDir ) { Direction = vDir; }

@@ -3,26 +3,25 @@
 #include "langman.h"
 #include <algorithm>
 #include <ranges>
+#include <optional>
 
 #if !( defined(__DBSERVER) || defined(__VPW) ) 
 	#include "project.h"
 #endif	// __DBSERVER
 
-CString GetLangFileName( int nLang, int nType )
-{
-	const char* file[] =
-		{ "Filter", "InvalidName", "Notice", "GuildCombatTEXT_1", "GuildCombatTEXT_2", "GuildCombatTEXT_3", "GuildCombatTEXT_4", "GuildCombatTEXT_5", "GuildCombatTEXT_6" 
-#ifdef __RULE_0615
-			,"Letter"
-#endif	// __RULE_0615
-			,"GuildCombat1to1_TEXT1", "GuildCombat1to1_TEXT2", "GuildCombat1to1_TEXT3", "GuildCombat1to1_TEXT4", "GuildCombat1to1_TEXT5"
-#ifdef __VENDOR_1106
-			, "Letter1"
-#endif	// __VENDOR_1106
-		};
+CString GetLangFileName( int nLang, _FILEWITHTEXT nType ) {
+	static constexpr const char * file[] = {
+		"Filter",
+		"InvalidName",
+		"Notice",
+		"GuildCombatTEXT_1", "GuildCombatTEXT_2", "GuildCombatTEXT_3", "GuildCombatTEXT_4", "GuildCombatTEXT_5", "GuildCombatTEXT_6" ,
+		"Letter",
+		"GuildCombat1to1_TEXT1", "GuildCombat1to1_TEXT2", "GuildCombat1to1_TEXT3", "GuildCombat1to1_TEXT4", "GuildCombat1to1_TEXT5",
+		"Letter1"
+	};
 
-	CString fileName = file[nType];
-	fileName	= fileName + CLangMan::GetInstance()->GetLangData( nLang )->szFileName;
+	CString fileName = file[static_cast<size_t>(nType)];
+	fileName += CLangMan::GetInstance()->GetLangData(nLang)->szFileName;
 	return fileName;
 }
 
@@ -452,50 +451,32 @@ BOOL CProject::LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apOb
 
 BOOL CProject::LoadText( LPCTSTR lpszFileName )
 {
-	tagColorText colorText;
-
 	CScript scanner;
 	if( scanner.Load( lpszFileName ) == FALSE )
 		return FALSE;
 
-	CStringArray strArray;
-	CDWordArray  colorArray;
-	DWORD dwId = scanner.GetNumber();
+	while (true) {
+		const DWORD dwId = scanner.GetNumber();
+		if (scanner.tok == FINISHED) break;
 
-	do {
-		DWORD dwColor = scanner.GetNumber(); // color
+		const DWORD dwColor = scanner.GetNumber(); // color
 		scanner.GetToken();
-		if( *scanner.token  == '{' )
-		{
+		if (*scanner.token == '{') {
 
 			scanner.GetToken();
-			CString str	= scanner.token;
-			str.Replace( "\"", "" );
-//			if( str.IsEmpty() )
-//				str	= "Empty";
-			#ifdef _DEBUG
-			if( strArray.GetSize() > (int)( dwId ) )
-				if( strArray.GetAt( dwId ).IsEmpty() == FALSE )
-					Error( "CProject::LoadText : 같은 아이디 존재 %d - %s", dwId, str );						
-			#endif	// _DEBUG	
-			strArray.SetAtGrow( dwId, str );
-			colorArray.SetAtGrow( dwId, dwColor );
+			CString str = scanner.token;
+			str.Replace("\"", "");
+
+			if (!str.IsEmpty()) {
+				m_colorText.SetAtGrow(dwId,
+					tagColorText{ dwColor, str }
+				);
+			}
+
 			scanner.GetToken();	// }
 		}
-		dwId = scanner.GetNumber();	// next
-	} while( scanner.tok != FINISHED );
+	};
 
-	for( int i = 0; i < strArray.GetSize(); i++ )
-	{
-		if( strArray.GetAt( i ).IsEmpty() == FALSE )
-		{
-			m_colorText.SetAtGrow(i, colorText);
-
-			tagColorText * pColorText = m_colorText.GetAt( i );
-			pColorText->dwColor = colorArray.GetAt( i );
-			pColorText->lpszData = strdup( strArray.GetAt( i ) ) ;
-		}
-	}
 	m_colorText.Optimize();
 	return TRUE;
 }
@@ -644,127 +625,9 @@ void CProject::LoadPreFiles()
 	CLangMan::GetInstance()->Load( "propLang.txt" );
 }
 
-
-#ifdef __RULE_0615
-#include <optional>
-
-bool CNameValider::Load() {
-	constexpr auto LoadInvalidNames = []() -> std::optional<std::set<std::string>> {
-		const CString strFilter = GetLangFileName(::GetLanguage(), FILE_INVALID);
-
-		CScanner s;
-		if (!s.Load(strFilter.GetString())) return std::nullopt;
-
-		std::set<std::string> retval;
-
-		s.GetToken();
-		while (s.tok != FINISHED) {
-			CString szName = s.Token;
-			szName.MakeLower();
-			retval.emplace(szName.GetString());
-			s.GetToken();
-		}
-
-		return retval;
-	};
-
-	constexpr auto LoadValidLetters = [](bool isVendor) -> std::optional<std::set<char>> {
-		const auto fileId = isVendor ? FILE_ALLOWED_LETTER2 : FILE_ALLOWED_LETTER;
-		const CString strFile = GetLangFileName(::GetLanguage(), fileId);
-
-		CScanner s;
-		if (!s.Load(strFile)) return std::nullopt;
-
-		std::set<char> retval;
-
-		s.GetToken();
-		while (s.tok != FINISHED) {
-			if (s.Token.GetLength()) {
-				retval.emplace(s.Token.GetAt(0));
-			}
-			s.GetToken();
-		}
-
-		return retval;
-	};
-
-	constexpr auto Arrayize = [](const std::optional<std::set<char>> & letters) {
-		std::array<bool, 256> retval;
-
-		if (!letters) {
-			retval.fill(true);
-		} else {
-			retval.fill(false);
-
-			for (const char letter : letters.value()) {
-				retval[static_cast<unsigned char>(letter)] = true;
-			}
-		}
-
-		return retval;
-	};
-
-	std::optional<std::set<std::string>> invalidNames = LoadInvalidNames();
-	if (!invalidNames) {
-		Error(__FUNCTION__ "() failed loading InvalidNames");
-		return false;
-	}
-
-	std::optional<std::set<char>> allowedLetters1 = LoadValidLetters(false);
-	std::optional<std::set<char>> allowedLetters2 = LoadValidLetters(true);
-
-	m_invalidNames = std::vector(invalidNames->begin(), invalidNames->end());
-	m_allowedLetters          = Arrayize(allowedLetters1);
-	m_allowedLettersForVendor = Arrayize(allowedLetters2);
-
-	return true;
-}
-
-bool CNameValider::IsNotAllowedName(LPCSTR name) const {
-	return IsInvalidName(name) || !AllLettersAreIn(name, m_allowedLetters);
-}
-
-bool CNameValider::IsNotAllowedVendorName(LPCSTR name) const {
-	return IsInvalidName(name) || !AllLettersAreIn(name, m_allowedLettersForVendor);
-}
-
-bool CNameValider::IsInvalidName(LPCSTR szName) const {
-	CString str = szName;
-	str.MakeLower();
-
-	return std::ranges::any_of(m_invalidNames,
-		[&](const std::string & invalidName) {
-			return str.Find(invalidName.c_str()) != -1;
-		});
-}
-
-bool CNameValider::AllLettersAreIn(LPCSTR name, const std::array<bool, 256> & allowed) {
-	const char * c = name;
-	while (*c != '\0') {
-		if (!allowed[static_cast<unsigned char>(*c)]) {
-			return false;
-		}
-		++c;
-	}
-	return true;
-}
-
-void CNameValider::Formalize(LPSTR szName) {
-	const auto language = ::GetLanguage();
-	if (language != LANG_GER && language != LANG_FRE) return;
-
-	if (szName[0] == '\0') return;
-
-	char buffer[2] = { szName[0], '\0' }; // Copy first letter
-	_strupr(buffer);                      // Upper the first letter
-	_strlwr(szName + 1);                  // Lower after first letter
-	szName[0] = buffer[0];                // Copy back upper cased 1st letter
-}
-#endif	// __RULE_0615
-
 CAr & operator<<(CAr & ar, const SHORTCUT & self) {
 	ar << self.m_dwShortcut << self.m_dwId
-		<< self.m_dwIndex << self.m_dwUserId << self.m_dwData;
+		<< self.m_dwIndex << self.m_dwData;
 
 	if (self.m_dwShortcut == ShortcutType::Chat) {
 		ar.WriteString(self.m_szString);
@@ -775,7 +638,7 @@ CAr & operator<<(CAr & ar, const SHORTCUT & self) {
 
 CAr & operator>>(CAr & ar, SHORTCUT & self) {
 	ar >> self.m_dwShortcut >> self.m_dwId
-		>> self.m_dwIndex >> self.m_dwUserId >> self.m_dwData;
+		>> self.m_dwIndex >> self.m_dwData;
 
 	if (self.m_dwShortcut == ShortcutType::Chat) {
 		ar.ReadString(self.m_szString);
@@ -826,6 +689,6 @@ namespace ItemProps {
 
 #ifdef __CLIENT
 CTexture * ItemProp::GetTexture() const {
-	return CWndBase::m_textureMng.AddTexture(g_Neuz.m_pd3dDevice, MakePath(DIR_ITEM, szIcon), 0xffff00ff);
+	return CWndBase::m_textureMng.AddTexture(MakePath(DIR_ITEM, szIcon), 0xffff00ff);
 }
 #endif

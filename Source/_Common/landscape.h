@@ -73,7 +73,7 @@ class CWorld;
 
 // 랜드스케이프에서 사용하는 레이어 클래스
 // 하나당 한 종류의 텍스쳐가 어떻게 깔려있는지의 정보를 가진다
-struct CLandLayer
+struct CLandLayer final
 {
 public:
 	BOOL m_bVisible;
@@ -81,9 +81,12 @@ public:
 	BOOL m_aPatchEnable[NUM_PATCHES_PER_SIDE*NUM_PATCHES_PER_SIDE]; // 패치의 표시 상태를 저장하는 배열
 	LPDIRECT3DTEXTURE9 m_pLightMap; // 라이트맵 포인터
 
-	CLandLayer(LPDIRECT3DDEVICE9 pd3dDevice,WORD nTex);
+	explicit CLandLayer(WORD nTex);
+	CLandLayer(const CLandLayer &) = delete;
+	CLandLayer(CLandLayer &&) noexcept;
+	CLandLayer & operator=(const CLandLayer &) = delete;
+	CLandLayer & operator=(CLandLayer &&) noexcept;
 	~CLandLayer();
-	BOOL GetPatchEnable(int x, int z) { return m_aPatchEnable[x+z*NUM_PATCHES_PER_SIDE]; } // 이 부분의 패치의 표시 상태를 리턴
 };
 
 
@@ -117,7 +120,6 @@ protected:
 	static FLOAT	m_fCloud_u1, m_fCloud_v1 ;
 	static FLOAT	m_fCloud_u2, m_fCloud_v2 ;
 
-	LPDIRECT3DDEVICE9		m_pd3dDevice;	// d3d 디바이스
 	CWorld*					m_pWorld;		// 월드의 포인터
 	FLOAT*					m_pHeightMap;											// 높이 맵 (실제 할당 주소)
 	WATERHEIGHT				m_aWaterHeight[ NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE ];
@@ -149,7 +151,7 @@ public:
 	static	int			m_nWidthLinkMap[ MAX_LINKLEVEL ];
 
 	DWORD				m_dwVersion;
-	CPtrArray			m_aLayer; // 이 랜드스케이프에 사용될 레이어들의 배열
+	std::vector<CLandLayer> m_aLayer; // 이 랜드스케이프에 사용될 레이어들의 배열
 	BOOL				m_abPatchRendered[NUM_PATCHES_PER_SIDE*NUM_PATCHES_PER_SIDE];
 	
 	std::array<ExistingObjects<CObj, 5000>, MAX_OBJARRAY> m_apObjects;
@@ -160,8 +162,8 @@ public:
 	
 	CObj***				GetObjLink( DWORD dwLinkType )	{	return( m_apObjLink[dwLinkType] );	}
 	CObj**				GetObjLink( DWORD dwLinkType, DWORD dwLinkLevel )	{	return( m_apObjLink[dwLinkType][dwLinkLevel] );		}
-	HRESULT				InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice, CWorld* pWorld );
-	HRESULT				RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice);
+	HRESULT				InitDeviceObjects( CWorld* pWorld );
+	HRESULT				RestoreDeviceObjects();
 	HRESULT				InvalidateDeviceObjects();
 	HRESULT				DeleteDeviceObjects();
 	int					isVisibile( ) { return m_bVisible; } // 컬링된 결과를 리턴
@@ -170,8 +172,8 @@ public:
 	void				NewLandscape( DWORD dwTextureId ); // 지형을 새로 만든다.
 	void				SetVertices(); // 버텍스 버퍼 재구성
 	void				RenderPatches(); // 모든 패치를 모든 레이어별로 그린다.
-	HRESULT				Render( LPDIRECT3DDEVICE9 pd3dDevice, BOOL bLod = TRUE );
-	HRESULT				RenderWater( LPDIRECT3DDEVICE9 pd3dDevice );
+	HRESULT				Render( BOOL bLod = TRUE );
+	HRESULT				RenderWater( );
 	BOOL				ForceTexture(LPDIRECT3DTEXTURE9 pNewTex);
 	void				CalculateBound(); // 컬링용 바운드 박스 재계산
 	void				UpdateCull(void); // 각 패치별 컬링과 LOD 적용

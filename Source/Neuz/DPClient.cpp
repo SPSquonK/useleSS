@@ -18,6 +18,7 @@
 #include "wndmessenger.h"
 #include "WndSkillTree.h"
 #include "WndQuest.h" 
+#include "WndPost.h"
 #include "mover.h"
 #include "Ship.h"
 #include "Sfx.h"
@@ -69,10 +70,6 @@
 #include "post.h"
 #include "spevent.h"
 
-#ifdef __S_SERVER_UNIFY
-extern DWORD IsValidPlayerName( CString& strName );
-#endif // __S_SERVER_UNIFY
-
 #include "playerdata.h"
 
 #include "WndBagEx.h"
@@ -107,7 +104,6 @@ CDPClient::CDPClient()
 	m_dwReturnScroll = 0;
 	m_bEventTextColor = TRUE;
 
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_JOIN, &CDPClient::OnJoin );
 	ON_MSG( PACKETTYPE_SNAPSHOT, &CDPClient::OnSnapshot );
 	ON_MSG( PACKETTYPE_REPLACE, &CDPClient::OnReplace );
@@ -183,7 +179,6 @@ CDPClient::CDPClient()
 #endif // __QUIZ
 
 	memset( (void*)&m_ss, 0, sizeof(SNAPSHOT) );
-	memset( (void*)&m_pa, 0, sizeof(PLAYERANGLE) );
 	
 	m_nMaxLoginGuild = 0;
 	memset( m_uLoginPlayerIdGuild, 0, sizeof(m_uLoginPlayerIdGuild) );
@@ -267,11 +262,9 @@ void CDPClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID
 #endif	// __J
 
 	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
+	DWORD dw; ar >> dw;
 	
-	if( pfn ) {
-		( this->*( pfn ) )( ar );
+	if( Handle(ar, dw) ) {
 	}
 	else {
 /*
@@ -669,9 +662,7 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_RAINBOWRACE_NOWSTATE:	OnRainbowRaceNowState( ar ); break;
 			case SNAPSHOTTYPE_RAINBOWRACE_MINIGAMESTATE: OnRainbowRaceMiniGameState( ar, FALSE ); break;
 			case SNAPSHOTTYPE_RAINBOWRACE_MINIGAMEEXTSTATE: OnRainbowRaceMiniGameState( ar, TRUE ); break;
-#ifdef __PET_1024
 			case SNAPSHOTTYPE_SET_PET_NAME:		OnSetPetName( objid, ar );	break;
-#endif	// __PET_1024
 			case SNAPSHOTTYPE_HOUSING_ALLINFO: OnHousingAllInfo( ar ); break;
 			case SNAPSHOTTYPE_HOUSING_FURNITURELIST: OnHousingSetFunitureList( ar ); break;
 			case SNAPSHOTTYPE_HOUSING_SETUPFURNITURE: OnHousingSetupFurniture( ar ); break;
@@ -901,7 +892,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 #ifdef __BS_NO_CREATION_POST
 	if( MI_POSTBOX == dwObjIndex  )
 	{
-		CObj* pObj	= (CCtrl*)CreateObj( g_Neuz.m_pd3dDevice, dwObjType, dwObjIndex, dwObjType != OT_MOVER );
+		CObj* pObj	= (CCtrl*)CreateObj( dwObjType, dwObjIndex, dwObjType != OT_MOVER );
 		if( pObj == NULL )
 		{
 			CString string;
@@ -922,7 +913,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 		if( pWorld )
 		{
 			// waste it
-			CObj* pObjtmp	= CreateObj( g_Neuz.m_pd3dDevice, dwObjType, dwObjIndex, dwObjType != OT_MOVER );
+			CObj* pObjtmp	= CreateObj( dwObjType, dwObjIndex, dwObjType != OT_MOVER );
 			pObjtmp->Serialize( ar );
 			( (CCtrl*)pObjtmp )->SetId( NULL_ID );
 			safe_delete( pObjtmp );
@@ -939,7 +930,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 		else
 		{
 			safe_delete( pObj );
-			pObj	= (CCtrl*)CreateObj( g_Neuz.m_pd3dDevice, dwObjType, dwObjIndex, dwObjType != OT_MOVER );
+			pObj	= (CCtrl*)CreateObj( dwObjType, dwObjIndex, dwObjType != OT_MOVER );
 			pObj->Serialize( ar );
 
 			if( dwObjType == OT_MOVER )
@@ -963,7 +954,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 					{
 						D3DXVECTOR3 vTemp	=pObj->GetPos() - g_pPlayer->GetPos();
 						if( vTemp.x*vTemp.x + vTemp.z*vTemp.z < 32*32 )
-							CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_MONSTER_SPAWN01, pObj->GetPos(), ( (CMover*)pObj )->GetId() );
+							CreateSfx( XI_GEN_MONSTER_SPAWN01, pObj->GetPos(), ( (CMover*)pObj )->GetId() );
 					}
 				}
 
@@ -990,17 +981,8 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 						SendPlayerBehavior2();
 				}
 				CMover* pPlayer	= (CMover*)pObj;
-				if( pPlayer->m_pActMover->IsFly() ) 
-				{
-					CModel* pModel	= prj.m_modelMng.LoadModel( D3DDEVICE, OT_ITEM, pPlayer->GetRideItemIdx() );
-					CModelObject* pModelObject = (CModelObject*)pModel;
-					if( pModelObject->m_pBone )
-					{
-						CString strMotion = pModelObject->GetMotionFileName( _T("stand") );
-						assert( strMotion != _T("") );
-						pModelObject->LoadMotion( strMotion );
-					}
-					pPlayer->SetRide( pModel, pPlayer->GetRideItemIdx() );
+				if (pPlayer->m_pActMover->IsFly()) {
+					pPlayer->SetRide(pPlayer->GetRideItemIdx());
 				}
 				pPlayer->InitMotion( pPlayer->m_dwMotion );	
 			}
@@ -1009,7 +991,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 	}
 	else
 	{
-		pObj	= (CCtrl*)CreateObj( g_Neuz.m_pd3dDevice, dwObjType, dwObjIndex, dwObjType != OT_MOVER );
+		pObj	= (CCtrl*)CreateObj( dwObjType, dwObjIndex, dwObjType != OT_MOVER );
 		if( pObj == NULL )
 		{
 			CString string;
@@ -1043,7 +1025,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 					{
 						D3DXVECTOR3 vTemp	=pObj->GetPos() - g_pPlayer->GetPos();
 						if( vTemp.x*vTemp.x + vTemp.z*vTemp.z < 32*32 )
-							CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_MONSTER_SPAWN01, pObj->GetPos(), ( (CMover*)pObj )->GetId() );
+							CreateSfx( XI_GEN_MONSTER_SPAWN01, pObj->GetPos(), ( (CMover*)pObj )->GetId() );
 					}
 				}
 			}
@@ -1087,15 +1069,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 			}
 			CMover* pPlayer	= (CMover*)pObj;
 			if( pPlayer->m_pActMover->IsFly() ) {
-				CModel* pModel	= prj.m_modelMng.LoadModel( D3DDEVICE, OT_ITEM, pPlayer->GetRideItemIdx() );
-				CModelObject* pModelObject = (CModelObject*)pModel;
-				if( pModelObject->m_pBone )
-				{
-					CString strMotion = pModelObject->GetMotionFileName( _T("stand") );
-					assert( strMotion != _T("") );
-					pModelObject->LoadMotion( strMotion );
-				}
-				pPlayer->SetRide( pModel, pPlayer->GetRideItemIdx() );
+				pPlayer->SetRide(pPlayer->GetRideItemIdx());
 				
 				ItemProp *pItemProp = prj.GetItemProp( pPlayer->GetRideItemIdx() );	// 빗자루 프로퍼티.
 				if( pItemProp )
@@ -1179,7 +1153,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 					ItemProp* pItemProp = prj.GetItemProp( pMover->m_dwUseItemId );
 					if( pItemProp )
 					{
-						CreateItemReadySfx( D3DDEVICE, pItemProp->dwSfxObj, pMover->GetPos(), pMover->GetId(), 
+						CreateItemReadySfx( pItemProp->dwSfxObj, pMover->GetPos(), pMover->GetId(), 
 							pMover->GetPos(), pMover->GetId(), -1 ); 
 					}					
 				}
@@ -1188,7 +1162,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 			DWORD dwDisquise = pMover->GetDisguise();
 			if( dwDisquise != NULL_ID )
 			{
-				pMover->Disguise( D3DDEVICE, dwDisquise );
+				pMover->Disguise( dwDisquise );
 				CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
 				if( pWndQuestDetail )
 					pWndQuestDetail->UpdateQuestText();
@@ -1199,7 +1173,7 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 			}
 #ifdef __QUIZ
 			else if( g_pPlayer->GetWorld() && g_pPlayer->GetWorld()->GetID() == WI_WORLD_QUIZ && g_pPlayer && g_pPlayer != pMover )
-				pMover->Disguise( D3DDEVICE, MI_AIBATT1 );
+				pMover->Disguise( MI_AIBATT1 );
 #endif // __QUIZ
 		}
 
@@ -1303,7 +1277,7 @@ void CDPClient::OnEventMessage( OBJID objid, CAr & ar )
 		{
 		case 0: // 꽝 이벤트 상품권
 			{
-				CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_FAIL, vPos);	// 이벤트 꽝 이펙트.
+				CSfx *pSfx = CreateSfx( XI_EVE_EVENT_FAIL, vPos);	// 이벤트 꽝 이펙트.
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
 			}
@@ -1314,28 +1288,28 @@ void CDPClient::OnEventMessage( OBJID objid, CAr & ar )
 				switch( dwItemID )
 				{
 				case II_SYS_SYS_EVE_0504M1NOTEBOOK:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_NOTEBOOK, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_NOTEBOOK, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M2DCAMARA:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_DCAMARA, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_DCAMARA, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M3AIRSHIP:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_AIRSHIP, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_AIRSHIP, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M4USBFANLIGHT:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_USBFANLIGHT, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_USBFANLIGHT, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M5BALLOON:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_BALLOON, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_BALLOON, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M6GIFTTICKET:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_GIFTTICKET, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_GIFTTICKET, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M7MOVIETICKET:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_MOVIETICKET, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_MOVIETICKET, vPos );	// 이벤트 이펙트.
 					break;
 				case II_SYS_SYS_EVE_0504M8OST:
-					pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_OST, vPos );	// 이벤트 이펙트.
+					pSfx = CreateSfx( XI_EVE_EVENT_OST, vPos );	// 이벤트 이펙트.
 					break;
 				default:
 					break;
@@ -1353,7 +1327,7 @@ void CDPClient::OnEventMessage( OBJID objid, CAr & ar )
 				g_WndMng.PutString( strString, pMover, 0xffffffff );
 				if( g_pPlayer == pMover )
 				{
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_EVE_EVENT_WIN, vPos);	// 이벤트 꽝 이펙트.
+					CSfx *pSfx = CreateSfx( XI_EVE_EVENT_WIN, vPos);	// 이벤트 꽝 이펙트.
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
 				}
@@ -1419,7 +1393,7 @@ void CDPClient::OnAllAction( CAr & ar )
 			if( !g_WndMng.m_pWndChangeName )
 			{
 				g_WndMng.m_pWndChangeName		= new CWndChangeName;
-				g_WndMng.m_pWndChangeName->Initialize( &g_WndMng, 0 );
+				g_WndMng.m_pWndChangeName->Initialize();
 			}
 		}
 		else
@@ -1428,7 +1402,7 @@ void CDPClient::OnAllAction( CAr & ar )
 			if( !pWndGuildName )
 			{
 				pWndGuildName	= new CWndGuildName;
-				pWndGuildName->Initialize( &g_WndMng );
+				pWndGuildName->Initialize();
 			}
 			pWndGuildName->SetData( 0x7f );
 		}
@@ -1633,7 +1607,7 @@ g_PASS:
 			{
 				D3DXVECTOR3 vPos = pMover->GetPos();
 				vPos.y += 1.5f;
-				CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_HIT_HITBLOCK01, vPos );
+				CSfx *pSfx = CreateSfx( XI_HIT_HITBLOCK01, vPos );
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 			}
@@ -1642,7 +1616,7 @@ g_PASS:
 			{
 				D3DXVECTOR3 vPos = pMover->GetPos();
 				vPos.y += 1.5f;
-				CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_HIT_PARRY01, vPos );
+				CSfx *pSfx = CreateSfx( XI_HIT_PARRY01, vPos );
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 			}
@@ -1653,7 +1627,7 @@ g_PASS:
 				{
 					D3DXVECTOR3 vPos = pMover->GetPos();
 					vPos.y += 1.5f;
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_HIT_MISS01, vPos );
+					CSfx *pSfx = CreateSfx( XI_HIT_MISS01, vPos );
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 				}
@@ -1665,7 +1639,7 @@ g_PASS:
 			{
 				D3DXVECTOR3 vPos = pMover->GetPos();
 				vPos.y += 1.5f;
-				CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_HIT_MISS01, vPos );
+				CSfx *pSfx = CreateSfx( XI_HIT_MISS01, vPos );
 				if( pSfx )
 					pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
 //				g_DamageNumMng.AddNumber( pMover->GetPos(), 0, 4 );
@@ -1676,7 +1650,7 @@ g_PASS:
 				{
 					D3DXVECTOR3 vPos = pMover->GetPos();
 					vPos.y += 1.5f;
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, XI_HIT_CRITICAL01, vPos );
+					CSfx *pSfx = CreateSfx( XI_HIT_CRITICAL01, vPos );
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3( 3.0f, 3.0f, 3.0f ) );
 				}
@@ -1741,19 +1715,19 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 		{
 			pMover->GetWorld()->SetObjFocus( NULL );
 			SAFE_DELETE( g_WndMng.m_pWndDuelConfirm );
-			( (CWndWorld *)g_WndMng.m_pWndWorld )->SetLastTarget( NULL_ID );
+			g_WndMng.m_pWndWorld->SetLastTarget( NULL_ID );
 		}
 		else if( pAttacker && g_pPlayer == pAttacker )
 		{
 			CObj* pTempObj = NULL;
-			if(( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj != NULL)
-				pTempObj = ( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj;
+			if(g_WndMng.m_pWndWorld->m_pNextTargetObj != NULL)
+				pTempObj = g_WndMng.m_pWndWorld->m_pNextTargetObj;
 			pAttacker->GetWorld()->SetObjFocus( NULL );
-			( (CWndWorld *)g_WndMng.m_pWndWorld )->SetLastTarget( NULL_ID );
+			g_WndMng.m_pWndWorld->SetLastTarget( NULL_ID );
 			if(pTempObj != NULL)
 			{
-				( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj = pTempObj;
-				( (CWndWorld *)g_WndMng.m_pWndWorld )->SetNextTarget();
+				g_WndMng.m_pWndWorld->m_pNextTargetObj = pTempObj;
+				g_WndMng.m_pWndWorld->SetNextTarget();
 			}
 		}
 		
@@ -1764,15 +1738,15 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 			pMover->m_pAngel = NULL;
 			pMover->m_pAngelFlag = FALSE;
 		}
-		if((CObj*)pMover == ( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj)
+		if((CObj*)pMover == g_WndMng.m_pWndWorld->m_pNextTargetObj)
 		{
-			if(( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj == ( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pRenderTargetObj)
+			if(g_WndMng.m_pWndWorld->m_pNextTargetObj == g_WndMng.m_pWndWorld->m_pRenderTargetObj)
 			{
-				( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj = NULL;
-				( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pRenderTargetObj = g_WorldMng()->GetObjFocus();
+				g_WndMng.m_pWndWorld->m_pNextTargetObj = NULL;
+				g_WndMng.m_pWndWorld->m_pRenderTargetObj = g_WorldMng()->GetObjFocus();
 			}
 			else
-				( (CWndWorld *)g_WndMng.m_pWndWorld )->m_pNextTargetObj = NULL;
+				g_WndMng.m_pWndWorld->m_pNextTargetObj = NULL;
 		}
 //		if( IsValidObj( (CObj*)pAttacker ) )
 		// pAttacker가 없을수도있다.
@@ -1840,7 +1814,7 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 					if( NULL == g_WndMng.m_pWndRevival )		// 부활창 띄움
 					{
 						g_WndMng.m_pWndRevival	= new CWndRevival;
-						g_WndMng.m_pWndRevival->Initialize( &g_WndMng, 0 );
+						g_WndMng.m_pWndRevival->Initialize();
 
 						if( bBossDie )
 						{
@@ -2070,7 +2044,7 @@ void CDPClient::OnReplace( CAr & ar )
 	if( pWndWorld )
 		pWndWorld->m_pSelectRenderObj = NULL;
 
-	g_Neuz.m_TexLoading.LoadTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff, FALSE );
+	g_Neuz.m_TexLoading.LoadTexture( strPath, 0xffff00ff, FALSE );
 	
 	g_Neuz.m_bTexLoad = TRUE;
 	g_Neuz.m_nTexAlpha = 255;
@@ -2135,10 +2109,10 @@ void CDPClient::OnReplace( CAr & ar )
 //	pWndWorld->m_dwIdBgmMusicOld	= 0;
 //#endif	//
 	StopMusic();
-	g_WorldMng.Open( g_Neuz.m_pd3dDevice, dwWorldID );
-	g_WorldMng.Get()->RestoreDeviceObjects( g_Neuz.m_pd3dDevice );
+	g_WorldMng.Open( dwWorldID );
+	g_WorldMng.Get()->RestoreDeviceObjects( );
 	g_WorldMng.Get()->SetCamera( &g_Neuz.m_camera );
-	g_Neuz.m_camera.Transform( D3DDEVICE, g_WorldMng.Get() );
+	g_Neuz.m_camera.Transform( g_WorldMng.Get() );
 	g_Neuz.m_camera.Reset();
 	g_WorldMng.Get()->ReadWorld( vPos );
 #ifdef __HOUSING
@@ -2186,7 +2160,7 @@ void CDPClient::OnDoEquip( OBJID objid, CAr & ar )
 				pPlayer->DoEquip( pItemElem, fEquip, nPart );
 				if( g_pBipedMesh )
 				{
-					CMover::UpdateParts( pPlayer->GetSex(), pPlayer->m_dwSkinSet, pPlayer->m_dwFace, pPlayer->m_dwHairMesh, pPlayer->m_dwHeadMesh, pPlayer->m_aEquipInfo, g_pBipedMesh, &pPlayer->m_Inventory );
+					CMover::UpdateParts( pPlayer->GetSex(), pPlayer->m_skin, pPlayer->m_aEquipInfo, g_pBipedMesh, &pPlayer->m_Inventory );
 					CWndBeautyShop* pWndBeautyShop = (CWndBeautyShop*)g_WndMng.GetWndBase(APP_BEAUTY_SHOP_EX);
 					if( pWndBeautyShop )
 						pWndBeautyShop->UpdateModels();
@@ -2196,7 +2170,7 @@ void CDPClient::OnDoEquip( OBJID objid, CAr & ar )
 				}
 			if( g_WndMng.m_pWndBeautyShop && g_WndMng.m_pWndBeautyShop->m_pModel )
 			{
-				CMover::UpdateParts( pPlayer->GetSex(), pPlayer->m_dwSkinSet, pPlayer->m_dwFace, pPlayer->m_dwHairMesh, pPlayer->m_dwHeadMesh, pPlayer->m_aEquipInfo, g_WndMng.m_pWndBeautyShop->m_pModel, &pPlayer->m_Inventory );
+				CMover::UpdateParts( pPlayer->GetSex(), pPlayer->m_skin, pPlayer->m_aEquipInfo, g_WndMng.m_pWndBeautyShop->m_pModel, &pPlayer->m_Inventory );
 			}
 			
 			CWndInventory* pWndInventory	= (CWndInventory*)g_WndMng.GetWndBase( APP_INVENTORY );
@@ -2257,7 +2231,7 @@ void CDPClient::OnConfirmTrade( OBJID objid, CAr & ar ) {
 	}
 		
 	g_WndMng.m_pWndConfirmTrade = new CWndConfirmTrade;
-	g_WndMng.m_pWndConfirmTrade->Initialize( NULL, APP_CONFIRM_TRADE );			
+	g_WndMng.m_pWndConfirmTrade->Initialize();			
 	g_WndMng.m_pWndConfirmTrade->OnSetName( pTrader->GetName(), objid );
 }
 
@@ -2411,32 +2385,13 @@ void CDPClient::OnTradeCancel( OBJID objid, CAr & ar )
 	SAFE_DELETE( g_WndMng.m_pWndTradeGold );
 }
 
-void CDPClient::OnTradelastConfirmOk( OBJID objid, CAr & ar )
-{
-	if( objid == g_pPlayer->GetId() )
-	{
-		CWndTradeConfirm* pWndTradeConfirm = (CWndTradeConfirm*)g_WndMng.GetWndBase( APP_TRADE_CONFIRM );
-		if( pWndTradeConfirm )
-		{
-			pWndTradeConfirm->bMsg = TRUE;
-			//CString str = "승인을 할동안 기다려 주십시요";
-			CString str = prj.GetText(TID_GAME_WAITCOMFIRM);
-			CWndStatic* pWndStatic = (CWndStatic*)pWndTradeConfirm->GetDlgItem( WIDC_STATIC1 );
-			pWndStatic->SetTitle( str );
-			CWndButton * pWndButtonOk = (CWndButton*)pWndTradeConfirm->GetDlgItem( WIDC_YES );
-			pWndButtonOk->SetVisible( FALSE );
-			CWndButton * pWndButtonNO = (CWndButton*)pWndTradeConfirm->GetDlgItem( WIDC_NO );
-			pWndButtonNO->SetVisible( FALSE );
+void CDPClient::OnTradelastConfirmOk(OBJID objid, CAr &) {
+	if (objid == g_pPlayer->GetId()) {
+		if (CWndTradeConfirm * pWndTradeConfirm = g_WndMng.GetWndBase<CWndTradeConfirm>(APP_TRADE_CONFIRM)) {
+			pWndTradeConfirm->OnTradelastConfirmOk();
 		}
-	}
-	else
-	{
-		if( g_pPlayer->m_vtInfo.GetOther() )
-		{
-			CString str;
-			str.Format( prj.GetText(TID_GAME_FINALCOMFIRM), g_pPlayer->m_vtInfo.GetOther()->GetName() );
-			g_WndMng.PutString( str, NULL, prj.GetTextColor( TID_GAME_TRADEACCPET ) );
-		}
+	} else if (g_pPlayer->m_vtInfo.GetOther()) {
+		g_WndMng.PutString(TID_GAME_FINALCOMFIRM, g_pPlayer->m_vtInfo.GetOther()->GetName());
 	}
 }
 
@@ -2473,7 +2428,7 @@ void CDPClient::OnTradeConsent() {
 void CDPClient::OnTradelastConfirm( void )
 {
 	g_WndMng.m_pWndTradeConfirm = new CWndTradeConfirm;
-	g_WndMng.m_pWndTradeConfirm->Initialize( NULL, APP_TRADE_CONFIRM );
+	g_WndMng.m_pWndTradeConfirm->Initialize();
 
 	CWndTrade* pWndTrade	= (CWndTrade*)g_WndMng.GetApplet( APP_TRADE );
 	if( pWndTrade )
@@ -2502,7 +2457,7 @@ void CDPClient::OnOpenShopWnd( OBJID objid, CAr & ar )
 		g_pPlayer->m_vtInfo.SetOther( pVendor );
 
 		g_WndMng.CreateApplet( APP_INVENTORY );
-		g_WndMng.m_pWndShop->Initialize( NULL, APP_SHOP_ );
+		g_WndMng.m_pWndShop->Initialize();
 	}
 }
 
@@ -2654,7 +2609,7 @@ void CDPClient::OnBank( OBJID , CAr & ar )
 	if (nMode == Subsnapshot::Bank::ValidateBankAccess) {
 		g_WndMng.CreateApplet(APP_INVENTORY);
 		g_WndMng.m_pWndBank = new CWndBank;
-		g_WndMng.m_pWndBank->Initialize(&g_WndMng, APP_COMMON_BANK);
+		g_WndMng.m_pWndBank->Initialize();
 		return;
 	}
 
@@ -2664,21 +2619,21 @@ void CDPClient::OnBank( OBJID , CAr & ar )
 		case Subsnapshot::Bank::AskCurrentPassword:
 		case Subsnapshot::Bank::OkForNewPassword:
 			g_WndMng.m_pWndConfirmBank = new CWndConfirmBank(dwId);
-			g_WndMng.m_pWndConfirmBank->Initialize(NULL);
+			g_WndMng.m_pWndConfirmBank->Initialize();
 			break;
 		case Subsnapshot::Bank::InitialRequirePassword:
 			g_WndMng.m_pWndBankPassword = new CWndBankPassword(false, dwId);
-			g_WndMng.m_pWndBankPassword->Initialize(NULL);
+			g_WndMng.m_pWndBankPassword->Initialize();
 			break;
 		case Subsnapshot::Bank::InvalidNewPasswordQuery:
 			g_WndMng.m_pWndBankPassword = new CWndBankPassword(true, dwId);
-			g_WndMng.m_pWndBankPassword->Initialize(NULL);
+			g_WndMng.m_pWndBankPassword->Initialize();
 
 			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0028)));
 			break;
 		case Subsnapshot::Bank::InvalidCurrentPassword:
 			g_WndMng.m_pWndConfirmBank = new CWndConfirmBank(dwId);
-			g_WndMng.m_pWndConfirmBank->Initialize(NULL);
+			g_WndMng.m_pWndConfirmBank->Initialize();
 			g_WndMng.OpenMessageBox(_T(prj.GetText(TID_DIAG_0028)));
 			break;
 	}
@@ -2704,7 +2659,7 @@ void CDPClient::OnGuildBankWindow( OBJID objid, CAr & ar )
 
 			g_WndMng.CreateApplet( APP_INVENTORY );
 			
-			g_WndMng.m_pWndGuildBank->Initialize(NULL, APP_GUILD_BANK);
+			g_WndMng.m_pWndGuildBank->Initialize();
 		}
 		break;
 	default:
@@ -2887,7 +2842,7 @@ void CDPClient::OnSetLevel( OBJID objid, CAr & ar )
 		{
 			if( pMover->m_pActMover && ( pMover->m_pActMover->IsState( OBJSTA_STAND ) || pMover->m_pActMover->IsState( OBJSTA_STAND2 )) )
 				pMover->SetMotion( MTI_LEVELUP, ANILOOP_1PLAY, MOP_FIXED );
-			CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId() );	// 레벨업 이펙트.
+			CreateSfx( XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId() );	// 레벨업 이펙트.
 		}
 
 		//현재 클라와 동기화가 안된 상황 - 기본 정보만 일단 셋팅 틱처리하는 부분이 수정되면 자동으로 Hp, Mp는 동기화가 될듯.
@@ -2906,7 +2861,7 @@ void CDPClient::OnSetFlightLevel( OBJID objid, CAr & ar )
 	if( IsValidObj( (CObj*)pMover ) )
 	{
 		if( (int)wFlightLv > pMover->GetFlightLv() )	// 레벨업 된상황이면 
-			CreateSfx( g_Neuz.m_pd3dDevice, XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId() );	// 레벨업 이펙트.
+			CreateSfx( XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId() );	// 레벨업 이펙트.
 		pMover->SetFlightLv( wFlightLv );
 	}
 }
@@ -2936,7 +2891,7 @@ void CDPClient::OnSetExperience( OBJID objid, CAr & ar )
 
 		if( nSP < nSkillPoint )
 		{
-			CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_LEVEL_UP01,g_pPlayer->GetPos(),g_pPlayer->GetId());
+			CreateSfx(XI_GEN_LEVEL_UP01,g_pPlayer->GetPos(),g_pPlayer->GetId());
 			if( pMover == g_pPlayer )
 			{
 				PlayMusic( BGM_IN_LEVELUP );
@@ -3034,16 +2989,12 @@ void CDPClient::OnRevivalLodelight( OBJID objid )
 	}
 }
 
-void CDPClient::OnSetGrowthLearningPoint( OBJID objid, CAr & ar )
-{
-	long nRemainGP, nRemainLP;
-	ar >> nRemainGP >> nRemainLP;
-	
-	// nRemainLP 사용하지 않는다.
-	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pMover ) )
-	{
-		pMover->m_nRemainGP	= nRemainGP;
+void CDPClient::OnSetGrowthLearningPoint(OBJID objid, CAr & ar) {
+	long nRemainGP; ar >> nRemainGP;
+
+	CMover * pMover = prj.GetMover(objid);
+	if (IsValidObj(pMover)) {
+		pMover->m_nRemainGP = nRemainGP;
 	}
 }
 
@@ -3051,16 +3002,14 @@ void CDPClient::OnSetChangeJob( OBJID objid, CAr & ar ) {
 	CMover* pMover = prj.GetMover( objid );
 	if (!IsValidObj(pMover)) return;
 
-	int nJob;
-	ar >> nJob >> pMover->m_jobSkills;
-	pMover->m_nJob = nJob;
+	ar >> pMover->m_nJob >> pMover->m_jobSkills;
 
 	CWndSkillTreeCommon::ReInitIfOpen();
 		
 	if (pMover->IsActiveMover()) {
 		if (pMover->m_pActMover && (pMover->m_pActMover->IsState(OBJSTA_STAND) || pMover->m_pActMover->IsState(OBJSTA_STAND2)))
 			pMover->SetMotion(MTI_LEVELUP, ANILOOP_1PLAY, MOP_FIXED);
-		CreateSfx(g_Neuz.m_pd3dDevice, XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId());
+		CreateSfx( XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId());
 		PlayMusic(BGM_IN_LEVELUP);
 		g_WndMng.PutString(TID_EVE_CHGJOB, pMover->GetJobString());
 
@@ -3077,11 +3026,9 @@ void CDPClient::OnSetNearChangeJob(OBJID objid, CAr & ar) {
 	CMover * pMover = prj.GetMover(objid);
 	if (!IsValidObj(pMover)) return;
 
-	int nJob;
-	ar >> nJob >> pMover->m_jobSkills;
-	pMover->m_nJob = nJob;
+	ar >> pMover->m_nJob >> pMover->m_jobSkills;
 
-	CreateSfx(g_Neuz.m_pd3dDevice, XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId());
+	CreateSfx( XI_GEN_LEVEL_UP01, pMover->GetPos(), pMover->GetId());
 
 	if (pMover->m_pActMover && (pMover->m_pActMover->IsState(OBJSTA_STAND) || pMover->m_pActMover->IsState(OBJSTA_STAND2)))
 		pMover->SetMotion(MTI_LEVELUP, ANILOOP_1PLAY, MOP_FIXED);
@@ -3363,12 +3310,12 @@ void CDPClient::OnCreateSfxObj( OBJID objid, CAr & ar )
 		}
 		else
 			vPos = pObj->GetPos();	// 없으면 오브젝트 좌표로 한다.
-		CreateSfx( g_Neuz.m_pd3dDevice, dwSfxObj, vPos, idObj, vPos, idObj );
+		CreateSfx( dwSfxObj, vPos, idObj, vPos, idObj );
 	}
 	else
 	{
 		if( x || y || z )		// 절대좌표가 있으면 그곳을 생성 위치로 한다.
-			CreateSfx( g_Neuz.m_pd3dDevice, dwSfxObj, vWorld, NULL_ID, vWorld, NULL_ID );
+			CreateSfx( dwSfxObj, vWorld, NULL_ID, vWorld, NULL_ID );
 	}
 }
 
@@ -4120,7 +4067,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 				{
 					D3DXVECTOR3 v = g_pPlayer->GetPos();
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, NULL_ID, D3DXVECTOR3(0,0,0), g_pPlayer->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, NULL_ID, D3DXVECTOR3(0,0,0), g_pPlayer->GetId() );	// 머리위에 sfx생성.
 
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(0.8f, 0.8f, 0.8f) );
@@ -4135,7 +4082,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 					
 					D3DXVECTOR3 v = pMover->GetPos();
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(0.8f, 0.8f, 0.8f) );
@@ -4157,7 +4104,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 				{
 					D3DXVECTOR3 v = g_pPlayer->GetPos();
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, NULL_ID, D3DXVECTOR3(0,0,0), g_pPlayer->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, NULL_ID, D3DXVECTOR3(0,0,0), g_pPlayer->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(0.7f, 0.7f, 0.7f) );
@@ -4172,7 +4119,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 					
 					D3DXVECTOR3 v = pMover->GetPos();
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(0.7f, 0.7f, 0.7f) );
@@ -4199,7 +4146,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 				{
 					D3DXVECTOR3 v = pPlayerMover->GetPos();
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pPlayerMover->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pPlayerMover->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -4241,7 +4188,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 				{
 					D3DXVECTOR3 v = g_pPlayer->GetPos();
 
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, g_pPlayer->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, g_pPlayer->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -4256,7 +4203,7 @@ void CDPClient::OnSetPartyMode( CAr & ar )
 					
 					D3DXVECTOR3 v = pMover->GetPos();
 					
-					CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
+					CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pMover->GetId() );	// 머리위에 sfx생성.
 					
 					if( pSfx )
 						pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -4415,7 +4362,7 @@ void CDPClient::OnPartySkillCall( OBJID objid, CAr & ar )
 			#define ST_STRETCHING                      8
 			#define ST_GIFTBOX                         9
 		 */
-		CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj2, v, objid );	// 머리위에 sfx생성.
+		CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj2, v, objid );	// 머리위에 sfx생성.
 	
 		if( pSfx )
 			pSfx->SetScale( D3DXVECTOR3(1.1f, 1.1f, 1.1f) );
@@ -4430,14 +4377,14 @@ void CDPClient::OnPartySkillCall( OBJID objid, CAr & ar )
 		{
 			D3DXVECTOR3 v = pLeaderMover->GetPos();
 			
-			CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj2, v, pLeaderMover->GetId() );	// 머리위에 sfx생성.
+			CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj2, v, pLeaderMover->GetId() );	// 머리위에 sfx생성.
 			
 			if( pSfx )
 				pSfx->SetScale( D3DXVECTOR3(1.1f, 1.1f, 1.1f) );
 		}
 		
 		// 단원 표시하기
-		CSfx *pSfx2 = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, objid );	// 머리위에 sfx생성.
+		CSfx *pSfx2 = CreateSfx( pItemProp->dwSfxObj, v, objid );	// 머리위에 sfx생성.
 		if( pSfx2 )
 		{
 			pSfx2->SetScale( D3DXVECTOR3(1.1f, 1.1f, 1.1f) );
@@ -4468,7 +4415,7 @@ void CDPClient::OnPartySkillBlitz( CAr & ar )
 
 	ItemProp* pItemProp = prj.GetPartySkill( ST_BLITZ );
 	
-	CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, NULL_ID, D3DXVECTOR3(0,0,0), tagetID );	// 머리위에 sfx생성.
+	CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, NULL_ID, D3DXVECTOR3(0,0,0), tagetID );	// 머리위에 sfx생성.
 
 	if( pSfx )
 		pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -4491,7 +4438,7 @@ void CDPClient::OnPartySkillRetreat( OBJID objid )
 
 		D3DXVECTOR3 v = pPlayerMover->GetPos();
 		
-		CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pPlayerMover->GetId() );	// 머리위에 sfx생성.
+		CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pPlayerMover->GetId() );	// 머리위에 sfx생성.
 
 		if( pSfx )
 			pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -4516,7 +4463,7 @@ void CDPClient::OnPartySkillSphereCircle( OBJID objid )
 	CMover* pLeader	= g_Party.GetLeader();
 	if( IsValidObj( (CObj*)pLeader ) )
 	{
-		CSfx *pSfx = CreateSfx( g_Neuz.m_pd3dDevice, pItemProp->dwSfxObj, v, pLeader->GetId(), D3DXVECTOR3(0,0,0) );	// 머리위에 sfx생성.
+		CSfx *pSfx = CreateSfx( pItemProp->dwSfxObj, v, pLeader->GetId(), D3DXVECTOR3(0,0,0) );	// 머리위에 sfx생성.
 		
 		if( pSfx )
 			pSfx->SetScale( D3DXVECTOR3(1.0f, 1.0f, 1.0f) );
@@ -4536,7 +4483,7 @@ void CDPClient::OnEnvironmentSetting( CAr & ar ) {
 				});
 		};
 
-		CFixedArray<MODELELEM> & apModelElem = prj.m_modelMng.m_aaModelElem[OT_OBJ];
+		CFixedArray<MODELELEM> & apModelElem = prj.m_modelMng.GetModelElems(OT_OBJ);
 
 		for (MODELELEM & pModelElem : apModelElem) {
 
@@ -4970,11 +4917,9 @@ void CDPClient::OnFlyffEvent( CAr & ar )
 	for( int i = 0; i < MAX_EVENT; i++ )
 	{
 		BYTE nState	= g_eLocal.GetState( i );
-		if( nState != 0 )
-		{
-			PEVENT_GENERIC pEvent	= CEventGeneric::GetInstance()->GetEvent( i );
-			if( pEvent )
-			{
+		if (nState == 0) continue;
+		
+			if (const EVENT_GENERIC * pEvent = CEventGeneric::GetInstance()->GetEvent(i)) {
 				if( strlen( pEvent->pszTitle ) == 0 )
 					continue;
 				char lpString[200]	= { 0, };
@@ -4986,6 +4931,7 @@ void CDPClient::OnFlyffEvent( CAr & ar )
 				m_bEventTextColor = !m_bEventTextColor;
 				continue;
 			}
+
 			switch( i )
 			{
 				case EVE_0401A:
@@ -5036,7 +4982,7 @@ void CDPClient::OnFlyffEvent( CAr & ar )
 						break;
 					}
 			}
-		}
+		
 	}
 }
 
@@ -5046,23 +4992,21 @@ void CDPClient::OnSetLocalEvent( CAr & ar )
 	BYTE nState;
 	ar >> id >> nState;
 	g_eLocal.SetState( id, nState );
-	PEVENT_GENERIC pEvent	= CEventGeneric::GetInstance()->GetEvent( id );
-	if( pEvent )
-	{
-		if( strlen( pEvent->pszTitle ) == 0 )
+	
+	if (const EVENT_GENERIC * pEvent = CEventGeneric::GetInstance()->GetEvent(id)) {
+		if( std::strlen( pEvent->pszTitle ) == 0 )
 			return;
-		char lpString[200]	= { 0, };
-		if( nState == 0 )
-			sprintf( lpString, GETTEXT( TID_GAME_END_EVENT ), pEvent->pszTitle );
-		else
-			sprintf( lpString, GETTEXT( TID_GAME_START_EVENT ), pEvent->pszTitle );
 
-		if( m_bEventTextColor )
-			g_WndMng.PutString( lpString, NULL, 0xffffff99 );
-		else
-			g_WndMng.PutString( lpString, NULL, 0xffccffcc );
+		const DWORD textId = nState == 0 ? TID_GAME_END_EVENT : TID_GAME_START_EVENT;
+		const DWORD textColor = m_bEventTextColor ? 0xffffff99 : 0xffccffcc;
+
+		char lpString[200] = "";
+		std::sprintf(lpString, prj.GetText(textId), pEvent->pszTitle);
+		g_WndMng.PutString(lpString, NULL, textColor);
+		
 		m_bEventTextColor = !m_bEventTextColor;
 	}
+
 	switch( id )
 	{
 		case EVE_0401A:
@@ -5492,7 +5436,7 @@ void CDPClient::OnChangeFace( CAr & ar )
 	
 	if( IsValidObj( pMover ) )
 	{
-		pMover->m_dwHeadMesh = dwFace;
+		pMover->m_skin.headMesh = dwFace;
 		if( g_pPlayer == pMover )
 		{
 			CWndInventory* pWndInventory	= (CWndInventory*)g_WndMng.GetWndBase( APP_INVENTORY );
@@ -5501,12 +5445,12 @@ void CDPClient::OnChangeFace( CAr & ar )
 				pWndInventory->UpdateParts();
 			}
 			
-			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, (CModelObject*)pMover->m_pModel, &pMover->m_Inventory );		
-			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, g_pBipedMesh, &pMover->m_Inventory );		
+			CMover::UpdateParts( pMover->GetSex(), pMover->m_skin, pMover->m_aEquipInfo, (CModelObject*)pMover->m_pModel, &pMover->m_Inventory );		
+			CMover::UpdateParts( pMover->GetSex(), pMover->m_skin, pMover->m_aEquipInfo, g_pBipedMesh, &pMover->m_Inventory );
 		}
 		else
 		{
-			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, (CModelObject*)pMover->m_pModel, NULL );		
+			CMover::UpdateParts( pMover->GetSex(), pMover->m_skin, pMover->m_aEquipInfo, (CModelObject*)pMover->m_pModel, NULL );
 		}
 
 	}		
@@ -5554,13 +5498,19 @@ void CDPClient::OnGuildCombat( CAr & ar )
 		OnGCUserState( ar );
 		break;
 	case GC_GUILDSTATUS:
-		OnGCGuildStatus( ar );
+		if (CWndWorld * pWndWorld = g_WndMng.GetWndBase<CWndWorld>(APP_WORLD)) {
+			pWndWorld->m_infoGC.OnGuildStatus(ar);
+		}
 		break;
 	case GC_GUILDPRECEDENCE:
-		OnGCGuildPrecedence( ar );
+		if (CWndWorld * pWndWorld = g_WndMng.GetWndBase<CWndWorld>(APP_WORLD)) {
+			pWndWorld->m_GCprecedence.OnGuildPrecedence(ar);
+		}
 		break;
 	case GC_PLAYERPRECEDENCE:
-		OnGCPlayerPrecedence( ar );
+		if (CWndWorld * pWndWorld = g_WndMng.GetWndBase<CWndWorld>(APP_WORLD)) {
+			pWndWorld->m_GCprecedence.OnPlayerPrecedence(ar);
+		}
 		break;
 	case GC_SELECTWARPOS:
 		OnGCJoinWarWindow( ar );
@@ -5593,7 +5543,9 @@ void CDPClient::OnGuildCombat( CAr & ar )
 		OnGCTele( ar );
 		break;
 	case GC_WARPLAYERLIST:
-		OnGCWarPlayerList( ar );
+		if (CWndWorld * pWndWorld = g_WndMng.GetWndBase<CWndWorld>(APP_WORLD)) {
+			pWndWorld->m_infoGC.OnPlayerList(ar);
+		}
 		break;
 	case GC_ISREQUEST:
 		OnIsRequest( ar );
@@ -5623,30 +5575,30 @@ void CDPClient::OnGCInWindow( CAr& ar )
 	}
 	
 	SAFE_DELETE(g_WndMng.m_pWndGuildCombatOffer);
-	g_WndMng.m_pWndGuildCombatOffer = new CWndGuildCombat1to1Offer(0);
+	g_WndMng.m_pWndGuildCombatOffer = new CWndGuildCombat1to1Offer(
+		CWndGuildCombat1to1Offer::CombatType::GCGuild
+	);
 
-	if( g_WndMng.m_pWndGuildCombatOffer )
-	{
-		g_WndMng.m_pWndGuildCombatOffer->Initialize( NULL );				
+	g_WndMng.m_pWndGuildCombatOffer->Initialize();				
 
-		g_WndMng.m_pWndGuildCombatOffer->SetMinGold( dwMinPenya );
+	g_WndMng.m_pWndGuildCombatOffer->SetMinGold( dwMinPenya );
 		
-		if( dwRequestPenya == 0 )
-		{
-			g_WndMng.m_pWndGuildCombatOffer->SetReqGold(dwRequestPenya);
-			g_WndMng.m_pWndGuildCombatOffer->SetBackupGold( dwMinPenya );
-			g_WndMng.m_pWndGuildCombatOffer->SetGold( dwMinPenya );
-		}
-		else
-		{
-			g_WndMng.m_pWndGuildCombatOffer->SetReqGold(dwRequestPenya);
-			g_WndMng.m_pWndGuildCombatOffer->SetBackupGold( dwRequestPenya );
-			g_WndMng.m_pWndGuildCombatOffer->SetGold( dwRequestPenya );			
-		}
-
-
-		g_WndMng.m_pWndGuildCombatOffer->EnableAccept( TRUE );
+	if( dwRequestPenya == 0 )
+	{
+		g_WndMng.m_pWndGuildCombatOffer->SetReqGold(dwRequestPenya);
+		g_WndMng.m_pWndGuildCombatOffer->SetBackupGold( dwMinPenya );
+		g_WndMng.m_pWndGuildCombatOffer->SetGold( dwMinPenya );
 	}
+	else
+	{
+		g_WndMng.m_pWndGuildCombatOffer->SetReqGold(dwRequestPenya);
+		g_WndMng.m_pWndGuildCombatOffer->SetBackupGold( dwRequestPenya );
+		g_WndMng.m_pWndGuildCombatOffer->SetGold( dwRequestPenya );			
+	}
+
+
+	g_WndMng.m_pWndGuildCombatOffer->EnableAccept( TRUE );
+	
 }
 
 void CDPClient::OnGCRequestStatus( CAr& ar )
@@ -5724,7 +5676,7 @@ void CDPClient::OnGCSelectPlayer( CAr& ar )
 			g_WndMng.m_pWndGuildCombatSelection = new CWndGuildCombatSelection;
 			if( g_WndMng.m_pWndGuildCombatSelection )
 			{
-				g_WndMng.m_pWndGuildCombatSelection->Initialize( NULL );	
+				g_WndMng.m_pWndGuildCombatSelection->Initialize();	
 				g_WndMng.m_pWndGuildCombatSelection->SetMemberSize(nMaxJoinMember, nMaxWarMember );
 			}
 			
@@ -5762,99 +5714,54 @@ void CDPClient::OnGCUserState( CAr & ar )
 	}
 }
 // 자신의 길드 상황
-void CDPClient::OnGCGuildStatus( CAr & ar )
-{
-	int nSize;
-	u_long uidPlayer;
-	int nLife, nJoinCount;
-	ar >> nJoinCount;
-	ar >> nSize;
+void WndWorld::GuildCombatInfo::OnGuildStatus(CAr & ar) {
+	GuildStatus.clear();
 
-	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-	if( pWndWorld )
-		pWndWorld->ClearGuildStatus();
+	int nJoinCount; ar >> nJoinCount;
+	int nSize;  ar >> nSize;
 
-	for( int i = 0  ; i < nSize ; ++i )
-	{
-		ar >> uidPlayer;	
-		ar >> nLife;
-
-		if( pWndWorld )
-		{
-			if( nJoinCount == i && nJoinCount != 0 )
-				pWndWorld->AddGuildStatus( uidPlayer, nLife, TRUE );
-			else
-				pWndWorld->AddGuildStatus( uidPlayer, nLife, FALSE );			
-		}
+	for (int i = 0; i < nSize; ++i) {
+		GUILDRATE rate;
+		ar >> rate.m_uidPlayer;
+		ar >> rate.nLife;
+		rate.bJoinReady = nJoinCount == i && nJoinCount != 0;
+		GuildStatus.emplace_back(rate);
 	}
-
-	// 순위 i
-	// 캐릭아이디 uidPlayer
-	// 캐릭 남은 생명 nLife
 }
+
 // 길드 순위
-void CDPClient::OnGCGuildPrecedence( CAr & ar )
-{
-	int nSize;
-	char strGuildName[128];
+void WndWorld::GuildCombatPrecedence::OnGuildPrecedence(CAr & ar) {
+	guilds.clear();
+	idToGuildName.clear();
+
+	int nSize; ar >> nSize;
+
+	u_long guildId;
 	int nGuildPoint;
-	
-	ar >> nSize;
+	char strGuildName[128];
+	for (int i = 0; i < nSize; ++i) {
+		ar >> guildId;
+		ar >> strGuildName;
+		ar >> nGuildPoint;
 
-	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-	if( pWndWorld )
-		pWndWorld->ClearGuildPrecedence();
-	
-	for( int i = 0 ; i < nSize ; ++i )
-	{
-		BOOL bRecive;
-		ar >> bRecive;
-		if( bRecive )
-		{
-			ar.ReadString( strGuildName, 128 );
-			ar >> nGuildPoint;
-			if( pWndWorld )
-			{
-				pWndWorld->AddGuildPrecedence( nGuildPoint, strGuildName );
-			}
-		}
+		guilds.emplace(nGuildPoint, guildId);
+		idToGuildName.emplace(guildId, strGuildName);
 	}
-
-	// 순위는 무작위 쇼트 해야함
-	// 길드 이름 strGuildName
-	// 길드 포인트 nGuildPoint
 }
+
 // 개인 순위
-void CDPClient::OnGCPlayerPrecedence( CAr & ar )
-{
-	int nGuildSize, nPlayerSize;
-	u_long uidPlayer;
-	int nPoint;
+void WndWorld::GuildCombatPrecedence::OnPlayerPrecedence(CAr & ar) {
+	players.clear();
 
-	ar >> nGuildSize;
-	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
+	int nGuildSize; ar >> nGuildSize;
+	for (int i = 0; i < nGuildSize; ++i) {
+		int nPlayerSize; ar >> nPlayerSize;
+		for (int j = 0; j < nPlayerSize; ++j) {
+			const auto [uidPlayer, nPoint] = ar.Extract<u_long, int>();
 
-	if( pWndWorld )
-		pWndWorld->ClearPlayerPrecedence();
-
-	for( int i = 0 ; i < nGuildSize ; ++i )
-	{
-		ar >> nPlayerSize;
-		for( int j = 0 ; j < nPlayerSize ; ++j )
-		{
-			ar >> uidPlayer;
-			ar >> nPoint;
-			if( pWndWorld )
-			{
-				pWndWorld->AddPlayerPrecedence( nPoint, uidPlayer );
-			}
+			players.emplace(nPoint, uidPlayer);
 		}
 	}
-
-	// 순위는 무작위 쇼트 해야함
-	// 캐릭 아이디 uidPlayer
-	// 캐릭 포인트 nPoint
-	
 }
 
 void CDPClient::OnGCJoinWarWindow( CAr & ar )
@@ -5964,12 +5871,8 @@ void CDPClient::OnGCDiagMessage( CAr & ar )
 	
 	SAFE_DELETE( g_WndMng.m_pWndGuildCombatInfoMessageBox2);
 	g_WndMng.m_pWndGuildCombatInfoMessageBox2 = new CGuildCombatInfoMessageBox2;
-
-	if( g_WndMng.m_pWndGuildCombatInfoMessageBox2 )
-	{
-		g_WndMng.m_pWndGuildCombatInfoMessageBox2->Initialize(&g_WndMng);
-		g_WndMng.m_pWndGuildCombatInfoMessageBox2->SetString( strMessage );
-	}
+	g_WndMng.m_pWndGuildCombatInfoMessageBox2->Initialize();
+	g_WndMng.m_pWndGuildCombatInfoMessageBox2->SetString( strMessage );
 }
 void CDPClient::OnGCTele( CAr & ar )
 {
@@ -5978,41 +5881,10 @@ void CDPClient::OnGCTele( CAr & ar )
 
 	SAFE_DELETE( g_WndMng.m_pWndGuildCombatInfoMessageBox);
 	g_WndMng.m_pWndGuildCombatInfoMessageBox = new CGuildCombatInfoMessageBox(0);
-	
-	if( g_WndMng.m_pWndGuildCombatInfoMessageBox )
-	{
-		g_WndMng.m_pWndGuildCombatInfoMessageBox->Initialize(&g_WndMng);
-		g_WndMng.m_pWndGuildCombatInfoMessageBox->SetString( strMessage );
-	}
+	g_WndMng.m_pWndGuildCombatInfoMessageBox->Initialize();
+	g_WndMng.m_pWndGuildCombatInfoMessageBox->SetString( strMessage );
 }
-void CDPClient::OnGCWarPlayerList( CAr & ar )
-{
-	int nSizeGuild, nSizeMember, nStatus;
-	u_long uidDefender, uidPlayer;
 
-	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-
-	if( pWndWorld )
-	{
-		pWndWorld->m_mapGC_GuildStatus.clear();
-
-		ar >> nSizeGuild;
-
-		for( int i = 0 ; i < nSizeGuild ; ++i )
-		{
-			ar >> uidDefender;		// 디펜더
-			ar >> nSizeMember;
-
-			for( int j = 0 ; j < nSizeMember ; ++j )
-			{
-				ar >> uidPlayer;
-				ar >> nStatus;		// 전쟁 상태 == 1 ; 대기자 == 0
-
-				pWndWorld->AddGCStatus( uidDefender, uidPlayer, nStatus );
-			}
-		}
-	}		
-}
 void CDPClient::OnIsRequest( CAr & ar )
 {
 	BOOL bRequest;
@@ -6031,14 +5903,7 @@ void CDPClient::OnGCLog( CAr & ar )
 
 	static constexpr auto MakeName = [](const char * name) -> StaticString<MAX_NAME> {
 		StaticString<MAX_NAME> retval;
-		GetStrCut(name, retval.GetBuffer(), 10);
-
-		if (10 <= GetStrLen(name)) {
-			strcat(szBuf, "...");
-		} else {
-			retval = name;
-		}
-
+		ComputeShortenName(retval.GetBuffer(), name, 10);
 		return retval;
 	};
 
@@ -6048,11 +5913,11 @@ void CDPClient::OnGCLog( CAr & ar )
 	int nRate = 0;
 	int nOldPoint = 0xffffffff;
 
-	for (const auto & [nPoint, str] : pWndWorld->m_mmapGuildCombat_GuildPrecedence | std::views::reverse) {
+	for (const auto & [nPoint, guildId] : pWndWorld->m_GCprecedence.guilds | std::views::reverse) {
 		if (nOldPoint != nPoint)
 			nRate++;
 
-		const auto name = MakeName(str.GetString());
+		const auto name = MakeName(pWndWorld->m_GCprecedence.GetGuildName(guildId));
 
 		if (nOldPoint != nPoint) {
 			if (nRate == 1)
@@ -6072,19 +5937,20 @@ void CDPClient::OnGCLog( CAr & ar )
 	nRate = 0;
 	nOldPoint = 0xffffffff;
 
-	for (const auto & [nPoint, uiPlayer] : pWndWorld->m_mmapGuildCombat_PlayerPrecedence | std::views::reverse) {
+	for (const auto & [nPoint, uiPlayer] : pWndWorld->m_GCprecedence.players | std::views::reverse) {
 		if (nOldPoint != nPoint)
 			nRate++;
 
 		const auto name = MakeName(CPlayerDataCenter::GetInstance()->GetPlayerString(uiPlayer));
 
 		if (nOldPoint != nPoint) {
-			if (uiPlayer == g_GuildCombatMng.m_uBestPlayer)
-				strTemp.Format("%2d   %s\t(%d) MVP", nRate, name.GetRawStr(), nPoint);
-			else
-				strTemp.Format("%2d   %s\t(%d)", nRate, name.GetRawStr(), nPoint);
+			strTemp.Format("%2d   %s\t(%d)", nRate, name.GetRawStr(), nPoint);
 		} else {
 			strTemp.Format("%s   %s\t(%d)", "  ", name.GetRawStr(), nPoint);
+		}
+
+		if (uiPlayer == g_GuildCombatMng.m_uBestPlayer) {
+			strTemp += " MVP";
 		}
 
 		g_WndMng.n_pWndGuildCombatResult->InsertPersonRate(strTemp);
@@ -6298,7 +6164,7 @@ void CDPClient::OnGuildCombatState( CAr & ar )
 			pWndWorld->m_dwGuildCombatTime = 0xffffffff;
 
 			// 길드원들 왼쪽 리스트 상태...
-			pWndWorld->m_mapGC_GuildStatus.clear();
+			pWndWorld->m_infoGC.ClearPlayerList();
 		}
 	}
 }
@@ -7256,7 +7122,7 @@ void CDPClient::OnWantedName( CAr & ar )
 		SAFE_DELETE( g_WndMng.m_pReWanted );
 		g_WndMng.m_pReWanted = new CWndReWanted;
 		g_WndMng.m_pReWanted->SetWantedName( szName );
-		g_WndMng.m_pReWanted->Initialize( &g_WndMng, APP_REWARD_INPUT );
+		g_WndMng.m_pReWanted->Initialize();
 	}
 	else
 	{
@@ -7282,7 +7148,7 @@ void CDPClient::OnWantedList(CAr & ar) {
 		g_WndMng.m_pWanted->InsertWanted(entry);
 	}
 
-	g_WndMng.m_pWanted->Initialize(&g_WndMng, APP_WANTED);
+	g_WndMng.m_pWanted->Initialize();
 }
 
 // Sender
@@ -7293,10 +7159,10 @@ void CDPClient::SendJoin( BYTE nSlot, CMover* pMover, CRTMessenger* pRTMessenger
 #endif //__FLYFF_INITPAGE_EXT
 	
 #ifndef __MAP_SECURITY
-	g_WorldMng.Open( g_Neuz.m_pd3dDevice, dwWorldID );
-	g_WorldMng()->RestoreDeviceObjects( g_Neuz.m_pd3dDevice );
+	g_WorldMng.Open( dwWorldID );
+	g_WorldMng()->RestoreDeviceObjects( );
 	g_WorldMng()->SetCamera( &g_Neuz.m_camera );
-	g_Neuz.m_camera.Transform( D3DDEVICE, g_WorldMng.Get() );
+	g_Neuz.m_camera.Transform( g_WorldMng.Get() );
 	g_Neuz.m_camera.Reset();
 	g_WorldMng()->ReadWorld( pMover->GetPos() );
 #endif // __MAP_SECURITY
@@ -7464,7 +7330,7 @@ void CDPClient::SendDoEquip( CItemElem* pItemElem, int nPart, BOOL bResult )
 			// 물어봐야 함
 			SAFE_DELETE( g_WndMng.m_pRemoveElem );
 			g_WndMng.m_pRemoveElem = new CWndRemoveElem;
-			g_WndMng.m_pRemoveElem->Initialize( &g_WndMng, APP_REMOVE_ELEM );
+			g_WndMng.m_pRemoveElem->Initialize();
 			g_WndMng.m_pRemoveElem->OnSetItem( 2, 0, 0, nPart, pItemElem );
 			return;
 		}
@@ -7539,17 +7405,6 @@ void CDPClient::SendDropItem(DWORD dwItemId, short nITemNum, const D3DXVECTOR3 &
 	CWndWorld * pWndWorld = (CWndWorld *)g_WndMng.GetWndBase(APP_WORLD);
 	if (pWndWorld)
 		pWndWorld->m_dwDropTime = GetTickCount();
-}
-
-void CDPClient::SendDropGold( DWORD dwGold, const D3DXVECTOR3 & vPlayerPos, const D3DXVECTOR3 & vPos )
-{
-	D3DXVECTOR3 vOut, v	= vPos - vPlayerPos;
-	D3DXVec3Normalize( &vOut, &v );
-	v	= vPlayerPos + vOut;
-
-	BEFORESENDSOLE( ar, PACKETTYPE_DROPGOLD, DPID_UNKNOWN );
-	ar << dwGold << v;
-	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
 void CDPClient::SendTrade( CMover* pTrader )
@@ -8163,7 +8018,7 @@ void CDPClient::SendPlayerBehavior( void )
 
 void CDPClient::SendPlayerMoved2( BYTE nFrame )
 {
-	PostPlayerAngle( FALSE );	
+	PostPlayerAngle( false );	
 
 	CMover* pPlayer	= g_pPlayer;
 	if( pPlayer ) 
@@ -8190,7 +8045,7 @@ void CDPClient::SendPlayerMoved2( BYTE nFrame )
 
 void CDPClient::SendPlayerBehavior2( void )
 {
-	PostPlayerAngle( FALSE );	//
+	PostPlayerAngle( false );	//
 
 	CMover* pPlayer	= g_pPlayer;
 	if( pPlayer ) 
@@ -8373,7 +8228,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				// 물어봐야 함
 				SAFE_DELETE( g_WndMng.m_pRemoveElem );
 				g_WndMng.m_pRemoveElem = new CWndRemoveElem;
-				g_WndMng.m_pRemoveElem->Initialize( &g_WndMng, APP_REMOVE_ELEM );
+				g_WndMng.m_pRemoveElem->Initialize();
 				g_WndMng.m_pRemoveElem->OnSetItem( 1, dwItemId, objid, nPart, NULL );
 				return;
 			}
@@ -8414,7 +8269,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		{
 			CReturnScrollMsgBox * pMsgBox = new CReturnScrollMsgBox;
 			m_dwReturnScroll = dwItemId;
-			g_WndMng.OpenCustomBox( "", pMsgBox );
+			g_WndMng.OpenCustomBox( pMsgBox );
 		}
 		return;
 	}
@@ -8429,7 +8284,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 		g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+		g_WndMng.m_pWndCommItemDlg->Initialize();
 		g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_REGARDLESS_USE, dwId, objid );
 		return;
 	}
@@ -8438,7 +8293,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 		g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+		g_WndMng.m_pWndCommItemDlg->Initialize();
 		g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_LV7OVER_NOTUSE, dwId, objid );
 		return;
 	}
@@ -8447,7 +8302,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 		g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+		g_WndMng.m_pWndCommItemDlg->Initialize();
 		g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_LV10OVER_NOTUSE, dwId, objid );
 		return;
 	}
@@ -8464,7 +8319,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		{
 			g_WndMng.m_pWndUseCouponConfirm = new CWndUseCouponConfirm;
 			g_WndMng.m_pWndUseCouponConfirm->SetInfo(APP_BEAUTY_SHOP_EX, 0);
-			g_WndMng.m_pWndUseCouponConfirm->Initialize( NULL );
+			g_WndMng.m_pWndUseCouponConfirm->Initialize();
 		}
 		return;
 	}
@@ -8474,7 +8329,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		{
 			g_WndMng.m_pWndUseCouponConfirm = new CWndUseCouponConfirm;
 			g_WndMng.m_pWndUseCouponConfirm->SetInfo(APP_BEAUTY_SHOP_SKIN, 0);
-			g_WndMng.m_pWndUseCouponConfirm->Initialize( NULL );
+			g_WndMng.m_pWndUseCouponConfirm->Initialize();
 		}
 		return;
 	}
@@ -8483,7 +8338,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 	{
 		SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 		g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-		g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+		g_WndMng.m_pWndCommItemDlg->Initialize();
 		g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_LV7OVER_NOTUSE, dwId, objid );
 		return;
 	}
@@ -8493,7 +8348,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( !g_WndMng.m_pWndChangeName )
 		{
 			g_WndMng.m_pWndChangeName		= new CWndChangeName;
-			g_WndMng.m_pWndChangeName->Initialize( &g_WndMng, 0 );
+			g_WndMng.m_pWndChangeName->Initialize();
 		}
 		g_WndMng.m_pWndChangeName->SetData( (WORD)( pItemBase->m_dwObjId ), 0 );
 		return;
@@ -8511,7 +8366,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( !pWndGuildName )
 		{
 			pWndGuildName	= new CWndGuildName;
-			pWndGuildName->Initialize( &g_WndMng );
+			pWndGuildName->Initialize();
 		}
 		pWndGuildName->SetData( (BYTE)( pItemBase->m_dwObjId ) );
 		return;
@@ -8529,7 +8384,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		SAFE_DELETE( g_WndMng.m_pFunnyCoinConfirm );
 		g_WndMng.m_pFunnyCoinConfirm = new CWndFunnyCoinConfirm;
 		g_WndMng.m_pFunnyCoinConfirm->SetInfo( dwId, pItemBase );
-		g_WndMng.m_pFunnyCoinConfirm->Initialize( &g_WndMng, APP_FUNNYCOIN_CONFIRM );
+		g_WndMng.m_pFunnyCoinConfirm->Initialize();
 		
 		return;
 	}
@@ -8574,7 +8429,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				return;
 
 			g_WndMng.m_pWndBeautyShop = new CWndBeautyShop;
-			g_WndMng.m_pWndBeautyShop->Initialize( NULL, APP_BEAUTY_SHOP_EX );
+			g_WndMng.m_pWndBeautyShop->Initialize();
 
 			return;
 		}
@@ -8597,19 +8452,19 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			case II_SYS_SYS_SCR_PET_TAMER_MIRACLE:
 				SAFE_DELETE( g_WndMng.m_pWndPetMiracle );
 				g_WndMng.m_pWndPetMiracle = new CWndPetMiracle;
-				g_WndMng.m_pWndPetMiracle->Initialize( &g_WndMng );
+				g_WndMng.m_pWndPetMiracle->Initialize();
 				g_WndMng.m_pWndPetMiracle->SetItem( dwId );
 				return;
 			case II_SYS_SYS_SCR_PET_TAMER_MISTAKE:
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+				g_WndMng.m_pWndCommItemDlg->Initialize();
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_PET_MISTAKE_DESC, dwId, II_SYS_SYS_SCR_PET_TAMER_MISTAKE );
 				return;
 			case II_SYS_SYS_SCR_PET_HATCH:
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+				g_WndMng.m_pWndCommItemDlg->Initialize();
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_PET_HATCH_DESC, dwId, objid );
 				return;	
 			case II_SYS_SYS_FEED_01:
@@ -8624,7 +8479,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				{
 					SAFE_DELETE( g_WndMng.m_pWndPetFoodMill );
 					g_WndMng.m_pWndPetFoodMill = new CWndPetFoodMill;
-					g_WndMng.m_pWndPetFoodMill->Initialize( &g_WndMng, APP_PET_FOOD );
+					g_WndMng.m_pWndPetFoodMill->Initialize();
 					g_WndMng.m_pWndPetFoodMill->SetItem( dwId );
 				}
 				return;
@@ -8632,12 +8487,12 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				SAFE_DELETE( g_WndMng.m_pWndPetLifeConfirm );
 				g_WndMng.m_pWndPetLifeConfirm = new CWndPetLifeConfirm;
 				g_WndMng.m_pWndPetLifeConfirm->SetItem(dwId);
-				g_WndMng.m_pWndPetLifeConfirm->Initialize( &g_WndMng, APP_MESSAGEBOX );				
+				g_WndMng.m_pWndPetLifeConfirm->Initialize();				
 				return;
 			case II_GEN_TOO_COL_NORMALBATTERY:
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+				g_WndMng.m_pWndCommItemDlg->Initialize();
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_BETTERY_DESC, dwId, II_GEN_TOO_COL_NORMALBATTERY );
 				return;	
 			case II_GEN_TOO_COL_BATTERY001:
@@ -8645,7 +8500,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			case II_GEN_TOO_COL_GOLDBATTERY:
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg = new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+				g_WndMng.m_pWndCommItemDlg->Initialize();
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_CACHE_BETTERY_DESC, dwId, pItemProp->dwID );
 				return;	
 			default:
@@ -8664,7 +8519,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 			{
 				SAFE_DELETE( g_WndMng.m_pWndCommItemDlg );
 				g_WndMng.m_pWndCommItemDlg	= new CWndCommItemDlg;
-				g_WndMng.m_pWndCommItemDlg->Initialize( &g_WndMng, APP_COMMITEM_DIALOG );
+				g_WndMng.m_pWndCommItemDlg->Initialize();
 				g_WndMng.m_pWndCommItemDlg->SetItem( TID_GAME_TICKET_DESC, dwId,  pItemProp->dwID );
 				return;
 			}
@@ -8691,7 +8546,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 				*/
 				SAFE_DELETE( g_WndMng.m_pWndSelectCh );
 				g_WndMng.m_pWndSelectCh = new CWndSelectCh( dwItemId, nExpand);
-				g_WndMng.m_pWndSelectCh->Initialize(&g_WndMng);
+				g_WndMng.m_pWndSelectCh->Initialize();
 			}
 		}
 	}
@@ -8703,7 +8558,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( !pWndItemTransy )
 		{
 			pWndItemTransy	= new CWndItemTransy;
-			pWndItemTransy->Initialize( &g_WndMng );
+			pWndItemTransy->Initialize();
 			pWndItemTransy->Init( pItemBase );
 		}
 		return;
@@ -8714,7 +8569,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( bCreateMonster == FALSE && g_Neuz.m_pCreateMonItem == NULL )
 		{
 			g_Neuz.m_pCreateMonItem = pItemBase;
-			CreateSfx( g_Neuz.m_pd3dDevice, XI_CHR_CURSOR1, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1 );
+			CreateSfx( XI_CHR_CURSOR1, g_pPlayer->GetPos(), g_pPlayer->GetId(), g_pPlayer->GetPos(), g_pPlayer->GetId(), -1 );
 		}
 		return;
 	}
@@ -8731,7 +8586,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( !pWndSummonParty )
 		{
 			pWndSummonParty = new CWndSummonParty;
-			pWndSummonParty->Initialize( &g_WndMng );
+			pWndSummonParty->Initialize();
 		}
 		pWndSummonParty->SetData( (WORD)( pItemBase->m_dwObjId ), 0 );
 		return;
@@ -8762,7 +8617,7 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		if( !g_WndMng.m_pWndSealChar )
 		{
 			g_WndMng.m_pWndSealChar		= new CWndSealChar;
-			g_WndMng.m_pWndSealChar->Initialize( &g_WndMng, 0 );
+			g_WndMng.m_pWndSealChar->Initialize();
 		}
 		return;
 	}
@@ -8772,7 +8627,6 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		return;
 	}
 
-#ifdef __PET_1024
 	if( pItemProp->dwID == II_SYS_SYS_SCR_PET_NAMING )
 	{
 		// 펫 작명 입력 창을 활성화 시킨다.
@@ -8781,11 +8635,10 @@ void CDPClient::SendDoUseItem( DWORD dwItemId, OBJID objid, int nPart, BOOL bRes
 		// 호출한다. dwData값에는 dwItemId을 넘기고, szInput은 이름 문자열을 넘긴다.
 		SAFE_DELETE( g_WndMng.m_pWndChangePetName );
 		g_WndMng.m_pWndChangePetName = new CWndChangePetName;
-		g_WndMng.m_pWndChangePetName->Initialize(&g_WndMng);
+		g_WndMng.m_pWndChangePetName->Initialize();
 		g_WndMng.m_pWndChangePetName->SetItemId(dwItemId);
 		return;
 	}
-#endif	// __PET_1024
 
 	BEFORESENDSOLE( ar, PACKETTYPE_DOUSEITEM, DPID_UNKNOWN );
 	ar << dwItemId << objid;
@@ -9009,33 +8862,13 @@ void CDPClient::SendBlock( BYTE Gu, const char *szName, const char *szFrom )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-#ifdef __IAOBJ0622
-void CDPClient::PutPlayerDestPos( CONST D3DXVECTOR3 & vPos, bool bForward, BYTE f, OBJID objidIAObj )
-#else	// __IAOBJ0622
-void CDPClient::PutPlayerDestPos( CONST D3DXVECTOR3 & vPos, bool bForward, BYTE f )
-#endif	// __IAOBJ0622
-{
-	m_ss.playerdestpos.fValid	= TRUE;
-	m_ss.playerdestpos.vPos		= vPos;
-	m_ss.playerdestpos.fForward	= (bForward ? 1 : 0);
-	if( f )	m_ss.uFrameMove		= 1;
-
-#ifdef __IAOBJ0622
-	m_ss.playerdestpos.objidIAObj	= objidIAObj;
-#endif	// __IAOBJ0622
+void CDPClient::PutPlayerDestPos(const PLAYERDESTPOS & playerDestPos, BYTE f) {
+	m_ss.playerdestpos = playerDestPos;
+	if (f)	m_ss.uFrameMove = 1;
 }
 
-void CDPClient::PutPlayerDestAngle( float fAngle, BYTE fLeft, BYTE f )
-{
-	m_ss.playerdestangle.fValid	= TRUE;
-	m_ss.playerdestangle.fLeft	= fLeft;
-	m_ss.playerdestangle.fAngle	= fAngle;
-	if( f )	m_ss.uFrameMove		= 1;
-}
-
-void CDPClient::ClearPlayerDestPos( void )
-{
-	memset( &m_ss.playerdestpos, 0, sizeof(PLAYERDESTPOS) );
+void CDPClient::ClearPlayerDestPos() {
+	m_ss.playerdestpos = std::nullopt;
 }
 
 void CDPClient::SendSnapshot( BOOL fUnconditional )
@@ -9043,48 +8876,39 @@ void CDPClient::SendSnapshot( BOOL fUnconditional )
 	m_ss.uFrameMove++;
 	if( fUnconditional || m_ss.uFrameMove % 30 == 0 )	// 5 / 1
 	{
-	if( m_ss.playerdestpos.fValid == TRUE )
+	if( m_ss.playerdestpos )
 	{
 		if( g_pPlayer->m_pActMover->IsSit() )
 			SendMotion( OBJMSG_STANDUP );
 	}
 		BEFORESENDSOLE( ar, PACKETTYPE_SNAPSHOT, DPID_UNKNOWN );
 
-		u_long uOffset	= ar.GetOffset();
-		BYTE c	= 0;
-		ar << c;	// reserve
+		auto pC = ar.PushBack<BYTE>(0);
 
-		if( m_ss.playerdestpos.fValid == TRUE )
+		if( m_ss.playerdestpos )
 		{
 			ar << SNAPSHOTTYPE_DESTPOS;
-			ar << m_ss.playerdestpos.vPos;	// 12
-			ar << m_ss.playerdestpos.fForward;	// 1
+			ar << m_ss.playerdestpos->vPos;	// 12
+			ar << m_ss.playerdestpos->fForward;	// 1
 
 #ifdef __IAOBJ0622
-			ar << m_ss.playerdestpos.objidIAObj;
+			ar << m_ss.playerdestpos->objidIAObj;
 #endif	// __IAOBJ0622
 
-			m_ss.playerdestpos.fValid	= FALSE;
-			c++;
+			m_ss.playerdestpos = std::nullopt;
+			(*pC)++;
 		}
 
-		if( c > 0 )
-		{
-			BYTE* lpBuf		= ar.GetBuffer( &nBufSize );
-			*( lpBuf + uOffset )	= c;
-			Send( (LPVOID)lpBuf, nBufSize, DPID_SERVERPLAYER );
+		if (*pC > 0) {
+			SEND(ar, this, DPID_SERVERPLAYER);
 		}
 
 		m_ss.uFrameMove		= 0;
 	}
 }
 
-void CDPClient::SendSfxHit( int idSfxHit, int nMagicPower, DWORD dwSkill, OBJID idAttacker, 
-						    int nDmgCnt, float fDmgAngle, float fDmgPower )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_SFX_HIT, DPID_UNKNOWN );
-	ar << idSfxHit << nMagicPower << dwSkill << idAttacker << nDmgCnt << fDmgAngle << fDmgPower;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendSfxHit(int idSfxHit, DWORD dwSkill, OBJID idAttacker) {
+	SendPacket<PACKETTYPE_SFX_HIT>(idSfxHit, dwSkill, idAttacker);
 }
 
 void CDPClient::SendSfxClear( int idSfxHit, OBJID idMover )
@@ -10141,7 +9965,7 @@ void CDPClient::OnStateMode( OBJID objid, CAr & ar )
 			ItemProp* pItemProp = prj.GetItemProp( dwItemId );
 			if( pItemProp )
 			{
-				CreateItemReadySfx( D3DDEVICE, pItemProp->dwSfxObj, pPlayer->GetPos(), pPlayer->GetId(), 
+				CreateItemReadySfx( pItemProp->dwSfxObj, pPlayer->GetPos(), pPlayer->GetId(), 
 					pPlayer->GetPos(), pPlayer->GetId(), -1 ); 
 			}
 		}
@@ -10845,12 +10669,10 @@ void CDPClient::SendGuilPenya( u_long, DWORD dwType, DWORD dwSendPenya )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendGuildSetName( LPCTSTR szName )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_SETNAME, DPID_UNKNOWN );
-	ar << g_pPlayer->m_idPlayer << g_pPlayer->m_idGuild;
-	ar.WriteString( szName );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendGuildSetName(LPCTSTR szName) {
+	BEFORESENDSOLE(ar, PACKETTYPE_GUILD_SETNAME, DPID_UNKNOWN);
+	ar.WriteString(szName);
+	SEND(ar, this, DPID_SERVERPLAYER);
 }
 
 void CDPClient::SendGuildRank( DWORD nVer )
@@ -11176,7 +10998,7 @@ void CDPClient::OnDisguise( OBJID objid, CAr & ar )
 
 	if( pMover )
 	{
-		pMover->Disguise( D3DDEVICE, dwMoverIdx );
+		pMover->Disguise( dwMoverIdx );
 		CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
 		if( pWndQuestDetail )
 			pWndQuestDetail->UpdateQuestText();
@@ -11194,7 +11016,7 @@ void CDPClient::OnNoDisguise( OBJID objid, CAr & ar )
 
 	if( pMover )
 	{
-		pMover->NoDisguise( D3DDEVICE );
+		pMover->NoDisguise( );
 		CWndQuestDetail* pWndQuestDetail = g_WndMng.m_pWndQuestDetail;
 		if( pWndQuestDetail )
 			pWndQuestDetail->UpdateQuestText();
@@ -11259,31 +11081,30 @@ void CDPClient::OnPVendorOpen( OBJID objid, CAr & ar )
 	pMover->m_vtInfo.SetTitle( szPVendor );
 	g_DialogMsg.AddVendorMessage( pMover, pMover->m_vtInfo.GetTitle(), 0xffffffff );
 
+	if (!pMover->IsActiveMover()) return;
+
 	CWndVendor* pWnd = (CWndVendor*)g_WndMng.GetWndVendorBase();
 	if( pWnd == NULL )
 		return;
 
-	if( pMover->IsActiveMover() )
-	{
-		CWndEdit* pWndEdit	= (CWndEdit*)pWnd->GetDlgItem( WIDC_EDIT1 );
-		pWndEdit->EnableWindow( FALSE );
+	CWndEdit* pWndEdit	= (CWndEdit*)pWnd->GetDlgItem( WIDC_EDIT1 );
+	pWndEdit->EnableWindow( FALSE );
 
-		SendEnterChattingRoom( pMover->m_idPlayer );
+	SendEnterChattingRoom( pMover->m_idPlayer );
 		
-		if( pWnd->m_pwndVenderMessage == NULL )
-		{
-			g_Chatting.m_bState = TRUE;
+	if( pWnd->m_pwndVenderMessage == NULL )
+	{
+		g_Chatting.m_bState = TRUE;
 
-			pWnd->m_pwndVenderMessage = new CWndVendorMessage;
-				if(pWnd->m_pVendor->IsActiveMover())
-					pWnd->m_pwndVenderMessage->m_nIsOwner = TRUE;
+		pWnd->m_pwndVenderMessage = new CWndVendorMessage;
+			if(pWnd->m_pVendor->IsActiveMover())
+				pWnd->m_pwndVenderMessage->m_nIsOwner = TRUE;
 #ifdef __FIX_WND_1109
-			pWnd->m_pwndVenderMessage->Initialize( pWnd );
+		pWnd->m_pwndVenderMessage->Initialize( pWnd );
 #else	// __FIX_WND_1109
-			pWnd->m_pwndVenderMessage->Initialize( );
+		pWnd->m_pwndVenderMessage->Initialize( );
 #endif	// __FIX_WND_1109
-			pWnd->SetFocus();   // 개인상점창이 채팅창 보다 앞에 나오게 한다.(기획상)
-		}
+		pWnd->SetFocus();   // 개인상점창이 채팅창 보다 앞에 나오게 한다.(기획상)
 	}
 
 	CString strTitle = prj.GetText( TID_GAME_VENDOR_TITLE );
@@ -11508,16 +11329,12 @@ void CDPClient::SendSetHair( BYTE nHair, float r, float g, float b )//, int nCos
 		nB	= (BYTE)( b * 255.0f );
 
 		BEFORESENDSOLE( ar, PACKETTYPE_SET_HAIR, DPID_UNKNOWN );
-	#ifdef __NEWYEARDAY_EVENT_COUPON
 		BOOL bUseCoupon = FALSE;
 		if(g_WndMng.m_pWndBeautyShop != NULL)
 		{
 			bUseCoupon = g_WndMng.m_pWndBeautyShop->m_bUseCoupon;
 		}
 		ar << nHair << nR << nG << nB << bUseCoupon;
-	#else //__NEWYEARDAY_EVENT_COUPON
-		ar << nHair << nR << nG << nB;	// << nCost;
-	#endif //__NEWYEARDAY_EVENT_COUPON
 		SEND( ar, this, DPID_SERVERPLAYER );
 	}
 }
@@ -11544,7 +11361,7 @@ void CDPClient::OnSetHair( OBJID objid, CAr & ar )
 			if( g_pPlayer == pMover )
 			{
 				if( g_pBipedMesh )
-					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_dwSkinSet, g_pPlayer->m_dwFace, g_pPlayer->m_dwHairMesh, g_pPlayer->m_dwHeadMesh, g_pPlayer->m_aEquipInfo, g_pBipedMesh, &g_pPlayer->m_Inventory );
+					CMover::UpdateParts( g_pPlayer->GetSex(), g_pPlayer->m_skin, g_pPlayer->m_aEquipInfo, g_pBipedMesh, &g_pPlayer->m_Inventory );
 
 				CWndInventory* pWndInventory	= (CWndInventory*)g_WndMng.GetWndBase( APP_INVENTORY );
 				if(pWndInventory && pWndInventory->GetModel())
@@ -11815,32 +11632,12 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 				}
 				break;
 			}
-		case FUNCTYPE_SETNAVIGATOR:
-			{
-				ar >> rsf.dwVal1;
-				ar >> rsf.vPos;
-				if( g_WndMng.m_pWndWorld )
-				{
-					g_WndMng.m_pWndWorld->m_stnv.dwWorldId	= rsf.dwVal1;
-					g_WndMng.m_pWndWorld->m_stnv.vPos	= rsf.vPos;
-				}
-				break;
-			}
-		case FUNCTYPE_REMOVENAVIGATOR:
-			{
-				if( g_WndMng.m_pWndWorld )
-				{
-					g_WndMng.m_pWndWorld->m_stnv.dwWorldId	= 0;
-//					g_WndMng.m_pWndWorld->m_stnv.vPos	= D3DXVECTOR3( 0, 0, 0 );
-				}
-				break;
-			}
 		case FUNCTYPE_QUERYSETPLAYERNAME:
 			{
 				if( NULL == g_WndMng.m_pWndChangeName )
 				{
 					g_WndMng.m_pWndChangeName		= new CWndChangeName;
-					g_WndMng.m_pWndChangeName->Initialize( &g_WndMng, 0 );
+					g_WndMng.m_pWndChangeName->Initialize();
 				}
 				g_WndMng.m_pWndChangeName->SetData( 0xffff, 1 );
 				break;
@@ -11852,7 +11649,7 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 			if( !pWndGuildName )
 			{
 				pWndGuildName	= new CWndGuildName;
-				pWndGuildName->Initialize( &g_WndMng );
+				pWndGuildName->Initialize();
 			}
 			pWndGuildName->SetData( 0x7f );
 			break;
@@ -11862,18 +11659,15 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::PostPlayerAngle( BOOL f )
-{
-	m_pa.fValid		= f;
+void CDPClient::PostPlayerAngle(bool f) {
+	m_pa.fValid = f;
 }
 
 void CDPClient::FlushPlayerAngle( void )
 {
 	if( m_pa.fValid && ( ++m_pa.nCounter % 30 ) == 0 )
 	{
-//		static	int	i	= 0;
-//		TRACE( "FlushPlayerAngle(): %d\n", ++i );
-		m_pa.fValid		= FALSE;
+		m_pa.fValid		= false;
 		CMover* pPlayer	= g_pPlayer;
 		if( pPlayer )
 		{
@@ -12044,7 +11838,7 @@ void CDPClient::OnInitSkillPoint( CAr & ar )
 	ar >> nSkillPoint;
 	if( g_pPlayer->m_nSkillPoint < nSkillPoint )
 	{
-		CreateSfx(g_Neuz.m_pd3dDevice,XI_GEN_LEVEL_UP01,g_pPlayer->GetPos(),g_pPlayer->GetId());
+		CreateSfx(XI_GEN_LEVEL_UP01,g_pPlayer->GetPos(),g_pPlayer->GetId());
 		PlayMusic( BGM_IN_LEVELUP );
 	}
 	g_pPlayer->m_nSkillPoint = nSkillPoint;
@@ -12256,7 +12050,7 @@ void CDPClient::OnSexChange( OBJID objid, CAr & ar )
 		pMover->SetSex( (uIndex==MI_MALE) ? SEX_MALE : SEX_FEMALE );
 		if( pMover->m_pModel && pMover->m_pModel->IsAniable() )
 			SAFE_DELETE( pMover->m_pModel );
-		pMover->SetTypeIndex( D3DDEVICE, OT_MOVER, (DWORD)uIndex );
+		pMover->SetTypeIndex( OT_MOVER, (DWORD)uIndex );
 		pMover->ResetScale();
 		pMover->UpdateLocalMatrix();
 		pMover->m_dwMotion = -1;
@@ -12264,7 +12058,7 @@ void CDPClient::OnSexChange( OBJID objid, CAr & ar )
 		pMover->UpdateParts( !pMover->IsActiveMover() );
 		if( pMover->IsActiveMover() && g_pBipedMesh )
 		{
-			CMover::UpdateParts( pMover->GetSex(), pMover->m_dwSkinSet, pMover->m_dwFace, pMover->m_dwHairMesh, pMover->m_dwHeadMesh, pMover->m_aEquipInfo, g_pBipedMesh, &pMover->m_Inventory );
+			CMover::UpdateParts( pMover->GetSex(), pMover->m_skin, pMover->m_aEquipInfo, g_pBipedMesh, &pMover->m_Inventory );
 		}
 
 		if( pMover->IsActiveMover() )
@@ -12549,7 +12343,7 @@ void	CDPClient::OnPushPower( OBJID objid, CAr & ar )
 	{
 		//pMover->SetPos( vPos );			// 동기화땜에 서버랑 좌표를 일단 맞춤.
 		pMover->SetAngle( fAngle );
-		AngleToVectorXZ( &pMover->m_pActMover->m_vDeltaE, fPushAngle, fPower );	// 밀리는 힘 설정.
+		pMover->m_pActMover->m_vDeltaE = AngleToVectorXZ( fPushAngle, fPower );	// 밀리는 힘 설정.
 	}
 }
 
@@ -12700,47 +12494,35 @@ void CDPClient::OnSetDuel( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::OnPKRelation( OBJID objid, CAr& ar )
-{
-	BYTE byType;
-	ar >> byType;
-	switch( byType )
-	{
-	case PK_PINK:
-		OnPKPink( objid, ar );
-		break;
-	case PK_PROPENSITY:
-		OnPKPropensity( objid, ar );
-		break;
-	case PK_PKVALUE:
-		OnPKValue( objid, ar );
-		break;
-	}
-}
+void CDPClient::OnPKRelation(OBJID objid, CAr & ar) {
+	CMover * pMover = prj.GetMover(objid);
+	if (!IsValidObj(pMover)) return;
 
-void CDPClient::OnPKPink( OBJID objid, CAr& ar )
-{
-	BYTE byPink;
-	ar >> byPink;
-	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj(pMover) )
-		pMover->SetPKPink( (DWORD)byPink );
-}
-void CDPClient::OnPKPropensity( OBJID objid, CAr& ar )
-{
-	DWORD dwPKPropensity;
-	ar >> dwPKPropensity;
-	CMover* pMover = prj.GetMover( objid );
-	if( IsValidObj( pMover ) )
-		pMover->SetPKPropensity( dwPKPropensity );
-}
-void CDPClient::OnPKValue( OBJID objid, CAr& ar )
-{
-	int nPKValue;
-	ar >> nPKValue;
-	CMover* pMover = prj.GetMover( objid );
-	if( IsValidObj( pMover ) )
-		pMover->SetPKValue( nPKValue );
+	Subsnapshot::PK byType;
+	ar >> byType;
+	switch (byType) {
+		case Subsnapshot::PK::PINK:
+		{
+			BYTE byPink;
+			ar >> byPink;
+			pMover->SetPKPink(byPink);
+			break;
+		}
+		case Subsnapshot::PK::PROPENSITY:
+		{
+			DWORD dwPKPropensity;
+			ar >> dwPKPropensity;
+			pMover->SetPKPropensity(dwPKPropensity);
+			break;
+		}
+		case Subsnapshot::PK::PKVALUE:
+		{
+			int nPKValue;
+			ar >> nPKValue;
+			pMover->SetPKValue(nPKValue);
+			break;
+		}
+	}
 }
 
 void CDPClient::OnWantedInfo( CAr & ar )
@@ -12862,7 +12644,7 @@ void CDPClient::OnSetPlayerName( CAr & ar )
 	{
 		if( pMover->IsActiveMover() )
 			g_WndMng.PutString( prj.GetText( TID_GAME_CHANGENAME ), NULL, prj.GetTextColor( TID_GAME_CHANGENAME  ) );
-		CreateSfx( g_Neuz.m_pd3dDevice, XI_SYS_EXCHAN01, pMover->GetPos(), pMover->GetId(), pMover->GetPos(), pMover->GetId() );
+		CreateSfx( XI_SYS_EXCHAN01, pMover->GetPos(), pMover->GetId(), pMover->GetPos(), pMover->GetId() );
 	}
 }
 
@@ -12958,7 +12740,7 @@ void CDPClient::OnQueryEquip(OBJID objid, CAr & ar) {
 
 	SAFE_DELETE(g_WndMng.m_pWndQueryEquip);
 	g_WndMng.m_pWndQueryEquip = new CWndQueryEquip(*pMover, std::move(aEquipInfoAdd));
-	g_WndMng.m_pWndQueryEquip->Initialize(&g_WndMng);
+	g_WndMng.m_pWndQueryEquip->Initialize();
 }
 
 void CDPClient::SendReturnScroll( int nSelect )
@@ -13032,214 +12814,80 @@ void CDPClient::SendQueryPostMail( BYTE nItem, short nItemNum, char* lpszReceive
 	ar.WriteString( lpszTitle );
 	ar.WriteString( lpszText );
 	SEND( ar, this, DPID_SERVERPLAYER );
-
-	//MAIL LOG
-	Error( "SendQueryPostMail nItem:%d, nItemNum:%d, receiver:%s, nGold:%d, Title:%s, Text:%s ", nItem, nItemNum, lpszReceiver, nGold, lpszTitle, lpszText );
 }
 
-void CDPClient::SendQueryRemoveMail( u_long nMail )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERYREMOVEMAIL, DPID_UNKNOWN );
-	ar << nMail;
-	SEND( ar, this, DPID_SERVERPLAYER );
-
-	//MAIL LOG
-	Error( "SendQueryRemoveMail nMail:%d", nMail );
+void CDPClient::SendQueryRemoveMail(u_long nMail) {
+	SendPacket<PACKETTYPE_QUERYREMOVEMAIL, u_long>(nMail);
 }
 
-void CDPClient::SendQueryGetMailItem( u_long nMail )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERYGETMAILITEM, DPID_UNKNOWN );
-	ar << nMail;
-	SEND( ar, this, DPID_SERVERPLAYER );
-
-	//MAIL LOG
-	Error( "SendQueryGetMailItem nMail:%d", nMail );
+void CDPClient::SendQueryGetMailItem(u_long nMail) {
+	SendPacket<PACKETTYPE_QUERYGETMAILITEM, u_long>(nMail);
 }
 
-void CDPClient::SendQueryGetMailGold( u_long nMail )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERYGETMAILGOLD, DPID_UNKNOWN );
-	ar << nMail;
-	SEND( ar, this, DPID_SERVERPLAYER );
-
-	//MAIL LOG
-	Error( "SendQueryGetMailGold nMail:%d", nMail );
+void CDPClient::SendQueryGetMailGold(u_long nMail) {
+	SendPacket<PACKETTYPE_QUERYGETMAILGOLD, u_long>(nMail);
 }
 
-void CDPClient::SendQueryReadMail( u_long nMail )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_READMAIL, DPID_UNKNOWN );
-	ar << nMail;
-	SEND( ar, this, DPID_SERVERPLAYER );
-
-	//MAIL LOG
-	Error( "SendQueryReadMail nMail:%d", nMail );
+void CDPClient::SendQueryReadMail(u_long nMail) {
+	SendPacket<PACKETTYPE_READMAIL, u_long>(nMail);
 }
 
-void CDPClient::SendQueryMailBox( void )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERYMAILBOX, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
-
-	//MAIL LOG
-	Error( "SendQueryMailBox" );
+void CDPClient::SendQueryMailBox() {
+	SendPacket<PACKETTYPE_QUERYMAILBOX>();
 }
 
-void CDPClient::OnPostMail( CAr & ar )
-{
-	CMail* pMail	= new CMail;
-	pMail->Serialize( ar );
-
-	u_long nMail	= CMailBox::GetInstance()->AddMail( pMail );
-
-	// 메일 로그
-	Error( _T( "CDPClient::OnPostMail- mail:%d, title:%s, text:%s, item:%s, num:%d" ), nMail, pMail->m_szTitle, pMail->m_szText, pMail->m_pItemElem->GetProp()->szName, pMail->m_pItemElem->m_nItemNum );
-
-#ifdef _DEBUG
-	char lpOutputString[100]	= { 0, };
-	if( pMail->m_pItemElem )
-		sprintf( lpOutputString, "CDPClient::OnPostMail- mail:%d, title:%s, text:%s, item:%s, num:%d", nMail, pMail->m_szTitle, pMail->m_szText, pMail->m_pItemElem->GetProp()->szName, pMail->m_pItemElem->m_nItemNum );
-	else
-		sprintf( lpOutputString, "CDPClient::OnPostMail- mail:%d, title:%s, text:%s, item:n/a", nMail, pMail->m_szTitle, pMail->m_szText );
-//	OutputDebugString( lpOutputString );
-	g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );
-#endif	// _DEBUG
+void CDPClient::OnPostMail(CAr & ar) {
+	CMail * pMail = new CMail;
+	ar >> *pMail;
+	CMailBox::GetInstance()->AddMail(pMail);
 }
 
-void CDPClient::OnRemoveMail( CAr & ar )
-{
-	u_long nMail;
-	int nType;
-	ar >> nMail >> nType;
+void CDPClient::OnRemoveMail(CAr & ar) {
+	const auto [nMail, nType] = ar.Extract<u_long, int>();
 
-	// 메일 로그
-	Error( _T( "CDPClient::OnRemoveMail- mail:%d, type:%d" ), nMail, nType );
-
-	CMailBox* pMailBox	= CMailBox::GetInstance();
-	switch( nType )
-	{
-		case CMail::mail:
-			{
-				BOOL bResult	= pMailBox->RemoveMail( nMail );
-#ifdef _DEBUG
-				char lpOutputString[100]	= { 0, };
-				sprintf( lpOutputString, "CDPClient::OnRemoveMail:mail- mail:%d, result:%d", nMail, bResult );
-				//	OutputDebugString( lpOutputString );
-				g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );
-#endif	// _DEBUG
-				break;
-			}
-		case CMail::item:
-			{
-				BOOL bResult	= pMailBox->RemoveMailItem( nMail );
-#ifdef _DEBUG
-				char lpOutputString[100]	= { 0, };
-				sprintf( lpOutputString, "CDPClient::OnRemoveMail:item- mail:%d, result:%d", nMail, bResult );
-				g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );
-#endif	// _DEBUG
-				break;
-			}
-		case CMail::gold:
-			{
-				BOOL bResult	= pMailBox->RemoveMailGold( nMail );
-#ifdef _DEBUG
-				char lpOutputString[100]	= { 0, };
-				sprintf( lpOutputString, "CDPClient::OnRemoveMail:gold- mail:%d, result:%d", nMail, bResult );
-				g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );
-#endif	// _DEBUG
-				break;
-			}
-		case CMail::read:
-			{
-				BOOL bResult	= pMailBox->ReadMail( nMail );
-#ifdef _DEBUG
-				char lpOutputString[100]	= { 0, };
-				sprintf( lpOutputString, "CDPClient::OnRemoveMail:read- mail:%d, result:%d", nMail, bResult );
-				g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );
-#endif	// _DEBUG
-				break;
-			}
-		default:
-			break;
+	CMailBox * pMailBox = CMailBox::GetInstance();
+	switch (nType) {
+		case CMail::mail: pMailBox->RemoveMail(nMail);     break;
+		case CMail::item: pMailBox->RemoveMailItem(nMail); break;
+		case CMail::gold: pMailBox->RemoveMailGold(nMail); break;
+		case CMail::read: pMailBox->ReadMail(nMail);       break;
 	}
 }
 
-void CDPClient::OnMailBox( CAr & ar )
-{
-	//MAIL LOG
-	Error( "BEGIN OnMailBox" );
+void CDPClient::OnMailBox( CAr & ar ) {
+	ar >> *CMailBox::GetInstance();
 
-	CMailBox* pMailBox	= CMailBox::GetInstance();
-	pMailBox->Serialize( ar );
-	CWndPost* pWndPost	= (CWndPost*)g_WndMng.GetWndBase( APP_POST );
-	if( pWndPost )
-#ifdef __MAIL_REQUESTING_BOX
-	{
+	if (CWndPost * pWndPost = g_WndMng.GetWndBase<CWndPost>(APP_POST)) {
 		pWndPost->EnableWindow( TRUE );
 		pWndPost->m_PostTabReceive.UpdateScroll();
 		pWndPost->CloseMailRequestingBox();
 
-		//gmpbigsun
 		g_WndMng.m_bWaitRequestMail = FALSE;
 	}
-#else // __MAIL_REQUESTING_BOX
-		pWndPost->m_PostTabReceive.UpdateScroll();
-#endif // __MAIL_REQUESTING_BOX
-
-	//MAIL LOG
-	Error( "END OnMailBox" );
-/*
-#ifdef _DEBUG
-//	OutputDebugString( "CDPClient::OnMailBox" );
-	char lpOutputString[256]	= { 0, };
-	sprintf( lpOutputString, "CDPClient::OnMailBox- size:%d", pMailBox->size() );
-	g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );	
-
-	for( vector<CMail*>::iterator i = pMailBox->begin(); i != pMailBox->end(); ++i )
-	{
-		CMail* pMail	= *i;
-		if( pMail->m_pItemElem )
-			sprintf( lpOutputString, "CDPClient::OnMailBox- mail:%d, title:%s, text:%s, item:%s, num:%d", pMail->m_nMail, pMail->m_szTitle, pMail->m_szText, pMail->m_pItemElem->GetProp()->szName, pMail->m_pItemElem->m_nItemNum );
-		else
-			sprintf( lpOutputString, "CDPClient::OnMailBox- mail:%d, title:%s, text:%s, item:n/a", pMail->m_nMail, pMail->m_szTitle, pMail->m_szText );
-		g_WndMng.PutString( lpOutputString, NULL, 0xffff0000 );	
-	}
-#endif	// _DEBUG
-*/
 }
 
 void CDPClient::OnMailBoxReq( CAr & ar )
 {
-	BOOL bCheckTransMailBox = FALSE;
+	bool bCheckTransMailBox = FALSE;
 	ar >> bCheckTransMailBox;
-
-	Error( "CDPClient::OnMailBoxReq bCheckTransMailBox:%d", bCheckTransMailBox );
 
 	if( bCheckTransMailBox )
 	{
-#ifdef __MAIL_REQUESTING_BOX
 		//받은거고 지금부터 5초세고 그래도 메일을 못받으면 메일 요청함.
 		g_WndMng.m_bWaitRequestMail = TRUE;
-#endif // __MAIL_REQUESTING_BOX
 	}
 	else 
 	{
 		
-#ifdef __MAIL_REQUESTING_BOX
 		// 요청 window는 닫아준다 메일이 없으므로,,,
-		CWndPost* pWndPost	= (CWndPost*)g_WndMng.GetWndBase( APP_POST );
+		CWndPost* pWndPost	= g_WndMng.GetWndBase<CWndPost>( APP_POST );
 		if( pWndPost )
 		{
 			pWndPost->CloseMailRequestingBox();
 			pWndPost->EnableWindow( TRUE );			//메일이 없으면 활성화 
 		}
 
-		CMailBox* pMailBox = CMailBox::GetInstance();
-		if( pMailBox )
-		{
-			pMailBox->Clear();
-		}
+		CMailBox::GetInstance()->Clear();
 
 		// 메일이 없기 때문에 받은 목록을 초기화
 		if( pWndPost )
@@ -13248,17 +12896,18 @@ void CDPClient::OnMailBoxReq( CAr & ar )
 		}
 
 		// 사용자의 마지막 메일 정보 저장해 놓은 파일 삭제
-		CString strFileName = _T( "" );
 		if( g_pPlayer == NULL )
 		{
 			return;
 		}
+
+		CString strFileName = _T("");
 		strFileName.Format( "%s_MailData.Temp", g_pPlayer->GetName() );
 		if( DeleteFile( strFileName ) == FALSE)
 		{
 			Error( "OnMailBoxReq : Fail Delete %s ", strFileName );
 		}
-#endif //__MAIL_REQUESTING_BOX
+
 	}
 
 }
@@ -13295,7 +12944,7 @@ void CDPClient::OnSummonFriend( CAr & ar )
 	if( !pWndSummonFriend )
 	{
 		pWndSummonFriend	= new CWndSummonFriend;
-		pWndSummonFriend->Initialize( &g_WndMng );
+		pWndSummonFriend->Initialize();
 	}
 	pWndSummonFriend->SetData( (WORD)( pItemBase->m_dwObjId ), 0 );
 }
@@ -13315,7 +12964,7 @@ void CDPClient::OnSummonFriendConfirm( CAr & ar )
 		if( !pWndSummonFriendConfirm )
 		{
 			pWndSummonFriendConfirm	= new CWndSummonFriendMsg;
-			pWndSummonFriendConfirm->Initialize( &g_WndMng );
+			pWndSummonFriendConfirm->Initialize();
 		}
 		pWndSummonFriendConfirm->SetData( objid, dwData, szName, szWorldName );		
 	}
@@ -13334,7 +12983,7 @@ void CDPClient::OnSummonPartyConfirm( CAr & ar )
 		if( !pWndSummonPartyConfirm )
 		{
 			pWndSummonPartyConfirm = new CWndSummonPartyMsg;
-			pWndSummonPartyConfirm->Initialize( &g_WndMng );
+			pWndSummonPartyConfirm->Initialize();
 		}
 		pWndSummonPartyConfirm->SetData( objid, dwData, szWorldName );
 	}
@@ -13529,10 +13178,8 @@ void CDPClient::OnPetCall( OBJID objid, CAr & ar )
 	DWORD dwPetId, dwIndex;
 	BYTE nPetLevel;
 	ar >> dwPetId >> dwIndex >> nPetLevel;
-#ifdef __PET_1024
 	char szPetName[MAX_PET_NAME]	= { 0,};
 	ar.ReadString( szPetName, MAX_PET_NAME );
-#endif	// __PET_1024
 	CMover* pMover	= prj.GetMover( objid );
 	if( IsValidObj( pMover ) )
 	{
@@ -13540,9 +13187,7 @@ void CDPClient::OnPetCall( OBJID objid, CAr & ar )
 			pMover->SetPetId( dwPetId );
 		else
 			pMover->SetPetId( MAKELONG( (WORD)dwIndex, (WORD)nPetLevel ) );
-#ifdef __PET_1024
 		pMover->m_pet.SetName( szPetName );
-#endif	//__PET_1024
 	}
 }
 
@@ -13570,9 +13215,7 @@ void CDPClient::OnPetRelease( OBJID objid, CAr & ar )
 			if(g_WndMng.m_pWndFoodConfirm != NULL)
 				g_WndMng.m_pWndFoodConfirm->Destroy();
 		}
-#ifdef __PET_1024
 		pMover->m_pet.SetName( "" );
-#endif	//__PET_1024
 	}
 }
 
@@ -13891,23 +13534,22 @@ void CDPClient::OnGC1to1TenderOpenWnd( CAr & ar )
 	ar >> g_GuildCombat1to1Mng.m_nJoinPenya;
 	
 	SAFE_DELETE(g_WndMng.m_pWndGuildCombat1to1Offer);
-	g_WndMng.m_pWndGuildCombat1to1Offer = new CWndGuildCombat1to1Offer(1);
+	g_WndMng.m_pWndGuildCombat1to1Offer = new CWndGuildCombat1to1Offer(
+		CWndGuildCombat1to1Offer::CombatType::GC1to1
+	);
 
-	if(g_WndMng.m_pWndGuildCombat1to1Offer)
+	g_WndMng.m_pWndGuildCombat1to1Offer->Initialize();
+	if( nPenya == 0 ) //한번도 입찰한 금액이 없을 경우
 	{
-		g_WndMng.m_pWndGuildCombat1to1Offer->Initialize(NULL);
-		if( nPenya == 0 ) //한번도 입찰한 금액이 없을 경우
-		{
-			g_WndMng.m_pWndGuildCombat1to1Offer->SetReqGold( nPenya );
-			g_WndMng.m_pWndGuildCombat1to1Offer->SetBackupGold( g_GuildCombat1to1Mng.m_nJoinPenya );
-			g_WndMng.m_pWndGuildCombat1to1Offer->SetGold( g_GuildCombat1to1Mng.m_nJoinPenya );
-		}
-		else
-		{
-			g_WndMng.m_pWndGuildCombat1to1Offer->SetReqGold( nPenya );
-			g_WndMng.m_pWndGuildCombat1to1Offer->SetBackupGold( nPenya );
-			g_WndMng.m_pWndGuildCombat1to1Offer->SetGold( nPenya );			
-		}
+		g_WndMng.m_pWndGuildCombat1to1Offer->SetReqGold( nPenya );
+		g_WndMng.m_pWndGuildCombat1to1Offer->SetBackupGold( g_GuildCombat1to1Mng.m_nJoinPenya );
+		g_WndMng.m_pWndGuildCombat1to1Offer->SetGold( g_GuildCombat1to1Mng.m_nJoinPenya );
+	}
+	else
+	{
+		g_WndMng.m_pWndGuildCombat1to1Offer->SetReqGold( nPenya );
+		g_WndMng.m_pWndGuildCombat1to1Offer->SetBackupGold( nPenya );
+		g_WndMng.m_pWndGuildCombat1to1Offer->SetGold( nPenya );			
 	}
 }
 
@@ -13927,7 +13569,7 @@ void CDPClient::OnGC1to1TenderView( CAr & ar )
 
 	if(g_WndMng.m_pWndGuildWarState)
 	{
-		g_WndMng.m_pWndGuildWarState->Initialize(NULL);
+		g_WndMng.m_pWndGuildWarState->Initialize();
 		g_WndMng.m_pWndGuildWarState->SetTime(t);
 		g_WndMng.m_pWndGuildWarState->SetRate(nRanking);
 		g_WndMng.m_pWndGuildWarState->SetGold(nPenya);
@@ -13993,13 +13635,9 @@ void CDPClient::OnGC1to1NowState( CAr & ar )
 				SAFE_DELETE( g_WndMng.m_pWndGuildCombatInfoMessageBox );
 				g_WndMng.m_pWndGuildCombatInfoMessageBox = new CGuildCombatInfoMessageBox(1);
 	
-				if( g_WndMng.m_pWndGuildCombatInfoMessageBox )
-				{
-					g_WndMng.m_pWndGuildCombatInfoMessageBox->Initialize(&g_WndMng);
-					CString strMsg;
-					strMsg.Format("%s", prj.GetText(TID_GAME_GUILDCOMBAT_1TO1_TELEPORT_MSG));
-					g_WndMng.m_pWndGuildCombatInfoMessageBox->SetString(strMsg);
-				}
+				g_WndMng.m_pWndGuildCombatInfoMessageBox->Initialize();
+				LPCTSTR strMsg = prj.GetText(TID_GAME_GUILDCOMBAT_1TO1_TELEPORT_MSG);
+				g_WndMng.m_pWndGuildCombatInfoMessageBox->SetString(strMsg);
 
 				int nSize;
 				u_long nPlayerId;
@@ -14074,24 +13712,21 @@ void CDPClient::OnGC1to1WarResult( CAr & ar )
 
 void CDPClient::OnGC1to1MemberLineUpOpenWnd( CAr & ar )
 {
-	u_long nTemp;
-	int nSize;
-	
 	ar >> g_GuildCombat1to1Mng.m_nMinJoinPlayerLevel;
 	ar >> g_GuildCombat1to1Mng.m_nMinJoinPlayer;
 	ar >> g_GuildCombat1to1Mng.m_nMaxJoinPlayer;
-	ar >> nSize;
 
 	SAFE_DELETE(g_WndMng.m_pWndGuildCombat1to1Selection);
 	g_WndMng.m_pWndGuildCombat1to1Selection = new CWndGuildCombat1to1Selection;
-	if( g_WndMng.m_pWndGuildCombat1to1Selection )
-		g_WndMng.m_pWndGuildCombat1to1Selection->Initialize( NULL );	
+	g_WndMng.m_pWndGuildCombat1to1Selection->Initialize();	
 
-	for( int i=0; i<nSize; i++ )
-	{
-		ar >> nTemp;
-		g_WndMng.m_pWndGuildCombat1to1Selection->AddCombatPlayer( nTemp );
+	std::vector<u_long> selection;
+
+	int nSize; ar >> nSize;
+	for (int i = 0; i < nSize; i++) {
+		ar >> selection.emplace_back();
 	}
+	g_WndMng.m_pWndGuildCombat1to1Selection->SetSelection(selection);
 }
 
 
@@ -14446,7 +14081,7 @@ void CDPClient::OnSecretRoomMngState( CAr & ar )
 
 				if( g_WndMng.m_pWndSecretRoomMsg )
 				{
-					g_WndMng.m_pWndSecretRoomMsg->Initialize(&g_WndMng);
+					g_WndMng.m_pWndSecretRoomMsg->Initialize();
 					CString strMsg;
 					strMsg.Format("%s", prj.GetText(TID_GAME_SECRETROOM_TELEPORT_MSG));
 					g_WndMng.m_pWndSecretRoomMsg->SetString(strMsg);
@@ -14650,29 +14285,20 @@ void CDPClient::SendSecretRoomLineUpOpenWnd()
 
 void CDPClient::OnSecretRoomLineUpOpenWnd( CAr & ar )
 {
-	int nSize;
-
 	ar >> CSecretRoomMng::GetInstance()->m_nMinGuildMemberNum;
 	ar >> CSecretRoomMng::GetInstance()->m_nMaxGuildMemberNum;
-	ar >> nSize;
 
 	SAFE_DELETE(g_WndMng.m_pWndSecretRoomSelection);
 	g_WndMng.m_pWndSecretRoomSelection = new CWndSecretRoomSelection();
+	g_WndMng.m_pWndSecretRoomSelection->Initialize();
 
-	if(g_WndMng.m_pWndSecretRoomSelection)
-	{
-		g_WndMng.m_pWndSecretRoomSelection->Initialize();
-
-		for( int i=0; i<nSize; i++ )
-		{
-			DWORD dwIdPlayer;
-			ar >> dwIdPlayer;
-			g_WndMng.m_pWndSecretRoomSelection->AddCombatPlayer(dwIdPlayer);
-		}
-
-//		if(nSize == 0)
-//			g_WndMng.m_pWndSecretRoomSelection->SetMaster();
+	int nSize; ar >> nSize;
+	std::vector<u_long> lineup;
+	for (int i = 0; i < nSize; i++) {
+		ar >> lineup.emplace_back();
 	}
+
+	g_WndMng.m_pWndSecretRoomSelection->ResetLineup(lineup);
 }
 
 void CDPClient::SendSecretRoomEntrance()
@@ -14710,7 +14336,7 @@ void CDPClient::OnSecretRoomTenderView( CAr & ar )
 
 	if(g_WndMng.m_pWndSecretRoomOfferState)
 	{
-		g_WndMng.m_pWndSecretRoomOfferState->Initialize(NULL);
+		g_WndMng.m_pWndSecretRoomOfferState->Initialize();
 		g_WndMng.m_pWndSecretRoomOfferState->SetTime(t);
 		g_WndMng.m_pWndSecretRoomOfferState->SetRate(nRanking);
 		g_WndMng.m_pWndSecretRoomOfferState->SetGold(nTenderPenya);
@@ -14755,7 +14381,7 @@ void CDPClient::OnTaxSetTaxRateOpenWnd( CAr & ar )
 	if(g_WndMng.m_pWndSecretRoomChangeTaxRate)
 	{
 		g_WndMng.m_pWndSecretRoomChangeTaxRate->SetDefaultTax(nMinTaxRate, nMaxTaxRate, nCont);
-		g_WndMng.m_pWndSecretRoomChangeTaxRate->Initialize(NULL);
+		g_WndMng.m_pWndSecretRoomChangeTaxRate->Initialize();
 	}
 }
 
@@ -14884,12 +14510,12 @@ void CDPClient::OnLordSkillUse( OBJID objid, CAr & ar )
 			g_pPlayer->SetAngle( GetDegree(pTarget->GetPos(), pLord->GetPos()) );
 		}
 		g_pPlayer->SetMotion( MTI_ATK1, ANILOOP_1PLAY, MOP_SWDFORCE | MOP_NO_TRANS | MOP_FIXED );
-		CreateSfx(g_Neuz.m_pd3dDevice, (int)pSkill->GetSrcSfx(), pLord->GetPos(), pLord->GetId());
+		CreateSfx( (int)pSkill->GetSrcSfx(), pLord->GetPos(), pLord->GetId());
 	}
 	if( IsValidObj( pTarget ) && pSkill->GetDstSfx() != NULL_ID )
 	{
 		// pTarget에 pSkill->GetDstSfx() 효과 주기
-		CreateSfx(g_Neuz.m_pd3dDevice, (int)pSkill->GetDstSfx(), pTarget->GetPos(), pTarget->GetId());
+		CreateSfx( (int)pSkill->GetDstSfx(), pTarget->GetPos(), pTarget->GetId());
 	}
 }
 
@@ -15025,7 +14651,7 @@ void CDPClient::OnRainbowRacePrevRankingOpenWnd( CAr & ar )
 	if(g_WndMng.m_pWndRainbowRaceRanking)
 	{
 		g_WndMng.m_pWndRainbowRaceRanking->SetRankingPlayer(adwPlayerId);
-		g_WndMng.m_pWndRainbowRaceRanking->Initialize(NULL);
+		g_WndMng.m_pWndRainbowRaceRanking->Initialize();
 	}
 }
 
@@ -15042,7 +14668,7 @@ void CDPClient::OnRainbowRaceApplicationOpenWnd( CAr & ar )
 	if(g_WndMng.m_pWndRainbowRaceOffer)
 	{
 		g_WndMng.m_pWndRainbowRaceOffer->SetOfferCount(nNum);
-		g_WndMng.m_pWndRainbowRaceOffer->Initialize(NULL);
+		g_WndMng.m_pWndRainbowRaceOffer->Initialize();
 	}
 }
 
@@ -15076,7 +14702,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					g_WndMng.m_pWndRRMiniGameKawiBawiBo = new CWndRRMiniGameKawiBawiBo;
 
 					if(g_WndMng.m_pWndRRMiniGameKawiBawiBo)
-						g_WndMng.m_pWndRRMiniGameKawiBawiBo->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameKawiBawiBo->Initialize();
 				}
 				else 
 				{
@@ -15104,7 +14730,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					if(g_WndMng.m_pWndRRMiniGameDice)
 					{
 						g_WndMng.m_pWndRRMiniGameDice->SetTargetNumber(pMiniGamePacket->nParam1);
-						g_WndMng.m_pWndRRMiniGameDice->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameDice->Initialize();
 					}
 				}
 				else
@@ -15137,7 +14763,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 						for( int i=0; i<(int)( pPacket->vecszData.size() ); i++ )
 							strQuestion = pPacket->vecszData[i];
 						
-						g_WndMng.m_pWndRRMiniGameArithmetic->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameArithmetic->Initialize();
 						g_WndMng.m_pWndRRMiniGameArithmetic->SetNextQuestion(strQuestion.c_str(), pPacket->nParam1);
 					}
 				}
@@ -15177,7 +14803,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 					{
 						g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_ARITHMATIC);
-						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 					}
 
 					if(g_WndMng.m_pWndRRMiniGameArithmetic)
@@ -15197,7 +14823,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 
 					if(g_WndMng.m_pWndRRMiniGameStopWatch)
 					{
-						g_WndMng.m_pWndRRMiniGameStopWatch->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameStopWatch->Initialize();
 						g_WndMng.m_pWndRRMiniGameStopWatch->SetTargetTime(pPacket->nParam1);
 					}
 				}
@@ -15219,7 +14845,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 					{
 						g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_STOPWATCH);
-						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 					}
 
 					if(g_WndMng.m_pWndRRMiniGameStopWatch)
@@ -15239,7 +14865,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 
 					if(g_WndMng.m_pWndRRMiniGameTyping)
 					{
-						g_WndMng.m_pWndRRMiniGameTyping->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameTyping->Initialize();
 
 						std::string strQuestion;
 						for( int i=0; i<(int)( pPacket->vecszData.size() ); i++ )
@@ -15269,7 +14895,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 					{
 						g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_TYPING);
-						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 					}
 
 					if(g_WndMng.m_pWndRRMiniGameTyping)
@@ -15288,7 +14914,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					g_WndMng.m_pWndRRMiniGameCard = new CWndRRMiniGameCard;
 
 					if(g_WndMng.m_pWndRRMiniGameCard)
-						g_WndMng.m_pWndRRMiniGameCard->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameCard->Initialize();
 
 					std::string strQuestion = pPacket->vecszData[0];
 					g_WndMng.m_pWndRRMiniGameCard->SetQuestion(strQuestion.c_str());
@@ -15311,7 +14937,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 					{
 						g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_PAIRGAME);
-						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+						g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 					}
 
 					if(g_WndMng.m_pWndRRMiniGameCard)
@@ -15329,7 +14955,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 					g_WndMng.m_pWndRRMiniGameLadder = new CWndRRMiniGameLadder;
 
 					if(g_WndMng.m_pWndRRMiniGameLadder)
-						g_WndMng.m_pWndRRMiniGameLadder->Initialize(NULL);
+						g_WndMng.m_pWndRRMiniGameLadder->Initialize();
 				}
 				else if(pMiniGamePacket->nState == MP_FAIL)
 				{
@@ -15362,7 +14988,6 @@ void CDPClient::SendDoUseItemInput( DWORD dwData, const char* szInput )
 }
 #endif	// __AZRIA_1023
 
-#ifdef __PET_1024
 void CDPClient::SendClearPetName()
 {
 	SendHdr( PACKETTYPE_CLEAR_PET_NAME );
@@ -15392,7 +15017,6 @@ void CDPClient::OnSetPetName( OBJID objid, CAr & ar )
 		}
 	}
 }
-#endif	// __PET_1024
 
 void CDPClient::OnHousingAllInfo(CAr & ar) {
 	ar >> *CHousing::GetInstance();
@@ -15686,10 +15310,10 @@ void CDPClient::OnWorldReadInfo( CAr & ar )
 	D3DXVECTOR3 vPos;
 	ar >> dwWorldId >> vPos;
 
-	g_WorldMng.Open( g_Neuz.m_pd3dDevice, dwWorldId );
-	g_WorldMng.Get()->RestoreDeviceObjects( g_Neuz.m_pd3dDevice );
+	g_WorldMng.Open( dwWorldId );
+	g_WorldMng.Get()->RestoreDeviceObjects( );
 	g_WorldMng.Get()->SetCamera( &g_Neuz.m_camera );
-	g_Neuz.m_camera.Transform( D3DDEVICE, g_WorldMng.Get() );
+	g_Neuz.m_camera.Transform( g_WorldMng.Get() );
 	g_Neuz.m_camera.Reset();
 	g_WorldMng.Get()->ReadWorld( vPos );
 }
@@ -15827,7 +15451,7 @@ void CDPClient::OnQuizEventMessage( CAr & ar )
 			else
 				dwId = 1115;
 			
-			CQuiz::GetInstance()->m_pVObj = (CCtrl*)CreateObj( g_Neuz.m_pd3dDevice, OT_OBJ, dwId );
+			CQuiz::GetInstance()->m_pVObj = (CCtrl*)CreateObj( OT_OBJ, dwId );
 			if( !CQuiz::GetInstance()->m_pVObj )
 				return;
 			
@@ -15837,7 +15461,7 @@ void CDPClient::OnQuizEventMessage( CAr & ar )
 			
 			if( CQuiz::GetInstance()->GetType() == TYPE_4C )
 			{
-				CQuiz::GetInstance()->m_pHObj = (CCtrl*)CreateObj( g_Neuz.m_pd3dDevice, OT_OBJ, dwId );
+				CQuiz::GetInstance()->m_pHObj = (CCtrl*)CreateObj( OT_OBJ, dwId );
 				if( !CQuiz::GetInstance()->m_pHObj )
 					return;
 				
@@ -16015,7 +15639,7 @@ void CDPClient::OnInviteCampusMember( CAr & ar )
 	if( g_WndMng.m_pWndCampusInvitationConfirm )
 		SAFE_DELETE( g_WndMng.m_pWndCampusInvitationConfirm );
 	g_WndMng.m_pWndCampusInvitationConfirm = new CWndCampusInvitationConfirm( idRequest, szRequest );
-	g_WndMng.m_pWndCampusInvitationConfirm->Initialize( NULL );
+	g_WndMng.m_pWndCampusInvitationConfirm->Initialize();
 }
 
 void CDPClient::OnUpdateCampus(CAr & ar) {
@@ -16077,7 +15701,7 @@ void CDPClient::OnSafeAwakening( CAr& ar )
 	if( !g_pPlayer ) return;
 	
 	g_WndMng.m_pWndSelectAwakeCase = new CWndSelectAwakeCase(byItemObjID, dwSerialNumber, n64NewRandomOption);
-	g_WndMng.m_pWndSelectAwakeCase->Initialize(&g_WndMng, APP_AWAKE_SELECTCASE);
+	g_WndMng.m_pWndSelectAwakeCase->Initialize();
 }
 
 #endif //__PROTECT_AWAKE

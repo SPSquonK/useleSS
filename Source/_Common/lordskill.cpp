@@ -59,7 +59,7 @@ void CLordSkillComponent::Initialize( int nId, int nCooltime, int nItem, const c
 CTexture* CLordSkillComponent::GetTexture( void )
 {
 	if( !m_pTexture )
-		m_pTexture	= CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ICON, m_szIcon ), 0xffff00ff );
+		m_pTexture	= CWndBase::m_textureMng.AddTexture( MakePath( DIR_ICON, m_szIcon ), 0xffff00ff );
 	return m_pTexture;
 }
 #endif	// __CLIENT

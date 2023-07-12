@@ -1,14 +1,9 @@
 #include "stdafx.h"
 #include "npchecker.h"
 
-CNpcChecker * CNpcChecker::GetInstance(void) {
+CNpcChecker * CNpcChecker::GetInstance() {
 	static CNpcChecker	sNpcChecker;
 	return &sNpcChecker;
-}
-
-void CNpcChecker::RemoveFrom(std::set<OBJID> & set, const OBJID id) {
-	auto it = set.find(id);
-	if (it != set.end()) set.erase(it);
 }
 
 void CNpcChecker::AddNpc(CObj * const pObj) {
@@ -40,11 +35,11 @@ void CNpcChecker::RemoveNpc(CObj * const pObj) {
 	if (!pCharacter) return;
 
 	const OBJID objid = pNpc->GetId();
-	for (int j = 0; j < MAX_MOVER_MENU; ++j) {
-		RemoveFrom(m_perMenu[j], objid);
+	for (auto & menu : m_perMenu) {
+		menu.erase(objid);
 	}
 
-	RemoveFrom(m_all, objid);
+	m_all.erase(objid);
 }
 
 std::optional<bool> CNpcChecker::IsCloseNpc(int nMenu, const CObj * const pObj) const {

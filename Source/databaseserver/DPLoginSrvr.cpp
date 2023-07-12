@@ -8,7 +8,6 @@
 
 CDPLoginSrvr::CDPLoginSrvr()
 {
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_GETPLAYERLIST, &CDPLoginSrvr::OnGetPlayerList );
 	ON_MSG( PACKETTYPE_CREATE_PLAYER, &CDPLoginSrvr::OnCreatePlayer );
 	ON_MSG( PACKETTYPE_DEL_PLAYER, &CDPLoginSrvr::OnRemovePlayer );
@@ -48,11 +47,10 @@ void CDPLoginSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	static size_t	nSize	= sizeof(DPID);
 	
 	CAr ar( (LPBYTE)lpMsg + nSize, dwMsgSize - nSize );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
+
+	DWORD dw; ar >> dw;
 	
-	if( pfn ) {
-		( this->*( pfn ) )( ar, *(UNALIGNED LPDPID)lpMsg, (LPBYTE)lpMsg + nSize + nSize, dwMsgSize - nSize - nSize );
+	if (Handle(ar, dw, *(UNALIGNED LPDPID)lpMsg, (LPBYTE)lpMsg + nSize + nSize, dwMsgSize - nSize - nSize)) {
 		if (ar.IsOverflow()) Error("Database-Login: Packet %08x overflowed", dw);
 	}
 	else {

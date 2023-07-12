@@ -49,7 +49,7 @@ void CWndChangeFace::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndChangeFace::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndChangeFace::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_CHANGEFACE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -58,7 +58,7 @@ BOOL CWndChangeFace::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ )
   직접 윈도를 열때 사용 
 BOOL CWndChangeFace::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
 { 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
+	CRect rectWindow = g_WndMng.GetWindowRect(); 
 	CRect rect( 50 ,50, 300, 300 ); 
 	SetTitle( _T( "title" ) ); 
 	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
@@ -76,7 +76,6 @@ void CWndChangeFace::OnLButtonUp( UINT nFlags, CPoint point )
 { 
 	// 10,25 
 	point.x -= 10;
-	
 	point.x /= 86;
 
 	if( point.x >=0 && point.x < 5 && point.y >= 0 && point.y < 180 )
@@ -115,16 +114,11 @@ CWndChangeSex::CWndChangeSex()
 	m_dwItemId	= NULL_ID;
 	m_dwObjId	= NULL_ID;
 } 
-CWndChangeSex::~CWndChangeSex() 
-{ 
-	SAFE_DELETE( m_pModel );
-} 
+
 void CWndChangeSex::OnDraw( C2DRender* p2DRender ) 
 { 
 	if( g_pPlayer == NULL  )
 		return;
-
-	LPDIRECT3DDEVICE9 pd3dDevice = p2DRender->m_pd3dDevice;
 
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
@@ -179,10 +173,7 @@ void CWndChangeSex::OnDraw( C2DRender* p2DRender )
 		D3DXMATRIX matProj;
 		D3DXMatrixIdentity( &matProj );
 		FLOAT fAspect = ((FLOAT)viewport.Width) / (FLOAT)viewport.Height;
-/*		
-		D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4.0f, fAspect, CWorld::m_fNearPlane - 0.01f, CWorld::m_fFarPlane );
-		pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
-*/		
+
 		FLOAT fov = D3DX_PI/4.0f;//796.0f;
 		FLOAT h = cos(fov/2) / sin(fov/2);
 		FLOAT w = h * fAspect;
@@ -211,11 +202,7 @@ void CWndChangeSex::OnDraw( C2DRender* p2DRender )
 		::SetFog( FALSE );
 		SetDiffuse( 1.0f, 1.0f, 1.0f );
 		SetAmbient( 1.0f, 1.0f, 1.0f );
-/*
-		m_pModel->GetObject3D(PARTS_HAIR)->m_fAmbient[0] = 0.5f;
-		m_pModel->GetObject3D(PARTS_HAIR)->m_fAmbient[1] = 0.5f;
-		m_pModel->GetObject3D(PARTS_HAIR)->m_fAmbient[2] = 0.5f;
-*/		
+
 		D3DXVECTOR4 vConst( 1.0f, 1.0f, 1.0f, 1.0f );
 #ifdef __YENV
 		D3DXVECTOR3 vDir( 0.0f, 0.0f, 1.0f );
@@ -228,7 +215,7 @@ void CWndChangeSex::OnDraw( C2DRender* p2DRender )
 		::SetTransformView( matView );
 		::SetTransformProj( matProj );
 				
-		m_pModel->Render( p2DRender->m_pd3dDevice, &matWorld );
+		m_pModel->Render( &matWorld );
 	}
 } 
 void CWndChangeSex::OnInitialUpdate() 
@@ -236,37 +223,32 @@ void CWndChangeSex::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 	
-	SAFE_DELETE( m_pModel );
-	
 	// 성전환이니깐 반대로 하자~
 	int nMover = (g_pPlayer->GetSex() == SEX_MALE ? MI_FEMALE:MI_MALE );
-	m_pModel = (CModelObject*)prj.m_modelMng.LoadModel( g_Neuz.m_pd3dDevice, OT_MOVER, nMover, TRUE );
-	prj.m_modelMng.LoadMotion( m_pModel,  OT_MOVER, nMover, MTI_STAND2 );
+	m_pModel = prj.m_modelMng.LoadModel<std::unique_ptr<CModelObject>>( OT_MOVER, nMover, TRUE );
+	m_pModel->LoadMotionId(MTI_STAND2);
 
-	CMover::UpdateParts( !g_pPlayer->GetSex(), 0, 0, g_pPlayer->m_dwHairMesh , m_nSelectFace,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );
+	UpdateModelParts();
 	
-	m_pModel->InitDeviceObjects( g_Neuz.GetDevice() );
+	m_pModel->InitDeviceObjects( );
 	
 	// 윈도를 중앙으로 옮기는 부분.
 	MoveParentCenter();
 } 
+
+void CWndChangeSex::UpdateModelParts() {
+	MoverSub::SkinMeshs skin = g_pPlayer->m_skin;
+	skin.headMesh = m_nSelectFace;
+	CMover::UpdateParts(!g_pPlayer->GetSex(), skin, g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory);
+}
+
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndChangeSex::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndChangeSex::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_CHANGESEX, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-BOOL CWndChangeSex::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndChangeSex::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndChangeSex::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndChangeSex::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( nID == WIDC_OK )
@@ -293,24 +275,14 @@ BOOL CWndChangeSex::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	else
 	if( nID == WIDC_LEFT )
 	{
-		m_nSelectFace--;
-
-		if( m_nSelectFace < 0 )
-		{
-			m_nSelectFace = MAX_DEFAULT_HEAD -1;
-		}
-		CMover::UpdateParts( !g_pPlayer->GetSex(), 0, 0, g_pPlayer->m_dwHairMesh, m_nSelectFace,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );		
+		m_nSelectFace = m_nSelectFace == 0 ? MAX_DEFAULT_HEAD - 1 : m_nSelectFace - 1;
+		UpdateModelParts();
 	}
 	else
 	if( nID == WIDC_RIGHT )
 	{
-		m_nSelectFace++;
-		
-		if( m_nSelectFace >= MAX_DEFAULT_HEAD)
-		{
-			m_nSelectFace = 0;
-		}
-		CMover::UpdateParts( !g_pPlayer->GetSex(), 0, 0, g_pPlayer->m_dwHairMesh, m_nSelectFace,g_pPlayer->m_aEquipInfo, m_pModel, &g_pPlayer->m_Inventory );		
+		m_nSelectFace = (m_nSelectFace + 1) % MAX_DEFAULT_HEAD;
+		UpdateModelParts();
 	}
 	
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
@@ -353,7 +325,7 @@ void CWndItemTransy::OnInitialUpdate()
 	MoveParentCenter();
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndItemTransy::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndItemTransy::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_ITEM_TRANSY, pWndParent, 0, CPoint( 0, 0 ) );

@@ -202,7 +202,6 @@ public:
 #endif // not __REMOVE_SCIRPT_060712
 
 	static BOOL		LookupDefine( LPCTSTR lpszString, int& rValue );
-	static void		GetFindIdToArray ( LPCTSTR strDef, CStringArray* pStrArray );
 	static int		GetDefineNum( LPCTSTR lpStr );
 
 	static std::optional<DWORD> GetDefineNumOpt(LPCTSTR lpStr) {

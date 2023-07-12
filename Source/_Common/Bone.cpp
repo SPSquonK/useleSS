@@ -5,7 +5,6 @@
 
 
 
-CBonesMng		g_BonesMng;
 
 ////////////////////////////////////////////////////////////////////////////////////
 ///////////////
@@ -17,20 +16,10 @@ CBonesMng		g_BonesMng;
 ////////////////////////////////////////////////////////////////////////////////////
 CBones :: CBones()
 {
-	Init();
-}
-
-CBones :: ~CBones()
-{
-	Destroy();
-}
-
-void	CBones :: Init( void )
-{
 	m_nID = 0;
 	memset( m_szName, 0, sizeof(m_szName) );
 	m_nMaxBone = 0;
-	m_pBones = NULL;
+	m_pBones = nullptr;
 	m_nRHandIdx = m_nLHandIdx = m_nRArmIdx = m_nLArmIdx = 0;
 
 	D3DXMatrixIdentity( &m_mLocalRH );
@@ -39,36 +28,8 @@ void	CBones :: Init( void )
 	D3DXMatrixIdentity( &m_mLocalKnuckle );
 
 	memset( m_vEvent, 0, sizeof(m_vEvent) );
-//	memset( m_pEventParent, 0, sizeof(m_pEventParent) );
 	memset( m_nEventParentIdx, 0, sizeof(m_nEventParentIdx) );
-
 }
-
-void	CBones :: Destroy( void )
-{
-	SAFE_DELETE_ARRAY( m_pBones );
-	Init();
-}
-
-//
-//  뼈대들중에서 nID값을 가지는 뼈대를 찾음
-//
-/*
-BONE	*CBones :: FindBone( int nID )
-{
-	int		i;
-	BONE	*pBone = m_pBones;
-
-	i = m_nMaxBone;
-	while( i-- )
-	{
-		if( pBone->m_nID == nID )	return pBone;
-		pBone ++;
-	}
-	
-	return NULL;
-}
-*/
 
 //
 //
@@ -108,8 +69,8 @@ int		CBones :: LoadBone( LPCTSTR szFileName )
 
 	resFp.Read( &nNumBone, 4, 1 );			// 본 개수 읽음
 	m_nMaxBone = nNumBone;
-	m_pBones = new BONE[ nNumBone ];			// 본 개수 만큼 할당
-	memset( m_pBones, 0, sizeof(BONE) * nNumBone );		// zero clear
+	m_pBones = std::make_unique<BONE[]>(nNumBone);			// 본 개수 만큼 할당
+	memset( m_pBones.get(), 0, sizeof(BONE) * nNumBone);		// zero clear
 
 	for( i = 0; i < nNumBone; i ++ )
 	{
@@ -154,12 +115,6 @@ int		CBones :: LoadBone( LPCTSTR szFileName )
 		resFp.Read( &m_mLocalLH, sizeof(D3DXMATRIX), 1 );
 	}
 
-	// 포인터로 할당.
-//	for( i = 0; i < 4; i ++ )
-//	{
-//		m_pEventParent[i] = &m_pBones[ nParentIdx[i] ];
-//	}
-
 	resFp.Close();
 
 	// 부모 포인터를 셋팅
@@ -188,47 +143,29 @@ int		CBones :: LoadBone( LPCTSTR szFileName )
 ///////////////
 ///////////////
 ////////////////////////////////////////////////////////////////////////////////////
-CBonesMng :: CBonesMng()
-{
-}
 
-CBonesMng :: ~CBonesMng()
-{
-	Destroy();
-}
+CBonesMng		g_BonesMng;
 
+// When this file load request comes in, the file
+// is read and loaded into memory.
+// When loading, the duplicate returns a pointer to
+// the already loaded bone.
+const CBones * CBonesMng::LoadBone(LPCTSTR szFileName) {
+	char sFile[MAX_PATH] = { 0, };
+	strcpy(sFile, szFileName);
+	strlwr(sFile);
 
-void	CBonesMng :: Init( void )
-{
-}
-
-void	CBonesMng :: Destroy( void )
-{
-	for( auto i = m_mapBones.begin(); i != m_mapBones.end(); ++i )
-		safe_delete( i->second );
-	m_mapBones.clear();
-}
-
-// 본 파일Load요청이 들어오면 파일을 읽어 메모리에 적재한다.
-// 적재할땐 중복된것은 이미 로딩되었던 본의 포인터를 리턴한다.
-// 파일의 첫머리에 고유 아이디를 넣어서 검색할때 파일이름으로 하지말고 아이디로 하도록 한다.
-CBones *CBonesMng :: LoadBone( LPCTSTR szFileName )
-{
-	char sFile[MAX_PATH]	= { 0,};
-	strcpy( sFile, szFileName );
-	strlwr( sFile );
-
-	auto i	= m_mapBones.find( sFile );
-	if( i != m_mapBones.end() )
-		return i->second;
-	// 로딩된게 아니었다면.  실제로 데이타 읽음.
-	CBones* pBones	= new CBones;
-	if( pBones->LoadBone( szFileName ) == FAIL )
-	{
-		safe_delete( pBones );
-		return NULL;
+	if (const auto i = m_mapBones.find(sFile); i != m_mapBones.end()) {
+		return i->second.get();
 	}
-	bool bResult	= m_mapBones.emplace(sFile, pBones).second;
+
+	CBones * pBones = new CBones;
+	if (pBones->LoadBone(szFileName) == FAIL) {
+		safe_delete(pBones);
+		return nullptr;
+	}
+
+	m_mapBones.emplace(sFile, pBones);
 	return pBones;
 }
 
@@ -242,48 +179,22 @@ CBones *CBonesMng :: LoadBone( LPCTSTR szFileName )
 ////////////////////////////////////////////////////////////////////////////////////
 CMotionMng		g_MotionMng;
 
+CMotion * CMotionMng::LoadMotion(LPCTSTR szFileName) {
+	char sFile[MAX_PATH] = { 0, };
+	std::strcpy(sFile, szFileName);
+	strlwr(sFile);
 
-CMotionMng :: CMotionMng()
-{
-}
-
-CMotionMng :: ~CMotionMng()
-{
-	Destroy();
-}
-
-void	CMotionMng :: Init( void )
-{
-}
-
-void	CMotionMng :: Destroy( void )
-{
-	for( auto i = m_mapMotions.begin(); i != m_mapMotions.end(); ++i )
-		safe_delete( i->second );
-	m_mapMotions.clear();
-}
-
-//
-//
-//
-CMotion *CMotionMng :: LoadMotion( LPCTSTR szFileName )
-{
-	char sFile[MAX_PATH]	= { 0,};
-	strcpy( sFile, szFileName );
-	strlwr( sFile );
-
-	const auto i	= m_mapMotions.find( sFile );
-	if( i != m_mapMotions.end() )
-		return i->second;
-
-	// 로딩된게 아니었다면.  실제로 데이타 읽음.
-	CMotion* pMotion	= new CMotion;
-	if( pMotion->LoadMotion( szFileName ) == FAIL )
-	{
-		safe_delete( pMotion );
-		return NULL;
+	if (const auto i = m_mapMotions.find(sFile); i != m_mapMotions.end()) {
+		return i->second.get();
 	}
-	bool bResult	= m_mapMotions.emplace(sFile, pMotion).second;
+
+	CMotion * pMotion = new CMotion;
+	if (pMotion->LoadMotion(szFileName) == FAIL) {
+		safe_delete(pMotion);
+		return nullptr;
+	}
+
+	m_mapMotions.emplace(sFile, pMotion);
 	return pMotion;
 }
 

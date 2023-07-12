@@ -17,13 +17,11 @@ public:
 	~TexturePool( );
 
 	static TexturePool* Get( );
-	void Init( IDirect3DDevice9* pDevice )		{ _pMyDevice = pDevice; }
 
 	void Free( );
 	IDirect3DTexture9* GetTexture( const std::string& dir, const std::string& filename );		//if not find, create the texture
 
 protected:
-	IDirect3DDevice9* _pMyDevice;
 	Texture_Container _cTextures;
 
 };

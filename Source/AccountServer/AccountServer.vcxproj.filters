@@ -57,12 +57,6 @@
     <ClCompile Include="dpsrvr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dpwldsrvr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="globalgiftbox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -155,12 +149,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dpsrvr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dpwldsrvr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="globalgiftbox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">

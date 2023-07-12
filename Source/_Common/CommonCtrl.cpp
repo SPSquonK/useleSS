@@ -11,10 +11,7 @@
 #endif	// __WORLDSERVER
 
 
-typedef std::map< std::string, DWORD >			CMapStrToObjId;
-typedef CMapStrToObjId :: value_type	MapStrToObjIdType;
-
-CMapStrToObjId	g_MapStrToObjId;
+std::map< std::string, DWORD >	g_MapStrToObjId;
  
 CCommonCtrl::CCommonCtrl()
 {
@@ -212,9 +209,9 @@ void CCommonCtrl::_ProcessWall( void )
 						// 뒤로 밀리기 처리.
 						if( pTarget->IsRank( RANK_MIDBOSS ) == FALSE )
 						{
-							FLOAT fPushAngle = pTarget->GetAngle() + 180.0f;
-							FLOAT fPower = 0.825f;
-							AngleToVectorXZ( &pTarget->m_pActMover->m_vDeltaE, fPushAngle, fPower );
+							const FLOAT fPushAngle = pTarget->GetAngle() + 180.0f;
+							static constexpr FLOAT fPower = 0.825f;
+							pTarget->m_pActMover->m_vDeltaE = AngleToVectorXZ( fPushAngle, fPower );
 							g_UserMng.AddPushPower( pTarget, pTarget->GetPos(), pTarget->GetAngle(), fPushAngle, fPower );
 						}
 					}
@@ -249,9 +246,9 @@ void CCommonCtrl::_ProcessWall( void )
 							DestroyWall();
 
 						// 뒤로 밀리기 처리.
-						FLOAT fPushAngle = pTarget->GetAngle() + 180.0f;
-						FLOAT fPower = 0.825f;
-						AngleToVectorXZ( &pTarget->m_pActMover->m_vDeltaE, fPushAngle, fPower );
+						const FLOAT fPushAngle = pTarget->GetAngle() + 180.0f;
+						const FLOAT fPower = 0.825f;
+						pTarget->m_pActMover->m_vDeltaE = AngleToVectorXZ( fPushAngle, fPower );
 						g_UserMng.AddPushPower( pTarget, pTarget->GetPos(), pTarget->GetAngle(), fPushAngle, fPower );
 					}
 				}
@@ -551,7 +548,7 @@ void CCommonCtrl::_CreateTrapSkill()
 }
 
 
-void CCommonCtrl::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CCommonCtrl::Render( )
 {
 #ifdef __CLIENT
 	if( GetIndex() == CI_PSYCHICWALL )		// 싸이킥월일경우 따로 처리 - 일단 땜빵.
@@ -560,8 +557,8 @@ void CCommonCtrl::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		m_pSfxModel->m_vRotate.y = GetAngle();
 		m_pSfxModel->m_vScale = GetScale();
 		m_pSfxModel->m_matScale = m_matScale;
-		//m_pSfxModel->Render( pd3dDevice, NULL );
-		m_pSfxModel->RenderZ( pd3dDevice, NULL );
+		//m_pSfxModel->Render( NULL );
+		m_pSfxModel->RenderZ( NULL );
 		return;
 	}
 		
@@ -572,36 +569,21 @@ void CCommonCtrl::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		AddAngle( 1.0f );
 	}
 	
-	CObj::Render( pd3dDevice );
+	CObj::Render( );
 #endif// __CLIENT
 }
 
-void CCommonCtrl::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor )
+void CCommonCtrl::RenderName( CD3DFont* pFont, DWORD dwColor )
 {
 #ifndef __WORLDSERVER
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-    D3DVIEWPORT9 vp;
-	const BOUND_BOX* pBB = m_pModel->GetBBVector();
-    pd3dDevice->GetViewport( &vp );
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matScale );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &m_matRotation );
-	D3DXMatrixMultiply( &matWorld, &matWorld, &matTrans );
-	
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(
+		std::nullopt,
+		PWCTSC_DoNotResetWorldTransform | PWCTSC_UntouchedViewport
+	);
+
 	vOut.x -= pFont->GetTextExtent( GetProp()->szName ).cx / 2;
 	pFont->DrawText( vOut.x + 1, vOut.y + 1, 0xff000000, GetProp()->szName );
 	pFont->DrawText( vOut.x, vOut.y, dwColor, GetProp()->szName );
-	return;
 #endif	// __WORLDSERVER
 }
 /*
@@ -627,7 +609,7 @@ void CCommonCtrl::SetActionPlay()
 		{
 			if( pCtrlProp && pCtrlProp->dwSfxCtrl != -1 )
 			{
-				CreateSfx( g_Neuz.m_pd3dDevice, pCtrlProp->dwSfxCtrl, GetPos() );
+				CreateSfx( pCtrlProp->dwSfxCtrl, GetPos() );
 			}
 		}
 	}
@@ -675,7 +657,7 @@ void CCommonCtrl::DropItem() {
 		pItem->m_dwDropTime		= timeGetTime();
 
 		pItem->m_bDropMob	= FALSE;
-		pItem->SetIndex( D3DDEVICE, pItem->m_pItemBase->m_dwItemId );
+		pItem->SetIndex( pItem->m_pItemBase->m_dwItemId );
 			
 		D3DXVECTOR3	v3Pos = GetPos();
 		v3Pos.x += static_cast<float>(xRandom(30) - 15) * 0.1f;
@@ -711,7 +693,7 @@ void CCommonCtrl::DropNPC()
 
 		for( j=0; j<(int)( dwBaseMob ); j++ )
 		{
-			CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+			CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 			if( NULL == pObj )	
 				return;
 
@@ -738,7 +720,7 @@ void CCommonCtrl::DropNPC()
 		// 선공 몹 생성
 		for( j=0; j<(int)( m_CtrlElem.m_dwMonActAttack[i] ); j++ )
 		{
-			CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+			CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 			if( NULL == pObj )	
 				return;
 			

@@ -20,7 +20,6 @@
 #define		__S_SERVER_UNIFY			// 서버 통합 Neuz, World
 #define		__LANG_IME_0327				// 국가별 ime표시 창 출력 구분
 
-#define		__NEWYEARDAY_EVENT_COUPON	// 설 이벤트 - 헤어샾, 성형 무료이용권 관련.
 // 해외 6차 적용
 
 #define		__ITEMDROPRATE				// 이벤트 아이템 드롭률 조정
@@ -37,8 +36,6 @@
 #define		__EVE_MINIGAME				// Mini Game 4종 이벤트 추가 관련.
 #define		__S_ADD_EXP					// EXP_S 아이템 생성
 
-#define		__RULE_0615					// 명명 규칙 정리
-#define		__FILTER_0705				// 필터링 규칙 변경
 #define		__S_ADD_RESTATE				// 상용화 아이템 생성( 리스테트 힘, 민첩, 체력, 지능 )
 
 #define		__PROP_0827					// 아이템 프로퍼티 적용 파라미터 확장
@@ -86,7 +83,6 @@
 
 #define		__JEFF_9_20					// 비행 시간을 침묵 시간으로 전용
 #define		__JEFF_11_4					// 아레나
-#define		__JEFF_11_5					// 메모리 누수
 #define		__JEFF_11_6					// 바보 몬스터
 #define		__DST_GIFTBOX				// 착용 아이템에 기프트 박스 기능 추가 
 
@@ -138,7 +134,6 @@
 
 #define		__LAYER_1020				// __LAYER_1015 테스트
 #define		__AZRIA_1023				// 입장권 계층 적용
-#define		__PET_1024					// 펫 작명
 #define		__SYNC_1217					// 비동기 수정(필리핀 보고)
 #define		__SYS_ITEMTRANSY			// NPC메뉴 아이템 트렌지 기능
 
@@ -218,8 +213,6 @@
 
 	#define __ENCRYPT_PASSWORD	//	mulcom	BEGIN100218	패스워드 암호화
 
-//	#define		__CERTIFIER_COLLECTING_SYSTEM	// 인증 서버 수집 시스템
-
 	#define		__DELETE_CHAR_CHANGE_KEY_VALUE	// 버디버디 i_PIN 도입으로 인한 캐릭터삭제 키값 변경(국내, 주민번호 -> 2차비번)
 	#define		__BS_ADJUST_SYNC			// mover간 동기화 개선 
 
@@ -227,7 +220,6 @@
 
 //	#define		__NEW_WEB_BOX				// 새로운 웹 표현 창
 	#define		__PROTECT_AWAKE				//각성보호
-	#define		__MAIL_REQUESTING_BOX		// 메일 요청 박스
 	#define     __BS_SAFE_WORLD_DELETE		// CWorld::Process에서 safe delete obj( sfx 류로 확인댐 )
 //	#define		__GAME_GRADE_SYSTEM			// 게임물 등급 표시 시스템
 	#define		__BS_FIX_ARRIVEPOS_ALGO		// 마우스 이동시 도착 검사루틴 개선 ( 정뱡향 축으로 한곳만 도착했을때 멈추는 문제가있었음 )
@@ -238,7 +230,6 @@
 
 // 8.5차
 #if	  defined(__INTERNALSERVER)	// 내부 사무실 테스트서버 
-//	#define	__RULE_0615
 
 	#define		NO_GAMEGUARD
 	#undef		__TRANSFER_ERROR_TEXT

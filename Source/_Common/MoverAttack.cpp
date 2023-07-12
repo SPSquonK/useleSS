@@ -1929,7 +1929,7 @@ void CMover::ClearSFX( OBJID idTarget )
 	m_mapSFXCount.erase( idTarget );
 }
 
-void CMover::RemoveSFX( OBJID idTarget, int id, BOOL bForce, DWORD dwSkill )
+void CMover::RemoveSFX( OBJID idTarget, DWORD dwSkill )
 {
 	if( idTarget != NULL_ID )
 	{
@@ -1985,7 +1985,7 @@ BOOL AttackBySFX( CMover* pAttacker, SFXHIT_INFO & info )
 		pTarget->m_pActMover->SendDamage( info.dwAtkFlags, pAttacker->GetId(), nParam );
 
 	if( info.fDmgPower )	// 밀리는 속성이 있는거면.
-		AngleToVectorXZ( &pTarget->m_pActMover->m_vDeltaE, info.fDmgAngle, info.fDmgPower );   
+		pTarget->m_pActMover->m_vDeltaE = AngleToVectorXZ( info.fDmgAngle, info.fDmgPower );
 
 	if( pTarget->IsLive() == FALSE )	// 위 공격의 결과로 대상이 사망 하였다.
 		return FALSE;

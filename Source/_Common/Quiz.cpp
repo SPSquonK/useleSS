@@ -133,7 +133,7 @@ void CQuiz::MakeQuizList( QUIZLIST & QL )
 
 void CQuiz::SetNPC()
 {
-	CMover* pMover	= (CMover*)CreateObj( D3DDEVICE, OT_MOVER, m_sNPC.dwNPCId );
+	CMover* pMover	= (CMover*)CreateObj( OT_MOVER, m_sNPC.dwNPCId );
 	if( !pMover )
 	{
 		Error( "CQuiz::SetNPC() - pMover is NULL - %d, %s", m_sNPC.dwNPCId, m_sNPC.strCharKey.c_str() );
@@ -382,7 +382,7 @@ void CQuiz::Process()
 			else
 				dwId = 1115;
 			
-			m_pVObj = CreateObj( D3DDEVICE, OT_OBJ, dwId );
+			m_pVObj = CreateObj( OT_OBJ, dwId );
 			if( !m_pVObj )
 				return;
 			
@@ -394,7 +394,7 @@ void CQuiz::Process()
 			
 			if( GetType() == TYPE_4C )
 			{
-				m_pHObj = CreateObj( D3DDEVICE, OT_OBJ, dwId );
+				m_pHObj = CreateObj( OT_OBJ, dwId );
 				if( !m_pHObj )
 					return;
 				

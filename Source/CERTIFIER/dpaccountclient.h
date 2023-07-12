@@ -1,15 +1,10 @@
-#ifndef __DPACCOUNTCLIENT_H__
-#define	__DPACCCOUNTCLIENT_H__
+#pragma once
 
 #include "dpmng.h"
 #include "msghdr.h"
 
-#undef	theClass
-#define theClass	CDPAccountClient
-#undef theParameters
-#define theParameters	CAr & ar, DPID
-
-class CDPAccountClient : public CDPMng
+class CDPAccountClient : public CDPMng,
+	public DPMngFeatures::PacketHandler<CDPAccountClient, DPID>
 {
 public:
 //	Constructions
@@ -42,7 +37,7 @@ public:
 	void	SendPing( DPID idFrom );
 	void	SendCloseExistingConnection( const char* lpszAccount );
 
-	USES_PFNENTRIES;
+private:
 //	Handlers
 	void	OnAddAccount( CAr & ar, DPID dpid );
 	void	OnDestroyPlayer( CAr & ar, DPID dpid );
@@ -53,5 +48,3 @@ public:
 };
 
 extern CDPAccountClient g_dpAccountClient;
-
-#endif	// __DPACCOUNTCLIENT_H__

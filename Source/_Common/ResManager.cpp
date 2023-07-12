@@ -120,7 +120,7 @@ BOOL CResManager::Load( LPCTSTR lpszName )
 			pWndCtrl->m_bVisible = scanner.GetNumber();
 			pWndCtrl->m_bGroup = scanner.GetNumber();
 			pWndCtrl->m_bDisabled = scanner.GetNumber();
-			pWndCtrl->m_bTabStop = scanner.GetNumber();
+			/* pWndCtrl->m_bTabStop = */ scanner.GetNumber();
 			
 			// Å¸ÀÌÆ² 
 			pWndCtrl->strTitle = GetLangCtrl( scanner );

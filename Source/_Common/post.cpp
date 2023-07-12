@@ -21,14 +21,12 @@ CMail::CMail()
 	m_byRead	= FALSE;
 	*m_szTitle	= '\0';
 	*m_szText	= '\0';
-#ifdef __DBSERVER
-	m_pMailBox	= NULL;
-#endif	// __DBSERVER
 	m_nGold		= 0;
 }
 
-CMail::CMail( u_long idSender, CItemElem* pItemElem, int nGold, char* szTitle, char* szText )
-{
+CMail::CMail(u_long idSender, CItemElem* pItemElem, int nGold,
+	const char* szTitle, const char* szText
+) {
 	m_nMail	= 0;
 	m_idSender	= idSender;
 	m_pItemElem	= pItemElem;
@@ -36,9 +34,6 @@ CMail::CMail( u_long idSender, CItemElem* pItemElem, int nGold, char* szTitle, c
 	m_byRead	= FALSE;
 	lstrcpy( m_szTitle, szTitle );
 	lstrcpy( m_szText, szText );
-#ifdef __DBSERVER
-	m_pMailBox	= NULL;
-#endif	// __DBSERVER
 	m_nGold		= 0;
 }
 
@@ -52,157 +47,72 @@ void CMail::Clear( void )
 	SAFE_DELETE( m_pItemElem );
 }
 
-DWORD CMail::GetCost( void )
-{
-	return 0;
-}
-
-void CMail::GetMailInfo( int* nKeepingDay, DWORD* dwKeepingTime )
-{
-	COleDateTime BaseTime;
-	COleDateTime CurrentTime;
+std::pair<int, DWORD> CMail::GetMailInfo() const {
+	const CTime BaseTime = m_tmCreate;
+	const CTime CurrentTime = CTime::GetCurrentTime();
 	
-	CTime cBase    = m_tmCreate;
-	CTime cCurrent = CTime::GetCurrentTime();
+	const CTimeSpan ts = CurrentTime - BaseTime;
+
+	const int nGap = (int)( (MAX_KEEP_MAX_DAY+1) - ts.GetDays() );
+	const DWORD dwKeepingTime = (DWORD)( (MAX_KEEP_MAX_DAY*24) - ts.GetTotalHours() );
+
+	return std::make_pair(nGap, dwKeepingTime);
+}
+
+CAr & operator<<(CAr & ar, const CMail & mail) {
+	ar << mail.m_nMail << mail.m_idSender;
+	if (mail.m_pItemElem) {
+		ar << true;
+		ar << *mail.m_pItemElem;
+	} else {
+		ar << false;
+	}
+	ar << mail.m_nGold;
+	ar << time_null() - mail.m_tmCreate;
+
+	ar << mail.m_byRead;
+	ar << mail.m_szTitle << mail.m_szText;
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CMail & mail) {
+	ar >> mail.m_nMail >> mail.m_idSender;
+
+	bool byItemElem; ar >> byItemElem;
+	if (byItemElem) {
+		mail.m_pItemElem = new CItemElem;
+		ar >> *mail.m_pItemElem;
+	}
+	ar >> mail.m_nGold;
 	
-	BaseTime.SetDateTime( cBase.GetYear(), cBase.GetMonth(), cBase.GetDay(), cBase.GetHour(), cBase.GetMinute(), cBase.GetSecond() );		
-	CurrentTime.SetDateTime( cCurrent.GetYear(), cCurrent.GetMonth(), cCurrent.GetDay(), cCurrent.GetHour(), cCurrent.GetMinute(), cCurrent.GetSecond() );
+	time_t tm; ar >> tm;
+	mail.m_tmCreate = time_null() - tm;
 	
-	COleDateTimeSpan temp( BaseTime.GetDay(), BaseTime.GetHour(), BaseTime.GetMinute(), BaseTime.GetSecond() );
-	COleDateTimeSpan temp2( CurrentTime.GetDay(), CurrentTime.GetHour(), CurrentTime.GetMinute(), CurrentTime.GetSecond() );
+	ar >> mail.m_byRead;
+	ar >> mail.m_szTitle >> mail.m_szText;
 
-	COleDateTimeSpan ts = temp2 - temp;
-
-	int nGap = -1;
-
-	nGap = (int)( (MAX_KEEP_MAX_DAY+1) - ts.GetTotalDays() );
-
-	if( dwKeepingTime )
-	{
-		*dwKeepingTime = (DWORD)( (MAX_KEEP_MAX_DAY*24) - ts.GetTotalHours() );
-	}
-
-	*nKeepingDay = nGap;
-}
-
-void CMail::Serialize( CAr & ar, BOOL bData )
-{
-	if( bData )
-	{
-		if( ar.IsStoring() )
-		{
-			ar << m_nMail << m_idSender;
-			if( m_pItemElem )
-			{
-				ar << (BYTE)1;
-				ar << *m_pItemElem;
-			}
-			else
-			{
-				ar << (BYTE)0;
-			}
-			ar << m_nGold;
-	//		ar << m_tmCreate;
-			ar << time_null() - m_tmCreate;
-
-			ar << m_byRead;
-			ar.WriteString( m_szTitle );
-			ar.WriteString( m_szText );
-		}
-		else
-		{
-			ar >> m_nMail >> m_idSender;
-
-			// 메일 로그
-//			//	BEGINTEST
-// 			Error( _T( "m_nMail:%d, m_idSender:%d" ), m_nMail, m_idSender );
-
-			BYTE byItemElem;
-			ar >> byItemElem;
-			if( byItemElem )
-			{
-				m_pItemElem	= new CItemElem;
-				ar >> *m_pItemElem;
-			}
-			ar >> m_nGold;
-			time_t tm;
-			ar >> tm;
-			m_tmCreate	= time_null() - tm; 
-	//		ar >> m_tmCreate;
-			ar >> m_byRead;
-			ar.ReadString( m_szTitle, MAX_MAILTITLE );
-			ar.ReadString( m_szText, MAX_MAILTEXT );
-		}
-	}
-	else	// no data
-	{
-		if( ar.IsStoring() )
-		{
-			ar << m_nMail;
-			ar << time_null() - m_tmCreate;
-			ar << m_byRead;
-		}
-		else	// load
-		{
-			ar >> m_nMail;
-			time_t tm;
-			ar >> tm;
-			m_tmCreate	= time_null() - tm; 
-			ar >> m_byRead;
-		}
-	}
-}
-
-CMailBox::CMailBox()
-{
-	m_idReceiver	= 0;
-#ifdef __WORLDSERVER
-	m_nStatus	= CMailBox::nodata;
-#endif	// __WORLDSERVER
-}
-
-CMailBox::CMailBox( u_long idReceiver )
-{
-	m_idReceiver	= idReceiver;
-#ifdef __WORLDSERVER
-	m_nStatus	= CMailBox::nodata;
-#endif	// __WORLDSERVER
-
-#ifdef __CLIENT
-	Error( _T( "CMailBox::CMailBox" ) );
-#endif
+	return ar;
 }
 
 CMailBox::~CMailBox()
 {
 	Clear();
-
-#ifdef __CLIENT
-	Error( _T( "CMailBox::~CMailBox" ) );
-#endif
 }
 
+#ifdef __CLIENT
 CMailBox*	CMailBox::GetInstance( void )
 {
 	static CMailBox	sMailBox;
 	return &sMailBox;
 }
-
-void CMailBox::Clear( void )
-{
-	for( MailVectorItr i = begin(); i != end(); ++i )
-	{
-#ifdef __DBSERVER
-		if( m_pPost )
-			m_pPost->m_mapMail4Proc.erase( (*i)->m_nMail );
-#endif	// __DBSERVER
-		SAFE_DELETE( *i );
-	}
-	clear();
-
-#ifdef __CLIENT
-	Error( _T( "CMailBox::Clear" ) );
 #endif
+
+void CMailBox::Clear() {
+	for (CMail * pMail : m_mails) {
+		SAFE_DELETE(pMail);
+	}
+	m_mails.clear();
 }
 
 u_long CMailBox::AddMail( CMail* pMail )
@@ -212,213 +122,104 @@ u_long CMailBox::AddMail( CMail* pMail )
 	else
 		CMail::s_nMail	= pMail->m_nMail;
 
-#ifdef __CLIENT
-	Error( _T( "CMailBox::AddMail  nMail:%d sMail:%d" ), pMail->m_nMail, CMail::s_nMail );
-#endif
-
 	// 康: POST: m_nMail이 같은 메일이 이미 없는지 확인해야 한다.
 	// 이미 있다면 별도의 예외 처리를 하자.
 
-	push_back( pMail );
-#ifdef __DBSERVER
-	pMail->SetMailBox( this );
-	if( m_pPost )
-	{
-		bool bResult	= m_pPost->m_mapMail4Proc.emplace(pMail->m_nMail, pMail).second;
-		if( bResult == FALSE )
-		{
-			Error( "AddMail Failed - nMail : %d, idSender : %d", pMail->m_nMail, pMail->m_idSender );
-		}
-		else
-		{
-// 			//	BEGINTEST
-// 			Error( "CMailBox::AddMail Sender[%d] nMail[%d]", pMail->m_idSender, pMail->m_nMail );
-		}
-	}
-#endif	// __DBSERVER
+	m_mails.push_back( pMail );
 	return pMail->m_nMail;
 }
 
 #ifdef __DBSERVER
-void CMailBox::Write( CAr & ar )
-{
-	ar << (int)size();
+void CMailBox::WriteMailContent(CAr & ar) {
+	ar << static_cast<std::uint32_t>(m_mails.size());
 
-// 	//	BEGINTEST
-// 	Error( "CMailBox::Write [%d]", (int)size() );
-
-	for( MailVectorItr i = begin(); i != end(); ++i )
-	{
-		CMail* pMail	= *i;
-		ar << pMail->m_nMail;
-		pMail->Serialize( ar, TRUE );
+	for (CMail * pMail : m_mails) {
+		ar << pMail->m_nMail << *pMail;
 	}
 }
 #endif	// __DBSERVER
 
 #ifdef __WORLDSERVER
-void CMailBox::Read( CAr & ar )
-{
-	int nSize;
-	ar >> nSize;
-	CMail temp;
-	for( int i = 0; i < nSize; i++ )
-	{
-		u_long nMail;
-		ar >> nMail;
-		CMail* pMail	= GetMail( nMail );
-		if( pMail )
-		{
-// 			//	BEGINTEST
-// 			Error( "CMailBox::Read " );
-
+void CMailBox::ReadMailContent(CAr & ar) {
+	std::uint32_t nSize; ar >> nSize;
+	
+	for (std::uint32_t i = 0; i < nSize; ++i) {
+		u_long nMail; ar >> nMail;
+		CMail* pMail = GetMail( nMail );
+		if (pMail) {
 			pMail->Clear();
-			pMail->Serialize( ar, TRUE );
-		}
-		else
-		{
-
-// 			//	BEGINTEST
-// 			Error( "CMailBox::Read pMail == NULL" );
-
-			// mail not found
-			Error( "CMailBox::Read - GetMail return NULL. nMail : %d", nMail );
-			//temp.Clear();
-			//temp.Serialize( ar, TRUE );
-			CMail* pNewMail = new CMail;
-			if( pNewMail != NULL )
-			{
-				pNewMail->Clear();
-				pNewMail->Serialize( ar, TRUE );
-				push_back( pNewMail );
-				Error( "CMailBox::Read - Create NewMail. nMail : %d, Sender : %07d", nMail, pNewMail->m_idSender );
-			}
-			else
-			{
-				Error( "CMailBox::Read - Create NewMail Failed. nMail : %d", nMail );
-				temp.Clear();
-				temp.Serialize( ar, TRUE );
-			}
+			ar >> *pMail;
+		} else {
+			CMail * pNewMail = new CMail();
+			pNewMail->Clear();
+			ar >> *pNewMail;
+			m_mails.push_back(pNewMail);
+			Error("CMailBox::ReadMailContent - Create NewMail. nMail : %d, Sender : %07d", nMail, pNewMail->m_idSender);
 		}
 	}
-	m_nStatus	= CMailBox::data;
-}
 
-void CMailBox::ReadReq( CAr & ar )
-{
-	int nSize;
-	ar >> nSize;
-
-	for( int i = 0; i < nSize; i++ )
-	{
-		u_long nMail;
-		ar >> nMail;
-
-		CMail* pMail	= GetMail( nMail );
-
-		if( pMail != NULL )
-		{
-			Error( "CMailBox::ReadReq - Mail Exist. nMail : %d", nMail );
-			pMail->Clear();
-			pMail->Serialize( ar, TRUE );
-		}
-		else
-		{
-			CMail* pNewMail = new CMail;
-			if( pNewMail != NULL )
-			{
-				pNewMail->Clear();
-				pNewMail->Serialize( ar, TRUE );
-				push_back( pNewMail );
-			}
-			else
-			{
-				Error( "CMailBox::ReadReq - New Failed. nMail : %d", nMail );
-				CMail temp;
-				temp.Clear();
-				temp.Serialize( ar, TRUE );
-			}
-		}
-	}
-	m_nStatus	= CMailBox::data;
+	m_nStatus	= CMailBox::BoxStatus::data;
 }
 #endif	// __WORLDSERVER
 
-void CMailBox::Serialize( CAr & ar, BOOL bData )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_idReceiver;
-		ar << (int)size();
-		for( MailVectorItr i = begin(); i != end(); ++i )
-		{
-			CMail* pMail	= *i;
-			pMail->Serialize( ar, bData );
-		}
-	}
-	else
-	{
-		Clear();
-		ar >> m_idReceiver;
-		int nSize;
-		ar >> nSize;
+CAr & operator<<(CAr & ar, const CMailBox & mailBox) {
+	ar << mailBox.m_idReceiver;
 
-#ifdef __MAIL_REQUESTING_BOX
-		if( g_WndMng.m_bWaitRequestMail && nSize <= 0 )
-			g_DPlay.SendQueryMailBox();
-#endif //__MAIL_REQUESTING_BOX
+	ar << (std::uint32_t)mailBox.m_mails.size();
+	for (const CMail * pMail : mailBox.m_mails) {
+		ar << *pMail;
+	}
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CMailBox & mailBox) {
+	mailBox.Clear();
+	ar >> mailBox.m_idReceiver;
+
+	std::uint32_t nSize; ar >> nSize;
 
 #ifdef __CLIENT
-			Error( _T( "CMailBox::Serialize m_idReceiver:%d, nSize:%d" ), m_idReceiver, nSize );
+	if (g_WndMng.m_bWaitRequestMail && nSize <= 0) {
+		g_DPlay.SendQueryMailBox();
+	}
 #endif
-		for( int i = 0; i < nSize; i++ )
-		{
-			CMail* pMail	= new CMail;
-			pMail->Serialize( ar, bData );
-			AddMail( pMail );
-		}
+
+	for (std::uint32_t i = 0; i < nSize; i++) {
+		CMail * pMail = new CMail;
+		ar >> *pMail;
+		mailBox.AddMail(pMail);
 	}
+
+	return ar;
 }
 
-MailVectorItr CMailBox::Find( u_long nMail )
-{
-	MailVectorItr i = begin();
-	for( ; i != end(); ++i )
-	{
-		CMail* pMail	= *i;
-		if( pMail->m_nMail == nMail )
-			break;
-	}
-	return i;
+std::vector<CMail *>::iterator CMailBox::Find(const u_long nMail) {
+	return std::find_if(m_mails.begin(), m_mails.end(),
+		[nMail](CMail * pMail) { return pMail->m_nMail == nMail; }
+	);
 }
 
-CMail* CMailBox::GetMail( u_long nMail )
-{
-	MailVectorItr i = Find( nMail );
-	if( i != end() )
+CMail* CMailBox::GetMail(const u_long nMail) {
+	const auto i = Find( nMail );
+	if (i != m_mails.end()) {
 		return *i;
+	}
 
 #ifdef __CLIENT
 	Error( _T( "CMailBox::GetMail failed!!!!" ) );
 #endif
-	return NULL;
+	return nullptr;
 }
 
 BOOL CMailBox::RemoveMail( u_long nMail )
 {
-	MailVectorItr i = Find( nMail );
-	if( i != end() )
+	auto i = Find( nMail );
+	if( i != m_mails.end() )
 	{
-#ifdef __DBSERVER
-		if( m_pPost )
-			m_pPost->m_mapMail4Proc.erase( (*i)->m_nMail );
-#endif	// __DBSERVER
 		SAFE_DELETE( *i );
-		erase( i );
+		m_mails.erase( i );
 
-#ifdef __CLIENT
-		Error( _T( "CMailBox::RemoveMail OK nMail:%d"), nMail  );
-#endif
 		return TRUE;
 	}
 
@@ -434,10 +235,6 @@ BOOL CMailBox::RemoveMailItem( u_long nMail )
 	if( pMail && pMail->m_pItemElem )
 	{
 		SAFE_DELETE( pMail->m_pItemElem );
-
-#ifdef __CLIENT
-		Error( _T( "CMailBox::RemoveMailItem nMail:%d" ), nMail );
-#endif
 		return TRUE;
 	}
 
@@ -453,9 +250,6 @@ BOOL CMailBox::RemoveMailGold( u_long nMail )
 	if( pMail && pMail->m_nGold > 0 )
 	{
 		pMail->m_nGold	= 0;
-#ifdef __CLIENT
-		Error( _T( "CMailBox::RemoveMailGold nMail:%d" ), nMail );
-#endif
 		return TRUE;
 	}
 #ifdef __CLIENT
@@ -467,13 +261,8 @@ BOOL CMailBox::RemoveMailGold( u_long nMail )
 BOOL CMailBox::ReadMail( u_long nMail )
 {
 	CMail* pMail	= GetMail( nMail );
-	if( pMail )
-	{
+	if( pMail ) {
 		pMail->m_byRead	= TRUE;
-
-#ifdef __CLIENT
-		Error( _T( "CMailBox::ReadMail nMail:%d" ), nMail );
-#endif
 		return TRUE;
 	}
 
@@ -483,50 +272,17 @@ BOOL CMailBox::ReadMail( u_long nMail )
 	return FALSE;
 }
 
-BOOL CMailBox::IsStampedMailExists( void )
-{
-	MailVectorItr i = begin();
-	for( ; i != end(); ++i )
-	{
-		CMail* pMail	= *i;
-		if( pMail->m_byRead == FALSE )
-		{
-#ifdef __CLIENT
-		Error( _T( "CMailBox::IsStampedMailExists" ) );
-#endif
-			return TRUE;
-		}
-	}
-
-#ifdef __CLIENT
-		Error( _T( "CMailBox::IsStampedMailExists Failed" ) );
-#endif
-	return FALSE;
+bool CMailBox::IsStampedMailExists() const {
+	return std::any_of(
+		m_mails.begin(), m_mails.end(),
+		[](CMail * pMail) { return pMail->m_byRead == FALSE; }
+	);
 }
 
-CPost::CPost()
-{
-}
+#if defined(__DBSERVER) || defined(__WORLDSERVER)
 
-CPost::~CPost()
-{
-	Clear();
-}
-
-void CPost::Clear( void )
-{
-	for( auto i = m_mapMailBox.begin(); i != m_mapMailBox.end(); ++i )
-	{
-		CMailBox* pMailBox	= i->second;
-		SAFE_DELETE( pMailBox );
-	}
+void CPost::Clear() {
 	m_mapMailBox.clear();
-#ifdef __DBSERVER
-#ifdef _DEBUG
-	TRACE( "CPost::m_mapMail4Proc.size() = %d\n", m_mapMail4Proc.size() );
-#endif	// _DEBUG
-	m_mapMail4Proc.clear();
-#endif	// __DBSERVER
 }
 
 u_long CPost::AddMail( u_long idReceiver, CMail* pMail )
@@ -552,41 +308,61 @@ CMailBox* CPost::GetMailBox( u_long idReceiver )
 {
 	auto i = m_mapMailBox.find( idReceiver );
 	if( i != m_mapMailBox.end() )
-		return i->second;
+		return i->second.get();
 	return NULL;
 }
 
-BOOL CPost::AddMailBox( CMailBox* pMailBox )
-{
-#ifdef __DBSERVER
-	pMailBox->SetPost( this );
-#endif	// __DBSERVER
+BOOL CPost::AddMailBox(CMailBox * pMailBox) {
 	return m_mapMailBox.emplace(pMailBox->m_idReceiver, pMailBox).second;
 }
 
-void CPost::Serialize( CAr & ar, BOOL bData )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_mapMailBox.size();
-		for( auto i = m_mapMailBox.begin(); i != m_mapMailBox.end(); ++i )
-		{
-			CMailBox* pMailBox	= i->second;
-			pMailBox->Serialize( ar, bData );
+#ifdef __DBSERVER
+CAr & operator<<(CAr & ar, const CPost::Structure & structure) {
+	CPost & post = *structure.post;
+
+	ar << static_cast<std::uint32_t>(post.m_mapMailBox.size());
+	for (const auto & [_, pMailBox] : post.m_mapMailBox) {
+		ar << pMailBox->m_idReceiver;
+
+		ar << static_cast<std::uint32_t>(pMailBox->m_mails.size());
+		for (CMail * pMail : pMailBox->m_mails) {
+			ar << pMail->m_nMail;
+			ar << time_null() - pMail->m_tmCreate;
+			ar << pMail->m_byRead;
 		}
 	}
-	else
-	{
-		int nSize;
-		ar >> nSize;
-		for( int i = 0; i < nSize; i++ )
-		{
-			CMailBox* pMailBox	= new CMailBox;
-			pMailBox->Serialize( ar, bData );
-			AddMailBox( pMailBox );
-		}
-	}
+
+	return ar;
 }
+#endif
+
+#ifdef __WORLDSERVER
+CAr & operator>>(CAr & ar, const CPost::Structure & structure) {
+	CPost & post = *structure.post;
+
+	std::uint32_t nbMailBoxes; ar >> nbMailBoxes;
+	for (std::uint32_t iMailBoxes = 0; iMailBoxes != nbMailBoxes; ++iMailBoxes) {
+		CMailBox * pMailBox = new CMailBox();
+		ar >> pMailBox->m_idReceiver;
+
+		std::uint32_t nbMails; ar >> nbMails;
+		for (std::uint32_t iMails = 0; iMails != nbMails; ++iMails) {
+			CMail * pMail = new CMail();
+			ar >> pMail->m_nMail;
+			
+			time_t tm; ar >> tm;
+			pMail->m_tmCreate = time_null() - tm;
+			ar >> pMail->m_byRead;
+
+			pMailBox->AddMail(pMail);
+		}
+
+		post.AddMailBox(pMailBox);
+	}
+
+	return ar;
+}
+#endif
 
 CPost*	CPost::GetInstance( void )
 {
@@ -600,18 +376,19 @@ void CPost::Process( void )
 	CMclAutoLock	Lock( m_csPost );
 	CTime t	= CTime::GetCurrentTime() - CTimeSpan( MAX_KEEP_MAX_DAY, 0, 0, 0 );
 
-	std::list<CMail*>	lspMail;
-	for( auto i = m_mapMail4Proc.begin(); i != m_mapMail4Proc.end(); ++i )
-	{
-		CMail* pMail	= i->second;
-		if( pMail->m_tmCreate < t.GetTime() )
-			lspMail.push_back( pMail );
+	std::vector<std::pair<CMailBox *, CMail *>> lpsMail;
+
+	for (const auto & [_, pMailBox] : m_mapMailBox) {
+		for (CMail * pMail : pMailBox->m_mails) {
+			if (pMail->m_tmCreate < t.GetTime()) {
+				lpsMail.emplace_back(pMailBox.get(), pMail);
+			}
+		}
 	}
-#ifdef __POST_1204
-	g_DbManager.RemoveMail( lspMail, t.GetTime() );
-#else	// __POST_1204
-	g_DbManager.RemoveMail( lspMail );
-#endif	// __POST_1204
-	lspMail.clear();
+
+	g_DbManager.RemoveMail(lpsMail);
 }
 #endif	// __DBSERVER
+
+#endif
+

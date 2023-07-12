@@ -2,12 +2,12 @@
 
 #include "resdata.h"
 
-class CWndTextQuest : public CWndMessageBox
+class CWndTextQuest : public CWndCustomMessageBox
 { 
 public: 
 	CItemElem * m_pItemBase;
 
-	virtual BOOL Initialize( CWndBase* pWndParent = NULL, DWORD dwWndId = 0 );
+	BOOL Initialize( CWndBase* pWndParent = nullptr ) override;
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 }; 
 

@@ -32,11 +32,6 @@ BOOL	g_bBuddyFlag;
 #endif
 #endif
 
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-#ifdef __CLIENT
-void EncryptedValidCertifierIPSetup( void );
-#endif // __CLIENT
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 
 /*
 //////////////////////////////////////////////////////////////////////////
@@ -431,11 +426,6 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 	//	mulcom	END100318	칠레 테스트 서버 아이템샵 URL 변경
 
 
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-#ifdef __CLIENT
-	EncryptedValidCertifierIPSetup();
-#endif // __CLIENT
-#endif // __CERTIFIER_COLLECTING_SYSTEM
 
 	if( FAILED( g_Neuz.Create( hInstance ) ) )
 		return 0;
@@ -453,72 +443,3 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 	return g_Neuz.Run();
 }
 
-#ifdef __CERTIFIER_COLLECTING_SYSTEM
-#ifdef __CLIENT
-void EncryptedValidCertifierIPSetup( void )
-{
-	// localhost (TwiLight)
-	g_vecEncryptedValidCertifierIP.push_back( _T( "f528764d624db129b32c21fbca0cb8d6" ) ); // 127.0.0.1
-
-	// kor
-	g_vecEncryptedValidCertifierIP.push_back( _T( "87450e835d4f48e30ca7911550fc3def" ) ); // 119.207.77.44
-	g_vecEncryptedValidCertifierIP.push_back( _T( "45cc88ee12277a8f93f1a4132c9a2fef" ) ); // 119.207.77.54
-
-	// eng
-	g_vecEncryptedValidCertifierIP.push_back( _T( "c1b955e6867668f0346ab6804963d84f" ) ); // 204.2.134.207
-	g_vecEncryptedValidCertifierIP.push_back( _T( "b6b5098f4d14dd8b77bc515f031c057c" ) ); // 38.104.134.26
-	g_vecEncryptedValidCertifierIP.push_back( _T( "e46174e308a0b7b066085fdb1026736b" ) ); // 204.2.134.200
-	g_vecEncryptedValidCertifierIP.push_back( _T( "314b5f6f1d7be350a1e550a047539c24" ) ); // 38.99.100.190
-
-	// php
-	g_vecEncryptedValidCertifierIP.push_back( _T( "24ab6abba5a77773d30372aa97d8c277" ) ); // 125.5.127.17
-	g_vecEncryptedValidCertifierIP.push_back( _T( "21604a1351d421e8dd4e081f3297ad93" ) ); // 125.5.127.16
-
-	// jap
-	g_vecEncryptedValidCertifierIP.push_back( _T( "771168ff1a3469936100e614b3819f4e" ) ); // 210.148.99.31
-	g_vecEncryptedValidCertifierIP.push_back( _T( "eaa5c6b31311462387e165bdfa985285" ) ); // 210.148.99.30
-
-	// tha
-	g_vecEncryptedValidCertifierIP.push_back( _T( "25f1000c18048f445f12e171993d25c7" ) ); // 203.195.98.81
-	g_vecEncryptedValidCertifierIP.push_back( _T( "cbb11ac1baddb7b87ccdadac67e8f0d9" ) ); // 203.195.98.27
-
-	// twn
-	g_vecEncryptedValidCertifierIP.push_back( _T( "cfb8faec43d8cdcb5904b01a0147628e" ) ); // 210.242.235.17
-	g_vecEncryptedValidCertifierIP.push_back( _T( "4a7c98c8cccf47d77960e2e9637ab356" ) ); // 210.242.174.100
-	g_vecEncryptedValidCertifierIP.push_back( _T( "4953d4f7cf6a2fec2ba60a5df0ac9586" ) ); // 60.199.180.13
-
-	// ger
-	g_vecEncryptedValidCertifierIP.push_back( _T( "a05132d7ccb5eb4f72aa550dfbc76bcc" ) ); // 195.59.138.10
-	g_vecEncryptedValidCertifierIP.push_back( _T( "8a800a3ed741f0cb5bec5ef03004201f" ) ); // 84.203.140.29
-	g_vecEncryptedValidCertifierIP.push_back( _T( "a00c29dcf8e07b9b763d26e8bdf26f11" ) ); // 84.203.140.30
-
-	// chl
-	g_vecEncryptedValidCertifierIP.push_back( _T( "507e2cdcaee1603ebc1482bde44743ef" ) ); // 204.2.134.20
-	g_vecEncryptedValidCertifierIP.push_back( _T( "028abb4c46626f63172b8f2df376c032" ) ); // 10.10.65.19
-
-	// fre
-	g_vecEncryptedValidCertifierIP.push_back( _T( "34bb79d1c8fff2e8e002490b7c8ac13d" ) ); // 195.59.138.5
-	g_vecEncryptedValidCertifierIP.push_back( _T( "7792c7d2e53778e43b537f60382d0fad" ) ); // 84.203.140.31
-	g_vecEncryptedValidCertifierIP.push_back( _T( "af02b17d7d900de779e408eb85eb39e1" ) ); // 84.203.140.34
-
-	// hk
-	g_vecEncryptedValidCertifierIP.push_back( _T( "89a7c12c3908e0659289110128c668dd" ) ); // 203.174.49.238
-	g_vecEncryptedValidCertifierIP.push_back( _T( "b43fe601c455abec2af4a97d50eae107" ) ); // 202.64.64.172
-
-	// por
-	g_vecEncryptedValidCertifierIP.push_back( _T( "143443684d7d1f847ed0344b881caa45" ) ); // 204.2.134.191
-	g_vecEncryptedValidCertifierIP.push_back( _T( "6fc636213ddbeb419488c17e6f10e807" ) ); // 204.2.134.18
-
-	// vtn
-	g_vecEncryptedValidCertifierIP.push_back( _T( "525aab63bd814ea8ed175d1273a3d25c" ) ); // 203.89.140.12
-	g_vecEncryptedValidCertifierIP.push_back( _T( "91ffed15f9329ad509d9045175984dc4" ) ); // 123.30.178.88
-
-	// rus
-	g_vecEncryptedValidCertifierIP.push_back( _T( "d9e0fcfeb2dfd78abf6de93b3919d776" ) ); // 88.212.221.67
-	g_vecEncryptedValidCertifierIP.push_back( _T( "ad1329540cd9d50b9161a02868fc88bc" ) ); // 91.212.60.104
-
-	// ind
-	g_vecEncryptedValidCertifierIP.push_back( _T( "6ea9b07ff40a1b97ac7df5115cb91009" ) ); // 220.226.181.109
-}
-#endif // __CLIENT
-#endif // __CERTIFIER_COLLECTING_SYSTEM

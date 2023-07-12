@@ -26,7 +26,7 @@ typedef struct tagWndCtrl
 	CRect rect;
 	BOOL m_bVisible;
 	BOOL m_bDisabled;
-	BOOL m_bTabStop;
+//	BOOL m_bTabStop; // Never used
 	BOOL m_bGroup;
 } WNDCTRL,* LPWNDCTRL; 
 

@@ -40,7 +40,7 @@ void CWndRainbowRaceOffer::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRainbowRaceOffer::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceOffer::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_OFFER, pWndParent, 0, CPoint( 0, 0 ) );
@@ -75,7 +75,7 @@ void CWndRainbowRaceInfo::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRainbowRaceInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceInfo::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_INFO, pWndParent, 0, CPoint( 0, 0 ) );
@@ -105,7 +105,7 @@ void CWndRainbowRaceRule::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRainbowRaceRule::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceRule::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_RULE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -143,7 +143,7 @@ void CWndRainbowRaceRanking::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRainbowRaceRanking::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceRanking::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_RANKING, pWndParent, 0, CPoint( 0, 0 ) );
@@ -216,7 +216,7 @@ void CWndRainbowRacePrize::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRainbowRacePrize::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRacePrize::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_PRIZE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -306,7 +306,7 @@ void CWndRainbowRaceMiniGame::OnInitialUpdate()
 	m_nTextID[6] = TID_MMI_LORD_RAINBOW_LADDER;
 /*
 	CWndRainbowRaceMiniGameButton* pWndButton = (CWndRainbowRaceMiniGameButton*)g_WndMng.GetWndBase( APP_RAINBOWRACE_BUTTON );
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point;
 
@@ -327,7 +327,7 @@ void CWndRainbowRaceMiniGame::OnInitialUpdate()
 	CWndRainbowRaceMiniGameButton* pWndButton = (CWndRainbowRaceMiniGameButton*)g_WndMng.GetWndBase( APP_RAINBOWRACE_BUTTON );
 	if(pWndButton != NULL)
 	{
-		CRect rectRoot = pWndButton->m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CRect rectButton = pWndButton->GetWindowRect( TRUE );
 
 		CPoint ptMove;
@@ -355,7 +355,7 @@ void CWndRainbowRaceMiniGame::OnInitialUpdate()
 	}
 } 
 
-BOOL CWndRainbowRaceMiniGame::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceMiniGame::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_MINIGAME, pWndParent, 0, CPoint( 0, 0 ) );
@@ -389,7 +389,7 @@ void CWndRainbowRaceMiniGame::OnDraw(C2DRender* p2DRender)
 		else if(m_bIsCompletedGame[i])
 		{
 			CTexture* pTexture;
-			pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strPathCheck[i]), 0xffff00ff );
+			pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, m_strPathCheck[i]), 0xffff00ff );
 			if(pTexture != NULL)
 				pTexture->Render( p2DRender, CPoint( GetWndCtrl( m_CheckStaticID[i] )->rect.left, GetWndCtrl( m_CheckStaticID[i] )->rect.top  ) );
 		}
@@ -418,36 +418,30 @@ void CWndRainbowRaceMiniGame::OnLButtonUp( UINT nFlags, CPoint point )
 			if(m_pWndMiniGameInfo)
 			{
 				m_pWndMiniGameInfo->SetFileName(m_strMiniGameInfo[i]);
-				m_pWndMiniGameInfo->Initialize(NULL);
+				m_pWndMiniGameInfo->Initialize();
 			}
 		}
 	}
 }
 
-BOOL CWndRainbowRaceMiniGame::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
+void CWndRainbowRaceMiniGame::OnSetCursor()
 {
-	CRect rect;
-	LPWNDCTRL lpWndCtrl;
-	BOOL bOnTitle = FALSE;
-	CPoint point = GetMousePoint();
+	bool bOnTitle = false;
+	const CPoint point = GetMousePoint();
 
-	for(int i=0; i<7; i++) 
-	{
-		lpWndCtrl = GetWndCtrl( m_TitleStaticID[i] );
-		rect = lpWndCtrl->rect;
-		if( rect.PtInRect( point ) )
-			bOnTitle = TRUE;
+	for (int i = 0; i < 7; i++) {
+		LPWNDCTRL lpWndCtrl = GetWndCtrl(m_TitleStaticID[i]);
+		CRect rect = lpWndCtrl->rect;
+		if (rect.PtInRect(point))
+			bOnTitle = true;
 	}
 
-	if(bOnTitle)
-		SetMouseCursor( CUR_SELECT );
-	else
-	{
-		SetMouseCursor( CUR_BASE );
-		CWndBase::OnSetCursor( pWndBase, nHitTest, message );
+	if (bOnTitle) {
+		SetMouseCursor(CUR_SELECT);
+	} else {
+		SetMouseCursor(CUR_BASE);
+		CWndBase::OnSetCursor();
 	}
-
-	return TRUE;
 }
 
 void CWndRainbowRaceMiniGame::FillRect(C2DRender *p2DRender, CRect rectBg, DWORD dwColorstart, DWORD dwColorend, BOOL bLamp)
@@ -544,7 +538,7 @@ void CWndRainbowRaceMiniGameInfo::OnInitialUpdate()
 	CWndRainbowRaceMiniGame* pWndGame = (CWndRainbowRaceMiniGame*)GetWndBase( APP_RAINBOWRACE_MINIGAME );
 	if(pWndGame != NULL)
 	{
-		CRect rectRoot = pWndGame->m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CRect rectGame = pWndGame->GetWindowRect( TRUE );
 
 		CPoint ptMove;
@@ -568,7 +562,7 @@ void CWndRainbowRaceMiniGameInfo::OnInitialUpdate()
 	}
 } 
 
-BOOL CWndRainbowRaceMiniGameInfo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceMiniGameInfo::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_MINIGAME_INFO, pWndParent, 0, CPoint( 0, 0 ) );
@@ -608,16 +602,6 @@ HRESULT CWndRainbowRaceMiniGameButton::DeleteDeviceObjects()
 	return CWndNeuz::DeleteDeviceObjects();
 }
 
-HRESULT CWndRainbowRaceMiniGameButton::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
-
-HRESULT CWndRainbowRaceMiniGameButton::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-
 void CWndRainbowRaceMiniGameButton::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate();
@@ -626,7 +610,7 @@ void CWndRainbowRaceMiniGameButton::OnInitialUpdate()
 	m_wndTitleBar.SetVisible( FALSE );
 
 	CWndNavigator* pWndNavigator = (CWndNavigator*)g_WndMng.GetWndBase( APP_NAVIGATOR );
-	CRect rectRoot = m_pWndRoot->GetLayoutRect();
+	CRect rectRoot = g_WndMng.GetLayoutRect();
 	CRect rectWindow = GetWindowRect();
 	CPoint point;
 
@@ -643,7 +627,7 @@ void CWndRainbowRaceMiniGameButton::OnInitialUpdate()
 
 	Move( point );
 
-	m_bLoadTexMap = m_BtnTexture.LoadScript( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, _T( "texMapRainbowButton.inc" ) ) );
+	m_bLoadTexMap = m_BtnTexture.LoadScript( MakePath( DIR_THEME, _T( "texMapRainbowButton.inc" ) ) );
 } 
 
 void CWndRainbowRaceMiniGameButton::PaintFrame( C2DRender* p2DRender )
@@ -680,7 +664,7 @@ void CWndRainbowRaceMiniGameButton::OnLButtonUp( UINT nFlags, CPoint point )
 			{
 				g_WndMng.m_pWndRainbowRaceMiniGame = new CWndRainbowRaceMiniGame;
 				if(g_WndMng.m_pWndRainbowRaceMiniGame)
-					g_WndMng.m_pWndRainbowRaceMiniGame->Initialize(NULL);
+					g_WndMng.m_pWndRainbowRaceMiniGame->Initialize();
 			}
 		}
 	}
@@ -737,7 +721,7 @@ BOOL CWndRainbowRaceMiniGameButton::Process()
 	return TRUE;
 }
 
-BOOL CWndRainbowRaceMiniGameButton::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRainbowRaceMiniGameButton::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RAINBOWRACE_BUTTON, pWndParent, WBS_NOFOCUS, CPoint( 0, 0 ) );
@@ -785,7 +769,7 @@ BOOL CWndRainbowRaceMiniGameButton::OnChildNotify( UINT message, UINT nID, LRESU
 		{
 			g_WndMng.m_pWndRainbowRaceMiniGame = new CWndRainbowRaceMiniGame;
 			if(g_WndMng.m_pWndRainbowRaceMiniGame)
-				g_WndMng.m_pWndRainbowRaceMiniGame->Initialize(NULL);
+				g_WndMng.m_pWndRainbowRaceMiniGame->Initialize();
 		}
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );
@@ -802,7 +786,7 @@ void CWndRainbowRaceMiniGameEnd::OnDestroy()
 	CRainbowRace::GetInstance()->m_bCheckEnd = TRUE;
 }
 
-BOOL CWndRainbowRaceMiniGameEnd::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndRainbowRaceMiniGameEnd::Initialize( CWndBase* pWndParent )
 {
 	CString strTemp;
 	int nTextId;
@@ -966,7 +950,7 @@ BOOL CWndRRMiniGameKawiBawiBo::Process()
 				if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 				{
 					g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_GAWIBAWIBO);
-					g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+					g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 				}
 
 				Destroy();
@@ -1037,14 +1021,14 @@ void CWndRRMiniGameKawiBawiBo::OnDraw( C2DRender* p2DRender )
 	
 	if(strMyPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strMyPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strMyPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC_MY1 )->rect.left + 3, GetWndCtrl( WIDC_STATIC_MY1 )->rect.top + 8 ) );		
 	}
 
 	if(strComPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strComPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strComPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC_COM1 )->rect.left + 3, GetWndCtrl( WIDC_STATIC_COM1 )->rect.top + 8 ) );		
 	}
@@ -1068,7 +1052,7 @@ void CWndRRMiniGameKawiBawiBo::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRRMiniGameKawiBawiBo::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameKawiBawiBo::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_KAWIBAWIBO, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1172,7 +1156,7 @@ void CWndRRMiniGameDice::OnInitialUpdate()
 	m_strPathDice[4] = MakePath( DIR_ICON, "Icon_5Dice90X90.dds");
 	m_strPathDice[5] = MakePath( DIR_ICON, "Icon_6Dice90X90.dds");
 
-	if(!m_texTargetNum.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "RainbowDiceNumber.inc" ) ))
+	if(!m_texTargetNum.LoadScript( MakePath( DIR_THEME, "RainbowDiceNumber.inc" ) ))
 		Destroy();
 
 	MoveParentCenter();
@@ -1183,16 +1167,8 @@ HRESULT CWndRRMiniGameDice::DeleteDeviceObjects()
 	m_texTargetNum.DeleteDeviceObjects();
 	return CWndNeuz::DeleteDeviceObjects();
 }
-HRESULT CWndRRMiniGameDice::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-HRESULT CWndRRMiniGameDice::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
 
-BOOL CWndRRMiniGameDice::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameDice::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_DICE, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1235,7 +1211,7 @@ void CWndRRMiniGameDice::OnDraw(C2DRender* p2DRender )
 
 	if(strPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC2 )->rect.left + 3, GetWndCtrl( WIDC_STATIC2 )->rect.top + 4 ) );	
 	}
@@ -1244,7 +1220,7 @@ void CWndRRMiniGameDice::OnDraw(C2DRender* p2DRender )
 
 	if(strPath.GetLength() > 0)
 	{
-		pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, strPath, 0xffff00ff );
+		pTexture = CWndBase::m_textureMng.AddTexture( strPath, 0xffff00ff );
 		if(pTexture != NULL)
 			pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC3 )->rect.left + 3, GetWndCtrl( WIDC_STATIC3 )->rect.top + 4 ) );	
 	}
@@ -1382,7 +1358,7 @@ BOOL CWndRRMiniGameDice::Process()
 				if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 				{
 					g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_DICEPLAY);
-					g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+					g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 				}
 
 				Destroy();
@@ -1445,14 +1421,14 @@ void CWndRRMiniGameArithmetic::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate();
 	// 여기에 코딩하세요
 	CWndText::SetupDescription(
-		GetDlgItem<CWndText>(WIDC_TEXT1),
+		GetDlgItem<CWndText>(WIDC_TEXT2),
 		_T("RRMinigameArithmetic.inc")
 	);
 
 	MoveParentCenter();
 } 
 
-BOOL CWndRRMiniGameArithmetic::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameArithmetic::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_ARITHMETIC, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1531,7 +1507,7 @@ void CWndRRMiniGameArithmeticTimeOver::OnDestroy()
 	CRainbowRace::GetInstance()->SendMinigamePacket( RMG_MAX, MP_FAIL, 0 );
 }
 
-BOOL CWndRRMiniGameArithmeticTimeOver::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndRRMiniGameArithmeticTimeOver::Initialize( CWndBase* pWndParent )
 {
 	return CWndMessageBox::Initialize( prj.GetText(TID_GAME_REMOVE_ARITHMETIC_TIMEOVER), pWndParent, MB_OK );
 }
@@ -1570,7 +1546,7 @@ void CWndRRMiniGameStopWatch::OnInitialUpdate()
 		_T("RRMinigameStopwatch.inc")
 	);
 
-	if(!m_texStopWatchNum.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "RainbowStopWatchNumber.inc" ) ))
+	if(!m_texStopWatchNum.LoadScript( MakePath( DIR_THEME, "RainbowStopWatchNumber.inc" ) ))
 		Destroy();
 
 	MoveParentCenter();
@@ -1581,16 +1557,8 @@ HRESULT CWndRRMiniGameStopWatch::DeleteDeviceObjects()
 	m_texStopWatchNum.DeleteDeviceObjects();
 	return CWndNeuz::DeleteDeviceObjects();
 }
-HRESULT CWndRRMiniGameStopWatch::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-HRESULT CWndRRMiniGameStopWatch::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
 
-BOOL CWndRRMiniGameStopWatch::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameStopWatch::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_STOPWATCH, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1606,7 +1574,7 @@ BOOL CWndRRMiniGameStopWatch::OnChildNotify( UINT message, UINT nID, LRESULT* pL
 
 			CWndButton* pWndButton = (CWndButton*)GetDlgItem(WIDC_START);
 			if(pWndButton)
-				pWndButton->SetTexture( m_pParentWnd->m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "Buttstop.bmp" ) ), TRUE );
+				pWndButton->SetTexture( MakePath( DIR_THEME, _T( "Buttstop.bmp" ) ), TRUE );
 
 			m_bStart = TRUE;
 		}
@@ -1614,7 +1582,7 @@ BOOL CWndRRMiniGameStopWatch::OnChildNotify( UINT message, UINT nID, LRESULT* pL
 		{
 			CWndButton* pWndButton = (CWndButton*)GetDlgItem(WIDC_START);
 			if(pWndButton)
-				pWndButton->SetTexture( m_pParentWnd->m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "ButtStart.bmp" ) ), TRUE );
+				pWndButton->SetTexture( MakePath( DIR_THEME, _T( "ButtStart.bmp" ) ), TRUE );
 
 			m_bStart = FALSE;
 			m_dwTime = GetTickCount() - m_dwStartTime;
@@ -1667,7 +1635,7 @@ BOOL CWndRRMiniGameStopWatch::Process()
 		//m_dwStartTime = GetTickCount();
 		CWndButton* pWndButton = (CWndButton*)GetDlgItem(WIDC_START);
 		if(pWndButton)
-			pWndButton->SetTexture( m_pParentWnd->m_pApp->m_pd3dDevice, MakePath( DIR_THEME, _T( "ButtStart.bmp" ) ), TRUE );
+			pWndButton->SetTexture( MakePath( DIR_THEME, _T( "ButtStart.bmp" ) ), TRUE );
 
 		m_bStart = FALSE;
 		m_dwTime = SEC(60);
@@ -1716,7 +1684,7 @@ void CWndRRMiniGameTyping::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate(); 
 	// 여기에 코딩하세요
 	CWndText::SetupDescription(
-		GetDlgItem<CWndText>(WIDC_TEXT1),
+		GetDlgItem<CWndText>(WIDC_TEXT4),
 		_T("RRMinigameTyping.inc")
 	);
 
@@ -1731,7 +1699,7 @@ void CWndRRMiniGameTyping::OnInitialUpdate()
 	MoveParentCenter();
 } 
 
-BOOL CWndRRMiniGameTyping::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameTyping::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_TYPING, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1816,7 +1784,7 @@ void CWndRRMiniGameCard::OnInitialUpdate()
 	m_strCard[7] = "RainbowRaceCard8.tga";
 	m_strCard[8] = "RainbowRaceCard9.tga";
 
-	m_texCardBack = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "RainbowRaceCardBack.tga"), 0xffff00ff );
+	m_texCardBack = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "RainbowRaceCardBack.tga"), 0xffff00ff );
 
 	m_nCustomID[0] = WIDC_CUSTOM1;
 	m_nCustomID[1] = WIDC_CUSTOM2;
@@ -1837,7 +1805,7 @@ void CWndRRMiniGameCard::OnInitialUpdate()
 	m_nCustomID[16] = WIDC_CUSTOM17;
 	m_nCustomID[17] = WIDC_CUSTOM18;
 
-	if(!m_texPenaltyNum.LoadScript( D3DDEVICE, MakePath( DIR_THEME, "RainbowCardPenaltyNumber.inc" ) ))
+	if(!m_texPenaltyNum.LoadScript( MakePath( DIR_THEME, "RainbowCardPenaltyNumber.inc" ) ))
 		Destroy();
 
 	MoveParentCenter();
@@ -1848,16 +1816,8 @@ HRESULT CWndRRMiniGameCard::DeleteDeviceObjects()
 	m_texPenaltyNum.DeleteDeviceObjects();
 	return CWndNeuz::DeleteDeviceObjects();
 }
-HRESULT CWndRRMiniGameCard::InvalidateDeviceObjects()
-{
-	return CWndNeuz::InvalidateDeviceObjects();
-}
-HRESULT CWndRRMiniGameCard::RestoreDeviceObjects()
-{
-	return CWndNeuz::RestoreDeviceObjects();
-}
 
-BOOL CWndRRMiniGameCard::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameCard::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_CARD, pWndParent, 0, CPoint( 0, 0 ) );
@@ -1912,7 +1872,7 @@ void CWndRRMiniGameCard::SetQuestion(CString strQuestion)
 		m_stCard[i].m_nCardNum = strQuestion.GetAt(i) - 1;
 		
 		if(m_stCard[i].m_nCardNum >= 0 && m_stCard[i].m_nCardNum < 9)
-			m_stCard[i].m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, m_strCard[m_stCard[i].m_nCardNum]), 0xffff00ff );
+			m_stCard[i].m_pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, m_strCard[m_stCard[i].m_nCardNum]), 0xffff00ff );
 		
 		m_stCard[i].m_bCheck = FALSE;
 	}
@@ -1944,30 +1904,25 @@ void CWndRRMiniGameCard::OnLButtonUp( UINT nFlags, CPoint point )
 	}
 }
 
-BOOL CWndRRMiniGameCard::OnSetCursor( CWndBase* pWndBase, UINT nHitTest, UINT message )
+void CWndRRMiniGameCard::OnSetCursor()
 {
-	CRect rect;
-	LPWNDCTRL lpWndCtrl;
-	BOOL bOnTitle = FALSE;
-	CPoint point = GetMousePoint();
+	bool bOnTitle = false;
+	const CPoint point = GetMousePoint();
 
 	for(int i=0; i<18; i++) 
 	{
-		lpWndCtrl = GetWndCtrl( m_nCustomID[i] );
-		rect = lpWndCtrl->rect;
+		LPWNDCTRL lpWndCtrl = GetWndCtrl( m_nCustomID[i] );
+		CRect rect = lpWndCtrl->rect;
 		if( rect.PtInRect( point ) && !m_stCard[i].m_bCheck )
-			bOnTitle = TRUE;
+			bOnTitle = true;
 	}
 
-	if(m_dwPenaltyTime == 0 && bOnTitle)
-		SetMouseCursor( CUR_SELECT );
-	else
-	{
-		SetMouseCursor( CUR_BASE );
-		CWndBase::OnSetCursor( pWndBase, nHitTest, message );
+	if (m_dwPenaltyTime == 0 && bOnTitle) {
+		SetMouseCursor(CUR_SELECT);
+	} else {
+		SetMouseCursor(CUR_BASE);
+		CWndBase::OnSetCursor();
 	}
-
-	return TRUE;
 }
 
 void CWndRRMiniGameCard::ReceiveResult(int nResult)
@@ -1994,10 +1949,9 @@ void CWndRRMiniGameLadderFail::OnDestroy()
 		g_WndMng.m_pWndRRMiniGameLadder->Reset();
 }
 
-BOOL CWndRRMiniGameLadderFail::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndRRMiniGameLadderFail::Initialize( CWndBase* pWndParent )
 {
-	CString strTemp;
-	strTemp.Format(prj.GetText(TID_GAME_RRMINIGAME_LADDER_FAIL));
+	LPCTSTR strTemp = prj.GetText(TID_GAME_RRMINIGAME_LADDER_FAIL);
 
 	return CWndMessageBox::Initialize( strTemp, pWndParent, MB_OK );
 }
@@ -2081,13 +2035,13 @@ void CWndRRMiniGameLadder::OnInitialUpdate()
 	m_nStartCustomID[13] = WIDC_CUSTOM14;
 	m_nStartCustomID[14] = WIDC_CUSTOM15;
 
-	m_pTexBg1 = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndRainbowRaceLadderBg1.bmp"), 0xffff00ff );
-	m_pTexBg2 = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndRainbowRaceLadderBg2.bmp"), 0xffff00ff );
-	m_pTexHorizon = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "RainbowRaceLadderHorizon.bmp"), 0xffff00ff );
-	m_pTexChoice = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndRainbowRaceLadderChoice.bmp"), 0xffff00ff );
-	m_pTexPoint = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndRainbowRaceLadderPoint.bmp"), 0xffff00ff );
-	m_pTexGoal = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndRainbowRaceLadderGoal.bmp"), 0xffff00ff );
-	m_pTexFail = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_THEME, "WndRainbowRaceLadderFail.bmp"), 0xffff00ff );
+	m_pTexBg1 = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndRainbowRaceLadderBg1.bmp"), 0xffff00ff );
+	m_pTexBg2 = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndRainbowRaceLadderBg2.bmp"), 0xffff00ff );
+	m_pTexHorizon = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "RainbowRaceLadderHorizon.bmp"), 0xffff00ff );
+	m_pTexChoice = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndRainbowRaceLadderChoice.bmp"), 0xffff00ff );
+	m_pTexPoint = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndRainbowRaceLadderPoint.bmp"), 0xffff00ff );
+	m_pTexGoal = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndRainbowRaceLadderGoal.bmp"), 0xffff00ff );
+	m_pTexFail = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndRainbowRaceLadderFail.bmp"), 0xffff00ff );
 
 	m_ptPoint.x = GetWndCtrl(m_nStartCustomID[m_nStart])->rect.left;
 	m_ptPoint.y = GetWndCtrl(m_nStartCustomID[m_nStart])->rect.top;
@@ -2101,7 +2055,7 @@ void CWndRRMiniGameLadder::OnInitialUpdate()
 	Reset();
 } 
 
-BOOL CWndRRMiniGameLadder::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndRRMiniGameLadder::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_RR_MINIGAME_LADDER, pWndParent, 0, CPoint( 0, 0 ) );
@@ -2147,30 +2101,25 @@ void CWndRRMiniGameLadder::OnLButtonUp(UINT nFlags, CPoint point )
 	}
 }
 
-BOOL CWndRRMiniGameLadder::OnSetCursor(CWndBase* pWndBase, UINT nHitTest, UINT message )
+void CWndRRMiniGameLadder::OnSetCursor()
 {
-	CRect rect;
-	LPWNDCTRL lpWndCtrl;
-	BOOL bOnTitle = FALSE;
-	CPoint point = GetMousePoint();
+	bool bOnTitle = false;
+	const CPoint point = GetMousePoint();
 
 	for(int i=0; i<15; i++) 
 	{
-		lpWndCtrl = GetWndCtrl( m_nStartCustomID[i] );
-		rect = lpWndCtrl->rect;
+		LPWNDCTRL lpWndCtrl = GetWndCtrl( m_nStartCustomID[i] );
+		CRect rect = lpWndCtrl->rect;
 		if( rect.PtInRect( point ) )
-			bOnTitle = TRUE;
+			bOnTitle = true;
 	}
 
-	if(!m_bStart && bOnTitle)
-		SetMouseCursor( CUR_SELECT );
-	else
-	{
-		SetMouseCursor( CUR_BASE );
-		CWndBase::OnSetCursor( pWndBase, nHitTest, message );
+	if (!m_bStart && bOnTitle) {
+		SetMouseCursor(CUR_SELECT);
+	} else {
+		SetMouseCursor(CUR_BASE);
+		CWndBase::OnSetCursor();
 	}
-
-	return TRUE;
 }
 
 void CWndRRMiniGameLadder::OnDraw(C2DRender* p2DRender)
@@ -2415,7 +2364,7 @@ BOOL CWndRRMiniGameLadder::Process()
 			if(g_WndMng.m_pWndRainbowRaceMiniGameEnd)
 			{
 				g_WndMng.m_pWndRainbowRaceMiniGameEnd->SetGameID(RMG_LADDER);
-				g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize(NULL);
+				g_WndMng.m_pWndRainbowRaceMiniGameEnd->Initialize();
 			}
 			Destroy();
 		}
@@ -2429,7 +2378,7 @@ BOOL CWndRRMiniGameLadder::Process()
 
 			m_pWndRRMiniGameLadderFail = new CWndRRMiniGameLadderFail;
 			if(m_pWndRRMiniGameLadderFail)
-				m_pWndRRMiniGameLadderFail->Initialize(NULL);
+				m_pWndRRMiniGameLadderFail->Initialize();
 		}
 	}
 	

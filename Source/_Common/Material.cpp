@@ -25,13 +25,11 @@ CTextureManager :: CTextureManager()
 //		m_pMaterial[i].strBitMapFileName[0] = 0;
 //	}
 	m_nMaxTexture = 0;
-	//m_pd3dDevice = NULL;
 }
 
 CTextureManager :: ~CTextureManager()
 {
 	DeleteDeviceObjects();
-//	m_pd3dDevice = NULL;
 }
 HRESULT CTextureManager::DeleteDeviceObjects()
 {
@@ -77,7 +75,7 @@ int CTextureManager::DeleteMaterial( LPDIRECT3DTEXTURE9 pTexture )
 	return FALSE;
 }
 
-MATERIAL*	CTextureManager :: AddMaterial( LPDIRECT3DDEVICE9 pd3dDevice, D3DMATERIAL9 *pMaterial, LPCTSTR strFileName, LPCTSTR szPath )
+MATERIAL*	CTextureManager :: AddMaterial( D3DMATERIAL9 *pMaterial, LPCTSTR strFileName, LPCTSTR szPath )
 {
 #ifdef	__WORLDSERVER
 	return NULL;
@@ -92,7 +90,7 @@ MATERIAL*	CTextureManager :: AddMaterial( LPDIRECT3DDEVICE9 pd3dDevice, D3DMATER
 	{
 		if( pMList->m_bActive )
 		{
-			if( strcmpi(strFileName, pMList->strBitMapFileName) == 0 && pMList->m_pd3dDevice == pd3dDevice )	// 이미 읽은건 다시 읽지 않음.  역시 땜빵 -_-;;
+			if( strcmpi(strFileName, pMList->strBitMapFileName) == 0 )	// 이미 읽은건 다시 읽지 않음.  역시 땜빵 -_-;;
 			{
 				pMList->m_nUseCnt ++;	// 이미로딩한걸 공유하고 있다면 카운트 올림.
 				return pMList;
@@ -122,7 +120,7 @@ MATERIAL*	CTextureManager :: AddMaterial( LPDIRECT3DDEVICE9 pd3dDevice, D3DMATER
 		strPath = MakePath( szPath, strFileName );		// 경로가 지정되어 있을땐 그걸쓴다.
 	}
 	
-	if( FAILED( LoadTextureFromRes( pd3dDevice, strPath, 
+	if( FAILED( LoadTextureFromRes( strPath, 
 			  D3DX_DEFAULT, D3DX_DEFAULT, 4, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 			  D3DPOOL_MANAGED,  D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR              , 
 			   D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR               , 0x00000000, NULL, NULL, &pTexture ) ) )
@@ -171,19 +169,10 @@ MATERIAL*	CTextureManager :: AddMaterial( LPDIRECT3DDEVICE9 pd3dDevice, D3DMATER
 #endif
 	strcpy( pMList->strBitMapFileName, strFileName );		// 텍스쳐 파일명 카피
 	pMList->m_pTexture = pTexture;
-	pMList->m_pd3dDevice = pd3dDevice;
 	pMList->m_nUseCnt = 1;	// 처음 등록된것이기땜에 1부터 시작.
 	m_nMaxTexture ++;
 
 
 	return pMList;
-}
-D3DMATERIAL9* CTextureManager::GetMaterial( LPDIRECT3DDEVICE9 m_pd3dDevice, int nIdx )
-{
-	return &m_pMaterial[ nIdx ].m_Material; 
-}
-LPDIRECT3DTEXTURE9	CTextureManager::GetTexture( LPDIRECT3DDEVICE9 m_pd3dDevice, int nIdx )
-{
-	return m_pMaterial[ nIdx ].m_pTexture; 
 }
 

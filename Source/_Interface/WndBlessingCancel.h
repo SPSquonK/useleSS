@@ -2,7 +2,7 @@
 
 #include "WndSqKComponents.h"
 
-class CWndBlessingCancel : public CWndNeuz {
+class CWndBlessingCancel final : public CWndNeuz {
 	class CFashionReceiver : public CWndItemReceiver {
 	public:
 		bool CanReceiveItem(const CItemElem & itemElem, bool verbose) override;
@@ -12,7 +12,7 @@ class CWndBlessingCancel : public CWndNeuz {
 	CFashionReceiver m_receiver;
 
 public:
-	BOOL Initialize( CWndBase* pWndParent = NULL, DWORD nType = MB_OK ) override;
+	BOOL Initialize( CWndBase* pWndParent = nullptr );
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override;
 	void OnInitialUpdate() override; 
 }; 

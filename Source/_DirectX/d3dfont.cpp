@@ -25,7 +25,6 @@ CD3DFontAPI::CD3DFontAPI()
     m_dwFontHeight         = 0;
     m_dwFontFlags          = 0;
     m_dwSpacing            = 0;
-    m_pd3dDevice           = NULL;
     m_pFont       = NULL;
     m_pD3DXSprite = NULL;
 	m_nOutLine = 0;
@@ -40,7 +39,6 @@ CD3DFontAPI::CD3DFontAPI( const TCHAR* strFontName, DWORD dwHeight, DWORD dwFlag
     m_dwFontHeight         = dwHeight;
     m_dwFontFlags          = dwFlags;
     m_dwSpacing            = 0;
-    m_pd3dDevice           = NULL;
 
 //_nFontSize  = 12;
     m_pFont       = NULL;
@@ -73,10 +71,8 @@ CD3DFontAPI::~CD3DFontAPI()
 // Desc: Initializes device-dependent objects, including the vertex buffer used
 //       for rendering text and the texture map which stores the font image.
 //-----------------------------------------------------------------------------
-HRESULT CD3DFontAPI::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CD3DFontAPI::InitDeviceObjects()
 {
-	m_pd3dDevice = pd3dDevice;
-
 	DWORD dwRed   = ( m_dwBgColor & 0x00ff0000 ) >> ( 16 + 4 );
 	DWORD dwGreen = ( m_dwBgColor & 0x0000ff00 ) >> ( 8 + 4 );
 	DWORD dwBlue  = ( m_dwBgColor & 0x000000ff ) >> 4;
@@ -103,7 +99,7 @@ HRESULT CD3DFontAPI::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 	////ADDERRORMSG( strError );
 
     nHeight = -nH * nLogPixelsY / 72;
-    hr = D3DXCreateFont( m_pd3dDevice,          // D3D device
+    hr = D3DXCreateFont( g_Neuz.m_pd3dDevice,          // D3D device
 		nHeight,               // Height
 		0,                     // Width
 		FW_MEDIUM,               // Weight
@@ -132,7 +128,7 @@ HRESULT CD3DFontAPI::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 		TEXT("MS Sans Serif"), &m_pStatsFont ) ) )
         return hr;
 	*/
-    if( FAILED( hr = D3DXCreateSprite( m_pd3dDevice, &m_pD3DXSprite ) ) )
+    if( FAILED( hr = D3DXCreateSprite( g_Neuz.m_pd3dDevice, &m_pD3DXSprite ) ) )
         return hr;
 
 	//strError.Format( "D3DXCreateSprite : 생성 후 m_pD3DXSprite %p ", m_pD3DXSprite );
@@ -494,7 +490,6 @@ CD3DFont::CD3DFont( const char* strFontName, DWORD dwHeight, DWORD dwFlags )// :
     m_dwFontHeight         = dwHeight;
     m_dwFontFlags          = dwFlags;
 	m_nOutLine             = 0;
-    m_pd3dDevice           = NULL;
     m_pVB                  = NULL;
 
     m_pStateBlockSaved     = NULL;
@@ -556,12 +551,9 @@ HRESULT CD3DFont::CreateGDIFont( HDC hDC, HFONT* pFont )
 // Desc: Initializes device-dependent objects, including the vertex buffer used
 //       for rendering text and the texture map which stores the font image.
 //-----------------------------------------------------------------------------
-HRESULT CD3DFont::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CD3DFont::InitDeviceObjects()
 {
     HRESULT hr = S_OK;
-
-    // Keep a local copy of the device
-    m_pd3dDevice = pd3dDevice;
 
     // Assume we will draw fonts into texture without scaling unless the
     // required texture size is found to be larger than the device max
@@ -638,7 +630,7 @@ HRESULT CD3DFont::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 	// 텍스춰 한장 만들어 놓기 
 	m_pCurTexture = CreateTexture();
 
-	m_apTexture.Add( m_pCurTexture  );
+	m_apTexture.emplace_back( m_pCurTexture  );
 
 	return hr;
 }
@@ -796,14 +788,11 @@ HRESULT CD3DFont::DeleteDeviceObjects()
 		DeleteObject(iter->second);
 	m_fontMap.clear();
 	
-	LPDIRECT3DTEXTURE9 pTex;
-	for( int i = 0 ; i < m_apTexture.GetSize(); i++ ) 
-	{
-		pTex = (LPDIRECT3DTEXTURE9)m_apTexture.GetAt( i );
+	for (LPDIRECT3DTEXTURE9 & pTex : m_apTexture) {
 		SAFE_RELEASE( pTex );
 	}
-    m_pd3dDevice = NULL;
-	m_apTexture.RemoveAll();
+	m_apTexture.clear();
+	
 
     return S_OK;
 }
@@ -1004,7 +993,7 @@ FONTTEX* CD3DFont::GetFontTex(const char* begin, const char* end, WORD wCodePage
 			{
 				return lpFontTex;
 			}
-			m_apTexture.Add( m_pCurTexture );
+			m_apTexture.emplace_back( m_pCurTexture );
 		}
 	}
 	
@@ -1090,7 +1079,7 @@ HRESULT CD3DFont::DrawText( FLOAT sx, FLOAT sy, DWORD dwColor,
 HRESULT CD3DFont::DrawText( FLOAT sx, FLOAT sy, FLOAT fXScale, FLOAT fYScale, DWORD dwColor,
                             const char* strText, DWORD dwFlags, WORD wCodePage )
 {
-    if( m_pd3dDevice == NULL )
+    if( m_pd3dDevice.IsMissing() )
         return E_FAIL;
 
 	wCodePage = wCodePage ? wCodePage : m_wCodePage;
@@ -1108,7 +1097,7 @@ HRESULT CD3DFont::DrawText( FLOAT sx, FLOAT sy, FLOAT fXScale, FLOAT fYScale, DW
         m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR );
         m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR );
     }
-	LPDIRECT3DTEXTURE9 pTexture = NULL;
+
     // Adjust for character spacing
     FLOAT fStartX = sx;
 	FLOAT _fsx = sx;
@@ -1118,10 +1107,8 @@ HRESULT CD3DFont::DrawText( FLOAT sx, FLOAT sy, FLOAT fXScale, FLOAT fYScale, DW
     FONT2DVERTEX* pVertices = NULL;
 	LPFONTTEX lpFontTex = NULL;
 
-	for( int t = 0; t < m_apTexture.GetSize(); t++ )
-	{
-	    m_dwNumTriangles = 0;
-		pTexture = (LPDIRECT3DTEXTURE9)m_apTexture.GetAt( t );
+	for (LPDIRECT3DTEXTURE9 pTexture : m_apTexture) {
+	  m_dwNumTriangles = 0;
 		m_pd3dDevice->SetTexture( 0, pTexture );
 		pVertices = NULL;
 		m_pVB->Lock( 0, 0, (void**)&pVertices, D3DLOCK_DISCARD );
@@ -1198,7 +1185,7 @@ HRESULT CD3DFont::DrawText( FLOAT sx, FLOAT sy, DWORD dwColor,
 HRESULT CD3DFont::DrawText( FLOAT sx, FLOAT sy, FLOAT fXScale, FLOAT fYScale, DWORD dwColor,
                             CEditString& strEditString, int nPos, int nLines, int nLineSpace, DWORD dwFlags )
 {
-    if( m_pd3dDevice == NULL )
+    if( m_pd3dDevice.IsMissing() )
         return E_FAIL;
 
     // Setup renderstate
@@ -1214,15 +1201,13 @@ HRESULT CD3DFont::DrawText( FLOAT sx, FLOAT sy, FLOAT fXScale, FLOAT fYScale, DW
         m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR );
         m_pd3dDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR );
     }
-	LPDIRECT3DTEXTURE9 pTexture = NULL;
-    // Adjust for character spacing
+
+		// Adjust for character spacing
     FLOAT fStartX = sx;
 	FLOAT _fsx = sx;
 	FLOAT _fsy = sy;
 
     // Fill vertex buffer
-    FONT2DVERTEX* pVertices = NULL;
-	LPFONTTEX lpFontTex = NULL;
 	
 	if( nLines == 0 )
 		nLines = strEditString.GetLineCount();
@@ -1230,17 +1215,15 @@ HRESULT CD3DFont::DrawText( FLOAT sx, FLOAT sy, FLOAT fXScale, FLOAT fYScale, DW
 	if( nMax > (int)( strEditString.GetLineCount() ) )
 		nMax = strEditString.GetLineCount();
 
-	for( int t = 0; t < m_apTexture.GetSize(); t++ )
-	{
+	for (LPDIRECT3DTEXTURE9 pTexture : m_apTexture) {
 	    m_dwNumTriangles = 0;
-		pTexture = (LPDIRECT3DTEXTURE9)m_apTexture.GetAt( t );
 		m_pd3dDevice->SetTexture( 0, pTexture );
-		pVertices = NULL;
+		FONT2DVERTEX * pVertices = NULL;
 		m_pVB->Lock( 0, 0, (void**)&pVertices, D3DLOCK_DISCARD );
 		FLOAT fStartX = sx;
 		sx = _fsx;
 		sy = _fsy;
-		//for( int i = nPos; i < nPos + nLine; i++ )
+
 		for( int i = nPos; i < nMax; i++ )
 		{
 			CString string = strEditString.GetLine( i );
@@ -1262,7 +1245,7 @@ HRESULT CD3DFont::DrawText( FLOAT sx, FLOAT sy, FLOAT fXScale, FLOAT fYScale, DW
 
 				const char* next = CharNextEx( iter, wCodePage );
 
-				lpFontTex = GetFontTex(iter, next, wCodePage);
+				FONTTEX * lpFontTex = GetFontTex(iter, next, wCodePage);
 
 				FLOAT tx1 = lpFontTex->tx1; 
 				FLOAT ty1 = lpFontTex->ty1; 
@@ -1547,7 +1530,7 @@ HRESULT CD3DFontAPIVTN::GetTextExtent( const TCHAR* strText, SIZE* pSize )
 	return S_FALSE;
 }
 
-HRESULT CD3DFontAPIVTN::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
+HRESULT CD3DFontAPIVTN::InitDeviceObjects()
 {
 	if(m_pD3DFont != NULL)
 	{
@@ -1565,7 +1548,7 @@ HRESULT CD3DFontAPIVTN::InitDeviceObjects( LPDIRECT3DDEVICE9 pd3dDevice )
 		dwBlue  = ( m_dwColor & 0x000000ff ) >> 4;
 		m_dwColor = ( dwRed << 8 ) | ( dwGreen << 4 ) | dwBlue;
 
-		m_pD3DFont->InitDeviceObjects(pd3dDevice);
+		m_pD3DFont->InitDeviceObjects();
 	}
 
 	return S_FALSE;

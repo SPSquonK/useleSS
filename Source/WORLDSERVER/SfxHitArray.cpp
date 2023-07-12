@@ -1,15 +1,9 @@
 #include "stdafx.h"
 #include "SfxHitArray.h"
 
-CSfxHitArray::CSfxHitArray()
-{
-	m_id	= 0;
-	memset( m_aSfxHit, 0, sizeof(SfxHit) * nMaxSizeOfSfxHit );
-}
-
-CSfxHitArray::~CSfxHitArray()
-{
-
+CSfxHitArray::CSfxHitArray() {
+	m_id = 0;
+	memset(m_aSfxHit.data(), 0, sizeof(SfxHit) * nMaxSizeOfSfxHit);
 }
 
 int CSfxHitArray::Add( int id, OBJID objid, DWORD dwAtkFlags, DWORD dwSkill, int nMaxDmgCnt )
@@ -30,53 +24,36 @@ int CSfxHitArray::Add( int id, OBJID objid, DWORD dwAtkFlags, DWORD dwSkill, int
 		}
 	}
 
-	memset( m_aSfxHit, 0, sizeof(m_aSfxHit) );	// 꽉차서 더이상 사용 못하므로 일단 클리어 해줌.
+	// Korean dev: It is full so we clear it to be able to use it again
+	// SquonK: ??? Can you justify why you are allowed to just clear the list?
+	// Is it not that important? Why don't you add the sfx you just tried to add
+	// after? In V21, why don't you use a vector or a small_vector?
+	// TODO: answer the questions
+	memset( m_aSfxHit.data(), 0, sizeof(m_aSfxHit));
 	return( -1 );
 }
 
-PSfxHit CSfxHitArray::GetAt( int nIndex )
-{
-	if( nIndex < 0 || nIndex >= nMaxSizeOfSfxHit )
-		return( NULL );
-	if( m_aSfxHit[nIndex].id != 0 )
-		return( &m_aSfxHit[nIndex] );
-	return( NULL );
+const CSfxHitArray::SfxHit * CSfxHitArray::GetSfxHit(const int id) const {
+	const auto it = std::find_if(
+		m_aSfxHit.begin(), m_aSfxHit.end(),
+		[id](const SfxHit & sfxHit) { return sfxHit.id == id; }
+	);
+
+	return it != m_aSfxHit.end() ? &*it : nullptr;
 }
 
-BOOL CSfxHitArray::RemoveAt( int nIndex, BOOL bForce )
-{
-	if( nIndex < 0 || nIndex >= nMaxSizeOfSfxHit )
-		return( FALSE ); 
-	if( m_aSfxHit[nIndex].id != 0 )
-	{
-		if( --m_aSfxHit[nIndex].nMaxDmgCnt == 0 || bForce )		// 카운트를 깎고 0이 됐을때만 완전히 삭제.
-			m_aSfxHit[nIndex].id	= 0;
-		return( TRUE );
+bool CSfxHitArray::RemoveSfxHit( int id, BOOL bForce ) {
+	const auto it = std::find_if(
+		m_aSfxHit.begin(), m_aSfxHit.end(),
+		[id](const SfxHit & sfxHit) { return sfxHit.id == id; }
+	);
+
+	if (it == m_aSfxHit.end()) return false;
+	
+	// 카운트를 깎고 0이 됐을때만 완전히 삭제.
+	if (--it->nMaxDmgCnt == 0 || bForce) {
+		it->id = 0;
 	}
-	return( FALSE );
-}
 
-int CSfxHitArray::FindSfxHit( int id )
-{
-	for( int i = 0; i < nMaxSizeOfSfxHit; i++ ) {
-		if( m_aSfxHit[i].id == id )
-			return( i );
-	}
-	return( -1 );
-}
-
-PSfxHit CSfxHitArray::GetSfxHit( int id )
-{
-	int nIndex	= FindSfxHit( id );
-	if( nIndex < 0 )
-		return( NULL );
-	return GetAt( nIndex );
-}
-
-BOOL CSfxHitArray::RemoveSfxHit( int id, BOOL bForce )
-{
-	int nIndex	= FindSfxHit( id );
-	if( nIndex < 0 )
-		return( FALSE );
-	return RemoveAt( nIndex, bForce );
+	return true;
 }

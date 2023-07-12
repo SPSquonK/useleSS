@@ -21,10 +21,9 @@ CDPSrvr_AccToCert::CDPSrvr_AccToCert()
 	memset( m_sAddrPmttd, 0, sizeof(m_sAddrPmttd) );
 	m_nSizeofAddrPmttd	= 0;
 
-	BEGIN_MSG;
-	ON_MSG( PACKETTYPE_ADD_ACCOUNT, &CDPSrvr_AccToCert::OnAddAccount );
-	ON_MSG( PACKETTYPE_REMOVE_ACCOUNT, &CDPSrvr_AccToCert::OnRemoveAccount );
-	ON_MSG( PACKETTYPE_PING, &CDPSrvr_AccToCert::OnPing );
+	ON_MSG(PACKETTYPE_ADD_ACCOUNT, &CDPSrvr_AccToCert::OnAddAccount);
+	ON_MSG(PACKETTYPE_REMOVE_ACCOUNT, &CDPSrvr_AccToCert::OnRemoveAccount);
+	ON_MSG(PACKETTYPE_PING, &CDPSrvr_AccToCert::OnPing);
 	ON_MSG( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPSrvr_AccToCert::OnCloseExistingConnection );
 }
 
@@ -49,16 +48,14 @@ void CDPSrvr_AccToCert::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSiz
 
 void CDPSrvr_AccToCert::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
-	static size_t	nSize	= sizeof(DPID);
+	static constexpr size_t	nSize = sizeof(DPID);
 	
 	LPBYTE lpBuffer		= (LPBYTE)lpMsg + nSize;
 	u_long uBufSize		= dwMsgSize - nSize;
 
 	CAr ar( lpBuffer, uBufSize );
-	GETTYPE( ar )
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
-	ASSERT( pfn );
-	( this->*( pfn ) )( ar, idFrom, *(UNALIGNED LPDPID)lpMsg );
+	DWORD dw; ar >> dw;
+	Handle(ar, dw, idFrom, *(UNALIGNED LPDPID)lpMsg);
 
 	if (ar.IsOverflow()) Error("Account-Certifier: Packet %08x overflowed", dw);
 }
@@ -117,8 +114,7 @@ void CDPSrvr_AccToCert::OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 )
 			cbResult = ACCOUNT_EXTERNAL_ADDR;	 
 	}
 
-	CMclAutoLock	Lock( m_csIPCut );
-	if( lpAddr[0] == '\0' || IsABClass(lpAddr) == TRUE )
+	if( lpAddr[0] == '\0' || IsBanned(lpAddr) )
 		cbResult = ACCOUNT_IPCUT_ADDR;		
 
 	if( lpAddr[0] == '\0' )
@@ -217,118 +213,106 @@ bool CDPSrvr_AccToCert::LoadAddrPmttd( LPCTSTR lpszFileName )
 	return false;
 }
 
+std::optional<std::uint32_t> CDPSrvr_AccToCert::IPStringToUInt32(const char * string) {
+	std::uint32_t result = 0;
 
-BOOL CDPSrvr_AccToCert::LoadIPCut( LPCSTR lpszFileName )
-{
-	CMclAutoLock	Lock( m_csIPCut );
 
-	InitIPCut();
+	size_t numberOfDots = 0;
+	size_t i = 0;
 
-	char strABClass[MAX_PATH];
+	std::uint32_t accumulator = 0;
 
-	CScanner s;
-	if( s.Load( lpszFileName ) )
-	{
-		s.GetToken();
-		while( s.tok != FINISHED )
-		{
-			ZeroMemory( strABClass, sizeof( strABClass ) );
+	while (string[i] != '\0') {
+		if (string[i] >= '0' && string[i] <= '9') {
+			accumulator = accumulator * 10 + (string[i] - '0');
+		} else if (string[i] == '.') {
+			if (accumulator > 0xFF) return std::nullopt;
+			result = result * 0x100 + accumulator;
 			
-			GetABCClasstoString( s.Token, strABClass, m_nIPCut[m_nSizeofIPCut][0] );
-			s.GetToken();
-			s.GetToken();
-			GetABCClasstoString( s.Token, strABClass, m_nIPCut[m_nSizeofIPCut][1] );
-
-			int nFindLast = -1;
-			STRING2INT::iterator iFind = m_sIPCut.find( strABClass );
-			if( iFind != m_sIPCut.end() )
-			{	
-				int nFind = iFind->second;
-				int nBufFind = m_nIPCut[nFind][2];
-				nFindLast = nFind;
-				while( nBufFind != -1 )
-				{
-					nFindLast = nBufFind;
-					nBufFind = m_nIPCut[nBufFind][2];
-				}
-			}
-			m_sIPCut.emplace(strABClass, m_nSizeofIPCut);
-			++m_nSizeofIPCut;
-
-			if( nFindLast != -1 )
-			{
-				m_nIPCut[nFindLast][2] = m_nSizeofIPCut - 1;
-			}
-			s.GetToken();
-		}
-		return TRUE;
-	}
-	
-	return FALSE;
-}
-
-BOOL CDPSrvr_AccToCert::IsABClass( LPCSTR lpszIP )
-{
-	char strABClass[MAX_PATH] = {0,};
-	int nCClass = 0;
-	GetABCClasstoString( lpszIP, strABClass, nCClass );
-	STRING2INT::iterator iFind = m_sIPCut.find( strABClass );
-	if( iFind != m_sIPCut.end() )
-	{
-		int nFind = iFind->second;
-		if( m_nIPCut[nFind][0] <= nCClass && nCClass <= m_nIPCut[nFind][1] )
-		{
-			return TRUE;
+			accumulator = 0;
+			++numberOfDots;
+		} else {
+			return std::nullopt;
 		}
 
-		while( m_nIPCut[nFind][2] != -1 )
-		{
-			nFind = m_nIPCut[nFind][2];
-			if( m_nIPCut[nFind][0] <= nCClass && nCClass <= m_nIPCut[nFind][1] )
-			{
-				return TRUE;
-			}
+		++i;
+	}
+
+	if (numberOfDots != 3) return std::nullopt;
+	if (accumulator > 0xFF) return std::nullopt;
+
+	return result + accumulator;
+}
+
+bool CDPSrvr_AccToCert::LoadIPCut( LPCSTR lpszFileName ) {
+	bool result = false;
+
+	m_IPCut.access([&](std::vector<IPRange> & ipRange) {
+		m_IPCutIsEmpty = false;
+		ipRange.clear();
+
+		CScanner s;
+		if (!s.Load(lpszFileName)) {
+			result = false;
+			m_IPCutIsEmpty = true;
+			return;
 		}
-	}
-	return FALSE;
+		
+		result = true;
+
+		s.GetToken();
+		while (s.tok != FINISHED) {
+
+			std::optional<std::uint32_t> from = IPStringToUInt32(s.Token.GetString());
+			if (!from) {
+				result = false;
+				Error("AccountServer LoadIPCut : Invalid value read %s", s.Token.GetString());
+			}
+			s.GetToken();
+			s.GetToken();
+			std::optional<std::uint32_t> to = IPStringToUInt32(s.Token.GetString());
+			if (!to) {
+				result = false;
+				Error("AccountServer LoadIPCut: Invalid value read %s", s.Token.GetString());
+			}
+
+			if (from && to) {
+				ipRange.emplace_back(IPRange{ from.value(), to.value() });
+			}
+
+			s.GetToken();
+		}
+
+		m_IPCutIsEmpty = ipRange.empty();
+		});
+
+	return result;
 }
 
-void CDPSrvr_AccToCert::GetABCClasstoString( LPCSTR lpszIP, char * lpABClass, int &nCClass )
-{
-	int nFindAB, nFindC;
-	CString strBuf1;
-	char strCClass[MAX_PATH];
-	ZeroMemory( strCClass, sizeof( strCClass ) );
-	strBuf1 = lpszIP;
-	nFindAB = strBuf1.Find( "." );
-	if( nFindAB == -1 )
-		AfxMessageBox( strBuf1 );
-	nFindAB = strBuf1.Find( ".", nFindAB + 1 );
-	if( nFindAB == -1 )
-		AfxMessageBox( strBuf1 );
-	
-	memcpy( lpABClass, lpszIP, nFindAB );
-	nFindC = strBuf1.Find( ".", nFindAB + 1 );
-	if( nFindC == -1 )
-		AfxMessageBox( strBuf1 );
-	for( int i = nFindAB + 1, j = 0 ; i < nFindC ; ++i, ++j )
-	{
-		strCClass[j] = lpszIP[i];
+bool CDPSrvr_AccToCert::IsBanned(LPCSTR lpszIP) {
+	const std::optional<std::uint32_t> myIp = IPStringToUInt32(lpszIP);
+	if (!myIp) {
+		Error("AccountServer IPCut: Invalid IP received for checking %s", lpszIP);
+		return false;
 	}
-	nCClass = atoi( strCClass );
-}
 
+	if (m_IPCutIsEmpty) return false;
+	// Note: It may be possible that without the if, m_IPCutIsEmpty field would
+	// become false when reaching m_IPCut. But the only scenario that it could
+	// appear is if a new file is loaded between the previous line and the
+	// resource access. This is very unlikely and anyway, people connecting
+	// within the milliseconds their IP is banned is bound to happend anyway.
 
-void CDPSrvr_AccToCert::InitIPCut( void )
-{
-	m_nSizeofIPCut = 0;
-	for( size_t i = 0 ; i < MAX_IP ; ++i )
-	{
-		m_nIPCut[i][0] = 0;
-		m_nIPCut[i][1] = 0;
-		m_nIPCut[i][2] = -1;
-	}
-	m_sIPCut.clear();
+	bool result = false;
+
+	m_IPCut.access([&](const std::vector<IPRange> & ipRange) {
+		result = std::any_of(ipRange.begin(), ipRange.end(),
+			[ipAddress = *myIp](const IPRange & range) {
+				return ipAddress >= range.from && ipAddress <= range.to;
+			});	
+		});
+
+	return result;
 }
 
 void CDPSrvr_AccToCert::SendServersetList( DPID dpid )

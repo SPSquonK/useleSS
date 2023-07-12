@@ -843,7 +843,7 @@ BOOL CGuildHouseBase::SetupFurnitureCtrl( int nIndex, GuildHouse_Furniture_Info 
 		CCtrl* pCtrl = NULL;
 		if( pItemProp->dwItemKind2 == IK2_GUILDHOUSE_NPC )	// 텔레포터는 NPC이기 때문에 무버를 생성해야 한다.
 		{
-			pCtrl = static_cast<CCtrl*>( CreateObj( D3DDEVICE, OT_MOVER, pItemProp->dwLinkKind ) );
+			pCtrl = static_cast<CCtrl*>( CreateObj( OT_MOVER, pItemProp->dwLinkKind ) );
 			CMover* pMover = static_cast<CMover*>( pCtrl );
 			if( pMover )
 			{
@@ -855,7 +855,7 @@ BOOL CGuildHouseBase::SetupFurnitureCtrl( int nIndex, GuildHouse_Furniture_Info 
 			}
 		}
 		else if( pItemProp->dwItemKind2 == IK2_GUILDHOUSE_FURNITURE )
-			pCtrl = static_cast<CCtrl*>( CreateObj( D3DDEVICE, OT_CTRL, pItemProp->dwLinkKind ) );
+			pCtrl = static_cast<CCtrl*>( CreateObj( OT_CTRL, pItemProp->dwLinkKind ) );
 
 		if( pCtrl )
 		{
@@ -915,7 +915,7 @@ BOOL CGuildHouseBase::ResetFurnitureCtrl( int nIndex, GuildHouse_Furniture_Info 
 		{
 			pCtrl->Delete();	// 삭제
 			// 그리고 다시 생성!!!
-			pCtrl = (CCtrl*)CreateObj( D3DDEVICE, OT_CTRL, pItemProp->dwLinkKind );
+			pCtrl = (CCtrl*)CreateObj( OT_CTRL, pItemProp->dwLinkKind );
 			if( pCtrl )
 			{
 				pCtrl->SetPos( gfi.vPos );

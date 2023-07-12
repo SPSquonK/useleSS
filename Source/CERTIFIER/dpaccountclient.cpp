@@ -9,7 +9,6 @@
 
 CDPAccountClient::CDPAccountClient()
 {
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_ADD_ACCOUNT, &CDPAccountClient::OnAddAccount );
 	ON_MSG( PACKETTYPE_DESTROY_PLAYER, &CDPAccountClient::OnDestroyPlayer );
 	ON_MSG( PACKETTYPE_SRVR_LIST, &CDPAccountClient::OnServersetList );
@@ -19,20 +18,16 @@ CDPAccountClient::CDPAccountClient()
 
 void CDPAccountClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
-	static size_t	nSize	= sizeof(DPID);
+	static constexpr size_t	nSize	= sizeof(DPID);
 
 	LPBYTE lpBuf	= (LPBYTE)lpMsg + nSize;
 	ULONG	uBufSize	= dwMsgSize - nSize;
 	DPID dpid2	= *(UNALIGNED LPDPID)lpMsg;
 
 	CAr ar( lpBuf, uBufSize );
-	GETTYPE( ar );
+	DWORD dw; ar >> dw;
 
-
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
-//	ASSERT( pfn );
-	if (pfn) {
-		(this->*(pfn))(ar, dpid2);
+	if (Handle(ar, dw, dpid2)) {
 		if (ar.IsOverflow()) Error("Certifier-Account: Packet %08x overflowed", dw);
 	}
 }
@@ -126,27 +121,28 @@ void CDPAccountClient::OnAddAccount( CAr & ar, DPID dpid )
 			break;
 		case ACCOUNT_CHECK_OK:					// 성공
 			{
-#ifndef __EUROPE_0514
-			const char * szBak = nullptr;
-#endif
-
+#ifdef __EUROPE_0514
 			if (!g_CertUserMng.AccountCheckOk(dpid, szBak)) {
 				return;
 			}
+#endif
 
-			#ifdef __GPAUTH_01
-				#ifdef __GPAUTH_02
+			CDPCertifier::SendServerListArgs args;
+			args.dwAuthKey = dwAuthKey;
+			args.cbAccountFlag = cbAccountFlag;
+			args.lTimeSpan = lTimeSpan;
+
+#ifdef __GPAUTH_01
+			args.szGPotatoNo = szGPotatoNo;
+#ifdef __GPAUTH_02
+			args.szCheck = szCheck;
 #ifdef __EUROPE_0514
-				g_dpCertifier.SendServerList( dpid, dwAuthKey, cbAccountFlag, lTimeSpan, szGPotatoNo, szCheck, szBak );
-#else	// __EUROPE_0514
-				g_dpCertifier.SendServerList( dpid, dwAuthKey, cbAccountFlag, lTimeSpan, szGPotatoNo, szCheck );
-#endif	// __EUROPE_0514
-				#else	// __GPAUTH_02
-				g_dpCertifier.SendServerList( dpid, dwAuthKey, cbAccountFlag, lTimeSpan, szGPotatoNo );
-				#endif	// __GPAUTH_02
-			#else	// __GPAUTH_01
-				g_dpCertifier.SendServerList( dpid, dwAuthKey, cbAccountFlag, lTimeSpan );
-			#endif	// __GPAUTH_01
+			args.szBak = szBak;
+#endif
+#endif
+#endif
+
+			g_dpCertifier.SendServerList(dpid, args);
 				break;
 			}
 		case ACCOUNT_EXTERNAL_ADDR:				// 허용되지 않는 주소 

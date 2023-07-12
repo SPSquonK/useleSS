@@ -8,14 +8,10 @@
 #include "SecretRoom.h"
 #include "GuildHouse.h"
 
-#undef	theClass
-#define theClass	CDPDatabaseClient
-#undef theParameters
-#define theParameters CAr & ar, DPID, DPID
-
 class CUser;
 class CDPDatabaseClient : public CDPMng,
-	public DPMngFeatures::SendPacketDual
+	public DPMngFeatures::SendPacketDual,
+	public DPMngFeatures::PacketHandler<CDPDatabaseClient, DPID, DPID>
 {
 private:
 	int		m_cbPing;
@@ -32,7 +28,6 @@ public:
 
 	[[nodiscard]] bool IsAlive() const { return m_bAlive; }
 
-	void	SendITEM_TBL_Update( void );
 #ifdef __LAYER_1015
 	void	SavePlayer( CUser* pUser, DWORD dwWorldId, const D3DXVECTOR3 & vPos, int nLayer, BOOL bLogout = FALSE );
 #else	// __LAYER_1015
@@ -43,9 +38,6 @@ public:
 	void	SaveSkill( CUser* pUser );
 #endif // __S_NEW_SKILL_2
 	
-#ifdef __S_RECOMMEND_EVE
-	void	SendRecommend( CUser* pUser, int nValue = 0 );
-#endif // __S_RECOMMEND_EVE
 	void	SendLogConnect( CUser* pUser );
 	void	SendLogPlayDeath( CMover* pMover, CMover* pSender );
 	void	SendLogLevelUp( CMover* pSender, int Action );
@@ -72,12 +64,12 @@ public:
 	void	CalluspXXXMultiServer( u_long uKey, u_long idPlayer );
 #endif	// __INVALID_LOGIN_0320
 	void	SendLogExpBox( u_long idPlayer, OBJID objid, EXPINTEGER iExp, BOOL bGet=FALSE );
-	void	UpdateGuildRanking(); // TRANS¼­¹ö¿¡°Ô ±æµå·©Å·À» ¾÷µ¥ÀÕÇÏ¶ó´Â ÆĞÅ¶À» º¸³»´Â ÇÔ¼ö
+	void	UpdateGuildRanking(); // TRANSì„œë²„ì—ê²Œ ê¸¸ë“œë­í‚¹ì„ ì—…ë°ì‡í•˜ë¼ëŠ” íŒ¨í‚·ì„ ë³´ë‚´ëŠ” í•¨ìˆ˜
 	void	UpdateGuildRankingUpdate();
 	void	SendQueryGuildQuest( void );
 	void	SendInsertGuildQuest( u_long idGuild, int nId );
 	void	SendUpdateGuildQuest( u_long idGuild, int nId, int nState );
-	void	SendQueryGuildBank(); // TRANS¼­¹ö¿¡°Ô ±æµåÃ¢°í¸¦ Äõ¸®ÇÏ¶ó´Â ÆĞÅ¶À» º¸³»´Â ÇÔ¼ö
+	void	SendQueryGuildBank(); // TRANSì„œë²„ì—ê²Œ ê¸¸ë“œì°½ê³ ë¥¼ ì¿¼ë¦¬í•˜ë¼ëŠ” íŒ¨í‚·ì„ ë³´ë‚´ëŠ” í•¨ìˆ˜
 	void	SendGuildContribution( CONTRIBUTION_CHANGED_INFO & info, BYTE nLevelUp, LONG nMemberLevel );
 	void	SendGuildGetPay( u_long uGuildId, DWORD nGoldGuild, DWORD dwPay );
 	void	SendQuerySetPlayerName( u_long idPlayer, const char* lpszPlayer, DWORD dwData );
@@ -86,7 +78,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	void	SendQueryMailBoxReq( u_long idReceiver );
-	void	SendQueryMailBoxCount( u_long idReceiver, int nCount );
+	void	SendQueryMailBoxCount( u_long idReceiver );
 	void	OnMailBoxReq( CAr & ar, DPID, DPID );
 	//////////////////////////////////////////////////////////////////////////
 
@@ -127,8 +119,6 @@ public:
 	void	SendUpdatePlayerData( CUser* pUser );
 
 private:
-	USES_PFNENTRIES;
-
 //	Handlers
 	void	OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnAllPlayerData( CAr & ar, DPID, DPID );
@@ -246,8 +236,8 @@ public:
 	void	SendLogGetHonorTime(CMover* pMover, int nGetHonor );
 
 #ifdef __FUNNY_COIN
-	void	SendFunnyCoinReqUse( DWORD dwPlayerId, CItemElem* pItemElem );	// ÆÛ´ÏÄÚÀÎÀ» »ç¿ëÇßÀ½À» TransServer¿¡ ¾Ë¸°´Ù.
-	void	OnFunnyCoinAckUse( CAr & ar, DPID, DPID );		// ÆÛ´ÏÄÚÀÎ »ç¿ë¿¡ ´ëÇÑ ÀÀ´äÀ» TranServer·Î ºÎÅÍ ¹Ş¾Ò´Ù.
+	void	SendFunnyCoinReqUse( DWORD dwPlayerId, CItemElem* pItemElem );	// í¼ë‹ˆì½”ì¸ì„ ì‚¬ìš©í–ˆìŒì„ TransServerì— ì•Œë¦°ë‹¤.
+	void	OnFunnyCoinAckUse( CAr & ar, DPID, DPID );		// í¼ë‹ˆì½”ì¸ ì‚¬ìš©ì— ëŒ€í•œ ì‘ë‹µì„ TranServerë¡œ ë¶€í„° ë°›ì•˜ë‹¤.
 #endif // __FUNNY_COIN
 	void	OnPCBangToggle( CAr & ar, DPID, DPID );
 #ifdef __VTN_TIMELIMIT

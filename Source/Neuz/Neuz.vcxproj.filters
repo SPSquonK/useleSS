@@ -133,9 +133,6 @@
     <ClCompile Include="DPClientGuildWar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DPCollectClient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DPLoginClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -392,9 +389,6 @@
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndRepairItem.cpp">
-      <Filter>Source Files\_Interface\WndApplet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_Interface\WndRepairItemCtrl.cpp">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClCompile>
     <ClCompile Include="..\_Interface\WndSealChar.cpp">
@@ -997,6 +991,15 @@
     <ClCompile Include="..\_Interface\WndSkill16.cpp">
       <Filter>Source Files\_Interface</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Interface\WndPost.cpp">
+      <Filter>Source Files\_Interface\WndApplet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Interface\PlayerLineup.cpp">
+      <Filter>Source Files\_Interface\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_Common\NameValidation.cpp">
+      <Filter>Source Files\_Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">
@@ -1252,9 +1255,6 @@
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>
     <ClInclude Include="..\_Interface\WndRepairItem.h">
-      <Filter>Source Files\_Interface\WndApplet</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_Interface\WndRepairItemCtrl.h">
       <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>
     <ClInclude Include="..\_Interface\WndSealChar.h">
@@ -1764,7 +1764,6 @@
     <ClInclude Include="clord.h" />
     <ClInclude Include="Cloth.h" />
     <ClInclude Include="..\_Common\collecting.h" />
-    <ClInclude Include="DPCollectClient.h" />
     <ClInclude Include="..\_Common\langman.h" />
     <ClInclude Include="..\_Common\rtmessenger.h" />
     <ClInclude Include="..\_Interface\WndQuizEvent.h" />
@@ -1848,6 +1847,15 @@
     </ClInclude>
     <ClInclude Include="..\_Common\ScriptDefines.h">
       <Filter>Source Files\_Common\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Interface\WndPost.h">
+      <Filter>Source Files\_Interface\WndApplet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Interface\PlayerLineup.h">
+      <Filter>Source Files\_Interface\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Common\NameValidation.h">
+      <Filter>Source Files\_Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

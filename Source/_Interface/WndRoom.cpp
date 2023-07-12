@@ -53,7 +53,7 @@ void CWndRoomList::OnInitialUpdate() {
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndRoomList::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndRoomList::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_MINIROOM_LIST, pWndParent, 0, CPoint(0, 0));
 }
 
@@ -99,7 +99,7 @@ void CWndQuitRoom::OnInitialUpdate() {
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndQuitRoom::Initialize(CWndBase * pWndParent, DWORD /*dwWndId*/) {
+BOOL CWndQuitRoom::Initialize(CWndBase * pWndParent) {
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog(APP_QUIT_ROOM, pWndParent, 0, CPoint(0, 0));
 }

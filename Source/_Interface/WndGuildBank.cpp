@@ -108,35 +108,12 @@ void CWndGuildBank::OnInitialUpdate()
 	pWndButtLog->SetVisible(TRUE);
 } 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildBank::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildBank::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GUILD_BANK, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-/*
-  직접 윈도를 열때 사용 
-BOOL CWndGuildBank::Initialize( CWndBase* pWndParent, DWORD dwWndId ) 
-{ 
-	CRect rectWindow = m_pWndRoot->GetWindowRect(); 
-	CRect rect( 50 ,50, 300, 300 ); 
-	SetTitle( _T( "title" ) ); 
-	return CWndNeuz::Create( WBS_THICKFRAME | WBS_MOVE | WBS_SOUND | WBS_CAPTION, rect, pWndParent, dwWndId ); 
-} 
-*/
-BOOL CWndGuildBank::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildBank::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildBank::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildBank::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
+
 BOOL CWndGuildBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( WIN_DBLCLK == message )
@@ -161,49 +138,23 @@ BOOL CWndGuildBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				if( nID == 11 ) // item
 				{
 					BOOL bForbid = TRUE;
-					SAFE_DELETE( g_WndMng.m_pWndTradeGold );
+
 					if( lpShortcut->m_dwData != 0 )
 					{
 						CWndItemCtrl* pWndItemCtrl = (CWndItemCtrl*)lpShortcut->m_pFromWnd;
 						
 						UINT SelectCount = pWndItemCtrl->GetSelectedCount();
-						if( SelectCount != 1)
-						{
-							//g_WndMng.PutString( "장착 되어 있는것은 넣을수 없습니다", NULL, 0xffffff00 );
-							g_WndMng.PutString( prj.GetText(TID_GAME_EQUIPPUT), NULL, prj.GetTextColor( TID_GAME_EQUIPPUT ) );
+						if( SelectCount != 1) {
+							g_WndMng.PutString(TID_GAME_EQUIPPUT);
 							
-						}
-						else
-						{
-							for( int i = 0; i < (int)( SelectCount ); i++ )
-							{
-								int nItem = pWndItemCtrl->GetSelectedItem( i );
-								pWndItemCtrl->GetItem( nItem );
-							}
-							CItemElem* itemElem = (CItemElem*)lpShortcut->m_dwData;
-							
-							if( itemElem->m_nItemNum > 1 )
-							{ 
-								g_WndMng.m_pWndTradeGold = new CWndTradeGold;
-								memcpy( &g_WndMng.m_pWndTradeGold->m_Shortcut, pLResult, sizeof(SHORTCUT) );
-								g_WndMng.m_pWndTradeGold->m_dwGold = itemElem->m_nItemNum;
-								g_WndMng.m_pWndTradeGold->m_nIdWndTo = APP_GUILD_BANK;
-								g_WndMng.m_pWndTradeGold->m_pWndBase = this;
-								
-								g_WndMng.m_pWndTradeGold->Initialize( NULL, APP_TRADE_GOLD );
-								g_WndMng.m_pWndTradeGold->MoveParentCenter();
-								CWndStatic* pStatic	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_STATIC );
-								CWndStatic* pStaticCount	= (CWndStatic *)g_WndMng.m_pWndTradeGold->GetDlgItem( WIDC_CONTROL1 );
-								CString strMain = prj.GetText(TID_GAME_MOVECOUNT);//"몇개를 이동하시겠습니까?";
-								CString strCount = prj.GetText(TID_GAME_NUMCOUNT);// " 갯수 : ";
-								pStatic->m_strTitle = strMain;
-								pStaticCount->m_strTitle = strCount;
-							}
-							else
-							{
-								g_DPlay.SendPutItemGuildBank( (BYTE)( lpShortcut->m_dwId ), 1, 1 );
-							}
-							
+						} else {
+							CWndTradeGold::Create<SHORTCUT::Source::Inventory>(
+								{ lpShortcut->m_dwId  },
+								[](auto source, int quantity) {
+									g_DPlay.SendPutItemGuildBank(source.itemPos, quantity, 1);
+								}
+							);
+
 						}
 					}
 				}
@@ -248,7 +199,7 @@ BOOL CWndGuildBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					if( pGuild->m_szGuild[0] == '\0' )
 					{
 						// "길드명칭이 없어 길드에 지원을 할 수 없습니다. 길드마스터는 길드명칭을 정해주세요."
-						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDNOTHINGNAME ), MB_OK, this );
+						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDNOTHINGNAME ), MB_OK );
 					}
 					else
 					{
@@ -265,7 +216,7 @@ BOOL CWndGuildBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				{
 					if( pGuild->m_nLevel < 4 )		// 4레벨 이하는 망토못만듬.
 					{
-						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDNOTLEVEL ), MB_OK, this );
+						g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_GUILDNOTLEVEL ), MB_OK );
 						break;
 					}
 					g_DPlay.SendCreateGuildCloak();
@@ -304,18 +255,6 @@ BOOL CWndGuildBank::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 // Guild Bank Log Window
 //////////////////////////////////////////////////////////////////////////
 
-CWndGuildBankLog::CWndGuildBankLog() 
-{ 
-}
-
-CWndGuildBankLog::~CWndGuildBankLog() 
-{ 
-}
-
-void CWndGuildBankLog::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
-
 void CWndGuildBankLog::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
@@ -349,7 +288,7 @@ void CWndGuildBankLog::OnInitialUpdate()
 	CWndGuildBank* pWndGuildBank = (CWndGuildBank*)GetWndBase( APP_GUILD_BANK );
 	if(pWndGuildBank != NULL)
 	{
-		CRect rectRoot = pWndGuildBank->m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CRect rectBank = pWndGuildBank->GetWindowRect( TRUE );
 
 		CPoint ptMove;
@@ -373,7 +312,7 @@ void CWndGuildBankLog::OnInitialUpdate()
 	}
 	else
 	{
-		CRect rectRoot = m_pWndRoot->GetLayoutRect();
+		CRect rectRoot = g_WndMng.GetLayoutRect();
 		CRect rectWindow = GetWindowRect();
 		CPoint point( rectRoot.right - rectWindow.Width(), rectRoot.bottom - rectWindow.Height() );
 		Move( point );
@@ -381,24 +320,11 @@ void CWndGuildBankLog::OnInitialUpdate()
 }
 
 // 처음 이 함수를 부르면 윈도가 열린다.
-BOOL CWndGuildBankLog::Initialize( CWndBase* pWndParent, DWORD /*dwWndId*/ ) 
+BOOL CWndGuildBankLog::Initialize( CWndBase* pWndParent )
 { 
 	// Daisy에서 설정한 리소스로 윈도를 연다.
 	return CWndNeuz::InitDialog( APP_GUILD_BANK_LOG, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-
-BOOL CWndGuildBankLog::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-}
-
-void CWndGuildBankLog::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-}
-
-void CWndGuildBankLog::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-}
 
 BOOL CWndGuildBankLog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
@@ -439,25 +365,24 @@ void CWndGuildBankLog::UpdateScroll()
 // Add Item Log Window
 //////////////////////////////////////////////////////////////////////////
 
-CWndAddItemLog::CWndAddItemLog() 
+CWndGuildLogGeneric::CWndGuildLogGeneric(BYTE type, int xOffset)
 {
 	m_nCurSelect = -1;
 	m_nFontHeight = 20;
 	m_nDrawCount = 0;
 
 	m_vLogList.clear();
+
+	m_type = type;
+	m_xOffset = xOffset;
 }
 
-CWndAddItemLog::~CWndAddItemLog()
-{
-}
-
-void CWndAddItemLog::Create( RECT& rect, CWndBase* pParentWnd, UINT nID )
+void CWndGuildLogGeneric::Create( RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
 	CWndBase::Create( WBS_CHILD, rect, pParentWnd, nID );
 }
 
-void CWndAddItemLog::OnInitialUpdate()
+void CWndGuildLogGeneric::OnInitialUpdate()
 {
 	CRect rect = GetWindowRect();
 
@@ -465,24 +390,23 @@ void CWndAddItemLog::OnInitialUpdate()
 	m_wndScrollBar.Create( WBS_VERT, rect, this, 1000 );
 }
 
-void CWndAddItemLog::UpdateScroll()
+void CWndGuildLogGeneric::UpdateScroll()
 {
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
-	nRange = m_vLogList.size();
+	const int nPage = GetClientRect().Height() / m_nFontHeight;
+	const int nRange = m_vLogList.size();
 	m_wndScrollBar.SetScrollRange( 0, nRange );
 	m_wndScrollBar.SetScrollPage( nPage );
 	m_wndScrollBar.SetScrollPos( 0 );
 }
 
-void CWndAddItemLog::UpdateLogList()
+void CWndGuildLogGeneric::UpdateLogList()
 {
 	m_vLogList.clear();
-	BYTE nType = 0x01;
+	BYTE nType = m_type;
 	g_DPlay.SendReqGuildBankLogList(nType);
 }
 
-void CWndAddItemLog::OnDraw( C2DRender* p2DRender ) 
+void CWndGuildLogGeneric::OnDraw( C2DRender* p2DRender )
 {
 	CPoint pt( 3, 3 );
 	m_nDrawCount = 0;
@@ -499,20 +423,18 @@ void CWndAddItemLog::OnDraw( C2DRender* p2DRender )
 	
 	for(int i=0; iter<m_vLogList.end(); i++, iter++)
 	{
-		CString strFormat;
-
 		if( i < m_nDrawCount )
 			continue;
 		if( i > nMax )
 			return;
 
-		p2DRender->TextOut( 4, pt.y, *iter, 0xff000000 );
+		p2DRender->TextOut( m_xOffset, pt.y, *iter, 0xff000000 );
 
 		pt.y += m_nFontHeight;
 	}
 }
 
-int CWndAddItemLog::GetDrawCount( void )
+int CWndGuildLogGeneric::GetDrawCount( void )
 {
 	int nMax = 0;
 	nMax = m_vLogList.size();
@@ -525,273 +447,3 @@ int CWndAddItemLog::GetDrawCount( void )
 	return nMax;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-// Remove Item Log Window
-//////////////////////////////////////////////////////////////////////////
-
-CWndRemoveItemLog::CWndRemoveItemLog() 
-{
-	m_nCurSelect = -1;
-	m_nFontHeight = 20;
-	m_nDrawCount = 0;
-
-	m_vLogList.clear();
-}
-
-CWndRemoveItemLog::~CWndRemoveItemLog()
-{
-}
-
-void CWndRemoveItemLog::Create( RECT& rect, CWndBase* pParentWnd, UINT nID )
-{
-	CWndBase::Create( WBS_CHILD, rect, pParentWnd, nID );
-}
-
-void CWndRemoveItemLog::OnInitialUpdate()
-{
-	CRect rect = GetWindowRect();
-
-	m_wndScrollBar.AddWndStyle( WBS_DOCKING );
-	m_wndScrollBar.Create( WBS_VERT, rect, this, 1000 );
-}
-
-void CWndRemoveItemLog::UpdateScroll()
-{
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
-	nRange = m_vLogList.size();
-	m_wndScrollBar.SetScrollRange( 0, nRange );
-	m_wndScrollBar.SetScrollPage( nPage );
-	m_wndScrollBar.SetScrollPos( 0 );
-}
-
-void CWndRemoveItemLog::UpdateLogList()
-{
-	m_vLogList.clear();	
-	BYTE nType = 0x02;
-	g_DPlay.SendReqGuildBankLogList(nType);
-}
-
-void CWndRemoveItemLog::OnDraw( C2DRender* p2DRender ) 
-{
-	CPoint pt( 3, 3 );
-	m_nDrawCount = 0;
-
-	if( NULL == g_pPlayer )
-		return;
-
-	int nMax = GetDrawCount();
-	m_nDrawCount = m_wndScrollBar.GetScrollPos();
-
-	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-	
-	auto iter = m_vLogList.begin();
-	
-	for(int i=0; iter<m_vLogList.end(); i++, iter++)
-	{
-		CString strFormat;
-
-		if( i < m_nDrawCount )
-			continue;
-		if( i > nMax )
-			return;
-
-		p2DRender->TextOut( 4, pt.y, *iter, 0xff000000 );
-
-		pt.y += m_nFontHeight;
-	}
-}
-
-int CWndRemoveItemLog::GetDrawCount( void )
-{
-	int nMax = 0;
-	nMax = m_vLogList.size();
-
-	if( nMax - m_wndScrollBar.GetScrollPos() > m_wndScrollBar.GetScrollPage() )
-		nMax = m_wndScrollBar.GetScrollPage() + m_wndScrollBar.GetScrollPos();
-	if( nMax < m_wndScrollBar.GetScrollPos() )
-		nMax = 0;
-
-	return nMax;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Receive Penya Log Window
-//////////////////////////////////////////////////////////////////////////
-
-CWndReceivePenyaLog::CWndReceivePenyaLog() 
-{
-	m_nCurSelect = -1;
-	m_nFontHeight = 20;
-	m_nDrawCount = 0;
-
-	m_vLogList.clear();
-}
-
-CWndReceivePenyaLog::~CWndReceivePenyaLog()
-{
-}
-
-void CWndReceivePenyaLog::Create( RECT& rect, CWndBase* pParentWnd, UINT nID )
-{
-	CWndBase::Create( WBS_CHILD, rect, pParentWnd, nID );
-}
-
-void CWndReceivePenyaLog::OnInitialUpdate()
-{
-	CRect rect = GetWindowRect();
-
-	m_wndScrollBar.AddWndStyle( WBS_DOCKING );
-	m_wndScrollBar.Create( WBS_VERT, rect, this, 1000 );
-}
-
-void CWndReceivePenyaLog::UpdateScroll()
-{
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
-	nRange = m_vLogList.size();
-	m_wndScrollBar.SetScrollRange( 0, nRange );
-	m_wndScrollBar.SetScrollPage( nPage );
-	m_wndScrollBar.SetScrollPos( 0 );
-}
-
-void CWndReceivePenyaLog::UpdateLogList()
-{
-	m_vLogList.clear();	
-	BYTE nType = 0x03;
-	g_DPlay.SendReqGuildBankLogList(nType);
-}
-
-void CWndReceivePenyaLog::OnDraw( C2DRender* p2DRender ) 
-{
-	CPoint pt( 3, 3 );
-	m_nDrawCount = 0;
-
-	if( NULL == g_pPlayer )
-		return;
-
-	int nMax = GetDrawCount();
-	m_nDrawCount = m_wndScrollBar.GetScrollPos();
-
-	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-	
-	auto iter = m_vLogList.begin();
-	
-	for(int i=0; iter<m_vLogList.end(); i++, iter++)
-	{
-		CString strFormat;
-
-		if( i < m_nDrawCount )
-			continue;
-		if( i > nMax )
-			return;
-
-		p2DRender->TextOut( 10, pt.y, *iter, 0xff000000 );
-
-		pt.y += m_nFontHeight;
-	}
-}
-
-int CWndReceivePenyaLog::GetDrawCount( void )
-{
-	int nMax = 0;
-	nMax = m_vLogList.size();
-
-	if( nMax - m_wndScrollBar.GetScrollPos() > m_wndScrollBar.GetScrollPage() )
-		nMax = m_wndScrollBar.GetScrollPage() + m_wndScrollBar.GetScrollPos();
-	if( nMax < m_wndScrollBar.GetScrollPos() )
-		nMax = 0;
-
-	return nMax;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Invest Penya Log Window
-//////////////////////////////////////////////////////////////////////////
-
-CWndInvestPenyaLog::CWndInvestPenyaLog() 
-{
-	m_nCurSelect = -1;
-	m_nFontHeight = 20;
-	m_nDrawCount = 0;
-
-	m_vLogList.clear();
-}
-
-CWndInvestPenyaLog::~CWndInvestPenyaLog()
-{
-}
-
-void CWndInvestPenyaLog::Create( RECT& rect, CWndBase* pParentWnd, UINT nID )
-{
-	CWndBase::Create( WBS_CHILD, rect, pParentWnd, nID );
-}
-
-void CWndInvestPenyaLog::OnInitialUpdate()
-{
-	CRect rect = GetWindowRect();
-
-	m_wndScrollBar.AddWndStyle( WBS_DOCKING );
-	m_wndScrollBar.Create( WBS_VERT, rect, this, 1000 );
-}
-
-void CWndInvestPenyaLog::UpdateScroll()
-{
-	int nPage, nRange;
-	nPage = GetClientRect().Height() / m_nFontHeight;
-	nRange = m_vLogList.size();
-	m_wndScrollBar.SetScrollRange( 0, nRange );
-	m_wndScrollBar.SetScrollPage( nPage );
-	m_wndScrollBar.SetScrollPos( 0 );
-}
-
-void CWndInvestPenyaLog::UpdateLogList()
-{
-	m_vLogList.clear();	
-	BYTE nType = 0x04;
-	g_DPlay.SendReqGuildBankLogList(nType);
-}
-
-void CWndInvestPenyaLog::OnDraw( C2DRender* p2DRender ) 
-{
-	CPoint pt( 3, 3 );
-	m_nDrawCount = 0;
-
-	if( NULL == g_pPlayer )
-		return;
-
-	int nMax = GetDrawCount();
-	m_nDrawCount = m_wndScrollBar.GetScrollPos();
-
-	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-	
-	auto iter = m_vLogList.begin();
-	
-	for(int i=0; iter<m_vLogList.end(); i++, iter++)
-	{
-		CString strFormat;
-
-		if( i < m_nDrawCount )
-			continue;
-		if( i > nMax )
-			return;
-
-		p2DRender->TextOut( 10, pt.y, *iter, 0xff000000 );
-
-		pt.y += m_nFontHeight;
-	}
-}
-
-int CWndInvestPenyaLog::GetDrawCount( void )
-{
-	int nMax = 0;
-	nMax = m_vLogList.size();
-
-	if( nMax - m_wndScrollBar.GetScrollPos() > m_wndScrollBar.GetScrollPage() )
-		nMax = m_wndScrollBar.GetScrollPage() + m_wndScrollBar.GetScrollPos();
-	if( nMax < m_wndScrollBar.GetScrollPos() )
-		nMax = 0;
-
-	return nMax;
-}

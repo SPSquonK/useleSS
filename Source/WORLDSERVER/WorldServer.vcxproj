@@ -97,12 +97,11 @@
     <ClCompile Include="..\_Common\groupquest.cpp" />
     <ClCompile Include="..\_Common\ItemContainer.cpp" />
     <ClCompile Include="..\_Common\ItemMorph.cpp" />
+    <ClCompile Include="..\_Common\NameValidation.cpp" />
     <ClCompile Include="..\_Common\ProjectJob.cpp" />
     <ClCompile Include="..\_Common\SkillsOfMover.cpp" />
     <ClCompile Include="..\_Interface\FuncTextCmd_ItemEnchant.cpp" />
     <ClCompile Include="AttackArbiter.cpp">
-    </ClCompile>
-    <ClCompile Include="..\_Common\auction.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\Campus.cpp">
     </ClCompile>
@@ -125,8 +124,6 @@
     <ClCompile Include="..\_common\flyffevent.cpp">
     </ClCompile>
     <ClCompile Include="..\_common\guildquest.cpp">
-    </ClCompile>
-    <ClCompile Include="ItemScript.cpp">
     </ClCompile>
     <ClCompile Include="ItemUpgrade.cpp">
     </ClCompile>
@@ -196,8 +193,6 @@
     <ClCompile Include="WorldDialog.cpp">
     </ClCompile>
     <ClCompile Include="WorldServer.cpp">
-    </ClCompile>
-    <ClCompile Include="WScript.cpp">
     </ClCompile>
     <ClCompile Include="..\_Network\tools.cpp">
     </ClCompile>
@@ -363,8 +358,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\Item.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Common\ItemPet.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\modelobject.cpp">
     </ClCompile>
     <ClCompile Include="..\_common\mover.cpp">
@@ -425,8 +418,6 @@
     </ClCompile>
     <ClCompile Include="..\_Common\script.cpp">
     </ClCompile>
-    <ClCompile Include="..\_Common\scriptdialog.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\ScriptHelper.cpp">
     </ClCompile>
     <ClCompile Include="..\_Common\scriptlib.cpp">
@@ -455,6 +446,7 @@
     <ClInclude Include="..\_Common\groupquest.h" />
     <ClInclude Include="..\_Common\GroupUtils.h" />
     <ClInclude Include="..\_Common\ItemMorph.h" />
+    <ClInclude Include="..\_Common\NameValidation.h" />
     <ClInclude Include="..\_Common\ProjectJob.h" />
     <ClInclude Include="..\_Common\ScriptDefines.h" />
     <ClInclude Include="..\_Common\SkillsOfMover.h" />
@@ -462,13 +454,11 @@
     <ClInclude Include="GroupedEmission.h" />
     <ClInclude Include="WantedListSnapshot.h" />
     <ClInclude Include="AttackArbiter.h" />
-    <ClInclude Include="..\_Common\auction.h" />
     <ClInclude Include="..\_Common\Campus.h" />
     <ClInclude Include="CampusHelper.h" />
     <ClInclude Include="..\_Common\couple.h" />
     <ClInclude Include="couplehelper.h" />
     <ClInclude Include="..\_common\dialogmsg.h" />
-    <ClInclude Include="dpaccountclient.h" />
     <ClInclude Include="DPCoreClient.h" />
     <ClInclude Include="DPDatabaseClient.h" />
     <ClInclude Include="DPSrvr.h" />
@@ -476,7 +466,6 @@
     <ClInclude Include="FunctionsInfo.h" />
     <ClInclude Include="GlobalTime.h" />
     <ClInclude Include="..\_common\guildquest.h" />
-    <ClInclude Include="ItemScript.h" />
     <ClInclude Include="ItemUpgrade.h" />
     <ClInclude Include="layeredlinkmap.h" />
     <ClInclude Include="LinkMap.h" />
@@ -510,7 +499,6 @@
     <ClInclude Include="VersionCommon.h" />
     <ClInclude Include="vmlog.h" />
     <ClInclude Include="WorldDialog.h" />
-    <ClInclude Include="WScript.h" />
     <ClInclude Include="..\_network\CmnHdr.h" />
     <ClInclude Include="..\_Network\ErrorCode.h" />
     <ClInclude Include="..\_network\MsgHdr.h" />
@@ -628,7 +616,6 @@
     <ClInclude Include="..\_AIInterface\ActionShip.h" />
     <ClInclude Include="..\_Common\scanner.h" />
     <ClInclude Include="..\_Common\script.h" />
-    <ClInclude Include="..\_Common\scriptdialog.h" />
     <ClInclude Include="..\_Common\ScriptHelper.h" />
     <ClInclude Include="..\_AIInterface\AIBear.h" />
     <ClInclude Include="..\_AIInterface\AIBigMuscle.h" />

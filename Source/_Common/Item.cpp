@@ -50,7 +50,7 @@ void CItemElem::SetTexture()
 				break;
 		}
 	}
-	m_pTexture = CWndBase::m_textureMng.AddTexture( g_Neuz.m_pd3dDevice, MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
+	m_pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, strIcon ), 0xffff00ff );
 #endif
 }
 
@@ -83,21 +83,15 @@ DWORD CItemElem::GetChipCost() const {
 }
 
 // 퀘스트 아이템인가?
-BOOL CItemElem::IsQuest()
-{
-	ItemProp* p = GetProp();
-	if( p->dwItemKind3 == IK3_QUEST )
-	{
-		if( ::GetLanguage() == LANG_JAP )
-		{
-			if( p->dwID == II_SYS_SYS_QUE_REDSOCKS )	// 예외 
-				return FALSE;
-		}
+bool CItemElem::IsQuest() const {
+	const ItemProp * p = GetProp();
+	if (p->dwItemKind3 != IK3_QUEST) return false;
 
-		return TRUE;
+	if (::GetLanguage() == LANG_JAP && p->dwID == II_SYS_SYS_QUE_REDSOCKS) {
+		return false;
 	}
 
-	return FALSE;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -445,7 +439,7 @@ void CItem::Process()
 #endif	// __WORLDSERVER
 }
 
-void CItem::Render( LPDIRECT3DDEVICE9 pd3dDevice )
+void CItem::Render( )
 {
 #ifndef __WORLDSERVER
 	ItemProp *pItemProp = GetProp();
@@ -455,32 +449,20 @@ void CItem::Render( LPDIRECT3DDEVICE9 pd3dDevice )
 		((CModelObject*)m_pModel)->SetEffect( 0, XE_REFLECT );	
 	}
 
-	CObj::Render( pd3dDevice );
+	CObj::Render( );
 	if( xRandom( 50 ) == 1 )
-		CreateSfx( pd3dDevice, XI_GEN_ITEM_SHINE01, GetPos() );
+		CreateSfx( XI_GEN_ITEM_SHINE01, GetPos() );
 #endif
 }
 
-void CItem::RenderName( LPDIRECT3DDEVICE9 pd3dDevice, CD3DFont* pFont, DWORD dwColor )
+void CItem::RenderName( CD3DFont* pFont, DWORD dwColor )
 {
 #ifndef __WORLDSERVER
-	// 월드 좌표를 스크린 좌표로 프로젝션 한다.
-	D3DXVECTOR3 vOut, vPos = GetPos(), vPosHeight;
-    D3DVIEWPORT9 vp;
-    pd3dDevice->GetViewport( &vp );
-	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y, vPos.z );
-	matWorld = matWorld * m_matScale * m_matRotation * matTrans;
+	D3DXVECTOR3 vOut = ProjectWorldCoordToScreenCoord(
+		std::nullopt,
+		PWCTSC_DoNotResetWorldTransform | PWCTSC_UntouchedViewport
+	);
 
-	const BOUND_BOX * pBB = m_pModel->GetBBVector();
-	vPosHeight = pBB->m_vPos[0];
-	vPosHeight.x = 0;
-	vPosHeight.z = 0;
-	
-	D3DXVec3Project( &vOut, &vPosHeight, &vp, &GetWorld()->m_matProj,
-		&GetWorld()->m_pCamera->m_matView, &matWorld);
 	vOut.x -= pFont->GetTextExtent( m_pItemBase->GetProp()->szName ).cx / 2;
 	pFont->DrawText( vOut.x + 1, vOut.y + 1, 0xff000000, m_pItemBase->GetProp()->szName	);
 	pFont->DrawText( vOut.x, vOut.y, dwColor, m_pItemBase->GetProp()->szName );
@@ -502,11 +484,9 @@ CString CItemElem::GetName() const
 		MoverProp* pMoverProp	= prj.GetMoverProp( m_pPet->GetIndex() );
 		if( pMoverProp )
 		{
-#ifdef __PET_1024
 			if( m_pPet->HasName() )
 				strName.Format( prj.GetText( TID_GAME_CAGE_STRING ), m_pPet->GetName() );
 			else
-#endif	// __PET_1024
 				strName.Format( prj.GetText( TID_GAME_CAGE_STRING ), pMoverProp->szName );
 		}
 	}

@@ -6,14 +6,10 @@
 #include "DPMng.h"
 #include "MsgHdr.h"
 
-#undef	theClass
-#define theClass	CDPLoginSrvr
-#undef	theParameters
-#define theParameters	CAr & ar, DPID, LPBYTE lpBuf, u_long uBufSize
-
 //class CAccount;
 class CDPLoginSrvr : public CDPMng,
-	public DPMngFeatures::BroadcastPacketSole
+	public DPMngFeatures::BroadcastPacketSole,
+	public DPMngFeatures::PacketHandler<CDPLoginSrvr, DPID, LPBYTE, u_long>
 {
 public:
 //	Constructions
@@ -34,7 +30,6 @@ public:
 	void	OnAddConnection( DPID dpid );
 	void	OnRemoveConnection( DPID dpid );
 
-	USES_PFNENTRIES;
 public:
 //	Handlers
 	void	OnGetPlayerList( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize );

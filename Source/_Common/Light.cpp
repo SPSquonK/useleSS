@@ -21,7 +21,7 @@ void CLight::SetLight( LPCTSTR lpszKey, D3DLIGHTTYPE ltType, FLOAT x, FLOAT y, F
 	D3DUtil_InitLight( *this, ltType, x, y, z );
 	//m_dwIndex = aaa;
 }
-void CLight::Appear( LPDIRECT3DDEVICE9 pd3dDevice, BOOL bEnable )
+void CLight::Appear( BOOL bEnable )
 {
 	if( bEnable )
 	{

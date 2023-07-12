@@ -10,7 +10,6 @@ extern	char	g_lpDBAddr[16];
 
 CDPDatabaseClient::CDPDatabaseClient()
 {
-	BEGIN_MSG;
 	ON_MSG( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPDatabaseClient::OnCloseExistingConnection );
 	ON_MSG( PACKETTYPE_ONE_HOUR_NOTIFY, &CDPDatabaseClient::OnOneHourNotify );
 	ON_MSG( PACKETTYPE_PLAYER_LIST, &CDPDatabaseClient::OnPlayerList );
@@ -18,20 +17,7 @@ CDPDatabaseClient::CDPDatabaseClient()
 	ON_MSG( PACKETTYPE_LOGIN_PROTECT_CERT, &CDPDatabaseClient::OnLoginProtect );
 }
 
-CDPDatabaseClient::~CDPDatabaseClient()
-{
-
-}
-
-void CDPDatabaseClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
-{
-	switch( lpMsg->dwType )
-	{
-		case DPSYS_DESTROYPLAYERORGROUP:
-			{
-				break;
-			}
-	}
+void CDPDatabaseClient::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom ) {
 }
 
 void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
@@ -43,11 +29,9 @@ void CDPDatabaseClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSi
 	DPID dpidUser	= *(UNALIGNED LPDPID)lpMsg;
 
 	CAr ar( lpBuf, uBufSize );
-	GETTYPE( ar );
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
+	DWORD dw; ar >> dw;
 	
-	if( pfn ) {
-		( this->*( pfn ) )( ar, dpidUser, lpBuf, uBufSize );
+	if (Handle(ar, dw, dpidUser, lpBuf, uBufSize)) {
 		if (ar.IsOverflow()) Error("Login-Database: Packet %08x overflowed", dw);
 	} else {
 		g_dpLoginSrvr.Send( lpBuf, uBufSize, dpidUser );

@@ -598,7 +598,7 @@ void CInstanceDungeonBase::CreateMonster( DWORD dwDungeonId, DWORD dwWorldId )
 			MoverProp* pMoverProp = prj.GetMoverProp( (*itVecMon).dwMonsterId );
 			if( pMoverProp )
 			{
-				CObj* pObj	= CreateObj( D3DDEVICE, OT_MOVER, pMoverProp->dwID );
+				CObj* pObj	= CreateObj( OT_MOVER, pMoverProp->dwID );
 				if( NULL == pObj )
 					return;	
 				
@@ -970,8 +970,8 @@ BOOL CInstanceDungeonHelper::EnteranceDungeon( CUser* pUser, DWORD dwWorldId )
 			return TRUE;
 		else
 		{
-			float fPushPower = 0.5f;
-			AngleToVectorXZ( &pUser->m_pActMover->m_vDeltaE, pUser->GetAngle() + 180.0f, fPushPower );
+			static constexpr float fPushPower = 0.5f;
+			pUser->m_pActMover->m_vDeltaE = AngleToVectorXZ( pUser->GetAngle() + 180.0f, fPushPower );
 			pUser->Replace( pUser->GetWorld()->GetID(), pUser->GetPos() + pUser->m_pActMover->m_vDeltaE, REPLACE_NORMAL, pUser->GetLayer() );
 			g_UserMng.AddPushPower( pUser, pUser->GetPos(), pUser->GetAngle(), pUser->GetAngle() + 180.0f, fPushPower );
 		}

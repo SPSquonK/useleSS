@@ -8,7 +8,7 @@
 inline boost::container::small_vector<CUser *, MAX_PTMEMBER_SIZE> AllMembers(const CParty & party) {
 	boost::container::small_vector<CUser *, MAX_PTMEMBER_SIZE> out;
 
-	for (const PartyMember & pm : party.m_aMember) {
+	for (const PartyMember & pm : std::span(party.m_aMember, party.GetSizeofMember())) {
 		CUser * pUser = prj.GetUserByID(pm.m_uPlayerId);
 		if (IsValidObj(pUser)) {
 			out.emplace_back(pUser);

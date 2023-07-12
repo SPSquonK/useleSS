@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#ifdef __MAIL_REQUESTING_BOX
+
 #ifdef __CLIENT
 #include "WndMailRequestingBox.h"
 #include "ResData.h"
@@ -17,7 +17,7 @@ CWndMailRequestingBox::~CWndMailRequestingBox( void )
 {
 }
 //-----------------------------------------------------------------------------
-BOOL CWndMailRequestingBox::Initialize( CWndBase* pWndParent, DWORD dwWndId )
+BOOL CWndMailRequestingBox::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_REQUESTING_POST, pWndParent, WBS_MODAL, CPoint( 0, 0 ) );
 }
@@ -87,4 +87,3 @@ BOOL CWndMailRequestingBox::OnChildNotify( UINT message, UINT nID, LRESULT* pLRe
 }
 //-----------------------------------------------------------------------------
 #endif // __CLIENT
-#endif // __MAIL_REQUESTING_BOX

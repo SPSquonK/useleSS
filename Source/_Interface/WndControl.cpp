@@ -315,9 +315,9 @@ BOOL CWndButton::Create(LPCTSTR lpszCaption,DWORD dwStyle,const RECT& rect,CWndB
 	BOOL b = CWndBase::Create(dwStyle|WBS_CHILD|/*WBS_NODRAWFRAME|*/WBS_NOFRAME,rect,pParentWnd,nID);//,pSprPack,nSprIdx,nColorTable);;
 	//m_strTexture = "ButtRadio.bmp";
 	if( IsWndStyle( WBS_RADIO ) )
-		SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, DEF_CTRL_RADIO ), 1 );
+		SetTexture( MakePath( DIR_THEME, DEF_CTRL_RADIO ), 1 );
 	if( IsWndStyle( WBS_CHECK ) )
-		SetTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, DEF_CTRL_CHECK ), 1 );
+		SetTexture( MakePath( DIR_THEME, DEF_CTRL_CHECK ), 1 );
 	
 #ifdef __CLIENT
 	//AddWndStyle( WBS_NODRAWFRAME );
@@ -333,7 +333,7 @@ void CWndButton::OnDraw( C2DRender* p2DRender )
 void CWndButton::PaintFrame( C2DRender* p2DRender )
 {
 	CRect rect = GetWindowRect();
-	GET_CLIENT_POINT( m_pApp->GetSafeHwnd(),  point );
+	CPoint point = GetClientPoint();
 	CString string;
 
 	DWORD dwColor = D3DCOLOR_TEMP( 200, 240, 240, 240 );
@@ -353,17 +353,17 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 	}
 	if(m_dwStyle & WBS_RADIO)
 	{
-		m_pTheme->RenderWndButtonRadio( p2DRender, this );
+		m_Theme.RenderWndButtonRadio( p2DRender, this );
 	}
 	else
 	if(m_dwStyle & WBS_CHECK)
 	{
-		m_pTheme->RenderWndButtonCheck( p2DRender,  this );
+		m_Theme.RenderWndButtonCheck( p2DRender,  this );
 	}
 	else
 	if(m_dwStyle & WBS_TEXT)
 	{
-		m_pTheme->RenderWndButtonText( p2DRender, this );
+		m_Theme.RenderWndButtonText( p2DRender, this );
 	}
 	else
 	if(m_dwStyle & WBS_MENUITEM)
@@ -437,7 +437,7 @@ void CWndButton::PaintFrame( C2DRender* p2DRender )
 	else
 	// 표준 버튼 
 	{
-			m_pTheme->RenderWndButton( p2DRender, this );
+		m_Theme.RenderWndButton( p2DRender, this );
 	}
 }
 BOOL CWndButton::Process()
@@ -489,14 +489,14 @@ void CWndButton::OnLButtonUp(UINT nFlags, CPoint point)
 }
 
 void CWndButton::ParentUncheckGroup() {
-	CPtrArray * pWndArray = &m_pParentWnd->m_wndArray;
+	std::vector<CWndBase *> & pWndArray = m_pParentWnd->m_wndArray;
 
 	// 1: Search the start of the group of this
-	std::optional<int> startGroup;
+	std::optional<size_t> startGroup;
 	bool foundThis = false;
 
-	for (int i = 0; i != pWndArray->GetSize(); ++i) {
-		CWndBase * pWnd = (CWndBase *) pWndArray->GetAt(i);
+	for (size_t i = 0; i != pWndArray.size(); ++i) {
+		const CWndBase * pWnd = pWndArray[i];
 
 		if (pWnd->IsGroup() && pWnd->IsWndStyle(WBS_RADIO)) {
 			startGroup = i;
@@ -521,8 +521,8 @@ void CWndButton::ParentUncheckGroup() {
 	}
 
 	// 2: Uncheck all members of groupe except this
-	for (int i = startGroup.value(); i != pWndArray->GetSize(); ++i) {
-		CWndBase * pWnd = (CWndBase *)pWndArray->GetAt(i);
+	for (size_t i = startGroup.value(); i != pWndArray.size(); ++i) {
+		CWndBase * pWnd = pWndArray[i];
 
 		// M.C. Hammer - U Can't Touch This
 		if (pWnd == this) continue;
@@ -734,7 +734,7 @@ TREEELEM * CWndTreeCtrl::InsertItem( LPTREEELEM lpParent, LPCTSTR lpString, DWOR
 		CWndButton* pWndCheckBox = lpTreeElem.m_pWndCheckBox;
 		CRect rectCheckBox( 0, 0, CHECK_BOX_SIZE_XY, CHECK_BOX_SIZE_XY );
 		pWndCheckBox->Create( "", WBS_CHECK, rectCheckBox, this, WIDC_CHECK );
-		pWndCheckBox->SetTexture( D3DDEVICE, MakePath( DIR_THEME, _T( DEF_CTRL_CHECK ) ), 1 );
+		pWndCheckBox->SetTexture( MakePath( DIR_THEME, _T( DEF_CTRL_CHECK ) ), 1 );
 		pWndCheckBox->FitTextureSize();
 		pWndCheckBox->SetCheck( bCheck );
 		pWndCheckBox->EnableWindow( FALSE );
@@ -889,8 +889,8 @@ void CWndTreeCtrl::CalculateTextColor(DWORD dwCategoryTextColor, DWORD dwNormalT
 void CWndTreeCtrl::OnInitialUpdate()
 {
 	CRect rect = GetWindowRect();
-	m_pTexButtOpen  = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtTreeOpen.tga"   ), 0xffff00ff );
-	m_pTexButtClose = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtTreeClose.tga"   ), 0xffff00ff );
+	m_pTexButtOpen  = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtTreeOpen.tga"   ), 0xffff00ff );
+	m_pTexButtClose = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtTreeClose.tga"   ), 0xffff00ff );
 
 	m_wndScrollBar.Create( WBS_DOCKING | WBS_VERT, rect, this, 1000 );//,m_pSprPack,-1);
 	m_wndScrollBar.SetVisible( IsWndStyle( WBS_VSCROLL ) );
@@ -1281,22 +1281,22 @@ void CWndScrollBar::OnDraw(C2DRender* p2DRender)
 
 void CWndScrollBar::OnInitialUpdate()
 {
-	m_pTexButtVScrBar   = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrBar.bmp"   ), 0xffff00ff );
-	m_pTexButtVScrPUp   = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrPUp.bmp"   ), 0xffff00ff );
-	m_pTexButtVScrPDown = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrPDown.bmp" ), 0xffff00ff );
-	m_pTexButtVScrPBar  = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtVScrPBar.bmp"  ), 0xffff00ff );
+	m_pTexButtVScrBar   = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtVScrBar.bmp"   ), 0xffff00ff );
+	m_pTexButtVScrPUp   = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtVScrPUp.bmp"   ), 0xffff00ff );
+	m_pTexButtVScrPDown = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtVScrPDown.bmp" ), 0xffff00ff );
+	m_pTexButtVScrPBar  = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtVScrPBar.bmp"  ), 0xffff00ff );
 
 	CRect rect = GetClientRect();
 	rect.bottom = rect.bottom / 4 * 4;
 	//rect.DeflateRect( 1, 1 );
 	//CSize size;// = m_pSprPack->GetAt(13+2)->GetSize();
 	m_wndArrow1.Create( "",0,CRect( rect.left, rect.top, rect.right, rect.top + rect.Width()),this,1000);//,m_pSprPack,13+0);
-	m_wndArrow1.SetTexture( m_pApp->m_pd3dDevice,MakePath( DIR_THEME, "ButtVScrUp.tga" ), TRUE );
+	m_wndArrow1.SetTexture(MakePath( DIR_THEME, "ButtVScrUp.tga" ), TRUE );
 	m_wndArrow1.FitTextureSize();
 	//rect.top = rect.bottom - size.cy;
 	rect.top = 0;
 	m_wndArrow2.Create( "",0,CRect( rect.left, rect.bottom - rect.Width(), rect.right, rect.bottom),this,1001);//,m_pSprPack,13+2);
-	m_wndArrow2.SetTexture( m_pApp->m_pd3dDevice,MakePath( DIR_THEME, "ButtVScrDown.tga" ), TRUE );
+	m_wndArrow2.SetTexture(MakePath( DIR_THEME, "ButtVScrDown.tga" ), TRUE );
 	m_wndArrow2.FitTextureSize();
 
 	m_wndArrow1.SetPushTime(500);
@@ -1422,6 +1422,33 @@ void CWndScrollBar::OnSize(UINT nType, int cx, int cy)
 //	m_string.Reset( m_pFont, &GetClientRect() );
 	CWndBase::OnSize( nType, cx, cy);
 }
+
+void CWndScrollBar::SetScrollFromSize(int nbElements, int maxPageSize) {
+	if (nbElements <= 0) nbElements = 1;
+	
+	SetScrollRange(0, nbElements);
+	SetScrollPage(std::min(nbElements, maxPageSize));
+
+	/*
+	If you see this kind of code, you can call this method instead:
+		
+	if( m_nMax > 0 )
+	{
+		m_wndScrollBar.SetScrollRange( 0, m_nMax );
+		if( m_nMax < SOME_CONSTANT )
+			m_wndScrollBar.SetScrollPage( m_nMax );
+		else
+			m_wndScrollBar.SetScrollPage( SOME_CONSTANT );
+	}
+	else
+	{
+		m_wndScrollBar.SetScrollRange( 0, 1 );
+		m_wndScrollBar.SetScrollPage( 1 );
+	}
+	*/
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CWndListBox
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2202,9 +2229,9 @@ CPoint CWndText::OffsetToPoint( DWORD dwSetOffset )
 void CWndText::DrawCaret(C2DRender* p2DRender)
 {
 }
-LONG CWndText::GetOffset(CPoint point)
+LONG CWndText::GetOffset(const CPoint point)
 {
-	int dwMaxHeight = GetFontHeight();
+	const int dwMaxHeight = GetFontHeight();
 	CPoint pt = point;
 	pt.y /= dwMaxHeight;
 	pt.y += m_wndScrollBar.GetScrollPos();
@@ -2218,11 +2245,13 @@ LONG CWndText::GetOffset(CPoint point)
 
 	DWORD dwOffset1 = m_string.GetLineOffset( pt.y );
 	DWORD dwOffset2 = m_string.GetLineOffset( pt.y + 1);
-	DWORD dwBegin = 0;
 	const char* begin = m_string;
 	const char* end = begin + dwOffset2;
 	const char* iter = begin + dwOffset1;
 
+	if (pt.x < 0) return dwOffset1;
+
+	DWORD dwBegin = 0;
 	while(*iter && iter < end) {
 
 		if( *iter == '\r' || *iter == '\n')
@@ -2249,13 +2278,8 @@ LONG CWndText::GetOffset(CPoint point)
 			m_pFont->GetTextExtent(temp, &size, wCodePage);
 		}
 
-		if( (int)( dwBegin+size.cx ) > pt.x)
-		{
-
-			if(pt.x-dwBegin < (dwBegin+size.cx)-pt.x)
-				return iter-begin;
-			else 
-				return next-begin;
+		if (dwBegin + size.cx > pt.x) {
+			return next - begin;
 		}
 
 		dwBegin += size.cx;
@@ -2684,360 +2708,6 @@ BOOL CWndMenu::OnEraseBkgnd(C2DRender * p2DRender) {
 	return TRUE;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// CWndListCtrl
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-CWndListCtrl::CWndListCtrl() 
-{
-	m_nWndColor    = D3DCOLOR_TEMP( 255,  0x5 << 3,  0x5 << 3,  0x5 << 3 );
-	m_nFontColor   = D3DCOLOR_ARGB( 255, 64, 64, 64 );
-	m_nSelectColor = D3DCOLOR_ARGB( 255, 255, 0, 0   );
-	m_nCurSelect = -1;
-	m_pFocusItem = NULL;
-	m_byWndType  = WTYPE_LISTCTRL;
-	m_nLineSpace = 3;
-}
-CWndListCtrl::~CWndListCtrl()
-{
-	LVCOLUMN* pColumn;
-	LVITEM* pItems;
-	for( int i = 0; i < m_aColumns.GetSize(); i++ )
-	{
-		pColumn = (LVCOLUMN*) m_aColumns.GetAt( i );
-		safe_delete( pColumn->pszText );
-		safe_delete( pColumn );
-	}
-	for( int i = 0; i < m_aItems.GetSize(); i++ )
-	{
-		pItems = (LVITEM*)m_aItems.GetAt ( i );
-		for( int j = 0; j < m_aColumns.GetSize(); j++ )
-		{
-			if( pItems[ j ].pszText )
-				safe_delete( pItems[ j ].pszText );
-		}
-		safe_delete_array( pItems );
-	}
-//	ResetContent();
-}
-void CWndListCtrl::Create( DWORD dwListCtrlStyle, RECT& rect, CWndBase* pParentWnd, UINT nID )
-{
-	CWndBase::Create( dwListCtrlStyle | WBS_CHILD, rect, pParentWnd, nID );
-}
-
-void CWndListCtrl::OnInitialUpdate()
-{
-	CRect rect = GetWindowRect();
-	m_wndScrollBar.AddWndStyle( WBS_DOCKING );
-	m_wndScrollBar.Create( WBS_VERT, rect, this, 1000 );//,m_pSprPack,-1);
-}
-
-
-void CWndListCtrl::OnDraw(C2DRender* p2DRender) 
-{
-	CPoint pt( 3, 3 );
-	m_nFontHeight = GetFontHeight();
-	//
-	// 리포트 출력 
-	//
-//	if( IsWndStyle( WLVS_REPORT ) )
-	{
-		pt.y -= (m_nFontHeight + 3) * m_wndScrollBar.GetScrollPos();
-		for( int i = 0; i < m_aItems.GetSize(); i++ ) 
-		{
-			LVITEM* pItems = (LVITEM*)m_aItems.GetAt( i );
-			for( int i2 = 0, x = 0; i2 < m_aColumns.GetSize(); i2++ ) 
-			{
-				if( i == m_nCurSelect )
-					p2DRender->TextOut( x + 2, pt.y, pItems[ i2 ].pszText, m_nSelectColor ); 
-				else
-					p2DRender->TextOut( x + 2, pt.y, pItems[ i2 ].pszText, m_nFontColor ); 
-				LVCOLUMN* pColumn = (LVCOLUMN*)m_aColumns.GetAt( i2 );
-				x += pColumn->cx + 7;
-			}
-			pt.y += m_nFontHeight + 3;
-		}
-		// 스크롤바 관련 
-		int nPage = GETRANGE;//GetClientRect().Height() / (m_nFontHeight + 3);
-		int nRange = m_aItems.GetSize();// - nPage;
-
-		if(	IsWndStyle( WBS_VSCROLL ) )  
-		{
-			m_wndScrollBar.SetVisible( TRUE );
-			m_wndScrollBar.SetScrollRange( 0, nRange );
-			m_wndScrollBar.SetScrollPage( nPage );
-		}
-		else
-			m_wndScrollBar.SetVisible( FALSE );
-	}
-	//
-	// 아이콘 출력
-	// CCtrllist
-	if( IsWndStyle( WLVS_ICON ) )
-	{
-		CRect rect = GetClientRect();
-		int nWidth = rect.Width() / 32;
-		int nHeight = rect.Height() / 32;
-		pt.y = 0;
-		pt.y += m_wndScrollBar.GetScrollPos() * nWidth;
-		for( int i = pt.y; i < m_aItems.GetSize(); i++ ) 
-		{
-			int x = ( i - pt.y ) % nWidth;
-			int y = ( i - pt.y ) / nWidth;
-			LVITEM* pItems = (LVITEM*)m_aItems.GetAt( i );
-			if( i == m_nCurSelect )
-				p2DRender->RenderFillRect( CRect( x * 32, y * 32, x * 32 + 32 - 2, y * 32 + 32 - 2 ), 0xff707070 );
-			else
-				p2DRender->RenderFillRect( CRect( x * 32, y * 32, x * 32 + 32 - 2, y * 32 + 32 - 2 ), 0xffffffff );
-			//p2DRender->TextOut( x * 32, y * 32, pItems->pszText, 0xff000000 );
-		}
-		// 스크롤바 관련 
-		int nPage = nHeight;
-		int nRange = m_aItems.GetSize() / nWidth;// - nPage;
-		if(nRange - nPage <= 0)
-			m_wndScrollBar.SetVisible(FALSE);
-		else
-		{
-			m_wndScrollBar.SetVisible( TRUE );
-			m_wndScrollBar.SetScrollRange( 0, nRange );
-			m_wndScrollBar.SetScrollPage( nPage );
-		}
-	}
-}
-int CWndListCtrl::GetCurSel() const
-{
-	return m_nCurSelect;
-}
-int CWndListCtrl::SetCurSel( int nSelect )
-{
-	m_pFocusItem = (LVITEM*)m_aItems.GetAt( nSelect );
-	m_nCurSelect = nSelect;
-	return m_nCurSelect;
-}
-CString CWndListCtrl::GetItemText(int nItem, int nSubItem) const
-{
-	LVITEM* pItem = (LVITEM*)m_aItems.GetAt( nItem );
-	return pItem[ nSubItem ].pszText;
-}
-void CWndListCtrl::OnLButtonUp( UINT nFlags, CPoint point )
-{
-	CPoint pt( 3, 3 );
-	CRect rect;
-	//
-	// 리포트 출력 
-	//
-	//if( IsWndStyle( WLVS_REPORT ) )
-	{
-		pt.y -= (m_nFontHeight + 3) * m_wndScrollBar.GetScrollPos();
-		for( int i = 0; i < m_aItems.GetSize(); i++ ) 
-		{
-			LVITEM* pItems = (LVITEM*)m_aItems.GetAt( i );
-			rect.SetRect( pt.x, pt.y, pt.x + m_rectWindow.Width() - m_wndScrollBar.GetClientRect().Width(), pt.y + m_nFontHeight );
-			if( rect.PtInRect( point ) )
-			{
-				if(m_pFocusItem == pItems)
-				{
-					// 부모가 차일드 윈도가 아니어야 OnCommand 메시지를 받는다.
-					CWndBase* pWnd = m_pParentWnd;
-					pWnd->OnChildNotify(WNM_SELCHANGE,m_nIdWnd,(LRESULT*)m_pFocusItem); 
-					return;
-				}
-			}
-			pt.y += m_nFontHeight + 3;
-		}
-	}
-	//
-	// 아이콘 출력
-	// CCtrllist
-	if( IsWndStyle( WLVS_ICON ) )
-	{
-		CRect rect = GetClientRect();
-		int nWidth = rect.Width() / 32;
-		int nHeight = rect.Height() / 32;
-		pt.y = 0;
-		pt.y += m_wndScrollBar.GetScrollPos() * nWidth;
-		for( int i = pt.y; i < m_aItems.GetSize(); i++ ) 
-		{
-			int x = ( i - pt.y ) % nWidth;
-			int y = ( i - pt.y ) / nWidth;
-			LVITEM* pItems = (LVITEM*)m_aItems.GetAt( i );
-			rect.SetRect( x * 32, y * 32, x * 32 + 32, y * 32 + 32 );
-			if( rect.PtInRect( point ) )
-			{
-				if(m_pFocusItem == pItems)
-				{
-					// 부모가 차일드 윈도가 아니어야 OnCommand 메시지를 받는다.
-					CWndBase* pWnd = m_pParentWnd;
-					pWnd->OnChildNotify(WNM_SELCHANGE,m_nIdWnd,(LRESULT*)m_pFocusItem); 
-					return;
-				}
-			}
-		}
-	}
-}
-void CWndListCtrl::OnLButtonDown( UINT nFlags, CPoint point )
-{
-	CPoint pt( 3, 3 );
-	CRect rect;
-	//
-	// 리포트 출력 
-	//
-	//if( IsWndStyle( WLVS_REPORT ) )
-	{
-		pt.y -= (m_nFontHeight + 3) * m_wndScrollBar.GetScrollPos();
-		for( int i = 0; i < m_aItems.GetSize(); i++ ) 
-		{
-			LVITEM* pItems = (LVITEM*)m_aItems.GetAt( i );
-			rect.SetRect( pt.x, pt.y, pt.x + m_rectWindow.Width() - m_wndScrollBar.GetClientRect().Width(), pt.y + m_nFontHeight );
-			if( rect.PtInRect( point ) )
-			{
-				m_nCurSelect = i;
-				m_pFocusItem = pItems;
-				break;
-			}
-			pt.y += m_nFontHeight + 3;
-		}
-	}
-	//
-	// 아이콘 출력
-	// CCtrllist
-	if( IsWndStyle( WLVS_ICON ) )
-	{
-		CRect rect = GetClientRect();
-		int nWidth = rect.Width() / 32;
-		int nHeight = rect.Height() / 32;
-		pt.y = 0;
-		pt.y += m_wndScrollBar.GetScrollPos() * nWidth;
-		for( int i = pt.y; i < m_aItems.GetSize(); i++ ) 
-		{
-			int x = ( i - pt.y ) % nWidth;
-			int y = ( i - pt.y ) / nWidth;
-			LVITEM* pItems = (LVITEM*)m_aItems.GetAt( i );
-			rect.SetRect( x * 32, y * 32, x * 32 + 32, y * 32 + 32 );
-			if( rect.PtInRect( point ) )
-			{
-				m_nCurSelect = i;
-				m_pFocusItem = pItems;
-				break;
-			}
-		}
-	}
-} 
-void CWndListCtrl::OnRButtonUp( UINT nFlags, CPoint point )
-{
-}
-void CWndListCtrl::OnRButtonDown( UINT nFlags, CPoint point )
-{
-}
-void CWndListCtrl::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-}
-void CWndListCtrl::OnRButtonDblClk( UINT nFlags, CPoint point)
-{
-}
-void CWndListCtrl::OnSize( UINT nType, int cx, int cy )
-{
-	CRect rect = GetWindowRect();
-
-	if( IsWndStyle( WBS_VSCROLL ) ) 
-		rect.left = rect.right - VSCROLL_WIDTH;
-	m_wndScrollBar.SetVisible( IsWndStyle( WBS_VSCROLL ) );
-	m_wndScrollBar.SetWndRect( rect );
-
-	CWndBase::OnSize( nType, cx, cy);
-}
-void CWndListCtrl::SetWndRect( CRect rectWnd, BOOL bOnSize )
-{
-	m_rectWindow = rectWnd;
-	m_rectClient = m_rectWindow;
-	m_rectClient.DeflateRect( 4, 4 );
-
-	//if( IsWndStyle( WLVS_REPORT ) )
-	{
-		int nPage = GETRANGE;//GetClientRect().Height() / (m_nFontHeight + 3);
-		int nRange = m_aItems.GetSize();// - nPage;
-		if( !( nRange - nPage <= 0 ) )
-			m_rectClient.right -= 15; // 스크롤 바가 보이면 
-		m_rectClient.top += 15; // 리포트 칼럼 
-	}
-	if( IsWndStyle( WLVS_ICON ) )
-	{
-		CRect rect = GetClientRect();
-		int nWidth = rect.Width() / 32;
-		int nHeight = rect.Height() / 32;
-		int nPage = nHeight;
-		int nRange = m_aItems.GetSize() / nWidth;// - nPage;
-		if( !( nRange - nPage <= 0 ) )
-			m_rectClient.right -= 15; // 스크롤 바가 보이면 
-	}
-	if( bOnSize )
-		OnSize( 0, m_rectClient.Width(), m_rectClient.Height() );
-}
-void CWndListCtrl::PaintFrame( C2DRender* p2DRender )
-{
-	CRect rect = GetWindowRect();
-	m_pTheme->RenderWndTextFrame( p2DRender, &rect );
-
-	//if( IsWndStyle( WLVS_REPORT ) )
-	{
-		int x = 0;
-		for(int i = 0 ; i < m_aColumns.GetSize(); i++ )
-		{
-			LVCOLUMN* pColumn = (LVCOLUMN*)m_aColumns.GetAt( i );
-			p2DRender->TextOut( x + 4, 4, pColumn->pszText ); 
-			const auto rect = CRect(x, 0, x + pColumn->cx + 5, 20);
-			m_pTheme->GradationRect( p2DRender, &rect, 
-				D3DCOLOR_ARGB( 50, 100, 100, 100 ),
-				D3DCOLOR_ARGB( 90, 255, 255, 255 ),
-				D3DCOLOR_ARGB( 50, 000, 000, 000 ), 20 );
-			x += pColumn->cx + 6;
-		}
-
-		const auto gradRect = CRect(x, 0, rect.Width(), 20);
-		m_pTheme->GradationRect( p2DRender, &gradRect,
-			D3DCOLOR_ARGB( 50, 100, 100, 100 ),
-			D3DCOLOR_ARGB( 90, 255, 255, 255 ),
-			D3DCOLOR_ARGB( 50, 000, 000, 000 ), 20 );
-	}
-}
-
-BOOL CWndListCtrl::OnEraseBkgnd( C2DRender* p2DRender )
-{
-	return TRUE;
-}
-BOOL CWndListCtrl::SetItem( const LVITEM* pItem )
-{
-	if( pItem->iItem < m_aItems.GetSize() && m_aItems.GetAt( pItem->iItem ) == NULL ) 
-		return FALSE; // 존재하지 않는다.
-	LVITEM* pItems = (LVITEM*)m_aItems.GetAt( pItem->iItem );
-	if( pItems )
-	{
-		if( pItems[ pItem->iSubItem ].pszText )
-			safe_delete( pItems[ pItem->iSubItem ].pszText );
-		memcpy( &pItems[ pItem->iSubItem ], pItem, sizeof( LVITEM ) );
-		pItems[ pItem->iSubItem ].pszText = new _TCHAR[ _tcslen( pItem->pszText ) + sizeof( _TCHAR ) ];
-		_tcscpy( pItems[ pItem->iSubItem ].pszText, pItem->pszText );
-	}
-	return TRUE;
-}
-int CWndListCtrl::InsertItem( const LVITEM* pItem )
-{
-//	if( pItem->iItem < m_aItems.GetSize() && m_aItems.GetAt( pItem->iItem ) ) 
-	if( pItem->iItem > m_aItems.GetSize() ) 
-			return -1; // 이미 존재한다.
-	LVITEM* pNewItems = new LVITEM[ m_aColumns.GetSize() ];
-	ZeroMemory( pNewItems, sizeof( LVITEM ) * m_aColumns.GetSize() );
-	memcpy( &pNewItems[ pItem->iSubItem ], pItem, sizeof( LVITEM ) );
-	pNewItems[ pItem->iSubItem ].pszText = new _TCHAR[ _tcslen( pItem->pszText ) + sizeof( _TCHAR ) ];
-	_tcscpy( pNewItems[ pItem->iSubItem ].pszText, pItem->pszText );
-	m_aItems.SetAtGrow( pItem->iItem, (void*)pNewItems );
-	return pItem->iItem;
-}
-int CWndListCtrl::GetItemCount() const
-{
-	return m_aItems.GetSize();
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -3204,12 +2874,12 @@ void CWndTabCtrl::OnDraw( C2DRender* p2DRender )
 }
 void CWndTabCtrl::OnInitialUpdate()
 {
-	m_aTexture[ 0 ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndTabTile10.bmp" ), 0xffff00ff, TRUE );
-	m_aTexture[ 1 ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndTabTile11.bmp" ), 0xffff00ff, TRUE );
-	m_aTexture[ 2 ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndTabTile12.bmp" ), 0xffff00ff, TRUE );
-	m_aTexture[ 3 ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndTabTile13.bmp" ), 0xffff00ff, TRUE );
-	m_aTexture[ 4 ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndTabTile14.bmp" ), 0xffff00ff, TRUE );
-	m_aTexture[ 5 ].LoadTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "WndTabTile15.bmp" ), 0xffff00ff, TRUE );
+	m_aTexture[ 0 ].LoadTexture( MakePath( DIR_THEME, "WndTabTile10.bmp" ), 0xffff00ff, TRUE );
+	m_aTexture[ 1 ].LoadTexture( MakePath( DIR_THEME, "WndTabTile11.bmp" ), 0xffff00ff, TRUE );
+	m_aTexture[ 2 ].LoadTexture( MakePath( DIR_THEME, "WndTabTile12.bmp" ), 0xffff00ff, TRUE );
+	m_aTexture[ 3 ].LoadTexture( MakePath( DIR_THEME, "WndTabTile13.bmp" ), 0xffff00ff, TRUE );
+	m_aTexture[ 4 ].LoadTexture( MakePath( DIR_THEME, "WndTabTile14.bmp" ), 0xffff00ff, TRUE );
+	m_aTexture[ 5 ].LoadTexture( MakePath( DIR_THEME, "WndTabTile15.bmp" ), 0xffff00ff, TRUE );
 }
 
 void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFORMAT d3dFormat )
@@ -3330,20 +3000,20 @@ void CWndTabCtrl::AdditionalSkinTexture( LPWORD pDest, CSize sizeSurface, D3DFOR
 		else
 			PaintTexture( pDest, lpImage[ 1 ], point, sizeSurface, d3dFormat );
 	}
- 	for( int i = 0; i < m_wndArray.GetSize(); i++ )
+ 	for( int i = 0; i < m_wndArray.size(); i++ )
 	{
-		CWndBase* pWndBase = (CWndBase*)m_wndArray[i];
+		CWndBase* pWndBase = m_wndArray[i];
 		CRect rectOld = m_rectWindow;
 		m_rectWindow.OffsetRect( rect.TopLeft() );
-		if( pWndBase->IsDestroy() == FALSE && pWndBase->IsVisible() )
+		if( !pWndBase->IsDestroy() && pWndBase->IsVisible() )
 		{
  			pWndBase->AdditionalSkinTexture( pDest, sizeSurface, d3dFormat );
-			for( int i = 0; i < pWndBase->m_wndArray.GetSize(); i++ )
+			for( size_t i = 0; i < pWndBase->m_wndArray.size(); i++ )
 			{
-				CWndBase* pWndChild = (CWndBase*)pWndBase->m_wndArray[i];
+				CWndBase* pWndChild = pWndBase->m_wndArray[i];
 				CRect rectOldChild = pWndChild->m_rectWindow;
 				pWndChild->m_rectWindow.OffsetRect( rect.TopLeft() );
-				if( pWndChild->IsDestroy() == FALSE && pWndChild->IsVisible() )
+				if( !pWndChild->IsDestroy() && pWndChild->IsVisible() )
 					pWndChild->AdditionalSkinTexture( pDest, sizeSurface, d3dFormat );
 				pWndChild->m_rectWindow = rectOldChild;
 			}
@@ -3493,7 +3163,7 @@ CAr & operator>>(CAr & ar, CWndTabCtrl & tab) {
 #ifdef __IMPROVE_MAP_SYSTEM
 void CWndComboListBox::PaintFrame( C2DRender* p2DRender )
 {
-	m_pTheme->RenderWndEditFrame( p2DRender, &GetWindowRect() );
+	m_Theme.RenderWndEditFrame( p2DRender, &GetWindowRect() );
 }
 #endif // __IMPROVE_MAP_SYSTEM
 
@@ -3519,7 +3189,7 @@ void CWndComboBox::OnInitialUpdate()
 	rect.left = rect.right - 20;
 	m_wndButton.AddWndStyle( WBS_DOCKING );
 	m_wndButton.Create( _T( "V" ), WBS_CHILD, rect, this, 0 );
-	m_wndButton.m_pTexture = m_textureMng.AddTexture( m_pApp->m_pd3dDevice, MakePath( DIR_THEME, "ButtQuickListDn.tga" ), 0xffff00ff, TRUE );
+	m_wndButton.m_pTexture = m_textureMng.AddTexture( MakePath( DIR_THEME, "ButtQuickListDn.tga" ), 0xffff00ff, TRUE );
 	rect = GetWindowRect();
 	ClientToScreen( &rect );
 	rect.top = rect.bottom;
@@ -3537,7 +3207,7 @@ void CWndComboBox::OnInitialUpdate()
 
 void CWndComboBox::Create( DWORD dwComboBoxStyle, const RECT& rect, CWndBase* pParentWnd, UINT nID )
 {
-	CWndEdit::Create( pParentWnd->m_pApp->GetSafeHwnd(), dwComboBoxStyle | WBS_CHILD, rect, pParentWnd, nID );
+	CWndEdit::Create( dwComboBoxStyle | WBS_CHILD, rect, pParentWnd, nID );
 }
 void CWndComboBox::SetWndRect( CRect rectWnd, BOOL bOnSize )
 {
@@ -3547,7 +3217,7 @@ void CWndComboBox::SetWndRect( CRect rectWnd, BOOL bOnSize )
 void CWndComboBox::PaintFrame( C2DRender* p2DRender )
 {
 #ifdef __IMPROVE_MAP_SYSTEM
-	m_pTheme->RenderWndEditFrame( p2DRender, &GetWindowRect() );
+	m_Theme.RenderWndEditFrame( p2DRender, &GetWindowRect() );
 #else // __IMPROVE_MAP_SYSTEM
 	CWndEdit::PaintFrame( p2DRender);
 #endif // __IMPROVE_MAP_SYSTEM

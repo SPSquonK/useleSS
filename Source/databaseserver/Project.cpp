@@ -51,7 +51,6 @@ CProject::CProject()
 	ZeroMemory( m_chBackEndSystemChatTime, sizeof( m_chBackEndSystemChatTime ) );
 	ZeroMemory( m_chGMChat, sizeof( m_chGMChat ) );
 
-	m_bItemUpdate = FALSE;
 #ifdef __ITEM_REMOVE_LIST
 	m_dwConvMode = 0;
 #endif // __ITEM_REMOVE_LIST
@@ -60,12 +59,6 @@ CProject::CProject()
 CProject::~CProject()
 {
 	SAFE_DELETE_ARRAY( m_pPropMover );
-
-	for (tagColorText & lpText : m_colorText) {
-		if (lpText.lpszData) {
-			free(lpText.lpszData);
-		}
-	}
 }
 
 BOOL CProject::OpenProject( LPCTSTR lpszFileName )
@@ -115,9 +108,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 
 	m_GuildCombat1to1.LoadScript();
 
-#ifdef __RULE_0615
 	if (!nameValider.Load()) return FALSE;
-#endif	// __RULE_0615
 	
 	CPetProperty::GetInstance()->LoadScript( "pet.inc" );
 

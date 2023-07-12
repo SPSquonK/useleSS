@@ -3,9 +3,7 @@
 #include "DPCoreClient.h"
 #include "DPCacheSrvr.h"
 #include "Player.h"
-#ifdef __TRACE1027
-
-#endif	// __TRACE1027
+#include <set>
 
 #ifdef __PL_0917
 #include "packetlog.h"
@@ -15,18 +13,6 @@
 #ifdef __CRASH_0404
 #include "crashstatus.h"
 #endif	// __CRASH_0404
-
-CDPCacheSrvr::CDPCacheSrvr()
-{
-	BEGIN_MSG;
-	ON_MSG( PACKETTYPE_JOIN, &CDPCacheSrvr::OnAddConnection );
-	ON_MSG( PACKETTYPE_KEEP_ALIVE, &CDPCacheSrvr::OnKeepAlive );
-}
-
-CDPCacheSrvr::~CDPCacheSrvr()
-{
-
-}
 
 void CDPCacheSrvr::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
 {
@@ -75,9 +61,7 @@ void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	if( dwMsgSize < 8 )
 		return;
 
-	GETTYPE( ar );
-
-	void ( theClass::*pfn )( theParameters )	=	GetHandler( dw );
+	DWORD dw; ar >> dw;
 	
 #ifdef __CRASH_0404
 	CCrashStatus::GetInstance()->SetLastPacket( this, dw );
@@ -87,11 +71,14 @@ void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 	CPacketLog::Instance()->Add( idFrom, dw, dwMsgSize );
 #endif	// __PL_0917
 
-	if( pfn ) {
-		( this->*( pfn ) )( ar, idFrom, (BYTE*)lpMsg + sizeof(DPID), dwMsgSize - sizeof(DPID) );
+
+	if (dw == PACKETTYPE_JOIN) {
+		OnAddConnection(ar, idFrom, (BYTE *)lpMsg + sizeof(DPID), dwMsgSize - sizeof(DPID));
 		if (ar.IsOverflow()) Error("Cache-World: Packet %08x overflowed", dw);
-	}
-	else {
+	} else if (dw == PACKETTYPE_KEEP_ALIVE) {
+		OnKeepAlive(ar, idFrom, (BYTE *)lpMsg + sizeof(DPID), dwMsgSize - sizeof(DPID));
+		if (ar.IsOverflow()) Error("Cache-World: Packet %08x overflowed", dw);
+	} else {
 		switch( dw )
 		{
 			case PACKETTYPE_ADDPARTYMEMBER_NeuzCore:
@@ -139,6 +126,7 @@ void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 				if (!pPlayer) break;
 				if (pPlayer->GetAddr() != std::string_view("127.0.0.1")) break;
 			}
+			[[fallthrough]];
 			default:
 				g_DPClientArray.SendToServer( idFrom, lpMsg, dwMsgSize );
 				break;

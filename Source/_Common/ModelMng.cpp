@@ -20,8 +20,6 @@ CModelMng::~CModelMng() {
 			SAFE_DELETE_ARRAY(pModelElem.m_apszMotion);
 		}
 	}
-
-	// TODO: Shoudln't the models stored in m_mapFileToMesh be also deleted?
 }
 
 MODELELEM * CModelMng::GetModelElem(const DWORD dwType, const DWORD dwIndex) {
@@ -99,63 +97,140 @@ void CModelMng::MakePartsName( TCHAR* pszPartsName, LPCTSTR lpszRootName, DWORD 
 	}
 	_tcscat( pszPartsName, _T( ".o3d" ) );
 }
-void CModelMng::MakeMotionName( TCHAR* pszMotionName, DWORD dwType, DWORD dwIndex, DWORD dwMotion )
-{
-	MODELELEM * lpModelElem = GetModelElem( dwType, dwIndex );
-	if( lpModelElem == NULL )
-		Error( "MakeMotionName GetModelElem dwType:%d dwIndex:%d, dwMotion:%d", dwType, dwIndex, dwMotion );
 
+void MODELELEM::MakeMotionName( TCHAR* pszMotionName, DWORD dwMotion ) const {
 	// Set to MTI_STAND (stop state) when out of range
-	if( (int)( dwMotion ) >= lpModelElem->m_nMax || dwMotion == NULL_ID )
-	{
+	if (static_cast<int>(dwMotion) >= m_nMax || dwMotion == NULL_ID) {
 		dwMotion = MTI_STAND;
 	}
 
-	_tcscpy( pszMotionName, g_szRoot[ dwType ] );
+	_tcscpy( pszMotionName, g_szRoot[ m_dwType ] );
 	_tcscat( pszMotionName, "_" );
 
-	LPCTSTR lpszMotion = lpModelElem->GetMotion( dwMotion ); 
+	LPCTSTR lpszMotion = &m_apszMotion[dwMotion * MotionNameLength];
 	if( _tcschr( lpszMotion, '_' ) == NULL )
 	{
-		_tcscat( pszMotionName, lpModelElem->m_szName );
+		_tcscat( pszMotionName, m_szName );
 		_tcscat( pszMotionName, "_" );
 	}
 
 	// Forced setting to MTI_STAND (stop state) in case of blank
-	if( lpszMotion[0] == 0 )
+	if( lpszMotion[0] == '\0')
 	{
 		dwMotion = MTI_STAND;
-		lpszMotion = lpModelElem->GetMotion( dwMotion ); 
+		lpszMotion = &m_apszMotion[MTI_STAND * MotionNameLength];
 	}
 
 	_tcscat( pszMotionName, lpszMotion );
 	_tcscat( pszMotionName, ".ani" );
 }
-BOOL CModelMng::LoadMotion( CModel* pModel, DWORD dwType, DWORD dwIndex, DWORD dwMotion )
-{
-	if( dwType != OT_MOVER )
-		return FALSE;
-	TCHAR szMotionName[ MAX_PATH ];
-	MakeMotionName( szMotionName, dwType, dwIndex, dwMotion );
 
-	((CModelObject*)pModel)->LoadMotion( szMotionName );		// Read bone animation
-	return TRUE;
-}
-CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, int nType, int nIndex, BOOL bParts )
+CModel * CModelMng::LoadModel( int nType, int nIndex, BOOL bParts )
 {
 	MODELELEM * lpModelElem = GetModelElem( nType, nIndex );
-	if( lpModelElem == NULL ) 
-	{
-		Error( "CModelMng::loadModel mdlObj/mdlDyna - objtype=%d index=%d bpart=%d has no information.", nType, nIndex, bParts );
-		return NULL;
+	if (lpModelElem == NULL) {
+		Error("CModelMng::loadModel mdlObj/mdlDyna - objtype=%d index=%d bpart=%d has no information.", nType, nIndex, bParts);
+		return nullptr;
 	}
 
 	TCHAR szFileName[ MAX_PATH ];
 	MakeModelName( szFileName, nType, nIndex );
-	return LoadModel( pd3dDevice, szFileName, lpModelElem, nType, bParts ); 
+	return LoadModel( szFileName, lpModelElem, nType, bParts ).ptr; 
 }
 
-CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts )
+
+// Handler for the case where the code expects a non object CModelObject but
+// the object is actually owned
+//
+// Here the chosen behaviour is as follows:
+// - If we are the server, produce an error
+// - If we are the client and a regular player, produce a error
+// - If we are the client and a game master, crash
+//
+// We want to crash only gamemasters to not inconvinience players
+static std::set<std::pair<int, int>> s_actuallyOwnedCModelObjects;
+void OnActuallyOwnedCModelObject(int nType, int nIndex) {
+	if (s_actuallyOwnedCModelObjects.contains(std::make_pair(nType, nIndex))) return;
+
+	Error("CModelMng::LoadModel(%d, %d) : expected a non owned Model but the model is actually owned", nType, nIndex);
+
+#ifdef __CLIENT
+	if (g_pPlayer && g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER)) {
+		throw std::exception("A CModelObject is actually owned. Check the Error file");
+	}
+#endif
+
+	s_actuallyOwnedCModelObjects.emplace(nType, nIndex);
+}
+
+
+template<typename T>
+requires (sqktd::IsOneOf<T,
+#ifdef __CLIENT
+	std::unique_ptr<CSfxModel>,
+#endif
+	std::unique_ptr<CModelObject>,
+	/* not owned */ CModelObject * ,
+	sqktd::maybe_owned_ptr<CModelObject>
+>)
+T CModelMng::LoadModel(int nType, int nIndex, BOOL bParts) {
+	MODELELEM * lpModelElem = GetModelElem(nType, nIndex);
+	if (lpModelElem == NULL) {
+		Error("CModelMng::loadModel mdlObj/mdlDyna - objtype=%d index=%d bpart=%d has no information.", nType, nIndex, bParts);
+		return nullptr;
+	}
+
+	TCHAR szFileName[MAX_PATH];
+	MakeModelName(szFileName, nType, nIndex);
+	ModelPtrInfo info = LoadModel(szFileName, lpModelElem, nType, bParts);
+
+	if (info.ptr == nullptr) return T(nullptr);
+
+#ifdef __CLIENT
+	if constexpr (std::same_as<T, std::unique_ptr<CSfxModel>>) {
+		if (info.isOwned && info.type == ModelType::Sfx) {
+			return std::unique_ptr<CSfxModel>(static_cast<CSfxModel *>(info.ptr));
+		}
+	}
+#endif
+	
+	if constexpr (std::same_as<T, std::unique_ptr<CModelObject>>) {
+		if (info.isOwned && info.type == ModelType::ModelObject) {
+			return std::unique_ptr<CModelObject>(static_cast<CModelObject *>(info.ptr));
+		}
+	} else if constexpr (std::same_as<T, CModelObject *>) {
+		if (info.type == ModelType::ModelObject) {
+			if (info.isOwned) {
+				OnActuallyOwnedCModelObject(nType, nIndex);
+			}
+
+			return static_cast<CModelObject *>(info.ptr);
+		}
+	} else if constexpr (std::same_as<T, sqktd::maybe_owned_ptr<CModelObject>>) {
+		if (info.type == ModelType::ModelObject) {
+			CModelObject * ptr = static_cast<CModelObject *>(info.ptr);
+			if (info.isOwned) {
+				return std::unique_ptr<CModelObject>(ptr);
+			} else {
+				return sqktd::maybe_owned_ptr<CModelObject>(ptr);
+			}
+		}
+	}
+
+	// TODO: if info.ptr is not null, should we do something? As it is likely a 
+	// programing error
+	if (info.isOwned && info.ptr) delete info.ptr;
+	return T(nullptr);
+}
+
+#ifdef __CLIENT
+template std::unique_ptr<CSfxModel>           CModelMng::LoadModel<std::unique_ptr<CSfxModel>          >(int nType, int nIndex, BOOL bParts);
+#endif
+template std::unique_ptr<CModelObject>        CModelMng::LoadModel<std::unique_ptr<CModelObject>       >(int nType, int nIndex, BOOL bParts);
+template CModelObject *                       CModelMng::LoadModel<CModelObject *                      >(int nType, int nIndex, BOOL bParts);
+template sqktd::maybe_owned_ptr<CModelObject> CModelMng::LoadModel<sqktd::maybe_owned_ptr<CModelObject>>(int nType, int nIndex, BOOL bParts);
+
+CModelMng::ModelPtrInfo CModelMng::LoadModel( TCHAR* lpszFileName, MODELELEM * lpModelElem, int nType, BOOL bParts )
 {
 	const int nModelType = lpModelElem->m_dwModelType;
 
@@ -169,9 +244,9 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 			pModel->SetSfx(lpszFileName);
 			pModel->m_pModelElem = lpModelElem;
 			pModel->m_pModelElem->m_bUsed = TRUE;
-			return pModel;
+			return ModelPtrInfo{ pModel, ModelType::Sfx, true };
 #endif // not World
-			return nullptr;
+			return ModelPtrInfo{ nullptr, ModelType::Nullptr, false };
 		}
 
 		case MODELTYPE_MESH: {
@@ -185,15 +260,15 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 				pModel->SetModelType( nModelType );
 				pModel->m_pModelElem = lpModelElem;
 
-				return pModel;
+				return ModelPtrInfo{ pModel, ModelType::ModelObject, true };
 #else
-				return mapItor->second;
+				return ModelPtrInfo{ mapItor->second.get(), ModelType::ModelObject, false };
 #endif
 			}
 			CModelObject * pModel = new CModelObject;
 			pModel->SetModelType( nModelType );
 			pModel->m_pModelElem = lpModelElem;
-			HRESULT hr = pModel->InitDeviceObjects( pd3dDevice );
+			HRESULT hr = pModel->InitDeviceObjects();
 			hr = pModel->LoadModel( lpszFileName );
 			if( hr == SUCCESS )
 			{
@@ -204,16 +279,16 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 			#endif			
 				m_mapFileToMesh.emplace(lpszFileName, pModel);
 				pModel->m_pModelElem->m_bUsed = TRUE;
-				return pModel;
+				return ModelPtrInfo{ pModel, ModelType::ModelObject, false };
 			} else {
 				SAFE_DELETE(pModel);
-				return nullptr;
+				return ModelPtrInfo{ nullptr, ModelType::Nullptr, false };
 			}
 		}
 		case MODELTYPE_ANIMATED_MESH: {
 			CModelObject * pModel = new CModelObject;
 			pModel->SetModelType(nModelType);
-			pModel->InitDeviceObjects(pd3dDevice);
+			pModel->InitDeviceObjects();
 			pModel->m_pModelElem = lpModelElem;
 			pModel->m_pModelElem->m_bUsed = TRUE;
 			TCHAR szFileName[MAX_PATH];
@@ -242,19 +317,15 @@ CModel* CModelMng::LoadModel( LPDIRECT3DDEVICE9 pd3dDevice, TCHAR* lpszFileName,
 				}
 			}
 
-			return pModel;
+			return ModelPtrInfo{ pModel, ModelType::ModelObject, true };
 		}
 		default:
-			return nullptr;
+			return ModelPtrInfo{ nullptr, ModelType::Nullptr, false };
 	}
 }
 
-HRESULT CModelMng::InitDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
-	return S_OK;
-}
-
-HRESULT CModelMng::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
-	for (CModelObject * pModel : m_mapFileToMesh | std::views::values) {
+HRESULT CModelMng::RestoreDeviceObjects() {
+	for (auto & pModel : m_mapFileToMesh | std::views::values) {
 		pModel->RestoreDeviceObjects();
 	}
 
@@ -262,7 +333,7 @@ HRESULT CModelMng::RestoreDeviceObjects(LPDIRECT3DDEVICE9 pd3dDevice) {
 }
 
 HRESULT CModelMng::InvalidateDeviceObjects() {
-	for (CModelObject * pModel : m_mapFileToMesh | std::views::values) {
+	for (auto & pModel : m_mapFileToMesh | std::views::values) {
 		pModel->InvalidateDeviceObjects();
 	}
 
@@ -270,9 +341,8 @@ HRESULT CModelMng::InvalidateDeviceObjects() {
 }
 
 HRESULT CModelMng::DeleteDeviceObjects() {
-	for (CModelObject *& pModel : m_mapFileToMesh | std::views::values) {
+	for (auto & pModel : m_mapFileToMesh | std::views::values) {
 		pModel->DeleteDeviceObjects();
-		SAFE_DELETE(pModel);
 	}
 	m_mapFileToMesh.clear();
 	return S_OK;
@@ -397,16 +467,16 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 				script.GoMark();
 				// Actual motion list setting
 				script.GetToken(); // motion name or }
-				modelElem.m_apszMotion = new TCHAR[ nMax * 32 ];
+				modelElem.m_apszMotion = new TCHAR[ nMax * MODELELEM::MotionNameLength];
 				modelElem.m_nMax = nMax;
-				ZeroMemory( modelElem.m_apszMotion, sizeof( TCHAR ) * nMax * 32 );
+				ZeroMemory( modelElem.m_apszMotion, sizeof( TCHAR ) * nMax * MODELELEM::MotionNameLength);
 				//TRACE( " %s %p\n", modelElem.m_szName, modelElem.m_apszMotion);
 				while( *script.token != '}' )
 				{
-					TCHAR szMotion[48];
+					TCHAR szMotion[MODELELEM::MotionNameLength];
 				#ifdef _DEBUG
 					if( sizeof(szMotion) <= strlen(script.token) + 1 )
-						Error( "%s string is too long. max = %zu", lpszFileName, strlen(script.token) );
+						Error( "%s string is too long. size = %zu / max = %zu", lpszFileName, strlen(script.token), MODELELEM::MotionNameLength);
 				#endif
 					_tcscpy( szMotion, script.token );
 					const UINT iMotion = script.GetNumber();
@@ -435,10 +505,8 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 			
 		#ifdef __WORLDSERVER
 			if( iType != OT_SFX )	// Sfx skip from server
-				apModelElem.SetAtGrow( iObject, modelElem );
-		#else
-			apModelElem.SetAtGrow( iObject, modelElem );
 		#endif
+				apModelElem.SetAtGrow(iObject, modelElem);
 
 		} // while( nBrace )
 
@@ -449,3 +517,20 @@ BOOL CModelMng::LoadScript(LPCTSTR lpszFileName) {
 	return TRUE;
 }
 
+
+void CModelMng::DestroyUnusedModels() {
+	// Destroy unused models.
+	// Only static things should come in here. Anything dynamic (using skinning)
+	// shouldn't be destroyed here.
+	auto itor = m_mapFileToMesh.begin();
+	while (itor != m_mapFileToMesh.end()) {
+		std::unique_ptr<CModelObject> & pModel = itor->second;
+		pModel->DeleteDeviceObjects();
+		if (pModel->m_pModelElem->m_bUsed == FALSE && pModel->m_pModelElem->m_dwType != OT_ITEM) {
+			itor = prj.m_modelMng.m_mapFileToMesh.erase(itor);
+		} else {
+			pModel->m_pModelElem->m_bUsed = FALSE;
+			++itor;
+		}
+	}
+}
