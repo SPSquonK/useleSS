@@ -200,7 +200,7 @@ void CUser::Open( void )
 {
 	AddItToGlobalId();
 	PCSetAt( GetId(), (CCtrl*)this );
-	m_Snapshot.SetSnapshot( GetId(),  PACKETTYPE_JOIN );
+	m_Snapshot.SetSnapshot( GetId(),  PACKETTYPE_JOIN_WorldNeuz );
 
 
 	AddEnvironmentSetting();

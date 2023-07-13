@@ -13,7 +13,7 @@ CDPDBSrvr::CDPDBSrvr()
 	ON_MSG( PACKETTYPE_REMOVE_ACCOUNT, &CDPDBSrvr::OnRemoveAccount );
 	ON_MSG( PACKETTYPE_GETPLAYERLIST, &CDPDBSrvr::OnGetPlayerList );
 	ON_MSG( PACKETTYPE_DEL_PLAYER, &CDPDBSrvr::OnRemovePlayer );
-	ON_MSG( PACKETTYPE_JOIN, &CDPDBSrvr::OnJoin );
+	ON_MSG( PACKETTYPE_JOIN_DbAccDb, &CDPDBSrvr::OnJoin );
 	ON_MSG( PACKETTYPE_REMOVE_ALLACCOUNTS, &CDPDBSrvr::OnRemoveAllAccounts );
 	ON_MSG( PACKETTYPE_BUYING_INFO, &CDPDBSrvr::OnBuyingInfo );
 }
@@ -136,7 +136,7 @@ void CDPDBSrvr::OnJoin( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 		pAccount->m_cbRef++;
 		*(UNALIGNED DWORD*)( lpBuf + uBufSize - sizeof(DWORD) )	= g_AccountMng.PopPCBangPlayer( dwAuthKey );
 		Send( (LPVOID)lpBuf, (DWORD)uBufSize, dpid );
-		OutputDebugString( "ACCOUNTSERVER.EXE\t// PACKETTYPE_JOIN" );
+		OutputDebugString( "ACCOUNTSERVER.EXE\t// PACKETTYPE_JOIN_Db[Acc]Db" );
 		
 		// 동접을 보낸다.
 

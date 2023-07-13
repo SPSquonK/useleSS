@@ -29,7 +29,7 @@
 CDPTrans::CDPTrans()
 :m_bPCBangApply( TRUE )
 {
-	ON_MSG( PACKETTYPE_JOIN, &CDPTrans::OnJoin );
+	ON_MSG( PACKETTYPE_JOIN_WorldDb, &CDPTrans::OnJoin );
 	ON_MSG( PACKETTYPE_SAVE_PLAYER, &CDPTrans::OnSavePlayer ); 
 	ON_MSG( PACKETTYPE_SAVE_CONCURRENT_USER_NUMBER, &CDPTrans::OnSaveConcurrentUserNumber );
 #ifdef __S_NEW_SKILL_2
@@ -475,11 +475,11 @@ void CDPTrans::SendGMChat( int nCount )
 void CDPTrans::OnJoin( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
 {
 	char lpOutputString[128]	= { 0, };
-	sprintf( lpOutputString, "DATABASESERVER.EXE\t// PACKETTYPE_JOIN\t// %d\n", dpid );
+	sprintf( lpOutputString, "DATABASESERVER.EXE\t// PACKETTYPE_JOIN_WorldDb\t// %d\n", dpid );
 	OutputDebugString( lpOutputString );
 
 	CAr ar1;
-	ar1 << PACKETTYPE_JOIN;
+	ar1 << PACKETTYPE_JOIN_DbAccDb;
 	ar1.Write( lpBuf, uBufSize );
 	ar1 << dpid << dpidCache << dpidUser;
 	ar1 << (DWORD)0;

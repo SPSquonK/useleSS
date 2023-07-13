@@ -29,7 +29,7 @@ CDPCoreSrvr::CDPCoreSrvr()
 {
 	ON_MSG( PACKETTYPE_MYREG, &CDPCoreSrvr::OnAddConnection );
 	ON_MSG( PACKETTYPE_RECHARGE_IDSTACK, &CDPCoreSrvr::OnRecharge );
-	ON_MSG( PACKETTYPE_JOIN, &CDPCoreSrvr::OnJoin );
+	ON_MSG( PACKETTYPE_JOIN_WorldCore, &CDPCoreSrvr::OnJoin );
 	ON_MSG( PACKETTYPE_WHISPER, &CDPCoreSrvr::OnWhisper );
 	ON_MSG( PACKETTYPE_SAY, &CDPCoreSrvr::OnSay );
 	ON_MSG( PACKETTYPE_MODIFYMODE, &CDPCoreSrvr::OnModifyMode );

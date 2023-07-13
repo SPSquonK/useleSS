@@ -18,7 +18,7 @@ CDPCoreClient::CDPCoreClient()
 {
 	ON_MSG( PACKETTYPE_PROCSERVER_LIST, &CDPCoreClient::OnProcServerList );
 	ON_MSG( PACKETTYPE_LOAD_WORLD, &CDPCoreClient::OnProcServer );
-	ON_MSG( PACKETTYPE_JOIN, &CDPCoreClient::OnJoin );
+	ON_MSG( PACKETTYPE_JOIN_CoreCache, &CDPCoreClient::OnJoin );
 	ON_MSG( PACKETTYPE_LEAVE, &CDPCoreClient::OnLeave );
 	ON_MSG( PACKETTYPE_DESTROY_ALLPLAYERS, &CDPCoreClient::OnDestroyAllPlayers );
 	ON_MSG( PACKETTYPE_KILLPLAYER, &CDPCoreClient::OnKillPlayer );
@@ -73,7 +73,7 @@ void CDPCoreClient::SendDestroyPlayer(const CCachePlayer & pPlayer) {
 }
 
 void CDPCoreClient::SendAddPlayer(const CCachePlayer & pPlayer, CRTMessenger & rtmessenger) {
-	BEFORESENDSOLE(ar, PACKETTYPE_JOIN, pPlayer.GetSerial());
+	BEFORESENDSOLE(ar, PACKETTYPE_JOIN_CacheCore, pPlayer.GetSerial());
 	ar << pPlayer.GetAuthKey();
 	ar << pPlayer.GetPlayerId();
 	ar << pPlayer.GetNetworkId();

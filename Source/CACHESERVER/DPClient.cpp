@@ -47,7 +47,7 @@ void CDPClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID
 	// Hard coded dispatch
 	if (dw == PACKETTYPE_QUERY_DESTROY_PLAYER) {
 		OnQueryDestroyPlayer(ar, dpidUser, lpMsg, dwMsgSize);
-		if (ar.IsOverflow()) Error("Cache-Neuz: Packet %08x overflowed", dw);
+		if (ar.IsOverflow()) Error("Cache-World: Packet %08x overflowed", dw);
 	} else {
 		// Send to Neuz
 		g_DPCacheSrvr.Send(lpBuf, uBufSize, dpidUser);
@@ -64,7 +64,7 @@ void CDPClient::OnReplace(CAr & ar, DPID dpidUser, LPVOID lpBuffer, u_long uBufS
 
 void CDPClient::SendJoin(CCachePlayer * pPlayer )
 {
-	BEFORESENDSOLE( ar, PACKETTYPE_JOIN, pPlayer->GetSerial() );
+	BEFORESENDSOLE( ar, PACKETTYPE_JOIN_CacheWorld, pPlayer->GetSerial() );
 	ar << pPlayer->GetAuthKey();
 	ar << pPlayer->GetPlayerId();
 	ar << pPlayer->GetSlot();

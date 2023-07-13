@@ -46,7 +46,7 @@ CDPDatabaseClient	g_dpDBClient;
 
 CDPDatabaseClient::CDPDatabaseClient()
 {
-	ON_MSG( PACKETTYPE_JOIN, &CDPDatabaseClient::OnJoin );
+	ON_MSG( PACKETTYPE_JOIN_DbWorld, &CDPDatabaseClient::OnJoin );
 	ON_MSG( PACKETTYPE_ALL_PLAYER_DATA, &CDPDatabaseClient::OnAllPlayerData );
 	ON_MSG( PACKETTYPE_ADD_PLAYER_DATA, &CDPDatabaseClient::OnAddPlayerData );
 	ON_MSG( PACKETTYPE_DELETE_PLAYER_DATA, &CDPDatabaseClient::OnDeletePlayerData );
@@ -511,7 +511,7 @@ void CDPDatabaseClient::OnJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
 	int nMaximumLevel = 0;
 
 	char lpOutputString[128]	= { 0, };
-	sprintf( lpOutputString, "WORLDSERVER.EXE\t// PACKETTYPE_JOIN\t// %d", g_uKey );
+	sprintf( lpOutputString, "WORLDSERVER.EXE\t// PACKETTYPE_JOIN_DbWorld\t// %d", g_uKey );
 	OutputDebugString( lpOutputString );
 
 	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );

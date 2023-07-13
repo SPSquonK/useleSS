@@ -104,7 +104,7 @@ CDPClient::CDPClient()
 	m_dwReturnScroll = 0;
 	m_bEventTextColor = TRUE;
 
-	ON_MSG( PACKETTYPE_JOIN, &CDPClient::OnJoin );
+	ON_MSG( PACKETTYPE_JOIN_WorldNeuz, &CDPClient::OnJoin );
 	ON_MSG( PACKETTYPE_SNAPSHOT, &CDPClient::OnSnapshot );
 	ON_MSG( PACKETTYPE_REPLACE, &CDPClient::OnReplace );
 	ON_MSG( PACKETTYPE_ERROR, &CDPClient::OnError );
@@ -7169,7 +7169,7 @@ void CDPClient::SendJoin( BYTE nSlot, CMover* pMover, CRTMessenger* pRTMessenger
 
 	g_Neuz.m_idPlayer	=  pMover->m_idPlayer;
 	
-	BEFORESENDSOLE( ar, PACKETTYPE_JOIN, DPID_UNKNOWN );
+	BEFORESENDSOLE( ar, PACKETTYPE_JOIN_NeuzCache, DPID_UNKNOWN );
 	ar << pMover->m_idPlayer;
 	ar << g_Neuz.m_dwAuthKey;
 	ar << pMover->m_idparty;

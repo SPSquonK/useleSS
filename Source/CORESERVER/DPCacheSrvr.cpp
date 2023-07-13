@@ -17,7 +17,7 @@
 
 CDPCacheSrvr::CDPCacheSrvr() 
 {
-	ON_MSG( PACKETTYPE_JOIN, &CDPCacheSrvr::OnAddPlayer );
+	ON_MSG( PACKETTYPE_JOIN_CacheCore, &CDPCacheSrvr::OnAddPlayer );
 	ON_MSG( PACKETTYPE_DESTROY_PLAYER, &CDPCacheSrvr::OnQueryRemovePlayer );
 	ON_MSG(PACKETTYPE_ADDPARTYMEMBER_NeuzCore, &CDPCacheSrvr::OnAddPartyMember );
 	ON_MSG(PACKETTYPE_REMOVEPARTYMEMBER_NeuzCore, &CDPCacheSrvr::OnRemovePartyMember );
@@ -167,7 +167,7 @@ void CDPCacheSrvr::OnAddPlayer( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 		g_PlayerMng.RegisterPlayerInfo( pPlayer );
 
-		BEFORESENDSOLE( out, PACKETTYPE_JOIN, pPlayer->dpidUser );	// result
+		BEFORESENDSOLE( out, PACKETTYPE_JOIN_CoreCache, pPlayer->dpidUser );	// result
 		out << pPlayer->m_dwSerial ;	// serial key로 구분하게 한다.
 		out << (BYTE)1;					// 항상 성공 
 		SEND( out, this, dpidCache );

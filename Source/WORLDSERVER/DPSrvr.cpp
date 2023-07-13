@@ -73,7 +73,7 @@ BOOL CanAdd( DWORD dwGold, int nPlus )
 
 CDPSrvr::CDPSrvr()
 {
-	OnMsg( PACKETTYPE_JOIN, &CDPSrvr::OnAddUser );
+	OnMsg( PACKETTYPE_JOIN_CacheWorld, &CDPSrvr::OnAddUser );
 	OnMsg( PACKETTYPE_LEAVE, &CDPSrvr::OnRemoveUser );
 	OnMsg( PACKETTYPE_REPLACE, &CDPSrvr::OnReplace );
 	OnMsg( PACKETTYPE_CORR_REQ, &CDPSrvr::OnCorrReq );
@@ -529,7 +529,7 @@ void CDPSrvr::OnAddUser( CAr & ar, DPID dpidCache, DPID dpidUser )
 	if( nSlot >= 3 )
 		return;
 
-	CUser* pUser = (CUser*)prj.GetUserByID( idPlayer );
+	CUser* pUser = prj.GetUserByID( idPlayer );
 	if( pUser )
 	{
 		//WriteLog( "CDPSrvr::OnAddUser idPlayer:%d account:%s DPID:%d", idPlayer, lpszAccount, dpidUser );
@@ -547,7 +547,7 @@ void CDPSrvr::OnAddUser( CAr & ar, DPID dpidCache, DPID dpidUser )
 	memcpy( pUser->m_playAccount.lpAddr, lpAddr, 16 );
 
 	//	TRANS
-	BEFORESENDDUAL( arJoin, PACKETTYPE_JOIN, dpidCache, dpidUser );
+	BEFORESENDDUAL( arJoin, PACKETTYPE_JOIN_WorldDb, dpidCache, dpidUser );
 	arJoin << dwAuthKey;
 	arJoin.WriteString( lpszAccount );
 	arJoin.WriteString( lpszpw );

@@ -10,7 +10,7 @@ CDPAccountClient::CDPAccountClient()
 #ifdef __REMOVE_PLAYER_0221
 	ON_MSG( PACKETTYPE_DEL_PLAYER, &CDPAccountClient::OnRemovePlayer );
 #endif	// __REMOVE_PLAYER_0221
-	ON_MSG( PACKETTYPE_JOIN, &CDPAccountClient::OnJoin );
+	ON_MSG( PACKETTYPE_JOIN_DbAccDb, &CDPAccountClient::OnJoin );
 	ON_MSG( PACKETTYPE_PLAYER_COUNT, &CDPAccountClient::OnPlayerCount );
 	ON_MSG( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPAccountClient::OnCloseExistingConnection );
 	ON_MSG( PACKETTYPE_ONE_HOUR_NOTIFY, &CDPAccountClient::OnOneHourNotify );

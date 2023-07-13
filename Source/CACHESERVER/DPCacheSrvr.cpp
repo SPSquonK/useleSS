@@ -72,7 +72,7 @@ void CDPCacheSrvr::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, D
 #endif	// __PL_0917
 
 
-	if (dw == PACKETTYPE_JOIN) {
+	if (dw == PACKETTYPE_JOIN_NeuzCache) {
 		OnAddConnection(ar, idFrom, (BYTE *)lpMsg + sizeof(DPID), dwMsgSize - sizeof(DPID));
 		if (ar.IsOverflow()) Error("Cache-World: Packet %08x overflowed", dw);
 	} else if (dw == PACKETTYPE_KEEP_ALIVE) {

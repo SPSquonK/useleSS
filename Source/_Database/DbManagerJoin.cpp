@@ -29,7 +29,7 @@ void CDbManager::SendJoin( CMover* pMover, LPDB_OVERLAPPED_PLUS lpDBOP, DWORD dw
 	_tcscpy( playAccount.lpszAccount, lpDBOP->AccountInfo.szAccount );
 	GetLocalTime( &playAccount.m_stLogin );
 
-	BEFORESENDDUAL( ar, PACKETTYPE_JOIN, lpDBOP->dpidCache, lpDBOP->dpidUser );
+	BEFORESENDDUAL( ar, PACKETTYPE_JOIN_DbWorld, lpDBOP->dpidCache, lpDBOP->dpidUser );
 	ar << dwAuthKey;
 	ar << playAccount;
 	ar << pMover->m_dwWorldID;

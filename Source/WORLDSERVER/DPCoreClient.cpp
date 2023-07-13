@@ -346,7 +346,7 @@ void CDPCoreClient::OnRecharge( CAr & ar )
 
 void CDPCoreClient::SendJoin( u_long idPlayer, const char* szPlayer, BOOL bOperator )
 {
-	BEFORESEND( ar, PACKETTYPE_JOIN );
+	BEFORESEND( ar, PACKETTYPE_JOIN_WorldCore );
 	ar << idPlayer;
 	ar.WriteString( szPlayer );
 	ar << bOperator;

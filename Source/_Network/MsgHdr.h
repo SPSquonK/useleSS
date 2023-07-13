@@ -90,7 +90,23 @@
 #define PACKETTYPE_SEND_TO_SERVER_AP			(DWORD)0x00000f33  // 액션 포인트 보냄.
 #define PACKETTYPE_CHANGEJOB					(DWORD)0x00000f34  // 액션 포인트 보냄.
 
-#define PACKETTYPE_JOIN		(DWORD)0x0000ff00
+
+// /!\ Non overlapping PACKETTYPE_JOIN ids is not supported
+// (it would lead to more exploits that there are already
+// because cache is dispatching packets depending on their ids)
+// WorldCore and WorldNeuz are sent at the barely same time
+// (WorldNeuz should be sent a bit later thanks to the Notify process)
+// All packets from NeuzCache to DbWorld are sequentials
+#define PACKETTYPE_JOIN_NeuzCache (DWORD)0x0000ff00
+#define PACKETTYPE_JOIN_CacheCore (DWORD)0x0000ff00
+#define PACKETTYPE_JOIN_CoreCache (DWORD)0x0000ff00
+#define PACKETTYPE_JOIN_CacheWorld (DWORD)0x0000ff00
+#define PACKETTYPE_JOIN_WorldDb (DWORD)0x0000ff00
+#define PACKETTYPE_JOIN_DbAccDb (DWORD)0x0000ff00
+#define PACKETTYPE_JOIN_DbWorld (DWORD)0x0000ff00
+#define PACKETTYPE_JOIN_WorldCore (DWORD)0x0000ff00
+#define PACKETTYPE_JOIN_WorldNeuz (DWORD)0x0000ff00
+
 #define PACKETTYPE_LEAVE	(DWORD)0x0000ff01
 #define	PACKETTYPE_DESTROY_ALLPLAYERS	(DWORD)0x0000ff02
 #define	PACKETTYPE_REMOVE_ALLACCOUNTS	(DWORD)0x0000ff03
