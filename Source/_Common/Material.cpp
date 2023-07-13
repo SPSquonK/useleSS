@@ -75,12 +75,8 @@ int CTextureManager::DeleteMaterial( LPDIRECT3DTEXTURE9 pTexture )
 	return FALSE;
 }
 
-MATERIAL*	CTextureManager :: AddMaterial( D3DMATERIAL9 *pMaterial, LPCTSTR strFileName, LPCTSTR szPath )
+MATERIAL*	CTextureManager :: AddMaterial( LPCTSTR strFileName, LPCTSTR szPath )
 {
-#ifdef	__WORLDSERVER
-	return NULL;
-#endif
-
 	int		i;
 	MATERIAL	*pMList = m_pMaterial;
 	LPDIRECT3DTEXTURE9      pTexture = NULL;
@@ -103,9 +99,6 @@ MATERIAL*	CTextureManager :: AddMaterial( D3DMATERIAL9 *pMaterial, LPCTSTR strFi
 	CString strPath;
 	if( szPath == NULL )
 	{
-	 #ifdef __WORLDSERVER
-		strPath = MakePath( DIR_MODELTEX, strFileName );
-	 #else
 		if( g_Option.m_nTextureQuality == 0 )
 			strPath = MakePath( DIR_MODELTEX, strFileName );
 		else
@@ -113,7 +106,7 @@ MATERIAL*	CTextureManager :: AddMaterial( D3DMATERIAL9 *pMaterial, LPCTSTR strFi
 			strPath = MakePath( DIR_MODELTEXMID, strFileName );
 		else
 			strPath = MakePath( DIR_MODELTEXLOW, strFileName );
-	 #endif // not worldserver
+
 	}
 	else
 	{
@@ -146,21 +139,22 @@ MATERIAL*	CTextureManager :: AddMaterial( D3DMATERIAL9 *pMaterial, LPCTSTR strFi
 
 	pMList->m_bActive = TRUE;
 #ifndef __CHERRY
-	pMaterial->Ambient.r = 1;
-	pMaterial->Ambient.g = 1;
-	pMaterial->Ambient.b = 1;
-	pMaterial->Diffuse.r = 1;
-	pMaterial->Diffuse.g = 1;
-	pMaterial->Diffuse.b = 1;
-	pMaterial->Specular.r = 1;
-	pMaterial->Specular.g = 1;
-	pMaterial->Specular.b = 1;
-	pMaterial->Emissive.r = 0;
-	pMaterial->Emissive.g = 0;
-	pMaterial->Emissive.b = 0;
-	pMaterial->Power = 0.0f;
+	D3DMATERIAL9 & pMaterial = pMList->m_Material;
+	pMaterial.Ambient.r = 1;
+	pMaterial.Ambient.g = 1;
+	pMaterial.Ambient.b = 1;
+	pMaterial.Diffuse.r = 1;
+	pMaterial.Diffuse.g = 1;
+	pMaterial.Diffuse.b = 1;
+	pMaterial.Specular.r = 1;
+	pMaterial.Specular.g = 1;
+	pMaterial.Specular.b = 1;
+	pMaterial.Emissive.r = 0;
+	pMaterial.Emissive.g = 0;
+	pMaterial.Emissive.b = 0;
+	pMaterial.Power = 0.0f;
 #endif
-	pMList->m_Material = *pMaterial;
+
 //	memcpy( &pMList->m_Material, pMaterial, sizeof(D3DMATERIAL9) );				// 매터리얼내용 카피
 //	memcpy( pMList->strBitMapFileName, strFileName, strlen(strFileName) );		// 텍스쳐 파일명 카피
 #ifdef	_XDEBUG

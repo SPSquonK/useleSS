@@ -8764,13 +8764,8 @@ void CAdvMgr::MoveButtons() {
 
 void CWndWorld::InitEyeFlash()
 {
-	CObject3D* pObject3D;
-	GMOBJECT*  pGmObj;
 	CString str1;
 	CString strTexture;
-
-	MATERIAL	*pMtrl;
-	D3DMATERIAL9	mMtrl;
 	
 	TCHAR lpszTemp[64];
 	for( int nSex = 0; nSex < 2; nSex++ )
@@ -8778,15 +8773,15 @@ void CWndWorld::InitEyeFlash()
 		for( int i=0; i<MAX_HEAD; i++ )
 		{
 			_stprintf( lpszTemp, PARTSMESH_HEAD( nSex ), i + 1 );
-			pObject3D = g_Object3DMng.LoadObject3D( lpszTemp );
-			pGmObj = pObject3D->GetGMOBJECT();
+			CObject3D * pObject3D = g_Object3DMng.LoadObject3D( lpszTemp );
+			GMOBJECT * pGmObj = pObject3D->GetGMOBJECT();
 			str1 = pGmObj->m_MaterialAry[0].strBitMapFileName;
 			CMover::m_pTextureEye[nSex][i] = *(pGmObj->m_pMtrlBlkTexture);
 			strTexture = str1.Mid( 0, strlen(pGmObj->m_MaterialAry[0].strBitMapFileName) - 4 );	
 			strTexture += "_Flash";
 			strTexture += str1.Right(4);
 
-			pMtrl = g_TextureMng.AddMaterial( &mMtrl, strTexture );
+			MATERIAL * pMtrl = g_TextureMng.AddMaterial( strTexture );
 			CMover::m_pTextureEyeFlash[nSex][i] = pMtrl->m_pTexture;
 		}
 	}

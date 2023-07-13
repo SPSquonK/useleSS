@@ -31,7 +31,7 @@ public:
 	D3DMATERIAL9			*GetMaterial( int nIdx ) { return &m_pMaterial[ nIdx ].m_Material; }
 	LPDIRECT3DTEXTURE9		GetTexture( int nIdx ) { return m_pMaterial[ nIdx ].m_pTexture; }
 
-	MATERIAL	*AddMaterial( D3DMATERIAL9 *pMaterial, LPCTSTR strFileName, LPCTSTR szPath = NULL );		// 매터리얼 하나를 추가하고 그 포인터를 되돌린다.
+	MATERIAL	*AddMaterial( LPCTSTR strFileName, LPCTSTR szPath = NULL );		// 매터리얼 하나를 추가하고 그 포인터를 되돌린다.
 };
 
 extern CTextureManager		g_TextureMng;
