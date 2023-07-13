@@ -4,6 +4,7 @@
 #include <d3dx9.h>
 #include "Material.h"
 #include "Bone.h"
+#include <span>
 
 #define D3DFVF_SKINVERTEX_BUMP (D3DFVF_XYZB3 | D3DFVF_LASTBETA_UBYTE4 | D3DFVF_NORMAL | D3DFVF_NORMAL | D3DFVF_TEX1)
 #define D3DFVF_SKINVERTEX (D3DFVF_XYZB3 | D3DFVF_LASTBETA_UBYTE4 | D3DFVF_NORMAL | D3DFVF_TEX1)
@@ -290,7 +291,7 @@ public:
 		for( int i = 0; i < m_pGroup->m_nMaxObject; i ++ )
 			SetTextureEx( &(m_pGroup->m_pObject[i]), nNumEx );		
 	}
-	void	LoadTextureEx( int nNumEx, GMOBJECT *pObj, MaterialessMATERIAL *pmMaterial[16] );
+	void	LoadTextureEx( int nNumEx, GMOBJECT *pObj, std::span<LPDIRECT3DTEXTURE9, 16> pmMaterial );
 	void	ChangeTexture( LPCTSTR szSrc, LPCTSTR szDest );
 	void	SetBone( D3DXMATRIX *pmBone ) { m_pmExternBone = pmBone; }
 	int		GetMaxVertex( void );

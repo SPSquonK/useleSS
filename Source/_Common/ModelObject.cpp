@@ -876,11 +876,10 @@ void	CModelObject::SetParent( int nParts, int nBoneIdx )
 void	CModelObject::SetTextureMulti( LPCTSTR szBitmap, int nParts )
 {
 #if !defined(__WORLDSERVER)
-	MaterialessMATERIAL * mtrl = g_TextureMng.AddMaterial(szBitmap);
 	O3D_ELEMENT* pParts = GetParts(nParts);
 
 	if( pParts )
-		pParts->m_pTextureEx = mtrl->m_pTexture;
+		pParts->m_pTextureEx = g_TextureMng.AddMaterial(szBitmap)->m_pTexture;
 #endif
 }
 

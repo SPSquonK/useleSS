@@ -14,116 +14,92 @@
 
 CTextureManager		g_TextureMng;
 
-CTextureManager :: CTextureManager()
-{
-//	int		i;
-
-	memset( m_pMaterial, 0, sizeof(m_pMaterial) );
-//	for( i = 0; i < MAX_MATERIAL; i ++ )
-//	{
-//		m_pMaterial[i].m_bActive = FALSE;
-//		m_pMaterial[i].strBitMapFileName[0] = 0;
-//	}
-	m_nMaxTexture = 0;
-
+CTextureManager::CTextureManager() {
+	memset( m_pMaterial.data(), 0, sizeof(m_pMaterial));
 
 #ifndef __CHERRY
-	D3DMATERIAL9 & pMaterial = m_defaultMaterial;
-	pMaterial.Ambient.r = 1;
-	pMaterial.Ambient.g = 1;
-	pMaterial.Ambient.b = 1;
-	pMaterial.Diffuse.r = 1;
-	pMaterial.Diffuse.g = 1;
-	pMaterial.Diffuse.b = 1;
-	pMaterial.Specular.r = 1;
-	pMaterial.Specular.g = 1;
-	pMaterial.Specular.b = 1;
-	pMaterial.Emissive.r = 0;
-	pMaterial.Emissive.g = 0;
-	pMaterial.Emissive.b = 0;
-	pMaterial.Power = 0.0f;
+	m_defaultMaterial.Ambient  = D3DCOLORVALUE{ 1.f, 1.f, 1.f, 0.f };
+	m_defaultMaterial.Diffuse  = D3DCOLORVALUE{ 1.f, 1.f, 1.f, 0.f };
+	m_defaultMaterial.Specular = D3DCOLORVALUE{ 1.f, 1.f, 1.f, 0.f };
+	m_defaultMaterial.Emissive = D3DCOLORVALUE{ 0.f, 0.f, 0.f, 0.f };
+	m_defaultMaterial.Power    = 0.0f;
 #endif
 }
 
-CTextureManager :: ~CTextureManager()
-{
+CTextureManager::~CTextureManager() {
 	DeleteDeviceObjects();
 }
-HRESULT CTextureManager::DeleteDeviceObjects()
-{
-	int		i;
-	for( i = 0; i < MAX_MATERIAL; i ++ )
-	{
-		if( m_pMaterial[i].m_bActive )
-			SAFE_RELEASE( m_pMaterial[i].m_pTexture );
-		m_pMaterial[i].m_bActive = FALSE;
-		m_pMaterial[i].strBitMapFileName[0] = 0;
-	}
-	m_nMaxTexture = 0;
-	return  S_OK;
-}	
 
-// pTexture를 사용하는 매터리얼을 찾아 삭제한다.
-// 공유되어 있는 텍스쳐라면 사용카운터를 보고 1인것만 삭제한다..
-int CTextureManager::DeleteMaterial( LPDIRECT3DTEXTURE9 pTexture )
-{
-	int		i;
-
-	if( pTexture == NULL )	return FALSE;
-	if( m_nMaxTexture == 0 )	return FALSE;
-
-	for( i = 0; i < MAX_MATERIAL; i ++ )
-	{
-		if( m_pMaterial[i].m_bActive )
-		{
-			if( m_pMaterial[i].m_pTexture == pTexture )		// pTexture를 찾았다.
-			{
-				if( m_pMaterial[i].m_nUseCnt == 1 )			// 공유된게 아니다(usecnt == 1)
-				{
-					SAFE_RELEASE( m_pMaterial[i].m_pTexture );	// 삭제.
-					m_pMaterial[i].m_bActive = FALSE;			// 텍스쳐 관리자에서도 삭제.
-					m_pMaterial[i].strBitMapFileName[0] = 0;
-					m_nMaxTexture --;
-					return TRUE;
-				}
-			}
+HRESULT CTextureManager::DeleteDeviceObjects() {
+	for (int i = 0; i < MAX_MATERIAL; i++) {
+		if (m_pMaterial[i].m_nUseCnt > 0) {
+			SAFE_RELEASE(m_pMaterial[i].m_pTexture);
+			m_pMaterial[i].strBitMapFileName[0] = 0;
+			m_pMaterial[i].m_nUseCnt = 0;
 		}
 	}
 
-	return FALSE;
+	return  S_OK;
 }
 
-MaterialessMATERIAL *	CTextureManager :: AddMaterial( LPCTSTR strFileName, LPCTSTR szPath )
+// Find materials that use pTexture and delete them.
+// If the texture is shared, look at the usage counter and delete only the one with 1.
+bool CTextureManager::DeleteMaterial( LPDIRECT3DTEXTURE9 pTexture )
 {
-	MaterialessMATERIAL *pMList = m_pMaterial;
+	if( !pTexture )	return false;
 
-	// 이미 읽은건지 검사.
-	for(int i = 0; i < MAX_MATERIAL; i ++ )
-	{
-		if( pMList->m_bActive )
-		{
-			if( strcmpi(strFileName, pMList->strBitMapFileName) == 0 )	// 이미 읽은건 다시 읽지 않음.  역시 땜빵 -_-;;
-			{
-				pMList->m_nUseCnt ++;	// 이미로딩한걸 공유하고 있다면 카운트 올림.
-				return pMList;
-			}
+	for (ManagedTexture & material : m_pMaterial) {
+		if (material.m_nUseCnt == 0) continue;
+
+		if (material.m_pTexture != pTexture) continue;
+
+		if (material.m_nUseCnt == 1) {
+			SAFE_RELEASE(material.m_pTexture);
+			material.m_nUseCnt = 0;
+			material.strBitMapFileName[0] = 0;
+
+			return true;
+		} else {
+			// SquonK: ??? We do not decrease m_nUseCnt?
+			// That means that if a texture is shared at one point, it
+			// will never be deleted. Is it intended?
+			return false;
 		}
-		pMList ++;
 	}
-	pMList = NULL;
 
-	CString strPath;
+	return false;
+}
+
+CTextureManager::ManagedTexture * CTextureManager::AddMaterial( LPCTSTR strFileName, LPCTSTR szPath ) {
+	// Already in cache?
+	auto it = std::find_if(
+		m_pMaterial.begin(), m_pMaterial.end(),
+		[&](const ManagedTexture & material) {
+			return material.m_nUseCnt > 0 && strcmpi(strFileName, material.strBitMapFileName) == 0;
+		}
+	);
+
+	if (it != m_pMaterial.end()) {
+		it->m_nUseCnt += 1;
+		return &*it;
+	}
+
+
+	// Load the texture
+	char strPath[256];
 	if (szPath) {
-		strPath = MakePath(szPath, strFileName);		// 경로가 지정되어 있을땐 그걸쓴다.
+		std::strcpy(strPath, szPath);
 	} else if (g_Option.m_nTextureQuality == 0) {
-		strPath = MakePath(DIR_MODELTEX, strFileName);
+		std::strcpy(strPath, DIR_MODELTEX);
 	} else if (g_Option.m_nTextureQuality == 1) {
-		strPath = MakePath(DIR_MODELTEXMID, strFileName);
+		std::strcpy(strPath, DIR_MODELTEXMID);
 	} else {
-		strPath = MakePath(DIR_MODELTEXLOW, strFileName);
+		std::strcpy(strPath, DIR_MODELTEXLOW);
 	}
 
-	LPDIRECT3DTEXTURE9 pTexture = NULL;
+	std::strcat(strPath, strFileName);
+
+	LPDIRECT3DTEXTURE9 pTexture = nullptr;
 	if( FAILED( LoadTextureFromRes( strPath, 
 			  D3DX_DEFAULT, D3DX_DEFAULT, 4, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 			  D3DPOOL_MANAGED,  D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR              , 
@@ -134,28 +110,21 @@ MaterialessMATERIAL *	CTextureManager :: AddMaterial( LPCTSTR strFileName, LPCTS
 			Error( "%s texture bitmap", strPath );
 	}
 
-	// 빈 슬롯이 있는지 검사.
-	pMList = m_pMaterial;
-	int i;
-	for( i = 0; i < MAX_MATERIAL; i ++ )
-	{
-		if( pMList->m_bActive == FALSE )	break;
-		pMList++;
-	}
-	if( i >= MAX_MATERIAL )
-	{
-		LPCTSTR szErr = Error( "CTextureManager::AddMaterial : 텍스쳐 갯수를 넘어섰다." );
-		//ADDERRORMSG( szErr );
-		return NULL;
+	// Look for an empty slot
+	it = std::find_if(
+		m_pMaterial.begin(), m_pMaterial.end(),
+		[](const ManagedTexture & material) { return material.m_nUseCnt == 0; }
+	);
+
+	if (it == m_pMaterial.end()) {
+		Error("CTextureManager::AddMaterial : Exceeded the number of textures.");
+		return nullptr;
 	}
 
-	pMList->m_bActive = TRUE;
+	strcpy( it->strBitMapFileName, strFileName );
+	it->m_pTexture = pTexture;
+	it->m_nUseCnt = 1;
 
-	strcpy( pMList->strBitMapFileName, strFileName );		// 텍스쳐 파일명 카피
-	pMList->m_pTexture = pTexture;
-	pMList->m_nUseCnt = 1;	// 처음 등록된것이기땜에 1부터 시작.
-	m_nMaxTexture ++;
-
-	return pMList;
+	return &*it;
 }
 

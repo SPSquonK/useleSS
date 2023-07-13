@@ -1184,7 +1184,7 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 	D3DMATERIAL9	mMaterial;
 	char			szBitmap[256];
 	int				nLen;
-	MaterialessMATERIAL *mMaterialAry[16];
+	CTextureManager::ManagedTexture * mMaterialAry[16];
 //nt				nIdx = 0;
 	int				bIsMaterial;
 
@@ -1386,8 +1386,8 @@ void	CObject3D::ChangeTexture( LPCTSTR szSrc, LPCTSTR szDest )
 				int nID = pObject->m_pMtrlBlk[j].m_nTextureID;
 				if( strcmp( szBitMapFileName[j], szBuff ) == 0 )	// szSrc랑 같은 파일명이 있으면
 				{
-					MaterialessMATERIAL *pMtrl = g_TextureMng.AddMaterial( szDest );		// szDest로 읽어서
-					pObject->m_pMtrlBlkTexture[j] = pMtrl->m_pTexture;	// 그놈으로 대체시키고
+					// szDest로 읽어서
+					pObject->m_pMtrlBlkTexture[j] = g_TextureMng.AddMaterial(szDest)->m_pTexture;	// 그놈으로 대체시키고
 					strcpy( pObject->m_MaterialAry[ nID ].strBitMapFileName, szDest );	// 파일명 바꿔놓는다.
 				}
 			}
@@ -2263,8 +2263,7 @@ D3DXVECTOR3 *CObject3D::IntersectRayTri( const D3DXVECTOR3 &vRayOrig, const D3DX
 void	CObject3D::SetTexture( LPCTSTR szTexture )
 {
 #if !defined(__WORLDSERVER)
-	MaterialessMATERIAL * pMtrl = g_TextureMng.AddMaterial( szTexture );
-	m_Group[0].m_pObject[0].m_pMtrlBlkTexture[0] = pMtrl->m_pTexture;
+	m_Group[0].m_pObject[0].m_pMtrlBlkTexture[0] = g_TextureMng.AddMaterial(szTexture)->m_pTexture;
 #endif
 }
 
@@ -2275,7 +2274,7 @@ void	CObject3D::SetTexture( LPDIRECT3DTEXTURE9 pTexture )
 #endif
 }
 
-void	CObject3D::LoadTextureEx( int nNumEx, GMOBJECT *pObj, MaterialessMATERIAL *pmMaterial[16] )
+void	CObject3D::LoadTextureEx( int nNumEx, GMOBJECT *pObj, std::span<LPDIRECT3DTEXTURE9, 16> pmMaterial )
 {
 #if !defined(__WORLDSERVER)
 	int		i;
@@ -2298,7 +2297,7 @@ void	CObject3D::LoadTextureEx( int nNumEx, GMOBJECT *pObj, MaterialessMATERIAL *
 		lstrcat( szTexture, szFileExt );
 
 		if( !IsEmpty(szTexture) )
-			pmMaterial[i] = g_TextureMng.AddMaterial( szTexture );
+			pmMaterial[i] = g_TextureMng.AddMaterial( szTexture )->m_pTexture;
 	}
 #endif // !__WORLDSERVER
 }
@@ -2309,28 +2308,27 @@ void	CObject3D::LoadTextureEx( int nNumEx, GMOBJECT *pObj, MaterialessMATERIAL *
 void	CObject3D::SetTextureEx( GMOBJECT *pObj, int nNumEx )
 {
 #if !defined(__WORLDSERVER)
-	LPDIRECT3DTEXTURE9	*pTextureEx;		// 매터리얼 블럭내 텍스쳐포인터
-	int		i;
-	MaterialessMATERIAL *mMaterial[16];
-	int		nID;
+
+	LPDIRECT3DTEXTURE9 mMaterial[16];
+	memset(mMaterial, 0, sizeof(mMaterial));
 	
 	if( nNumEx >= 8 )
 	{
 		Error( "CObject3D::SetTextureEx : nNumEx = %d", nNumEx );
 		return;
 	}
-	pTextureEx = pObj->m_pMtrlBlkTexture + (pObj->m_nMaxMtrlBlk * nNumEx);		// 확장부분 포인터.
+	// 매터리얼 블럭내 텍스쳐포인터
+	LPDIRECT3DTEXTURE9 * pTextureEx = pObj->m_pMtrlBlkTexture + (pObj->m_nMaxMtrlBlk * nNumEx);		// 확장부분 포인터.
 	
-		memset( mMaterial, 0, sizeof(mMaterial) );
 		
 		if( pTextureEx[0] == NULL )		// 확장 텍스쳐가 로딩된적이 없다.
 		{
 			LoadTextureEx( nNumEx, pObj, mMaterial );		// 확장텍스쳐를 로딩함.
-			for( i = 0; i < pObj->m_nMaxMtrlBlk; i ++ )
+			for(int i = 0; i < pObj->m_nMaxMtrlBlk; i ++ )
 			{
-				nID = pObj->m_pMtrlBlk[i].m_nTextureID;
+				const int nID = pObj->m_pMtrlBlk[i].m_nTextureID;
 				if( mMaterial[ nID ] )
-					pTextureEx[i] = mMaterial[ nID ]->m_pTexture;		// 확장텍스쳐를 로딩함.
+					pTextureEx[i] = mMaterial[ nID ];		// 확장텍스쳐를 로딩함.
 			}
 		}
 
