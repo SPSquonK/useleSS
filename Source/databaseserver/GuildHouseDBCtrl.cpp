@@ -140,10 +140,7 @@ void CGuildHouseDBCtrl::RemoveGuildHouse( DWORD dwGuildId )
 	if( GetQueryObject()->Execute( "usp_GuildHouse_Delete '%02d', '%06d'", g_appInfo.dwSys, dwGuildId ) )
 		GuildHouseMng->RemoveGuildHouse( dwGuildId );
 	
-	BEFORESENDDUAL( arOut, PACKETTYPE_GUILDHOUSE_REMOVE, DPID_UNKNOWN, DPID_UNKNOWN );
-	arOut << dwGuildId;
-	SEND( arOut, CDPTrans::GetInstance(), DPID_ALLPLAYERS );
-
+	CDPTrans::GetInstance()->BroadcastPacket<PACKETTYPE_GUILDHOUSE_REMOVE, DWORD>(dwGuildId);
 }
 
 void CGuildHouseDBCtrl::RunDefaultPacket( CAr & ar, DPID dpId )

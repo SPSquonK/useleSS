@@ -343,11 +343,8 @@ void CDPTrans::SendAddPlayerData( u_long idPlayer, PlayerData* pPlayerData )
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPTrans::SendDeletePlayerData( u_long idPlayer )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_DELETE_PLAYER_DATA, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendDeletePlayerData(u_long idPlayer) {
+	BroadcastPacket<PACKETTYPE_DELETE_PLAYER_DATA, u_long>(idPlayer);
 }
 
 void CDPTrans::SendUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerData )
@@ -364,11 +361,8 @@ void CDPTrans::SendHdr( DWORD dwHdr, DPID dpid )
 	SEND( ar, this, dpid );
 }
 
-void CDPTrans::SendUpdateGuildRankFinish()
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_UPDATE_GUILD_RANKING_END, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << CGuildRank::Instance;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendUpdateGuildRankFinish() {
+	BroadcastPacket<PACKETTYPE_UPDATE_GUILD_RANKING_END>(CGuildRank::Instance);
 }
 
 void CDPTrans::SendBaseGameSetting( BOOL bFirst, DPID dpid )
@@ -1053,32 +1047,20 @@ void CDPTrans::SendPostMail(BOOL bResult, u_long idReceiver, CMail * pMail) {
 	BroadcastPacket<PACKETTYPE_QUERYPOSTMAIL, BOOL, u_long, CMail>(bResult, idReceiver, *pMail);
 }
 
-void CDPTrans::SendRemoveMail( u_long idReceiver, u_long nMail )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYREMOVEMAIL, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver << nMail;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendRemoveMail(u_long idReceiver, u_long nMail) {
+	BroadcastPacket<PACKETTYPE_QUERYREMOVEMAIL, u_long, u_long>(idReceiver, nMail);
 }
 
-void CDPTrans::SendGetMailItem( u_long idReceiver, u_long nMail, u_long uQuery )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYGETMAILITEM, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver << nMail << uQuery;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendGetMailItem(u_long idReceiver, u_long nMail, u_long uQuery) {
+	BroadcastPacket<PACKETTYPE_QUERYGETMAILITEM, u_long, u_long, u_long>(idReceiver, nMail, uQuery);
 }
 
-void CDPTrans::SendGetMailGold( u_long idReceiver, u_long nMail, u_long uQuery )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYGETMAILGOLD, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver << nMail << uQuery;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendGetMailGold(u_long idReceiver, u_long nMail, u_long uQuery) {
+	BroadcastPacket<PACKETTYPE_QUERYGETMAILGOLD, u_long, u_long, u_long>(idReceiver, nMail, uQuery);
 }
 
-void CDPTrans::SendReadMail( u_long idReceiver, u_long nMail )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_READMAIL, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver << nMail;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendReadMail(u_long idReceiver, u_long nMail) {
+	BroadcastPacket<PACKETTYPE_READMAIL, u_long, u_long>(idReceiver, nMail);
 }
 
 void CDPTrans::SendAllMail( DPID dpid )
@@ -1163,20 +1145,17 @@ void CDPTrans::OnGCContinue( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser,
 	lpDbOverlappedPlus->nQueryMode	= CONTINUE_GUILDCOMBAT;
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPGuild, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
-void CDPTrans::SendInGuildCombat( u_long idGuild, DWORD dwPenya, DWORD dwExistingPenya )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_IN_GUILDCOMBAT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idGuild;
-	ar << dwPenya;
-	ar << dwExistingPenya;
-	SEND( ar, this, DPID_ALLPLAYERS );	
+
+void CDPTrans::SendInGuildCombat(u_long idGuild, DWORD dwPenya, DWORD dwExistingPenya) {
+	BroadcastPacket<PACKETTYPE_IN_GUILDCOMBAT, u_long, DWORD, DWORD>(
+		idGuild, dwPenya, dwExistingPenya
+	);
 }
-void CDPTrans::SendOutGuildCombat( u_long idGuild )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_OUT_GUILDCOMBAT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idGuild;
-	SEND( ar, this, DPID_ALLPLAYERS );	
+
+void CDPTrans::SendOutGuildCombat(u_long idGuild) {
+	BroadcastPacket<PACKETTYPE_OUT_GUILDCOMBAT, u_long>(idGuild);
 }
+
 void CDPTrans::SendResultGuildCombat( void )
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_RESULT_GUILDCOMBAT, DPID_UNKNOWN, DPID_UNKNOWN );
@@ -1193,34 +1172,30 @@ void CDPTrans::SendPlayerPointGuildCombat( void )
 	g_DbManager.SerializePlayerPoint( ar );
 	SEND( ar, this, DPID_ALLPLAYERS );	
 }
-void CDPTrans::SendGetPenyaGuildGC( u_long uidPlayer, int nGuildCombatID, u_long uidGuild )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GETPENYAGUILD_GUILDCOMBAT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uidPlayer;
-	ar << nGuildCombatID;
-	ar << uidGuild;
-	SEND( ar, this, DPID_ALLPLAYERS );	
-}
-void CDPTrans::SendGetPenyaPlayerGC( u_long uidPlayer, int nGuildCombatID, u_long uidGuild )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GETPENYAPLAYER_GUILDCOMBAT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uidPlayer;
-	ar << nGuildCombatID;
-	ar << uidGuild;
-	SEND( ar, this, DPID_ALLPLAYERS );	
+
+void CDPTrans::SendGetPenyaGuildGC(u_long uidPlayer, int nGuildCombatID, u_long uidGuild) {
+	BroadcastPacket<PACKETTYPE_GETPENYAGUILD_GUILDCOMBAT, u_long, int, u_long>(
+		uidPlayer, nGuildCombatID, uidGuild
+	);
 }
 
-void CDPTrans::SendContinueGC()
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_CONTINUE_GUILDCOMBAT, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_ALLPLAYERS );	
+void CDPTrans::SendGetPenyaPlayerGC(u_long uidPlayer, int nGuildCombatID, u_long uidGuild) {
+	BroadcastPacket<PACKETTYPE_GETPENYAPLAYER_GUILDCOMBAT, u_long, int, u_long>(
+		uidPlayer, nGuildCombatID, uidGuild
+	);
+}
+
+void CDPTrans::SendContinueGC() {
+	BroadcastPacket<PACKETTYPE_CONTINUE_GUILDCOMBAT>();
 }
 
 void CDPTrans::SendQueryRemoveGuildBankTbl( int nNo, u_long idGuild, DWORD dwItemId, SERIALNUMBER iSerialNumber, DWORD dwItemNum )
 {
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERY_REMOVE_GUILD_BANK_TBL, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << nNo << idGuild << dwItemId << iSerialNumber << dwItemNum;
-	SEND( ar, this, DPID_ALLPLAYERS );	
+	BroadcastPacket<PACKETTYPE_QUERY_REMOVE_GUILD_BANK_TBL,
+		int, u_long, DWORD, SERIALNUMBER, DWORD
+	>(
+		nNo, idGuild, dwItemId, iSerialNumber, dwItemNum
+	);
 }
 
 void CDPTrans::OnQueryRemoveGuildBankTbl( CAr & ar, DPID, DPID, DPID, LPBYTE lpBuf, u_long uBufSize )
@@ -1239,11 +1214,8 @@ void CDPTrans::SendEventGeneric( DPID dpid )
 	SEND( ar, this, dpid );
 }
 
-void CDPTrans::SendEventFlag( DWORD dwFlag )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_EVENT_FLAG, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwFlag;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendEventFlag(DWORD dwFlag) {
+	BroadcastPacket<PACKETTYPE_EVENT_FLAG, DWORD>(dwFlag);
 }
 
 void CDPTrans::SendEventLuaState(std::map<BYTE, BOOL> mapState, BOOL bTextOut, DPID dpId )
@@ -1256,10 +1228,8 @@ void CDPTrans::SendEventLuaState(std::map<BYTE, BOOL> mapState, BOOL bTextOut, D
 	SEND( ar, this, dpId );
 }
 
-void CDPTrans::SendEventLuaChanged( void )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_EVENTLUA_CHANGED, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendEventLuaChanged() {
+	BroadcastPacket<PACKETTYPE_EVENTLUA_CHANGED>();
 }
 
 void CDPTrans::OnEventLuaChanged( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -1339,10 +1309,8 @@ void CDPTrans::OnCalluspPetLog( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUs
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPPut, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
 
-void CDPTrans::SendGC1to1Open( void )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GC1TO1_OPEN, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendGC1to1Open() {
+	BroadcastPacket<PACKETTYPE_GC1TO1_OPEN>();
 }
 
 void CDPTrans::SendGC1to1TenderGuild(std::vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecT, std::vector<CGuildCombat1to1Mng::__GC1TO1TENDER>& vecF, DPID dpId )
@@ -1466,11 +1434,11 @@ void CDPTrans::OnSealCharSet( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser
 	PostQueuedCompletionStatus( g_DbManager.m_hIOCPGuild, 1, NULL, &lpDbOverlappedPlus->Overlapped );
 }
 
-void CDPTrans::SendElectionAddDeposit( u_long idPlayer, __int64 iDeposit, time_t tCreate, BOOL bRet )
-{	// 월드 서버에 군주입찰 결과 전송
-	BEFORESENDDUAL( ar, PACKETTYPE_ELECTION_ADD_DEPOSIT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << iDeposit << tCreate << bRet;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendElectionAddDeposit(u_long idPlayer, __int64 iDeposit, time_t tCreate, BOOL bRet) {
+	// 월드 서버에 군주입찰 결과 전송
+	BroadcastPacket<PACKETTYPE_ELECTION_ADD_DEPOSIT>(
+		idPlayer, iDeposit, tCreate, bRet
+	);
 }
 
 void CDPTrans::SendElectionSetPledge( u_long idPlayer, const char* szPledge, BOOL bRet )
@@ -1484,28 +1452,24 @@ void CDPTrans::SendElectionSetPledge( u_long idPlayer, const char* szPledge, BOO
 
 void CDPTrans::SendElectionIncVote( u_long idPlayer, u_long idElector, BOOL bRet )
 {	// 월드 서버에 투표 결과 전송
-	BEFORESENDDUAL( ar, PACKETTYPE_ELECTION_INC_VOTE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << idElector << bRet;
-	SEND( ar, this, DPID_ALLPLAYERS );
+	BroadcastPacket<PACKETTYPE_ELECTION_INC_VOTE, u_long, u_long, BOOL>(
+		idPlayer, idElector, bRet
+	);
 }
 
 void CDPTrans::SendElectionBeginCandidacy( void )
 {	// 월드 서버에 입후보 시작 상태 전송
-	SendHdr( PACKETTYPE_ELECTION_BEGIN_CANDIDACY, DPID_ALLPLAYERS );
+	BroadcastPacket<PACKETTYPE_ELECTION_BEGIN_CANDIDACY>();
 }
 
 void CDPTrans::SendElectionBeginVote( int nRequirement )
 {	// 월드 서버에 투표 시작 상태 전송
-	BEFORESENDDUAL( ar, PACKETTYPE_ELECTION_BEGIN_VOTE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << nRequirement;
-	SEND( ar, this, DPID_ALLPLAYERS );
+	BroadcastPacket<PACKETTYPE_ELECTION_BEGIN_VOTE, int>(nRequirement);
 }
 
 void CDPTrans::SendElectionEndVote( u_long idPlayer )
 {	// 월드 서버에 투표 종료 상태 전송
-	BEFORESENDDUAL( ar, PACKETTYPE_ELECTION_END_VOTE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer;
-	SEND( ar, this, DPID_ALLPLAYERS );
+	BroadcastPacket<PACKETTYPE_ELECTION_END_VOTE, u_long>(idPlayer);
 }
 
 void CDPTrans::OnElectionAddDeposit( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize )
@@ -1586,16 +1550,16 @@ void CDPTrans::SendLEventCreate( CLEComponent* pComponent, BOOL bResult )
 
 void CDPTrans::SendLEventInitialize( void )
 {	// 월드 서버에 군주 이벤트 초기화를 전송
-	BEFORESENDDUAL( ar, PACKETTYPE_L_EVENT_INITIALIZE, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_ALLPLAYERS );
+	BroadcastPacket<PACKETTYPE_L_EVENT_INITIALIZE>();
 }
 
 void CDPTrans::SendLordSkillUse( u_long idPlayer, u_long idTarget, int nSkill, int nRet )
 {	// 월드 서버에 군주 스킬 사용 결과를 전송
 	// 결과가 참이면 월드 서버는 실제 군주 스킬 효과를 적용
-	BEFORESENDDUAL( ar, PACKETTYPE_LORD_SKILL_USE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << idTarget << nSkill << nRet;
-	SEND( ar, this, DPID_ALLPLAYERS );
+	
+	BroadcastPacket<PACKETTYPE_LORD_SKILL_USE, u_long, u_long, int, int>(
+		idPlayer, idTarget, nSkill, nRet
+	);
 }
 
 void CDPTrans::SendLordSkillTick( CLordSkill* pSkills )
@@ -1815,11 +1779,8 @@ void CDPTrans::OnQueryAddCoupleExperience( CAr & ar, DPID dpid, DPID dpidCache, 
 	CCoupleHelper::Instance()->PostRequest( CCoupleHelper::eAddExperience, lpBuf, uBufSize );
 }
 
-void CDPTrans::SendAddCoupleExperience( u_long idPlayer, int nExperience )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ADD_COUPLE_EXPERIENCE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << nExperience;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendAddCoupleExperience(u_long idPlayer, int nExperience) {
+	BroadcastPacket<PACKETTYPE_ADD_COUPLE_EXPERIENCE, u_long, int>(idPlayer, nExperience);
 }
 
 void CDPTrans::SendCouple( CCoupleMgr* pMgr, DPID dpid )
@@ -1836,18 +1797,14 @@ void CDPTrans::SendProposeResult( u_long idProposer, u_long idTarget, int nResul
 	SEND( ar, this, dpid );
 }
 
-void CDPTrans::SendCoupleResult( u_long idProposer, u_long idTarget, int nResult )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_COUPLE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idProposer << idTarget << nResult;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendCoupleResult(u_long idProposer, u_long idTarget, int nResult) {
+	BroadcastPacket<PACKETTYPE_COUPLE, u_long, u_long, int>(
+		idProposer, idTarget, nResult
+	);
 }
 
-void CDPTrans::SendDecoupleResult( u_long idPlayer, int nResult )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_DECOUPLE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << nResult;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendDecoupleResult(u_long idPlayer, int nResult) {
+	BroadcastPacket<PACKETTYPE_DECOUPLE, u_long, int>(idPlayer, nResult);
 }
 
 
@@ -1953,10 +1910,8 @@ void CDPTrans::SendQuizEventNotice( DPID dpId )
 	SEND( ar, this, dpId );
 }
 
-void CDPTrans::SendQuizEventChanged()
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUIZ_CHANGED, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendQuizEventChanged() {
+	BroadcastPacket<PACKETTYPE_QUIZ_CHANGED>();
 }
 #endif // __QUIZ
 
@@ -2028,23 +1983,16 @@ void CDPTrans::SendAllCampus( DPID dpId )
 	SEND( ar, this, dpId );
 }
 
-void CDPTrans::SendAddCampusMember( u_long idCampus, u_long idMaster, u_long idPupil )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_CAMPUS_ADD_MEMBER, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idCampus << idMaster << idPupil;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendAddCampusMember(u_long idCampus, u_long idMaster, u_long idPupil) {
+	BroadcastPacket<PACKETTYPE_CAMPUS_ADD_MEMBER, u_long, u_long, u_long>(
+		idCampus, idMaster, idPupil
+	);
 }
 
-void CDPTrans::SendRemoveCampusMember( u_long idCampus, u_long idPlayer )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_CAMPUS_REMOVE_MEMBER, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idCampus << idPlayer;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendRemoveCampusMember(u_long idCampus, u_long idPlayer) {
+	BroadcastPacket<PACKETTYPE_CAMPUS_REMOVE_MEMBER, u_long, u_long>(idCampus, idPlayer);
 }
 
-void CDPTrans::SendUpdateCampusPoint( u_long idPlayer, int nCampusPoint )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_CAMPUS_UPDATE_POINT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << nCampusPoint;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPTrans::SendUpdateCampusPoint(u_long idPlayer, int nCampusPoint) {
+	BroadcastPacket<PACKETTYPE_CAMPUS_UPDATE_POINT, u_long, int>(idPlayer, nCampusPoint);
 }

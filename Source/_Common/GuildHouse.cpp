@@ -1616,9 +1616,7 @@ void CGuildHouseMng::SetTenderState( DWORD dwGHType, int nState )
 	{
 		pTenderData->nTenderState = nState;
 #ifdef __DBSERVER
-		BEFORESENDDUAL( ar, PACKETTYPE_GUILDHOUSE_TENDER_STATE, DPID_UNKNOWN, DPID_UNKNOWN );
-		ar << dwGHType << nState;
-		SEND( ar, CDPTrans::GetInstance(), DPID_ALLPLAYERS );
+		CDPTrans::GetInstance()->BroadcastPacket<PACKETTYPE_GUILDHOUSE_TENDER_STATE>(dwGHType, nState);
 #endif // __DBSERVER
 	}
 	else
