@@ -879,7 +879,7 @@ void	CModelObject::SetTextureMulti( LPCTSTR szBitmap, int nParts )
 	O3D_ELEMENT* pParts = GetParts(nParts);
 
 	if( pParts )
-		pParts->m_pTextureEx = g_TextureMng.AddMaterial(szBitmap)->m_pTexture;
+		pParts->m_pTextureEx = g_TextureMng.AddMaterial(szBitmap);
 #endif
 }
 

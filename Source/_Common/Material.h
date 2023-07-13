@@ -29,7 +29,7 @@ public:
 
 	[[nodiscard]] D3DMATERIAL9 * GetShadowMaterial() { return &m_defaultMaterial; }
 
-	ManagedTexture * AddMaterial(LPCTSTR strFileName, LPCTSTR szPath = nullptr);
+	LPDIRECT3DTEXTURE9 AddMaterial(LPCTSTR strFileName, LPCTSTR szPath = nullptr);
 };
 
 extern CTextureManager		g_TextureMng;

@@ -1184,17 +1184,20 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 	D3DMATERIAL9	mMaterial;
 	char			szBitmap[256];
 	int				nLen;
-	CTextureManager::ManagedTexture * mMaterialAry[16];
-//nt				nIdx = 0;
+	std::array<LPDIRECT3DTEXTURE9, 16> mMaterialAry;
+	mMaterialAry.fill(nullptr);
+
+#ifdef __YENV
+	std::array<LPCTSTR, 16> mMaterialNames;
+	mMaterialNames.fill(nullptr);
+#endif
+
 	int				bIsMaterial;
 
 	file->Read( &bIsMaterial, 4, 1 );		// ASE의 Main MaxMaterial을 저장했다.  이게 0이면 매터리얼이 없다는 것.
 	pObject->m_bMaterial = bIsMaterial;				// 나중에 저장을 위해서 백업받아둔다.
 	if( bIsMaterial )
-	{
-		memset( mMaterialAry, 0, sizeof(mMaterialAry) );
-//		for( i = 0; i < 16; i ++ )	mMaterialAry[i] = NULL;
-		
+	{		
 		file->Read( &pObject->m_nMaxMaterial, 4, 1 );				// 사용하는 매트리얼 개수 읽음
 
 		if( pObject->m_nMaxMaterial == 0 )	pObject->m_nMaxMaterial = 1;	// CASEMesh의 Save부분을 참고할것.
@@ -1213,8 +1216,9 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 
 			strcpy( pObject->m_MaterialAry[i].strBitMapFileName, szBitmap );
 		#if	!defined(__WORLDSERVER)
-			if( !IsEmpty(szBitmap) )
-				mMaterialAry[i] = g_TextureMng.AddMaterial( szBitmap );
+			if (!IsEmpty(szBitmap)) {
+				mMaterialAry[i] = g_TextureMng.AddMaterial(szBitmap);
+			}
 		#endif
 		}
 	}
@@ -1256,7 +1260,7 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 			{
 				if( mMaterialAry[ pObject->m_pMtrlBlk[i].m_nTextureID ] )
 				{
-					pObject->m_pMtrlBlkTexture[i] = mMaterialAry[ pObject->m_pMtrlBlk[i].m_nTextureID ]->m_pTexture;
+					pObject->m_pMtrlBlkTexture[i] = mMaterialAry[ pObject->m_pMtrlBlk[i].m_nTextureID ];
 
 			#ifdef __YENV
 				#ifdef __YENV_WITHOUT_BUMP
@@ -1266,7 +1270,7 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 				#endif //__YENV_WITHOUT_BUMP
 					{
 						char	szTexture[MAX_PATH], szFileExt[MAX_PATH];
-						char*	strFileName = mMaterialAry[ pObject->m_pMtrlBlk[i].m_nTextureID ]->strBitMapFileName;
+						char*	strFileName = pObject->m_MaterialAry[ pObject->m_pMtrlBlk[i].m_nTextureID ].strBitMapFileName;
 
 						::GetFileTitle( strFileName, szTexture );
 						lstrcat( szTexture, "-n." );
@@ -1287,7 +1291,7 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 				#endif //__YENV_WITHOUT_BUMP
 					{
 						char	szTexture[MAX_PATH], szFileExt[MAX_PATH];
-						char*	strFileName		= mMaterialAry[ pObject->m_pMtrlBlk[i].m_nTextureID ]->strBitMapFileName;
+						char*	strFileName		= pObject->m_MaterialAry[ pObject->m_pMtrlBlk[i].m_nTextureID ].strBitMapFileName;
 						
 						::GetFileTitle( strFileName, szTexture );
 						lstrcat( szTexture, "-s." );
@@ -1387,7 +1391,7 @@ void	CObject3D::ChangeTexture( LPCTSTR szSrc, LPCTSTR szDest )
 				if( strcmp( szBitMapFileName[j], szBuff ) == 0 )	// szSrc랑 같은 파일명이 있으면
 				{
 					// szDest로 읽어서
-					pObject->m_pMtrlBlkTexture[j] = g_TextureMng.AddMaterial(szDest)->m_pTexture;	// 그놈으로 대체시키고
+					pObject->m_pMtrlBlkTexture[j] = g_TextureMng.AddMaterial(szDest);	// 그놈으로 대체시키고
 					strcpy( pObject->m_MaterialAry[ nID ].strBitMapFileName, szDest );	// 파일명 바꿔놓는다.
 				}
 			}
@@ -2263,7 +2267,7 @@ D3DXVECTOR3 *CObject3D::IntersectRayTri( const D3DXVECTOR3 &vRayOrig, const D3DX
 void	CObject3D::SetTexture( LPCTSTR szTexture )
 {
 #if !defined(__WORLDSERVER)
-	m_Group[0].m_pObject[0].m_pMtrlBlkTexture[0] = g_TextureMng.AddMaterial(szTexture)->m_pTexture;
+	m_Group[0].m_pObject[0].m_pMtrlBlkTexture[0] = g_TextureMng.AddMaterial(szTexture);
 #endif
 }
 
@@ -2297,7 +2301,7 @@ void	CObject3D::LoadTextureEx( int nNumEx, GMOBJECT *pObj, std::span<LPDIRECT3DT
 		lstrcat( szTexture, szFileExt );
 
 		if( !IsEmpty(szTexture) )
-			pmMaterial[i] = g_TextureMng.AddMaterial( szTexture )->m_pTexture;
+			pmMaterial[i] = g_TextureMng.AddMaterial( szTexture );
 	}
 #endif // !__WORLDSERVER
 }

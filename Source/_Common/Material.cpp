@@ -70,7 +70,7 @@ bool CTextureManager::DeleteMaterial( LPDIRECT3DTEXTURE9 pTexture )
 	return false;
 }
 
-CTextureManager::ManagedTexture * CTextureManager::AddMaterial( LPCTSTR strFileName, LPCTSTR szPath ) {
+LPDIRECT3DTEXTURE9 CTextureManager::AddMaterial( LPCTSTR strFileName, LPCTSTR szPath ) {
 	// Already in cache?
 	auto it = std::find_if(
 		m_pMaterial.begin(), m_pMaterial.end(),
@@ -81,7 +81,7 @@ CTextureManager::ManagedTexture * CTextureManager::AddMaterial( LPCTSTR strFileN
 
 	if (it != m_pMaterial.end()) {
 		it->m_nUseCnt += 1;
-		return &*it;
+		return it->m_pTexture;
 	}
 
 
@@ -125,6 +125,6 @@ CTextureManager::ManagedTexture * CTextureManager::AddMaterial( LPCTSTR strFileN
 	it->m_pTexture = pTexture;
 	it->m_nUseCnt = 1;
 
-	return &*it;
+	return pTexture;
 }
 

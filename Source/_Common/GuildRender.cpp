@@ -64,7 +64,7 @@ LPDIRECT3DTEXTURE9 CGuildTexture::LoadGuildTexture( DWORD idGuild )
 		// CT + 길드번호 + .jpg 로 텍스쳐 이름 생성/로딩
 		sprintf( szName, "CT%06d.jpg", idGuild );
 
-		pNode->lpCloakTexture = g_TextureMng.AddMaterial(szName, DIR_LOGO)->m_pTexture;
+		pNode->lpCloakTexture = g_TextureMng.AddMaterial(szName, DIR_LOGO);
 		pNode->tmLoad = timeGetTime();			// 로딩한 시간 기록.
 		return pNode->lpCloakTexture;
 	}
