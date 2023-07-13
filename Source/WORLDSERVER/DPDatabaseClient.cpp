@@ -1363,11 +1363,12 @@ void CDPDatabaseClient::OnDeletePlayerData( CAr & ar, DPID, DPID )
 
 void CDPDatabaseClient::SendUpdatePlayerData( CUser* pUser )
 {
-	BEFORESENDDUAL( ar, PACKETTYPE_UPDATE_PLAYER_DATA, DPID_UNKNOWN, DPID_UNKNOWN );  
 	sPlayerData data;
 	data.nJob	= pUser->GetJob();
 	data.nLevel	= pUser->GetLevel();
 	data.nSex	= pUser->GetSex();
+
+	BEFORESENDDUAL( ar, PACKETTYPE_UPDATE_PLAYER_DATA, DPID_UNKNOWN, DPID_UNKNOWN );  
 	ar << pUser->m_idPlayer;
 	ar.Write( &data, sizeof(sPlayerData) );
 	SEND( ar, this, DPID_SERVERPLAYER );	
@@ -1640,11 +1641,12 @@ void CDPDatabaseClient::SendLogSkillPoint( int nAction, int nPoint, CMover* pMov
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendLogExpBox( u_long idPlayer, OBJID objid, EXPINTEGER iExp, BOOL bGet )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_LOG_EXPBOX, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << objid << iExp << bGet;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendLogExpBox(u_long idPlayer, OBJID objid, EXPINTEGER iExp, BOOL bGet) {
+	SendPacket<
+		PACKETTYPE_LOG_EXPBOX, u_long, OBJID, EXPINTEGER, BOOL
+	>(
+		idPlayer, objid, iExp, bGet
+	);
 }
 
 void CDPDatabaseClient::SendLogLevelUp( CMover* pSender, int Action )
@@ -1768,12 +1770,9 @@ void CDPDatabaseClient::SendChangeBankPass( const char* szName, const char *szNe
 
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-void	CDPDatabaseClient::SendLogGetHonorTime(CMover* pMover, int nGetHonor )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_LOG_GETHONORTIME, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << nGetHonor;
-	ar << pMover->m_idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+
+void	CDPDatabaseClient::SendLogGetHonorTime(CMover * pMover, int nGetHonor) {
+	SendPacket<PACKETTYPE_LOG_GETHONORTIME, int, u_long>(nGetHonor, pMover->m_idPlayer);
 }
 
 void CDPDatabaseClient::SendLogUniqueItem(CMover* pMover, CItem* pItem, int nOption )
@@ -1874,11 +1873,8 @@ void CDPDatabaseClient::SendLogSchool( u_long idPlayer, LPCTSTR szName )
 }
 
 
-void CDPDatabaseClient::SendGuildGetPay( u_long idGuild, DWORD nGoldGuild, DWORD dwPay )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GUILD_DB_REALPENYA, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idGuild << nGoldGuild << dwPay;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendGuildGetPay(u_long idGuild, DWORD nGoldGuild, DWORD dwPay) {
+	SendPacket<PACKETTYPE_GUILD_DB_REALPENYA, u_long, DWORD, DWORD>(idGuild, nGoldGuild, dwPay);
 }
 
 void CDPDatabaseClient::SendGuildContribution( CONTRIBUTION_CHANGED_INFO & info, BYTE nLevelUp, LONG nMemberLevel )
@@ -1890,23 +1886,17 @@ void CDPDatabaseClient::SendGuildContribution( CONTRIBUTION_CHANGED_INFO & info,
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendQueryGuildBank()
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GUILD_BANK_QUERY, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryGuildBank() {
+	SendPacket<PACKETTYPE_GUILD_BANK_QUERY>();
 }
 
-void CDPDatabaseClient::UpdateGuildRanking()
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_UPDATE_GUILD_RANKING, DPID_UNKNOWN, DPID_UNKNOWN );
-	
-	ar << static_cast<int>(1); // 월드 서버에서 요청
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::UpdateGuildRanking() {
+	// 월드 서버에서 요청
+	SendPacket<PACKETTYPE_UPDATE_GUILD_RANKING, int>(1);
 }
 
 void CDPDatabaseClient::UpdateGuildRankingUpdate() {
-	BEFORESENDDUAL(ar, PACKETTYPE_UPDATE_GUILD_RANKING_DB, DPID_UNKNOWN, DPID_UNKNOWN);
-	SEND(ar, this, DPID_SERVERPLAYER);
+	SendPacket<PACKETTYPE_UPDATE_GUILD_RANKING_DB>();
 }
 
 void CDPDatabaseClient::OnGuildBank( CAr & ar, DPID, DPID )
@@ -1948,24 +1938,16 @@ void CDPDatabaseClient::OnUpdateGuildRankingFinish(CAr & ar, DPID, DPID) {
 }
 
 
-void CDPDatabaseClient::SendQueryGuildQuest( void )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYGUILDQUEST, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryGuildQuest() {
+	SendPacket<PACKETTYPE_QUERYGUILDQUEST>();
 }
 
-void CDPDatabaseClient::SendInsertGuildQuest( u_long idGuild, int nId )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_INSERTGUILDQUEST, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idGuild << nId;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendInsertGuildQuest(u_long idGuild, int nId) {
+	SendPacket<PACKETTYPE_INSERTGUILDQUEST, u_long, int>(idGuild, nId);
 }
 
-void CDPDatabaseClient::SendUpdateGuildQuest( u_long idGuild, int nId, int nState )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_UPDATEGUILDQUEST, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idGuild << nId << nState;	
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendUpdateGuildQuest(u_long idGuild, int nId, int nState) {
+	SendPacket<PACKETTYPE_UPDATEGUILDQUEST, u_long, int, int>(idGuild, nId, nState);
 }
 
 void CDPDatabaseClient::OnQueryGuildQuest( CAr & ar, DPID, DPID ) {
@@ -2013,9 +1995,7 @@ void CDPDatabaseClient::SendPing( void )
 
 	m_cbPing++;
 	m_bAlive	= FALSE;
-	BEFORESENDDUAL( ar, PACKETTYPE_PING, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << time_null();
-	SEND( ar, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_PING, time_t>(time_null());
 }
 
 void CDPDatabaseClient::OnPing( CAr & ar, DPID, DPID )
@@ -2131,32 +2111,20 @@ void CDPDatabaseClient::SendQueryPostMail( u_long idReceiver, u_long idSender, C
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendQueryRemoveMail( u_long idReceiver, u_long nMail )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYREMOVEMAIL, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver << nMail;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryRemoveMail(u_long idReceiver, u_long nMail) {
+	SendPacket<PACKETTYPE_QUERYREMOVEMAIL, u_long, u_long>(idReceiver, nMail);
 }
 
-void CDPDatabaseClient::SendQueryGetMailItem( u_long idReceiver, u_long nMail )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYGETMAILITEM, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver << nMail << g_uIdofMulti/*uQuery*/;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryGetMailItem(u_long idReceiver, u_long nMail) {
+	SendPacket<PACKETTYPE_QUERYGETMAILITEM, u_long, u_long, u_long>(idReceiver, nMail, g_uIdofMulti);
 }
 
-void CDPDatabaseClient::SendQueryGetMailGold( u_long idReceiver, u_long nMail )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERYGETMAILGOLD, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver << nMail << g_uIdofMulti/*uQuery*/;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryGetMailGold(u_long idReceiver, u_long nMail) {
+	SendPacket<PACKETTYPE_QUERYGETMAILGOLD, u_long, u_long, u_long>(idReceiver, nMail, g_uIdofMulti);
 }
 
-void CDPDatabaseClient::SendQueryReadMail( u_long idReceiver, u_long nMail )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_READMAIL, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver << nMail;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryReadMail(u_long idReceiver, u_long nMail) {
+	SendPacket<PACKETTYPE_READMAIL, u_long, u_long>(idReceiver, nMail);
 }
 
 void CDPDatabaseClient::OnPostMail( CAr & ar, DPID, DPID )
@@ -2412,11 +2380,8 @@ void CDPDatabaseClient::OnQueryRemoveGuildBankTbl( CAr & ar, DPID, DPID )
 	SendQueryRemoveGuildBankTbl( nNo, dwRemoved );
 }
 
-void CDPDatabaseClient::SendQueryRemoveGuildBankTbl( int nNo, DWORD dwRemoved )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUERY_REMOVE_GUILD_BANK_TBL, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << nNo << dwRemoved;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryRemoveGuildBankTbl(int nNo, DWORD dwRemoved) {
+	SendPacket<PACKETTYPE_QUERY_REMOVE_GUILD_BANK_TBL, int, DWORD>(nNo, dwRemoved);
 }
 
 void CDPDatabaseClient::OnEventGeneric( CAr & ar, DPID, DPID )
@@ -2578,33 +2543,26 @@ void CDPDatabaseClient::CalluspXXXMultiServer( u_long uKey, u_long idPlayer )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::CalluspPetLog( u_long idPlayer, SERIALNUMBER iSerial, DWORD dwData, int nType, CPet* pPet )
-{
-	if( pPet == NULL )
-		return;
-	BEFORESENDDUAL( ar, PACKETTYPE_CALL_USP_PET_LOG, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << iSerial << dwData << nType << *pPet;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::CalluspPetLog(u_long idPlayer, SERIALNUMBER iSerial, DWORD dwData, int nType, CPet * pPet) {
+	if (!pPet) return;
+
+	SendPacket<PACKETTYPE_CALL_USP_PET_LOG, u_long, SERIALNUMBER, DWORD, int, CPet>(
+		idPlayer, iSerial, dwData, nType, *pPet
+	);
 }
 
-void CDPDatabaseClient::SendEventLuaChanged( void )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_EVENTLUA_CHANGED, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendEventLuaChanged() {
+	SendPacket<PACKETTYPE_EVENTLUA_CHANGED>();
 }
 
-void CDPDatabaseClient::SendGC1to1StateToDBSrvr( void )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GC1TO1_STATETODB, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << g_GuildCombat1to1Mng.m_nState;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendGC1to1StateToDBSrvr() {
+	SendPacket<PACKETTYPE_GC1TO1_STATETODB>(g_GuildCombat1to1Mng.m_nState);
 }
 
-void CDPDatabaseClient::SendGC1to1Tender( char cGU, u_long uGuildId, int nPenya, char cState )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GC1TO1_TENDERTODB, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << cGU << uGuildId << nPenya << cState;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendGC1to1Tender(char cGU, u_long uGuildId, int nPenya, char cState) {
+	SendPacket<PACKETTYPE_GC1TO1_TENDERTODB, char, u_long, int, char>(
+		cGU, uGuildId, nPenya, cState
+	);
 }
 
 void CDPDatabaseClient::SendGC1to1LineUp( u_long uGuildId, std::vector<u_long>& vecMemberId )
@@ -2617,27 +2575,22 @@ void CDPDatabaseClient::SendGC1to1LineUp( u_long uGuildId, std::vector<u_long>& 
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendGC1to1WarPerson( u_long uGuildId, u_long uIdPlayer, char cState )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GC1TO1_WARPERSONTODB, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << uGuildId << uIdPlayer << cState;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendGC1to1WarPerson(u_long uGuildId, u_long uIdPlayer, char cState) {
+	SendPacket<PACKETTYPE_GC1TO1_WARPERSONTODB, u_long, u_long, char>(uGuildId, uIdPlayer, cState);
 }
 
-void CDPDatabaseClient::SendGC1to1WarGuild( DWORD dwWorldId, u_long uGuildId_0, u_long uGuildId_1, char cState )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GC1TO1_WARGUILDTODB, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwWorldId << uGuildId_0 << uGuildId_1 << cState;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendGC1to1WarGuild(DWORD dwWorldId, u_long uGuildId_0, u_long uGuildId_1, char cState) {
+	SendPacket<PACKETTYPE_GC1TO1_WARGUILDTODB, DWORD, u_long, u_long, char>(
+		dwWorldId, uGuildId_0, uGuildId_1, cState
+	);
 }
 
 
 
-void CDPDatabaseClient::SendQueryGetGuildBankLogList( u_long idReceiver, DWORD idGuild, BYTE byListType )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GUILDLOG_VIEW, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver << idGuild << byListType << g_uIdofMulti/*uQuery*/;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryGetGuildBankLogList(u_long idReceiver, DWORD idGuild, BYTE byListType) {
+	SendPacket<PACKETTYPE_GUILDLOG_VIEW, u_long, u_long, BYTE, u_long>(
+		idReceiver, idGuild, byListType, g_uIdofMulti
+	);
 }
 
 void CDPDatabaseClient::OnGuildBankLogViewFromDB( CAr & ar, DPID, DPID )
@@ -2677,11 +2630,8 @@ void CDPDatabaseClient::SendQueryGetSealChar( u_long idReceiver ,const char* szA
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendQueryGetSealCharConm( u_long idReceiver )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_SEALCHARCONM_REQ, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idReceiver << g_uIdofMulti/*uQuery*/;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryGetSealCharConm(u_long idReceiver) {
+	SendPacket<PACKETTYPE_SEALCHARCONM_REQ, u_long, u_long>(idReceiver, g_uIdOfMulti);
 }
 
 void CDPDatabaseClient::OnSealCharFromDB( CAr & ar, DPID, DPID )
@@ -2997,11 +2947,8 @@ void CDPDatabaseClient::OnLEventTick( CAr & ar, DPID, DPID )
 	pEvent->EraseExpiredComponents();
 }
 
-void CDPDatabaseClient::SendElectionAddDeposit( u_long idPlayer, __int64 iDeposit )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ELECTION_ADD_DEPOSIT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << iDeposit;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendElectionAddDeposit(u_long idPlayer, __int64 iDeposit) {
+	SendPacket<PACKETTYPE_ELECTION_ADD_DEPOSIT, u_long, __int64>(idPlayer, iDeposit);
 }
 
 void CDPDatabaseClient::SendElectionSetPledge( u_long idPlayer, const char* szPledge )
@@ -3014,80 +2961,58 @@ void CDPDatabaseClient::SendElectionSetPledge( u_long idPlayer, const char* szPl
 
 void CDPDatabaseClient::SendElectionIncVote( u_long idPlayer, u_long idElector )
 {
-	BEFORESENDDUAL( ar, PACKETTYPE_ELECTION_INC_VOTE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << idElector;
-	SEND( ar, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_ELECTION_INC_VOTE, u_long, u_long>(idPlayer, idElector);
 }
 
-void CDPDatabaseClient::SendLEventCreate( u_long idPlayer, int iEEvent, int iIEvent )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_L_EVENT_CREATE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << iEEvent << iIEvent;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendLEventCreate(u_long idPlayer, int iEEvent, int iIEvent) {
+	SendPacket<PACKETTYPE_L_EVENT_CREATE, u_long, int, int>(
+		idPlayer, iEEvent, iIEvent
+	);
 }
 
-void CDPDatabaseClient::SendLordSkillUse( u_long idPlayer, u_long idTarget, int nSkill )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_LORD_SKILL_USE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << idTarget << nSkill;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendLordSkillUse(u_long idPlayer, u_long idTarget, int nSkill) {
+	SendPacket<PACKETTYPE_LORD_SKILL_USE, u_long, u_long, int>(
+		idPlayer, idTarget, nSkill
+	);
 }
 
 // operator commands
-void CDPDatabaseClient::SendLEventInitialize( void )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_L_EVENT_INITIALIZE, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendLEventInitialize() {
+	SendPacket<PACKETTYPE_L_EVENT_INITIALIZE>();
 }
 
-void CDPDatabaseClient::SendElectionProcess( BOOL bRun )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ELECTION_PROCESS, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << bRun;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-void CDPDatabaseClient::SendElectionBeginCandidacy( void )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ELECTION_BEGIN_CANDIDACY, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-void CDPDatabaseClient::SendElectionBeginVote( void )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ELECTION_BEGIN_VOTE, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-void CDPDatabaseClient::SendElectionBeginEndVote( void )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ELECTION_END_VOTE, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendElectionProcess(BOOL bRun) {
+	SendPacket<PACKETTYPE_ELECTION_PROCESS, BOOL>(bRun);
 }
 
-void CDPDatabaseClient::SendSecretRoomWinGuild( BYTE nCont, DWORD dwGuildId )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_TAX_SET_SECRETROOM_WINNER, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << nCont << dwGuildId;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendElectionBeginCandidacy() {
+	SendPacket<PACKETTYPE_ELECTION_BEGIN_CANDIDACY>();
 }
 
-void CDPDatabaseClient::SendLord( DWORD dwIdPlayer )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_TAX_SET_LORD, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwIdPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendElectionBeginVote() {
+	SendPacket<PACKETTYPE_ELECTION_BEGIN_VOTE>();
 }
 
-void CDPDatabaseClient::SendTaxRate( BYTE nCont, int nSalesTaxRate, int nPurchaseTaxRate )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_TAX_SET_TAXRATE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << nCont;
-	ar << nSalesTaxRate << nPurchaseTaxRate;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendElectionBeginEndVote() {
+	SendPacket<PACKETTYPE_ELECTION_END_VOTE>();
 }
 
-void CDPDatabaseClient::SendApplyTaxRateNow()
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_TAX_APPLY_TAXRATE_NOW, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendSecretRoomWinGuild(BYTE nCont, DWORD dwGuildId) {
+	SendPacket<PACKETTYPE_TAX_SET_SECRETROOM_WINNER, BYTE, DWORD>(nCont, dwGuildId);
+}
+
+void CDPDatabaseClient::SendLord(DWORD dwIdPlayer) {
+	SendPacket<PACKETTYPE_TAX_SET_LORD, DWORD>(dwIdPlayer);
+}
+
+void CDPDatabaseClient::SendTaxRate(BYTE nCont, int nSalesTaxRate, int nPurchaseTaxRate) {
+	SendPacket<PACKETTYPE_TAX_SET_TAXRATE, BYTE, int, int>(
+		nCont, nSalesTaxRate, nPurchaseTaxRate,
+	);
+}
+
+void CDPDatabaseClient::SendApplyTaxRateNow() {
+	SendPacket<PACKETTYPE_TAX_APPLY_TAXRATE_NOW>();
 }
 
 void CDPDatabaseClient::OnTaxInfo( CAr & ar, DPID, DPID )
@@ -3130,18 +3055,12 @@ void CDPDatabaseClient::OnTaxInfo( CAr & ar, DPID, DPID )
 	}
 }
 
-void CDPDatabaseClient::SendAddTax( BYTE nCont, int nTax, BYTE nTaxKind )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_TAX_ADDTAX, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << nCont << nTax << nTaxKind;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendAddTax(BYTE nCont, int nTax, BYTE nTaxKind) {
+	SendPacket<PACKETTYPE_TAX_ADDTAX, BYTE, int, BYTE>(nCont, nTax, nTaxKind);
 }
 
-void CDPDatabaseClient::SendSecretRoomInsertToDB( BYTE nContinent, __SECRETROOM_TENDER & srTender )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_SECRETROOM_TENDER_INSERTTODB, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << nContinent << srTender.dwGuildId << srTender.nPenya;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendSecretRoomInsertToDB(BYTE nContinent, __SECRETROOM_TENDER & srTender) {
+	SendPacket<PACKETTYPE_SECRETROOM_TENDER_INSERTTODB, BYTE, DWORD, int>(nContinent, srTender.dwGuildId, srTender.nPenya);
 }
 
 void CDPDatabaseClient::SendSecretRoomUpdateToDB( BYTE nContinent, __SECRETROOM_TENDER & srTender, char chState )
@@ -3163,20 +3082,14 @@ void CDPDatabaseClient::SendSecretRoomInsertLineUpToDB( BYTE nContinent, __SECRE
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPDatabaseClient::SendSecretRoomClosed()
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_SECRETROOM_CLOSED, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendSecretRoomClosed() {
+	SendPacket<PACKETTYPE_SECRETROOM_CLOSED>();
 }
 
-void CDPDatabaseClient::OnSecretRoomInfoClear( CAr & ar, DPID, DPID )
-{
-	CSecretRoomMng* pSRMng = CSecretRoomMng::GetInstance();
-	auto it = pSRMng->m_mapSecretRoomContinent.begin();
-	for( ; it!=pSRMng->m_mapSecretRoomContinent.end(); it++ )
-	{
-   		CSecretRoomContinent* pSRCont = it->second;
-		pSRCont->m_vecSecretRoomTender.clear();
+void CDPDatabaseClient::OnSecretRoomInfoClear(CAr & ar, DPID, DPID) {
+	CSecretRoomMng * pSRMng = CSecretRoomMng::GetInstance();
+	for (auto & [_, pSrCont] : pSRMng->m_mapSecretRoomContinent) {
+		pSrCont->m_vecSecretRoomTender.clear();
 	}
 }
 
@@ -3234,31 +3147,20 @@ void CDPDatabaseClient::OnRainbowRaceInfo( CAr & ar, DPID, DPID )
 	CRainbowRaceMng::GetInstance()->SetPrevRanking( vec_dwPrevRanking );
 }
 
-void CDPDatabaseClient::SendRainbowRaceReqLoad()
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_RAINBOWRACE_LOADDBTOWORLD, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendRainbowRaceReqLoad() {
+	SendPacket<PACKETTYPE_RAINBOWRACE_LOADDBTOWORLD>();
 }
 
-void CDPDatabaseClient::SendRainbowRaceApplication( DWORD dwPlayerId )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_RAINBOWRACE_APPTODB, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwPlayerId;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendRainbowRaceApplication(DWORD dwPlayerId) {
+	SendPacket<PACKETTYPE_RAINBOWRACE_APPTODB, DWORD>(dwPlayerId);
 }
 
-void CDPDatabaseClient::SendRainbowRaceFailedUser( DWORD dwPlayerId )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_RAINBOWRACE_FAILEDTODB, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwPlayerId;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendRainbowRaceFailedUser(DWORD dwPlayerId) {
+	SendPacket<PACKETTYPE_RAINBOWRACE_FAILEDTODB, DWORD>(dwPlayerId);
 }
 
-void CDPDatabaseClient::SendRainbowRaceRanking( DWORD dwPlayerId, int nRanking )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_RAINBOWRACE_RANKINGTODB, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwPlayerId << nRanking;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendRainbowRaceRanking(DWORD dwPlayerId, int nRanking) {
+	SendPacket<PACKETTYPE_RAINBOWRACE_RANKINGTODB, DWORD, int>(dwPlayerId, nRanking);
 }
 
 void CDPDatabaseClient::OnHousingLoadInfo( CAr & ar, DPID, DPID )
@@ -3325,31 +3227,20 @@ void CDPDatabaseClient::OnHousingDBFailed( CAr & ar, DPID, DPID )
 	}
 }
 
-void CDPDatabaseClient::SendPropose( u_long idProposer, u_long idTarget )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_PROPOSE, DPID_UNKNOWN, DPID_UNKNOWN );  
-	ar << idProposer << idTarget;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendPropose(u_long idProposer, u_long idTarget) {
+	SendPacket<PACKETTYPE_PROPOSE, u_long, u_long>(idProposer, idTarget);
 }
 
-void CDPDatabaseClient::SendCouple( u_long idProposer, u_long idTarget )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_COUPLE, DPID_UNKNOWN, DPID_UNKNOWN );  
-	ar << idProposer << idTarget;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendCouple(u_long idProposer, u_long idTarget) {
+	SendPacket<PACKETTYPE_COUPLE, u_long, u_long>(idProposer, idTarget);
 }
 
-void CDPDatabaseClient::SendDecouple( u_long idPlayer )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_DECOUPLE, DPID_UNKNOWN, DPID_UNKNOWN );  
-	ar << idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendDecouple(u_long idPlayer) {
+	SendPacket<PACKETTYPE_DECOUPLE, u_long>(idPlayer);
 }
 
-void CDPDatabaseClient::SendClearPropose()
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_CLEAR_PROPOSE, DPID_UNKNOWN, DPID_UNKNOWN );  
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendClearPropose() {
+	SendPacket<PACKETTYPE_CLEAR_PROPOSE>();
 }
 
 void CDPDatabaseClient::OnProposeResult( CAr & ar, DPID, DPID )
@@ -3371,11 +3262,8 @@ void CDPDatabaseClient::OnCouple(CAr & ar, DPID, DPID) {
 	ar >> *CCoupleHelper::Instance();
 }
 
-void CDPDatabaseClient::SendQueryAddCoupleExperience( u_long idPlayer, int nExperience )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_ADD_COUPLE_EXPERIENCE, DPID_UNKNOWN, DPID_UNKNOWN );  
-	ar << idPlayer << nExperience;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQueryAddCoupleExperience(u_long idPlayer, int nExperience) {
+	SendPacket<PACKETTYPE_ADD_COUPLE_EXPERIENCE, u_long, int>(idPlayer, nExperience);
 }
 
 void CDPDatabaseClient::OnAddCoupleExperience( CAr & ar, DPID, DPID )
@@ -3384,12 +3272,12 @@ void CDPDatabaseClient::OnAddCoupleExperience( CAr & ar, DPID, DPID )
 }
 
 #ifdef __FUNNY_COIN
-void CDPDatabaseClient::SendFunnyCoinReqUse( DWORD dwPlayerId, CItemElem* pItemElem )	// 퍼니코인을 사용했음을 TransServer에 알린다.
+void CDPDatabaseClient::SendFunnyCoinReqUse(DWORD dwPlayerId, CItemElem * pItemElem)	// 퍼니코인을 사용했음을 TransServer에 알린다.
 {
-	BEFORESENDDUAL( ar, PACKETTYPE_FUNNYCOIN_REQ_USE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwPlayerId;
-	ar << pItemElem->m_dwItemId << pItemElem->GetSerialNumber();
-	SEND( ar, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_FUNNYCOIN_REQ_USE, DWORD, DWORD, SERIALNUMBER>(
+		dwPlayerId,
+		pItemElem->m_dwItemId, pItemElem->GetSerialNumber()
+	);
 }
 
 void CDPDatabaseClient::OnFunnyCoinAckUse( CAr & ar, DPID, DPID )	// 퍼니코인 사용에 대한 응답을 TranServer로 부터 받았다.
@@ -3454,9 +3342,9 @@ void CDPDatabaseClient::OnTimeLimitReset( CAr & ar, DPID, DPID )
 
 void CDPDatabaseClient::SendLogInstanceDungeon( DWORD dwDungeonId, DWORD dwWorldId, u_long uChannel, int nDungeonType, char chState )
 {
-	BEFORESENDDUAL( ar, PACKETTYPE_INSTANCEDUNGEON_LOG, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwDungeonId << dwWorldId << uChannel << nDungeonType << chState;
-	SEND( ar, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_INSTANCEDUNGEON_LOG>(
+		dwDungeonId, dwWorldId, uChannel, nDungeonType, chState
+	);
 }
 
 #ifdef __QUIZ
@@ -3485,39 +3373,28 @@ void CDPDatabaseClient::OnQuizEventChanged( CAr & ar, DPID, DPID )
 		Error( "QuizEvent.lua 재실행 완료!!!" );
 }
 
-void CDPDatabaseClient::SendQuizEventOpen( int nType )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUIZ_OPEN, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << nType;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQuizEventOpen(int nType) {
+	SendPacket<PACKETTYPE_QUIZ_OPEN, int>(nType);
 }
 
 void CDPDatabaseClient::SendQuizEventState( int nState, int nChannel, int nWinnerCount, int nQuizCount )
 {
-	BEFORESENDDUAL( ar, PACKETTYPE_QUIZ_STATE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << nState << nChannel << nWinnerCount << nQuizCount;
-	SEND( ar, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_QUIZ_STATE, int, int, int, int>(
+		nState, nChannel, nWinnerCount, nQuizCount
+	);
 }
 
-void CDPDatabaseClient::SendQuizEventEntrance( u_long idPlayer, int nChannel )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUIZ_ENTRANCE, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << nChannel;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendQuizEventEntrance(u_long idPlayer, int nChannel) {
+	SendPacket<PACKETTYPE_QUIZ_ENTRANCE, u_long, int>(idPlayer, nChannel);
 }
 
 void CDPDatabaseClient::SendQuizEventSelect( u_long idPlayer, int nChannel, int nQuizId, int nSelect, int nAnswer )
 {
-	BEFORESENDDUAL( ar, PACKETTYPE_QUIZ_SELECT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << nChannel << nQuizId << nSelect << nAnswer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_QUIZ_SELECT>(idPlayer, nChannel, nQuizId, nSelect, nAnswer);
 }
 
-void CDPDatabaseClient::SendPostPrizeItem( u_long idPlayer, DWORD dwItemId, int nItemNum )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_QUIZ_PRIZEITEM, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << dwItemId << nItemNum;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendPostPrizeItem(u_long idPlayer, DWORD dwItemId, int nItemNum) {
+	SendPacket<PACKETTYPE_QUIZ_PRIZEITEM, u_long, DWORD, int>(idPlayer, dwItemId, nItemNum);
 }
 #endif // __QUIZ
 
@@ -3574,11 +3451,10 @@ void CDPDatabaseClient::OnGuildHousePacket( CAr & ar, DPID, DPID )
 	}
 }
 
-void CDPDatabaseClient::SendLogGuildFurniture( DWORD dwGuildId, GH_Fntr_Info & gfi, char chState )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_GUILDFURNITURE_LOG, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwGuildId << gfi << chState;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendLogGuildFurniture(DWORD dwGuildId, GH_Fntr_Info & gfi, char chState) {
+	SendPacket<PACKETTYPE_GUILDFURNITURE_LOG>(
+		dwGuildId, gfi, chState
+	);
 }
 
 #ifdef __GUILD_HOUSE_MIDDLE
@@ -3639,22 +3515,18 @@ void CDPDatabaseClient::OnUpdateCampusPoint( CAr & ar, DPID, DPID )
 
 void CDPDatabaseClient::SendAddCampusMember( u_long idMaster, int nMasterPoint, u_long idPupil, int nPupilPoint )
 {
-	BEFORESENDDUAL( ar, PACKETTYPE_CAMPUS_ADD_MEMBER, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idMaster << nMasterPoint << idPupil << nPupilPoint;
-	SEND( ar, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_CAMPUS_ADD_MEMBER, u_long, int, u_long, int>(
+		idMaster, nMasterPoint, idPupil, nPupilPoint
+	);
 }
 
-void CDPDatabaseClient::SendRemoveCampusMember( u_long idCampus, u_long idPlayer )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_CAMPUS_REMOVE_MEMBER, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idCampus << idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendRemoveCampusMember(u_long idCampus, u_long idPlayer) {
+	SendPacket<PACKETTYPE_CAMPUS_REMOVE_MEMBER, u_long, u_long>(idCampus, idPlayer);
 }
 
-void CDPDatabaseClient::SendUpdateCampusPoint( u_long idPlayer, int nCampusPoint, BOOL bAdd, char chState )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_CAMPUS_UPDATE_POINT, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << idPlayer << nCampusPoint << bAdd << chState;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPDatabaseClient::SendUpdateCampusPoint(u_long idPlayer, int nCampusPoint, BOOL bAdd, char chState) {
+	SendPacket<PACKETTYPE_CAMPUS_UPDATE_POINT, u_long, int, BOOL, char>(
+		idPlayer, nCampusPoint, bAdd, chState
+	);
 }
 

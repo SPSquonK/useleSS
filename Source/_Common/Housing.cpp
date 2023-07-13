@@ -112,9 +112,9 @@ CAr & operator>>(CAr & ar, CHousing & self) {
 #ifdef __WORLDSERVER
 		CHousingMng::GetInstance()->SetAddVisitable(self.m_dwMasterId, dwPlayerId);
 		if (IsValidObj(pUser) && !pUser->m_RTMessenger.GetFriend(dwPlayerId)) {
-			BEFORESENDDUAL(ar, PACKETTYPE_HOUSING_SETVISITALLOW, DPID_UNKNOWN, DPID_UNKNOWN);
-			ar << pUser->m_idPlayer << dwPlayerId << FALSE;
-			SEND(ar, &g_dpDBClient, DPID_SERVERPLAYER);
+			g_dpDBClient.SendPacket<PACKETTYPE_HOUSING_SETVISITALLOW, u_long, DWORD, BOOL>(
+				pUser->m_idPlayer, dwPlayerId, FALSE
+			);
 		}
 #endif // __WORLDSERVER
 	}
@@ -471,11 +471,8 @@ CHousingMng* CHousingMng::GetInstance()
 }
 
 #ifdef __WORLDSERVER
-void CHousingMng::ReqLoadHousingInfo( DWORD dwPlayerId )
-{
-	BEFORESENDDUAL( ar, PACKETTYPE_HOUSING_LOADINFO, DPID_UNKNOWN, DPID_UNKNOWN );
-	ar << dwPlayerId;
-	SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
+void CHousingMng::ReqLoadHousingInfo(DWORD dwPlayerId) {
+	g_dpDBClient.SendPacket<PACKETTYPE_HOUSING_LOADINFO, DWORD>(dwPlayerId);
 }
 
 BOOL CHousingMng::ReqSetFurnitureList( CUser* pUser, DWORD dwItemId )
@@ -484,9 +481,7 @@ BOOL CHousingMng::ReqSetFurnitureList( CUser* pUser, DWORD dwItemId )
 	if( pHousing && pHousing->IsListUpAble( pUser, dwItemId ) )
 	{
 		pHousing->Setting( TRUE );
-		BEFORESENDDUAL( ar, PACKETTYPE_HOUSING_FURNITURELIST, DPID_UNKNOWN, DPID_UNKNOWN );
-		ar << pUser->m_idPlayer << dwItemId;
-		SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
+		g_dpDBClient.SendPacket<PACKETTYPE_HOUSING_FURNITURELIST, u_long, DWORD>(pUser->m_idPlayer, dwItemId);
 	}
 	else
 		return FALSE;
@@ -500,9 +495,7 @@ BOOL CHousingMng::ReqSetupFurniture( CUser* pUser, HOUSINGINFO housingInfo )
 	if( pHousing && pHousing->IsSetupAble( pUser, housingInfo ) )
 	{
 		pHousing->Setting( TRUE );
-		BEFORESENDDUAL( ar, PACKETTYPE_HOUSING_SETUPFURNITURE, DPID_UNKNOWN, DPID_UNKNOWN );
-		ar << pUser->m_idPlayer << housingInfo;
-		SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
+		g_dpDBClient.SendPacket<PACKETTYPE_HOUSING_SETUPFURNITURE, u_long>(pUser->m_idPlayer, housingInfo);
 	}
 	else
 		return FALSE;
@@ -517,9 +510,9 @@ BOOL CHousingMng::ReqSetAllowVisit( CUser* pUser, DWORD dwPlayerId, BOOL bAllow 
 	if( pUser->m_RTMessenger.GetFriend( dwPlayerId ) && pHousing && ( pHousing->IsAllowVisit( dwPlayerId ) != bAllow ) )
 	{
 		pHousing->Setting( TRUE );
-		BEFORESENDDUAL( ar, PACKETTYPE_HOUSING_SETVISITALLOW, DPID_UNKNOWN, DPID_UNKNOWN );
-		ar << pUser->m_idPlayer << dwPlayerId << bAllow;
-		SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
+		g_dpDBClient.SendPacket<PACKETTYPE_HOUSING_SETVISITALLOW, u_long, DWORD, BOOL>(
+			pUser->m_idPlayer, dwPlayerId, bAllow
+		);
 	}
 	else
 		return FALSE;
@@ -527,14 +520,9 @@ BOOL CHousingMng::ReqSetAllowVisit( CUser* pUser, DWORD dwPlayerId, BOOL bAllow 
 	return TRUE;
 }
 
-void CHousingMng::ReqGMFunrnitureListAll( CUser* pUser )
-{
-	CHousing* pHousing = GetHousing( pUser->m_idPlayer );
-	if( pHousing )
-	{
-		BEFORESENDDUAL( ar, PACKETTYPE_HOUSING_GM_REMOVEALL, DPID_UNKNOWN, DPID_UNKNOWN );
-		ar << pUser->m_idPlayer;
-		SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
+void CHousingMng::ReqGMFunrnitureListAll(CUser * pUser) {
+	if (GetHousing(pUser->m_idPlayer)) {
+		g_dpDBClient.SendPacket<PACKETTYPE_HOUSING_GM_REMOVEALL, u_long>(pUser->m_idPlayer);
 	}
 }
 

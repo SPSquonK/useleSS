@@ -555,11 +555,11 @@ BOOL CGuildHouseBase::SendWorldToDatabase( CUser* pUser, int nPacketType, GH_Fnt
 	
 	SetWaitDBAckPlayerId( pUser->m_idPlayer );
 	{
-		BEFORESENDDUAL( ar, PACKETTYPE_GUILDHOUSE_PACKET, DPID_UNKNOWN, DPID_UNKNOWN );
-		ar << pUser->m_idGuild;
-		ar << nPacketType << nIndex;
-		ar << gfi;
-		SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
+		g_dpDBClient.SendPacket<PACKETTYPE_GUILDHOUSE_PACKET>(
+			pUser->m_idGuild,
+			nPacketType, nIndex,
+			gfi
+		);
 	}
 
 	return TRUE;
@@ -1223,10 +1223,8 @@ void CGuildHouseMng::ReqBuyGuildHouse( CUser* pUser )
 	{
 		pUser->AddGold( -BUY_PENYA );
 		g_DPSrvr.PutPenyaLog( pUser, "f", "GUILDHOUSE_BUY", BUY_PENYA ); // 페냐 로그
-
-		BEFORESENDDUAL( ar, PACKETTYPE_GUILDHOUSE_BUY, DPID_UNKNOWN, DPID_UNKNOWN );
-		ar << pUser->m_idPlayer << pUser->m_idGuild;
-		SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
+		
+		g_dpDBClient.SendPacket<PACKETTYPE_GUILDHOUSE_BUY, u_long, u_long>(pUser->m_idPlayer, pUser->m_idGuild);
 	}
 }
 
@@ -2184,11 +2182,8 @@ void CGuildHouseMng::OnGuildHouseTenderJoin( CUser* pUser, OBJID objGHId, int nT
 			return;
 		}
 
-		BEFORESENDDUAL( ar, PACKETTYPE_GUILDHOUSE_TENDER_JOIN, DPID_UNKNOWN, DPID_UNKNOWN );
-		ar << pUser->m_idPlayer;
-		GUILDHOUSE_TENDER GHT( objGHId, pUser->m_idGuild, nTenderPerin, nTenderPenya );
-		ar << GHT;
-		SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
+		GUILDHOUSE_TENDER GHT(objGHId, pUser->m_idGuild, nTenderPerin, nTenderPenya);
+		g_dpDBClient.SendPacket<PACKETTYPE_GUILDHOUSE_TENDER_JOIN, u_long, GUILDHOUSE_TENDER>(pUser->m_idPlayer, GHT);
 	}
 }
 
@@ -2533,9 +2528,9 @@ void CGuildHouseMng::CheckGuildHouseQuest( CUser* pUser, int nQuestId )
 					if( pGuildHouse->GetGuildHouseLevel() < pGHQuest->nLevel )
 					{
 						// send trans
-						BEFORESENDDUAL( ar, PACKETTYPE_GUILDHOUSE_LEVEL_UPDATE, DPID_UNKNOWN, DPID_UNKNOWN );
-						ar << pGuild->GetGuildId() << pGHQuest->nLevel;
-						SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
+						g_dpDBClient.SendPacket<PACKETTYPE_GUILDHOUSE_LEVEL_UPDATE>(
+							pGuild->GetGuildId(), pGHQuest->nLevel
+						);
 					}
 					else
 					{
