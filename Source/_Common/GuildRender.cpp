@@ -41,7 +41,7 @@ LPDIRECT3DTEXTURE9 CGuildTexture::LoadGuildTexture( DWORD idGuild )
 #endif
 	int	i;
 	GUILD_TEXTURE *pList = m_Texture, *pNode;
-	MATERIAL	*pMtrl;
+	MaterialessMATERIAL *pMtrl;
 	char	szName[128];
 
 	memset( szName, 0, sizeof(szName) );

@@ -25,6 +25,24 @@ CTextureManager :: CTextureManager()
 //		m_pMaterial[i].strBitMapFileName[0] = 0;
 //	}
 	m_nMaxTexture = 0;
+
+
+#ifndef __CHERRY
+	D3DMATERIAL9 & pMaterial = m_defaultMaterial;
+	pMaterial.Ambient.r = 1;
+	pMaterial.Ambient.g = 1;
+	pMaterial.Ambient.b = 1;
+	pMaterial.Diffuse.r = 1;
+	pMaterial.Diffuse.g = 1;
+	pMaterial.Diffuse.b = 1;
+	pMaterial.Specular.r = 1;
+	pMaterial.Specular.g = 1;
+	pMaterial.Specular.b = 1;
+	pMaterial.Emissive.r = 0;
+	pMaterial.Emissive.g = 0;
+	pMaterial.Emissive.b = 0;
+	pMaterial.Power = 0.0f;
+#endif
 }
 
 CTextureManager :: ~CTextureManager()
@@ -75,9 +93,9 @@ int CTextureManager::DeleteMaterial( LPDIRECT3DTEXTURE9 pTexture )
 	return FALSE;
 }
 
-MATERIAL*	CTextureManager :: AddMaterial( LPCTSTR strFileName, LPCTSTR szPath )
+MaterialessMATERIAL *	CTextureManager :: AddMaterial( LPCTSTR strFileName, LPCTSTR szPath )
 {
-	MATERIAL	*pMList = m_pMaterial;
+	MaterialessMATERIAL *pMList = m_pMaterial;
 
 	// 이미 읽은건지 검사.
 	for(int i = 0; i < MAX_MATERIAL; i ++ )
@@ -132,22 +150,6 @@ MATERIAL*	CTextureManager :: AddMaterial( LPCTSTR strFileName, LPCTSTR szPath )
 	}
 
 	pMList->m_bActive = TRUE;
-#ifndef __CHERRY
-	D3DMATERIAL9 & pMaterial = pMList->m_Material;
-	pMaterial.Ambient.r = 1;
-	pMaterial.Ambient.g = 1;
-	pMaterial.Ambient.b = 1;
-	pMaterial.Diffuse.r = 1;
-	pMaterial.Diffuse.g = 1;
-	pMaterial.Diffuse.b = 1;
-	pMaterial.Specular.r = 1;
-	pMaterial.Specular.g = 1;
-	pMaterial.Specular.b = 1;
-	pMaterial.Emissive.r = 0;
-	pMaterial.Emissive.g = 0;
-	pMaterial.Emissive.b = 0;
-	pMaterial.Power = 0.0f;
-#endif
 
 	strcpy( pMList->strBitMapFileName, strFileName );		// 텍스쳐 파일명 카피
 	pMList->m_pTexture = pTexture;

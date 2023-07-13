@@ -2,6 +2,13 @@
 
 #include <d3d9.h>
 
+struct MaterialessMATERIAL {
+	LPDIRECT3DTEXTURE9 m_pTexture;
+	char               strBitMapFileName[64];
+	int  m_nUseCnt;
+	BOOL m_bActive;
+};
+
 struct MATERIAL {
 	D3DMATERIAL9       m_Material;
 	LPDIRECT3DTEXTURE9 m_pTexture;
@@ -15,9 +22,10 @@ struct MATERIAL {
 class CTextureManager final {
 private:
 	int		m_nMaxTexture;
-	
+	D3DMATERIAL9 m_defaultMaterial;
+
 public:
-	MATERIAL	m_pMaterial[ MAX_MATERIAL ];
+	MaterialessMATERIAL	m_pMaterial[ MAX_MATERIAL ];
 	CTextureManager();
 	~CTextureManager();
 
@@ -26,9 +34,9 @@ public:
 	int		DeleteMaterial( LPDIRECT3DTEXTURE9 pTexture );
 	
 
-	[[nodiscard]] D3DMATERIAL9 * GetShadowMaterial() { return &m_pMaterial[0].m_Material; }
+	[[nodiscard]] D3DMATERIAL9 * GetShadowMaterial() { return &m_defaultMaterial; }
 
-	MATERIAL * AddMaterial(LPCTSTR strFileName, LPCTSTR szPath = nullptr);
+	MaterialessMATERIAL * AddMaterial(LPCTSTR strFileName, LPCTSTR szPath = nullptr);
 };
 
 extern CTextureManager		g_TextureMng;

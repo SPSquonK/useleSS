@@ -289,7 +289,7 @@ public:
 		for( int i = 0; i < m_pGroup->m_nMaxObject; i ++ )
 			SetTextureEx( &(m_pGroup->m_pObject[i]), nNumEx );		
 	}
-	void	LoadTextureEx( int nNumEx, GMOBJECT *pObj, MATERIAL *pmMaterial[16] );
+	void	LoadTextureEx( int nNumEx, GMOBJECT *pObj, MaterialessMATERIAL *pmMaterial[16] );
 	void	ChangeTexture( LPCTSTR szSrc, LPCTSTR szDest );
 	void	SetBone( D3DXMATRIX *pmBone ) { m_pmExternBone = pmBone; }
 	int		GetMaxVertex( void );

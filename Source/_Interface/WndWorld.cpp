@@ -8781,7 +8781,7 @@ void CWndWorld::InitEyeFlash()
 			strTexture += "_Flash";
 			strTexture += str1.Right(4);
 
-			MATERIAL * pMtrl = g_TextureMng.AddMaterial( strTexture );
+			MaterialessMATERIAL * pMtrl = g_TextureMng.AddMaterial( strTexture );
 			CMover::m_pTextureEyeFlash[nSex][i] = pMtrl->m_pTexture;
 		}
 	}
