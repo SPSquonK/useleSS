@@ -138,14 +138,52 @@ inline BOOL CDPMng::Send( LPVOID lpData, DWORD dwDataSize, DPID dpidTo )
 
 namespace DPMngFeatures {
 
+
+	template<typename Derived>
+	struct SendingPacket {
+		CAr ar;
+		Derived * self;
+
+		SendingPacket(Derived * self) : self(self) {}
+		SendingPacket(const SendingPacket &) = delete;
+		SendingPacket & operator=(const SendingPacket &) = delete;
+		SendingPacket(SendingPacket && other) {
+			self = other.self;
+			other.self = nullptr;
+		}
+
+		SendingPacket & operator=(SendingPacket && other) {
+			std::swap(self, other.self);
+			return *this;
+		}
+
+		~SendingPacket() {
+			if (!self) return;
+
+			int nBufSize;
+			SEND(ar, self, DPID_SERVERPLAYER);
+		}
+
+		CAr * operator->() { return &ar; }
+		CAr & operator*() { return ar; }
+		operator CAr & () & { return ar; }
+
+		template<typename T>
+		SendingPacket & operator<<(const T & t) {
+			ar << t;
+			return *this;
+		}
+	};
+
 template<typename Derived>
 class SendPacketNone {
 public:
 	template<DWORD PacketId, typename ... Ts>
-	void SendPacket(const Ts & ... ts) {
-		BEFORESEND(ar, PacketId);
-		ar.Accumulate(ts...);
-		SEND(ar, static_cast<Derived *>(this), DPID_SERVERPLAYER);
+	SendingPacket<Derived> SendPacket(const Ts & ... ts) {
+		SendingPacket<Derived> res{ static_cast<Derived *>(this) };
+		res << PacketId;
+		res.ar.Accumulate(ts...);
+		return res;
 	}
 };
 
@@ -153,10 +191,11 @@ template<typename Derived>
 class SendPacketSole {
 public:
 	template<DWORD PacketId, typename ... Ts>
-	void SendPacket(const Ts & ... ts) {
-		BEFORESENDSOLE(ar, PacketId, DPID_UNKNOWN);
-		ar.Accumulate(ts...);
-		SEND(ar, static_cast<Derived *>(this), DPID_SERVERPLAYER);
+	SendingPacket<Derived> SendPacket(const Ts & ... ts) {
+		SendingPacket<Derived> res{ static_cast<Derived *>(this) };
+		res << DPID_UNKNOWN << PacketId;
+		res.ar.Accumulate(ts...);
+		return res;
 	}
 };
 

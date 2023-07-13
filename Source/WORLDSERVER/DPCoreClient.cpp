@@ -177,10 +177,9 @@ BOOL CDPCoreClient::Run( LPSTR lpszAddr, USHORT uPort, u_long uKey )
 
 void CDPCoreClient::MyRegister( u_long uKey )
 {
-	BEFORESEND( ar, PACKETTYPE_MYREG );
+	auto ar = SendPacket<PACKETTYPE_MYREG>();
 	ar << uKey;	// uKey는 g_uKey와 동일한 값 
 	ar << (DWORD)timeGetTime();
-	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
 BOOL CDPCoreClient::CheckIdStack( void )
@@ -251,11 +250,8 @@ void CDPCoreClient::SendSetMonsterRespawn( u_long uidPlayer, DWORD dwMonsterID, 
 
 void CDPCoreClient::SendBlock( BYTE nGu, u_long uidPlayerTo, char *szNameTo, u_long uidPlayerFrom )
 {
-	BEFORESEND( ar, PACKETTYPE_BLOCK );
-	ar << nGu;
-	ar << uidPlayerTo << uidPlayerFrom;
-	ar.WriteString( szNameTo );
-	SEND( ar, this, DPID_ALLPLAYERS );
+	auto ar = SendPacket<PACKETTYPE_BLOCK>(nGu, uidPlayerTo, uidPlayerFrom);
+	ar->WriteString( szNameTo );
 }
 
 // Handlers

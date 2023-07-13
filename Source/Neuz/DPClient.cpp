@@ -7188,11 +7188,15 @@ void CDPClient::SendJoin( BYTE nSlot, CMover* pMover, CRTMessenger* pRTMessenger
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendChat( LPCSTR lpszChat )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_CHAT, DPID_UNKNOWN );
-	ar.WriteString( lpszChat );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendChat(LPCSTR lpszChat) {
+	auto p = SendPacket<PACKETTYPE_CHAT>();
+	p->WriteString(lpszChat);
+
+	if (false) {
+		// Testing passing p as a parameter to Serialize
+		CRTMessenger * rt;
+		rt->Serialize(p);
+	}
 }
 
 // 대전창 띄움
