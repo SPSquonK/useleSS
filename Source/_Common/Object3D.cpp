@@ -1208,8 +1208,6 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 			file->Read( szBitmap, nLen, 1 );
 			strlwr( szBitmap );		// 소문자로 변환
 			
-			pObject->m_MaterialAry[i].m_Material = mMaterial;
-
 			if( strlen(szBitmap)+1 > sizeof(pObject->m_MaterialAry[i].strBitMapFileName) )
 				Error( "CObject3D::LoadGeoMesh() : %s의 길이가 너무 길다", szBitmap );
 
@@ -2323,9 +2321,6 @@ void	CObject3D::SetTextureEx( GMOBJECT *pObj, int nNumEx )
 	}
 	pTextureEx = pObj->m_pMtrlBlkTexture + (pObj->m_nMaxMtrlBlk * nNumEx);		// 확장부분 포인터.
 	
-//	if( bUse )
-	if( 1 )
-	{
 		memset( mMaterial, 0, sizeof(mMaterial) );
 		
 		if( pTextureEx[0] == NULL )		// 확장 텍스쳐가 로딩된적이 없다.
@@ -2338,12 +2333,7 @@ void	CObject3D::SetTextureEx( GMOBJECT *pObj, int nNumEx )
 					pTextureEx[i] = mMaterial[ nID ]->m_pTexture;		// 확장텍스쳐를 로딩함.
 			}
 		}
-	}
-	else
-	{
-		for( i = 0; i < pObj->m_nMaxMtrlBlk; i ++ )
-			pTextureEx[i] = NULL;
-	}
+
 	
 	m_nTextureEx = nNumEx;
 #endif

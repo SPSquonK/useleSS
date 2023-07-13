@@ -92,7 +92,6 @@ struct O3D_ELEMENT
 	LPDIRECT3DVERTEXBUFFER9		*m_ppd3d_VB3;	// LOD3
 	LPDIRECT3DVERTEXBUFFER9		*m_ppd3d_VBSel;	// 현재 선택된 버퍼
 	LPDIRECT3DTEXTURE9			m_pTextureEx;	// 추가 텍스쳐.(멀티텍스쳐로 옷을 덧입힐때 쓴다.) 텍스쳐스테이지1번에 들어간다.
-	MATERIAL					m_Mtrl;			// mes에 포함된 텍스쳐이외에 텍스쳐를 따로 쓸때.  여기에 값이 없다면 디폴트것을 쓴다.
 	int							m_nEffect;		// 각 파츠의 외부지정 이펙트 설정.
 	int							m_nPartsIdx;
 };

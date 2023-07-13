@@ -136,8 +136,9 @@ struct GMOBJECT		// base object
 	D3DXVECTOR3		m_vBBMin, m_vBBMax;			// read bound box min, max
 //	D3DXVECTOR3		m_vBBVList[8];				// read bound box vlist
 
+	struct TextureName { char strBitMapFileName[64]; };
 	int				m_bMaterial;				// MES파일에 매터리얼이 있었는지?.  저장을 위해서 백업 받아둠
-	MATERIAL		m_MaterialAry[16];			// MES에 저장되어 있던 Material정보.  Save때나 다시 매터리얼을 셋팅 해야할 필요가 있을때 사용
+	TextureName		m_MaterialAry[16];			// MES에 저장되어 있던 Material정보.  Save때나 다시 매터리얼을 셋팅 해야할 필요가 있을때 사용
 
 	// void*의 VB를 쓸땐 항상 캐스팅을 할것.
 //	NORMALVERTEX	*m_ptempVB;
