@@ -101,7 +101,8 @@ void CCachePlayerMng::DestroyGarbagePlayer(CCachePlayer * pPlayer) {
 }
 
 void CCachePlayerMng::SendKeepAlive(CCachePlayer * pPlayer) {
-	BEFORESEND(ar, PACKETTYPE_KEEP_ALIVE);
 	pPlayer->SetAlive(false);
+
+	BEFORESEND(ar, PACKETTYPE_KEEP_ALIVE);
 	SEND(ar, &g_DPCacheSrvr, pPlayer->GetNetworkId());
 }

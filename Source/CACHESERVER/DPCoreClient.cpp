@@ -59,6 +59,7 @@ void CDPCoreClient::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, 
 	if (Handle(ar, dw, dpidUser)) {
 		if (ar.IsOverflow()) Error("Cache-Core: Packet %08x overflowed", dw);
 	} else {
+		// Send to Neuz
 		g_DPCacheSrvr.Send( lpBuf, uBufSize, dpidUser );
 	}
 #ifdef __CRASH_0404

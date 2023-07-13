@@ -281,10 +281,7 @@ void CDPCacheSrvr::SendSetFriendState( CPlayer* pTo )
 			vecIdFriend.push_back( friendId );
 	}
 
-	BEFORESENDSOLE( ar, PACKETTYPE_SETFRIENDSTATE, pTo->dpidUser );
-	ar << idPlayer;
-	ar << dwState;
-	SEND( ar, this, pTo->dpidCache );
+	SendPacket<PACKETTYPE_SETFRIENDSTATE, u_long, FriendStatus>(pTo, idPlayer, dwState);
 	
 	pTo->Unlock();
 
@@ -297,10 +294,9 @@ void CDPCacheSrvr::SendSetFriendState( CPlayer* pTo )
 			if( pFriend )
 			{
 				pFriend->dwState	= dwState;
-				BEFORESENDSOLE( ar, PACKETTYPE_SETFRIENDSTATE, pPlayer->dpidUser );
-				ar << idPlayer; 
-				ar << dwState;
-				SEND( ar, this, pPlayer->dpidCache );
+
+				// TODO: Both players receives the same idPlayer, which is suspicious
+				SendPacket<PACKETTYPE_SETFRIENDSTATE, u_long, FriendStatus>(pPlayer, idPlayer, dwState);
 			}
 			pPlayer->Unlock();
 		}
@@ -317,43 +313,25 @@ void CDPCacheSrvr::SendFriendJoin( CPlayer* pTo, CPlayer* pFriend )
 	SEND( ar, this, pTo->dpidCache );
 }
 
-void CDPCacheSrvr::SendFriendLogOut( CPlayer* pTo, u_long uidPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ADDFRIENDLOGOUT, pTo->dpidUser );
-	ar << uidPlayer;
-	SEND( ar, this, pTo->dpidCache );
+void CDPCacheSrvr::SendFriendLogOut(CPlayer * pTo, u_long uidPlayer) {
+	SendPacket<PACKETTYPE_ADDFRIENDLOGOUT, u_long>(pTo, uidPlayer);
 }
 
 void CDPCacheSrvr::SendFriendNoIntercept(CPlayer * pTo, u_long uFriendid) {
-	BEFORESENDSOLE(ar, PACKETTYPE_FRIENDNOINTERCEPT, pTo->dpidUser);
-	ar << uFriendid;
-	SEND(ar, this, pTo->dpidCache);
+	SendPacket<PACKETTYPE_FRIENDNOINTERCEPT, u_long>(pTo, uFriendid);
 }
 
-void CDPCacheSrvr::SendFriendIntercept( CPlayer* pPlayer, CPlayer* pFriend )
-{
-	{
-		BEFORESENDSOLE( ar, PACKETTYPE_FRIENDINTERCEPTSTATE, pPlayer->dpidUser );
-		ar << pPlayer->uKey << pFriend->uKey;
-		SEND( ar, this, pPlayer->dpidCache );
-	}
-	{
-		BEFORESENDSOLE( ar, PACKETTYPE_FRIENDINTERCEPTSTATE, pFriend->dpidUser );
-		ar << pPlayer->uKey << pFriend->uKey;
-		SEND( ar, this, pFriend->dpidCache );
-	}
+void CDPCacheSrvr::SendFriendIntercept(CPlayer * pPlayer, CPlayer * pFriend) {
+	SendPacket<PACKETTYPE_FRIENDINTERCEPTSTATE, u_long, u_long>(pPlayer, pPlayer->uKey, pFriend->uKey);
+	SendPacket<PACKETTYPE_FRIENDINTERCEPTSTATE, u_long, u_long>(pFriend, pPlayer->uKey, pFriend->uKey);
 }
 
-void CDPCacheSrvr::SendFriendIntercept( CPlayer* pPlayer, u_long uFriendid )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_FRIENDINTERCEPTSTATE, pPlayer->dpidUser );
-	ar << pPlayer->uKey << uFriendid;
-	SEND( ar, this, pPlayer->dpidCache );
+void CDPCacheSrvr::SendFriendIntercept(CPlayer * pPlayer, u_long uFriendid) {
+	SendPacket<PACKETTYPE_FRIENDINTERCEPTSTATE, u_long, u_long>(pPlayer, pPlayer->uKey, uFriendid);
 }
 
-void CDPCacheSrvr::SendKillPlayer( CPlayer* pPlayer )
-{
-	SendHdr( PACKETTYPE_KILLPLAYER, pPlayer->dpidCache, pPlayer->dpidUser );
+void CDPCacheSrvr::SendKillPlayer(CPlayer * pPlayer) {
+	SendPacket<PACKETTYPE_KILLPLAYER>(pPlayer);
 }
 
 void CDPCacheSrvr::SendGetPlayerAddr( const CHAR* lpszPlayer, const CHAR* lpAddr, CPlayer* pOperator )
@@ -364,11 +342,8 @@ void CDPCacheSrvr::SendGetPlayerAddr( const CHAR* lpszPlayer, const CHAR* lpAddr
 	SEND( ar, this, pOperator->dpidCache );
 }
 
-void CDPCacheSrvr::SendGetPlayerCount( u_short uCount, CPlayer* pOperator )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GETPLAYERCOUNT, pOperator->dpidUser );
-	ar << uCount;
-	SEND( ar, this, pOperator->dpidCache );
+void CDPCacheSrvr::SendGetPlayerCount(u_short uCount, CPlayer * pOperator) {
+	SendPacket<PACKETTYPE_GETPLAYERCOUNT, u_short>(pOperator, uCount);
 }
 
 void CDPCacheSrvr::SendGetCorePlayer( CPlayer* pOperator )
@@ -395,12 +370,8 @@ void CDPCacheSrvr::SendCaption( const CHAR* lpString, DWORD dwWorldId, BOOL bSma
 }
 
 
-void CDPCacheSrvr::SendGameRate( FLOAT fRate, BYTE nFlag )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GAMERATE, DPID_ALLPLAYERS );
-	ar << fRate;
-	ar << nFlag;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPCacheSrvr::SendGameRate(FLOAT fRate, BYTE nFlag) {
+	BroadcastPacket<PACKETTYPE_GAMERATE, FLOAT, BYTE>(fRate, nFlag);
 }
 
 void CDPCacheSrvr::SendDefinedText( int dwText, DPID dpidCache, DPID dpidUser, LPCSTR lpszFormat, ... )
@@ -452,9 +423,7 @@ void CDPCacheSrvr::OnSendTag( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 // cbResult -  결과: 0 - 실패(20개 초과의 경우), 1 - 성공 
 void CDPCacheSrvr::SendTagResult(CPlayer * pPlayer, bool cbResult) {
-	BEFORESENDSOLE(ar, PACKETTYPE_INSERTTAG_RESULT, pPlayer->dpidUser);
-	ar << cbResult;
-	SEND(ar, this, pPlayer->dpidCache);
+	SendPacket<PACKETTYPE_INSERTTAG_RESULT, bool>(pPlayer, cbResult);
 }
 
 void CDPCacheSrvr::OnPartyChangeLeader( CAr & ar, DPID dpidCache, DPID dpidUser )
@@ -1518,29 +1487,20 @@ void CDPCacheSrvr::SendAddGuildMember( const GUILD_MEMBER_INFO & info, const cha
 	SEND( ar, this, pPlayer->dpidCache );
 }
 
-void CDPCacheSrvr::SendRemoveGuildMember( u_long idPlayer, u_long idGuild, CPlayer* pPlayer )
-{
-	if( !pPlayer )
+void CDPCacheSrvr::SendRemoveGuildMember(u_long idPlayer, u_long idGuild, CPlayer * pPlayer) {
+	if (!pPlayer)
 		return;
 
-	BEFORESENDSOLE( ar, PACKETTYPE_REMOVE_GUILD_MEMBER, pPlayer->dpidUser );
-	ar << idPlayer << idGuild;
-	SEND( ar, this, pPlayer->dpidCache );
+	SendPacket<PACKETTYPE_REMOVE_GUILD_MEMBER, u_long, u_long>(pPlayer, idPlayer, idGuild);
 }
 
-void CDPCacheSrvr::SendGuildMemberLv( u_long idPlayer, int nMemberLv, CPlayer* pPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_MEMBER_LEVEL, pPlayer->dpidUser );
-	ar << idPlayer << nMemberLv;
-	SEND( ar, this, pPlayer->dpidCache );
+void CDPCacheSrvr::SendGuildMemberLv(u_long idPlayer, int nMemberLv, CPlayer * pPlayer) {
+	SendPacket<PACKETTYPE_GUILD_MEMBER_LEVEL, u_long, int>(pPlayer, idPlayer, nMemberLv);
 }
 
 
-void CDPCacheSrvr::SendGuildClass( u_long idPlayer, int nClass, CPlayer* pPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_CLASS, pPlayer->dpidUser );
-	ar << idPlayer << nClass;
-	SEND( ar, this, pPlayer->dpidCache );
+void CDPCacheSrvr::SendGuildClass(u_long idPlayer, int nClass, CPlayer * pPlayer) {
+	SendPacket<PACKETTYPE_GUILD_CLASS, u_long, int>(pPlayer, idPlayer, nClass);
 }
 
 void CDPCacheSrvr::SendGuildNickName( u_long idPlayer, LPCTSTR strNickName, CPlayer* pPlayer )
@@ -1551,11 +1511,8 @@ void CDPCacheSrvr::SendGuildNickName( u_long idPlayer, LPCTSTR strNickName, CPla
 	SEND( ar, this, pPlayer->dpidCache );
 }
 
-void CDPCacheSrvr::SendChgMaster( u_long idPlayer, u_long idPlayer2, CPlayer* pPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_CHG_MASTER, pPlayer->dpidUser );
-	ar << idPlayer << idPlayer2;
-	SEND( ar, this, pPlayer->dpidCache );
+void CDPCacheSrvr::SendChgMaster(u_long idPlayer, u_long idPlayer2, CPlayer * pPlayer) {
+	SendPacket<PACKETTYPE_CHG_MASTER, u_long, u_long>(pPlayer, idPlayer, idPlayer2);
 }
 
 void CDPCacheSrvr::SendGuildSetName( u_long idGuild, const char* szName )
@@ -1575,11 +1532,8 @@ void CDPCacheSrvr::SendGuildChat( const char* lpszPlayer, const char* sChat, CPl
 	SEND( ar, this, pPlayer->dpidCache );
 }
 
-void CDPCacheSrvr::SendGuildMemberLogin( CPlayer* pTo, BYTE nLogin, u_long uPlayerId, u_long uMultiNo )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_GAMELOGIN, pTo->dpidUser );
-	ar << nLogin << uPlayerId << uMultiNo;
-	SEND( ar, this, pTo->dpidCache );
+void CDPCacheSrvr::SendGuildMemberLogin(CPlayer * pTo, BYTE nLogin, u_long uPlayerId, u_long uMultiNo) {
+	SendPacket<PACKETTYPE_GUILD_GAMELOGIN, BYTE, u_long, u_long>(pTo, nLogin, uPlayerId, nMultiNo);
 }
 
 void CDPCacheSrvr::SendGuildMemberGameJoin( CPlayer * pTo, int nMaxLogin, u_long uLoginPlayerId[], u_long uLoginGuildMulti[] )
@@ -1591,11 +1545,8 @@ void CDPCacheSrvr::SendGuildMemberGameJoin( CPlayer * pTo, int nMaxLogin, u_long
 	SEND( ar, this, pTo->dpidCache );
 }
 
-void CDPCacheSrvr::SendGuildError( CPlayer * pTo, int nError )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GUILD_ERROR, pTo->dpidUser );
-	ar << nError;
-	SEND( ar, this, pTo->dpidCache );
+void CDPCacheSrvr::SendGuildError(CPlayer * pTo, int nError) {
+	SendPacket<PACKETTYPE_GUILD_ERROR, int>(pTo, nError);
 }
 
 // fixme - raiders
@@ -1732,11 +1683,8 @@ void CDPCacheSrvr::OnRemoveFriend( CAr & ar, DPID dpidCache, DPID dpidUser )
 	}
 }
 
-void CDPCacheSrvr::SendErrorParty( DWORD dwError, CPlayer* pPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ERRORPARTY, pPlayer->dpidUser );
-	ar << dwError;
-	SEND( ar, this, pPlayer->dpidCache );
+void CDPCacheSrvr::SendErrorParty(DWORD dwError, CPlayer * pPlayer) {
+	SendPacket<PACKETTYPE_ERRORPARTY, DWORD>(pPlayer, dwError);
 }
 
 void CDPCacheSrvr::SendAddFriend( u_long uLeader, u_long uMember, LONG nLeaderJob, BYTE nLeaderSex, char * szLeaderName, CPlayer* pMember )
@@ -2081,18 +2029,12 @@ void CDPCacheSrvr::SendDeclWar( u_long idDecl, const char* pszMaster, CPlayer* p
 	SEND( ar, this, pPlayer->dpidCache );
 }
 
-void CDPCacheSrvr::SendAcptWar(WarId idWar, u_long idDecl, u_long idAcpt )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ACPT_GUILD_WAR, DPID_ALLPLAYERS );
-	ar << idWar << idDecl << idAcpt;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPCacheSrvr::SendAcptWar(WarId idWar, u_long idDecl, u_long idAcpt) {
+	BroadcastPacket<PACKETTYPE_ACPT_GUILD_WAR, WarId, u_long, u_long>(idWar, idDecl, idAcpt);
 }
 
-void CDPCacheSrvr::SendWarEnd(WarId idWar, int nWptDecl, int nWptAcpt, int nType )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_WAR_END, DPID_ALLPLAYERS );
-	ar << idWar << nWptDecl << nWptAcpt << nType;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPCacheSrvr::SendWarEnd(WarId idWar, int nWptDecl, int nWptAcpt, int nType) {
+	BroadcastPacket<PACKETTYPE_WAR_END, WarId, int, int, int>(idWar, nWptDecl, nWptAcpt, nType);
 }
 
 void CDPCacheSrvr::SendWarDead(WarId idWar, const char* lpszPlayer, BOOL bDecl, CPlayer* pPlayer )
@@ -2104,10 +2046,8 @@ void CDPCacheSrvr::SendWarDead(WarId idWar, const char* lpszPlayer, BOOL bDecl, 
 	SEND( ar, this, pPlayer->dpidCache );
 }
 
-void CDPCacheSrvr::SendQueryTruce( CPlayer* pPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERY_TRUCE, pPlayer->dpidUser );
-	SEND( ar, this, pPlayer->dpidCache );
+void CDPCacheSrvr::SendQueryTruce(CPlayer * pPlayer) {
+	SendPacket<PACKETTYPE_QUERY_TRUCE>(pPlayer);
 }
 
 void CDPCacheSrvr::OnAddVote( CAr & ar, DPID dpidCache, DPID dpidUser )
@@ -2245,11 +2185,8 @@ void CDPCacheSrvr::OnCastVote( CAr & ar, DPID dpidCache, DPID dpidUser )
 	}	
 }
 
-void CDPCacheSrvr::SendUpdateGuildRank()
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_UPDATE_GUILD_RANKING, DPID_ALLPLAYERS );
-	ar << CGuildRank::Instance;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPCacheSrvr::SendUpdateGuildRank() {
+	BroadcastPacket<PACKETTYPE_UPDATE_GUILD_RANKING>(CGuildRank::Instance);
 }
 
 void CDPCacheSrvr::SendSetPlayerName( u_long idPlayer, const char* lpszPlayer )
@@ -2275,19 +2212,15 @@ void CDPCacheSrvr::SendUpdatePlayerData( u_long idPlayer, PlayerData* pPlayerDat
 	SEND( ar, this, pTo->dpidCache );
 }
 
-void CDPCacheSrvr::SendLogout( u_long idPlayer, CPlayer* pTo )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_LOGOUT, pTo->dpidUser );
-	ar << idPlayer;
-	SEND( ar, this, pTo->dpidCache );
+void CDPCacheSrvr::SendLogout(u_long idPlayer, CPlayer * pTo) {
+	SendPacket<PACKETTYPE_LOGOUT, u_long>(pTo, idPlayer);
 }
 
 #ifdef __QUIZ
-void CDPCacheSrvr::SendQuizSystemMessage( int nDefinedTextId, BOOL bAll, int nChannel, int nTime )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUIZ_NOTICE, DPID_ALLPLAYERS );
-	ar << nDefinedTextId << bAll << nChannel << nTime;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPCacheSrvr::SendQuizSystemMessage(int nDefinedTextId, BOOL bAll, int nChannel, int nTime) {
+	BroadcastPacket<PACKETTYPE_QUIZ_NOTICE, int, BOOL, int, int>(
+		nDefinedTextId, bAll, nChannel, nTime
+	);
 }
 #endif // __QUIZ
 

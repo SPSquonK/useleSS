@@ -327,18 +327,12 @@ void CDPSrvr_AccToCert::SendServersetList( DPID dpid )
 	SEND( ar, this, dpid );
 }
 
-void CDPSrvr_AccToCert::SendPlayerCount( u_long uId, long lCount )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_PLAYER_COUNT, DPID_UNKNOWN );
-	ar << uId << lCount;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPSrvr_AccToCert::SendPlayerCount(u_long uId, long lCount) {
+	BroadcastPacket<PACKETTYPE_PLAYER_COUNT, u_long, long>(uId, lCount);
 }
 
-void CDPSrvr_AccToCert::SendEnableServer( u_long uId, long lEnable )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ENABLE_SERVER, DPID_UNKNOWN );
-	ar << uId << lEnable;
-	SEND( ar, this, DPID_ALLPLAYERS );
+void CDPSrvr_AccToCert::SendEnableServer(u_long uId, long lEnable) {
+	BroadcastPacket<PACKETTYPE_ENABLE_SERVER, u_long, long>(uId, lEnable);
 }
 
 BOOL CDPSrvr_AccToCert::EnableServer( DWORD dwParent, DWORD dwID, long lEnable ) {
