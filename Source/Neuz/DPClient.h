@@ -128,7 +128,7 @@ public:
 	void	SendDuelPartyRequest( CMover* pSrc, CMover* pDst );
 	void	SendDuelPartyYes( CMover* pSrc, CMover* pDst );
 	void	SendDuelPartyNo( CMover* pSrc );
-	void	SendPartyChangeLeader( u_long uLeaderId, u_long uChangerLeaderid );
+	void	SendPartyChangeLeader( u_long uChangerLeaderid );
 	void	SendMoverFocus( u_long uidPlayer );
 	void	SendChangeFace(DWORD dwFaceNum);
 	

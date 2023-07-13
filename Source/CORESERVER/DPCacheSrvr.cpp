@@ -428,16 +428,13 @@ void CDPCacheSrvr::SendTagResult(CPlayer * pPlayer, bool cbResult) {
 
 void CDPCacheSrvr::OnPartyChangeLeader( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
-	u_long _idLeader, idChangeLeader;
-	ar >> _idLeader >> idChangeLeader;
-	
-	CPlayer* pLeader;
-	CPlayer* pChangeLeader;
+	u_long idChangeLeader;
+	ar >> idChangeLeader;
 	
 	CMclAutoLock	Lock( g_PlayerMng.m_AddRemoveLock );
 	
-	pLeader = g_PlayerMng.GetPlayerBySerial( dpidUser );
-	pChangeLeader = g_PlayerMng.GetPlayer( idChangeLeader );
+	CPlayer * pLeader = g_PlayerMng.GetPlayerBySerial( dpidUser );
+	CPlayer * pChangeLeader = g_PlayerMng.GetPlayer( idChangeLeader );
 	
 	if( !pLeader )
 	{

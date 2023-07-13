@@ -1169,9 +1169,8 @@ void CDPSrvr::OnPartyRequestCancle(CAr & ar, CUser & pMember) {
 
 void CDPSrvr::OnPartySkillUse( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
-	u_long uLeaderid;
 	int nSkill;
-	ar >> uLeaderid >> nSkill;	
+	ar >> nSkill;	
 
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsInvalidObj( pUser ) )		

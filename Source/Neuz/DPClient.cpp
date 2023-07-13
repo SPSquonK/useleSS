@@ -812,8 +812,7 @@ void CDPClient::OnKeepAlive( CAr & ar )
 #ifdef __TRAFIC_1218
 	m_traficLog.Clear();
 #endif	// __TRAFIC_1218
-	BEFORESENDSOLE( ar2, PACKETTYPE_KEEP_ALIVE, DPID_UNKNOWN );
-	SEND( ar2, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_KEEP_ALIVE>();
 }
 
 void CDPClient::OnUpdatePlayerData( CAr & ar )
@@ -853,9 +852,8 @@ void CDPClient::OnGetClock( CAr & ar )
 
 //	time_t tClient	= timeGetTime();
 	DWORD tClient	= timeGetTime();
-	BEFORESENDSOLE( ar2, PACKETTYPE_GET_CLOCK, DPID_UNKNOWN );
-	ar2 << fsETbaseOfClient << tClient;
-	SEND( ar2, this, DPID_SERVERPLAYER );
+
+	SendPacket<PACKETTYPE_GET_CLOCK, BYTE, DWORD>(fsETbaseOfClient, tClient);
 }
 
 void CDPClient::OnError( CAr & ar )
@@ -1235,8 +1233,7 @@ void CDPClient::OnChat( OBJID objid, CAr & ar )
 #ifdef __YS_CHATTING_BLOCKING_SYSTEM
 		if( pMover && pMover->IsPlayer() == TRUE )
 		{
-			auto BlockedUserIterator = prj.m_setBlockedUserID.find( pMover->GetName( TRUE ) );
-			if( BlockedUserIterator != prj.m_setBlockedUserID.end() )
+			if( prj.m_setBlockedUserID.contains(pMover->GetName(TRUE)) )
 				return;
 		}
 #endif // __YS_CHATTING_BLOCKING_SYSTEM
@@ -7211,16 +7208,12 @@ void CDPClient::SendGuildCombatApp( DWORD dwPenya )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 // 대전 취소
-void CDPClient::SendGuildCombatCancel( void )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_OUT_GUILDCOMBAT, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendGuildCombatCancel() {
+	SendPacket<PACKETTYPE_OUT_GUILDCOMBAT>();
 }
 // 대전 신청 현황
-void CDPClient::SendGCRequestStatusWindow( void )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_REQUEST_STATUS, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendGCRequestStatusWindow() {
+	SendPacket<PACKETTYPE_REQUEST_STATUS>();
 }
 // 대전 선택 캐릭창 띄움
 void CDPClient::SendGCSelectPlayerWindow( void )
@@ -7244,78 +7237,53 @@ void CDPClient::SendGCSelectPlayer(std::vector<u_long> vecSelectPlayer, u_long u
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 // 대전 맵 선택
-void CDPClient::SendGCSelectMap( int nMap )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_SELECTMAP_GUILDCOMBAT, DPID_UNKNOWN );
-	ar << nMap;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendGCSelectMap(int nMap) {
+	SendPacket<PACKETTYPE_SELECTMAP_GUILDCOMBAT, int>(nMap);
 }
 // 길드대전 입장
-void CDPClient::SendGCJoin( void )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_JOIN_GUILDCOMBAT, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendGCJoin() {
+	SendPacket<PACKETTYPE_JOIN_GUILDCOMBAT>();
 }
 // 길드 신청금액 및 보상받기
-void CDPClient::SendGCGetPenyaGuild( void )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GETPENYAGUILD_GUILDCOMBAT, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendGCGetPenyaGuild() {
+	SendPacket<PACKETTYPE_GETPENYAGUILD_GUILDCOMBAT>();
 }
 // 베스트 플레이어 보상 받기
-void CDPClient::SendGCGetPenyaPlayer( void )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GETPENYAPLAYER_GUILDCOMBAT, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendGCGetPenyaPlayer() {
+	SendPacket<PACKETTYPE_GETPENYAPLAYER_GUILDCOMBAT>();
 }
-void CDPClient::SendGCTele( void )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_TELE_GUILDCOMBAT, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendGCTele() {
+	SendPacket<PACKETTYPE_TELE_GUILDCOMBAT>();
 }
-void CDPClient::SendGCPlayerPoint( void )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_PLAYERPOINT_GUILDCOMBAT, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendGCPlayerPoint() {
+	SendPacket<PACKETTYPE_PLAYERPOINT_GUILDCOMBAT>();
 }
 
-void CDPClient::SendActMsg( CMover* pMover, DWORD dwMsg, int nParam1, int nParam2 )
-{
-	SendSnapshot( TRUE );
+void CDPClient::SendActMsg(CMover *, DWORD dwMsg, int nParam1, int nParam2) {
+	SendSnapshot(TRUE);
 
-	BEFORESENDSOLE( ar, PACKETTYPE_ACTMSG, DPID_UNKNOWN );
-	ar << dwMsg << nParam1 << nParam2;
-	SEND( ar, this, DPID_SERVERPLAYER );
+	SendPacket<PACKETTYPE_ACTMSG, DWORD, int, int>(dwMsg, nParam1, nParam2);
 }
 
-void CDPClient::SendError( int nCode, int nData )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_ERRORCODE, DPID_UNKNOWN );
-	ar << nCode << nData;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendError(int nCode, int nData) {
+	SendPacket<PACKETTYPE_ERRORCODE, int, int>(nCode, nData);
 }
 
 void CDPClient::SendShipActMsg( CShip *pShip, DWORD dwMsg, int nParam1, int nParam2 )
 {
 	OBJID	idShip = pShip->GetId();
-	BEFORESENDSOLE( ar, PACKETTYPE_SHIP_ACTMSG, DPID_UNKNOWN );
-	ar << dwMsg << nParam1 << nParam2 << idShip;
-	SEND( ar, this, DPID_SERVERPLAYER );
+
+	SendPacket<PACKETTYPE_SHIP_ACTMSG, DWORD, int, int, OBJID>(
+		dwMsg, nParam1, nParam2, idShip
+	);
 }
 
-void CDPClient::SendLocalPosFromIA( const D3DXVECTOR3 &vLocal, OBJID idIA )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_LOCALPOSFROMIA, DPID_UNKNOWN );
-	ar << vLocal << idIA;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendLocalPosFromIA(const D3DXVECTOR3 & vLocal, OBJID idIA) {
+	SendPacket<PACKETTYPE_LOCALPOSFROMIA, D3DXVECTOR3, OBJID>(vLocal, idIA);
 }
 
-void CDPClient::SendRemoveItem( CItemElem* pItemElem, int nNum )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_REMOVEINVENITEM, DPID_UNKNOWN );
-	ar << pItemElem->m_dwObjId;
-	ar << nNum;
-	SEND( ar, this, DPID_SERVERPLAYER );	
+void CDPClient::SendRemoveItem(CItemElem * pItemElem, int nNum) {
+	SendPacket<PACKETTYPE_REMOVEINVENITEM, DWORD, int>(pItemElem->m_dwObjId, nNum);
 }
 
 void CDPClient::SendDoEquip( CItemElem* pItemElem, int nPart, BOOL bResult )
@@ -7409,50 +7377,34 @@ void CDPClient::SendDropItem(DWORD dwItemId, short nITemNum, const D3DXVECTOR3 &
 
 void CDPClient::SendTrade( CMover* pTrader )
 {
-	if( IsValidObj( pTrader )/**/ && pTrader->GetType() == OT_MOVER && ( (CMover*)pTrader )->IsPlayer() )
+	if( IsValidObj( pTrader ) && pTrader->GetType() == OT_MOVER && ( (CMover*)pTrader )->IsPlayer() )
 	{
-		BEFORESENDSOLE( ar, PACKETTYPE_TRADE, DPID_UNKNOWN );
-		ar << pTrader->GetId();
-		SEND( ar, this, DPID_SERVERPLAYER );
+		SendPacket<PACKETTYPE_TRADE, OBJID>(pTrader->GetId());
 	}
 }
 
 void CDPClient::SendConfirmTrade( CMover* pTrader )
 {
-	if( IsValidObj( pTrader )/**/ && pTrader->GetType() == OT_MOVER && ( (CMover*)pTrader )->IsPlayer() )
+	if( IsValidObj( pTrader ) && pTrader->GetType() == OT_MOVER && ( (CMover*)pTrader )->IsPlayer() )
 	{
-		BEFORESENDSOLE( ar, PACKETTYPE_CONFIRMTRADE, DPID_UNKNOWN );
-		ar << pTrader->GetId();
-		SEND( ar, this, DPID_SERVERPLAYER );
+		SendPacket<PACKETTYPE_CONFIRMTRADE, OBJID>(pTrader->GetId());
 	}
 }
 
-void CDPClient::SendTradePut( BYTE i, BYTE nItemType, BYTE nId, short ItemNum )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_TRADEPUT, DPID_UNKNOWN );
-	ar << i << nItemType << nId << ItemNum;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendTradePut(BYTE i, BYTE nItemType, BYTE nId, short ItemNum) {
+	SendPacket<PACKETTYPE_TRADEPUT, BYTE, BYTE, BYTE, short>(i, nItemType, nId, ItemNum);
 }
 
-void CDPClient::SendTradePull( int i )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_TRADEPULL, DPID_UNKNOWN );
-	ar << (BYTE)i;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendTradePull(int i) {
+	SendPacket<PACKETTYPE_TRADEPULL, BYTE>(static_cast<BYTE>(i));
 }
 
-void CDPClient::SendTradePutGold( DWORD dwGold )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_TRADEPUTGOLD, DPID_UNKNOWN );
-	ar << dwGold;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendTradePutGold(DWORD dwGold) {
+	SendPacket<PACKETTYPE_TRADEPUTGOLD, DWORD>(dwGold);
 }
 
-void CDPClient::SendTradeCancel( int nMode )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_TRADECANCEL, DPID_UNKNOWN );
-	ar << nMode;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendTradeCancel(int nMode) {
+	SendPacket<PACKETTYPE_TRADECANCEL, int>(nMode);
 }
 
 void CDPClient::SendMessageNote(u_long uidTo, LPCTSTR strMessage) {
@@ -7462,11 +7414,8 @@ void CDPClient::SendMessageNote(u_long uidTo, LPCTSTR strMessage) {
 	SEND(ar, this, DPID_SERVERPLAYER);
 }
 
-void CDPClient::SendPartySkillUse( int nSkill )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_PARTYSKILLUSE, DPID_UNKNOWN );
-	ar << g_pPlayer->m_idPlayer << nSkill;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendPartySkillUse(int nSkill) {
+	SendPacket<PACKETTYPE_PARTYSKILLUSE, int>(nSkill);
 }
 
 void CDPClient::SendPartyMemberCancle(u_long uLeader, int nMode) {
@@ -7497,37 +7446,24 @@ void CDPClient::SendChangePartyName( const char * szPartyName )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendPartyChangeLeader( u_long uLeaderId, u_long uChangerLeaderid )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_PARTYCHANGELEADER, DPID_UNKNOWN );
-	ar << uLeaderId;
-	ar << uChangerLeaderid;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendPartyChangeLeader(u_long uChangerLeaderid) {
+	SendPacket<PACKETTYPE_PARTYCHANGELEADER, u_long>(uChangerLeaderid);
 }
 
 // pSrc : 듀얼 신청자
 // pDst : 듀얼 타겟
-void CDPClient::SendDuelRequest( CMover* pSrc, CMover* pDst )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_DUELREQUEST, DPID_UNKNOWN );
-	ar << pSrc->m_idPlayer << pDst->m_idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendDuelRequest(CMover * pSrc, CMover * pDst) {
+	SendPacket<PACKETTYPE_DUELREQUEST, u_long, u_long>(pSrc->m_idPlayer, pDst->m_idPlayer);
 }
 
 // 듀얼시작을 알림
-void CDPClient::SendDuelYes( CMover* pSrc, CMover* pDst )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_DUELYES, DPID_UNKNOWN );
-	ar << pSrc->m_idPlayer << pDst->m_idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendDuelYes(CMover * pSrc, CMover * pDst) {
+	SendPacket<PACKETTYPE_DUELYES, u_long, u_long>(pSrc->m_idPlayer, pDst->m_idPlayer);
 }
 
 // 신청자에게 듀얼신청을 거부한다는걸 알림.
-void CDPClient::SendDuelNo( CMover* pSrc )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_DUELNO, DPID_UNKNOWN );
-	ar << pSrc->m_idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendDuelNo(CMover * pSrc) {
+	SendPacket<PACKETTYPE_DUELNO, u_long>(pSrc->m_idPlayer);
 }
 
 void CDPClient::SendFocusObj()
@@ -7563,34 +7499,22 @@ void CDPClient::OnFocusObj( CAr & ar )
 /// 파티 듀얼.
 // pSrc : 듀얼 신청자
 // pDst : 듀얼 타겟
-void CDPClient::SendDuelPartyRequest( CMover* pSrc, CMover* pDst )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_DUELPARTYREQUEST, DPID_UNKNOWN );
-	ar << pSrc->m_idPlayer << pDst->m_idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendDuelPartyRequest(CMover * pSrc, CMover * pDst) {
+	SendPacket<PACKETTYPE_DUELPARTYREQUEST, u_long, u_long>(pSrc->m_idPlayer, pDst->m_idPlayer);
 }
 
 // 듀얼시작을 알림
-void CDPClient::SendDuelPartyYes( CMover* pSrc, CMover* pDst )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_DUELPARTYYES, DPID_UNKNOWN );
-	ar << pSrc->m_idPlayer << pDst->m_idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendDuelPartyYes(CMover * pSrc, CMover * pDst) {
+	SendPacket<PACKETTYPE_DUELPARTYYES, u_long, u_long>(pSrc->m_idPlayer, pDst->m_idPlayer);
 }
 
 // 신청자에게 듀얼신청을 거부한다는걸 알림.
-void CDPClient::SendDuelPartyNo( CMover* pSrc )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_DUELPARTYNO, DPID_UNKNOWN );
-	ar << pSrc->m_idPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendDuelPartyNo(CMover * pSrc) {
+	SendPacket<PACKETTYPE_DUELPARTYNO, u_long>(pSrc->m_idPlayer);
 }
 
-void CDPClient::SendMoverFocus( u_long uidPlayer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_MOVERFOCOUS, DPID_UNKNOWN );
-	ar << uidPlayer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendMoverFocus(u_long uidPlayer) {
+	SendPacket<PACKETTYPE_MOVERFOCOUS, u_long>(uidPlayer);
 }
 
 void CDPClient::SendScriptDialogReq( OBJID objid, LPCTSTR lpKey, int nGlobal1, int nGlobal2, int nGlobal3, int nGlobal4 )
@@ -7601,17 +7525,13 @@ void CDPClient::SendScriptDialogReq( OBJID objid, LPCTSTR lpKey, int nGlobal1, i
 	ar << nGlobal1 << nGlobal2 << nGlobal3 << nGlobal4;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-void CDPClient::SendOpenShopWnd( OBJID objid )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_OPENSHOPWND, DPID_UNKNOWN );
-	ar << objid;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendOpenShopWnd(OBJID objid) {
+	SendPacket<PACKETTYPE_OPENSHOPWND, OBJID>(objid);
 }
 
-void CDPClient::SendCloseShopWnd( void )
-{
-	ASSERT( g_pPlayer );
-	SendHdr( PACKETTYPE_CLOSESHOPWND );
+void CDPClient::SendCloseShopWnd() {
+	ASSERT(g_pPlayer);
+	SendPacket<PACKETTYPE_CLOSESHOPWND>();
 }
 
 void CDPClient::SendOpenBankWnd(const DWORD dwId) {

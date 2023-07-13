@@ -261,7 +261,7 @@ void CWndParty::OnChangeLeader() {
 		return g_WndMng.PutString(TID_PK_NOCHANGE_PARTYLEADER);
 	}
 	
-	g_DPlay.SendPartyChangeLeader(g_pPlayer->m_idPlayer, nLeadMember);
+	g_DPlay.SendPartyChangeLeader(nLeadMember);
 }
 
 /****************************************************
