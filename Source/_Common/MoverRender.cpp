@@ -150,16 +150,6 @@ void CMover::Render( )
 		LPCTSTR szErr = Error( "CMover::Render : 프로퍼티 못읽음 %s", GetName() );
 		//ADDERRORMSG( szErr );
 	}
-#ifdef _DEBUG
-	if( g_pPlayer == this )
-	{
-		int a = 0;
-	} else
-	{
-		int a = 0;
-	}
-
-#endif
 
 	if( !IsVisible() || IsCull() )
 		return;
@@ -219,7 +209,7 @@ void CMover::Render( )
 
 #endif
 
-	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( 0 ) );
+	pd3dDevice->SetMaterial( g_TextureMng.GetShadowMaterial() );
 
 	D3DXMATRIX  mWorld;
 
@@ -788,7 +778,7 @@ void CMover::RenderPartsEffect( )
 	if( !IsVisible() || IsCull() )
 		return;
 
-	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( 0 ) );
+	pd3dDevice->SetMaterial( g_TextureMng.GetShadowMaterial() );
 
 	D3DXVECTOR3 vPos = GetPos();
 	D3DXMATRIX  matWorld;

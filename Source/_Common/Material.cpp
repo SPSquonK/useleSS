@@ -77,12 +77,10 @@ int CTextureManager::DeleteMaterial( LPDIRECT3DTEXTURE9 pTexture )
 
 MATERIAL*	CTextureManager :: AddMaterial( LPCTSTR strFileName, LPCTSTR szPath )
 {
-	int		i;
 	MATERIAL	*pMList = m_pMaterial;
-	LPDIRECT3DTEXTURE9      pTexture = NULL;
 
 	// 이미 읽은건지 검사.
-	for( i = 0; i < MAX_MATERIAL; i ++ )
+	for(int i = 0; i < MAX_MATERIAL; i ++ )
 	{
 		if( pMList->m_bActive )
 		{
@@ -97,22 +95,17 @@ MATERIAL*	CTextureManager :: AddMaterial( LPCTSTR strFileName, LPCTSTR szPath )
 	pMList = NULL;
 
 	CString strPath;
-	if( szPath == NULL )
-	{
-		if( g_Option.m_nTextureQuality == 0 )
-			strPath = MakePath( DIR_MODELTEX, strFileName );
-		else
-		if( g_Option.m_nTextureQuality == 1 )
-			strPath = MakePath( DIR_MODELTEXMID, strFileName );
-		else
-			strPath = MakePath( DIR_MODELTEXLOW, strFileName );
+	if (szPath) {
+		strPath = MakePath(szPath, strFileName);		// 경로가 지정되어 있을땐 그걸쓴다.
+	} else if (g_Option.m_nTextureQuality == 0) {
+		strPath = MakePath(DIR_MODELTEX, strFileName);
+	} else if (g_Option.m_nTextureQuality == 1) {
+		strPath = MakePath(DIR_MODELTEXMID, strFileName);
+	} else {
+		strPath = MakePath(DIR_MODELTEXLOW, strFileName);
+	}
 
-	}
-	else
-	{
-		strPath = MakePath( szPath, strFileName );		// 경로가 지정되어 있을땐 그걸쓴다.
-	}
-	
+	LPDIRECT3DTEXTURE9 pTexture = NULL;
 	if( FAILED( LoadTextureFromRes( strPath, 
 			  D3DX_DEFAULT, D3DX_DEFAULT, 4, 0, D3DFMT_UNKNOWN, //D3DFMT_A4R4G4B4, 
 			  D3DPOOL_MANAGED,  D3DX_FILTER_TRIANGLE|D3DX_FILTER_MIRROR              , 
@@ -125,6 +118,7 @@ MATERIAL*	CTextureManager :: AddMaterial( LPCTSTR strFileName, LPCTSTR szPath )
 
 	// 빈 슬롯이 있는지 검사.
 	pMList = m_pMaterial;
+	int i;
 	for( i = 0; i < MAX_MATERIAL; i ++ )
 	{
 		if( pMList->m_bActive == FALSE )	break;
@@ -155,17 +149,10 @@ MATERIAL*	CTextureManager :: AddMaterial( LPCTSTR strFileName, LPCTSTR szPath )
 	pMaterial.Power = 0.0f;
 #endif
 
-//	memcpy( &pMList->m_Material, pMaterial, sizeof(D3DMATERIAL9) );				// 매터리얼내용 카피
-//	memcpy( pMList->strBitMapFileName, strFileName, strlen(strFileName) );		// 텍스쳐 파일명 카피
-#ifdef	_XDEBUG
-	if( strlen(strFileName)+1 > 32 )
-		Error( "CTextureManager::AddMaterial() : %s의 길이가 너무 길다", strFilename );
-#endif
 	strcpy( pMList->strBitMapFileName, strFileName );		// 텍스쳐 파일명 카피
 	pMList->m_pTexture = pTexture;
 	pMList->m_nUseCnt = 1;	// 처음 등록된것이기땜에 1부터 시작.
 	m_nMaxTexture ++;
-
 
 	return pMList;
 }

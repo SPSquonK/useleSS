@@ -278,7 +278,7 @@ int CModelObject::RenderAttachModelElem(const D3DXMATRIX *mWorld)
 	}
 
 	int nNextFrame = GetNextFrame();
-	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( 0 ) );
+	pd3dDevice->SetMaterial( g_TextureMng.GetShadowMaterial() );
 
 	D3DXVECTOR3 vec3LightBackup = D3DXVECTOR3( s_vLight[0], s_vLight[1], s_vLight[2] );
 	D3DXVECTOR4 vec4Diffuse = D3DXVECTOR4( s_fDiffuse[0], s_fDiffuse[1], s_fDiffuse[2], s_fDiffuse[3] );;
@@ -1028,7 +1028,7 @@ int		CModelObject::Render( const D3DXMATRIX *mWorld )
 	}
 
 	nNextFrame = GetNextFrame();
-	pd3dDevice->SetMaterial( g_TextureMng.GetMaterial( 0 ) );
+	pd3dDevice->SetMaterial( g_TextureMng.GetShadowMaterial() );
 
 	D3DXVECTOR3 vec3LightBackup = D3DXVECTOR3( s_vLight[0], s_vLight[1], s_vLight[2] );
 	D3DXVECTOR4 vec4Diffuse = D3DXVECTOR4( s_fDiffuse[0], s_fDiffuse[1], s_fDiffuse[2], s_fDiffuse[3] );;
