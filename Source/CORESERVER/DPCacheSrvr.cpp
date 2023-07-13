@@ -1533,7 +1533,7 @@ void CDPCacheSrvr::SendGuildChat( const char* lpszPlayer, const char* sChat, CPl
 }
 
 void CDPCacheSrvr::SendGuildMemberLogin(CPlayer * pTo, BYTE nLogin, u_long uPlayerId, u_long uMultiNo) {
-	SendPacket<PACKETTYPE_GUILD_GAMELOGIN, BYTE, u_long, u_long>(pTo, nLogin, uPlayerId, nMultiNo);
+	SendPacket<PACKETTYPE_GUILD_GAMELOGIN, BYTE, u_long, u_long>(pTo, nLogin, uPlayerId, uMultiNo);
 }
 
 void CDPCacheSrvr::SendGuildMemberGameJoin( CPlayer * pTo, int nMaxLogin, u_long uLoginPlayerId[], u_long uLoginGuildMulti[] )

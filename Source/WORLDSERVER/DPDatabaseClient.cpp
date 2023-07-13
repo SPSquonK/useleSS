@@ -2631,7 +2631,7 @@ void CDPDatabaseClient::SendQueryGetSealChar( u_long idReceiver ,const char* szA
 }
 
 void CDPDatabaseClient::SendQueryGetSealCharConm(u_long idReceiver) {
-	SendPacket<PACKETTYPE_SEALCHARCONM_REQ, u_long, u_long>(idReceiver, g_uIdOfMulti);
+	SendPacket<PACKETTYPE_SEALCHARCONM_REQ, u_long, u_long>(idReceiver, g_uIdofMulti);
 }
 
 void CDPDatabaseClient::OnSealCharFromDB( CAr & ar, DPID, DPID )
@@ -3007,7 +3007,7 @@ void CDPDatabaseClient::SendLord(DWORD dwIdPlayer) {
 
 void CDPDatabaseClient::SendTaxRate(BYTE nCont, int nSalesTaxRate, int nPurchaseTaxRate) {
 	SendPacket<PACKETTYPE_TAX_SET_TAXRATE, BYTE, int, int>(
-		nCont, nSalesTaxRate, nPurchaseTaxRate,
+		nCont, nSalesTaxRate, nPurchaseTaxRate
 	);
 }
 
