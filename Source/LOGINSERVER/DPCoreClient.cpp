@@ -5,9 +5,9 @@
 #include "msghdr.h"
 
 CDPCoreClient::CDPCoreClient() {
-	ON_MSG( PACKETTYPE_QUERYTICKCOUNT, &CDPCoreClient::OnQueryTickCount );
-	ON_MSG( PACKETTYPE_PRE_JOIN      , &CDPCoreClient::OnPreJoin );
-	ON_MSG( PACKETTYPE_DESTROY_PLAYER, &CDPCoreClient::OnQueryRemovePlayer );
+	ON_MSG( PACKETTYPE_QUERYTICKCOUNT    , &CDPCoreClient::OnQueryTickCount );
+	ON_MSG( PACKETTYPE_PRE_JOIN_CoreLogin, &CDPCoreClient::OnPreJoin );
+	ON_MSG( PACKETTYPE_DESTROY_PLAYER    , &CDPCoreClient::OnQueryRemovePlayer );
 }
 
 void CDPCoreClient::SysMessageHandler(LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom) {
@@ -51,7 +51,7 @@ void CDPCoreClient::OnQueryTickCount( CAr & ar )
 
 void CDPCoreClient::SendPreJoin( DWORD dwAuthKey, const TCHAR* lpszAccount, u_long idPlayer, const TCHAR* lpszPlayer )
 {
-	BEFORESEND( ar, PACKETTYPE_PRE_JOIN );
+	BEFORESEND( ar, PACKETTYPE_PRE_JOIN_LoginCore );
 	ar << dwAuthKey;
 	ar.WriteString( lpszAccount );
 	ar << idPlayer;
@@ -79,7 +79,7 @@ void CDPCoreClient::OnPreJoin( CAr & ar )
 		if( pUser->m_dwAuthKey == dwAuthKey )
 		{
 			if( f )	// o
-				g_dpLoginSrvr.SendHdr( PACKETTYPE_PRE_JOIN, pUser->m_dpid );
+				g_dpLoginSrvr.SendHdr( PACKETTYPE_PRE_JOIN_LoginNeuz, pUser->m_dpid );
 			else
 			{
 				WriteLog( "OnPreJoin(): recv 0 from CORE, %s", lpszAccount );

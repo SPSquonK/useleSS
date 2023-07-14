@@ -9,7 +9,7 @@
 CDPLoginSrvr::CDPLoginSrvr() 
 {
 	ON_MSG( PACKETTYPE_QUERYTICKCOUNT, &CDPLoginSrvr::OnQueryTickCount );
-	ON_MSG( PACKETTYPE_PRE_JOIN, &CDPLoginSrvr::OnPreJoin );
+	ON_MSG( PACKETTYPE_PRE_JOIN_LoginCore, &CDPLoginSrvr::OnPreJoin );
 	ON_MSG( PACKETTYPE_LEAVE, &CDPLoginSrvr::OnLeave );
 }
 
@@ -112,7 +112,7 @@ TCHAR lpszAccount[MAX_ACCOUNT], lpszPlayer[MAX_PLAYER];
 			WriteLog( "OnPreJoin(): Player not found" );
 	}
 
-	BEFORESEND( ar1, PACKETTYPE_PRE_JOIN );	// result
+	BEFORESEND( ar1, PACKETTYPE_PRE_JOIN_CoreLogin );	// result
 	ar1 << dwAuthKey;
 	ar1.WriteString( lpszAccount );
 	ar1 << idPlayer;

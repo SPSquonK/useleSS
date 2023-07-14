@@ -9,7 +9,7 @@ extern  char				g_szMSG_VER[];
 
 CDPLoginSrvr::CDPLoginSrvr()
 {
-	ON_MSG( PACKETTYPE_PRE_JOIN, &CDPLoginSrvr::OnPreJoin);
+	ON_MSG( PACKETTYPE_PRE_JOIN_NeuzLogin, &CDPLoginSrvr::OnPreJoin);
 	ON_MSG( PACKETTYPE_PING, &CDPLoginSrvr::OnPing);
 	ON_MSG( PACKETTYPE_QUERYTICKCOUNT, &CDPLoginSrvr::OnQueryTickCount);
 	ON_MSG( PACKETTYPE_GETPLAYERLIST, &CDPLoginSrvr::OnAddConnection );

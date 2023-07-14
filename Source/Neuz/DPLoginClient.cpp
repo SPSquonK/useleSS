@@ -20,7 +20,7 @@ CDPLoginClient::CDPLoginClient()
 	ON_MSG( PACKETTYPE_PLAYER_LIST, &CDPLoginClient::OnPlayerList );
 	ON_MSG( PACKETTYPE_CACHE_ADDR, &CDPLoginClient::OnCacheAddr );
 	ON_MSG( PACKETTYPE_QUERYTICKCOUNT, &CDPLoginClient::OnQueryTickCount );
-	ON_MSG( PACKETTYPE_PRE_JOIN, &CDPLoginClient::OnPreJoin );
+	ON_MSG( PACKETTYPE_PRE_JOIN_LoginNeuz, &CDPLoginClient::OnPreJoin );
 	ON_MSG( PACKETTYPE_ONE_HOUR_NOTIFY, &CDPLoginClient::OnOneHourNotify );
 	
 	ON_MSG( PACKETTYPE_PING, &CDPLoginClient::OnPing );
@@ -156,7 +156,7 @@ void CDPLoginClient::SendDeletePlayer( BYTE nSlot, LPCTSTR szNo )
 void CDPLoginClient::SendPreJoin( const TCHAR* lpszAccount, u_long idPlayer, const TCHAR* lpszPlayer, int nSlot, int nSecretNum )
 {
 	m_nSlot		= nSlot;
-	BEFORESENDSOLE( ar, PACKETTYPE_PRE_JOIN, DPID_UNKNOWN );
+	BEFORESENDSOLE( ar, PACKETTYPE_PRE_JOIN_NeuzLogin, DPID_UNKNOWN );
 //	ar << g_Neuz.m_dwAuthKey;
 	ar.WriteString( lpszAccount );
 	ar << idPlayer;

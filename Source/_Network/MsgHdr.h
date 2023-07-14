@@ -91,6 +91,14 @@
 #define PACKETTYPE_CHANGEJOB					(DWORD)0x00000f34  // 액션 포인트 보냄.
 
 
+
+// == Connection sequence to Cache/WorldServer
+#define	PACKETTYPE_PRE_JOIN_NeuzLogin	(DWORD)0x0000ff05
+// If 2nd password is on, some PACKETTYPE_LOGIN_PROTECT_CERT
+// are exchanged between Login and Db.
+#define	PACKETTYPE_PRE_JOIN_LoginCore	(DWORD)0x0000ff05
+#define	PACKETTYPE_PRE_JOIN_CoreLogin	(DWORD)0x0000ff05
+#define	PACKETTYPE_PRE_JOIN_LoginNeuz	(DWORD)0x0000ff05
 // /!\ Non overlapping PACKETTYPE_JOIN ids is not supported
 // (it would lead to more exploits that there are already
 // because cache is dispatching packets depending on their ids)
@@ -111,7 +119,6 @@
 #define	PACKETTYPE_DESTROY_ALLPLAYERS	(DWORD)0x0000ff02
 #define	PACKETTYPE_REMOVE_ALLACCOUNTS	(DWORD)0x0000ff03
 #define	PACKETTYPE_CLOSE_ERROR	(DWORD)0x0000ff04
-#define	PACKETTYPE_PRE_JOIN	(DWORD)0x0000ff05
 
 #define PACKETTYPE_GAMERATE				(DWORD)0x0000ff06
 #define PACKETTYPE_SETMONSTERRESPAWN	(DWORD)0x0000ff07

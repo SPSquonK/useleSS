@@ -1565,19 +1565,15 @@ void CWndSelectChar::Connected()
 		LPCTSTR szErr = Error( "CWndSelectChar::Connected : 범위초과 %d", m_nSelectCharacter );
 		throw std::exception(szErr);
 	}
-#ifdef __USE_IDPLAYER0519
-	#ifdef __GPAUTH_01
-	g_dpLoginClient.SendPreJoin( g_Neuz.m_bGPotatoAuth? g_Neuz.m_szGPotatoNo: g_Neuz.m_szAccount, g_Neuz.m_apPlayer[m_nSelectCharacter]->m_idPlayer, m_nSelectCharacter, g_Neuz.m_n2ndPasswordNumber );
-	#else	// __GPAUTH_01
-	g_dpLoginClient.SendPreJoin( g_Neuz.m_szAccount, g_Neuz.m_apPlayer[m_nSelectCharacter]->m_idPlayer, m_nSelectCharacter, g_Neuz.m_n2ndPasswordNumber );
-	#endif	// __GPAUTH_01
-#else	// __USE_IDPLAYER0519
-	#ifdef __GPAUTH_01
-	g_dpLoginClient.SendPreJoin( g_Neuz.m_bGPotatoAuth? g_Neuz.m_szGPotatoNo: g_Neuz.m_szAccount, g_Neuz.m_apPlayer[m_nSelectCharacter]->m_idPlayer, g_Neuz.m_apPlayer[m_nSelectCharacter]->GetName(), m_nSelectCharacter, g_Neuz.m_n2ndPasswordNumber );
-	#else	// __GPAUTH_01
-	g_dpLoginClient.SendPreJoin( g_Neuz.m_szAccount, g_Neuz.m_apPlayer[m_nSelectCharacter]->m_idPlayer, g_Neuz.m_apPlayer[m_nSelectCharacter]->GetName(), m_nSelectCharacter, g_Neuz.m_n2ndPasswordNumber );
-	#endif	// __GPAUTH_01
-#endif	// __USE_IDPLAYER0519
+
+	g_dpLoginClient.SendPreJoin(
+		g_Neuz.m_bGPotatoAuth ? g_Neuz.m_szGPotatoNo : g_Neuz.m_szAccount,
+		g_Neuz.m_apPlayer[m_nSelectCharacter]->m_idPlayer,
+		g_Neuz.m_apPlayer[m_nSelectCharacter]->GetName(),
+		m_nSelectCharacter,
+		g_Neuz.m_n2ndPasswordNumber
+	);
+
 
 	CNetwork::GetInstance().OnEvent( LOGIN_REQ_PREJOIN );
 
