@@ -8,12 +8,14 @@
 
 class CDPCertified : public CDPMng,
 	public DPMngFeatures::SendPacketNone<CDPCertified>,
-	public DPMngFeatures::PacketHandler<CDPCertified, DPID>
+	public DPMngFeatures::PacketHandler<CDPCertified>
 {
 private:
-	BOOL	m_fConn;
-	CTimer	m_timer;
-	LONG	m_lError;					// protocol error code 
+	bool   m_fConn;
+	bool   m_bRecvSvrList;
+	CTimer m_timer;
+	LONG   m_lError;					// protocol error code 
+
 
 public:
 	CListedServers m_servers;
@@ -21,53 +23,37 @@ public:
 public:
 //	Constructions
 	CDPCertified();
-	virtual	~CDPCertified();
 
 //	Overrides
 	virtual void	SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpId );
 	virtual void	UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpId );
 
 //	Operations
-	LONG	GetNetError();
-	LONG	GetErrorCode()	{ return m_lError; }
-//	void	Destroy( BOOL bDestroy );
-	BOOL	IsDestroyed( void );
-	BOOL	IsConnected( void );
-	void	Ping( void );
+	[[nodiscard]] LONG GetNetError()  const noexcept { return m_lError; }
+	[[nodiscard]] LONG GetErrorCode() const noexcept { return m_lError; }
+	[[nodiscard]] bool IsConnected()  const noexcept { return m_fConn; }
+	[[nodiscard]] LPCTSTR GetServerName(int nServerIndex) const;
+	void	Ping();
 	void	SendNewAccount( LPCSTR lpszAccount, LPCSTR lpszpw );
-	[[nodiscard]] LPCTSTR GetServerName( int nServerIndex ) const;
-	void	SendHdr( DWORD dwHdr );
 	void	SendCloseExistingConnection( const char* lpszAccount, const char* lpszpw );
-	BOOL	CheckNofityDisconnected();
 	void	SendCertify();
 
 private:
+	[[nodiscard]] bool CheckNofityDisconnected() const noexcept;
+
+private:
 	// Handlers
-	void	OnSrvrList( CAr & ar, DPID );
-	void	OnError( CAr & ar, DPID dpid );
-#ifdef __GPAUTH
-	void	OnErrorString( CAr & ar, DPID dpid );
-#endif	// __GPAUTH
-	void	OnKeepAlive( CAr & ar, DPID );
+	void	OnSrvrList( CAr & ar );
+	void	OnError( CAr & ar );
+	void	OnErrorString( CAr & ar );
+	void	OnKeepAlive( CAr & ar );
 };
 
-inline void CDPCertified::SendHdr( DWORD dwHdr )
-{
-	BEFORESEND( ar, dwHdr );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-inline void CDPCertified::Ping( void )
-{
-	if( m_timer.IsTimeOut() ) 
-	{
+inline void CDPCertified::Ping() {
+	if (m_timer.IsTimeOut()) {
 		m_timer.Reset();
-		SendHdr( PACKETTYPE_PING );
+		SendPacket<PACKETTYPE_PING>();
 	}
-}
-
-inline BOOL CDPCertified::IsConnected( void )
-{	
-	return m_fConn;	
 }
 
 extern CDPCertified g_dpCertified;

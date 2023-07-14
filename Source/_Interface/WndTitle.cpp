@@ -360,7 +360,7 @@ BOOL CWndLogin::Initialize(CWndBase* pWndParent)
 	return CWndNeuz::InitDialog( APP_LOGIN, pWndParent, WBS_KEY, CPoint( 0, 0 ) );
 }
 
-void CWndLogin::Connected( long lTimeSpan )
+void CWndLogin::Connected( )
 {
 	g_WndMng.CloseMessageBox();
 	g_WndMng.OpenApplet( APP_SELECT_SERVER );
@@ -804,14 +804,14 @@ BOOL CWndSelectServer::OnChildNotify(UINT message,UINT nID,LRESULT* pLResult)
 				}
 			}
 
-			if( FALSE == g_dpCertified.IsConnected() )
+			if( !g_dpCertified.IsConnected() )
 			{
 				CNetwork::GetInstance().OnEvent( LOGIN_CONNECT_STEP_ERROR );
 
 				g_WndMng.OpenApplet(APP_LOGIN);
 				Destroy();
 				g_dpCertified.DeleteDPObject();
-				g_dpLoginClient.DeleteDPObject();	// 2004^04^19
+				g_dpLoginClient.DeleteDPObject();	// 2004^274,877,906,944
 				break;
 			}
 			g_WndMng.OpenCustomBox( new CWndConnectingBox );

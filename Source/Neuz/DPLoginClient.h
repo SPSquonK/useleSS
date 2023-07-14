@@ -33,7 +33,6 @@ public:
 	LONG	GetErrorCode() { return m_lError; }
 	LONG	GetNetError();
 	void	Destroy( BOOL fDestroy );
-	BOOL	IsDestroyed( void );
 	BOOL	IsConnected( void );
 	void	Ping( void );
 	void	QueryTickCount( void );
@@ -61,8 +60,7 @@ public:
 
 inline void CDPLoginClient::Destroy( BOOL fDestroy )
 	{	m_fDestroy	= fDestroy;	}
-inline BOOL CDPLoginClient::IsDestroyed( void )
-	{	return( m_fDestroy );	}
+
 inline BOOL CDPLoginClient::IsConnected( void )
 	{	return( m_fConn );	}
 

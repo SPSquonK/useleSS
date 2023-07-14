@@ -7,7 +7,6 @@
 #include "Network.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static BOOL		g_bRecvSvrList	= FALSE;
 CDPCertified	g_dpCertified;
 
 
@@ -16,6 +15,7 @@ CDPCertified::CDPCertified()
 {
 	m_timer.Set( MIN( 1 ) );
 	m_lError = 0;
+	m_bRecvSvrList = false;
 
 	ON_MSG( PACKETTYPE_SRVR_LIST, &CDPCertified::OnSrvrList );
 	ON_MSG( PACKETTYPE_ERROR, &CDPCertified::OnError );
@@ -25,42 +25,24 @@ CDPCertified::CDPCertified()
 	ON_MSG( PACKETTYPE_KEEP_ALIVE, &CDPCertified::OnKeepAlive );
 }
 
-CDPCertified::~CDPCertified()
-{
-
-}
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-LONG CDPCertified::GetNetError()
-{
-	return m_lError;
+// Should I indicate disconnection?
+bool CDPCertified::CheckNofityDisconnected() const noexcept {
+	// If the server list is received, the server disconnection is not displayed.
+	// and if it is disconnected due to an error, it is not displayed.
+	return !m_bRecvSvrList && m_lError == 0;
 }
 
-// 접속 끊김을 표시해야 하는가?
-BOOL CDPCertified::CheckNofityDisconnected()
-{
-	//서버 리스트를 받았으면 서버 끊김을 표시하지 않는다.
-	if( g_bRecvSvrList )
-		return FALSE;
-
-	// 에러로 끊기면 표시하지 않는다.
-	if( m_lError )
-		return FALSE;
-
-	return TRUE;
-}
-
-void CDPCertified::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpId )
+void CDPCertified::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID )
 {
 	switch( lpMsg->dwType )
 	{
 		case DPSYS_CREATEPLAYERORGROUP:
 			{
-				m_fConn		= TRUE;
-				g_bRecvSvrList	= FALSE;
+				m_fConn		= true;
+				m_bRecvSvrList = false;
 			}
 			break;
 		case DPSYS_DESTROYPLAYERORGROUP:
@@ -70,16 +52,17 @@ void CDPCertified::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 			}
 			CNetwork::GetInstance().OnEvent( CERT_DISCONNECT );
 
-			m_fConn		= FALSE;
+			m_fConn		= false;
 
-			if( CheckNofityDisconnected() )		// 접속 끊김을 표시해야 하는가?
+			if( CheckNofityDisconnected() )
 			{
 				g_WndMng.CloseMessageBox();
 				g_WndMng.OpenMessageBox( prj.GetText(TID_DIAG_0023) );
 
-				CWndLogin* pWndLogin	= (CWndLogin*)g_WndMng.GetWndBase( APP_LOGIN );
-				if( pWndLogin )
-					pWndLogin->GetDlgItem( WIDC_OK )->EnableWindow( TRUE );
+				
+				if (CWndLogin * pWndLogin = g_WndMng.GetWndBase<CWndLogin>(APP_LOGIN)) {
+					pWndLogin->GetDlgItem(WIDC_OK)->EnableWindow(TRUE);
+				}
 			}
 
 			m_lError = 0;		// 에러코드 clear
@@ -87,23 +70,10 @@ void CDPCertified::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DP
 	}
 }
 
-void CDPCertified::UserMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID dpId )
-{
-	CAr ar( (LPBYTE)lpMsg, dwMsgSize );
-
+void CDPCertified::UserMessageHandler(LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID) {
+	CAr ar((LPBYTE)lpMsg, dwMsgSize);
 	DWORD dw; ar >> dw;
-
-	if ( Handle(ar, dw, dpId) ) {
-	}
-	else {
-		/*
-		switch( dw ) {
-			default:
-				TRACE( "Handler not found(%08x)\n", dw );
-				break;
-		}
-		*/
-	}
+	Handle(ar, dw);
 }
 
 void CDPCertified::SendNewAccount( LPCSTR lpszAccount, LPCSTR lpszpw )
@@ -149,12 +119,8 @@ void CDPCertified::SendCertify()
 
 
 #ifdef __TWN_LOGIN0816
-	if( GetLanguage() == LANG_TWN )
-	{
-		ar.WriteString( g_Neuz.m_szSessionPwd );
-//		char lpOutputString[256]	= { 0,};
-//		sprintf( lpOutputString, "account = %s, pwd = %s, session = %s", g_Neuz.m_szAccount, g_Neuz.m_szPassword, g_Neuz.m_szSessionPwd );
-//		OutputDebugString( lpOutputString );
+	if (GetLanguage() == LANG_TWN) {
+		ar.WriteString(g_Neuz.m_szSessionPwd);
 	}
 #endif	// __TWN_LOGIN0816
 	SEND( ar, this, DPID_SERVERPLAYER );
@@ -172,25 +138,25 @@ void CDPCertified::SendCloseExistingConnection( const char* lpszAccount, const c
 // nServerIndex - 서버 ListBox에서 선택한 행의 번호 ( 0부터 시작 )
 LPCTSTR CDPCertified::GetServerName(int nServerIndex) const {
 	const auto span = m_servers.GetServers();
-	if (nServerIndex >= span.size()) return "Unknown";
+	if (nServerIndex < 0) return "Unknown";
+	if (static_cast<size_t>(nServerIndex) >= span.size()) return "Unknown";
 	return span[nServerIndex].lpName;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void CDPCertified::OnKeepAlive(CAr &, DPID) {
+void CDPCertified::OnKeepAlive(CAr &) {
 	SendPacket<PACKETTYPE_KEEP_ALIVE>();
 }
 
 
 //	Handlers
-void CDPCertified::OnSrvrList( CAr & ar, DPID )
+void CDPCertified::OnSrvrList( CAr & ar )
 {
-	g_bRecvSvrList	= TRUE;
+	m_bRecvSvrList = true;
 
 	ar >> g_Neuz.m_dwAuthKey;
 	ar >> g_Neuz.m_cbAccountFlag;
-	long lTimeSpan = 0;
 
 #ifdef __GPAUTH_01
 	if( g_Neuz.m_bGPotatoAuth )
@@ -234,13 +200,13 @@ void CDPCertified::OnSrvrList( CAr & ar, DPID )
 
 	CNetwork::GetInstance().OnEvent( CERT_SRVR_LIST );
 
-	CWndBase* pWndBase	= g_WndMng.GetWndBase( APP_LOGIN );
-	if( pWndBase )
-		( (CWndLogin*)pWndBase )->Connected( lTimeSpan );
+	if (CWndLogin * pWndBase = g_WndMng.GetWndBase<CWndLogin>(APP_LOGIN)) {
+		pWndBase->Connected();
+	}
 }
 
 #ifdef __GPAUTH
-void CDPCertified::OnErrorString( CAr & ar, DPID dpid )
+void CDPCertified::OnErrorString( CAr & ar )
 {
 	char szError[256]	= { 0,};
 	ar.ReadString( szError );
@@ -257,7 +223,7 @@ void CDPCertified::OnErrorString( CAr & ar, DPID dpid )
 }
 #endif	// __GPAUTH
 
-void CDPCertified::OnError( CAr & ar, DPID dpid )
+void CDPCertified::OnError( CAr & ar )
 {
 	g_Neuz.m_dwTimeOutDis = 0xffffffff;			// 타임 아웃 메세지 박스 표시를 막는다.
 	int nText = 0;

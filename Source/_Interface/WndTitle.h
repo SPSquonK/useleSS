@@ -29,7 +29,7 @@ public:
 	CWndButton m_wndRegist   ;
 	CWndButton m_wndQuit     ;
 
-	void Connected( long lTimeSpan );
+	void Connected();
 
 	CWndLogin();
 	virtual ~CWndLogin();
