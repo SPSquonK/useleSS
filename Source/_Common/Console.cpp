@@ -78,8 +78,6 @@ DlgConsole::DlgConsole( )
 
 DlgConsole::~DlgConsole( )
 {
-//	con::AssDeleter< ConDataConationer > ( ) ( _cConDatas );
-
 	if( _hWnd )
 	{
 		DestroyWindow( _hWnd );
@@ -247,9 +245,9 @@ void DlgConsole::Parsing( const char* str )
 	CON_DATA* pFindData = FindData( key );
 	if( pFindData )
 	{
-		vector< string > args;
-		args.push_back( string( key ) );
-		args.push_back( string( val ) );
+		std::vector< std::string > args;
+		args.emplace_back( key );
+		args.emplace_back( val );
 		pFindData->CallFunction( args );
 
 		AddString( "=>OK..." );
@@ -259,36 +257,36 @@ void DlgConsole::Parsing( const char* str )
 	}
 }
 
-CON_DATA* DlgConsole::FindData( const string& key )
+CON_DATA* DlgConsole::FindData( const std::string& key )
 {
-	ConDataIter iter = _cConDatas.find( key );
+	auto iter = _cConDatas.find( key );
 	if( iter != _cConDatas.end() )
 		return &(iter->second);
 
 	return NULL; 
 }
 
-void DlgConsole::AddData( const string& key, CON_DATA::VALUE_TYPE eType, void* func, const string& exp )
+void DlgConsole::AddData( const std::string& key, CON_DATA::VALUE_TYPE eType, void* func, const std::string& exp )
 {
-	ConDataIter iter =  _cConDatas.find( key );
+	auto iter =  _cConDatas.find( key );
 	if( iter == _cConDatas.end() )
 	{
 		CON_DATA kNewData( key, eType, func, exp );
-		_cConDatas.insert( ConDataConationer::value_type( key, kNewData ) );
+		_cConDatas.emplace( key, kNewData );
 	}
 }
 
 void DlgConsole::ShowAllCommand( )
 {
-	string temp;
+	std::string temp;
 
-	ConDataIter iter = _cConDatas.begin();
+	auto iter = _cConDatas.begin();
 	++iter; //'?'
 
 	for( iter ; iter != _cConDatas.end(); ++iter )
 	{
 		CON_DATA& kData = iter->second;
-		if( kData._strKey == string( "help" ) )
+		if( kData._strKey == "help" )
 			continue;
 
 		temp = "[" + kData._strKey + "]" + " : " + kData._strExplain;
@@ -302,7 +300,7 @@ void DlgConsole::Update( )
 }
 
 // helper
-void CONSOLE_REGISTER( const string& key, CON_DATA::VALUE_TYPE eType, void* func, const string& explain )
+void CONSOLE_REGISTER( const std::string& key, CON_DATA::VALUE_TYPE eType, void* func, const std::string& explain )
 {
 	gConsole()->AddData( key, eType, func, explain );
 }

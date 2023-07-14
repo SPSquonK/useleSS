@@ -24,7 +24,7 @@ struct CON_DATA
 	//	VT_BOOLEAN,
 	};
 
-	CON_DATA( const string& key, VALUE_TYPE vt, void* func, const string& exp ) 
+	CON_DATA( const std::string& key, VALUE_TYPE vt, void* func, const std::string& exp ) 
 	{ 
 		_strKey = key;
 		_strExplain = exp;
@@ -40,8 +40,8 @@ struct CON_DATA
 	}
 
 	VALUE_TYPE _eVt;
-	string _strKey;
-	string _strExplain;
+	std::string _strKey;
+	std::string _strExplain;
 	
 	union VAL
 	{
@@ -57,20 +57,16 @@ struct CON_DATA
 //	float GetFloat( ) { if( _eVt == VT_FLOAT ) { return _func.fval; } return 0.0f; }
 //	bool GetBool( ) { if( _eVt == VT_BOOLEAN ) { return _func.bTrue; } return true; }
 
-	void CallFunction( std::vector<string>& arguments )
+	void CallFunction( std::vector<std::string>& arguments )
 	{
 		if( _func.func )
-			( ( void (*)( std::vector<string>& ) ) _func.func ) ( arguments );
+			( ( void (*)( std::vector<std::string>& ) ) _func.func ) ( arguments );
 	}												
 
 };
 
-typedef std::map< string, CON_DATA >	ConDataConationer;
-typedef ConDataConationer::iterator		ConDataIter;
-
-
 void ConsoleRegister( );
-void CONSOLE_REGISTER( const string& key, CON_DATA::VALUE_TYPE eType, void* func, const string& exp );
+void CONSOLE_REGISTER( const std::string& key, CON_DATA::VALUE_TYPE eType, void* func, const std::string& exp );
 
 // Console Dialog
 INT_PTR CALLBACK DlgConsoleProc( HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -93,8 +89,8 @@ public:
 	HWND GetParentHWnd( )	{ return _hWndParent; }
 
 	void Parsing( const char* str );
-	CON_DATA* FindData( const string& key );
-	void AddData( const string& key, CON_DATA::VALUE_TYPE eType, void* func, const string& exp );
+	CON_DATA* FindData( const std::string& key );
+	void AddData( const std::string& key, CON_DATA::VALUE_TYPE eType, void* func, const std::string& exp );
 
 	void ShowAllCommand( );
 	void Update( );
@@ -104,7 +100,7 @@ protected:
 	HWND _hWnd;
 	HWND _hWndParent;
 
-	ConDataConationer _cConDatas;
+	std::map< std::string, CON_DATA > _cConDatas;
 
 public:
 	float _fSpeedMul;

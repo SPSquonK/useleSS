@@ -35,7 +35,7 @@ namespace con
 			T* Singleton<T>::ms_pSingleton=NULL;
 
 	template< typename T >
-	struct Deleter : public unary_function< T, void >
+	struct Deleter
 	{
 		void operator( ) ( T& t )
 		{
@@ -48,7 +48,7 @@ namespace con
 	};
 
 	template< typename T >
-	struct PairDeleter : public unary_function< T, void >
+	struct PairDeleter
 	{
 		void operator( ) ( T& t )
 		{

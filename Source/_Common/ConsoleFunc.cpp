@@ -16,14 +16,14 @@
 #include "defineText.h"
 #include "dpCertified.h"
 
-void _help_commend(  std::vector< string >& arg )
+void _help_commend(  std::vector< std::string >& arg )
 { 
 	gConsole()->AddString( "***************** Command list ************************" );
 	gConsole()->ShowAllCommand( );	
 	gConsole()->AddString( "***************** Command list end ********************" );
 }
 
-void _show_mypos( std::vector< string >& arg )
+void _show_mypos( std::vector< std::string >& arg )
 {
 	if( !g_pPlayer )
 	{
@@ -37,9 +37,9 @@ void _show_mypos( std::vector< string >& arg )
 	gConsole()->AddString( temp );
 }
 
-void _show_fps( std::vector< string >& arg )
+void _show_fps( std::vector< std::string >& arg )
 {
-	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( 2002 );
+	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
 	if( !pWndWorld )
 		return;
 
@@ -49,7 +49,7 @@ void _show_fps( std::vector< string >& arg )
 	
 }
 
-void _set_speed( std::vector< string >& arg )
+void _set_speed( std::vector< std::string >& arg )
 {
 	if( arg.size() < 2 )
 		return;
@@ -63,13 +63,13 @@ void _set_speed( std::vector< string >& arg )
 	gConsole()->Log( "=>now speed is ( org * %3.0f )", fSpeedMul );
 }
 
-void _show_mpu( std::vector< string >& arg )
+void _show_mpu( std::vector< std::string >& arg )
 {
 	gConsole()->Log( "=>MPU : %d", g_MPU );
 
 }
 
-void _volum( std::vector< string >& arg )
+void _volum( std::vector< std::string >& arg )
 {
 	if( arg.size() < 2 )
 		return;
@@ -81,7 +81,7 @@ void _volum( std::vector< string >& arg )
 	SetVolume( fVol );
 }
 
-void _show_music_info( std::vector< string >& arg )
+void _show_music_info( std::vector< std::string >& arg )
 {
 #if ( __USE_FMOD_MUSIC == ML_MILES )
 	gConsole()->Log( "FMOD Music, Current Volum is : %f", GetVolume( ) );
@@ -90,7 +90,7 @@ void _show_music_info( std::vector< string >& arg )
 #endif
 }
 
-void _play_music( std::vector< string >& arg )
+void _play_music( std::vector< std::string >& arg )
 {
 	if( arg.size() < 2 )
 		return;
@@ -100,7 +100,7 @@ void _play_music( std::vector< string >& arg )
 	PlayBGM( musicIndex );
 }
 
-void _set_weather( std::vector< string >& arg )
+void _set_weather( std::vector< std::string >& arg )
 {
 	if( arg.size() < 2 )
 		return;
@@ -110,7 +110,7 @@ void _set_weather( std::vector< string >& arg )
 	CWorld::m_skyBox.SetWeather( weather, TRUE );
 }
 
-void _change_model( std::vector< string >& arg )
+void _change_model( std::vector< std::string >& arg )
 {
 	if( arg.size() < 2 )
 		return;
@@ -124,7 +124,7 @@ void _change_model( std::vector< string >& arg )
 	}
 }
 
-void _sfx_pos( std::vector< string >& arg )
+void _sfx_pos(std::vector < std:: string > & arg)
 {
 	if( arg.size() < 2 )
 		return;
@@ -161,7 +161,7 @@ void _sfx_pos( std::vector< string >& arg )
 	}
 }
 
-void _sfx_link( std::vector< string >& arg )
+void _sfx_link( std::vector< std::string >& arg )
 {
 	if( arg.size() < 2 )
 		return;
@@ -181,7 +181,7 @@ void _sfx_link( std::vector< string >& arg )
 	}
 }
 
-void _world_height( std::vector< string >& arg )
+void _world_height( std::vector< std::string >& arg )
 {
 	if( arg.size() < 2 )
 		return;
@@ -215,14 +215,14 @@ void _test_func( std::vector< std::string >& arg )
 	}
 }
 
-void _random_moving( std::vector< string >& arg )
+void _random_moving( std::vector< std::string >& arg )
 {
 	g_Console._bRandomMoving = !g_Console._bRandomMoving;
 
 	g_Console.Log( "now Random Moving is %d", g_Console._bRandomMoving );
 }
 
-void _ambient( std::vector< string >& arg )
+void _ambient( std::vector< std::string >& arg )
 {
 	if( arg.size() < 2 )
 		return;
@@ -244,7 +244,7 @@ void _ambient( std::vector< string >& arg )
 	}
 }
 
-void _diffuse( std::vector< string >& arg )
+void _diffuse( std::vector< std::string >& arg )
 {
 	if( arg.size() < 2 )
 		return;
@@ -266,7 +266,7 @@ void _diffuse( std::vector< string >& arg )
 	}
 }
 
-//void _change_reflect_texture1( std::vector< string >& arg )
+//void _change_reflect_texture1( std::vector< std::string >& arg )
 //{
 //	if( arg.size() < 2 )
 //		return;
@@ -280,7 +280,7 @@ void _diffuse( std::vector< string >& arg )
 //	g_Console.Log( "changed reflection texture1" );
 //}
 //
-//void _change_reflect_texture2( std::vector< string >& arg )
+//void _change_reflect_texture2( std::vector< std::string >& arg )
 //{
 //	if( arg.size() < 2 )
 //		return;
@@ -294,7 +294,7 @@ void _diffuse( std::vector< string >& arg )
 //	g_Console.Log( "changed reflection texture2" );
 //}
 
-void _fog_start( std::vector< string >& arg )
+void _fog_start( std::vector< std::string >& arg )
 {
 	if( arg.size() < 2 )
 		return;
@@ -435,34 +435,34 @@ void _update_auto_login( const DWORD dwDelta )
 void ConsoleRegister( )
 {	
 	// 여기서 명령 문자열 과 함수를 등록합니다.
-	CONSOLE_REGISTER( string("help"), CON_DATA::VT_FUNCTION, _help_commend, string("도움말") );	
-	CONSOLE_REGISTER( string("?"), CON_DATA::VT_FUNCTION, _help_commend, string("도움말") );
-	CONSOLE_REGISTER( string("pos"), CON_DATA::VT_FUNCTION, _show_mypos, string("내좌표 출력") );
-	CONSOLE_REGISTER( string("fps"), CON_DATA::VT_FUNCTION, _show_fps, string("toggle show fps") );	
-	CONSOLE_REGISTER( string("speed"), CON_DATA::VT_FUNCTION, _set_speed, string("스피드 배율") );	
-	CONSOLE_REGISTER( string("ㄴ"), CON_DATA::VT_FUNCTION, _set_speed, string("스피드 배율") );	
-	CONSOLE_REGISTER( string("mpu"), CON_DATA::VT_FUNCTION, _show_mpu, string("print MPU") );	
-	CONSOLE_REGISTER( string("vol"), CON_DATA::VT_FUNCTION, _volum, string("music volum ( 0 - 255 )") );	
-	CONSOLE_REGISTER( string("music_info"), CON_DATA::VT_FUNCTION, _show_music_info, string("music info") );	
-	CONSOLE_REGISTER( string("music"), CON_DATA::VT_FUNCTION, _play_music, string("play music (number)") );
+	CONSOLE_REGISTER( ("help"), CON_DATA::VT_FUNCTION, _help_commend, ("도움말") );	
+	CONSOLE_REGISTER( ("?"), CON_DATA::VT_FUNCTION, _help_commend, ("도움말") );
+	CONSOLE_REGISTER( ("pos"), CON_DATA::VT_FUNCTION, _show_mypos, ("내좌표 출력") );
+	CONSOLE_REGISTER( ("fps"), CON_DATA::VT_FUNCTION, _show_fps, ("toggle show fps") );	
+	CONSOLE_REGISTER( ("speed"), CON_DATA::VT_FUNCTION, _set_speed, ("스피드 배율") );	
+	CONSOLE_REGISTER( ("ㄴ"), CON_DATA::VT_FUNCTION, _set_speed, ("스피드 배율") );	
+	CONSOLE_REGISTER( ("mpu"), CON_DATA::VT_FUNCTION, _show_mpu, ("print MPU") );	
+	CONSOLE_REGISTER( ("vol"), CON_DATA::VT_FUNCTION, _volum, ("music volum ( 0 - 255 )") );	
+	CONSOLE_REGISTER( ("music_info"), CON_DATA::VT_FUNCTION, _show_music_info, ("music info") );	
+	CONSOLE_REGISTER( ("music"), CON_DATA::VT_FUNCTION, _play_music, ("play music (number)") );
 	
-	CONSOLE_REGISTER( string("weather"), CON_DATA::VT_FUNCTION, _set_weather, string("change weather( 2rain, 3snow)") );
-	CONSOLE_REGISTER( string("change_model"), CON_DATA::VT_FUNCTION, _change_model, string( "모델바꿈" ) );
-	CONSOLE_REGISTER( string("sfx_pos"), CON_DATA::VT_FUNCTION, _sfx_pos, string( "주인공 앞에 play sfx" ) );
-	CONSOLE_REGISTER( string("sfx_link"), CON_DATA::VT_FUNCTION, _sfx_link, string( "쥬인공 link sfx" ) );
-	CONSOLE_REGISTER( string("world_height"), CON_DATA::VT_FUNCTION, _world_height, string( "월드 높이 설정" ) );
-	CONSOLE_REGISTER( string("wh"), CON_DATA::VT_FUNCTION, _world_height, string( "월드 높이 설정" ) );
-	CONSOLE_REGISTER( string("test" ), CON_DATA::VT_FUNCTION, _test_func, string( "test" ) );
-	CONSOLE_REGISTER( string("auto_login" ), CON_DATA::VT_FUNCTION, _auto_login, string( "auto login" ) );
-	CONSOLE_REGISTER( string("random_moving"), CON_DATA::VT_FUNCTION, _random_moving, string("무작위 이동") );
+	CONSOLE_REGISTER( ("weather"), CON_DATA::VT_FUNCTION, _set_weather, ("change weather( 2rain, 3snow)") );
+	CONSOLE_REGISTER( ("change_model"), CON_DATA::VT_FUNCTION, _change_model, ( "모델바꿈" ) );
+	CONSOLE_REGISTER( ("sfx_pos"), CON_DATA::VT_FUNCTION, _sfx_pos, ( "주인공 앞에 play sfx" ) );
+	CONSOLE_REGISTER( ("sfx_link"), CON_DATA::VT_FUNCTION, _sfx_link, ( "쥬인공 link sfx" ) );
+	CONSOLE_REGISTER( ("world_height"), CON_DATA::VT_FUNCTION, _world_height, ( "월드 높이 설정" ) );
+	CONSOLE_REGISTER( ("wh"), CON_DATA::VT_FUNCTION, _world_height, ( "월드 높이 설정" ) );
+	CONSOLE_REGISTER( ("test" ), CON_DATA::VT_FUNCTION, _test_func, ( "test" ) );
+	CONSOLE_REGISTER( ("auto_login" ), CON_DATA::VT_FUNCTION, _auto_login, ( "auto login" ) );
+	CONSOLE_REGISTER( ("random_moving"), CON_DATA::VT_FUNCTION, _random_moving, ("무작위 이동") );
 
-	CONSOLE_REGISTER( string("ambient"), CON_DATA::VT_FUNCTION, _ambient, string("ambient value") );
-	CONSOLE_REGISTER( string("diffuse"), CON_DATA::VT_FUNCTION, _diffuse, string("diffuse value") );
+	CONSOLE_REGISTER( ("ambient"), CON_DATA::VT_FUNCTION, _ambient, ("ambient value") );
+	CONSOLE_REGISTER( ("diffuse"), CON_DATA::VT_FUNCTION, _diffuse, ("diffuse value") );
 
-	//CONSOLE_REGISTER( string("crm1"), CON_DATA::VT_FUNCTION, _change_reflect_texture1, string("change reflect1") );
-	//CONSOLE_REGISTER( string("crm2"), CON_DATA::VT_FUNCTION, _change_reflect_texture2, string("change reflect2") );
+	//CONSOLE_REGISTER( ("crm1"), CON_DATA::VT_FUNCTION, _change_reflect_texture1, ("change reflect1") );
+	//CONSOLE_REGISTER( ("crm2"), CON_DATA::VT_FUNCTION, _change_reflect_texture2, ("change reflect2") );
 	
-	CONSOLE_REGISTER( string("fog_start"), CON_DATA::VT_FUNCTION, _fog_start, string("fog start") );
+	CONSOLE_REGISTER( ("fog_start"), CON_DATA::VT_FUNCTION, _fog_start, ("fog start") );
 }
 
 void _auto_start( )
@@ -531,19 +531,19 @@ void _update_console( )
 		}
 		else if( g_bKeyTable[ 'Y' ] )
 		{
-			CMailBox* pMailBox	= CMailBox::GetInstance();
-			int nMax = pMailBox->size();
-
-			CMailBox& mailbox = *pMailBox;
-			
-			for( int i = 0; i < nMax; ++i )
-			{
-				CMail* pMail = mailbox[i];
-				if( pMail )
-				{
-					g_DPlay.SendQueryRemoveMail( pMail->m_nMail );						
-				}
-			}
+//			CMailBox* pMailBox	= CMailBox::GetInstance();
+//			int nMax = pMailBox->size();
+//
+//			CMailBox& mailbox = *pMailBox;
+//			
+//			for( int i = 0; i < nMax; ++i )
+//			{
+//				CMail* pMail = mailbox[i];
+//				if( pMail )
+//				{
+//					g_DPlay.SendQueryRemoveMail( pMail->m_nMail );						
+//				}
+//			}			
 		}
 	}
 
