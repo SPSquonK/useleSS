@@ -5194,10 +5194,9 @@ void CWndInventory::RunUpgrade( CItemElem * pItem )
 			
 			if(m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_ORICHALCUM02)
 			{
-				CWndSmeltJewel* pWndSmeltJewel = (CWndSmeltJewel*)g_WndMng.GetWndBase( APP_SMELT_JEWEL );
-				if(pWndSmeltJewel != NULL)
-				{
-					if(pWndSmeltJewel->m_pItemElem->m_dwObjId == pItem->m_dwObjId)
+				
+				if (CWndSmeltJewel * pWndSmeltJewel = g_WndMng.GetWndBase<CWndSmeltJewel>(APP_SMELT_JEWEL)) {
+					if(pWndSmeltJewel->m_pItemElem && pWndSmeltJewel->m_pItemElem->m_dwObjId == pItem->m_dwObjId)
 					{
 						g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
 						BaseMouseCursor();
