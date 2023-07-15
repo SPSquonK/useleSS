@@ -276,17 +276,6 @@ void CDPLoginClient::OnError( CAr & ar )
 				}
 				break;
 			}
-
-/*
-#ifdef __S0114_RELOADPRO
-		case ERROR_FLYFF_DB_JOB_ING:	// 133L
-			{
-				m_bShowDisconnectMsg = FALSE;       // 서버로 부터 접속이 종료되었습니다를 표시하지 않음 
-				g_WndMng.OpenMessageBox( _T( prj.GetText(TID_DB_INSPECTION) ) );
-				break;
-			}
-#endif // __S0114_RELOADPRO
-*/
 		case ERROR_BILLING_TIME_OVER:			// 플레이 도중 사용기간 만료
 			m_bShowDisconnectMsg = FALSE;       // 서버로 부터 접속이 종료되었습니다를 표시하지 않음 
 			g_WndMng.OpenMessageBoxUpper( prj.GetText(TID_DIAG_PLAYNOCHARGING), MB_OK, TRUE );  // TRUE - 메세지 표시후 로그인화면으로 

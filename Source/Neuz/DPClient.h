@@ -605,13 +605,6 @@ private:
 #endif // __EVE_MINIGAME
 	void	OnSExpBoxInfo( OBJID objid, CAr & ar );
 	void	OnSExpBoxCoolTime( OBJID objid, CAr & ar );
-	
-
-/*
-#ifdef __S0114_RELOADPRO
-	void	OnReloadProject( CAr & ar );
-#endif // __S0114_RELOADPRO
-*/
 	void	OnFriendGameJoin( CAr & ar );
 	void	OnAddFriend( CAr & ar );
 	void	OnRemoveFriend( CAr & ar );

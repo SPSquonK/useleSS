@@ -126,16 +126,6 @@ void CDbManager::DBQryLog( char* qryLog, char* Gu, u_long idPlayer, int nserveri
 }
 */
 
-/*
-#ifdef __S0114_RELOADPRO
-void CDbManager::Load_ReloadAccount()
-{
-	LPDB_OVERLAPPED_PLUS pOV = m_pDbIOData->Alloc();
-	pOV->nQueryMode	= RELOAD_PROJECT;
-	PostQueuedCompletionStatus( m_hDbCompletionPort, 1, NULL, &pOV->Overlapped );
-}
-#endif // __S0114_RELOADPRO
-*/
 void CDbManager::UpdateTracking( BOOL bON, LPCTSTR lpszAccount )
 {
 	if( m_bTracking == FALSE )
@@ -237,35 +227,6 @@ void CDbManager::LogSMItem( CQuery & qryLog, LPDB_OVERLAPPED_PLUS lpDbOverlapped
 	}
 }
 
-/*
-#ifdef __S0114_RELOADPRO
-void CDbManager::QueryReloadProject( CQuery& query, LPDB_OVERLAPPED_PLUS pOV )
-{
-	char szQuery[1024] = {0,};
-	sprintf( szQuery, "LOGIN_RELOAD_STR" );
-	
-	if( FALSE == query.Exec( szQuery ) )
-	{
-		Error( " DB Qry : Load_ReloadAccount 구문 실패 : LOGIN_RELOAD_STR" );
-		return;
-	}
-
-	m_OutAccount_List.clear();
-	char szAccount[64] = {0,};
-	BOOL bOutAccount = FALSE;
-	while( query.Fetch() )
-	{
-		query.GetStr( "account", szAccount );
-		m_OutAccount_List.insert( szAccount );
-		bOutAccount = TRUE;
-	}
-
-	if( bOutAccount )
-		g_dpDbSrvr.SendReloadAccount();
-}
-#endif // __S0114_RELOADPRO
-*/
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // DbWorkerThread
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -276,11 +237,6 @@ u_int DbWorkerThread(CDbManager * pDbManager)
 	CQuery qryLog;
 	BOOL bLongConnect = FALSE;
 
-/*
-#ifdef __S0114_RELOADPRO
-	bLongConnect = TRUE;
-#endif // __S0114_RELOADPRO
-*/
 	if( bLongConnect || pDbManager->m_bTracking )
 	{
 		if( FALSE == qryLogin.Connect( 3, dbLogin))
@@ -337,14 +293,6 @@ u_int DbWorkerThread(CDbManager * pDbManager)
 					pDbManager->LogSMItem(qryLog, lpDbOverlappedPlus);
 				}
 				break;
-
-/*
-#ifdef __S0114_RELOADPRO
-			case RELOAD_PROJECT:
-				pDbManager->QueryReloadProject( qryLogin, lpDbOverlappedPlus );
-				break;
-#endif // __S0114_RELOADPRO
-*/
 			default:
 				break;
 		}

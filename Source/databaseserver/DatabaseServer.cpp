@@ -66,7 +66,6 @@ BOOL	LoadRemoveItem( LPCSTR lpszFileName );
 
 
 #define	TID_MEM_RELEASE		0
-#define TID_RELOAD_PROJECT  1
 #define	TID_POSTPROC	2
 #define	TID_QUERY_REMOVE_GUILD_BANK_TBL	3
 #define	TIMER_ID_EVENT_GENERIC	4
@@ -176,11 +175,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		OutputDebugString( "EnableConnectionPooling\n" );
 	g_DbManager.CreateDbWorkers();
 
-/*
-#ifdef __S0114_RELOADPRO
-	SetTimer( hWnd, TID_RELOAD_PROJECT, SEC( 30 ), NULL );
-#endif // __S0114_RELOADPRO
-*/
 #ifdef __INTERNALSERVER
 	SetTimer(  hWnd, TID_QUERY_REMOVE_GUILD_BANK_TBL, MIN( 1 ), NULL );
 #else	// __INTERNALSERVER
@@ -390,13 +384,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				WORD wTimerID	= wParam;
 				switch( wTimerID )
 				{
-/*
-#ifdef __S0114_RELOADPRO
-					case TID_RELOAD_PROJECT:
-						g_dpAccountClient.ReloadProject();
-						break;
-#endif // __S0114_RELOADPRO
-*/
 					case TID_POSTPROC:
 						CPost::GetInstance()->Process();
 						break;
@@ -440,11 +427,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			EndPaint(hWnd, &ps);
 			break;
 		case WM_DESTROY:
-/*
-#ifdef __S0114_RELOADPRO
-			KillTimer( hWnd, TID_RELOAD_PROJECT );
-#endif // __S0114_RELOADPRO
-*/
 			KillTimer( hWnd, TID_POSTPROC );
 			KillTimer( hWnd, TID_QUERY_REMOVE_GUILD_BANK_TBL );
 			KillTimer( hWnd, TIMER_ID_EVENT_GENERIC );

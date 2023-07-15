@@ -158,12 +158,6 @@ private:
 	void	OnSealCharFromDB( CAr & ar, DPID, DPID );
 	void	OnSealCharGetFromDB( CAr & ar, DPID, DPID );
 
-/*
-#ifdef __S0114_RELOADPRO
-	void	OnReloadProject( CAr & ar, DPID dpidCache, DPID dpidUser );
-#endif // __S0114_RELOADPRO
-*/
-
 private:
 	void	OnElectionAddDeposit( CAr & ar, DPID, DPID );
 	void	OnElectionSetPledge( CAr & ar, DPID, DPID );

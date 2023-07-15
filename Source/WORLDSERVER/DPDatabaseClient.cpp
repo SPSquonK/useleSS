@@ -59,11 +59,6 @@ CDPDatabaseClient::CDPDatabaseClient()
 	ON_MSG( PACKETTYPE_MONSTERPROPGAMESETTING, &CDPDatabaseClient::OnMonsterPropSetting );
 	ON_MSG( PACKETTYPE_GAMEMASTER_CHATTING, &CDPDatabaseClient::OnGMChat );
 	ON_MSG( PACKETTYPE_PING, &CDPDatabaseClient::OnPing );
-/*
-#ifdef __S0114_RELOADPRO
-	ON_MSG( PACKETTYPE_RELOAD_PROJECT, OnReloadProject );
-#endif // __S0114_RELOADPRO
-*/
 	ON_MSG( PACKETTYPE_ADD_GUILDCOMBAT, &CDPDatabaseClient::OnAllGuildCombat );
 	ON_MSG( PACKETTYPE_IN_GUILDCOMBAT, &CDPDatabaseClient::OnInGuildCombat );
 	ON_MSG( PACKETTYPE_OUT_GUILDCOMBAT, &CDPDatabaseClient::OnOutGuildCombat );
@@ -1585,23 +1580,7 @@ void CDPDatabaseClient::OnGMChat( CAr & ar, DPID, DPID )
 	if( 0 < nSize )
 		g_UserMng.AddGMChat( nSize );
 }
-/*
-#ifdef __S0114_RELOADPRO
-void CDPDatabaseClient::OnReloadProject( CAr & ar, DPID dpidCache, DPID dpidUser )
-{
-	prj.m_AddRemoveLock.Enter( theLineFile );	// lock1
-	g_UserMng.m_AddRemoveLock.Enter( theLineFile );	// lock2
-	
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( pUser )
-	{
-		g_DPSrvr.SendReloadProject( dpidCache, dpidUser );
-	}
-	g_UserMng.m_AddRemoveLock.Leave( theLineFile );	// unlock2
-	prj.m_AddRemoveLock.Leave( theLineFile );	// unlock1
-}
-#endif // __S0114_RELOADPRO
-*/
+
 void CDPDatabaseClient::SendLogPlayDeath(CMover* pMover, CMover* pSender)
 {
 	BEFORESENDDUAL( ar, PACKETTYPE_LOG_PLAY_DEATH, DPID_UNKNOWN, DPID_UNKNOWN );

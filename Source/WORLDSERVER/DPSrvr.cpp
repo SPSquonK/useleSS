@@ -4941,15 +4941,7 @@ void CDPSrvr::OnGameMasterWhisper( CAr & ar, DPID dpidCache, DPID dpidUser )
 		g_dpDBClient.SendLogGamemaChat( pUser, szChat );
 	}
 }
-/*
-#ifdef __S0114_RELOADPRO
-void CDPSrvr::SendReloadProject( DPID dpidCache, DPID dpidUser )
-{
-//	BEFORESENDSOLE( ar1, PACKETTYPE_RELOAD_PROJECT, dpidUser );
-//	SEND( ar1, &g_DPSrvr, dpidCache );
-}
-#endif // __S0114_RELOADPRO
-*/
+
 // 현상금 걸기 패킷 
 void CDPSrvr::OnNWWantedGold( CAr & ar, DPID dpidCache, DPID dpidUser )
 {

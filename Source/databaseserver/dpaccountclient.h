@@ -23,12 +23,6 @@ public:
 #ifdef __SERVERLIST0911
 	void	SendServerEnable( int nMulti, long lEnable );
 #endif	// __SERVERLIST0911
-/*
-#ifdef __S0114_RELOADPRO
-	void	SendCompleteReloadProject();
-	void	ReloadProject();
-#endif // __S0114_RELOADPRO
-*/
 //	Handlers
 private:
 	void	OnGetPlayerList( CAr & ar, LPBYTE, u_long );
@@ -41,11 +35,6 @@ private:
 	void	OnOneHourNotify( CAr & ar, LPBYTE lpBuf, u_long uBufSize );
 	void	OnFail( CAr & ar, LPBYTE, u_long );
 	void	OnBuyingInfo( CAr & ar, LPBYTE lpBuf, u_long uBufSize );	// 2
-/*
-#ifdef __S0114_RELOADPRO
-	void	OnReloadProject( CAr& ar, LPBYTE lpBuf, u_long uBufSize );
-#endif // __S0114_RELOADPRO
-*/
 };
 
 extern CDPAccountClient g_dpAccountClient;

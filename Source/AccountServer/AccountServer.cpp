@@ -178,11 +178,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	if( ::GetLanguage() == LANG_THA )
 		SetTimer( hWnd, IDT_PREVENT_EXCESS, 1000 * 60, NULL );
 
-/*
-#ifdef __S0114_RELOADPRO
-	SetTimer( hWnd, IDT_RELOAD_PROJECT, 1000 * 30, NULL );
-#endif // __S0114_RELOADPRO
-*/
 	SetTimer( hWnd, IDT_BUYING_INFO, 500, NULL );
 
 	if( FALSE == g_DbManager.AllOff() )
@@ -437,16 +432,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						}
 					}
 					break;
-/*
-#ifdef __S0114_RELOADPRO
-				case IDT_RELOAD_PROJECT:
-					{
-						if( g_dpSrvr.m_bReloadPro )
-							g_DbManager.Load_ReloadAccount();
-					}
-					break;
-#endif // __S0114_RELOADPRO
-*/
 				case IDT_BUYING_INFO:
 					g_BuyingInfoMng.Process();
 					break;
@@ -519,11 +504,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			KillTimer( hMainWnd, IDT_SENDPLAYERCOUNT );
 			if( ::GetLanguage() == LANG_THA )
 				KillTimer( hMainWnd, IDT_PREVENT_EXCESS );
-/*
-#ifdef __S0114_RELOADPRO
-			KillTimer( hMainWnd, IDT_RELOAD_PROJECT );
-#endif // __S0114_RELOADPRO
-*/
 			PostQuitMessage(0);
 			break;
 

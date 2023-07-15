@@ -125,12 +125,6 @@ public:
 	void	AccountOff( CQuery & qry, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	LogSMItem( CQuery & qryLog, LPDB_OVERLAPPED_PLUS lpDbOverlappedPlus );
 	void	DBQryLogSMItem( char* szSql, const LOG_SM_ITEM_INFO & info);
-/*
-#ifdef __S0114_RELOADPRO
-	void	QueryReloadProject( CQuery& query, LPDB_OVERLAPPED_PLUS pOV );
-	void	Load_ReloadAccount();
-#endif // __S0114_RELOADPRO
-	*/
 };
 
 extern CDbManager g_DbManager;
