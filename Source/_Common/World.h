@@ -600,7 +600,7 @@ public:
 public:
 	// Iterators
 	struct Iterators {
-		struct Barrier {};
+		struct Sentinel {};
 
 #ifdef __CLIENT
 		class LandIterator;
@@ -907,7 +907,7 @@ public:
 		GoToAValidLand();
 	}
 
-	LandIterator(Barrier) {
+	LandIterator(Sentinel) {
 		m_pWorld = nullptr;
 		m_xMin = m_xMax = m_yMin = m_yMax = 0;
 		m_x = m_y = 1;
@@ -915,7 +915,7 @@ public:
 
 	CLandscape *& operator*() { return m_pWorld->m_apLand[m_y * m_pWorld->m_nLandWidth + m_x]; }
 
-	bool operator==(Barrier) const {
+	bool operator==(Sentinel) const {
 		return m_y > m_yMax;
 	}
 
@@ -950,12 +950,12 @@ private:
 public:
 	LandRange(CWorld * pWorld) : m_pWorld(pWorld) {}
 
-	LandIterator begin() const {
-		if (!m_pWorld->m_pCamera) return Barrier{};
+	[[nodiscard]] LandIterator begin() const {
+		if (!m_pWorld->m_pCamera) return Sentinel{};
 		return LandIterator(m_pWorld);
 	}
 
-	Barrier end() const { return Barrier{}; }
+	[[nodiscard]] Sentinel end() const { return Sentinel{}; }
 };
 
 inline CWorld::Iterators::LandRange CWorld::GetVisibleLands() {
