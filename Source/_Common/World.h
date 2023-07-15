@@ -2,6 +2,7 @@
 #define __WORLD_2002_1_22
 
 #include <array>
+#include <experimental/generator>
 #include <boost/container/small_vector.hpp>
 #include "ExistingObjects.h"
 
@@ -611,6 +612,11 @@ public:
 #ifdef __CLIENT
 	[[nodiscard]] Iterators::LandRange GetVisibleLands();
 #endif
+
+	std::experimental::generator<CObj *> GetObjsInLinkMap(
+		const D3DXVECTOR3 & vPos, int nRange, DWORD dwLinkType,
+		int nLayer = 0
+	);
 };
 
 
@@ -876,6 +882,53 @@ extern CObj *GetLastPickObj( void );
 							if( IsValidObj( pObj ) )  
 
 	#define END_LINKMAP pObj = pObj->GetNextNode(); } } } } } }
+
+inline std::experimental::generator<CObj *> CWorld::GetObjsInLinkMap(
+	const D3DXVECTOR3 & vPos, const int nRange, const DWORD dwLinkType,
+	const int nLayer
+) {
+	const int _nLinkX = (int)(vPos.x / m_iMPU);
+	const int _nLinkZ = (int)(vPos.z / m_iMPU);
+
+	for (int i = 0; i < MAX_LINKLEVEL; i++) {
+		const int nWidthLink = CLandscape::m_nWidthLinkMap[i];
+		const int nMaxWidth = nWidthLink * m_nLandWidth;
+		const int nMaxHeight = nWidthLink * m_nLandHeight;
+		const int nUnit = (MAP_SIZE * m_nLandWidth) / nMaxWidth;
+		int nX = (_nLinkX / nUnit) * nUnit * m_iMPU;
+		int nZ = (_nLinkZ / nUnit) * nUnit * m_iMPU;
+		const int d = nUnit * m_iMPU / 2;
+		nX = ((int)(vPos.x) - nX > d) ? 1 : 0;
+		nZ = ((int)(vPos.z) - nZ > d) ? 1 : 0;
+
+		const int nLinkXMin = std::max(((_nLinkX - nRange) / nUnit) + (nX - 1), 0);
+		const int nLinkZMin = std::max(((_nLinkZ - nRange) / nUnit) + (nZ - 1), 0);
+		const int nLinkXMax = std::min(((_nLinkX + nRange) / nUnit) + nX, nMaxWidth - 1);
+		const int nLinkZMax = std::min(((_nLinkZ + nRange) / nUnit) + nZ, nMaxHeight - 1);
+
+		for (int j = nLinkZMin; j <= nLinkZMax; j++) {
+			for (int k = nLinkXMin; k <= nLinkXMax; k++) {
+				CLandscape * pLand = m_apLand[(j / nWidthLink) * m_nLandWidth + (k / nWidthLink)];
+				if (pLand) {
+					CObj ** pObjs = pLand->GetObjLink(dwLinkType, i);
+					ASSERT(_pObjs);
+					const int nPos = (j % nWidthLink) * nWidthLink + (k % nWidthLink);
+					CObj * pObj = pObjs[nPos];
+					while (pObj) {
+
+						if (IsValidObj(pObj))
+							co_yield pObj;
+
+						pObj = pObj->GetNextNode();
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
 
 #endif	// __WORLDSERVER
 

@@ -727,6 +727,7 @@ BOOL	CWorld::IntersectObjLine( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 
 
 
+#ifdef __CLIENT
 //
 // vPos를 중심으로 일정한 반경내의 오브젝트를 대상으로 검색
 // 카메라 충돌은 이걸로 해야한다.
@@ -734,8 +735,7 @@ BOOL	CWorld::IntersectObjLine( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vEnd, BOOL bSkipTrans, BOOL bWithTerrain, BOOL bWithObject )
 {
 	BOOL bRet = FALSE;
-#ifdef __CLIENT
-	int nRange = 0;
+
 	CObj	*pObj = NULL;
 	CModel	*pModel = NULL;
 	D3DXVECTOR3	vDir, vIntersect;
@@ -747,10 +747,10 @@ BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, cons
 	D3DXVECTOR3		vTempEnd  = vEnd;
 	float			fShortest = 0.0f;
 
-	if(m_nLandWidth < 4) nRange = 5;
-	nRange = 5;
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
-	{
+	const int nRange = 5;
+
+	for (CObj * pObj : GetObjsInLinkMap(vPos, nRange, CObj::linkStatic)) {
+
 		bAble = TRUE;
 		if( bSkipTrans && pObj->m_pModel->m_pModelElem->m_bTrans )	// 반투명이 되는 오브젝트는 검사대상에서 제외함.
 			bAble = FALSE;
@@ -787,7 +787,6 @@ BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, cons
 			}
 		}
 	}
-	END_LINKMAP
 	
 	if(bIsCol) return TRUE;
 	// 康: 카메라 충돌에서 사용하는 클라이언트 코드이므로 계층 값을 0으로 설정
@@ -833,9 +832,10 @@ BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, cons
 			bRet = TRUE;
 		}
 	}
-#endif	// __CLIENT
+
 	return bRet;
 }
+#endif	// __CLIENT
 
 // 주어진 레이와 충돌하는 바닥을 체크. - 레이저 공격에 쓰임.
 FLOAT CWorld::IntersectRayTerrain2( const D3DXVECTOR3 &vPickRayOrig, const D3DXVECTOR3 &vPickRayDir )
