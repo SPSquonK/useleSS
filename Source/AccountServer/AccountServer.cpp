@@ -12,6 +12,7 @@
 #include "account.h"
 #include "dpadbill.h"
 
+#include <rapidjson/document.h>
 #include "..\Resource\Lang.h"
 
 #include "dbmanager.h"
@@ -132,6 +133,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	if( Script( "AccountServer.ini" ) == FALSE )	
 		return FALSE;
 
+	bool serversRead = false;
+	g_dpSrvr.m_servers.write([&](CListedServers & servers) {
+		serversRead = servers.ReadJson("Server.json");
+	});
+	if (!serversRead) return FALSE;
+
+
 #ifdef __SECURITY_0628
 	LoadResAuth( "Flyff.b" );
 #endif	// __SECURITY_0628
@@ -238,14 +246,6 @@ AddTail( -1, 1, "TEST", "192.168.0.103" );
 #endif	// _DEBUG
 				SetWindowText( hMainWnd, lpString );
 			}
-			else if( s.Token == "AddTail" )
-			{
-				g_dpSrvr.m_servers.write(
-					[&](CListedServers & servers) {
-						servers.EmplaceNew(s);
-					}
-				);
-			}
 			else if( s.Token == "MAX" )
 			{
 				g_dpSrvr.m_nMaxConn = s.GetNumber();
@@ -342,58 +342,69 @@ AddTail( -1, 1, "TEST", "192.168.0.103" );
 	return FALSE;
 }
 
-void CListedServers::EmplaceNew(CScanner & s) {
-	s.GetToken();	// (
-	DWORD dwParent = s.GetNumber();
-	s.GetToken();	// ,
-	DWORD dwID = s.GetNumber();
-	s.GetToken();	// ,
-	s.GetToken();
-	CString lpName = s.Token;
-	s.GetToken();	// ,
-	s.GetToken();
-	CString lpAddr = s.Token;
-	s.GetToken();	// ,
-	BOOL b18 = (BOOL)s.GetNumber();
-	s.GetToken();	// ,
-	long lEnable = (long)s.GetNumber();
-#ifdef __SERVERLIST0911
-	lEnable = 0L;
-#endif	// __SERVERLIST0911
-	s.GetToken();	// ,
-	long lMax = (long)s.GetNumber();
-	s.GetToken();	// )
 
-	const auto SetValues = [&](auto & instance) {
-		instance.dwID = dwID;
-		lstrcpy(instance.lpName, lpName.GetString());
-		instance.lEnable = lEnable;
+bool CListedServers::ReadJson(LPCTSTR lpszFileName) {
+	m_servers.clear();
+
+	CScanner s;
+	if (!s.Load(lpszFileName)) return false;
+
+	rapidjson::Document document;
+	document.Parse(s.m_pProg);
+
+	constexpr auto GetOptionalBoolean = [](const auto & object, const char * field, bool defaultValue = true) {
+		const auto & fieldJson = object.FindMember(field);
+		if (fieldJson == object.MemberEnd()) {
+			return defaultValue;
+		} else {
+			return fieldJson->value.GetBool();
+		}
 	};
 
-	if (dwParent == NULL_ID) {
-		Server server;
-		SetValues(server);
-		lstrcpy(server.lpAddr, lpAddr.GetString());
-		m_servers.emplace_back(server);
-	} else {
-		Channel channel;
-		SetValues(channel);
-		channel.b18 = b18;
-		channel.lMax = lMax;
-
-		auto it = std::ranges::find_if(m_servers,
-			[dwParent](const Server & server) { return server.dwID == dwParent; }
-		);
-
-		if (it == m_servers.end()) {
-			Error("Bad AccountServer.ini: a channel has no parent");
-			throw "Bad AccountServer.ini: a channel has no parent";
+	constexpr auto ThrowIfMissing = [](const auto & object, auto & ... members) {
+		if (!(object.HasMember(members) && ...)) {
+			throw std::exception("Invalid Server.json file");
 		}
+	};
 
-		it->channels.emplace_back(channel);
+	try {
+		for (const auto & listedServer : document.GetArray()) {
+			const auto & oneServerJson = listedServer.GetObject();
+
+			if (GetOptionalBoolean(oneServerJson, "ignore", false)) continue;
+
+			ThrowIfMissing(oneServerJson, "sys", "name", "ip", "channels");
+
+			Server & serverObject = m_servers.emplace_back();
+
+			serverObject.dwID = oneServerJson["sys"].GetUint();
+			std::strcpy(serverObject.lpName, oneServerJson["name"].GetString());
+			std::strcpy(serverObject.lpAddr, oneServerJson["ip"].GetString());
+
+			serverObject.lEnable = GetOptionalBoolean(oneServerJson, "enable");
+
+			for (const auto & listedChannel : listedServer["channels"].GetArray()) {
+				const auto & oneChannelJson = listedChannel.GetObject();
+
+				if (GetOptionalBoolean(oneChannelJson, "ignore", false)) continue;
+				ThrowIfMissing(oneChannelJson, "id", "name", "max");
+
+				Channel & channelObject = serverObject.channels.emplace_back();
+
+				channelObject.dwID = oneChannelJson["id"].GetUint();
+				std::strcpy(channelObject.lpName, oneChannelJson["name"].GetString());
+				channelObject.lMax = oneChannelJson["max"].GetUint();
+				channelObject.lEnable = GetOptionalBoolean(oneChannelJson, "enable");
+				channelObject.b18 = GetOptionalBoolean(oneChannelJson, "b18");
+			}
+		}
+	} catch (std::exception e) {
+		Error(__FUNCTION__"(): Invalid Server.json file - %s", e.what());
+		return false;
 	}
-}
 
+	return true;
+}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

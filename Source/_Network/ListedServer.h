@@ -25,10 +25,9 @@ public:
   struct Channel {
     DWORD	dwID = NULL_ID;
     char	lpName[36] = "";
-//    char	lpAddr[16] = "";
-    BOOL	b18 = FALSE;
+    bool  b18 = false;
+    bool  lEnable = false;
     long	lCount = 0;
-    long	lEnable = 0;
     long	lMax = 0;
 
     friend CAr & operator<<(CAr & ar, const Channel & self);
@@ -39,10 +38,7 @@ public:
     DWORD	dwID = NULL_ID;
     char	lpName[36] = "";
     char	lpAddr[16] = "";
-//    BOOL	b18 = FALSE;
-//    long	lCount = 0;
-    long	lEnable = 0;
-//    long	lMax = 0;
+    bool	lEnable = false;
     boost::container::static_vector<Channel, MaxChannels> channels;
 
     friend CAr & operator<<(CAr & ar, const Server & self);
@@ -63,7 +59,7 @@ public:
   friend CAr & operator>>(CAr & ar,       CListedServers & self);
 
 #ifdef __ACCOUNT
-  void EmplaceNew(CScanner & s);
+  bool ReadJson(LPCTSTR lpszFileName);
 #endif 
   
   [[nodiscard]]       Server * GetServer(DWORD serverId);

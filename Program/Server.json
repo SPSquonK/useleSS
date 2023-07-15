@@ -1,0 +1,16 @@
+[
+  {
+    "sys": 1,
+    "name": "FlyFF",
+    "ip": "127.0.0.1",
+    "enable": true,
+    "channels": [
+      {
+        "id": 1,
+        "name": "Channel 1",
+        "enable": true,
+        "b18": true
+      }
+    ]
+  }
+]
