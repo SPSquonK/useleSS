@@ -596,6 +596,21 @@ public:
 	BOOL			ReadRespawn( CScript& s );
 	BOOL			LoadRegion();
 	BOOL			LoadPatrol();
+
+public:
+	// Iterators
+	struct Iterators {
+		struct Barrier {};
+
+#ifdef __CLIENT
+		class LandIterator;
+		class LandRange;
+#endif
+	};
+
+#ifdef __CLIENT
+	[[nodiscard]] Iterators::LandRange GetVisibleLands();
+#endif
 };
 
 
@@ -862,25 +877,92 @@ extern CObj *GetLastPickObj( void );
 
 	#define END_LINKMAP pObj = pObj->GetNextNode(); } } } } } }
 
-	#define FOR_LAND( _pWorld, _pLand, _nVisibilityLand, _bVisuble ) { \
-		if( (_pWorld)->m_pCamera ) \
-		{ \
-			int _i, _j; \
-			const auto [_x, _y] = (_pWorld)->WorldPosToLand( (_pWorld)->m_pCamera->m_vPos ); \
-			int _nXMin = _x - _nVisibilityLand; if( _nXMin < 0 ) _nXMin = 0; \
-			int _nYMin = _y - _nVisibilityLand; if( _nYMin < 0 ) _nYMin = 0; \
-			int _nXMax = _x + _nVisibilityLand; if( _nXMax >= (_pWorld)->m_nLandWidth  ) _nXMax = (_pWorld)->m_nLandWidth - 1; \
-			int _nYMax = _y + _nVisibilityLand; if( _nYMax >= (_pWorld)->m_nLandHeight ) _nYMax = (_pWorld)->m_nLandHeight - 1; \
-			for( _i = _nYMin; _i <= _nYMax; _i++ ) \
-			{ \
-				for( _j = _nXMin; _j <= _nXMax; _j++ ) \
-				{ \
-					if( (_pWorld)->m_apLand[ _i * (_pWorld)->m_nLandWidth + _j ] ) \
-					{ \
-						_pLand = (_pWorld)->m_apLand[ _i * (_pWorld)->m_nLandWidth + _j ]; \
-						if( _bVisuble == FALSE || ( _bVisuble == TRUE && _pLand->isVisibile() ) ) 
-
-	#define END_LAND } } } } }
-
 #endif	// __WORLDSERVER
+
+
+
+#ifdef __CLIENT
+
+
+class CWorld::Iterators::LandIterator {
+private:
+	CWorld * m_pWorld;
+	int m_x; int m_xMin; int m_xMax;
+	int m_y; int m_yMin; int m_yMax;
+
+public:
+	LandIterator(
+		CWorld * pWorld
+	) : m_pWorld(pWorld) {
+		const int visibilityRange = m_pWorld->m_nVisibilityLand;
+
+		const auto [x, y] = m_pWorld->WorldPosToLand(m_pWorld->m_pCamera->m_vPos);
+		m_xMin = std::max(x - visibilityRange, 0);
+		m_yMin = std::max(y - visibilityRange, 0);
+		m_xMax = std::min(x + visibilityRange, m_pWorld->m_nLandWidth - 1);
+		m_yMax = std::min(y + visibilityRange, m_pWorld->m_nLandHeight - 1);
+
+		m_x = m_xMin;
+		m_y = m_yMin;
+		GoToAValidLand();
+	}
+
+	LandIterator(Barrier) {
+		m_pWorld = nullptr;
+		m_xMin = m_xMax = m_yMin = m_yMax = 0;
+		m_x = m_y = 1;
+	}
+
+	CLandscape *& operator*() { return m_pWorld->m_apLand[m_y * m_pWorld->m_nLandWidth + m_x]; }
+
+	bool operator==(Barrier) const {
+		return m_y > m_yMax;
+	}
+
+	LandIterator & operator++() {
+		Next();
+		GoToAValidLand();
+		return *this;
+	}
+
+private:
+	void GoToAValidLand() {
+		while (m_y <= m_yMax && !operator*()) {
+			Next();
+		}
+	}
+
+	void Next() {
+		if (m_x >= m_xMax) {
+			++m_y;
+			m_x = m_xMin;
+		} else {
+			++m_x;
+		}
+	}
+
+};
+
+class CWorld::Iterators::LandRange {
+private:
+	CWorld * m_pWorld;
+
+public:
+	LandRange(CWorld * pWorld) : m_pWorld(pWorld) {}
+
+	LandIterator begin() const {
+		if (!m_pWorld->m_pCamera) return Barrier{};
+		return LandIterator(m_pWorld);
+	}
+
+	Barrier end() const { return Barrier{}; }
+};
+
+inline CWorld::Iterators::LandRange CWorld::GetVisibleLands() {
+	return Iterators::LandRange(this);
+}
+
+
+#endif
+
 #endif	// __WORLD_2002_1_22

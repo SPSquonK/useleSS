@@ -2444,18 +2444,14 @@ void CWndWorld::RenderAltimeter()
 
 	FLOAT fHigh1 = -1.0f, fLow1 = 999999.0f;
 	FLOAT fHigh2 = -1.0f, fLow2 = 999999.0f;
-	CObj* pObj;
-	CLandscape* pLand;
-//	FOR_LAND( &g_World, pLand, g_World.m_nVisibilityLand, FALSE )
-	FOR_LAND( g_WorldMng.Get(), pLand, g_WorldMng.Get()->m_nVisibilityLand, FALSE )
-	{
+
+	for (CLandscape * pLand : g_WorldMng.Get()->GetVisibleLands()) {
 		for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
 			D3DXVECTOR3 vPos = pObj->GetPos();
 			if (fHigh1 < vPos.y) fHigh1 = vPos.y;
 			if (fLow1 > vPos.y) fLow1 = vPos.y;
 		}
 	}
-	END_LAND
 
 	if( fHigh1 == -1.0f && fLow1 == 999999.0f )
 		return;
@@ -2498,8 +2494,7 @@ void CWndWorld::RenderAltimeter()
 //	CWorld* pWorld = &g_World;
 	CWorld* pWorld	= g_WorldMng.Get();
 
-//	FOR_LAND( &g_World, pLand, g_World.m_nVisibilityLand, FALSE )
-	FOR_LAND( g_WorldMng.Get(), pLand, g_WorldMng.Get()->m_nVisibilityLand, FALSE )
+	for (CLandscape * pLand : pWorld->GetVisibleLands())
 	{
 		for (CObj * pObj : pLand->m_apObjects[OT_MOVER].ValidObjs()) {
 			CMover* pMover = (CMover*) pObj;
@@ -2534,9 +2529,8 @@ void CWndWorld::RenderAltimeter()
 				dwColor	);
 		}
 	}
-	END_LAND
 
-	pObj = pWorld->GetObjFocus();
+	CObj * pObj = pWorld->GetObjFocus();
 	if( pObj )
 	{
 		DWORD dwColor = dwColor = 0xffff0000;

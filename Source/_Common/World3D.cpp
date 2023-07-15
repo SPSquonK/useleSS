@@ -555,57 +555,57 @@ void CWorld::RenderObject( CD3DFont* pFont )
 		CHECK1();
 		// Culling: pick the objects that are seen on screen
 		// Set the culling flex at the same time as the culling.
-		CLandscape* pLand;
 		// Static object culling and collection
 		m_pd3dDevice->SetRenderState( D3DRS_LIGHTING, m_bViewLight );
 
-		FOR_LAND( this, pLand, m_nVisibilityLand, FALSE )
-		{
-			for (auto & apObjects : pLand->m_apObjects)
-			for (CObj * pObj : apObjects.ValidObjs())
-			{
-				// Calculates the distance, and distinguishes what to print and what not to print according to the distance.
 
-				const D3DXVECTOR3 pvCamera = m_pCamera->GetPos();
-				const D3DXVECTOR3 pv = pObj->GetPos();
-				const D3DXVECTOR3 dist = pv - pvCamera;
-
-				MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem( pObj->m_dwType, pObj->m_dwIndex );
-				if( lpModelElem && g_Option.m_bSFXRenderOff && lpModelElem->m_bRenderFlag != 1 )
-					continue;
-				
-				// Guild Combat Rendering Options
-				if( pObj->GetType() == OT_MOVER )
+		for (CLandscape * pLand : GetVisibleLands()) {
+			for (auto & apObjects : pLand->m_apObjects) {
+				for (CObj * pObj : apObjects.ValidObjs())
 				{
-					CMover* pMover = (CMover*)pObj;
-					if( pMover->m_dwMode & GCWAR_RENDER_SKIP_MODE )
-					{
-						continue;
-					}
-			#ifdef __QUIZ
-					// Skip rendering in the quiz event area
-					if( !pObj->IsActiveMover() && ( pMover->m_dwMode & QUIZ_RENDER_SKIP_MODE ) )
-						continue;
-			#endif // __QUIZ
-				}
-				
-				pObj->m_fDistCamera = D3DXVec3Length(&dist);
-				static FLOAT fDistant[3][4] = { 
-					{ 400, 200, 70, 400 },
-					{ 250, 150, 60, 400 },
-					{ 150, 100, 40, 400 } };
-				if( m_bViewLODObj )
-				{
-					if( m_bMiniMapRender == FALSE && pObj->m_fDistCamera > fDistant[ g_Option.m_nObjectDistant ][ pObj->GetModel()->m_pModelElem->m_dwDistant ] ) 
-					{
-						continue;
-					}
-				}
-				else
-					pObj->m_fDistCamera = 0;
+					// Calculates the distance, and distinguishes what to print and what not to print according to the distance.
 
+					const D3DXVECTOR3 pvCamera = m_pCamera->GetPos();
+					const D3DXVECTOR3 pv = pObj->GetPos();
+					const D3DXVECTOR3 dist = pv - pvCamera;
+
+					MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem( pObj->m_dwType, pObj->m_dwIndex );
+					if( lpModelElem && g_Option.m_bSFXRenderOff && lpModelElem->m_bRenderFlag != 1 )
+						continue;
+				
+					// Guild Combat Rendering Options
+					if( pObj->GetType() == OT_MOVER )
+					{
+						CMover* pMover = (CMover*)pObj;
+						if( pMover->m_dwMode & GCWAR_RENDER_SKIP_MODE )
+						{
+							continue;
+						}
+				#ifdef __QUIZ
+						// Skip rendering in the quiz event area
+						if( !pObj->IsActiveMover() && ( pMover->m_dwMode & QUIZ_RENDER_SKIP_MODE ) )
+							continue;
+				#endif // __QUIZ
+					}
+				
+					pObj->m_fDistCamera = D3DXVec3Length(&dist);
+					static FLOAT fDistant[3][4] = { 
+						{ 400, 200, 70, 400 },
+						{ 250, 150, 60, 400 },
+						{ 150, 100, 40, 400 } };
+					if( m_bViewLODObj )
+					{
+						if( m_bMiniMapRender == FALSE && pObj->m_fDistCamera > fDistant[ g_Option.m_nObjectDistant ][ pObj->GetModel()->m_pModelElem->m_dwDistant ] ) 
+						{
+							continue;
+						}
+					}
+					else
+						pObj->m_fDistCamera = 0;
+
+					if (!pLand->isVisibile()) continue;
 					
-				if( pLand->isVisibile() ) { // TODO: can't we do this before?...
+				
 					if( !( m_bMiniMapRender == TRUE && pObj->GetType() != OT_OBJ ) )
 					{
 						// Matrices and bound box updates
@@ -635,9 +635,7 @@ void CWorld::RenderObject( CD3DFont* pFont )
 					}
 				}
 			}
-
 		}
-		END_LAND
 		
 		CHECK2( "Assert Obj" );
 
