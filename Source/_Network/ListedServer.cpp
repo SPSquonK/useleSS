@@ -19,12 +19,12 @@ CAr & operator>>(CAr & ar, CListedServers::Server & self) {
 }
 
 CAr & operator<<(CAr & ar, const CListedServers::Channel & self) {
-  ar << self.dwID << self.lpName << self.b18 << self.lCount << self.lMax;
+  ar << self.dwID << self.lEnable << self.lpName << self.b18 << self.lCount << self.lMax;
   return ar;
 }
 
 CAr & operator>>(CAr & ar, CListedServers::Channel & self) {
-  ar >> self.dwID >> self.lpName >> self.b18 >> self.lCount >> self.lMax;
+  ar >> self.dwID >> self.lEnable >> self.lpName >> self.b18 >> self.lCount >> self.lMax;
   return ar;
 }
 

@@ -719,26 +719,27 @@ void CWndSelectServer::DisplayChannels(CWndListBox & listBox, const std::span<CL
 	char lpString[256];
 
 	for (CListedServers::Channel & channel : channels) {
-		//if (channel.lEnable) {
+		if (channel.lEnable) {
 
-		long lCount = channel.lCount;
-		long lMax = channel.lMax;
+			long lCount = channel.lCount;
+			long lMax = channel.lMax;
 
-		long lBusy = (long)(lMax * 0.8);
+			long lBusy = (long)(lMax * 0.8);
 
-		const char * lpStrtmp;
-		if (lCount < lBusy)
-			lpStrtmp = prj.GetText(TID_GAME_NORMAL);	//"Á¤»ó"
-		else if (lCount < lMax)
-			lpStrtmp = prj.GetText(TID_GAME_BUSY);		//"È¥Àâ"
-		else
-			lpStrtmp = prj.GetText(TID_GAME_FULL);
+			const char * lpStrtmp;
+			if (lCount < lBusy)
+				lpStrtmp = prj.GetText(TID_GAME_NORMAL);	//"Á¤»ó"
+			else if (lCount < lMax)
+				lpStrtmp = prj.GetText(TID_GAME_BUSY);		//"È¥Àâ"
+			else
+				lpStrtmp = prj.GetText(TID_GAME_FULL);
 
-		const auto r = std::format_to_n(lpString, std::size(lpString) - 1, "{}({})", channel.lpName, lpStrtmp);
-		*r.out = '\0';
-		
-		CWndListBox::LISTITEM & item = listBox.AddString(lpString);
-		item.m_dwData = reinterpret_cast<DWORD>(&channel);
+			const auto r = std::format_to_n(lpString, std::size(lpString) - 1, "{}({})", channel.lpName, lpStrtmp);
+			*r.out = '\0';
+
+			CWndListBox::LISTITEM & item = listBox.AddString(lpString);
+			item.m_dwData = reinterpret_cast<DWORD>(&channel);
+		}
 	}
 }
 
