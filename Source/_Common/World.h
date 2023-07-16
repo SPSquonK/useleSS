@@ -610,6 +610,7 @@ public:
 
 #ifdef __CLIENT
 	[[nodiscard]] Iterators::LandRange GetVisibleLands();
+#endif
 
 	template<typename Func>
 	void ForLinkMap(
@@ -617,8 +618,6 @@ public:
 		int nRange, DWORD dwLinkType, int nLayer,
 		Func && consumer
 	);
-#endif
-
 };
 
 
@@ -843,6 +842,59 @@ extern CObj *GetLastPickObj( void );
 #endif	// __LAYER_1015
 	#define END_LINKMAP	\
 		pObj = pObj->GetNextNode(); } } } } }
+
+
+template<typename Func>
+void CWorld::ForLinkMap(
+	const D3DXVECTOR3 & vPos,
+	int nRange, DWORD dwLinkType, int nLayer,
+	Func && consumer
+) {
+	const int _nLinkX = (int)( vPos.x / m_iMPU );
+	const int _nLinkZ = (int)( vPos.z / m_iMPU );
+	
+	for (int i = 0; i < m_linkMap.GetMaxLinkLevel(dwLinkType, nLayer); i++) {
+		CObj ** _pObjs = m_linkMap.GetObj(dwLinkType, i, nLayer);
+		ASSERT(_pObjs);
+
+		const int nWidthLink = m_linkMap.GetLinkWidth(dwLinkType, i, nLayer);
+		const int nMaxWidth = nWidthLink * m_nLandWidth;
+		const int nMaxHeight = nWidthLink * m_nLandHeight;
+		const int nUnit = (MAP_SIZE * m_nLandWidth) / nMaxWidth;
+		const int d = nUnit * m_iMPU / 2;
+		int nX = (_nLinkX / nUnit) * nUnit * m_iMPU;
+		int nZ = (_nLinkZ / nUnit) * nUnit * m_iMPU;
+		nX = ((int)(vPos.x) - nX > d) ? 1 : 0;
+		nZ = ((int)(vPos.z) - nZ > d) ? 1 : 0;
+
+		const int nLinkXMin = std::max(((_nLinkX - nRange) / nUnit) + (nX - 1), 0);
+		const int nLinkZMin = std::max(((_nLinkZ - nRange) / nUnit) + (nZ - 1), 0);
+		const int nLinkXMax = std::min(((_nLinkX + nRange) / nUnit) + nX, nMaxWidth - 1);
+		const int nLinkZMax = std::min(((_nLinkZ + nRange) / nUnit) + nZ, nMaxHeight - 1);
+
+		for (int z = nLinkZMin; z <= nLinkZMax; z++) {
+			for (int x = nLinkXMin; x <= nLinkXMax; x++) {
+				const int nPos = z * nMaxWidth + x;
+				CObj * pObj = _pObjs[nPos];
+				int _limit = 1000;
+				while (pObj && _limit--) {
+					if constexpr (std::is_invocable_r_v<void, Func, CObj *>) {
+						consumer(pObj);
+					} else if constexpr (std::is_invocable_r_v<bool, Func, CObj *>) {
+						const bool stop = consumer(pObj);
+						if (stop) return;
+					} else {
+						static_assert(false, "Unknown consumer signature, must be void(CObj *) or bool(CObj *)");
+					}
+
+					pObj = pObj->GetNextNode();
+				}
+			}
+		}
+	}
+}
+
+
 #else	// __WORLDSERVER
 	#define FOR_LINKMAP( _pWorld, _vPos, _pObj, _nRange, _dwLinkType, _nLayer ) { \
 		int _nLinkX = (int)( _vPos.x / _pWorld->m_iMPU );	\
@@ -899,9 +951,9 @@ void CWorld::ForLinkMap(
 		const int nMaxWidth = nWidthLink * m_nLandWidth;
 		const int nMaxHeight = nWidthLink * m_nLandHeight;
 		const int nUnit = (MAP_SIZE * m_nLandWidth) / nMaxWidth;
+		const int d = nUnit * m_iMPU / 2;
 		int nX = (_nLinkX / nUnit) * nUnit * m_iMPU;
 		int nZ = (_nLinkZ / nUnit) * nUnit * m_iMPU;
-		const int d = nUnit * m_iMPU / 2;
 		nX = ((int)(vPos.x) - nX > d) ? 1 : 0;
 		nZ = ((int)(vPos.z) - nZ > d) ? 1 : 0;
 

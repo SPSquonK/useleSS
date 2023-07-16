@@ -1658,10 +1658,7 @@ void	CMover::SendDamageAround( int nDmgType, CMover *pAttacker, int nApplyType, 
 {
 #ifdef __WORLDSERVER
 	int nRange	= 4;	// 4m
-	float fDistSq;
-	CObj* pObj;
-	CMover *pTarget;
-	D3DXVECTOR3 vPos = GetPos();
+	const D3DXVECTOR3 vPos = GetPos();
 	D3DXVECTOR3 vDist;
 
 	if( fRange <= 4.0f )
@@ -1676,7 +1673,7 @@ void	CMover::SendDamageAround( int nDmgType, CMover *pAttacker, int nApplyType, 
 	if( fRange <= 0 )	// 범위가 0이거나 음수일수는 없다.
 		Error( "CMover::SendDamageAround : D:%s A:%s %d %f", GetName(), pAttacker->GetName(), nAttackID, fRange );
 
-	ItemProp* pProp;
+	const ItemProp* pProp;
 	if( nDmgType == AF_MAGICSKILL )
 	{
 		pProp = prj.GetSkillProp( nAttackID );		// UseSkill에서 사용한 스킬의 프로퍼티 꺼냄
@@ -1695,21 +1692,15 @@ void	CMover::SendDamageAround( int nDmgType, CMover *pAttacker, int nApplyType, 
 		}
 	}
 	
-	BOOL	bDamage = FALSE;
-	BOOL	bTarget = FALSE;
-
 	if( nApplyType & OBJTYPE_PLAYER )	// 적용대상이 플레이어인가 
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, CObj::linkPlayer, GetLayer() )
-		{
+		GetWorld()->ForLinkMap(vPos, nRange, CObj::linkPlayer, GetLayer(),
+			[&](CObj * pObj) {
 			if( pObj->GetType() == OT_MOVER )
 			{
-				bDamage = TRUE;
 
-				if( bDamage )
-				{
 					vDist = pObj->GetPos() - vPos;		// this -> 타겟까지의 벡터
-					fDistSq = D3DXVec3LengthSq( &vDist );
+					const FLOAT fDistSq = D3DXVec3LengthSq( &vDist );
 					if( fDistSq < fRange * fRange )		// 타겟과의 거리가 fRange미터 이내인것을 대상으로.
 					{
 						if( pObj == this && fTargetRatio == 0.0f )	// 타겟데미지 비율이 0이면 자기자신(타겟)은 데미지를 주지않음.
@@ -1718,9 +1709,9 @@ void	CMover::SendDamageAround( int nDmgType, CMover *pAttacker, int nApplyType, 
 						{
 							if( pObj != pAttacker )		// 어태커는 검색대상에서 제외.
 							{
-								pTarget = (CMover *)pObj;
-								bTarget = ( pTarget == this );
-								if( IsValidObj( (CObj*)pTarget ) && pTarget->IsLive() )
+								CMover * pTarget = (CMover *)pObj;
+								const BOOL bTarget = ( pTarget == this );
+								if( IsValidObj( pTarget ) && pTarget->IsLive() )
 								{
 									if( pProp->dwComboStyle == CT_FINISH )
 										pTarget->m_pActMover->SendDamageForce( nDmgType, pAttacker->GetId(), (nAttackID << 16), bTarget );
@@ -1730,23 +1721,20 @@ void	CMover::SendDamageAround( int nDmgType, CMover *pAttacker, int nApplyType, 
 							}
 						}
 					}
-					
-					bDamage = FALSE;	// 다음 루프를 위해서 초기화.
-				} // bDamage
 			}
-		}
-		END_LINKMAP
+
+			});
 	}
 
 	// 적용대상이 몬스터인가.
 	if( nApplyType & OBJTYPE_MONSTER )
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, CObj::linkDynamic, GetLayer() )
-		{
+		GetWorld()->ForLinkMap(vPos, nRange, CObj::linkDynamic, GetLayer(),
+			[&](CObj * pObj) {
 			if( pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPeaceful() == FALSE )
 			{
 				vDist = pObj->GetPos() - vPos;		// this -> 타겟까지의 벡터
-				fDistSq = D3DXVec3LengthSq( &vDist );
+				const FLOAT fDistSq = D3DXVec3LengthSq( &vDist );
 				if( fDistSq < fRange * fRange )		// 타겟과의 거리가 fRange미터 이내인것을 대상으로.
 				{
 					if( pObj == this && fTargetRatio == 0.0f )	// 타겟데미지 비율이 0이면 자기자신(타겟)은 데미지를 주지않음.
@@ -1755,8 +1743,8 @@ void	CMover::SendDamageAround( int nDmgType, CMover *pAttacker, int nApplyType, 
 					{
 						if( pObj != pAttacker )		// 공격자는 검사대상에서 제외.
 						{
-							pTarget = (CMover *)pObj;
-							if( IsValidObj( (CObj*)pTarget ) && pTarget->IsLive() )
+							CMover * pTarget = (CMover *)pObj;
+							if( IsValidObj( pTarget ) && pTarget->IsLive() )
 							{
 								if( pProp->dwComboStyle == CT_FINISH )
 									pTarget->m_pActMover->SendDamageForce( nDmgType, pAttacker->GetId(), (nAttackID << 16) );
@@ -1767,8 +1755,8 @@ void	CMover::SendDamageAround( int nDmgType, CMover *pAttacker, int nApplyType, 
 					}
 				}
 			}
-		}
-		END_LINKMAP
+			});
+		
 	}
 		
 #endif // WORLDSERVER		
