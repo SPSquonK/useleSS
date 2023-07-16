@@ -185,14 +185,14 @@ void CPartyQuestProcessor::RemoveAllDynamicObj( DWORD dwWorldID, D3DXVECTOR3 vPo
 	CWorld * pWorld = g_WorldMng.GetWorld(dwWorldID);
 	if (!pWorld) return;
 
-	for (CObj * pObj : GetLandRange(pWorld, vPos, nRange, LinkType::Dynamic, nTempLayer)) {
+	for (CObj * pObj : LinkMapRange(pWorld, vPos, nRange, LinkType::Dynamic, nTempLayer)) {
 		if (pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPeaceful() == FALSE) {
 			pObj->Delete();
 		}
 	}
 
 	const D3DXVECTOR3 vPos2	= D3DXVECTOR3( 6968.0f, 0, 3328.8f );
-	for (CUser * pUser : GetLandRange(pWorld, vPos, nRange, LinkType::Player, nTempLayer)) {
+	for (CUser * pUser : LinkMapRange(pWorld, vPos, nRange, LinkType::Player, nTempLayer)) {
 		pUser->AddQuestTextTime(0, GroupQuest::ProcessState::Ready, 0xffffffff);
 		pUser->Replace(WI_WORLD_MADRIGAL, vPos2, REPLACE_NORMAL, nDefaultLayer);
 	}

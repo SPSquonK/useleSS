@@ -126,7 +126,7 @@ CMover* CAIInterface::ScanTargetNext( CObj* pObjCenter, int nRange, OBJID dwIdTa
 	float fRadius	= (float)( nRange * nRange );
 
 	for (CObj * pObj : 
-		GetLandRange(pObjCenter->GetWorld(), vPos, nRange, LinkType::Player, GetMover()->GetLayer())
+		LinkMapRange(pObjCenter->GetWorld(), vPos, nRange, LinkType::Player, GetMover()->GetLayer())
 		)
 
 //	CObj * pObj;

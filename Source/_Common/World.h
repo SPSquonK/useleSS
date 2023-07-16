@@ -603,7 +603,7 @@ public:
 		struct Sentinel {};
 
 #ifdef __CLIENT
-		class LandIterator;
+		class LinkMapIterator;
 		class LandRange;
 #endif
 	};
@@ -772,14 +772,14 @@ extern CObj *GetLastPickObj( void );
 #ifdef __CLIENT
 
 
-class CWorld::Iterators::LandIterator {
+class CWorld::Iterators::LinkMapIterator {
 private:
 	CWorld * m_pWorld;
 	int m_x; int m_xMin; int m_xMax;
 	int m_y; int m_yMin; int m_yMax;
 
 public:
-	LandIterator(
+	LinkMapIterator(
 		CWorld * pWorld
 	) : m_pWorld(pWorld) {
 		const int visibilityRange = m_pWorld->m_nVisibilityLand;
@@ -795,7 +795,7 @@ public:
 		GoToAValidLand();
 	}
 
-	LandIterator(Sentinel) {
+	LinkMapIterator(Sentinel) {
 		m_pWorld = nullptr;
 		m_xMin = m_xMax = m_yMin = m_yMax = 0;
 		m_x = m_y = 1;
@@ -807,7 +807,7 @@ public:
 		return m_y > m_yMax;
 	}
 
-	LandIterator & operator++() {
+	LinkMapIterator & operator++() {
 		Next();
 		GoToAValidLand();
 		return *this;
@@ -838,9 +838,9 @@ private:
 public:
 	LandRange(CWorld * pWorld) : m_pWorld(pWorld) {}
 
-	[[nodiscard]] LandIterator begin() const {
+	[[nodiscard]] LinkMapIterator begin() const {
 		if (!m_pWorld->m_pCamera) return Sentinel{};
-		return LandIterator(m_pWorld);
+		return LinkMapIterator(m_pWorld);
 	}
 
 	[[nodiscard]] Sentinel end() const { return Sentinel{}; }

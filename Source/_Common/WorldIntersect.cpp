@@ -305,7 +305,7 @@ FLOAT	CWorld::GetItemHeight( const D3DXVECTOR3 & vPos )
 	D3DXVECTOR3 vEnd( vPos + vDir );
 	Segment3 segment( vPos, vEnd );
 
-	for (CObj * pObj : GetLandRange(this, vPos, nRange, LinkType::Static, nDefaultLayer)) {
+	for (CObj * pObj : LinkMapRange(this, vPos, nRange, LinkType::Static, nDefaultLayer)) {
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
 		CModel * pModel = pObj->m_pModel;
 		if (pModel->TestIntersectionOBB_Line(segment, pObj) == TRUE) {
@@ -730,7 +730,7 @@ BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, cons
 	const int nRange = 5;
 
 
-	for (CObj * pObj : GetLandRange(this, vPos, nRange, LinkType::Static)) {
+	for (CObj * pObj : LinkMapRange(this, vPos, nRange, LinkType::Static)) {
 		bAble = TRUE;
 		if( bSkipTrans && pObj->m_pModel->m_pModelElem->m_bTrans )	// 반투명이 되는 오브젝트는 검사대상에서 제외함.
 			bAble = FALSE;
@@ -1104,18 +1104,18 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, const D
 	};
 
 	if (GetID() == WI_WORLD_MINIROOM || IsWorldGuildHouse()) {
-		for (CObj * pObj : GetLandRange(this, vPos, nRange, LinkType::Dynamic)) {
+		for (CObj * pObj : LinkMapRange(this, vPos, nRange, LinkType::Dynamic)) {
 			if (pObj->GetType() == OT_CTRL) {
 				ProcessObjCollision(pObj);
 			}
 		}
 	}
 
-	for (CObj * pObj : GetLandRange(this, vPos, nRange, LinkType::Static)) {
+	for (CObj * pObj : LinkMapRange(this, vPos, nRange, LinkType::Static)) {
 		ProcessObjCollision(pObj);
 	}
 
-	for (CObj * pObj : GetLandRange(this, vPos, nRange, LinkType::AirShip)) {
+	for (CObj * pObj : LinkMapRange(this, vPos, nRange, LinkType::AirShip)) {
 		ProcessObjCollision(pObj);
 	}
 

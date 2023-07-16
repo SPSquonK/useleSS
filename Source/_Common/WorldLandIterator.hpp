@@ -9,7 +9,7 @@ static_assert(false, "WorldLandIterator.hpp may only be included in WorldServer 
 
 namespace useless_impl {
 namespace world {
-	template<LinkType dwLinkType, typename CObjSpec> class LandIterator;
+	template<LinkType dwLinkType, typename CObjSpec> class LinkMapIterator;
 	template<LinkType dwLinkType> class LinkLevelIterator;
 	template<LinkType dwLinkType> class AreaIterator;
 	template<LinkType dwLinkType> class ObjIterator;
@@ -73,42 +73,42 @@ namespace world {
 	};
 
 	template<LinkType dwLinkType, typename CObjSpec>
-	class LandIterator {
+	class LinkMapIterator {
 		LinkLevelIterator<dwLinkType> m_link;
 		AreaIterator<dwLinkType> m_area;
 		ObjIterator<dwLinkType> m_obj;
 
 	public:
-		LandIterator(CWorld * pWorld, const D3DXVECTOR3 & vPos, int nRange, int nLayer);
+		LinkMapIterator(CWorld * pWorld, const D3DXVECTOR3 & vPos, int nRange, int nLayer);
 		[[nodiscard]] bool operator==(CWorld::Iterators::Sentinel sentinel) const;
 		CObjSpec * operator*() { return reinterpret_cast<CObjSpec *>(*m_obj); }
-		LandIterator & operator++();
+		LinkMapIterator & operator++();
 	
 	private:
 		void FindNonEmpty();
 	};
 
 	template<LinkType dwLinkType, typename ObjSpec>
-	inline auto GetLandRange_(
+	inline auto GetLinkMapRange_(
 		CWorld * pWorld,
 		const D3DXVECTOR3 & vPos,
 		int nRange, int nLayer
 	) {
 		struct Range {
-			LandIterator<dwLinkType, ObjSpec> begin_;
+			LinkMapIterator<dwLinkType, ObjSpec> begin_;
 
-			explicit Range(LandIterator<dwLinkType, ObjSpec> begin_) : begin_(begin_) {}
+			explicit Range(LinkMapIterator<dwLinkType, ObjSpec> begin_) : begin_(begin_) {}
 
 			[[nodiscard]] auto begin() const { return begin_; }
 			[[nodiscard]] CWorld::Iterators::Sentinel end() const { return CWorld::Iterators::Sentinel{}; }
 		};
 
-		return Range(LandIterator<dwLinkType, ObjSpec>(pWorld, vPos, nRange, nLayer));
+		return Range(LinkMapIterator<dwLinkType, ObjSpec>(pWorld, vPos, nRange, nLayer));
 	}
 
-#pragma region LandIterator Implementation
+#pragma region LinkMapIterator Implementation
 	template<LinkType dwLinkType, typename CObjSpec>
-	LandIterator<dwLinkType, CObjSpec>::LandIterator(
+	LinkMapIterator<dwLinkType, CObjSpec>::LinkMapIterator(
 		CWorld * pWorld, const D3DXVECTOR3 & vPos, int nRange, int nLayer
 	)
 		: m_link(pWorld, vPos, nRange, nLayer)
@@ -121,12 +121,12 @@ namespace world {
 	}
 
 	template<LinkType dwLinkType, typename CObjSpec>
-	bool LandIterator<dwLinkType, CObjSpec>::operator==(CWorld::Iterators::Sentinel sentinel) const {
+	bool LinkMapIterator<dwLinkType, CObjSpec>::operator==(CWorld::Iterators::Sentinel sentinel) const {
 		return m_obj == sentinel;
 	}
 
 	template<LinkType dwLinkType, typename CObjSpec>
-	LandIterator<dwLinkType, CObjSpec> & LandIterator<dwLinkType, CObjSpec>::operator++() {
+	LinkMapIterator<dwLinkType, CObjSpec> & LinkMapIterator<dwLinkType, CObjSpec>::operator++() {
 		++m_obj;
 		FindNonEmpty();
 		return *this;
@@ -134,7 +134,7 @@ namespace world {
 
 
 	template<LinkType dwLinkType, typename CObjSpec>
-	void LandIterator<dwLinkType, CObjSpec>::FindNonEmpty() {
+	void LinkMapIterator<dwLinkType, CObjSpec>::FindNonEmpty() {
 		while (m_obj == CWorld::Iterators::Sentinel{}) {
 			// Go to next area
 			++m_area;
@@ -315,7 +315,7 @@ namespace world {
 
 
 
-#define GetLandRangeMostSpecializedKnownType(dwLinkType) \
+#define LinkMapRange_MostSpecializedKnownType(dwLinkType) \
 	std::conditional_t< \
 		std::is_convertible_v<CObjSpecialization<dwLinkType> *, CObj *>, \
 		CObjSpecialization<dwLinkType>, \
@@ -323,10 +323,10 @@ namespace world {
 	>
 
 #ifdef __WORLDSERVER
-#define GetLandRange(pWorld, vPos, nRange, dwLinkType, nLayer) useless_impl::world::GetLandRange_<dwLinkType, GetLandRangeMostSpecializedKnownType(dwLinkType)>(pWorld, vPos, nRange, nLayer)
+#define LinkMapRange(pWorld, vPos, nRange, dwLinkType, nLayer) useless_impl::world::GetLinkMapRange_<dwLinkType, LinkMapRange_MostSpecializedKnownType(dwLinkType)>(pWorld, vPos, nRange, nLayer)
 #else
-#define GetLandRange(pWorld, vPos, nRange, dwLinkType) useless_impl::world::GetLandRange_<dwLinkType, GetLandRangeMostSpecializedKnownType(dwLinkType)>(pWorld, vPos, nRange, 0)
-#define GetLandRange(pWorld, vPos, nRange, dwLinkType, nLayer) useless_impl::world::GetLandRange_<dwLinkType, GetLandRangeMostSpecializedKnownType(dwLinkType)>(pWorld, vPos, nRange, 0)
+#define LinkMapRange(pWorld, vPos, nRange, dwLinkType        ) useless_impl::world::GetLinkMapRange_<dwLinkType, LinkMapRange_MostSpecializedKnownType(dwLinkType)>(pWorld, vPos, nRange, 0)
+#define LinkMapRange(pWorld, vPos, nRange, dwLinkType, nLayer) useless_impl::world::GetLinkMapRange_<dwLinkType, LinkMapRange_MostSpecializedKnownType(dwLinkType)>(pWorld, vPos, nRange, 0)
 #endif
 
 
