@@ -99,13 +99,11 @@ BOOL CAIPet::SubItemLoot( void )
 	CMover* pMover = GetMover();
 	CMover* pOwner = prj.GetMover( m_idOwner );
 	CWorld* pWorld = GetWorld();
-	MoverProp *pProp = pMover->GetProp();
-	D3DXVECTOR3 vPos = pMover->GetPos();
-	CObj *pObj = NULL;
-	int nRange = 0;
+
+	const D3DXVECTOR3 vPos = pMover->GetPos();
 	D3DXVECTOR3 vDist;
-	FLOAT fDistSq, fMinDist = 9999999.0f;
-	CObj *pMinObj = NULL;
+	FLOAT fDistSq;
+	
 
 	vDist = pOwner->GetPos() - pMover->GetPos();
 	fDistSq = D3DXVec3LengthSq( &vDist );
@@ -114,49 +112,35 @@ BOOL CAIPet::SubItemLoot( void )
 
 	if( pOwner && pOwner->IsFly() )
 		return FALSE;
-		
+
+	FLOAT fMinDist = 15 * 15;
+	CItem * pMinObj = nullptr;
 	// 근처의 아이템을 검색함. - 주인님꺼만 검색해야할듯...
-	FOR_LINKMAP( pWorld, vPos, pObj, nRange, LinkType::Dynamic, pMover->GetLayer() )
-	{
-		if( pObj->GetType() == OT_ITEM )	// 아템만 검색
-		{
-			CItem *pItem = (CItem *)pObj;
-			ItemProp* pItemProp	= pItem->GetProp();
+	for (CObj * pObj : LinkMapRange(pWorld, vPos, 0, LinkType::Dynamic, pMover->GetLayer())) {
+		if (pObj->IsDelete()) continue;
+
+		CItem * pItem = pObj->ToItem();
+		if (!pItem) continue; // 아템만 검색
+
+		const ItemProp* pItemProp	= pItem->GetProp();
+		if (!pItemProp) continue;
 			// 이걸 따로 넣은이유는 StateIdle ARRIVAL에서 DoLoot()하고 난직후에 다시 SubItemLoot()을 호출했을때
 			// Loot한 아이템이 아직 안지워져서 여기서 또 검색이 되더라고.. 그래서 중복되는 아이템은 검색 안되게 고쳐봤다.
-//			if( pItem->GetId() != m_idLootItem )		
-			if( pItem->IsDelete() == FALSE )
-			{
-				if( pItemProp )
-				{
-					if( pOwner->IsLoot( pItem, TRUE ) )	// 루팅되는아이템인지 검사함.
-					{
-						vDist = pObj->GetPos() - pMover->GetPos();
-						fDistSq = D3DXVec3LengthSq( &vDist );		// 거리 구함.
-						if( fDistSq < 15 * 15 && fDistSq < fMinDist )	// 10미터 이내고... 가장 거리가 가까운 아템을 찾음.
-							pMinObj = pObj;
-					}
-				}
-			}
+
+		//	if( pItem->GetId() != m_idLootItem )		
+		if( pOwner->IsLoot( pItem, TRUE ) )	// 루팅되는아이템인지 검사함.
+		{
+			vDist = pObj->GetPos() - pMover->GetPos();
+			fDistSq = D3DXVec3LengthSq( &vDist );		// 거리 구함.
+			if( fDistSq < fMinDist )	// 10미터 이내고... 가장 거리가 가까운 아템을 찾음.
+				pMinObj = pItem;
 		}
 	}
-	END_LINKMAP
 
-	if( pMinObj )
-	{
-		// Get object ID of the loot item
-		DWORD dwIdLootItem = ((CItem *)pMinObj)->GetId();
-
-		// Get the item obj
-		CCtrl *pCtrl = prj.GetCtrl( dwIdLootItem );	
-
-		// if exists...
-		if( IsValidObj(pCtrl) )
-		{
-				MoveToDst( pMinObj->GetPos() );		// 목표쪽으로 이동.
-				m_idLootItem = dwIdLootItem;
-				m_bLootMove = TRUE;
-		}
+	if (pMinObj) {
+		MoveToDst(pMinObj->GetPos());		// 목표쪽으로 이동.
+		m_idLootItem = pMinObj->GetId();
+		m_bLootMove = TRUE;
 	}
 		
 	return m_bLootMove;
