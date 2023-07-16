@@ -451,6 +451,7 @@
     <ClInclude Include="..\_Common\ProjectJob.h" />
     <ClInclude Include="..\_Common\ScriptDefines.h" />
     <ClInclude Include="..\_Common\SkillsOfMover.h" />
+    <ClInclude Include="..\_Common\WorldLandIterator.hpp" />
     <ClInclude Include="DisplayedInfo.h" />
     <ClInclude Include="GroupedEmission.h" />
     <ClInclude Include="WantedListSnapshot.h" />

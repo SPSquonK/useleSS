@@ -1151,6 +1151,9 @@
     <ClInclude Include="..\_Common\linktype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\WorldLandIterator.hpp">
+      <Filter>Neuz Common Files\Common Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WorldServer.rc">
