@@ -1099,105 +1099,58 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **ppObj, const D3DX
 FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, const D3DXVECTOR3 &vPos )
 {
 	D3DXVECTOR3 vDir( 0.0f, -1.5f, 0.0f );	// 키높이(1.5) +	여유분(0.5)
-	D3DXVECTOR3 vIntersect, vEnd;
+	D3DXVECTOR3 vIntersect;
 	float	fMaxY = -65535.0f;	// 충돌한 좌표중 가장 높은 위치를 찾기 위한...
 	D3DXVECTOR3 vOut( 0, 0, 0 );		// *pOut에 최종적으로 넘겨줄 값.
 
-	CObj* pObj;
-	CObj* pMinObj = NULL;
-	CModel* pModel;
-	int nRange = 0;
-	//return GetLandHeight( vPos.x, vPos.z );
-	vEnd = vPos + vDir;
-	int		nCount = 0;
+	constexpr int nRange = 0;
+
+	const D3DXVECTOR3 vEnd = vPos + vDir;
 	Segment3 segment( vPos, vEnd );
 
-
-	if(GetID() == WI_WORLD_MINIROOM || IsWorldGuildHouse() )
-	{
-		FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Dynamic, nDefaultLayer )
-		{
-
-			// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
-			pModel = pObj->m_pModel;
-			if( pObj->GetType() == OT_CTRL ) 
-			{
-				if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
-				{
-					// 중력방향 라인과 교차하는 삼각형을 찾고 교차점(높이)을 찾은 후 슬라이딩 벡터를 vOut에 받는다.
-					if( ((CModelObject *)pModel)->GetObject3D()->SlideVectorUnder( &vOut, vPos, vEnd, pObj->GetMatrixWorld(), &vIntersect ) == TRUE )
-					{
-						if( vIntersect.y > fMaxY )
-						{
-							fMaxY = vIntersect.y;	// 충돌한 폴리곤중에 가장 높은 값을 쓰자....이렇게 되서 졸라 느려졌다.
-							*pOut = vOut;
-							*pObjColl = pObj;			// 충돌한 오브젝트.
-						}
-					}
-				}
-			}
-		}
-		END_LINKMAP
-	}
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
-	{
+	const auto ProcessObjCollision = [&](CObj * pObj) {
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
-		nCount ++;
-		pModel = pObj->m_pModel;
-		if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
-		{
+		CModel * pModel = pObj->m_pModel;
+		if (pModel->TestIntersectionOBB_Line(segment, pObj)) {
 			// 중력방향 라인과 교차하는 삼각형을 찾고 교차점(높이)을 찾은 후 슬라이딩 벡터를 vOut에 받는다.
-			if( ((CModelObject *)pModel)->GetObject3D()->SlideVectorUnder( &vOut, vPos, vEnd, pObj->GetMatrixWorld(), &vIntersect ) == TRUE )
-			{
-				if( vIntersect.y > fMaxY )
-				{
+			if (((CModelObject *)pModel)->GetObject3D()->SlideVectorUnder(&vOut, vPos, vEnd, pObj->GetMatrixWorld(), &vIntersect) == TRUE) {
+				if (vIntersect.y > fMaxY) {
 					fMaxY = vIntersect.y;	// // 충돌한 폴리곤중에 가장 높은 값을 쓰자....이렇게 되서 졸라 느려졌다.
 					*pOut = vOut;
 					*pObjColl = pObj;	// 충돌한 오브젝트.
 				}
 			}
 		}
-	}
-	END_LINKMAP
+	};
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::AirShip, nDefaultLayer )
-	{
-		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
-		nCount ++;
-		pModel = pObj->m_pModel;
-		if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
-		{
-			// 중력방향 라인과 교차하는 삼각형을 찾고 교차점(높이)을 찾은 후 슬라이딩 벡터를 vOut에 받는다.
-			if( ((CModelObject *)pModel)->GetObject3D()->SlideVectorUnder( &vOut, vPos, vEnd, pObj->GetMatrixWorld(), &vIntersect ) == TRUE )
-			{
-				if( vIntersect.y > fMaxY )
-				{
-					fMaxY = vIntersect.y;	// // 충돌한 폴리곤중에 가장 높은 값을 쓰자....이렇게 되서 졸라 느려졌다.
-					*pOut = vOut;
-					*pObjColl = pObj;	// 충돌한 오브젝트.
+	if (GetID() == WI_WORLD_MINIROOM || IsWorldGuildHouse()) {
+		ForLinkMap<LinkType::Dynamic>(vPos, nRange, 0,
+			[&](CObj * pObj) {
+				if (pObj->GetType() == OT_CTRL) {
+					ProcessObjCollision(pObj);
 				}
 			}
-		}
+		);
 	}
-	END_LINKMAP
 
-	D3DXVECTOR3	v1, v2;
+	ForLinkMap<LinkType::Static >(vPos, nRange, 0, ProcessObjCollision);
+	ForLinkMap<LinkType::AirShip>(vPos, nRange, 0, ProcessObjCollision);
+
 	// 현재 위치의 하이트맵 삼각형 읽음
 	// 수직벡터로 인터섹트 지점 구하고(높이) 슬라이드 계산.
 	// 
 	D3DXVECTOR3 pTri[3 * 9 * 2];		// 삼각형 54개
-	FLOAT	fDist;
-	FLOAT	vx, vz;
 
 	// 바닥 노말 구함
-	vx = vPos.x;	vz = vPos.z;
+	FLOAT vx = vPos.x;	FLOAT vz = vPos.z;
 	GetLandTri( vx, vz, pTri );
-	v1 = pTri[1] - pTri[0];		// 노말 계산 시작.
-	v2 = pTri[2] - pTri[0];
+	D3DXVECTOR3 v1 = pTri[1] - pTri[0];		// 노말 계산 시작.
+	D3DXVECTOR3 v2 = pTri[2] - pTri[0];
 	D3DXVec3Cross( &v1, &v1, &v2 );		// 바닥의 노말 계산.
 	D3DXVec3Normalize( &v1, &v1 );		// 단위벡터로 변환
 
 	// 수직벡터와 바닥면의 충돌지점 구함.
+	FLOAT	fDist;
 	BOOL b = IsTouchRayTri( &pTri[0], &pTri[1], &pTri[2], &vPos, &vDir, &fDist );
 	vIntersect.x = vx;
 	vIntersect.z = vz;
@@ -1224,13 +1177,6 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, const D
 			vOut = vIntersect + vOut * fDist;
 		else
 			vOut = vIntersect + vOut;
-
-#ifdef __XUZHU
-		if( fabs(vPos.z - vOut.z) > 10.0f )
-		{
-			int a=0;
-		}
-#endif
 	}
 
 	if( vIntersect.y > fMaxY )

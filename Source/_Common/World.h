@@ -896,12 +896,16 @@ void CWorld::ForLinkMap(
 	int nRange, int nLayer,
 	auto && consumer
 ) {
-	using ObjSpec = CObjSpecialization<dwLinkType>;
+	using ObjSpec =
+		std::conditional_t<
+			std::is_convertible_v<CObjSpecialization<dwLinkType> *, CObj *>,
+			CObjSpecialization<dwLinkType>,
+			CObj
+		>;
 	using ReturnType = std::invoke_result_t<decltype(consumer), ObjSpec *>;
 	
 	const int _nLinkX = (int)( vPos.x / m_iMPU );
 	const int _nLinkZ = (int)( vPos.z / m_iMPU );
-	static_assert(std::is_convertible_v<ObjSpec *, CObj *>);
 
 #ifdef __WORLDSERVER	
 	for (int i = 0; i < m_linkMap.GetMaxLinkLevel(dwLinkType, nLayer); i++) {
