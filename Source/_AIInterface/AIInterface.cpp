@@ -118,17 +118,21 @@ CMover* CAIInterface::ScanTargetNext( CObj* pObjCenter, int nRange, OBJID dwIdTa
 		return NULL;
 
 	TRACE( "ScanTargetNext\n" );
-	CObj* pObj;
 	D3DXVECTOR3 vPos	= pObjCenter->GetPos();
 	D3DXVECTOR3 vDist;
-	CMover *pTarget	= NULL;
 
 	BOOL bFlyMob	= GetMover()->IsFlyingNPC();
 	float fRadius	= (float)( nRange * nRange );
 
-	FOR_LINKMAP( pObjCenter->GetWorld(), vPos, pObj, nRange, LinkType::Player, GetMover()->GetLayer() )
+
+//	for (CObj * pObj : 
+//		GetLandRange(pObjCenter->GetWorld(), vPos, nRange, LinkType::Player, GetMover()->GetLayer())
+//		)
+
+	CObj * pObj;
+	FOR_LINKMAP(pObjCenter->GetWorld(), vPos, pObj, nRange, LinkType::Player, GetMover()->GetLayer())
 	{
-		pTarget	= (CMover *)pObj;
+		CMover * pTarget	= (CMover *)pObj;
 		if( pTarget->IsLive() && pTarget->GetId() != dwIdTarget ) 
 		{
 			if( bFlyMob == pTarget->IsFly() || bFlyMob == FALSE  )
@@ -144,6 +148,7 @@ CMover* CAIInterface::ScanTargetNext( CObj* pObjCenter, int nRange, OBJID dwIdTa
 		}
 	}
 	END_LINKMAP
+
 	return NULL;
 }
 

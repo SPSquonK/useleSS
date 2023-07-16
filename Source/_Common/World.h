@@ -890,6 +890,38 @@ extern CObj *GetLastPickObj( void );
 
 
 #if defined(__WORLDSERVER) || defined(__CLIENT)
+
+template<LinkType dwLinkType>
+inline auto GetLandRange_(
+	CWorld * pWorld,
+	const D3DXVECTOR3 & vPos,
+	int nRange, int nLayer
+) {
+	struct Empty {
+		bool operator==(CWorld::Iterators::Sentinel) { return true; }
+		Empty & operator++() { return *this; }
+		CObj * operator*() { return nullptr; }
+	};
+
+	struct Range {
+		// WImpl::LandIterator<dwLinkType> begin_;
+
+		// auto begin() { return begin_; }
+
+
+		Empty begin() { return Empty{}; }
+		CWorld::Iterators::Sentinel end() { return CWorld::Iterators::Sentinel{}; }
+	};
+
+	return Range{};
+}
+
+#ifdef __WORLDSERVER
+#define GetLandRange(pWorld, vPos, nRange, dwLinkType, nLayer) GetLandRange_<dwLinkType>(pWorld, vPos, nRange, nLayer)
+#else
+#define GetLandRange(pWorld, vPos, nRange, dwLinkType, nLayer) GetLandRange_<dwLinkType>(pWorld, vPos, nRange, 0)
+#endif
+
 template<LinkType dwLinkType>
 void CWorld::ForLinkMap(
 	const D3DXVECTOR3 & vPos,
