@@ -305,18 +305,17 @@ FLOAT	CWorld::GetItemHeight( const D3DXVECTOR3 & vPos )
 	D3DXVECTOR3 vEnd( vPos + vDir );
 	Segment3 segment( vPos, vEnd );
 
-	ForLinkMap<LinkType::Static>(vPos, nRange, nDefaultLayer,
-		[&](CObj * pObj) {
-			// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
-			CModel * pModel = pObj->m_pModel;
-			if (pModel->TestIntersectionOBB_Line(segment, pObj) == TRUE) {
-				// 중력방향 라인과 교차하는 삼각형을 찾고 교차점(높이)을 찾은 후 슬라이딩 벡터를 vOut에 받는다.
-				if (((CModelObject *)pModel)->GetObject3D()->SlideVectorUnder(&vOut, vPos, vEnd, pObj->GetMatrixWorld(), &vIntersect) == TRUE) {
-					if (vIntersect.y > fMaxY)
-						fMaxY = vIntersect.y;	// 충돌한 폴리곤중에 가장 높은 값을 쓰자....이렇게 되서 졸라 느려졌다.
-				}
+	for (CObj * pObj : GetLandRange(this, vPos, nRange, LinkType::Static, nDefaultLayer)) {
+		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
+		CModel * pModel = pObj->m_pModel;
+		if (pModel->TestIntersectionOBB_Line(segment, pObj) == TRUE) {
+			// 중력방향 라인과 교차하는 삼각형을 찾고 교차점(높이)을 찾은 후 슬라이딩 벡터를 vOut에 받는다.
+			if (((CModelObject *)pModel)->GetObject3D()->SlideVectorUnder(&vOut, vPos, vEnd, pObj->GetMatrixWorld(), &vIntersect) == TRUE) {
+				if (vIntersect.y > fMaxY)
+					fMaxY = vIntersect.y;	// 충돌한 폴리곤중에 가장 높은 값을 쓰자....이렇게 되서 졸라 느려졌다.
 			}
-	});
+		}
+	}
 
 	if( fMaxY != -65535.0f )
 		return fMaxY;
@@ -1119,10 +1118,6 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, const D
 	for (CObj * pObj : GetLandRange(this, vPos, nRange, LinkType::AirShip)) {
 		ProcessObjCollision(pObj);
 	}
-
-
-	ForLinkMap<LinkType::Static >(vPos, nRange, 0, ProcessObjCollision);
-	ForLinkMap<LinkType::AirShip>(vPos, nRange, 0, ProcessObjCollision);
 
 	// 현재 위치의 하이트맵 삼각형 읽음
 	// 수직벡터로 인터섹트 지점 구하고(높이) 슬라이드 계산.
