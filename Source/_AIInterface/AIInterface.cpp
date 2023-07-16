@@ -127,11 +127,7 @@ CMover* CAIInterface::ScanTargetNext( CObj* pObjCenter, int nRange, OBJID dwIdTa
 
 	for (CObj * pObj : 
 		LinkMapRange(pObjCenter->GetWorld(), vPos, nRange, LinkType::Player, GetMover()->GetLayer())
-		)
-
-//	CObj * pObj;
-//	FOR_LINKMAP(pObjCenter->GetWorld(), vPos, pObj, nRange, LinkType::Player, GetMover()->GetLayer())
-	{
+		)	{
 		CMover * pTarget	= (CMover *)pObj;
 		if( pTarget->IsLive() && pTarget->GetId() != dwIdTarget ) 
 		{

@@ -134,16 +134,11 @@ void CCommonCtrl::_ProcessWall( void )
 	#endif
 	}
 
-	D3DXVECTOR3	vPos = GetPos();
-
-#ifndef __CLIENT
-	CObj* pObj;
-	BOOL bApply;
-#endif //__CLIENT
+	const D3DXVECTOR3	vPos = GetPos();
 
 	int nRange = 4;
 	// 일반적으로 fDepth가 가장 길기때문에 검사 영역은 fDepth로 했다. 
-	float fDepth = 3;
+	const float fDepth = 3;
 	
 	if( fDepth <= 4.0f )		nRange = 4;
 	else if( fDepth <= 8.0f )	nRange = 8;
@@ -165,97 +160,85 @@ void CCommonCtrl::_ProcessWall( void )
 	int nMaxPVP		= m_pAddSkillProp->dwAbilityMaxPVP + ( pAttacker->GetLevel() + ( pAttacker->GetInt() / 10 ) * (int)m_pAddSkillProp->dwSkillLvl );
 	int nDamagePVP	= xRandom( nMinPVP, nMaxPVP );
 
-	int nHitPoint = 0;
-	int nTargetHP = 0;
-	
-	FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Dynamic, GetLayer() )
-	{
-		bApply = FALSE;
-		if( pObj->GetType() == OT_MOVER )				// 대상이 무버일때만.
+	for (CObj * pObj : LinkMapRange(GetWorld(), vPos, nRange, LinkType::Dynamic, GetLayer())) {
+		// 대상이 무버일때만.
+		CMover * pTarget = pObj->ToMover();
+		if (!pTarget) continue;
+		if (!IsValidObj(pTarget) || !pTarget->IsLive()) continue;
+
+		bool bApply = false;
+
+		if( pTarget->IsPeaceful() == FALSE )		// NPC가 아닌경우만 적용
+			bApply = true;
+		if( pAttacker->IsPlayer() && !pAttacker->IsChaotic() && pTarget->GetProp()->dwClass == RANK_GUARD )
+			bApply = false;
+
+		if (!bApply) continue;
+
+		if (!pObj->IsRangeObj(vPos, 1.0f)) continue;
+					
+		if( IsValidObj(pAttacker) )
 		{
-			CMover *pTarget = (CMover *)pObj;
-			if( pTarget->IsPeaceful() == FALSE )		// NPC가 아닌경우만 적용
-				bApply = TRUE;
-			if( pAttacker->IsPlayer() && !pAttacker->IsChaotic() && pTarget->GetProp()->dwClass == RANK_GUARD )
-				bApply = FALSE;
-			if( bApply )
+			const int nTargetHP = pTarget->GetHitPoint();
+			const int nHitPoint = nTargetHP - nDamage;
+			if( nHitPoint > 0 )
 			{
-				if( IsValidObj( pTarget ) && pTarget->IsLive() )
-				{
-					if( pObj->IsRangeObj( vPos, 1.0f ) )
-					{
-						if( IsValidObj(pAttacker) )
-						{
-							nTargetHP = pTarget->GetHitPoint();
-							nHitPoint = nTargetHP - nDamage;
-							if( nHitPoint > 0 )
-							{
-								pTarget->m_nHitPoint = nHitPoint;
-								g_UserMng.AddDamage( pTarget, pAttacker->GetId(), nDamage, AF_GENERIC );
-							}
-							else
-							{
-								pAttacker->SubExperience( pTarget );		// pTarget를 죽이고 난후의 m_pAttacker 경험치 처리.
-								pTarget->DropItemByDied( pAttacker );				// 몬스터였다면 아이템 드랍.
-								pAttacker->m_nAtkCnt = 0;					// 타겟을 죽였으면 공격자의 어택카운트 클리어
-								pTarget->DoDie( pAttacker );				// pTarget 죽어라. 
-								pTarget->m_nHitPoint = 0;
-							}
-						}
-						m_nLife ++;		// 부딪힐때마다 카운트 올라감
-						if( m_nLife >= (int)(m_pAddSkillProp->dwSkillLvl / 2) )
-							DestroyWall();
-						
-						// 뒤로 밀리기 처리.
-						if( pTarget->IsRank( RANK_MIDBOSS ) == FALSE )
-						{
-							const FLOAT fPushAngle = pTarget->GetAngle() + 180.0f;
-							static constexpr FLOAT fPower = 0.825f;
-							pTarget->m_pActMover->m_vDeltaE = AngleToVectorXZ( fPushAngle, fPower );
-							g_UserMng.AddPushPower( pTarget, pTarget->GetPos(), pTarget->GetAngle(), fPushAngle, fPower );
-						}
-					}
-				}
+				pTarget->m_nHitPoint = nHitPoint;
+				g_UserMng.AddDamage( pTarget, pAttacker->GetId(), nDamage, AF_GENERIC );
+			}
+			else
+			{
+				pAttacker->SubExperience( pTarget );		// pTarget를 죽이고 난후의 m_pAttacker 경험치 처리.
+				pTarget->DropItemByDied( pAttacker );				// 몬스터였다면 아이템 드랍.
+				pAttacker->m_nAtkCnt = 0;					// 타겟을 죽였으면 공격자의 어택카운트 클리어
+				pTarget->DoDie( pAttacker );				// pTarget 죽어라. 
+				pTarget->m_nHitPoint = 0;
 			}
 		}
+
+		m_nLife ++;		// 부딪힐때마다 카운트 올라감
+		if( m_nLife >= (int)(m_pAddSkillProp->dwSkillLvl / 2) )
+			DestroyWall();
+						
+		// 뒤로 밀리기 처리.
+		if( pTarget->IsRank( RANK_MIDBOSS ) == FALSE )
+		{
+			const FLOAT fPushAngle = pTarget->GetAngle() + 180.0f;
+			static constexpr FLOAT fPower = 0.825f;
+			pTarget->m_pActMover->m_vDeltaE = AngleToVectorXZ( fPushAngle, fPower );
+			g_UserMng.AddPushPower( pTarget, pTarget->GetPos(), pTarget->GetAngle(), fPushAngle, fPower );
+		}
 	}
-	END_LINKMAP
 
 	// 플레이어 링크맵이므로 공격자가 플레이어면 PVP이다.
-	BOOL bPVP	= pAttacker->IsPlayer();
-	FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Player, GetLayer() )
-	{
-		if( pObj->GetType() == OT_MOVER )				// 대상이 무버일때만.
-		{
-			CMover *pTarget = (CMover *)pObj;
-			if( pTarget->IsLive() && pAttacker != pTarget )
-			{
-				if( pObj->IsRangeObj( vPos, 1.0f ) )
-				{
-					int n = 0;
-					if( bPVP && pAttacker->IsPVPTarget( pTarget ) )
-						n	= pTarget->m_pActMover->SendDamage( AF_FORCE, pAttacker->GetId(), nDamagePVP, FALSE );	
-					else if( bPVP && (m_bControl || pAttacker->IsGuildCombatTarget( pTarget )
-								/*아레나 추가*/	|| pAttacker->IsArenaTarget( pTarget ) 
-						) )
-						n	= pTarget->m_pActMover->SendDamage( AF_FORCE, pAttacker->GetId(), nDamage, FALSE );	
-					if( n > 0 )
-					{
-						m_nLife ++;		// 부딪힐때마다 카운트 올라감
-						if( m_nLife >= (int)( m_pAddSkillProp->dwSkillLvl / 2 ) )
-							DestroyWall();
+	const bool bPVP	= pAttacker->IsPlayer();
+	for (CUser * pTarget : LinkMapRange(GetWorld(), vPos, nRange, LinkType::Player, GetLayer())) {
+		if (!pTarget->IsLive()) continue;
+		if (pAttacker == pTarget) continue;
+		if (!pTarget->IsRangeObj(vPos, 1.0f)) continue;
 
-						// 뒤로 밀리기 처리.
-						const FLOAT fPushAngle = pTarget->GetAngle() + 180.0f;
-						const FLOAT fPower = 0.825f;
-						pTarget->m_pActMover->m_vDeltaE = AngleToVectorXZ( fPushAngle, fPower );
-						g_UserMng.AddPushPower( pTarget, pTarget->GetPos(), pTarget->GetAngle(), fPushAngle, fPower );
-					}
-				}
-			}
+		int n = 0;
+		if( bPVP && pAttacker->IsPVPTarget( pTarget ) )
+			n	= pTarget->m_pActMover->SendDamage( AF_FORCE, pAttacker->GetId(), nDamagePVP, FALSE );	
+		else if( bPVP && (m_bControl || pAttacker->IsGuildCombatTarget( pTarget )
+					/*아레나 추가*/	|| pAttacker->IsArenaTarget( pTarget ) 
+			) )
+			n	= pTarget->m_pActMover->SendDamage( AF_FORCE, pAttacker->GetId(), nDamage, FALSE );	
+
+		if( n > 0 )
+		{
+			m_nLife ++;		// 부딪힐때마다 카운트 올라감
+			if( m_nLife >= (int)( m_pAddSkillProp->dwSkillLvl / 2 ) )
+				DestroyWall();
+
+			// 뒤로 밀리기 처리.
+			const FLOAT fPushAngle = pTarget->GetAngle() + 180.0f;
+			const FLOAT fPower = 0.825f;
+			pTarget->m_pActMover->m_vDeltaE = AngleToVectorXZ( fPushAngle, fPower );
+			g_UserMng.AddPushPower( pTarget, pTarget->GetPos(), pTarget->GetAngle(), fPushAngle, fPower );
 		}
 	}
-	END_LINKMAP
+
 #endif // WorldSErver
 
 #ifdef __CLIENT				

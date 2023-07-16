@@ -1605,43 +1605,38 @@ int		CMover::DoAttackMelee( CMover *pTarget, OBJMSG dwMsg, DWORD dwItemID )
 
 
 
+#ifdef __CLIENT
 // 주변에 있는 아이템중 하나를 집는다.
 void	CMover::DoPickupItemAround()
 {
-#ifdef __CLIENT
 	if( m_pActMover->IsActAttack() )	return;		// 공격중 사용안됨.
 	if( IsDie() )		return;						// 죽었을땐 사용안됨.
 	
-	int nRange	= 4;	// 4m
-	float fDistMin = 99999.0f, fDistSq;
-	CObj* pObj, *pMinObj = NULL;
-	D3DXVECTOR3 vPos = GetPos();
-	D3DXVECTOR3 vDist;
-	FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Dynamic, GetLayer() )
-	{
+	float fDistMin = 16.0f; // 아이템과의 거리가 x미터 이내인것을 대상으로.
+	CCtrl * pMinObj = nullptr;
+	const D3DXVECTOR3 vPos = GetPos();
+
+	for (CCtrl * pObj : LinkMapRange(GetWorld(), vPos, 4, LinkType::Dynamic ) ) {
 		if( pObj->GetType() == OT_ITEM )
 		{
-			vDist = pObj->GetPos() - vPos;		// this -> 아이템까지의 벡터
-			fDistSq = D3DXVec3LengthSq( &vDist );
-			if( fDistSq < 4.0f * 4.0f )		// 아이템과의 거리가 x미터 이내인것을 대상으로.
+			const D3DXVECTOR3 vDist = pObj->GetPos() - vPos;		// this -> 아이템까지의 벡터
+			const float fDistSq = D3DXVec3LengthSq( &vDist );
+
+			if( fDistSq < fDistMin )	// 그중 젤 가까운놈으로 선택
 			{
-				if( fDistSq < fDistMin )	// 그중 젤 가까운놈으로 선택
-				{
-					fDistMin = fDistSq;
-					pMinObj = pObj;
-				}
+				fDistMin = fDistSq;
+				pMinObj = pObj;
 			}
 		}
 	}
-	END_LINKMAP
 
 	// 아이템 집을게 있다.
 	if( pMinObj )
 	{
 		CMD_SetUseItem( (CCtrl*)pMinObj );
 	}
-#endif // __CLIENT
 }
+#endif // __CLIENT
 
 
 // this를 타겟으로 주변에 데미지를 준다.

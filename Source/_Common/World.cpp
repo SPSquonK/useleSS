@@ -1601,13 +1601,9 @@ LPWATERHEIGHT CWorld::GetWaterHeight(int x, int z )
 void	CWorld::SendDamageAround( const D3DXVECTOR3 *pvPos, int nDmgType, CMover *pAttacker, int nApplyType, int nAttackID, float fRange )
 {
 #ifdef __WORLDSERVER
-	int nRange	= 4;	// 4, 8, 16 단위로 넣자.
-	float fDistSq;
-	CObj* pObj;
-	CMover *pTarget;
-	D3DXVECTOR3 vPos = *pvPos;
-	D3DXVECTOR3 vDist;
+	const D3DXVECTOR3 vPos = *pvPos;
 
+	int nRange = 4;	// 4, 8, 16 단위로 넣자.
 	if( fRange <= 4.0f )
 		nRange = 4;
 	else if( fRange <= 8.0f )
@@ -1622,7 +1618,7 @@ void	CWorld::SendDamageAround( const D3DXVECTOR3 *pvPos, int nDmgType, CMover *p
 	if( fRange <= 0 )	// 범위가 0이거나 음수일수는 없다.
 		Error( "CWorld::SendDamageAround : D:%d,%d,%d A:%s %d %f", pvPos->x, pvPos->y, pvPos->z, pAttacker->GetName(), nAttackID, fRange );
 
-	ItemProp* pProp;
+	const ItemProp* pProp;
 	if( nDmgType == AF_MAGICSKILL )
 	{
 		pProp = prj.GetSkillProp( nAttackID );		// UseSkill에서 사용한 스킬의 프로퍼티 꺼냄
@@ -1641,61 +1637,38 @@ void	CWorld::SendDamageAround( const D3DXVECTOR3 *pvPos, int nDmgType, CMover *p
 		}
 	}
 
-	if( nApplyType & OBJTYPE_PLAYER )	// 적용대상이 플레이어인가 
-	{
-		FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Player, pAttacker->GetLayer() )
+	const auto ConsiderTarget = [&](CMover * pTarget) {
+		const D3DXVECTOR3 vDist = pTarget->GetPos() - vPos;		// this -> 타겟까지의 벡터
+		const float fDistSq = D3DXVec3LengthSq(&vDist);
+		if (fDistSq < fRange * fRange)		// 타겟과의 거리가 fRange미터 이내인것을 대상으로.
 		{
-			if( pObj->GetType() == OT_MOVER )
+			if (pTarget != pAttacker)		// 어태커는 검색대상에서 제외.
 			{
-
-					vDist = pObj->GetPos() - vPos;		// this -> 타겟까지의 벡터
-					fDistSq = D3DXVec3LengthSq( &vDist );
-					if( fDistSq < fRange * fRange )		// 타겟과의 거리가 fRange미터 이내인것을 대상으로.
-					{
-						if( pObj != pAttacker )		// 어태커는 검색대상에서 제외.
-						{
-							pTarget = (CMover *)pObj;
-							if( IsValidObj( (CObj*)pTarget ) && pTarget->IsLive() )
-							{
-								if( pProp->dwComboStyle == CT_FINISH )
-									pTarget->m_pActMover->SendDamageForce( nDmgType, pAttacker->GetId(), (nAttackID << 16) );
-								else
-									pTarget->m_pActMover->SendDamage( nDmgType, pAttacker->GetId(), (nAttackID << 16) );
-							}
-						}
-					}
-
-			}
-		}
-		END_LINKMAP
-	}
-
-	// 적용대상이 몬스터인가.
-	if( nApplyType & OBJTYPE_MONSTER )
-	{
-		FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Dynamic, pAttacker->GetLayer() )
-		{
-			if( pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPeaceful() == FALSE )
-			{
-				vDist = pObj->GetPos() - vPos;		// this -> 타겟까지의 벡터
-				fDistSq = D3DXVec3LengthSq( &vDist );
-				if( fDistSq < fRange * fRange )		// 타겟과의 거리가 fRange미터 이내인것을 대상으로.
-				{
-					if( pObj != pAttacker )		// 공격자는 검사대상에서 제외.
-					{
-						pTarget = (CMover *)pObj;
-						if( IsValidObj( (CObj*)pTarget ) && pTarget->IsLive() )
-						{
-							if( pProp->dwComboStyle == CT_FINISH )
-								pTarget->m_pActMover->SendDamageForce( nDmgType, pAttacker->GetId(), (nAttackID << 16) );
-							else
-								pTarget->m_pActMover->SendDamage( nDmgType, pAttacker->GetId(), (nAttackID << 16) );
-						}
-					}
+				if (IsValidObj(pTarget) && pTarget->IsLive()) {
+					if (pProp->dwComboStyle == CT_FINISH)
+						pTarget->m_pActMover->SendDamageForce(nDmgType, pAttacker->GetId(), (nAttackID << 16));
+					else
+						pTarget->m_pActMover->SendDamage(nDmgType, pAttacker->GetId(), (nAttackID << 16));
 				}
 			}
 		}
-		END_LINKMAP
+	};
+
+	// 적용대상이 플레이어인가 
+	if (nApplyType & OBJTYPE_PLAYER) {
+		for (CMover * pMover : LinkMapRange(this, vPos, nRange, LinkType::Player, pAttacker->GetLayer())) {
+			ConsiderTarget(pMover);
+		}
+	}
+
+	// 적용대상이 몬스터인가.
+	if (nApplyType & OBJTYPE_MONSTER) {
+		for (CObj * pObj : LinkMapRange(this, vPos, nRange, LinkType::Dynamic, pAttacker->GetLayer())) {
+			CMover * pMover = pObj->ToMover();
+			if (pMover && pMover->IsPeaceful() == FALSE) {
+				ConsiderTarget(pMover);
+			}
+		}
 	}
 		
 #endif // WORLDSERVER		

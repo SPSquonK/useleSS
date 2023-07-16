@@ -57,32 +57,26 @@ FLOAT CWorld::GetFullHeight( const D3DXVECTOR3& vPos )
 
 #ifdef __CLIENT
 // 현재 캐릭터가 있는 위치의 맵에서 해당이름을 가진 오브젝트를 찾는다
-CObj *CWorld::GetObjByName(const char * ObjName)
-{
-	CObj* pObj;
-	if(g_pPlayer)
-	{
-		FOR_LINKMAP( this, g_pPlayer->m_vPos, pObj, 0, LinkType::Static, nDefaultLayer )
-		{
-			const char* pString = ((CModelObject *)pObj->m_pModel)->GetObject3D()->m_szFileName;
-			if( strcmp(ObjName, pString) == 0 )
-			{
-				return pObj;
-			}
+CObj * CWorld::GetObjByName(const char * ObjName) {
+	if (!g_pPlayer) return nullptr;
+
+	for (CObj * pObj : LinkMapRange(this, g_pPlayer->m_vPos, 0, LinkType::Static)) {
+		CModelObject * pModel = dynamic_cast<CModelObject *>(pObj->m_pModel);
+		if (!pModel) continue;
+
+		const char * pString = pModel->GetObject3D()->m_szFileName;
+		if (strcmp(ObjName, pString) == 0) {
+			return pObj;
 		}
-		END_LINKMAP
 	}
-	
-	return NULL;
+
+	return nullptr;
 }
 
-void CWorld::ForceTexture(LPDIRECT3DTEXTURE9 pNewTex)
-{
-	for( int i = 0; i < m_nLandWidth * m_nLandHeight; i++)
-	{
-		if(m_apLand[ i ]) m_apLand[ i ]->ForceTexture(pNewTex);
+void CWorld::ForceTexture(LPDIRECT3DTEXTURE9 pNewTex) {
+	for (int i = 0; i < m_nLandWidth * m_nLandHeight; i++) {
+		if (m_apLand[i]) m_apLand[i]->ForceTexture(pNewTex);
 	}
-
 }
 
 
