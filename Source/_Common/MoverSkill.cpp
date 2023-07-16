@@ -1617,7 +1617,7 @@ void	CMover::DoPickupItemAround()
 	CObj* pObj, *pMinObj = NULL;
 	D3DXVECTOR3 vPos = GetPos();
 	D3DXVECTOR3 vDist;
-	FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, CObj::linkDynamic, GetLayer() )
+	FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Dynamic, GetLayer() )
 	{
 		if( pObj->GetType() == OT_ITEM )
 		{
@@ -1694,7 +1694,7 @@ void	CMover::SendDamageAround( int nDmgType, CMover *pAttacker, int nApplyType, 
 	
 	if( nApplyType & OBJTYPE_PLAYER )	// 적용대상이 플레이어인가 
 	{
-		GetWorld()->ForLinkMap<CObj::linkPlayer>(vPos, nRange, GetLayer(),
+		GetWorld()->ForLinkMap<LinkType::Player>(vPos, nRange, GetLayer(),
 			[&](CMover * pObj) {
 			
 
@@ -1728,7 +1728,7 @@ void	CMover::SendDamageAround( int nDmgType, CMover *pAttacker, int nApplyType, 
 	// 적용대상이 몬스터인가.
 	if( nApplyType & OBJTYPE_MONSTER )
 	{
-		GetWorld()->ForLinkMap<CObj::linkDynamic>(vPos, nRange, GetLayer(),
+		GetWorld()->ForLinkMap<LinkType::Dynamic>(vPos, nRange, GetLayer(),
 			[&](CObj * pObj) {
 			if( pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPeaceful() == FALSE )
 			{
@@ -1841,7 +1841,7 @@ void	CMover::SendDamageLine( int nDmgType, int nApplyType, int nAttackID,
 
 	if( nApplyType & OBJTYPE_PLAYER )	// 적용대상이 플레이어인가 
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, CObj::linkPlayer, GetLayer() )
+		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Player, GetLayer() )
 		{
 			if( pObj->GetType() == OT_MOVER )
 			{
@@ -1875,7 +1875,7 @@ void	CMover::SendDamageLine( int nDmgType, int nApplyType, int nAttackID,
 	// 적용대상이 몬스터인가.
 	if( nApplyType & OBJTYPE_MONSTER )
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, CObj::linkDynamic, GetLayer() )
+		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Dynamic, GetLayer() )
 		{
 			if( pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPeaceful() == FALSE )
 			{

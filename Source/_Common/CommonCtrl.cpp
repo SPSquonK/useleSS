@@ -168,7 +168,7 @@ void CCommonCtrl::_ProcessWall( void )
 	int nHitPoint = 0;
 	int nTargetHP = 0;
 	
-	FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, CObj::linkDynamic, GetLayer() )
+	FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Dynamic, GetLayer() )
 	{
 		bApply = FALSE;
 		if( pObj->GetType() == OT_MOVER )				// 대상이 무버일때만.
@@ -223,7 +223,7 @@ void CCommonCtrl::_ProcessWall( void )
 
 	// 플레이어 링크맵이므로 공격자가 플레이어면 PVP이다.
 	BOOL bPVP	= pAttacker->IsPlayer();
-	FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, CObj::linkPlayer, GetLayer() )
+	FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Player, GetLayer() )
 	{
 		if( pObj->GetType() == OT_MOVER )				// 대상이 무버일때만.
 		{

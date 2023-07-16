@@ -258,7 +258,7 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 	//------------ 적용대상이 플레이어인가 
 	if( nApplyType & OBJTYPE_PLAYER )	
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, CObj::linkPlayer, GetLayer() )
+		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Player, GetLayer() )
 		{
 			bApply = FALSE;	// 일단 FALSE로 초기화
 
@@ -324,7 +324,7 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 	// 적용대상이 몬스터/컨트롤 인가.
 	if( nApplyType & (OBJTYPE_MONSTER | OBJTYPE_CTRL) )
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, CObj::linkDynamic, GetLayer() )	// linkDynamic을 쓴다
+		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Dynamic, GetLayer() )	// linkDynamic을 쓴다
 		{
 			bApply = FALSE;
 			if( pObj->GetType() == OT_MOVER )				// 대상이 무버면.
@@ -416,7 +416,7 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 	//------------ 적용대상이 플레이어인가 
 	if( nApplyType & OBJTYPE_PLAYER )	
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, CObj::linkPlayer, GetLayer() )
+		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Player, GetLayer() )
 		{
 			bApply = FALSE;	// 일단 FALSE로 초기화
 
@@ -478,7 +478,7 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 	// 적용대상이 몬스터/컨트롤 인가.
 	if( nApplyType & (OBJTYPE_MONSTER | OBJTYPE_CTRL) )
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, CObj::linkDynamic, GetLayer() )	// linkDynamic을 쓴다
+		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Dynamic, GetLayer() )	// linkDynamic을 쓴다
 		{
 			bApply = FALSE;
 			if( pObj->GetType() == OT_MOVER )				// 대상이 무버면.
@@ -575,7 +575,7 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 
 	if( nApplyType & OBJTYPE_PLAYER )	// 적용대상이 플레이어인가 
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, CObj::linkPlayer, GetLayer() )
+		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Player, GetLayer() )
 		{
 			bApply = FALSE;	// 시작은 FALSE
 
@@ -633,7 +633,7 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 	// 적용대상이 몬스터인가.
 	if( nApplyType & (OBJTYPE_MONSTER | OBJTYPE_CTRL) )
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, CObj::linkDynamic, GetLayer() )
+		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Dynamic, GetLayer() )
 		{
 			bApply = FALSE;
 			if( pObj->GetType() == OT_MOVER )				// 대상이 무버면.

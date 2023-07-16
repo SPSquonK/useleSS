@@ -1,7 +1,7 @@
 #pragma once
 
 enum class LinkType : std::uint8_t {
-	Static  = 0,
+	/* CObj  */ Static = 0,
 	/* CCtrl */ Dynamic = 1,
 	/* CUser */ Player = 2,
 	/* CShip */ AirShip = 3

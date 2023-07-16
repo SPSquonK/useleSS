@@ -116,7 +116,7 @@ BOOL CAIPet::SubItemLoot( void )
 		return FALSE;
 		
 	// 근처의 아이템을 검색함. - 주인님꺼만 검색해야할듯...
-	FOR_LINKMAP( pWorld, vPos, pObj, nRange, CObj::linkDynamic, pMover->GetLayer() )
+	FOR_LINKMAP( pWorld, vPos, pObj, nRange, LinkType::Dynamic, pMover->GetLayer() )
 	{
 		if( pObj->GetType() == OT_ITEM )	// 아템만 검색
 		{

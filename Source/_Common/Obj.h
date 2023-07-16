@@ -173,11 +173,6 @@ public:
 	#endif //__YSMOOTH_OBJ
 #endif	// __WORLDSERVER
 
-	static constexpr auto linkStatic  = LinkType::Static;
-	static constexpr auto linkDynamic = LinkType::Dynamic;
-	static constexpr auto linkPlayer  = LinkType::Player;
-	static constexpr auto linkAirShip = LinkType::AirShip;
-
 #if defined(__WORLDSERVER) || defined(__CLIENT)
 	[[nodiscard]]       CMover * ToMover();
 	[[nodiscard]] const CMover * ToMover() const;

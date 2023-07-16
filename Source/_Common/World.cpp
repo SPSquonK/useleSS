@@ -1645,7 +1645,7 @@ void	CWorld::SendDamageAround( const D3DXVECTOR3 *pvPos, int nDmgType, CMover *p
 
 	if( nApplyType & OBJTYPE_PLAYER )	// 적용대상이 플레이어인가 
 	{
-		FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkPlayer, pAttacker->GetLayer() )
+		FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Player, pAttacker->GetLayer() )
 		{
 			if( pObj->GetType() == OT_MOVER )
 			{
@@ -1687,7 +1687,7 @@ void	CWorld::SendDamageAround( const D3DXVECTOR3 *pvPos, int nDmgType, CMover *p
 	// 적용대상이 몬스터인가.
 	if( nApplyType & OBJTYPE_MONSTER )
 	{
-		FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkDynamic, pAttacker->GetLayer() )
+		FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Dynamic, pAttacker->GetLayer() )
 		{
 			if( pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPeaceful() == FALSE )
 			{

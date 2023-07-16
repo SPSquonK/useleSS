@@ -609,7 +609,7 @@ BOOL	CAIMeteonyker::ProcessSummon( BOOL bUnconditional )
 		CObj* pObj;
 
 		// 반경 30 모든 사용자 소환
-		FOR_LINKMAP( pWorld, vPos, pObj, 15, CObj::linkPlayer, pMover->GetLayer() )
+		FOR_LINKMAP( pWorld, vPos, pObj, 15, LinkType::Player, pMover->GetLayer() )
 		{
 			pPlayer	= (CMover*)pObj;
 			if( pPlayer->IsLive() )

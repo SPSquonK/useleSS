@@ -191,7 +191,7 @@ void CPartyQuestProcessor::RemoveAllDynamicObj( DWORD dwWorldID, D3DXVECTOR3 vPo
 	CObj*		pObj;
 	D3DXVECTOR3 vDist;
 
-	FOR_LINKMAP( pWorld, vPos, pObj, nRange, CObj::linkDynamic, nTempLayer )
+	FOR_LINKMAP( pWorld, vPos, pObj, nRange, LinkType::Dynamic, nTempLayer )
 	{
 		if( pObj )
 		{
@@ -204,7 +204,7 @@ void CPartyQuestProcessor::RemoveAllDynamicObj( DWORD dwWorldID, D3DXVECTOR3 vPo
 	END_LINKMAP
 
 	D3DXVECTOR3 vPos2	= D3DXVECTOR3( 6968.0f, 0, 3328.8f );
-	FOR_LINKMAP( pWorld, vPos, pObj, nRange, CObj::linkPlayer, nTempLayer )
+	FOR_LINKMAP( pWorld, vPos, pObj, nRange, LinkType::Player, nTempLayer )
 	{
 		if( pObj )
 		{

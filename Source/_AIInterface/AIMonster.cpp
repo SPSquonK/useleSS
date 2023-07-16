@@ -212,7 +212,7 @@ BOOL CAIMonster::SubItemLoot()
 	CObj *pMinObj = NULL;
 
 	// 근처의 아이템을 검색함.
-	FOR_LINKMAP( pWorld, vPos, pObj, nRange, CObj::linkDynamic, pMover->GetLayer() )
+	FOR_LINKMAP( pWorld, vPos, pObj, nRange, LinkType::Dynamic, pMover->GetLayer() )
 	{
 		if( pObj->GetType() == OT_ITEM )
 		{
@@ -946,7 +946,7 @@ void CAIMonster::CallHelper( const MoverProp* pMoverProp )
 	default: nRange = pMoverProp->m_nAttackFirstRange * pMoverProp->m_nHelpRangeMul;	break;	// 시야범위의 배수.
 	}
 
-	FOR_LINKMAP( pMover->GetWorld(), vPos, pObj, nRange / MPU, CObj::linkDynamic, pMover->GetLayer() )
+	FOR_LINKMAP( pMover->GetWorld(), vPos, pObj, nRange / MPU, LinkType::Dynamic, pMover->GetLayer() )
 	{
 		if( pObj != pMover && pObj->GetType() == OT_MOVER )
 		{
@@ -981,7 +981,7 @@ NEXT:
 		// 파티가 확실하다면 파티원을 apPlayer에 수집한다.
 		if( pParty )
 		{
-			FOR_LINKMAP( pMover->GetWorld(), vPos, pObj, 20 / MPU, CObj::linkPlayer, pMover->GetLayer() )
+			FOR_LINKMAP( pMover->GetWorld(), vPos, pObj, 20 / MPU, LinkType::Player, pMover->GetLayer() )
 			{
 				if( pObj->GetType() == OT_MOVER && ((CMover*)pObj)->IsPlayer() && pParty->IsMember( ((CMover*)pObj)->m_idPlayer ) )
 				{
@@ -2224,7 +2224,7 @@ BOOL CMonsterSkill::ApplySkill( CMover* pAttacker, CMover* pTarget, DWORD dwAtkM
 	else	// 범위 스킬이면 범위안에 모든 캐릭터에게 스킬 적용
 	{		
 		CObj* pObj = NULL;
-		FOR_LINKMAP( pAttacker->GetWorld(), pAttacker->GetPos(), pObj, vecMonsterSkill[i].nRange, CObj::linkPlayer, pAttacker->GetLayer() )
+		FOR_LINKMAP( pAttacker->GetWorld(), pAttacker->GetPos(), pObj, vecMonsterSkill[i].nRange, LinkType::Player, pAttacker->GetLayer() )
 		{
 			if( pObj->GetType() == OT_MOVER && ((CMover*)pObj)->IsPlayer() && ((CMover*)pObj)->IsLive()
 				&& pObj != pAttacker && pObj->IsRangeObj( pAttacker, (float)( vecMonsterSkill[i].nRange ) ) )

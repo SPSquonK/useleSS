@@ -17,7 +17,7 @@ FLOAT CWorld::GetFullHeight( const D3DXVECTOR3& vPos )
 	CModel* pModel;
 	int nRange = 0;
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
 	{
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
 		pModel = pObj->m_pModel;
@@ -62,7 +62,7 @@ CObj *CWorld::GetObjByName(const char * ObjName)
 	CObj* pObj;
 	if(g_pPlayer)
 	{
-		FOR_LINKMAP( this, g_pPlayer->m_vPos, pObj, 0, CObj::linkStatic, nDefaultLayer )
+		FOR_LINKMAP( this, g_pPlayer->m_vPos, pObj, 0, LinkType::Static, nDefaultLayer )
 		{
 			const char* pString = ((CModelObject *)pObj->m_pModel)->GetObject3D()->m_szFileName;
 			if( strcmp(ObjName, pString) == 0 )
@@ -101,7 +101,7 @@ BOOL	CWorld::ProcessObjCollision(D3DXVECTOR3 vPos, CObj* pTargetObj, CObj* pWall
 
 	// 오브젝트를 폴리곤 단위로 교차검사한다
 	int nRange = OLD_MPU / m_iMPU;					// gmpbigsun:MPU가 4 이하일경우 그 범위수치가 보정되어야 함.
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkDynamic, 0 )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Dynamic, 0 )
 	{
 		if( pObj->GetType() == OT_CTRL )
 		{
@@ -118,7 +118,7 @@ BOOL	CWorld::ProcessObjCollision(D3DXVECTOR3 vPos, CObj* pTargetObj, CObj* pWall
 	}
 	END_LINKMAP
 	
-// 	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, 0)
+// 	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, 0)
 // 	{
 // 		if(pWallObj == pObj)
 // 		{
@@ -281,7 +281,7 @@ FLOAT CWorld::GetUnderHeight( const D3DXVECTOR3 &vPos )
 	CModel* pModel;
 
 	int nRange = 0;
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
 	{
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
 		pModel = pObj->m_pModel;
@@ -322,7 +322,7 @@ FLOAT	CWorld::GetItemHeight( const D3DXVECTOR3 & vPos )
 
 	D3DXVECTOR3 vEnd( vPos + vDir );
 	Segment3 segment( vPos, vEnd );
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
 	{
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
 		pModel	= pObj->m_pModel;
@@ -356,7 +356,7 @@ FLOAT CWorld::GetOverHeightForPlayer( const D3DXVECTOR3 &vPos, CObj* pExceptionO
 	Segment3 segment( vPos, vEnd );
 	Segment3 point( vPos, vPos );
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
 	{
 		pModel = pObj->m_pModel;
 		if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
@@ -405,7 +405,7 @@ FLOAT CWorld::GetOverHeight( const D3DXVECTOR3 &vPos, CObj* pExceptionObj )
 	vEnd = vPos + vDir;
 	Segment3 segment( vPos, vEnd );
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
 	{
 		pModel = pObj->m_pModel;
 		if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
@@ -453,7 +453,7 @@ BOOL	CWorld::ProcessCollision( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 	
 	*pOut = vDir;
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkDynamic, nLayer )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Dynamic, nLayer )
 	{
 		if( pObj->GetType() == OT_CTRL ) 
 		{
@@ -493,7 +493,7 @@ BOOL	CWorld::ProcessCollision( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 	END_LINKMAP
 		
 		
- 	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
+ 	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
 	{
 		// 선분과 오브젝트OBB의 검사.
 		pModel = pObj->m_pModel;
@@ -558,7 +558,7 @@ BOOL	CWorld::ProcessCollisionReflection( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &v
 	vEnd = vPos + vDir;		// 레이를 선분으로 바꾼다.
 	Segment3 segment( vPos, vEnd );
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
 	{
 		// 선분과 오브젝트OBB의 검사.
 		pModel = pObj->m_pModel;
@@ -591,7 +591,7 @@ BOOL	CWorld::ProcessCollisionReflection( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &v
 	}
 	END_LINKMAP
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkAirShip, nDefaultLayer )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::AirShip, nDefaultLayer )
 	{
 		// 선분과 오브젝트OBB의 검사.
 		pModel = pObj->m_pModel;
@@ -749,7 +749,7 @@ BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, cons
 
 	const int nRange = 5;
 
-	ForLinkMap<CObj::linkStatic>(vPos, nRange, 0,
+	ForLinkMap<LinkType::Static>(vPos, nRange, 0,
 		[&](CObj * pObj) {
 		bAble = TRUE;
 		if( bSkipTrans && pObj->m_pModel->m_pModelElem->m_bTrans )	// 반투명이 되는 오브젝트는 검사대상에서 제외함.
@@ -790,7 +790,7 @@ BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, cons
 	
 	if(bIsCol) return TRUE;
 	// 康: 카메라 충돌에서 사용하는 클라이언트 코드이므로 계층 값을 0으로 설정
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkDynamic, nTempLayer )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Dynamic, nTempLayer )
 	{
 		if( pObj->GetType() == OT_CTRL ) 
 		{
@@ -982,7 +982,7 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **ppObj, const D3DX
 
 	if(GetID() == WI_WORLD_MINIROOM || IsWorldGuildHouse() )
 	{
-		FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkDynamic, nDefaultLayer )
+		FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Dynamic, nDefaultLayer )
 		{
 
 			// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
@@ -1006,7 +1006,7 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **ppObj, const D3DX
 		}
 		END_LINKMAP
 	}
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
 	{
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
 		pModel = pObj->m_pModel;
@@ -1026,7 +1026,7 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **ppObj, const D3DX
 	}
 	END_LINKMAP
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkAirShip, nDefaultLayer )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::AirShip, nDefaultLayer )
 	{
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
 		pModel = pObj->m_pModel;
@@ -1115,7 +1115,7 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, const D
 
 	if(GetID() == WI_WORLD_MINIROOM || IsWorldGuildHouse() )
 	{
-		FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkDynamic, nDefaultLayer )
+		FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Dynamic, nDefaultLayer )
 		{
 
 			// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
@@ -1139,7 +1139,7 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, const D
 		}
 		END_LINKMAP
 	}
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkStatic, nDefaultLayer )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
 	{
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
 		nCount ++;
@@ -1160,7 +1160,7 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, const D
 	}
 	END_LINKMAP
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, CObj::linkAirShip, nDefaultLayer )
+	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::AirShip, nDefaultLayer )
 	{
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
 		nCount ++;

@@ -126,7 +126,7 @@ CMover* CAIInterface::ScanTargetNext( CObj* pObjCenter, int nRange, OBJID dwIdTa
 	BOOL bFlyMob	= GetMover()->IsFlyingNPC();
 	float fRadius	= (float)( nRange * nRange );
 
-	FOR_LINKMAP( pObjCenter->GetWorld(), vPos, pObj, nRange, CObj::linkPlayer, GetMover()->GetLayer() )
+	FOR_LINKMAP( pObjCenter->GetWorld(), vPos, pObj, nRange, LinkType::Player, GetMover()->GetLayer() )
 	{
 		pTarget	= (CMover *)pObj;
 		if( pTarget->IsLive() && pTarget->GetId() != dwIdTarget ) 
@@ -165,7 +165,7 @@ CMover* CAIInterface::ScanTarget( CObj* pObjCenter, int nRangeMeter, int nJobCon
 
 	float fRadius = (float)( nRangeMeter * nRangeMeter );	// 거리 
 
-	FOR_LINKMAP( pObjCenter->GetWorld(), vPos, pObj, nRangeMeter, CObj::linkPlayer, GetMover()->GetLayer() )
+	FOR_LINKMAP( pObjCenter->GetWorld(), vPos, pObj, nRangeMeter, LinkType::Player, GetMover()->GetLayer() )
 	{
 		ASSERT( pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPlayer() );
 		pTarget = (CMover *)pObj;
@@ -240,7 +240,7 @@ CMover* CAIInterface::ScanTargetStrong( CObj* pObjCenter, FLOAT fRangeMeter  )
 	// 지름 
 	FLOAT fRadius = fRangeMeter * fRangeMeter;
 	
-	FOR_LINKMAP( pObjCenter->GetWorld(), vPos, pObj, (int)( fRangeMeter / MPU ), CObj::linkPlayer, GetMover()->GetLayer() )
+	FOR_LINKMAP( pObjCenter->GetWorld(), vPos, pObj, (int)( fRangeMeter / MPU ), LinkType::Player, GetMover()->GetLayer() )
 	{
 		vDist = pObj->GetPos() - vPos;	// 두좌표간 벡터
 		float fDistSq = D3DXVec3LengthSq( &vDist );		// 두오브젝트간의 거리Sq
@@ -274,7 +274,7 @@ CMover* CAIInterface::ScanTargetOverHealer( CObj* pObjCenter, FLOAT fRangeMeter 
 	// 지름 
 	FLOAT fRadius = fRangeMeter * fRangeMeter;
 	
-	FOR_LINKMAP( pObjCenter->GetWorld(), vPos, pObj, (int)( fRangeMeter / MPU ), CObj::linkPlayer, GetMover()->GetLayer() )
+	FOR_LINKMAP( pObjCenter->GetWorld(), vPos, pObj, (int)( fRangeMeter / MPU ), LinkType::Player, GetMover()->GetLayer() )
 	{
 		vDist = pObj->GetPos() - vPos;	// 두좌표간 벡터
 		float fDistSq = D3DXVec3LengthSq( &vDist );		// 두오브젝트간의 거리Sq
