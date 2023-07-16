@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __CLIENT
+static constexpr int nDefaultLayer = 0;
+#endif
+
 enum class LinkType : std::uint8_t {
 	/* CObj  */ Static = 0,
 	/* CCtrl */ Dynamic = 1,

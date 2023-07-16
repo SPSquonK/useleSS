@@ -181,39 +181,25 @@ void CPartyQuestProcessor::Boom(int nQuestId, CRect rect, DWORD dwWorldId) {
 	RemoveQuest(nQuestId);
 }
 
-void CPartyQuestProcessor::RemoveAllDynamicObj( DWORD dwWorldID, D3DXVECTOR3 vPos, int nRange  )
-{
-	CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldID );
+void CPartyQuestProcessor::RemoveAllDynamicObj( DWORD dwWorldID, D3DXVECTOR3 vPos, int nRange) {
+	CWorld * pWorld = g_WorldMng.GetWorld(dwWorldID);
+	if (!pWorld) return;
 
-	if( !pWorld )
-		return;
-
-	CObj*		pObj;
-	D3DXVECTOR3 vDist;
-
-	FOR_LINKMAP( pWorld, vPos, pObj, nRange, LinkType::Dynamic, nTempLayer )
-	{
-		if( pObj )
-		{
-			if( pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPeaceful() == FALSE )
-			{
+	pWorld->ForLinkMap<LinkType::Dynamic>(vPos, nRange, nTempLayer,
+		[](CObj * pObj) {
+			if (pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPeaceful() == FALSE) {
 				pObj->Delete();
 			}
 		}
-	}
-	END_LINKMAP
+	);
 
-	D3DXVECTOR3 vPos2	= D3DXVECTOR3( 6968.0f, 0, 3328.8f );
-	FOR_LINKMAP( pWorld, vPos, pObj, nRange, LinkType::Player, nTempLayer )
-	{
-		if( pObj )
-		{
-			CUser* pUser = (CUser*)pObj;
-			pUser->AddQuestTextTime( 0, GroupQuest::ProcessState::Ready, 0xffffffff );			
-			pUser->Replace( WI_WORLD_MADRIGAL, vPos2, REPLACE_NORMAL, nDefaultLayer );
+	const D3DXVECTOR3 vPos2	= D3DXVECTOR3( 6968.0f, 0, 3328.8f );
+	pWorld->ForLinkMap<LinkType::Player>(vPos, nRange, nTempLayer,
+		[&vPos2](CUser * pUser) {
+			pUser->AddQuestTextTime(0, GroupQuest::ProcessState::Ready, 0xffffffff);
+			pUser->Replace(WI_WORLD_MADRIGAL, vPos2, REPLACE_NORMAL, nDefaultLayer);
 		}
-	}
-	END_LINKMAP
+	);
 }
 
 

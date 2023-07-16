@@ -1640,8 +1640,6 @@ void	CWorld::SendDamageAround( const D3DXVECTOR3 *pvPos, int nDmgType, CMover *p
 			return;	// property not found
 		}
 	}
-	
-	BOOL	bDamage = FALSE;
 
 	if( nApplyType & OBJTYPE_PLAYER )	// 적용대상이 플레이어인가 
 	{
@@ -1649,17 +1647,7 @@ void	CWorld::SendDamageAround( const D3DXVECTOR3 *pvPos, int nDmgType, CMover *p
 		{
 			if( pObj->GetType() == OT_MOVER )
 			{
-				if( pAttacker->IsPlayer() )
-				{
-					bDamage = TRUE;
-				} else
-				// 공격자가 몬스터
-				{
-					bDamage = TRUE;
-				}
 
-				if( bDamage )
-				{
 					vDist = pObj->GetPos() - vPos;		// this -> 타겟까지의 벡터
 					fDistSq = D3DXVec3LengthSq( &vDist );
 					if( fDistSq < fRange * fRange )		// 타겟과의 거리가 fRange미터 이내인것을 대상으로.
@@ -1676,9 +1664,7 @@ void	CWorld::SendDamageAround( const D3DXVECTOR3 *pvPos, int nDmgType, CMover *p
 							}
 						}
 					}
-					
-					bDamage = FALSE;	// 다음 루프를 위해서 초기화.
-				} // bDamage
+
 			}
 		}
 		END_LINKMAP

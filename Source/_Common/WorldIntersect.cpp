@@ -117,22 +117,6 @@ BOOL	CWorld::ProcessObjCollision(D3DXVECTOR3 vPos, CObj* pTargetObj, CObj* pWall
 		}
 	}
 	END_LINKMAP
-	
-// 	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, 0)
-// 	{
-// 		if(pWallObj == pObj)
-// 		{
-// 			// pWallObj는 특수하게 벽전체를 감싸고 있는 박스이기때문에 충돌에 실패한다는 것은 룸에서 벗어난 곳이라는 의미
-// 			if(TestOBBIntersect(&pObj->m_OBB, &pTargetObj->m_OBB))
-// 			{
-// 				if(TestTriIntersect(pObj, pTargetObj))
-// 						return TRUE;	
-// 			}
-// 			else	
-// 				return TRUE;
-// 		}
-// 	}
-// 	END_LINKMAP
 
 	return FALSE;
 }
@@ -312,31 +296,28 @@ LP1:
 
 FLOAT	CWorld::GetItemHeight( const D3DXVECTOR3 & vPos )
 {
-	D3DXVECTOR3 vDir( 0.0f, -3.0f, 0.0f );
+	const D3DXVECTOR3 vDir( 0.0f, -3.0f, 0.0f );
 	D3DXVECTOR3 vIntersect;
 	float fMaxY	= -65535.0f;
 	D3DXVECTOR3 vOut( 0.0f, 0.0f, 0.0f );
-	CObj* pObj;
-	CModel* pModel;
 	int nRange = 0;
 
 	D3DXVECTOR3 vEnd( vPos + vDir );
 	Segment3 segment( vPos, vEnd );
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
-	{
-		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
-		pModel	= pObj->m_pModel;
-		if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
-		{
-			// 중력방향 라인과 교차하는 삼각형을 찾고 교차점(높이)을 찾은 후 슬라이딩 벡터를 vOut에 받는다.
-			if( ((CModelObject *)pModel)->GetObject3D()->SlideVectorUnder( &vOut, vPos, vEnd, pObj->GetMatrixWorld(), &vIntersect ) == TRUE )
-			{
-				if( vIntersect.y > fMaxY )
-					fMaxY = vIntersect.y;	// 충돌한 폴리곤중에 가장 높은 값을 쓰자....이렇게 되서 졸라 느려졌다.
+
+	ForLinkMap<LinkType::Static>(vPos, nRange, nDefaultLayer,
+		[&](CObj * pObj) {
+			// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
+			CModel * pModel = pObj->m_pModel;
+			if (pModel->TestIntersectionOBB_Line(segment, pObj) == TRUE) {
+				// 중력방향 라인과 교차하는 삼각형을 찾고 교차점(높이)을 찾은 후 슬라이딩 벡터를 vOut에 받는다.
+				if (((CModelObject *)pModel)->GetObject3D()->SlideVectorUnder(&vOut, vPos, vEnd, pObj->GetMatrixWorld(), &vIntersect) == TRUE) {
+					if (vIntersect.y > fMaxY)
+						fMaxY = vIntersect.y;	// 충돌한 폴리곤중에 가장 높은 값을 쓰자....이렇게 되서 졸라 느려졌다.
+				}
 			}
-		}
-	}
-	END_LINKMAP
+	});
+
 	if( fMaxY != -65535.0f )
 		return fMaxY;
 	return GetLandHeight( vPos );
@@ -344,7 +325,7 @@ FLOAT	CWorld::GetItemHeight( const D3DXVECTOR3 & vPos )
 
 FLOAT CWorld::GetOverHeightForPlayer( const D3DXVECTOR3 &vPos, CObj* pExceptionObj )
 {
-	static D3DXVECTOR3 vDir( 0.0f, 1.0f, 0.0f );
+	const D3DXVECTOR3 vDir( 0.0f, 1.0f, 0.0f );
 	D3DXVECTOR3 vIntersect, vEnd;
 	FLOAT fDist;
 
@@ -359,9 +340,9 @@ FLOAT CWorld::GetOverHeightForPlayer( const D3DXVECTOR3 &vPos, CObj* pExceptionO
 	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
 	{
 		pModel = pObj->m_pModel;
-		if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
+		if( pModel->TestIntersectionOBB_Line( segment, pObj ) )
 		{
-			if( pModel->TestIntersectionOBB_Line( point, pObj ) == TRUE )
+			if( pModel->TestIntersectionOBB_Line( point, pObj ) )
 			{
 				pMinObj = pObj;
 			}
