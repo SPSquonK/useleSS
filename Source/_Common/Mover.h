@@ -1198,7 +1198,6 @@ public:
 	BOOL			CreateSkillEffect( OBJID idTarget, int nSkill, DWORD dwLevel );		// 실제 스킬 발동.
 	void			RemoveInvisible();		// 투명화 상태걸려있으면 해제함.
 	void			SendDamageAround( int nDmgType, CMover *pAttacker, int nApplyType, int nAttackID, float fRange, float fTargetRatio, float fAroundRatio );	// this를 중심으로 주변에 데미지를 입힘.
-	void			SendDamageLine( int nDmgType, int nApplyType, int nAttackID, float fWidth, float fHeight, float fDepth );
 	void			ChangeExpRatio( CMover* pAttacker, CMover* pDefender );
 	void			OnAttacked( CMover* pAttacker, int nDamage, BOOL bTarget, int nReflect );
 	BOOL			OnDamage( int nItemID, DWORD dwState, CMover *pHitObj, const D3DXVECTOR3 *pvDamagePos = NULL, DWORD dwAtkFlag = AF_GENERIC );

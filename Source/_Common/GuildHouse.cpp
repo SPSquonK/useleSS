@@ -369,19 +369,7 @@ void CGuildHouseBase::CheckDestroyRoom( CUser* pUser )
 	CWorld* pWorld = g_WorldMng.GetWorld( m_dwWorldId );
 	if( pWorld && pWorld->m_linkMap.GetLinkMap( static_cast<int>( m_dwGuildId ) ) )
 	{
-	/*
-		int nWidth = pWorld->WORLD_WIDTH * pWorld->m_iMPU;
-		int nHeight = pWorld->WORLD_HEIGHT * pWorld->m_iMPU;
-		D3DXVECTOR3 vPosCenter( nWidth / 2, 0.0f, nHeight / 2 );
-		int nRange = max( nWidth, nHeight ) / 2;
-		CObj* pObj;
-		FOR_LINKMAP( pWorld, vPosCenter, pObj, nRange, LinkType::Player, static_cast<int>( m_dwGuildId ) )
-		{
-			if( pObj->GetType() == OT_MOVER && static_cast<CMover*>( pObj )->IsPlayer() && pUser != pObj )	// 내가 아닌 다른 사람이 남아있는 경우다.
-				return;
-		}
-		END_LINKMAP
-	*/
+
 		if( g_UserMng.HasUserSameWorldnLayer( pUser ) )
 			return;
 
