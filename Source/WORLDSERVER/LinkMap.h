@@ -1,6 +1,8 @@
 #ifndef __LINKMAP_H__20041210
 #define __LINKMAP_H__20041210
 
+#include "linktype.h"
+
 class CObj;
 
 struct LINKMAP_INFO
@@ -27,18 +29,18 @@ public:
 	void		Init( int nLandWidth, int nLandHeight, int nView, int nMPU );
 	void		Release();
 
-	int			GetLinkWidth( DWORD dwLinkType, int dwLinkLevel );
-	CObj**		GetObj( DWORD dwLinkType, DWORD dwLinkLevel );
+	int			GetLinkWidth( LinkType dwLinkType, int dwLinkLevel );
+	CObj**		GetObj( LinkType dwLinkType, DWORD dwLinkLevel );
 	DWORD		CalcLinkLevel( CObj* pObj, float fObjWidth );
 
-	int			GetMaxLinkLevel( DWORD dwLinkType );
-	void		SetMaxLinkLevel( DWORD dwLinkType, int nLevel );
+	int			GetMaxLinkLevel( LinkType dwLinkType );
+	void		SetMaxLinkLevel( LinkType dwLinkType, int nLevel );
 
 	BOOL		InsertObjLink( CObj* pObj );
 	BOOL		RemoveObjLink2( CObj* pObj );
 	BOOL		RemoveObjLink( CObj* pObj );
-	CObj*		GetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel );
-	BOOL		SetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel, CObj* pObj );
+	CObj*		GetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel );
+	BOOL		SetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel, CObj* pObj );
 
 	void		AddItToView( CCtrl* pCtrl );
 	void		ModifyView( CCtrl* pCtrl );
@@ -50,7 +52,7 @@ public:
 
 private:
 	int			IsOverlapped( int c, int p, int r, int w );
-	CObj**		GetObjPtr( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel );
+	CObj**		GetObjPtr( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel );
 
 #ifdef __LAYER_1015
 private:
@@ -58,20 +60,20 @@ private:
 #endif	// __LAYER_1015
 };
 
-inline int CLinkMap::GetMaxLinkLevel( DWORD dwLinkType )
+inline int CLinkMap::GetMaxLinkLevel( const LinkType dwLinkType )
 {
 	//assert( 0 < m_infos[dwLinkType].nMaxLevel );
-	return m_infos[dwLinkType].nMaxLevel;
+	return m_infos[std::to_underlying(dwLinkType)].nMaxLevel;
 }
 
-inline int	CLinkMap::GetLinkWidth( DWORD dwLinkType, int dwLinkLevel ) 
+inline int	CLinkMap::GetLinkWidth( const LinkType dwLinkType, int dwLinkLevel ) 
 { 
-	return m_infos[dwLinkType].nWidth[dwLinkLevel]; 
+	return m_infos[std::to_underlying(dwLinkType)].nWidth[dwLinkLevel];
 }	
 
-inline CObj** CLinkMap::GetObj( DWORD dwLinkType, DWORD dwLinkLevel ) 
+inline CObj** CLinkMap::GetObj( const LinkType dwLinkType, DWORD dwLinkLevel ) 
 { 
-	return m_infos[dwLinkType].apObj[dwLinkLevel]; 
+	return m_infos[std::to_underlying(dwLinkType)].apObj[dwLinkLevel]; 
 }		
 
 #endif  //__LINKMAP_H__20041210 

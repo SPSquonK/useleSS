@@ -594,7 +594,7 @@ void CObj::SetPos( const D3DXVECTOR3& vPos )
 			else
 			{
 				// 같은 Landscape 안에서의 이동 
-				DWORD dwLinkType	= GetLinkType();
+				const LinkType dwLinkType	= GetLinkType();
 				if( pWorld->GetObjInLinkMap( m_vPos, dwLinkType, m_dwLinkLevel ) == this )
 					pWorld->SetObjInLinkMap( m_vPos, dwLinkType, m_dwLinkLevel, m_pNext );
 				DelNode();
@@ -914,24 +914,24 @@ void	CObj::ProcessAirShip( void )
 #ifdef __CLIENT
 #endif	// __CLIENT
 
-DWORD CObj::GetLinkType( void )
-{
+LinkType CObj::GetLinkType() const {
 	switch( m_dwType )
 	{
 		case OT_OBJ:
-			return CObj::linkStatic;
+			return LinkType::Static;
 		case OT_SHIP:
-			return CObj::linkAirShip;
+			return LinkType::AirShip;
 		case OT_MOVER:
-			if( ( (CMover*)this )->IsPlayer() == TRUE )
-				return CObj::linkPlayer;
+			if( ( (CMover*)this )->IsPlayer() )
+				return LinkType::Player;
+			[[fallthrough]];
 		case OT_CTRL:
 		case OT_SFX:
 		case OT_ITEM:
-			return CObj::linkDynamic;
+			return LinkType::Dynamic;
 	}
 	ASSERT( 0 );
-	return( -1 );
+	return LinkType::Dynamic;
 }
 
 void CObj::RenderName( CD3DFont* pFont, DWORD dwColor )

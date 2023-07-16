@@ -253,7 +253,7 @@ CLandscape::CLandscape()
 		nWidth /= 2;
 		if( nWidth == 0 ) nWidth = 1;
 		// 128	// 64	// 32	// 16 // 8 // 4  -	// 4	// 8	// 16	// 32 // 64 // 128
-		for( int j = 0; j < MAX_LINKTYPE; j++ )
+		for(std::underlying_type_t<LinkType> j = 0; j < MAX_LINKTYPE; j++ )
 		{
 			m_apObjLink[j][i]	= new CObj*[nWidth*nWidth];
 			memset( m_apObjLink[j][i], 0, sizeof(CObj*) * nWidth*nWidth );
@@ -304,7 +304,7 @@ CLandscape::~CLandscape()
 		}
 	}
 
-	for( int j = 0; j < MAX_LINKTYPE; j++ ) 
+	for(std::underlying_type_t<LinkType> j = 0; j < MAX_LINKTYPE; j++ )
 	{
 		for( int i = 0; i < MAX_LINKLEVEL; i++ ) 
 			SAFE_DELETE_ARRAY( m_apObjLink[j][i] );
@@ -1438,7 +1438,7 @@ BOOL CLandscape::RemoveObjLink( CObj* pObj )
 	return FALSE;
 }
 
-CObj* CLandscape::GetObjInLinkMap( D3DXVECTOR3 vPos, DWORD dwLinkType, int nLinkLevel )
+CObj* CLandscape::GetObjInLinkMap( D3DXVECTOR3 vPos, LinkType dwLinkType, int nLinkLevel )
 {
 	vPos.x /= MPU;
 	vPos.z /= MPU;
@@ -1455,7 +1455,7 @@ CObj* CLandscape::GetObjInLinkMap( D3DXVECTOR3 vPos, DWORD dwLinkType, int nLink
 	return NULL;
 }
 
-BOOL CLandscape::SetObjInLinkMap( D3DXVECTOR3 vPos, DWORD dwLinkType, int nLinkLevel, CObj* pObj )
+BOOL CLandscape::SetObjInLinkMap( D3DXVECTOR3 vPos, LinkType dwLinkType, int nLinkLevel, CObj* pObj )
 {
 	vPos.x /= MPU;
 	vPos.z /= MPU;

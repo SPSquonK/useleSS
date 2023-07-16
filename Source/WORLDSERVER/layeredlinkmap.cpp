@@ -31,7 +31,7 @@ void CLayeredLinkMap::Init( int nLandWidth, int nLandHeight, int nView, BOOL bBa
 
 void CLayeredLinkMap::Release()
 {
-	for( MLM::iterator i = m_mapLinkMap.begin(); i != m_mapLinkMap.end(); ++i )
+	for( auto i = m_mapLinkMap.begin(); i != m_mapLinkMap.end(); ++i )
 	{
 		CLinkMap* pLinkMap	= i->second;
 		pLinkMap->Release();
@@ -40,13 +40,13 @@ void CLayeredLinkMap::Release()
 	m_mapLinkMap.clear();
 }
 
-int CLayeredLinkMap::GetLinkWidth( DWORD dwLinkType, int nLinkLevel, int nLayer )
+int CLayeredLinkMap::GetLinkWidth( LinkType dwLinkType, int nLinkLevel, int nLayer )
 {
 	CLinkMap* pLinkMap	= GetLinkMap( nLayer );
 	return pLinkMap->GetLinkWidth( dwLinkType, nLinkLevel );
 }
 
-CObj** CLayeredLinkMap::GetObj( DWORD dwLinkType, DWORD dwLinkLevel, int nLayer )
+CObj** CLayeredLinkMap::GetObj( LinkType dwLinkType, DWORD dwLinkLevel, int nLayer )
 {
 	CLinkMap* pLinkMap	= GetLinkMap( nLayer );
 	return pLinkMap->GetObj( dwLinkType, dwLinkLevel );
@@ -58,13 +58,13 @@ DWORD CLayeredLinkMap::CalcLinkLevel( CObj* pObj, float fObjWidth, int nLayer )
 	return pLinkMap->CalcLinkLevel( pObj, fObjWidth );
 }
 
-int	CLayeredLinkMap::GetMaxLinkLevel( DWORD dwLinkType, int nLayer )
+int	CLayeredLinkMap::GetMaxLinkLevel( LinkType dwLinkType, int nLayer )
 {
 	CLinkMap* pLinkMap	= GetLinkMap( nLayer );
 	return pLinkMap->GetMaxLinkLevel( dwLinkType );
 }
 
-void CLayeredLinkMap::SetMaxLinkLevel( DWORD dwLinkType, int nLevel, int nLayer )
+void CLayeredLinkMap::SetMaxLinkLevel( LinkType dwLinkType, int nLevel, int nLayer )
 {
 	CLinkMap* pLinkMap	= GetLinkMap( nLayer );
 	pLinkMap->SetMaxLinkLevel( dwLinkType, nLevel );
@@ -88,13 +88,13 @@ BOOL CLayeredLinkMap::RemoveObjLink( CObj* pObj )
 	return pLinkMap->RemoveObjLink( pObj );
 }
 
-CObj* CLayeredLinkMap::GetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel, int nLayer )
+CObj* CLayeredLinkMap::GetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel, int nLayer )
 {
 	CLinkMap* pLinkMap	= GetLinkMap( nLayer );
 	return pLinkMap->GetObjInLinkMap( vPos, dwLinkType, nLinkLevel );
 }
 
-BOOL CLayeredLinkMap::SetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel, CObj* pObj, int nLayer )
+BOOL CLayeredLinkMap::SetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel, CObj* pObj, int nLayer )
 {
 	CLinkMap* pLinkMap	= GetLinkMap( nLayer );
 	return pLinkMap->SetObjInLinkMap( vPos, dwLinkType, nLinkLevel, pObj );
@@ -119,13 +119,13 @@ BOOL CLayeredLinkMap::CreateLinkMap( int nLayer )
 		return FALSE;
 	pLinkMap	= new CLinkMap;
 	pLinkMap->Init( m_nLandWidth, m_nLandHeight, m_nView, m_iMPU );
-	bool bResult	= m_mapLinkMap.insert( MLM::value_type( nLayer, pLinkMap ) ).second;
+	bool bResult	= m_mapLinkMap.emplace( nLayer, pLinkMap ).second;
 	return TRUE;
 }
 
 CLinkMap* CLayeredLinkMap::GetLinkMap( int nLayer )
 {
-	MLM::iterator i	= m_mapLinkMap.find( nLayer );
+	auto i	= m_mapLinkMap.find( nLayer );
 	if( i != m_mapLinkMap.end() )
 		return i->second;
 	return NULL;
@@ -133,7 +133,7 @@ CLinkMap* CLayeredLinkMap::GetLinkMap( int nLayer )
 
 void CLayeredLinkMap::DeleteLinkMap( int nLayer )
 {
-	MLM::iterator i	= m_mapLinkMap.find( nLayer );
+	auto i	= m_mapLinkMap.find( nLayer );
 	if( i != m_mapLinkMap.end() )
 	{
 		CLinkMap* pLinkMap	= i->second;

@@ -421,11 +421,11 @@ public:
 	BOOL			RemoveObjLink2( CObj* pObj );
 	void			AddMoveLandObj( CObj* pObj );
 #ifdef __LAYER_1015
-	CObj*			GetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel, int nLayer );
-	BOOL			SetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel, CObj* pObj, int nLayer );
+	CObj*			GetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel, int nLayer );
+	BOOL			SetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel, CObj* pObj, int nLayer );
 #else	// __LAYER_1015
-	CObj*			GetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel );
-	BOOL			SetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel, CObj* pObj );
+	CObj*			GetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel );
+	BOOL			SetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel, CObj* pObj );
 #endif	// __LAYER_1015
 
 	FLOAT			GetFullHeight( const D3DXVECTOR3& vPos );
@@ -615,7 +615,7 @@ public:
 	template<typename Func>
 	void ForLinkMap(
 		const D3DXVECTOR3 & vPos,
-		int nRange, DWORD dwLinkType, int nLayer,
+		int nRange, LinkType dwLinkType, int nLayer,
 		Func && consumer
 	);
 };
@@ -847,7 +847,7 @@ extern CObj *GetLastPickObj( void );
 template<typename Func>
 void CWorld::ForLinkMap(
 	const D3DXVECTOR3 & vPos,
-	int nRange, DWORD dwLinkType, int nLayer,
+	int nRange, LinkType dwLinkType, int nLayer,
 	Func && consumer
 ) {
 	const int _nLinkX = (int)( vPos.x / m_iMPU );
@@ -940,7 +940,7 @@ void CWorld::ForLinkMap(
 template<typename Func>
 void CWorld::ForLinkMap(
 	const D3DXVECTOR3 & vPos,
-	int nRange, DWORD dwLinkType, int nLayer,
+	int nRange, LinkType dwLinkType, int nLayer,
 	Func && consumer
 ) {
 	const int _nLinkX = (int)(vPos.x / m_iMPU);

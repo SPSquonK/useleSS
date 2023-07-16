@@ -1857,6 +1857,9 @@
     <ClInclude Include="..\_Common\NameValidation.h">
       <Filter>Source Files\_Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\linktype.h">
+      <Filter>Source Files\_Common\LOD</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\_Common\mss32.lib">

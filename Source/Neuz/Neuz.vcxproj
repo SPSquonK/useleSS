@@ -666,6 +666,7 @@
     <ClInclude Include="..\_Common\ItemContainer.h" />
     <ClInclude Include="..\_Common\ItemElem.h" />
     <ClInclude Include="..\_Common\ItemMorph.h" />
+    <ClInclude Include="..\_Common\linktype.h" />
     <ClInclude Include="..\_Common\NameValidation.h" />
     <ClInclude Include="..\_Common\ProjectJob.h" />
     <ClInclude Include="..\_Common\ScriptDefines.h" />

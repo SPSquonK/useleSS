@@ -608,9 +608,9 @@ BOOL CWorld::RemoveObjLink( CObj* pObj )
 }
 
 #ifdef __LAYER_1015
-CObj* CWorld::GetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel, int nLayer )
+CObj* CWorld::GetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel, int nLayer )
 #else	// __LAYER_1015
-CObj* CWorld::GetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel )
+CObj* CWorld::GetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel )
 #endif	// __LAYER_1015
 {
 	if( VecInWorld( vPos ) == FALSE )
@@ -643,9 +643,9 @@ CObj* CWorld::GetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int n
 }
 
 #ifdef __LAYER_1015
-BOOL CWorld::SetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel, CObj* pObj, int nLayer )
+BOOL CWorld::SetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel, CObj* pObj, int nLayer )
 #else	// __LAYER_1015
-BOOL CWorld::SetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel, CObj* pObj )
+BOOL CWorld::SetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel, CObj* pObj )
 #endif	// __LAYER_1015
 {
 	if( VecInWorld( vPos ) == FALSE )
@@ -1317,7 +1317,7 @@ void CWorld::_modifylink() {
 		if ((int)vOldtmp.x == (int)vCurtmp.x && (int)vOldtmp.z == (int)vCurtmp.z)
 			continue;
 		
-		const DWORD dwLinkType	= pObj->GetLinkType();
+		const LinkType dwLinkType	= pObj->GetLinkType();
 		const int nLinkLevel	= (int)pObj->GetLinkLevel();
 #ifdef __LAYER_1015
 		const int nLayer	= pObj->GetLayer();

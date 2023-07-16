@@ -7,6 +7,7 @@
 
 #include "XUtil3D.h"
 #include "define.h"
+#include "linktype.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -172,8 +173,10 @@ public:
 	#endif //__YSMOOTH_OBJ
 #endif	// __WORLDSERVER
 
-	#define	MAX_LINKTYPE	4
-	enum	{	linkStatic	= 0, linkDynamic	= 1, linkPlayer	= 2,	linkAirShip		= 3,	};
+	static constexpr auto linkStatic  = LinkType::Static;
+	static constexpr auto linkDynamic = LinkType::Dynamic;
+	static constexpr auto linkPlayer  = LinkType::Player;
+	static constexpr auto linkAirShip = LinkType::AirShip;
 
 #if defined(__WORLDSERVER) || defined(__CLIENT)
 	[[nodiscard]]       CMover * ToMover();
@@ -249,7 +252,7 @@ public:
 	BOOL			SetTypeIndex( DWORD dwType, DWORD dwIndex, BOOL bInitProp = FALSE );
 	void			ProcessAI();
 	void			ProcessAirShip();		
-	DWORD			GetLinkType();
+	[[nodiscard]] LinkType GetLinkType() const;
 	void			Delete();
 
 	void			SetPos( const D3DXVECTOR3& vPos ); 

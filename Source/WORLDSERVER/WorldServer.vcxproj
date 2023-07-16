@@ -446,6 +446,7 @@
     <ClInclude Include="..\_Common\groupquest.h" />
     <ClInclude Include="..\_Common\GroupUtils.h" />
     <ClInclude Include="..\_Common\ItemMorph.h" />
+    <ClInclude Include="..\_Common\linktype.h" />
     <ClInclude Include="..\_Common\NameValidation.h" />
     <ClInclude Include="..\_Common\ProjectJob.h" />
     <ClInclude Include="..\_Common\ScriptDefines.h" />

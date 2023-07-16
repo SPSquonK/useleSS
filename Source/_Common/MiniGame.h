@@ -11,7 +11,10 @@
 
 #ifdef __EVE_MINIGAME
 
+#ifdef __WORLDSERVER
 class CUser;
+#endif
+
 class CMiniGame  
 {
 public:

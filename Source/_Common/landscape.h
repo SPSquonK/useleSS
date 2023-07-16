@@ -1,6 +1,8 @@
 #ifndef LANDSCAPE_H
 #define LANDSCAPE_H
 
+#include "linktype.h"
+
 #ifndef __MAP_SIZE
 
 #define MAP_SIZE (128)
@@ -160,8 +162,8 @@ public:
 	CPatch				m_aPatches[NUM_PATCHES_PER_SIDE][NUM_PATCHES_PER_SIDE];	// 패치 배열
 	CObj**				m_apObjLink[MAX_LINKTYPE][MAX_LINKLEVEL];
 	
-	CObj***				GetObjLink( DWORD dwLinkType )	{	return( m_apObjLink[dwLinkType] );	}
-	CObj**				GetObjLink( DWORD dwLinkType, DWORD dwLinkLevel )	{	return( m_apObjLink[dwLinkType][dwLinkLevel] );		}
+	CObj***				GetObjLink( LinkType dwLinkType )	{	return( m_apObjLink[std::to_underlying(dwLinkType)] );	}
+	CObj**				GetObjLink( LinkType dwLinkType, DWORD dwLinkLevel )	{	return( m_apObjLink[std::to_underlying(dwLinkType)][dwLinkLevel] );		}
 	HRESULT				InitDeviceObjects( CWorld* pWorld );
 	HRESULT				RestoreDeviceObjects();
 	HRESULT				InvalidateDeviceObjects();
@@ -190,8 +192,8 @@ public:
 	void				RemoveObjArray( int nIndex );
 	BOOL				InsertObjLink( CObj* pObj );
 	BOOL				RemoveObjLink( CObj* pObj );
-	BOOL				SetObjInLinkMap( D3DXVECTOR3 vPos, DWORD dwLinkType, int nLinkLevel, CObj* pObj );
-	CObj*				GetObjInLinkMap( D3DXVECTOR3 vPos, DWORD dwLinkType, int nLinkLevel );
+	BOOL				SetObjInLinkMap( D3DXVECTOR3 vPos, LinkType dwLinkType, int nLinkLevel, CObj* pObj );
+	CObj*				GetObjInLinkMap( D3DXVECTOR3 vPos, LinkType dwLinkType, int nLinkLevel );
 };
 
 void SetLODDetail( int nDetail );

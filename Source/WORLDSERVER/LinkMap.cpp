@@ -36,16 +36,16 @@ void CLinkMap::Init( int nLandWidth, int nLandHeight, int nView, int nMPU )
 	float fMulGrid = 0.25f * (float)m_iMPU;
 	assert( m_iMPU > 0 && m_iMPU < 5 );
 	
-	int nLevel, nType;
+	int nLevel;
 	int nLandscape = MAP_SIZE * m_iMPU;	
 
 	int nCX = nLandscape * nLandWidth;  // 맵의 한변의 길이 (미터 단위) = 랜드스케이프 길이 * 맵의 한변 랜드스케이프 갯수 
 	float* fDivisor;
 
-	for( nType = 0; nType < MAX_LINKTYPE; nType++  )
+	for( std::underlying_type_t<LinkType> nType = 0; nType < MAX_LINKTYPE; nType++  )
 	{
 		LINKMAP_INFO* pInfo = &m_infos[nType];
-		if( nType == CObj::linkStatic )
+		if( static_cast<LinkType>(nType) == LinkType::Static )
 			fDivisor = fStaticGrid;
 		else
 			fDivisor = g_table;
@@ -75,19 +75,18 @@ void CLinkMap::Init( int nLandWidth, int nLandHeight, int nView, int nMPU )
 
 void CLinkMap::Release()
 {
-	int nLevel, nType;
-	for( nLevel = 0; nLevel < MAX_LINKLEVEL; nLevel++ )
+	for( int nLevel = 0; nLevel < MAX_LINKLEVEL; nLevel++ )
 	{
 		SAFE_DELETE_ARRAY( m_apfMask[nLevel] );
 	}
 
-	for( nType = 0; nType < MAX_LINKTYPE; nType++ )
-		for( nLevel = 0; nLevel < MAX_LINKLEVEL; nLevel++ )
+	for(std::underlying_type_t<LinkType> nType = 0; nType < MAX_LINKTYPE; nType++ )
+		for( int nLevel = 0; nLevel < MAX_LINKLEVEL; nLevel++ )
 			SAFE_DELETE_ARRAY( m_infos[nType].apObj[nLevel] );
 }
 
 // vPos위치, dwLinkType, nLinkLevel에 위치한 obj포인터의 포인터를 리턴 
-CObj** CLinkMap::GetObjPtr( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel )
+CObj** CLinkMap::GetObjPtr( const D3DXVECTOR3 & vPos, const LinkType dwLinkType, int nLinkLevel )
 {
 	CObj** aObjLinkMap	= GetObj( dwLinkType, nLinkLevel );
 	int nMaxWidth = GetLinkWidth( dwLinkType, nLinkLevel ) * m_nLandWidth;
@@ -138,7 +137,7 @@ BOOL CLinkMap::RemoveObjLink2( CObj* pObj )
 	WriteError( "ROL//CALLED" );
 
 	int nLinkLevel	= pObj->GetLinkLevel();
-	int nLinkType	= pObj->GetLinkType();
+	const LinkType nLinkType	= pObj->GetLinkType();
 	CObj** aObjLinkMap	= GetObj( nLinkType, nLinkLevel );
 	int nMaxWidth	= GetLinkWidth( nLinkType, nLinkLevel ) * m_nLandWidth;
 	int nMaxPos		= nMaxWidth * nMaxWidth;
@@ -182,7 +181,7 @@ BOOL CLinkMap::RemoveObjLink( CObj* pObj )
 	return FALSE;
 }
 
-CObj* CLinkMap::GetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel )
+CObj* CLinkMap::GetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel )
 {
 	CObj** ppObj = GetObjPtr( vPos, dwLinkType, nLinkLevel );
 	if( ppObj )
@@ -191,7 +190,7 @@ CObj* CLinkMap::GetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int
 		return NULL;
 }
 
-BOOL CLinkMap::SetObjInLinkMap( const D3DXVECTOR3 & vPos, DWORD dwLinkType, int nLinkLevel, CObj* pObj )
+BOOL CLinkMap::SetObjInLinkMap( const D3DXVECTOR3 & vPos, LinkType dwLinkType, int nLinkLevel, CObj* pObj )
 {
 	CObj** ppObj = GetObjPtr( vPos, dwLinkType, nLinkLevel );
 	if( ppObj )
@@ -224,8 +223,8 @@ void CLinkMap::AddItToView( CCtrl* pCtrl )
 		pUser	= (CUser*)pCtrl;
 		for( i = 0; i < MAX_LINKLEVEL; i++ )
 		{
-			nMaxWidth	= GetLinkWidth( CObj::linkDynamic, i) * m_nLandWidth;
-			nMaxHeight	= GetLinkWidth( CObj::linkDynamic, i) * m_nLandHeight;
+			nMaxWidth	= GetLinkWidth( LinkType::Dynamic, i) * m_nLandWidth;
+			nMaxHeight	= GetLinkWidth( LinkType::Dynamic, i) * m_nLandHeight;
 
 			nUnit	= (MAP_SIZE * m_nLandWidth) / nMaxWidth;
 			nLinkX	= (int)( ( vPos.x / m_iMPU ) / nUnit );
@@ -236,7 +235,7 @@ void CLinkMap::AddItToView( CCtrl* pCtrl )
 			pUser->m_nOldCenter[i]	= nLinkZ * nMaxWidth + nLinkX;
 
 //			player link
-			apObj	= GetObj( CObj::linkPlayer, i );	
+			apObj	= GetObj( LinkType::Player, i );	
 			for( j = nLinkZ - nVisibilityRange; j <= nUBoundZ; j++ )
 			{
 				if( j < 0 || j >= nMaxHeight )	continue;
@@ -259,7 +258,7 @@ void CLinkMap::AddItToView( CCtrl* pCtrl )
 			}
 
 //			dynamic link
-			apObj	= GetObj( CObj::linkDynamic, i );
+			apObj	= GetObj( LinkType::Dynamic, i );
 			for( j = nLinkZ - nVisibilityRange; j <= nUBoundZ; j++ )
 			{
 				if( j < 0 || j >= nMaxHeight )	continue;
@@ -281,7 +280,7 @@ void CLinkMap::AddItToView( CCtrl* pCtrl )
 			}
 
 //			airship link
-			apObj	= GetObj( CObj::linkAirShip, i );
+			apObj	= GetObj( LinkType::AirShip, i );
 			for( j = nLinkZ - nVisibilityRange; j <= nUBoundZ; j++ )
 			{
 				if( j < 0 || j >= nMaxHeight )	continue;
@@ -309,8 +308,8 @@ void CLinkMap::AddItToView( CCtrl* pCtrl )
 		i	= 0;		//
 //		{
 		
-			nMaxWidth	= GetLinkWidth( CObj::linkDynamic, i ) * m_nLandWidth;  // CObj::linkDynamic -> CObj::linkPlayer
-			nMaxHeight	= GetLinkWidth( CObj::linkDynamic, i ) * m_nLandHeight;
+			nMaxWidth	= GetLinkWidth( LinkType::Dynamic, i ) * m_nLandWidth;  // LinkType::Dynamic -> LinkType::Player
+			nMaxHeight	= GetLinkWidth( LinkType::Dynamic, i ) * m_nLandHeight;
 
 			nUnit	= (MAP_SIZE * m_nLandWidth) / nMaxWidth;
 			nLinkX	= (int)( ( vPos.x / m_iMPU ) / nUnit );
@@ -321,7 +320,7 @@ void CLinkMap::AddItToView( CCtrl* pCtrl )
 			if( pCtrl->GetType() == OT_SHIP || pCtrl->GetType() == OT_MOVER )
 				pCtrl->m_nOldCenter[i]	= nLinkZ * nMaxWidth + nLinkX;
 
-			apObj	= GetObj( CObj::linkPlayer, i );
+			apObj	= GetObj( LinkType::Player, i );
 
 			for( j = nLinkZ - nVisibilityRange; j <= nUBoundZ; j++ )
 			{
@@ -370,9 +369,9 @@ void CLinkMap::ModifyView( CCtrl* pCtrl )
 		for( int nLinkLevel = 0; nLinkLevel < MAX_LINKLEVEL; nLinkLevel++ )
 		{
 //			player link
-			apObj	    = GetObj( CObj::linkPlayer, nLinkLevel );
+			apObj	    = GetObj( LinkType::Player, nLinkLevel );
 
-			nMaxWidth	= GetLinkWidth( CObj::linkPlayer, nLinkLevel) * m_nLandWidth;
+			nMaxWidth	= GetLinkWidth( LinkType::Player, nLinkLevel) * m_nLandWidth;
 			nMaxPos		= nMaxWidth * nMaxWidth;
 
 			nUnit	    = (MAP_SIZE * m_nLandWidth) / nMaxWidth;
@@ -447,7 +446,7 @@ void CLinkMap::ModifyView( CCtrl* pCtrl )
 			}
 
 //			dynamic link
-			apObj	= GetObj( CObj::linkDynamic, nLinkLevel );
+			apObj	= GetObj( LinkType::Dynamic, nLinkLevel );
 			
 			for( i = -nVisibilityRange; i <= nVisibilityRange; i++ )
 			{
@@ -504,7 +503,7 @@ void CLinkMap::ModifyView( CCtrl* pCtrl )
 				}
 			}
 //			airship link
-			apObj	= GetObj( CObj::linkAirShip, nLinkLevel );
+			apObj	= GetObj( LinkType::AirShip, nLinkLevel );
 			
 			for( i = -nVisibilityRange; i <= nVisibilityRange; i++ )
 			{
@@ -569,8 +568,8 @@ void CLinkMap::ModifyView( CCtrl* pCtrl )
 		const int nMaxLevel	= 1;
 		for( int nLinkLevel = 0; nLinkLevel < nMaxLevel; nLinkLevel++ )
 		{
-			apObj	    = GetObj( CObj::linkPlayer, nLinkLevel );
-			nMaxWidth	= GetLinkWidth( CObj::linkPlayer, nLinkLevel) * m_nLandWidth;
+			apObj	    = GetObj( LinkType::Player, nLinkLevel );
+			nMaxWidth	= GetLinkWidth( LinkType::Player, nLinkLevel) * m_nLandWidth;
 			nMaxPos		= nMaxWidth * nMaxWidth;
 
 			nUnit	    = (MAP_SIZE * m_nLandWidth) / nMaxWidth;
@@ -673,18 +672,18 @@ int CLinkMap::IsOverlapped( int c, int p, int r, int w )
 	return -1;
 }
 
-void CLinkMap::SetMaxLinkLevel( DWORD dwLinkType, int nLevel )
+void CLinkMap::SetMaxLinkLevel(LinkType dwLinkType, int nLevel )
 {
-	m_infos[dwLinkType].nMaxLevel = nLevel;
+	m_infos[std::to_underlying(dwLinkType)].nMaxLevel = nLevel;
 }
 
 // 링크레벨을 계산한다.
 DWORD CLinkMap::CalcLinkLevel( CObj* pObj, float fObjWidth )
 {
 	float* fGrid = NULL;
-	DWORD dwLinkType = pObj->GetLinkType();
+	const LinkType dwLinkType = pObj->GetLinkType();
 
-	if( dwLinkType == CObj::linkStatic )
+	if( dwLinkType == LinkType::Static )
 		fGrid = fStaticGrid;
 	else
 		fGrid = fDynamicGrid;
