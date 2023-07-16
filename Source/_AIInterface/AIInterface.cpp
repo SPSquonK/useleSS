@@ -110,6 +110,7 @@ void CAIInterface::PostAIMsg( DWORD dwMessage, DWORD dwParam1, DWORD dwParam2 )
 	}
 }
 
+
 CMover* CAIInterface::ScanTargetNext( CObj* pObjCenter, int nRange, OBJID dwIdTarget, u_long uParty )
 {
 	// 타겟이 없어졌을 때, 공격 조건을 만족하는 주변에 같은 파티원을 검색한다.
@@ -124,13 +125,12 @@ CMover* CAIInterface::ScanTargetNext( CObj* pObjCenter, int nRange, OBJID dwIdTa
 	BOOL bFlyMob	= GetMover()->IsFlyingNPC();
 	float fRadius	= (float)( nRange * nRange );
 
+	for (CObj * pObj : 
+		GetLandRange(pObjCenter->GetWorld(), vPos, nRange, LinkType::Player, GetMover()->GetLayer())
+		)
 
-//	for (CObj * pObj : 
-//		GetLandRange(pObjCenter->GetWorld(), vPos, nRange, LinkType::Player, GetMover()->GetLayer())
-//		)
-
-	CObj * pObj;
-	FOR_LINKMAP(pObjCenter->GetWorld(), vPos, pObj, nRange, LinkType::Player, GetMover()->GetLayer())
+//	CObj * pObj;
+//	FOR_LINKMAP(pObjCenter->GetWorld(), vPos, pObj, nRange, LinkType::Player, GetMover()->GetLayer())
 	{
 		CMover * pTarget	= (CMover *)pObj;
 		if( pTarget->IsLive() && pTarget->GetId() != dwIdTarget ) 
@@ -147,7 +147,6 @@ CMover* CAIInterface::ScanTargetNext( CObj* pObjCenter, int nRange, OBJID dwIdTa
 			}
 		}
 	}
-	END_LINKMAP
 
 	return NULL;
 }

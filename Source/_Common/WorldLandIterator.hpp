@@ -7,36 +7,312 @@ static_assert(false, "WorldLandIterator.hpp may only be included in WorldServer 
 ///////////////////////////////////////////////////////////////////////////////
 //// FOR LAND RANGE
 
+namespace useless_impl {
+namespace world {
+	template<LinkType dwLinkType> class LandIterator;
+	template<LinkType dwLinkType> class LinkLevelIterator;
+	template<LinkType dwLinkType> class AreaIterator;
+	template<LinkType dwLinkType> class ObjIterator;
 
-template<LinkType dwLinkType>
-inline auto GetLandRange_(
-	CWorld * pWorld,
-	const D3DXVECTOR3 & vPos,
-	int nRange, int nLayer
-) {
-	struct Empty {
-		bool operator==(CWorld::Iterators::Sentinel) { return true; }
-		Empty & operator++() { return *this; }
-		CObj * operator*() { return nullptr; }
+	template<LinkType dwLinkType>
+	class LinkLevelIterator {
+	private:
+		CWorld * m_pWorld;
+		D3DXVECTOR3 m_vPos;
+		int m_nRange;
+		int m_nLayer;
+		int m_nLinkX;
+		int m_nLinkZ;
+		int m_linkLevel;
+
+	public:
+		LinkLevelIterator(CWorld * pWorld, const D3DXVECTOR3 & vPos, int nRange, int nLayer);
+		[[nodiscard]] bool operator==(CWorld::Iterators::Sentinel) const;
+		LinkLevelIterator & operator++();
+
+		friend ObjIterator<dwLinkType>;
+		friend AreaIterator<dwLinkType>;
 	};
 
-	struct Range {
-		// WImpl::LandIterator<dwLinkType> begin_;
+	template<LinkType dwLinkType>
+	class AreaIterator {
+		int m_x, m_z;
+		int m_nLinkXMin, m_nLinkXMax;
+		int m_nLinkZMin, m_nLinkZMax;
+		int m_nMaxWidth;
+#ifdef __WORLDSERVER
+		CObj ** m_pObjs;
+#else
+		int nWidthLink;
+#endif
 
-		// auto begin() { return begin_; }
+	public:
+		AreaIterator(const LinkLevelIterator<dwLinkType> & link);
+		[[nodiscard]] bool operator==(CWorld::Iterators::Sentinel) const;
+		AreaIterator & operator++();
 
-
-		Empty begin() { return Empty{}; }
-		CWorld::Iterators::Sentinel end() { return CWorld::Iterators::Sentinel{}; }
+		friend class ObjIterator<dwLinkType>;
 	};
 
-	return Range{};
-}
+	template<LinkType dwLinkType>
+	class ObjIterator {
+		CObj * m_pObj;
+#ifdef __WORLDSERVER
+		int limit = 1000;
+#endif
+
+	public:
+		ObjIterator(
+			const LinkLevelIterator<dwLinkType> & link,
+			const AreaIterator<dwLinkType> & area
+		);
+
+		[[nodiscard]] bool operator==(CWorld::Iterators::Sentinel) const;
+		ObjIterator & operator++();
+		[[nodiscard]] CObj * operator*() const { return m_pObj; }
+
+		friend class LandIterator<dwLinkType>;
+	};
+
+	template<LinkType dwLinkType>
+	class LandIterator {
+		LinkLevelIterator<dwLinkType> m_link;
+		AreaIterator<dwLinkType> m_area;
+		ObjIterator<dwLinkType> m_obj;
+
+	public:
+		LandIterator(CWorld * pWorld, const D3DXVECTOR3 & vPos, int nRange, int nLayer);
+		[[nodiscard]] bool operator==(CWorld::Iterators::Sentinel sentinel) const;
+		CObj * operator*() { return *m_obj; }
+		LandIterator & operator++();
+	};
+
+	template<LinkType dwLinkType>
+	inline auto GetLandRange_(
+		CWorld * pWorld,
+		const D3DXVECTOR3 & vPos,
+		int nRange, int nLayer
+	) {
+		struct Range {
+			LandIterator<dwLinkType> begin_;
+
+			explicit Range(LandIterator<dwLinkType> begin_) : begin_(begin_) {}
+
+			[[nodiscard]] auto begin() const { return begin_; }
+			[[nodiscard]] CWorld::Iterators::Sentinel end() const { return CWorld::Iterators::Sentinel{}; }
+		};
+
+		return Range(LandIterator<dwLinkType>(pWorld, vPos, nRange, nLayer));
+	}
+
+#pragma region LandIterator Implementation
+	template<LinkType dwLinkType>
+	LandIterator<dwLinkType>::LandIterator(
+		CWorld * pWorld, const D3DXVECTOR3 & vPos, int nRange, int nLayer
+	)
+		: m_link(pWorld, vPos, nRange, nLayer)
+		, m_area(m_link)
+		, m_obj(m_link, m_area)
+	{
+
+	}
+
+	template<LinkType dwLinkType>
+	bool LandIterator<dwLinkType>::operator==(CWorld::Iterators::Sentinel sentinel) const {
+		return m_obj == sentinel;
+	}
+
+	template<LinkType dwLinkType>
+	LandIterator<dwLinkType> & LandIterator<dwLinkType>::operator++() {
+		++m_obj;
+
+		while (m_obj == CWorld::Iterators::Sentinel{}) {
+			// Go to next area
+			++m_area;
+
+			while (m_area == CWorld::Iterators::Sentinel{}) {
+				// If area empty, go to next linklevel
+				++m_link;
+
+				if (m_link == CWorld::Iterators::Sentinel{}) {
+					// No more link level
+					return *this;
+				}
+
+				// On next link
+				m_area = AreaIterator<dwLinkType>(m_link);
+				// This link level may have no area, so we loop
+			}
+
+			// On next area
+			m_obj = ObjIterator<dwLinkType>(m_link, m_area);
+			// There may be no object in this area, so we loop
+		}
+
+		return *this;
+	}
+#pragma endregion
+
+
+#pragma region LinkLevelIterator Implementation
+	template<LinkType dwLinkType>
+	LinkLevelIterator<dwLinkType>::LinkLevelIterator(
+		CWorld * pWorld, const D3DXVECTOR3 & vPos, int nRange, int nLayer
+	) {
+		m_pWorld = pWorld;
+		m_vPos = vPos;
+		m_nRange = nRange;
+		m_nLayer = nLayer;
+
+		m_nLinkX = (int)(m_vPos.x / m_pWorld->m_iMPU);
+		m_nLinkZ = (int)(m_vPos.z / m_pWorld->m_iMPU);
+
+		m_linkLevel = 0;
+	}
+
+	template<LinkType dwLinkType>
+	[[nodiscard]] bool LinkLevelIterator<dwLinkType>::operator==(CWorld::Iterators::Sentinel) const {
+#ifdef __WORLDSERVER
+		return m_linkLevel < m_pWorld->m_linkMap.GetMaxLinkLevel(dwLinkType, m_nLayer);
+#else
+		return m_linkLevel < MAX_LINKLEVEL;
+#endif
+	}
+
+	template<LinkType dwLinkType>
+	LinkLevelIterator<dwLinkType> & LinkLevelIterator<dwLinkType>::operator++() {
+		++m_linkLevel;
+		return *this;
+	}
+#pragma endregion
+
+#pragma region AreaIterator Implementation
+	template<LinkType dwLinkType>
+	AreaIterator<dwLinkType>::AreaIterator(const LinkLevelIterator<dwLinkType> & link) {
+		if (link == CWorld::Iterators::Sentinel{}) {
+			m_nLinkXMin = m_nLinkXMax = m_nLinkZMin = m_nLinkZMax = 0;
+			m_x = m_z = 1;
+			m_nMaxWidth = 0;
+#ifdef __WORLDSERVER
+			m_pObjs = nullptr;
+#endif
+			return;
+		}
+
+		CWorld * pWorld = link.m_pWorld;
 
 #ifdef __WORLDSERVER
-#define GetLandRange(pWorld, vPos, nRange, dwLinkType, nLayer) GetLandRange_<dwLinkType>(pWorld, vPos, nRange, nLayer)
+		m_pObjs = pWorld->m_linkMap.GetObj(dwLinkType, link.m_linkLevel, link.m_nLayer);
+#endif
+
+#ifdef __WORLDSERVER
+		const int nWidthLink = pWorld->m_linkMap.GetLinkWidth(dwLinkType, link.m_linkLevel, link.m_nLayer);
+#else // __CLIENT
+		nWidthLink = CLandscape::m_nWidthLinkMap[link.m_linkLevel];
+#endif
+		m_nMaxWidth = nWidthLink * pWorld->m_nLandWidth;
+		const int nMaxHeight = nWidthLink * pWorld->m_nLandHeight;
+		const int nUnit = (MAP_SIZE * pWorld->m_nLandWidth) / m_nMaxWidth;
+		const int d = nUnit * pWorld->m_iMPU / 2;
+		int nX = (link.m_nLinkX / nUnit) * nUnit * pWorld->m_iMPU;
+		int nZ = (link.m_nLinkZ / nUnit) * nUnit * pWorld->m_iMPU;
+		nX = ((int)(link.m_vPos.x) - nX > d) ? 1 : 0;
+		nZ = ((int)(link.m_vPos.z) - nZ > d) ? 1 : 0;
+
+		m_nLinkXMin = std::max(((link.m_nLinkX - link.m_nRange) / nUnit) + (nX - 1), 0);
+		m_nLinkZMin = std::max(((link.m_nLinkZ - link.m_nRange) / nUnit) + (nZ - 1), 0);
+		m_nLinkXMax = std::min(((link.m_nLinkX + link.m_nRange) / nUnit) + nX, m_nMaxWidth - 1);
+		m_nLinkZMax = std::min(((link.m_nLinkZ + link.m_nRange) / nUnit) + nZ, nMaxHeight - 1);
+
+		m_x = m_nLinkXMin;
+		m_z = m_nLinkZMin;
+
+		if (m_nLinkXMin > m_nLinkXMax) m_z = m_nLinkZMax + 1;
+	}
+
+	template<LinkType dwLinkType>
+	[[nodiscard]] bool AreaIterator<dwLinkType>::operator==(CWorld::Iterators::Sentinel) const {
+		return m_z > m_nLinkZMax;
+	}
+
+	template<LinkType dwLinkType>
+	AreaIterator<dwLinkType> & AreaIterator<dwLinkType>::operator++() {
+		if (m_x < m_nLinkXMax) {
+			++m_x;
+		} else {
+			m_x = m_nLinkXMin;
+			++m_z;
+		}
+		return *this;
+	}
+
+
+#pragma endregion
+
+#pragma region ObjIterator Implementation
+	template<LinkType dwLinkType>
+	ObjIterator<dwLinkType>::ObjIterator(
+		const LinkLevelIterator<dwLinkType> & link,
+		const AreaIterator<dwLinkType> & area
+	) {
+		if (area == CWorld::Iterators::Sentinel{}) {
+			m_pObj = nullptr;
+			return;
+		}
+
+#ifdef __WORLDSERVER
+		const int nPos = area.m_z * area.m_nMaxWidth + area.m_x;
+		CObj * pObj = area.m_pObjs[nPos];
 #else
-#define GetLandRange(pWorld, vPos, nRange, dwLinkType, nLayer) GetLandRange_<dwLinkType>(pWorld, vPos, nRange, 0)
+		CLandscape * pLand = link.m_pWorld->m_apLand[(area.m_z / area.nWidthLink) * link.m_pWorld->m_nLandWidth + (area.m_x / area.nWidthLink)];
+		if (pLand) {
+			CObj ** pObjs = pLand->GetObjLink(dwLinkType, link.m_linkLevel);
+			ASSERT(_pObjs);
+			const int nPos = (area.m_z % area.nWidthLink) * area.nWidthLink + (area.m_x % area.nWidthLink);
+			m_pObj = pObjs[nPos];
+
+			while (!IsValidObj(m_pObj)) {
+				m_pObj = m_pObj->GetNextNode();
+			}
+		} else {
+			m_pObj = nullptr;
+		}
+#endif
+	}
+
+	template<LinkType dwLinkType>
+	[[nodiscard]] bool ObjIterator<dwLinkType>::operator==(CWorld::Iterators::Sentinel) const {
+		return !m_pObj;
+	}
+
+	template<LinkType dwLinkType>
+	ObjIterator<dwLinkType> & ObjIterator<dwLinkType>::operator++() {
+		m_pObj = m_pObj->GetNextNode();
+
+#ifdef __WORLDSERVER
+		--limit;
+		if (limit == 0) m_pObj = nullptr;
+#endif
+
+#ifdef __CLIENT
+		while (m_pObj && !IsValidObj(m_pObj)) {
+			m_pObj = m_pObj->GetNextNode();
+		}
+#endif
+
+		return *this;
+	}
+#pragma endregion
+}
+}
+
+
+
+#ifdef __WORLDSERVER
+#define GetLandRange(pWorld, vPos, nRange, dwLinkType, nLayer) useless_impl::world::GetLandRange_<dwLinkType>(pWorld, vPos, nRange, nLayer)
+#else
+#define GetLandRange(pWorld, vPos, nRange, dwLinkType) useless_impl::world::GetLandRange_<dwLinkType>(pWorld, vPos, nRange, 0)
+#define GetLandRange(pWorld, vPos, nRange, dwLinkType, nLayer) useless_impl::world::GetLandRange_<dwLinkType>(pWorld, vPos, nRange, 0)
 #endif
 
 

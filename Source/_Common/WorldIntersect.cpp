@@ -730,8 +730,8 @@ BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, cons
 
 	const int nRange = 5;
 
-	ForLinkMap<LinkType::Static>(vPos, nRange, 0,
-		[&](CObj * pObj) {
+
+	for (CObj * pObj : GetLandRange(this, vPos, nRange, LinkType::Static)) {
 		bAble = TRUE;
 		if( bSkipTrans && pObj->m_pModel->m_pModelElem->m_bTrans )	// 반투명이 되는 오브젝트는 검사대상에서 제외함.
 			bAble = FALSE;
@@ -767,7 +767,7 @@ BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, cons
 				}
 			}
 		}
-	});
+	}
 	
 	if(bIsCol) return TRUE;
 	// 康: 카메라 충돌에서 사용하는 클라이언트 코드이므로 계층 값을 0으로 설정
@@ -1105,14 +1105,21 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **pObjColl, const D
 	};
 
 	if (GetID() == WI_WORLD_MINIROOM || IsWorldGuildHouse()) {
-		ForLinkMap<LinkType::Dynamic>(vPos, nRange, 0,
-			[&](CObj * pObj) {
-				if (pObj->GetType() == OT_CTRL) {
-					ProcessObjCollision(pObj);
-				}
+		for (CObj * pObj : GetLandRange(this, vPos, nRange, LinkType::Dynamic)) {
+			if (pObj->GetType() == OT_CTRL) {
+				ProcessObjCollision(pObj);
 			}
-		);
+		}
 	}
+
+	for (CObj * pObj : GetLandRange(this, vPos, nRange, LinkType::Static)) {
+		ProcessObjCollision(pObj);
+	}
+
+	for (CObj * pObj : GetLandRange(this, vPos, nRange, LinkType::AirShip)) {
+		ProcessObjCollision(pObj);
+	}
+
 
 	ForLinkMap<LinkType::Static >(vPos, nRange, 0, ProcessObjCollision);
 	ForLinkMap<LinkType::AirShip>(vPos, nRange, 0, ProcessObjCollision);
