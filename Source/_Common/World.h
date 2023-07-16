@@ -2,7 +2,6 @@
 #define __WORLD_2002_1_22
 
 #include <array>
-#include <experimental/generator>
 #include <boost/container/small_vector.hpp>
 #include "ExistingObjects.h"
 
@@ -611,12 +610,15 @@ public:
 
 #ifdef __CLIENT
 	[[nodiscard]] Iterators::LandRange GetVisibleLands();
+
+	template<typename Func>
+	void ForLinkMap(
+		const D3DXVECTOR3 & vPos,
+		int nRange, DWORD dwLinkType, int nLayer,
+		Func && consumer
+	);
 #endif
 
-	std::experimental::generator<CObj *> GetObjsInLinkMap(
-		const D3DXVECTOR3 & vPos, int nRange, DWORD dwLinkType,
-		int nLayer = 0
-	);
 };
 
 
@@ -883,9 +885,11 @@ extern CObj *GetLastPickObj( void );
 
 	#define END_LINKMAP pObj = pObj->GetNextNode(); } } } } } }
 
-inline std::experimental::generator<CObj *> CWorld::GetObjsInLinkMap(
-	const D3DXVECTOR3 & vPos, const int nRange, const DWORD dwLinkType,
-	const int nLayer
+template<typename Func>
+void CWorld::ForLinkMap(
+	const D3DXVECTOR3 & vPos,
+	int nRange, DWORD dwLinkType, int nLayer,
+	Func && consumer
 ) {
 	const int _nLinkX = (int)(vPos.x / m_iMPU);
 	const int _nLinkZ = (int)(vPos.z / m_iMPU);
@@ -915,9 +919,16 @@ inline std::experimental::generator<CObj *> CWorld::GetObjsInLinkMap(
 					const int nPos = (j % nWidthLink) * nWidthLink + (k % nWidthLink);
 					CObj * pObj = pObjs[nPos];
 					while (pObj) {
-
-						if (IsValidObj(pObj))
-							co_yield pObj;
+						if (IsValidObj(pObj)) {
+							if constexpr (std::is_invocable_r_v<void, Func, CObj *>) {
+								consumer(pObj);
+							} else if constexpr (std::is_invocable_r_v<bool, Func, CObj *>) {
+								const bool stop = consumer(pObj);
+								if (stop) return;
+							} else {
+								static_assert(false, "Unknown consumer signature, must be void(CObj *) or bool(CObj *)");
+							}
+						}
 
 						pObj = pObj->GetNextNode();
 					}
@@ -926,9 +937,6 @@ inline std::experimental::generator<CObj *> CWorld::GetObjsInLinkMap(
 		}
 	}
 }
-
-
-
 
 #endif	// __WORLDSERVER
 
