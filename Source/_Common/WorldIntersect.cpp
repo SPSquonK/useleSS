@@ -749,7 +749,7 @@ BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, cons
 
 	const int nRange = 5;
 
-	ForLinkMap(vPos, nRange, CObj::linkStatic, 0,
+	ForLinkMap<CObj::linkStatic>(vPos, nRange, 0,
 		[&](CObj * pObj) {
 		bAble = TRUE;
 		if( bSkipTrans && pObj->m_pModel->m_pModelElem->m_bTrans )	// 반투명이 되는 오브젝트는 검사대상에서 제외함.

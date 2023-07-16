@@ -612,11 +612,11 @@ public:
 	[[nodiscard]] Iterators::LandRange GetVisibleLands();
 #endif
 
-	template<typename Func>
+	template<LinkType dwLinkType>
 	void ForLinkMap(
 		const D3DXVECTOR3 & vPos,
-		int nRange, LinkType dwLinkType, int nLayer,
-		Func && consumer
+		int nRange, int nLayer,
+		auto && consumer
 	);
 };
 
@@ -890,14 +890,18 @@ extern CObj *GetLastPickObj( void );
 
 
 #if defined(__WORLDSERVER) || defined(__CLIENT)
-template<typename Func>
+template<LinkType dwLinkType>
 void CWorld::ForLinkMap(
 	const D3DXVECTOR3 & vPos,
-	int nRange, LinkType dwLinkType, int nLayer,
-	Func && consumer
+	int nRange, int nLayer,
+	auto && consumer
 ) {
+	using ObjSpec = CObjSpecialization<dwLinkType>;
+	using ReturnType = std::invoke_result_t<decltype(consumer), ObjSpec *>;
+	
 	const int _nLinkX = (int)( vPos.x / m_iMPU );
 	const int _nLinkZ = (int)( vPos.z / m_iMPU );
+	static_assert(std::is_convertible_v<ObjSpec *, CObj *>);
 
 #ifdef __WORLDSERVER	
 	for (int i = 0; i < m_linkMap.GetMaxLinkLevel(dwLinkType, nLayer); i++) {
@@ -941,14 +945,13 @@ void CWorld::ForLinkMap(
 					while (pObj) {
 						if (IsValidObj(pObj)) {
 #endif
-					if constexpr (std::is_invocable_r_v<void, Func, CObj *>) {
-						consumer(pObj);
-					} else if constexpr (std::is_invocable_r_v<bool, Func, CObj *>) {
-						const bool stop = consumer(pObj);
-						if (stop) return;
-					} else {
-						static_assert(false, "Unknown consumer signature, must be void(CObj *) or bool(CObj *)");
-					}
+
+							if constexpr (std::is_same_v<void, ReturnType>) {
+								consumer(reinterpret_cast<ObjSpec *>(pObj));
+							} else {
+								const bool stop = consumer(reinterpret_cast<ObjSpec *>(pObj));
+								if (stop) return;
+							}
 
 #ifdef __WORLDSERVER
 					pObj = pObj->GetNextNode();

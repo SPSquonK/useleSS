@@ -12,6 +12,7 @@
 		#include "..\_AIInterface\aimeteonyker.h"
 #endif // __WORLDSERVER
 
+#include <format>
 
 //////////////////////////////////////////////////////////////////////
 // class static member 
@@ -931,7 +932,8 @@ LinkType CObj::GetLinkType() const {
 			return LinkType::Dynamic;
 	}
 	ASSERT( 0 );
-	return LinkType::Dynamic;
+	std::string message = std::format("An objet has an invalid link m_dwType = {}", m_dwType);
+	throw std::runtime_error(message);
 }
 
 void CObj::RenderName( CD3DFont* pFont, DWORD dwColor )

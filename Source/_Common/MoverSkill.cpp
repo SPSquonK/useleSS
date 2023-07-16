@@ -1694,12 +1694,11 @@ void	CMover::SendDamageAround( int nDmgType, CMover *pAttacker, int nApplyType, 
 	
 	if( nApplyType & OBJTYPE_PLAYER )	// 적용대상이 플레이어인가 
 	{
-		GetWorld()->ForLinkMap(vPos, nRange, CObj::linkPlayer, GetLayer(),
-			[&](CObj * pObj) {
-			if( pObj->GetType() == OT_MOVER )
-			{
+		GetWorld()->ForLinkMap<CObj::linkPlayer>(vPos, nRange, GetLayer(),
+			[&](CMover * pObj) {
+			
 
-					vDist = pObj->GetPos() - vPos;		// this -> 타겟까지의 벡터
+					const D3DXVECTOR3 vDist = pObj->GetPos() - vPos;		// this -> 타겟까지의 벡터
 					const FLOAT fDistSq = D3DXVec3LengthSq( &vDist );
 					if( fDistSq < fRange * fRange )		// 타겟과의 거리가 fRange미터 이내인것을 대상으로.
 					{
@@ -1721,7 +1720,7 @@ void	CMover::SendDamageAround( int nDmgType, CMover *pAttacker, int nApplyType, 
 							}
 						}
 					}
-			}
+			
 
 			});
 	}
@@ -1729,11 +1728,11 @@ void	CMover::SendDamageAround( int nDmgType, CMover *pAttacker, int nApplyType, 
 	// 적용대상이 몬스터인가.
 	if( nApplyType & OBJTYPE_MONSTER )
 	{
-		GetWorld()->ForLinkMap(vPos, nRange, CObj::linkDynamic, GetLayer(),
+		GetWorld()->ForLinkMap<CObj::linkDynamic>(vPos, nRange, GetLayer(),
 			[&](CObj * pObj) {
 			if( pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPeaceful() == FALSE )
 			{
-				vDist = pObj->GetPos() - vPos;		// this -> 타겟까지의 벡터
+				const D3DXVECTOR3 vDist = pObj->GetPos() - vPos;		// this -> 타겟까지의 벡터
 				const FLOAT fDistSq = D3DXVec3LengthSq( &vDist );
 				if( fDistSq < fRange * fRange )		// 타겟과의 거리가 fRange미터 이내인것을 대상으로.
 				{

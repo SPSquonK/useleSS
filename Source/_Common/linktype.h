@@ -2,9 +2,9 @@
 
 enum class LinkType : std::uint8_t {
 	Static  = 0,
-	Dynamic = 1,
-	Player  = 2,
-	AirShip = 3
+	/* CCtrl */ Dynamic = 1,
+	/* CUser */ Player = 2,
+	/* CShip */ AirShip = 3
 };
 static constexpr std::underlying_type_t<LinkType> MAX_LINKTYPE = 4;
 
@@ -43,5 +43,5 @@ namespace useless_impl {
 
 /// The most specialized CObj type shared by all objs with the given linkmap
 template<LinkType linkType>
-using CObjSpecialization = useless_impl::CObjSpecialization<linkType>;
+using CObjSpecialization = useless_impl::CObjSpecialization<linkType>::type;
 
