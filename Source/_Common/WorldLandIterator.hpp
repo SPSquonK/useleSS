@@ -83,6 +83,9 @@ namespace world {
 		[[nodiscard]] bool operator==(CWorld::Iterators::Sentinel sentinel) const;
 		CObjSpec * operator*() { return reinterpret_cast<CObjSpec *>(*m_obj); }
 		LandIterator & operator++();
+	
+	private:
+		void FindNonEmpty();
 	};
 
 	template<LinkType dwLinkType, typename ObjSpec>
@@ -112,7 +115,9 @@ namespace world {
 		, m_area(m_link)
 		, m_obj(m_link, m_area)
 	{
-
+		if (!(m_link == CWorld::Iterators::Sentinel{})) {
+			FindNonEmpty();
+		}
 	}
 
 	template<LinkType dwLinkType, typename CObjSpec>
@@ -123,7 +128,13 @@ namespace world {
 	template<LinkType dwLinkType, typename CObjSpec>
 	LandIterator<dwLinkType, CObjSpec> & LandIterator<dwLinkType, CObjSpec>::operator++() {
 		++m_obj;
+		FindNonEmpty();
+		return *this;
+	}
 
+
+	template<LinkType dwLinkType, typename CObjSpec>
+	void LandIterator<dwLinkType, CObjSpec>::FindNonEmpty() {
 		while (m_obj == CWorld::Iterators::Sentinel{}) {
 			// Go to next area
 			++m_area;
@@ -134,7 +145,7 @@ namespace world {
 
 				if (m_link == CWorld::Iterators::Sentinel{}) {
 					// No more link level
-					return *this;
+					return;
 				}
 
 				// On next link
@@ -146,8 +157,6 @@ namespace world {
 			m_obj = ObjIterator<dwLinkType>(m_link, m_area);
 			// There may be no object in this area, so we loop
 		}
-
-		return *this;
 	}
 #pragma endregion
 
@@ -171,9 +180,9 @@ namespace world {
 	template<LinkType dwLinkType>
 	[[nodiscard]] bool LinkLevelIterator<dwLinkType>::operator==(CWorld::Iterators::Sentinel) const {
 #ifdef __WORLDSERVER
-		return m_linkLevel < m_pWorld->m_linkMap.GetMaxLinkLevel(dwLinkType, m_nLayer);
+		return m_linkLevel >= m_pWorld->m_linkMap.GetMaxLinkLevel(dwLinkType, m_nLayer);
 #else
-		return m_linkLevel < MAX_LINKLEVEL;
+		return m_linkLevel >= MAX_LINKLEVEL;
 #endif
 	}
 
@@ -260,7 +269,7 @@ namespace world {
 
 #ifdef __WORLDSERVER
 		const int nPos = area.m_z * area.m_nMaxWidth + area.m_x;
-		CObj * pObj = area.m_pObjs[nPos];
+		m_pObj = area.m_pObjs[nPos];
 #else
 		CLandscape * pLand = link.m_pWorld->m_apLand[(area.m_z / area.nWidthLink) * link.m_pWorld->m_nLandWidth + (area.m_x / area.nWidthLink)];
 		if (pLand) {
@@ -269,7 +278,7 @@ namespace world {
 			const int nPos = (area.m_z % area.nWidthLink) * area.nWidthLink + (area.m_x % area.nWidthLink);
 			m_pObj = pObjs[nPos];
 
-			while (!IsValidObj(m_pObj)) {
+			while (m_pObj && !IsValidObj(m_pObj)) {
 				m_pObj = m_pObj->GetNextNode();
 			}
 		} else {
