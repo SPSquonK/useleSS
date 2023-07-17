@@ -204,7 +204,7 @@ void CCoupleHelper::OnAddExperience( CAr & ar )
 
 void CCoupleHelper::PostItem( CCouple* pCouple )
 {
-	VCI& vItems	= CCoupleProperty::Instance()->GetItems( pCouple->GetLevel() );
+	const auto & vItems	= CCoupleProperty::Instance()->GetItems( pCouple->GetLevel() );
 	if( vItems.empty() )
 		return;
 

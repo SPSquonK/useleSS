@@ -2944,7 +2944,7 @@ void CUser::ProcessCouple()
 	CCouple* pCouple	= CCoupleHelper::Instance()->GetCouple( m_idPlayer );
 	if( pCouple )
 	{
-		CUser* pPartner	= static_cast<CUser*>( prj.GetUserByID( pCouple->GetPartner( m_idPlayer ) ) );
+		CUser* pPartner	=  prj.GetUserByID( pCouple->GetPartner( m_idPlayer ) );
 		if( IsValidObj( pPartner ) )
 		{
 			if( bTick && m_idPlayer > pPartner->m_idPlayer && pCouple->GetLevel() < CCouple::eMaxLevel )	// 1 커플 1회 요청
@@ -2966,7 +2966,7 @@ void CUser::ProcessCouple()
 
 void CUser::ActiveCoupleBuff( int nLevel )
 {
-	VS& vSkills	= CCoupleProperty::Instance()->GetSkill( nLevel );
+	std::vector<int> & vSkills	= CCoupleProperty::Instance()->GetSkill( nLevel );
 	for( int i = 0; i < (int)( vSkills.size() ); i++ )
 	{
 		ItemProp* pProp	= prj.GetItemProp( vSkills[i] );

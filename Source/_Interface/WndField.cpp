@@ -10402,8 +10402,8 @@ void CWndCoupleTabSkill::OnDraw(C2DRender* p2DRender)
 		nLevel = pCouple->GetLevel();
 	}
 
-	VS& vSkills	= CCoupleProperty::Instance()->GetSkill( nLevel );
-	VSK& vSkillKinds = CCoupleProperty::Instance()->GetSKillKinds();
+	std::vector<int> & vSkills	= CCoupleProperty::Instance()->GetSkill( nLevel );
+	std::vector<int> & vSkillKinds = CCoupleProperty::Instance()->GetSKillKinds();
 
 	if(vSkills.size() == vSkillKinds.size())
 	{

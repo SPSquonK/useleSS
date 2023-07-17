@@ -46,27 +46,20 @@ struct	COUPLE_ITEM
 	COUPLE_ITEM( int i, int s, int f, int l, int n ) : nItem( i ), nSex( s ), nFlags( f ), nLife( l ), nNum( n )		{}
 };
 
-typedef std::vector<int>		VE;
-typedef std::vector<COUPLE_ITEM>		VCI;
-typedef	std::vector<VCI>		VVCI;
-typedef	std::vector<int>		VSK;
-typedef std::vector<int>		VS;
-typedef std::vector<VS>		VVS;
-
 class CCoupleProperty
 {
 public:
 	CCoupleProperty();
 	virtual	~CCoupleProperty();
 	static	CCoupleProperty*	Instance();
-	VCI&	GetItems( int nLevel );
-	VS&		GetSkill( int nLevel );
+	std::vector<COUPLE_ITEM> &	GetItems( int nLevel );
+	std::vector<int> &		GetSkill( int nLevel );
 	int		GetLevel( int nExperience );
 	BOOL	Initialize();
 	int		GetTotalExperience( int nLevel );
 	int		GetExperienceRequired( int nLevel );
 	float	GetExperienceRate( int nLevel, int nExperience );
-	VSK&	GetSKillKinds() { return m_vSkillKinds; };
+	std::vector<int> &	GetSKillKinds() { return m_vSkillKinds; };
 private:
 	void	LoadLevel( CScript & s );
 	void	LoadItem( CScript & s );
@@ -74,10 +67,10 @@ private:
 	void	LoadSkillLevel( CScript & s );
 	void	AddItem( int nLevel, const COUPLE_ITEM & ci );
 private:
-	VE		m_vExp;
-	VVCI	m_vItems;
-	VSK		m_vSkillKinds;
-	VVS		m_vSkills;
+	std::vector<int>		m_vExp;
+	std::vector<std::vector<COUPLE_ITEM>>	m_vItems;
+	std::vector<int>		m_vSkillKinds;
+	std::vector<std::vector<int>>		m_vSkills;
 };
 
 class CCoupleMgr final

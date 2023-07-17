@@ -26,14 +26,14 @@ BOOL CCoupleTestCase::Test()
 	// Item
 	for( nLevel = 1; nLevel <= CCouple::eMaxLevel; nLevel++ )
 	{
-		VCI& vItems	= ptr->GetItems( nLevel );
+		std::vector<COUPLE_ITEM>& vItems	= ptr->GetItems( nLevel );
 		TRACE( "Level: %d: Item\n", nLevel );
 		for( int i = 0; i < vItems.size(); i++ )
 			TRACE( "\tnItem: %d, nFlags: %d, nLife: %d, nNum: %d\n", vItems[i].nItem, vItems[i].nFlags, vItems[i].nLife, vItems[i].nNum );
 	}
 	for( nLevel = 1; nLevel <= CCouple::eMaxLevel; nLevel++ )
 	{
-		VS& vSkills	= ptr->GetSkill( nLevel );
+		std::vector<int>& vSkills	= ptr->GetSkill( nLevel );
 		TRACE( "Level: %d: Skill\n", nLevel );
 		for( int i = 0; i < vSkills.size(); i++ )
 			TRACE( "\tSkill: %d\n", vSkills[i] );
@@ -267,16 +267,14 @@ void CCoupleProperty::LoadItem( CScript & s )
 	}
 }
 
-VCI& CCoupleProperty::GetItems( int nLevel )
+std::vector<COUPLE_ITEM> & CCoupleProperty::GetItems( int nLevel )
 {
 	ASSERT( nLevel <= (int)( m_vItems.size() ) );
 	return m_vItems[nLevel-1];
 }
 
-void CCoupleProperty::AddItem( int nLevel, const COUPLE_ITEM & ci )
-{
-	VCI& vci	= GetItems( nLevel );
-	vci.push_back( ci );
+void CCoupleProperty::AddItem(int nLevel, const COUPLE_ITEM & ci) {
+	GetItems(nLevel).emplace_back(ci);
 }
 
 void CCoupleProperty::LoadSkillKind( CScript & s )
@@ -325,7 +323,7 @@ int CCoupleProperty::GetLevel( int nExperience )
 	return 1;
 }
 
-VS& CCoupleProperty::GetSkill( int nLevel )
+std::vector<int> & CCoupleProperty::GetSkill( int nLevel )
 {
 	ASSERT( nLevel <= (int)( m_vSkills.size() ) );
 	return m_vSkills[nLevel-1];
