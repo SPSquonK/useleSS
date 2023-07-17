@@ -12,12 +12,13 @@ FLOAT CWorld::GetFullHeight( const D3DXVECTOR3& vPos )
 	D3DXVECTOR3 vIntersect;
 	FLOAT fDist, fDistMin = 4194304.0f;
 
-	CObj* pObj;
 	CObj* pMinObj = NULL;
 	CModel* pModel;
 	int nRange = 0;
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
+	for (CObj * pObj : 
+		LinkMapRange( this, vPos, nRange, LinkType::Static, nDefaultLayer )
+		)
 	{
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
 		pModel = pObj->m_pModel;
@@ -32,7 +33,6 @@ FLOAT CWorld::GetFullHeight( const D3DXVECTOR3& vPos )
 			}
 		}
 	}
-	END_LINKMAP
 	
 	if( pMinObj )	// 레이에 걸린 가장 가까운 오브젝트가 있는가	
 	{
@@ -95,11 +95,11 @@ BOOL	CWorld::ProcessObjCollision(D3DXVECTOR3 vPos, CObj* pTargetObj, CObj* pWall
 
 	// 오브젝트를 폴리곤 단위로 교차검사한다
 	int nRange = OLD_MPU / m_iMPU;					// gmpbigsun:MPU가 4 이하일경우 그 범위수치가 보정되어야 함.
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Dynamic, 0 )
+	for (CCtrl * pObj : LinkMapRange( this, vPos, nRange, LinkType::Dynamic, 0 ) )
 	{
 		if( pObj->GetType() == OT_CTRL )
 		{
-			if( ((CCtrl*)pObj)->GetId( ) != GuildHouse->m_dwSelectedObjID )		//gmpbigsun: 음 재설치의 경우 복사본이 원본과 충돌패스 
+			if( pObj->GetId( ) != GuildHouse->m_dwSelectedObjID )		//gmpbigsun: 음 재설치의 경우 복사본이 원본과 충돌패스 
 			{
 				if(pObj != pTargetObj)
 				{
@@ -110,7 +110,6 @@ BOOL	CWorld::ProcessObjCollision(D3DXVECTOR3 vPos, CObj* pTargetObj, CObj* pWall
 			}
 		}
 	}
-	END_LINKMAP
 
 	return FALSE;
 }
@@ -254,24 +253,22 @@ FLOAT CWorld::GetUnderHeight( const D3DXVECTOR3 &vPos )
 	D3DXVECTOR3 vEnd = vPos + vDir;
 	Segment3 segment( vPos, vEnd );
 
-	CObj* pObj;
 	CObj* pMinObj = NULL;
 	CModel* pModel;
 
 	int nRange = 0;
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
+
+	for (CObj * pObj : LinkMapRange( this, vPos, nRange, LinkType::Static, nDefaultLayer ) )
 	{
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
 		pModel = pObj->m_pModel;
 		if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
 		{
 			pMinObj = pObj;		// 찾았으면 바로 튀어나옴 - 속도땜에 이랬다...
-			goto LP1;
+			break;
 		}
 	}
-	END_LINKMAP
 
-LP1:
 	if( pMinObj )	// 레이에 걸린 가장 가까운 오브젝트가 있는가	
 	{
 		FLOAT fDist;
@@ -322,7 +319,6 @@ FLOAT CWorld::GetOverHeightForPlayer( const D3DXVECTOR3 &vPos, CObj* pExceptionO
 	D3DXVECTOR3 vIntersect, vEnd;
 	FLOAT fDist;
 
-	CObj* pObj;
 	CObj* pMinObj = NULL;
 	CModel* pModel;
 	int nRange = 0;
@@ -330,7 +326,7 @@ FLOAT CWorld::GetOverHeightForPlayer( const D3DXVECTOR3 &vPos, CObj* pExceptionO
 	Segment3 segment( vPos, vEnd );
 	Segment3 point( vPos, vPos );
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
+	for (CObj * pObj : LinkMapRange( this, vPos, nRange, LinkType::Static, nDefaultLayer ) )
 	{
 		pModel = pObj->m_pModel;
 		if( pModel->TestIntersectionOBB_Line( segment, pObj ) )
@@ -342,12 +338,11 @@ FLOAT CWorld::GetOverHeightForPlayer( const D3DXVECTOR3 &vPos, CObj* pExceptionO
 			else
 			{
 				pMinObj = pObj;
-				goto LP1;
+				break;
 			}
 		}
 	}
-	END_LINKMAP
-LP1:
+
 	if( pMinObj )	// 레이에 걸린 가장 가까운 오브젝트가 있는가
 	{
 		pModel = pMinObj->m_pModel;
@@ -372,24 +367,23 @@ FLOAT CWorld::GetOverHeight( const D3DXVECTOR3 &vPos, CObj* pExceptionObj )
 	D3DXVECTOR3 vIntersect, vEnd;
 	FLOAT fDist;
 
-	CObj* pObj;
 	CObj* pMinObj = NULL;
 	CModel* pModel;
 	int nRange = 0;
 	vEnd = vPos + vDir;
 	Segment3 segment( vPos, vEnd );
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
+	for (CObj * pObj : LinkMapRange( this, vPos, nRange, LinkType::Static, nDefaultLayer ) )
 	{
 		pModel = pObj->m_pModel;
 		if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
 		{
 			pMinObj = pObj;		// 찾았으면 바로 튀어나옴
-			goto LP1;
+			break;
 		}
 	}
-	END_LINKMAP
-LP1:
+
+
 	if( pMinObj )	// 레이에 걸린 가장 가까운 오브젝트가 있는가
 	{
 		pModel = pMinObj->m_pModel;
@@ -427,7 +421,7 @@ BOOL	CWorld::ProcessCollision( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 	
 	*pOut = vDir;
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Dynamic, nLayer )
+	for (CObj * pObj : LinkMapRange( this, vPos, nRange, LinkType::Dynamic, nLayer ) )
 	{
 		if( pObj->GetType() == OT_CTRL ) 
 		{
@@ -464,10 +458,9 @@ BOOL	CWorld::ProcessCollision( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 			}
 		}
 	}
-	END_LINKMAP
 		
 		
- 	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
+	for (CObj * pObj : LinkMapRange( this, vPos, nRange, LinkType::Static, nDefaultLayer ))
 	{
 		// 선분과 오브젝트OBB의 검사.
 		pModel = pObj->m_pModel;
@@ -509,7 +502,6 @@ BOOL	CWorld::ProcessCollision( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 			}
 		}
 	}
-	END_LINKMAP
 		
 	return FALSE;
 }
@@ -522,8 +514,6 @@ BOOL	CWorld::ProcessCollision( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const
 BOOL	CWorld::ProcessCollisionReflection( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, const D3DXVECTOR3 &vDir, int nRecusCnt )
 {
 	int nRange = 0;
-	CObj	*pObj = NULL;
-	CModel	*pModel = NULL;
 	D3DXVECTOR3	vEnd, vIntersect, vN, v1;
 	D3DXMATRIX mTM;
 	FLOAT	fDist;
@@ -532,71 +522,44 @@ BOOL	CWorld::ProcessCollisionReflection( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &v
 	vEnd = vPos + vDir;		// 레이를 선분으로 바꾼다.
 	Segment3 segment( vPos, vEnd );
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
-	{
+	const auto TestObj = [&](CObj * pObj) {
 		// 선분과 오브젝트OBB의 검사.
-		pModel = pObj->m_pModel;
-		if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
-		{
+		CModel * pModel = pObj->m_pModel;
+		if (pModel->TestIntersectionOBB_Line(segment, pObj) == TRUE) {
 			// 선분과 삼각형의 교차 검사.  pTri에 담겨나온다.
-			((CModelObject *)pModel)->GetObject3D()->FindTouchTriLine( pTri, vPos, vEnd, pObj->GetMatrixWorld(), &fDist );
-			if( *pTri )
-			{
+			((CModelObject *)pModel)->GetObject3D()->FindTouchTriLine(pTri, vPos, vEnd, pObj->GetMatrixWorld(), &fDist);
+			if (*pTri) {
 				// (2*(-D dot N)) * N + D
 				v1 = *pTri[1] - *pTri[0];
 				vN = *pTri[2] - *pTri[0];
-				D3DXVec3Cross( &vN, &v1, &vN );
+				D3DXVec3Cross(&vN, &v1, &vN);
 				mTM = pObj->GetMatrixWorld();
 				mTM._41 = mTM._42 = mTM._43 = 0;
-				D3DXVec3TransformCoord( &vN, &vN, &mTM );	// mTM에 스케일이 있다면 노말도 같이 커지기땜에 Normalize를 나중에 해야 한다.
-				D3DXVec3Normalize( &vN, &vN );
-				
+				D3DXVec3TransformCoord(&vN, &vN, &mTM);	// mTM에 스케일이 있다면 노말도 같이 커지기땜에 Normalize를 나중에 해야 한다.
+				D3DXVec3Normalize(&vN, &vN);
+
 				v1.x = -vDir.x;	v1.y = -vDir.y;	v1.z = -vDir.z;	// -D
-				FLOAT fLenN = D3DXVec3Dot( &v1, &vN );			// -D dot N
+				FLOAT fLenN = D3DXVec3Dot(&v1, &vN);			// -D dot N
 				vN *= (fLenN * 2.0f);							// (-D dot N) * 2  이때 N는 단위벡터 상태여야한다.
 				*pOut = vDir + vN;								// 최종 반사벡터.
 
-				if( nRecusCnt++ < 3 )
-					ProcessCollisionReflection( pOut, vPos, *pOut, nRecusCnt );
-				
-				return TRUE;
+				if (nRecusCnt++ < 3)
+					ProcessCollisionReflection(pOut, vPos, *pOut, nRecusCnt);
+
+				return true;
 			}
 		}
-	}
-	END_LINKMAP
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::AirShip, nDefaultLayer )
-	{
-		// 선분과 오브젝트OBB의 검사.
-		pModel = pObj->m_pModel;
-		if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
-		{
-			// 선분과 삼각형의 교차 검사.  pTri에 담겨나온다.
-			((CModelObject *)pModel)->GetObject3D()->FindTouchTriLine( pTri, vPos, vEnd, pObj->GetMatrixWorld(), &fDist );
-			if( *pTri )
-			{
-				// (2*(-D dot N)) * N + D
-				v1 = *pTri[1] - *pTri[0];
-				vN = *pTri[2] - *pTri[0];
-				D3DXVec3Cross( &vN, &v1, &vN );
-				mTM = pObj->GetMatrixWorld();
-				mTM._41 = mTM._42 = mTM._43 = 0;
-				D3DXVec3TransformCoord( &vN, &vN, &mTM );	// mTM에 스케일이 있다면 노말도 같이 커지기땜에 Normalize를 나중에 해야 한다.
-				D3DXVec3Normalize( &vN, &vN );
-				
-				v1.x = -vDir.x;	v1.y = -vDir.y;	v1.z = -vDir.z;	// -D
-				FLOAT fLenN = D3DXVec3Dot( &v1, &vN );			// -D dot N
-				vN *= (fLenN * 2.0f);							// (-D dot N) * 2  이때 N는 단위벡터 상태여야한다.
-				*pOut = vDir + vN;								// 최종 반사벡터.
+		return false;
+	};
 
-				if( nRecusCnt++ < 3 )
-					ProcessCollisionReflection( pOut, vPos, *pOut, nRecusCnt );
-				
-				return TRUE;
-			}
-		}
+	for (CObj * pObj : LinkMapRange(this, vPos, nRange, LinkType::Static, nDefaultLayer)) {
+		if (TestObj(pObj)) return TRUE;
 	}
-	END_LINKMAP
+
+	for (CObj * pObj : LinkMapRange(this, vPos, nRange, LinkType::AirShip, nDefaultLayer)) {
+		if (TestObj(pObj)) return TRUE;
+	}
 
 	return FALSE;
 }
@@ -764,7 +727,10 @@ BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, cons
 	
 	if(bIsCol) return TRUE;
 	// 康: 카메라 충돌에서 사용하는 클라이언트 코드이므로 계층 값을 0으로 설정
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Dynamic, nTempLayer )
+	
+	
+	
+	for (CObj * pObj : LinkMapRange( this, vPos, nRange, LinkType::Dynamic, nTempLayer ))
 	{
 		if( pObj->GetType() == OT_CTRL ) 
 		{
@@ -793,7 +759,6 @@ BOOL	CWorld::IntersectObjLine2( D3DXVECTOR3 *pOut, const D3DXVECTOR3 &vPos, cons
 			}
 		}
 	}
-	END_LINKMAP
 	
 	if( bWithTerrain )		// 지형까지 검사함.
 	{
@@ -947,43 +912,14 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **ppObj, const D3DX
 	D3DXVECTOR3		vIntersect;
 	float			fMaxY = -65535.0f;			
 	D3DXVECTOR3		vOut( 0.0f, 0.0f, 0.0f );	
-	CObj*			pObj;
-	CModel*			pModel;
 	int				nRange = 0;
 
 	D3DXVECTOR3 vEnd( vPos + vDir );
 	Segment3 segment( vPos, vEnd );
 
-	if(GetID() == WI_WORLD_MINIROOM || IsWorldGuildHouse() )
-	{
-		FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Dynamic, nDefaultLayer )
-		{
-
-			// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
-			pModel = pObj->m_pModel;
-			if( pObj->GetType() == OT_CTRL ) 
-			{
-				if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
-				{
-					// 중력방향 라인과 교차하는 삼각형을 찾고 교차점(높이)을 찾은 후 슬라이딩 벡터를 vOut에 받는다.
-					if( ((CModelObject *)pModel)->GetObject3D()->SlideVectorUnder( &vOut, vPos, vEnd, pObj->GetMatrixWorld(), &vIntersect ) == TRUE )
-					{
-						if( vIntersect.y > fMaxY )
-						{
-							fMaxY = vIntersect.y;	// 충돌한 폴리곤중에 가장 높은 값을 쓰자....이렇게 되서 졸라 느려졌다.
-							*pOut = vOut;
-							*ppObj = pObj;			// 충돌한 오브젝트.
-						}
-					}
-				}
-			}
-		}
-		END_LINKMAP
-	}
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::Static, nDefaultLayer )
-	{
+	const auto TestObj = [&](CObj * pObj) {
 		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
-		pModel = pObj->m_pModel;
+		CModel * pModel = pObj->m_pModel;
 		if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
 		{
 			// 중력방향 라인과 교차하는 삼각형을 찾고 교차점(높이)을 찾은 후 슬라이딩 벡터를 vOut에 받는다.
@@ -997,28 +933,24 @@ FLOAT CWorld::ProcessUnderCollision( D3DXVECTOR3 *pOut, CObj **ppObj, const D3DX
 				}
 			}
 		}
-	}
-	END_LINKMAP
+	};
 
-	FOR_LINKMAP( this, vPos, pObj, nRange, LinkType::AirShip, nDefaultLayer )
-	{
-		// 레이(vPos-vDir)와 오브젝트OBB의 검사.  
-		pModel = pObj->m_pModel;
-		if( pModel->TestIntersectionOBB_Line( segment, pObj ) == TRUE )
-		{
-			// 중력방향 라인과 교차하는 삼각형을 찾고 교차점(높이)을 찾은 후 슬라이딩 벡터를 vOut에 받는다.
-			if( ((CModelObject *)pModel)->GetObject3D()->SlideVectorUnder( &vOut, vPos, vEnd, pObj->GetMatrixWorld(), &vIntersect ) == TRUE )
-			{
-				if( vIntersect.y > fMaxY )
-				{
-					fMaxY = vIntersect.y;	// 충돌한 폴리곤중에 가장 높은 값을 쓰자....이렇게 되서 졸라 느려졌다.
-					*pOut = vOut;
-					*ppObj = pObj;			// 충돌한 오브젝트.
-				}
+
+	if (GetID() == WI_WORLD_MINIROOM || IsWorldGuildHouse()) {
+		for (CObj * pObj : LinkMapRange(this, vPos, nRange, LinkType::Dynamic, nDefaultLayer)) {
+			if (pObj->GetType() == OT_CTRL) {
+				TestObj(pObj);
 			}
 		}
 	}
-	END_LINKMAP
+
+	for (CObj * pObj : LinkMapRange(this, vPos, nRange, LinkType::Static, nDefaultLayer)) {
+		TestObj(pObj);
+	}
+
+	for (CObj * pObj : LinkMapRange(this, vPos, nRange, LinkType::AirShip, nDefaultLayer)) {
+		TestObj(pObj);
+	}
 
 	// 수직벡터와 지형의 충돌지점 구함.
 	FLOAT fDist;

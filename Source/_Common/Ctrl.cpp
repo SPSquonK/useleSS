@@ -258,7 +258,9 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 	//------------ 적용대상이 플레이어인가 
 	if( nApplyType & OBJTYPE_PLAYER )	
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Player, GetLayer() )
+		for (CUser * pUser : 
+			LinkMapRange( GetWorld(), vPos, nRange, LinkType::Player, GetLayer() )
+			)
 		{
 			bApply = FALSE;	// 일단 FALSE로 초기화
 
@@ -318,13 +320,15 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 				bApply = FALSE;	// 다음 루프를 위해서 초기화.
 			} // bApply
 		}
-		END_LINKMAP
+
 	} // OBJTYPE_PLAYER
 
 	// 적용대상이 몬스터/컨트롤 인가.
 	if( nApplyType & (OBJTYPE_MONSTER | OBJTYPE_CTRL) )
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Dynamic, GetLayer() )	// linkDynamic을 쓴다
+		for (CCtrl * pObj :
+			LinkMapRange( GetWorld(), vPos, nRange, LinkType::Dynamic, GetLayer() )	// linkDynamic을 쓴다
+			)
 		{
 			bApply = FALSE;
 			if( pObj->GetType() == OT_MOVER )				// 대상이 무버면.
@@ -352,17 +356,16 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 						if( pObj->GetType() == OT_MOVER )	// 타겟이 무버냐?
 						{
 							if( IsValidObj( pObj ) && ((CMover *)pObj)->IsLive() )		// 타겟이 무버면 살아있는지 검사.
-								((CCtrl*)pObj)->ApplySkill( pSrc, pSkillProp, pAddSkillProp, bIgnoreProb, 0, bOnlyDmg );		// 대상에게 효과를 적용함.
+								pObj->ApplySkill( pSrc, pSkillProp, pAddSkillProp, bIgnoreProb, 0, bOnlyDmg );		// 대상에게 효과를 적용함.
 						} else
 						{
 							// 타겟이 무버가 아니냐?
-							((CCtrl*)pObj)->ApplySkill( pSrc, pSkillProp, pAddSkillProp, bIgnoreProb, 0, bOnlyDmg );		// 대상에게 효과를 적용함.
+							pObj->ApplySkill( pSrc, pSkillProp, pAddSkillProp, bIgnoreProb, 0, bOnlyDmg );		// 대상에게 효과를 적용함.
 						}
 					}
 				}
 			} // bApply
 		}
-		END_LINKMAP
 	}
 		
 #endif // WORLDSERVER		
@@ -380,7 +383,6 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 {
 #ifdef __WORLDSERVER
 	int nRange	= 4;	// 4m
-	CObj* pObj;
 	D3DXVECTOR3 vPos = GetPos();
 	D3DXVECTOR3 vDist;
 
@@ -416,7 +418,9 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 	//------------ 적용대상이 플레이어인가 
 	if( nApplyType & OBJTYPE_PLAYER )	
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Player, GetLayer() )
+		for (CUser * pObj : 
+			LinkMapRange( GetWorld(), vPos, nRange, LinkType::Player, GetLayer() )
+			)
 		{
 			bApply = FALSE;	// 일단 FALSE로 초기화
 
@@ -430,8 +434,7 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 				{
 					bApply	= TRUE;
 					CMover *pDefender = (CMover *)pObj;
-					if( pDefender->IsPlayer() )
-					{
+
 						bTarget = (this == pDefender);
 						
 						if( bControl == FALSE && pAttacker->GetHitType( pDefender, bTarget, FALSE ) == HITTYPE_PK )
@@ -441,7 +444,7 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 							bApply = FALSE;
 //	#endif // __JHMA_VER_8_5_1	
 
-					}
+					
 				} else
 				{	// 공격자가 몬스터면
 					bApply = TRUE;		// 
@@ -472,13 +475,15 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 				bApply = FALSE;	// 다음 루프를 위해서 초기화.
 			} // bApply
 		}
-		END_LINKMAP
+
 	} // OBJTYPE_PLAYER
 
 	// 적용대상이 몬스터/컨트롤 인가.
 	if( nApplyType & (OBJTYPE_MONSTER | OBJTYPE_CTRL) )
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Dynamic, GetLayer() )	// linkDynamic을 쓴다
+		for (CCtrl * pObj : 
+			LinkMapRange( GetWorld(), vPos, nRange, LinkType::Dynamic, GetLayer() )	// linkDynamic을 쓴다
+			)
 		{
 			bApply = FALSE;
 			if( pObj->GetType() == OT_MOVER )				// 대상이 무버면.
@@ -510,18 +515,17 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 							if( pObj->GetType() == OT_MOVER )	// 타겟이 무버냐?
 							{
 								if( IsValidObj( pObj ) && ((CMover *)pObj)->IsLive() )		// 타겟이 무버면 살아있는지 검사.
-									((CCtrl*)pObj)->ApplySkill( pSrc, pSkillProp, pAddSkillProp, bIgnoreProb, 0, bOnlyDmg );		// 대상에게 효과를 적용함.
+									pObj->ApplySkill( pSrc, pSkillProp, pAddSkillProp, bIgnoreProb, 0, bOnlyDmg );		// 대상에게 효과를 적용함.
 							} else
 							{
 								// 타겟이 무버가 아니냐?
-								((CCtrl*)pObj)->ApplySkill( pSrc, pSkillProp, pAddSkillProp, bIgnoreProb, 0, bOnlyDmg );		// 대상에게 효과를 적용함.
+								pObj->ApplySkill( pSrc, pSkillProp, pAddSkillProp, bIgnoreProb, 0, bOnlyDmg );		// 대상에게 효과를 적용함.
 							}
 						}
 					}
 				}
 			} // bApply
 		}
-		END_LINKMAP
 	}
 		
 #endif // WORLDSERVER		
@@ -575,7 +579,7 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 
 	if( nApplyType & OBJTYPE_PLAYER )	// 적용대상이 플레이어인가 
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Player, GetLayer() )
+		for (CUser * pUser : LinkMapRange( GetWorld(), vPos, nRange, LinkType::Player, GetLayer() ) )
 		{
 			bApply = FALSE;	// 시작은 FALSE
 
@@ -627,13 +631,14 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 				}
 			} // bApply
 		}
-		END_LINKMAP
 	}
 
 	// 적용대상이 몬스터인가.
 	if( nApplyType & (OBJTYPE_MONSTER | OBJTYPE_CTRL) )
 	{
-		FOR_LINKMAP( GetWorld(), vPos, pObj, nRange, LinkType::Dynamic, GetLayer() )
+		for (CObj * pObj : 
+			LinkMapRange( GetWorld(), vPos, nRange, LinkType::Dynamic, GetLayer() )
+			)
 		{
 			bApply = FALSE;
 			if( pObj->GetType() == OT_MOVER )				// 대상이 무버면.
@@ -676,7 +681,6 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 					((CCtrl*)pObj)->ApplySkill( this, pSkillProp, pAddSkillProp, bIgnoreProb );		// 대상에게 효과를 적용함.
 			}
 		}
-		END_LINKMAP
 	}
 		
 #endif // WORLDSERVER		
