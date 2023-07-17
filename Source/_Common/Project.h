@@ -36,9 +36,9 @@ static_assert(false, "Project.h was included")
 #include "Exchange.h"
 #endif // __TRADESYS
 
-#if defined(__WORLDSERVER) // __EVENTLUA && __WORLDSERVER
+#if defined(__WORLDSERVER)
 #include "EventLua.h"
-#endif // __EVENTLUA && __WORLDSERVER
+#endif
 
 #ifdef __IMPROVE_MAP_SYSTEM
 #ifdef __CLIENT
@@ -682,7 +682,7 @@ private:
 #if defined( __CLIENT )
 	std::map< int, CString >			m_mapQuestDestination;		// 퀘스트 목적지 설명
 	std::map< int, CString >			m_mapPatrolDestination;		// 정찰 목적지 이름
-#endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+#endif
 
 public:
 	static FLOAT				m_fItemDropRate;			// 몬스터 아이템 드롭률
@@ -766,9 +766,9 @@ public:
 	CExchange m_Exchange;
 #endif // __TRADESYS
 
-#if defined(__WORLDSERVER) // __EVENTLUA && __WORLDSERVER
+#if defined(__WORLDSERVER)
 	CEventLua m_EventLua;
-#endif // __EVENTLUA && __WORLDSERVER
+#endif
 	
 #ifdef __YS_CHATTING_BLOCKING_SYSTEM
 #ifdef __CLIENT
@@ -901,7 +901,7 @@ public:
 	const CString& GetQuestDestination( DWORD dwKey ) const;
 	BOOL LoadPatrolDestination( void );
 	const CString& GetPatrolDestination( DWORD dwKey ) const;
-#endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+#endif
 
 #ifdef __IMPROVE_MAP_SYSTEM
 #ifdef __CLIENT

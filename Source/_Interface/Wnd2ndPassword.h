@@ -25,7 +25,7 @@ private:
 private:
 	int m_nSelectCharacter;
 };
-#endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+#endif
 
 #endif // __WND_2ND_PASSWORD__
 

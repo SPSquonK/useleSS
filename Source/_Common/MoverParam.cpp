@@ -2368,7 +2368,7 @@ BOOL CMover::__SetQuest( LPQUEST lpQuest, LPQUEST lpNewQuest )
 			g_QuestTreeInfoManager.DeleteTreeInformation( lpNewQuest->m_wId.get() );
 			D3DXVECTOR3& rDestinationArrow = g_WndMng.m_pWndWorld->m_vDestinationArrow;
 			rDestinationArrow = D3DXVECTOR3( -1.0F, 0.0F, -1.0F );
-#endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+#endif
 		
 	}
 
@@ -2845,9 +2845,7 @@ float CMover::GetItemDropRateFactor( CMover* pAttacker )
 #ifdef __WORLDSERVER
 	fFactor		*= prj.m_fItemDropRate;
 	fFactor		*= GetProp()->m_fItemDrop_Rate;
-#ifdef __ITEMDROPRATE
 	fFactor		*= CEventGeneric::GetInstance()->GetItemDropRateFactor();
-#endif // __ITEMDROPRATE
 	fFactor		*= prj.m_EventLua.GetItemDropRate();
 #endif	// __WORLDSERVER
 	return fFactor;

@@ -264,7 +264,6 @@ public:
 
 	CWndMenu m_wndMenuMover;
 
-//#ifdef __QUEST_HELPER
 	BOOL m_bSetQuestNPCDest;
 	D3DXVECTOR3 m_vQuestNPCDest;
 	D3DXVECTOR3 m_vDestinationArrow;
@@ -273,7 +272,7 @@ public:
 	CString m_strDestName;
 	BOOL m_bStartAniArrow;
 #endif
-//#endif //__QUEST_HELPER
+
 	//ect m_rectBound;
 
 	CTexture m_texLvUp;

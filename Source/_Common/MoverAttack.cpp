@@ -452,10 +452,10 @@ int CMover::CalcDefense( ATTACK_INFO* pInfo, BOOL bRandom )
 {
 	int nDefense = CalcDefenseCore( pInfo->pAttacker, pInfo->dwAtkFlags, bRandom );
 	nDefense	= (int)( nDefense * GetDEFMultiplier( pInfo ) );
-#if defined(__WORLDSERVER) // __EVENTLUA_ATKDEF
+#if defined(__WORLDSERVER)
 	if( IsPlayer() )
 		nDefense += prj.m_EventLua.GetDefensePower();
-#endif // __EVENTLUA_ATKDEF
+#endif
 	return nDefense;
 }
 

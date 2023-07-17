@@ -116,9 +116,9 @@ void CHARACTER::Clear()
 bool CDropItemGenerator::Item::IsDropped(BOOL bUniqueMode, float fProbability) const
 {
 	DWORD dwRand = xRandom(3000000000);
-#if defined(__WORLDSERVER) // __EVENTLUA, __WORLDSERVER
+#if defined(__WORLDSERVER)
 	dwRand = static_cast<DWORD>(dwRand / fProbability);
-#endif // __EVENTLUA && __WORLDSERVER
+#endif
 	/*
 	if( lpDropItem->dwLevel && bUniqueMode && lpDropItem->dwProbability <= 10000000 )
 	{
@@ -426,9 +426,9 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	m_Exchange.Load_Script();
 #endif // __TRADESYS
 
-#if defined(__WORLDSERVER) // __EVENTLUA && __WORLDSERVER
+#if defined(__WORLDSERVER)
 	prj.m_EventLua.LoadScript();
-#endif // __EVENTLUA && __WORLDSERVER
+#endif
 
 	#ifdef __WORLDSERVER
 	g_GuildCombat1to1Mng.LoadScript();
@@ -494,7 +494,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 #if defined( __CLIENT )
 	LoadQuestDestination();
 	LoadPatrolDestination();
-#endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+#endif
 
 #ifdef __IMPROVE_MAP_SYSTEM
 #ifdef __CLIENT
@@ -4383,5 +4383,5 @@ const CString& CProject::GetPatrolDestination( DWORD dwKey ) const
 		return i->second;
 	return strEmpty;
 }
-#endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+#endif
 

@@ -6,7 +6,7 @@
 #include "party.h"
 #include "WndQuest.h"
 #include "WorldMap.h"
-#endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+#endif
 
 #if defined( __CLIENT )
 //-----------------------------------------------------------------------------
@@ -368,4 +368,4 @@ void CWndQuestQuickInfo::DeleteTree( void )
 		pWndTreeCtrl->DeleteAllItems();
 }
 //-----------------------------------------------------------------------------
-#endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+#endif

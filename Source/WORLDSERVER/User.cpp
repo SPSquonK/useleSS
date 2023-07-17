@@ -131,16 +131,12 @@ void CUser::Init( DPID dpidCache, DPID dpidUser )
 	m_dwEventTime	= 0;
 	m_dwEventElapsed	= 0;
 #endif	// __EVENT_1101
-#ifdef __HACK_1130
 	m_tmDuelRequest		= 0;
-#endif	// __HACK_1130
 
 #ifdef __S_SERVER_UNIFY
 	m_bAllAction = TRUE;
 #endif // __S_SERVER_UNIFY
-#ifdef __QUEST_1208
 	m_tickScript	= GetTickCount();
-#endif	// __QUEST_1208
 	
 #ifdef __EVE_MINIGAME
 	m_nKawibawiboWin	= 0;

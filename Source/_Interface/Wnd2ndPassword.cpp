@@ -6,7 +6,7 @@
 #include "Network.h"
 #include "ResData.h"
 #include "defineText.h"
-#endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+#endif
 
 #if defined( __CLIENT )
 //-----------------------------------------------------------------------------
@@ -402,4 +402,4 @@ void CWnd2ndPassword::ResetNumberpad( u_long idNumberPad )
 
 }
 //-----------------------------------------------------------------------------
-#endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+#endif

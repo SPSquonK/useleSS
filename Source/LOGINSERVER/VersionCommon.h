@@ -14,19 +14,6 @@
 #define		__VERIFYNETLIB
 #define		__DOS1101
 
-// 15차
-//	#define		__2ND_PASSWORD_SYSTEM			// 로그인 시 2차 비밀번호 입력
-
-#if	  defined(__INTERNALSERVER)	// 내부 사무실 테스트서버 
-
-
-#elif defined(__TESTSERVER)		// 외부 유저 테스트서버
-
-
-#elif defined(__MAINSERVER)		// 외부 본섭
-
-#endif	// end - 서버종류별 define 
-
 
 #endif
 

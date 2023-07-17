@@ -205,7 +205,7 @@ BOOL CEventGeneric::LoadScript( LPCSTR lpFilename )
 					s.GetToken();
 #endif	// __DBSERVER
 				}
-#ifdef __ITEMDROPRATE
+
 				else if( s.Token == _T( "fItemDropRate" ) )
 				{
 #ifdef __DBSERVER
@@ -214,7 +214,7 @@ BOOL CEventGeneric::LoadScript( LPCSTR lpFilename )
 					s.GetToken();
 #endif	// __DBSERVER
 				}
-#endif // __ITEMDROPRATE
+
 				else if( s.Token == _T( "Spawn" ) )
 				{
 #if defined(__WORLDSERVER ) && defined(__EVENT_0117)
@@ -282,7 +282,6 @@ FLOAT CEventGeneric::GetExpFactor( void )
 	return fExpFactor;
 }
 
-#ifdef __ITEMDROPRATE
 FLOAT CEventGeneric::GetItemDropRateFactor( void )
 {
 	FLOAT	fFactor	= 1.0f;
@@ -292,7 +291,7 @@ FLOAT CEventGeneric::GetItemDropRateFactor( void )
 	}
 	return fFactor;
 }
-#endif // __ITEMDROPRATE
+
 #endif	// __WORLDSERVER
 CAr & operator<<(CAr & ar, const CEventGeneric & self) {
 	ar << (int)self.m_lspEvent.size();

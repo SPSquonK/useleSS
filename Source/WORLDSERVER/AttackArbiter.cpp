@@ -298,9 +298,7 @@ int CAttackArbiter::CalcATK( ATTACK_INFO* pInfo )
 	if( nCount > 0 )															// 지속데미지는 계산된 ATK 10%
 		nATK	= (int)( nATK * 0.1f );
 
-//#ifdef __PET_0410
 	nATK	+= m_pAttacker->GetParam( DST_ATKPOWER, 0 );
-//#endif	// __PET_0410
 
 	if( m_pAttacker->IsPlayer() )
 		nATK += prj.m_EventLua.GetAttackPower();

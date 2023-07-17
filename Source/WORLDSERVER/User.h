@@ -142,13 +142,8 @@ public:
 	void	AddCallTheRoll( void );
 #endif	// __EVENT_1101
 
-#ifdef __HACK_1130
 	DWORD	m_tmDuelRequest;
-#endif	// __HACK_1130
-
-#ifdef __QUEST_1208
 	DWORD	m_tickScript;
-#endif	// __QUEST_1208
 
 #ifdef __S_SERVER_UNIFY
 	BOOL	m_bAllAction;

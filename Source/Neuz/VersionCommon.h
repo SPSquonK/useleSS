@@ -22,8 +22,6 @@
 
 // 해외 6차 적용
 
-#define		__ITEMDROPRATE				// 이벤트 아이템 드롭률 조정
-
 
 // 10
 #define		__TRADESYS					// 교환 아이템 스크립트(이벤트, 퀘스트, ... ) Neuz, World
@@ -40,42 +38,15 @@
 #define		__CSC_ENCHANT_EFFECT_2		// 기존 이펙트 + 향상된 이펙트
 
 //11차
-//	#define		__MA_VER11_02				// 수표 기능 페린 관련
-//	#define		__MA_VER11_03				// neuz극단창(B)에서 극단원이 멀리 떨어져 있어도 레벨이 표시 되도록
-//	#define		__MA_VER11_04				// 길드 창고 로그 기능 world,database,neuz
-//	#define		__MA_VER11_05				// 케릭터 봉인 거래 기능 world,database,neuz
-//	#define		__MA_VER11_06				// 확율스킬 효과수정 world,neuz
-//	#define		__CSC_VER11_1				// <레벨??> 삭제, 채팅창 수정, 페냐거래 취소버튼 삭제
-//	#define		__CSC_VER11_2				// 타겟 표시 방법 변경
-//	#define		__CSC_VER11_3				// 칩으로 상점 이용 하기 (길드 대전 관련)
-//	#define		__CSC_VER11_4				// 메신저창 개선
-//	#define		__CSC_VER11_5				// 태스크바 확장
-//	#define		__GUILDCOMBATCHIP			// 길드대전 칩보상 및 칩을 통한 상점 이용
-//	#define		__GUILD_COMBAT_1TO1			// 일대일 길드 대전
-//	#define		__GUILD_BANK_LOG			// 길드뱅크 로그창 추가
-//	#define		__EXPITEM_TOOLTIP_CHANGE	// 경험치 아이템 표기 방법 변경
-//	#define		__REMOVE_ENDURANCE			// 아이템 내구력 개념 제거
-//	#define		__PIERCING_REMOVE			// 피어싱 옵션 제거
-//	#define		__CHIPI_071210				// 기간제 아이템 지속시간 초단위 표기
 
 #define		__EVENTLUA_COUPON			// 쿠폰 이벤트
 #define		__NOLIMIT_RIDE_ITEM			// 레벨 제한 없는 비행체 아이템
 #define		__NPC_BUFF					// NPC를 통해 버프받기
 
-//	#define		__SYS_POCKET				// 주머니
-//	#define		__SYS_COLLECTING			// 채집 시스템
-//	#define		__SYS_IDENTIFY				// 각성, 축복
-//	#define		__FIX_ROTATE				// 비스트에서 발견된 오류 수정
-//	#define		__ADD_ZOOMOPT				// 줌옵션 추가 
-//	#define		__MOD_VENDOR				// 개인상점 개선
-//	#define		__FIX_COLLISION				// 충돌 문제 수정
-//	#define		__FIX_PICKING				// 피킹 문제 수정
 //	#define		__CAPTURE_JPG				// JPG포맷으로 캡쳐
 
 #define		__SYS_TICKET				// 입장권
-//	#define		__SYS_PLAYER_DATA			// 캐릭터 정보 통합
 #define		__HACK_1023					// 리소스 변조 // 날것 속도, 무기 공격 속도
-#define		__VENDOR_1106				// 개인상점 허용 문자
 #define		__JEFF_11
 
 #define		__JEFF_9_20					// 비행 시간을 침묵 시간으로 전용
@@ -92,42 +63,12 @@
 
 // 12차
 
-//	#define		__SECRET_ROOM				// 비밀의 방
-//	#define		__TAX						// 세금
-//	#define		__CSC_VER12_1				// 개인상점 중 플레이어 살펴보기 메뉴 가능하도록 수정 & 살펴보기 창 유지하기
-//	#define		__CSC_VER12_2				// 길드 창의 멤버 텝에 항목별 정렬이 가능하도록 추가
-//	#define		__CSC_VER12_3				// 퀘스트가 많을 경우 퀘스트 항목이 잘리는 현상 때문에 대화창 늘림
-//	#define		__CSC_VER12_4				// 피어싱 제거 창 개선 및 얼터멋 보석 제거 창 추가
-//	#define		__CSC_VER12_5				// 펫 알 변환 기능 추가
-//	#define		__HEAVEN_TOWER				// 심연의 탑
-//	#define		__EXT_PIERCING				// 무기 피어싱
-//	#define		__NEW_SUMMON_RULE			// 몬스터 소환 규칙 변경
-//	#define		__MOD_TUTORIAL				// 튜토리얼 개선
-//	#define		__LORD						// 군주
 //	#define		__PET_0519	// 펫 각성
-//	#define		__J12_0		// 각성, 축복 가능 파츠 추가
-//	#define		__UPDATE_OPT				// 옵션창 개선
-//	#define		__CAM_FAST_RECOVER			// 카메라 복원속도 증가
-//	#define		__JHMA_VER12_1	//12차 극단유료아이템
-//	#define		__ITEMCREATEMON_S0602		// 몬스터 생성 Neuz, World
-//	#define		__PARSKILL1001	//12차 파스킬 아이템 수정  world,core,neuz
-//	#define		__LEAK_0827
 
 
 // 13차
 //	#define		__EXT_ENCHANT				// 제련 확장(속성, 일반)
-//	#define		__RAINBOW_RACE				// 레인보우 레이스
 	#define		__HOUSING					// 하우징 시스템
-//	#define		__QUEST_HELPER				// 퀘스트 NPC위치 알림.
-//	#define		__CHIPI_QUESTITEM_FLAG
-//	#define		__RENEW_CHARINFO			// 캐릭터정보창 리뉴얼
-//	#define		__HONORABLE_TITLE			// 달인
-	#define		__MAX_BUY_ITEM9999			// 화살포스터구입갯수9999개
-//	#define		__REMOVE_JOINPARTYMEMBER_ANI			// 파티맴버조인시 애니 빼기
-//	#define		__CSC_VER13_1				// WorldMap 몬스터 표시
-//	#define		__CSC_VER13_2				// 커플 시스템
-//	#define		__COUPLE_1117				// 커플 시스템
-//	#define		__COUPLE_1202				// 커플 보상
 
 #define		__LAYER_1020				// __LAYER_1015 테스트
 #define		__AZRIA_1023				// 입장권 계층 적용
@@ -148,9 +89,7 @@
 #define		__MAP_SECURITY				// 맵툴로 변조한 맵 검사
 
 // 14차
-	#define		__NEW_CONTINENT				// 14차 신규대륙 하르모닌 추가
 	#define		__SMELT_SAFETY				// 14차 안전제련
-	#define		__INSTANCE_DUNGEON			// 14차 인스턴스 던전
 	#define		__EQUIP_BIND				// 장착아이템 착용시 귀속
 	#define		__EXT_ATTRIBUTE				// 속성제련 공식 확장 및 변경
 	#define		__NEW_ITEM_LIMIT_LEVEL		// 아이템 착용레벨 규칙 변경(MASTER, HERO도 레벨 적용을 받고 하위 클래스 무기는 무조건 장착 가능)
@@ -170,30 +109,21 @@
 	#define		__BALLOON_CODE_IMPROVEMENT	// 풍선 관련 코드 개선
 	#define		__WING_ITEM					// 날개 아이템
 	#define		__USE_SOUND_LIB_FMOD		// use FMod sound lib
-	#define		__PCBANG					// PC방 혜택
 //	end 14th
 
 // 15차 ZU TEST ZWECKEN AUSDEKLARIERUNG ENTFERNT!
 	#define		__DYNAMIC_MPU				// 변경가능한 MPU !!
 	#define		__BOUND_BOX_COLLISION		// 바운드 박스 충돌 루틴 개선
 	#define		__BS_CHANGING_ENVIR			// 대륙별 환경 변경 ( light, fog, sky, weather, 24hours light ... ) <<< ONLY CLIENT!!!! >>>
-	#define		__USING_CONTINENT_DATA		// 대륙 경계데이터 외부에서 긁어옴! 
-	#define		__IMPROVE_QUEST_INTERFACE	// 15차 향상된 퀘스트 인터페이스 시스템
 	#define		__IMPROVE_SYSTEM_VER15		// 15차 개선 사항
 	#define		__15TH_INSTANCE_DUNGEON		// 15차 인스턴스 던전
-	#define		__PETVIS					// 15차 비스펫
-	#define		__GUILD_HOUSE				// 15차 길드하우스
 	#define		__TELEPORTER				// 15차 텔레포터
 	#define		__FIND_OBJ_INSIGHT			// 시야거리 안의 동적오브젝트 출력( 미니맵 오른쪽버튼 클릭 )
-	#define		__HERO129_VER15				// 15차 히어로 레벨확장
 	#define		__MUSIC2					// 마일즈 7.2g ver 업데이트 ( OGG 재생 가능 버젼  ) 차후 Lib업데이트시에 같이 풀어줘야함.
 #define		__NEW_CONTINENT15			// 추가 대륙 ( 협곡 )
 	#define		__BS_BBOX_ABS_EXTENT		// BBOX 길이 절대값으로 수정
-	#define		__CAMPUS					// 15차 사제 시스템
 	#define		__BS_FIXED_KNOCKBACK		// 넉백시 상태 꼬임현상 수정 
 	#define		__BS_FIXED_EQUIPMOTION		// 아이템 장/탈 착중 기존모션이 유지되는현상 수정 
-	#define		__15_5TH_ELEMENTAL_SMELT_SAFETY	// 15.5차 속성 안전 제련 추가
-	#define		__2ND_PASSWORD_SYSTEM		// 2차 비밀번호 시스템
  // end 15th
 
 	#define		__QUIZ						// 퀴즈 이벤트 시스템
@@ -281,13 +211,9 @@
 
 //	#define     __Y_NEW_ENCHANT				// 제련 아이템 변경, Neuz, World
 
-//	#define		__ULTIMATE					// 9,10차 제련
-//	#define		__LEGEND					// 10차 전승시스템	Neuz, World, Trans
 //	#define		__CSC_VER9_1				// 9차 전승관련 Clienet - Neuz
 
-//	#define		__PET_0410					// 9, 10차 펫
 	#define		__HACK_0516					// 미국 해킹 2차
-//	#define		__AI_0509					// 몬스터 인공지능
 
 //	#define		__CSC_VER9_RESOLUTION		// Wide및 고해상도 추가
 //	#define		__Y_ADV_ENCHANT_EFFECT		// 제련 이팩트 향상 버전
@@ -301,8 +227,6 @@
 
 //	#define		__Y_DRAGON_FIRE				// 메테오니커 파이어 발사!!!
 
-//	#define		__LUASCRIPT					// 루아 스크립트 사용 (World, Trans, Neuz)
-//	#define		__EVENTLUA					// 이벤트 (루아 스크립트 적용) - World, Trans, Neuz
 
 //	#define		__METEONYKER_0608
 //	#define		__CSC_UPDATE_WORLD3D		// World3D Object Culling부분 업데이트
@@ -314,22 +238,17 @@
 
 	#define		__GLOBAL_COUNT_0705			// CTime::GetTimer
 	
-//	#define		__SKILL_0706				// 대인용 AddSkillProp 컬럼 추가 및 적용
 
 //	#define		__AI_0711					// 메테오니커 AI 수정
 
-//	#define		__REMOVE_ATTRIBUTE			// 속성제련 제거(10차로 변경)
 //	#define		__CSC_ENCHANT_EFFECT_2		// 기존 이펙트 + 향상된 이펙트
 	
 //	#define		__SYS_TICKET				// 입장권
-//	#define		__SYS_PLAYER_DATA			// 캐릭터 정보 통합
 //	#define		__HACK_1023					// 리소스 변조 // 날것 속도, 무기 공격 속도
 
-//	#define		__RT_1025					// 메신저
 
 //  #define		__LINK_PORTAL				// 외부 포탈 연결 시 무인자 처리
 
-//	#define		__VENDOR_1106				// 개인상점 허용 문자
 //	#define		__JEFF_11
 
 	#define		__JEFF_11_1
@@ -380,8 +299,6 @@
 	#define		__Y_BEAUTY_SHOP_CHARGE		// 뷰티샵, 개인상점 유료아이템화..Neuz, World
 	#define		__TRAFIC_1215				// 전송량 감소
 
-//	#define		__ULTIMATE					// 9,10차 제련
-//	#define		__LEGEND					// 10차 전승시스템	Neuz, World, Trans
 //	#define		__CSC_VER9_1				// 9차 전승관련 Clienet - Neuz
 
 //	#define		__CSC_VER9_RESOLUTION		// Wide및 고해상도 추가
@@ -397,16 +314,12 @@
 //	#define		__Y_DRAGON_FIRE				// 메테오니커 파이어 발사!!!
 	#define		__HACK_0516					// 미국 해킹 2차
 
-//	#define		__LUASCRIPT					// 루아 스크립트 사용 (World, Trans, Neuz)
 //	#define		__EVENTLUA					// 이벤트 (루아 스크립트 적용) - World, Trans, Neuz
 //	#define		__CSC_VER9_REMOVE_PKSETTING	// 옵션 설정 창에서 PK설정 제거 (무조건 Ctrl키 누른 상태에서만 공격)
 
 //	#define		__INSERT_MAP				// 스타트메뉴에 전체지도 메뉴 추가 
 
-//	#define		__PET_0410					// 9, 10차 펫
-//	#define		__AI_0509					// 몬스터 인공지능
 //	#define		__METEONYKER_0608
-//	#define		__SKILL_0706				// 대인용 AddSkillProp 컬럼 추가 및 적용
 //	#define		__AI_0711					// 메테오니커 AI 수정
 	#define		__GLOBAL_COUNT_0705			// CTime::GetTimer
 
@@ -417,7 +330,6 @@
 //	#define		__JEFF_11_4					// 아레나
 //	#define		__JEFF_11_5					// 메모리 누수
 
-//	#define		__JAPAN_SAKURA				// 벗꽃 이벤트
 
 
 //   VER 16 __TESTSERVER begin
@@ -436,10 +348,8 @@
 	#define		__TRAFIC_1215
 //	#define     __Y_NEW_ENCHANT				// 제련 아이템 변경, Neuz, World
 //	#define		__EVENT_FALL				// 단풍
-//	#define		__JAPAN_SAKURA				// 벗꽃 이벤트
 
 	#define		__JEFF_11_1
-//	#define		__RAIN_EVENT				// 장마 이벤트(비오는 동안 경험치 2배)
 
 #endif	// end - 서버종류별 define 
 

@@ -19,10 +19,6 @@
 #define	__REMOVE_PLAYER_0221		// 캐릭터 삭제 패킷 조작
 
 
-// 14th
-//	#define __PCBANG			// PC방 혜택
-
-
 
 #if	  defined(__INTERNALSERVER)	// 내부 사무실 테스트서버 
 	#define	__SECURITY_0628	// 리소스 버전 인증

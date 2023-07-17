@@ -18,11 +18,9 @@
 #define	__GPAUTH
 #define	__GPAUTH_01
 #define	__GPAUTH_02		// 독일/프랑스 통합 인증 - 구매
-//#define	__GPAUTH_03		// 독일/프랑스 통합 인증 - 권한
 #define	__EUROPE_0514
 
 // 14th
-//	#define 	__PCBANG		// PC방 혜택
 
 #define __ENCRYPT_PASSWORD	//	mulcom	BEGIN100218	패스워드 암호화
 

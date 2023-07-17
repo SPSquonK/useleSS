@@ -46,7 +46,7 @@ int CWndWorld::ControlPlayer( DWORD dwMessage, CPoint point )
 		return 0;
 #endif //__EVE_MINIGAME
 /*
-#if __VER >= 13 // __RAINBOW_RACE
+#if __VER >= 13
 	if( g_WndMng.GetWndBase(APP_RR_MINIGAME_KAWIBAWIBO) )
 		return 0;
 	if( g_WndMng.GetWndBase(APP_RR_MINIGAME_DICE) )
@@ -61,7 +61,7 @@ int CWndWorld::ControlPlayer( DWORD dwMessage, CPoint point )
 		return 0;
 	if( g_WndMng.GetWndBase(APP_RR_MINIGAME_LADDER) )
 		return 0;
-#endif //__RAINBOW_RACE
+#endif
 
 #if __VER >= 9 // __CSC_VER9_1
 	if( g_WndMng.GetWndBase(APP_SMELT_JEWEL) )

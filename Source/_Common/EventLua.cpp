@@ -938,4 +938,4 @@ void CEventLuaProxy::Initialize( CEventLua* pEventLua )
 	m_fShopSellFactor = pEventLua->GetShopSellFactor(FALSE);
 #endif // __SHOP_COST_RATE
 }
-#endif	// __EVENTLUA_0826
+#endif

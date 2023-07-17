@@ -99,4 +99,4 @@ int CTreeInformationManager::GetTreeInformationListSize( void ) const
 	return m_TreeInformationList.size();
 }
 //-----------------------------------------------------------------------------
-#endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+#endif

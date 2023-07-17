@@ -710,21 +710,18 @@ void CDPSrvr::OnScriptDialogReq( CAr & ar, DPID dpidCache, DPID dpidUser )
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-#ifdef __QUEST_1208
 		DWORD dwTickCount	= GetTickCount();
 		if( dwTickCount < pUser->m_tickScript + 400 )
 			return;
 		pUser->m_tickScript	= dwTickCount;
-#endif	// __QUEST_1208
+
 		CMover* pMover	= prj.GetMover( objid );
 		if( IsValidObj( pMover ) )
 		{
-#ifdef __HACK_1130
 			char lpOutputString[512]	= { 0,};
 			sprintf( lpOutputString, "npc = %s, key = %s, n1 = %d, n2 = %d, n3 = %d, n4 = %d",
 				pMover->GetName(), lpKey, nGlobal1, nGlobal2, nGlobal3, nGlobal4 );
 			OutputDebugString( lpOutputString );
-#endif	// __HACK_1130
 
 			D3DXVECTOR3 vOut	= pUser->GetPos() - pMover->GetPos();
 			if( fabs( (double)D3DXVec3LengthSq( &vOut ) ) > MAX_LEN_MOVER_MENU )
@@ -1288,12 +1285,11 @@ void CDPSrvr::OnRemoveQuest( CAr & ar, DPID dpidCache, DPID dpidUser )
 	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	if( IsValidObj( pUser ) )
 	{
-#ifdef __QUEST_1208
 		DWORD dwTickCount	= GetTickCount();
 		if( dwTickCount < pUser->m_tickScript + 400 )
 			return;
 		pUser->m_tickScript	= dwTickCount;
-#endif	// __QUEST_1208
+
 		LPQUEST lpQuest = pUser->GetQuest( dwQuestCancelID );
 		if( lpQuest )
 		{
@@ -1534,9 +1530,7 @@ void CDPSrvr::OnDuelRequest( CAr & ar, DPID dpidCache, DPID dpidUser )
 			}
 			else
 			{
-#ifdef __HACK_1130
 				pUser->m_tmDuelRequest	= GetTickCount();
-#endif	// __HACK_1130
 				pDstUser->AddDuelRequest( uidSrc, uidDst );
 			}
 		}
@@ -1550,11 +1544,8 @@ void CDPSrvr::OnDuelYes( CAr & ar, DPID dpidCache, DPID dpidUser )
 	ar >> uidSrc >> uidDst;
 
 	CUser* pSrc = g_UserMng.GetUserByPlayerID( uidSrc );
-#ifdef __HACK_1130
 	CUser* pDst	=	g_UserMng.GetUser( dpidCache, dpidUser );
-#else	// __HACK_1130
-	CUser* pDst = g_UserMng.GetUserByPlayerID( uidDst );
-#endif	// __HACK_1130
+
 
 	if( IsValidObj(pSrc) && IsValidObj(pDst) )
 	{
@@ -1579,13 +1570,12 @@ void CDPSrvr::OnDuelYes( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 		if( pSrc->IsPVPInspection( pDst, CUser::PVPInspection::Solo) )
 		{
-#ifdef __HACK_1130
 			if( pSrc->m_tmDuelRequest + SEC( 10 ) < GetTickCount() )	// 듀얼 신청 시간을 10초 초과하면
 			{
 				pSrc->m_tmDuelRequest	= 0;
 				return;
 			}
-#endif	// __HACK_1130
+
 			pSrc->m_nDuel = 1;
 			pSrc->m_nDuelState = 104;
 			pSrc->m_idDuelOther = pDst->GetId();

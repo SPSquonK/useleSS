@@ -48,6 +48,6 @@ private:
 	CWndQITreeCtrl m_CWndQITreeCtrl;
 };
 //-----------------------------------------------------------------------------
-#endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+#endif
 
 #endif // __WND_QUEST_QUICK_INFO_H__

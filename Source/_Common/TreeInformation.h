@@ -47,6 +47,6 @@ private:
 	TreeInformationList m_TreeInformationList;
 };
 //-----------------------------------------------------------------------------
-#endif // defined( __IMPROVE_QUEST_INTERFACE ) && defined( __CLIENT )
+#endif
 
 #endif // __TREE_INFORMATION_H__

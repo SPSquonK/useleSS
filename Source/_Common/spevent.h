@@ -8,9 +8,7 @@ struct EVENT_GENERIC {
 	time_t tStart       = 0;
 	time_t tEnd         = 0;
 	FLOAT  fExpFactor   = 1.0f;
-#ifdef __ITEMDROPRATE
 	FLOAT fItemDropRate = 1.0f;
-#endif // __ITEMDROPRATE
 	char pszTitle[MAX_EVENT_TITLE] = "";
 };
 
@@ -117,9 +115,7 @@ public:
 #ifdef __WORLDSERVER
 	std::pair<CEventItem *, int> GetItem();
 	FLOAT	GetExpFactor( void );
-#ifdef __ITEMDROPRATE
 	FLOAT	GetItemDropRateFactor( void );
-#endif // __ITEMDROPRATE
 #ifdef __EVENT_1101
 	LONG	GetEventElapsed( void );
 	void	CallTheRoll( void );
