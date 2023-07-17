@@ -35,7 +35,6 @@
 #define		__ITEMDROPRATE					// 이벤트 아이템 드롭률 조정정
 
 #define		__PK_PVP_SKILL_REGION			// PK금지구역에서 악행 스킬은 PVP상대에게만 가능하도록..
-#define		__PVPDEBUFSKILL					// PVP 종료 후 디버프로 인해 카오가 되는 문제 수정 - World
 #define		__EVENT_1101_2					// 출첵 이벤트 64비트 변경
 #define		__S_RECOMMEND_EVE				// 추천 이벤트 Neuz, Trans, World
 #define		__EVE_MINIGAME					// 이벤트 미니게임 4종, Neuz, World

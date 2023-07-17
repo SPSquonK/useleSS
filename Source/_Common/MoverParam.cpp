@@ -417,14 +417,13 @@ int	CMover::DuelResult( CMover *pLose )
 	{
 		ChangeFame( pLose );
 		
-#ifdef __PVPDEBUFSKILL
 		//pLose->m_SkillState.SetMover( pLose );
 		pLose->m_nDead = PROCESS_COUNT * 2;		// ���� �� 2�ʰ��� ����
 		pLose->RemoveAttackerBuffs( pLose->m_idDuelOther );
 		//m_SkillState.SetMover( this );
 		m_nDead = PROCESS_COUNT * 2;		// ���� �� 2�ʰ��� ����
 		RemoveAttackerBuffs( m_idDuelOther );
-#endif // __PVPDEBUFSKILL
+
 	}
 	else
 	// �ش� ���.

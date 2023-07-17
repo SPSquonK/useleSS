@@ -1115,11 +1115,8 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 				if( pSkillProp->dwID == SI_ELE_FIRE_BURINGFIELD )
 					bNew = FALSE;	//  버닝필드는 예외처리 
 				else
-#ifdef __PVPDEBUFSKILL
 					bNew	= static_cast<CMover*>( this )->AddBuff( wType, (WORD)( pSkillProp->dwID ), nLevel, nSkillTime + (int)dwTime1 + (int)dwTime2, pSrc->GetId() );
-#else // __PVPDEBUFSKILL
-					bNew = ((CMover *)this)->m_SkillState.Set( wType, pSkillProp->dwID, nLevel, nSkillTime + (int)dwTime1 + (int)dwTime2 );	
-#endif // __PVPDEBUFSKILL
+
 
 				
 			#elif defined(__CLIENT)
