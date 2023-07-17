@@ -1,6 +1,7 @@
 #ifndef __COUPLEHELPER_H
 #define	__COUPLEHELPER_H
 
+#include <memory>
 #include "dbcontroller.h"
 #include "couple.h"
 #include "ar.h"
@@ -53,9 +54,9 @@ public:
 	time_t	GetPropose( u_long idPlayer );
 	void	ProcessPropose();
 	bool	AddPropose( u_long idPlayer, time_t t )	{	return m_mapProposes.emplace( idPlayer, t ).second;	}
-	void	Couple( CCouple* pCouple )	{	ASSERT( m_pMgr );	m_pMgr->Couple( pCouple );	}
+	void	Couple( std::unique_ptr<CCouple> pCouple )	{	ASSERT( m_pMgr );	m_pMgr->Couple( std::move(pCouple) );	}
 private:
-	void	GetGender( CCouple* pCouple, int & nGenderFirst, int & nGenderSecond );
+	[[nodiscard]] static std::pair<int, int>	GetGender(CCouple * pCouple);
 private:
 	CCoupleMgr*	m_pMgr;
 	CCoupleController* m_pController;

@@ -26,8 +26,8 @@ public:
 	void	OnTimer();
 	friend CAr & operator<<(CAr & ar, const CCouple & self);
 	friend CAr & operator>>(CAr & ar, CCouple & self);
-	u_long	GetFirst()	{	return m_idFirst;	}
-	u_long	GetSecond()		{	return m_idSecond;	}
+	[[nodiscard]] u_long	GetFirst() const	{	return m_idFirst;	}
+	[[nodiscard]] u_long	GetSecond() const		{	return m_idSecond;	}
 private:
 	int		m_nExperience;
 	int		m_nLevel;
@@ -35,16 +35,16 @@ private:
 	u_long	m_idSecond;
 };
 
-typedef	struct	_COUPLE_ITEM
+struct	COUPLE_ITEM
 {
 	int	nItem;
 	int nSex;
 	int	nFlags;
 	int nLife;
 	int nNum;
-	_COUPLE_ITEM() : nItem( 0 ), nSex( 0 ), nFlags( 0 ), nLife( 0 ), nNum( 0 )		{}
-	_COUPLE_ITEM( int i, int s, int f, int l, int n ) : nItem( i ), nSex( s ), nFlags( f ), nLife( l ), nNum( n )		{}
-}	COUPLE_ITEM, *PCOUPLE_ITEM;
+	COUPLE_ITEM() : nItem( 0 ), nSex( 0 ), nFlags( 0 ), nLife( 0 ), nNum( 0 )		{}
+	COUPLE_ITEM( int i, int s, int f, int l, int n ) : nItem( i ), nSex( s ), nFlags( f ), nLife( l ), nNum( n )		{}
+};
 
 typedef std::vector<int>		VE;
 typedef std::vector<COUPLE_ITEM>		VCI;
@@ -52,9 +52,6 @@ typedef	std::vector<VCI>		VVCI;
 typedef	std::vector<int>		VSK;
 typedef std::vector<int>		VS;
 typedef std::vector<VS>		VVS;
-
-typedef	std::map<u_long, CCouple*>	MPC;
-typedef	std::vector<CCouple*>	VCOUPLE;
 
 class CCoupleProperty
 {
@@ -83,24 +80,22 @@ private:
 	VVS		m_vSkills;
 };
 
-class CCoupleMgr
+class CCoupleMgr final
 {
 public:
-	CCoupleMgr();
-	virtual	~CCoupleMgr();
 	void	Couple( u_long idFirst, u_long idSecond );
-	void	Couple( CCouple* pCouple );
-	size_t	GetCount()	{	return m_vCouples.size();	}
-	BOOL	Decouple( u_long idPlayer );
+	void	Couple(std::unique_ptr<CCouple> pCouple);
+	[[nodiscard]] size_t GetCount() const noexcept { return m_vCouples.size(); }
+	bool	Decouple( u_long idPlayer );
 	CCouple*	GetCouple( u_long idPlayer );
-	BOOL	IsCouple( u_long idFirst, u_long idSecond );
+
 	friend CAr & operator<<(CAr & ar, const CCoupleMgr & self);
 	friend CAr & operator>>(CAr & ar, CCoupleMgr & self);
 	void	OnTimer();
 private:
 	void	Clear();
 private:
-	MPC		m_mapPlayers;
-	VCOUPLE		m_vCouples;
+	std::map<u_long, CCouple *>           m_mapPlayers;
+	std::vector<std::unique_ptr<CCouple>> m_vCouples;
 };
 #endif	// __COUPLE_H

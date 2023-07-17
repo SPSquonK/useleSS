@@ -32,9 +32,9 @@ BOOL CCoupleController::Restore()
 		int nExperience	= pQuery->GetInt( "nExperience" );
 		u_long idFirst	= pQuery->GetInt( "idFirst" );
 		u_long idSecond	= pQuery->GetInt( "idSecond" );
-		CCouple* pCouple	= new CCouple( idFirst, idSecond );
-		m_pHelper->Couple( pCouple );
-		pCouple->AddExperience( nExperience );
+		auto pCouple	= std::make_unique<CCouple>( idFirst, idSecond );
+		pCouple->AddExperience(nExperience);
+		m_pHelper->Couple( std::move(pCouple) );
 	}
 
 	pQuery->Clear();
@@ -207,9 +207,8 @@ void CCoupleHelper::PostItem( CCouple* pCouple )
 	VCI& vItems	= CCoupleProperty::Instance()->GetItems( pCouple->GetLevel() );
 	if( vItems.empty() )
 		return;
-	int nGenderFirst, nGenderSecond;
-	nGenderFirst	= nGenderSecond	= SEX_SEXLESS;
-	GetGender( pCouple, nGenderFirst, nGenderSecond );
+
+	const auto [nGenderFirst, nGenderSecond] = GetGender( pCouple );
 
 	for( DWORD i = 0; i < vItems.size(); i++ )
 	{
@@ -220,15 +219,17 @@ void CCoupleHelper::PostItem( CCouple* pCouple )
 	}
 }
 
-void CCoupleHelper::GetGender( CCouple* pCouple, int & nGenderFirst, int & nGenderSecond )
+std::pair<int, int> CCoupleHelper::GetGender( CCouple* pCouple )
 {
+	std::pair<int, int> result = { SEX_SEXLESS, SEX_SEXLESS };
 	CMclAutoLock	Lock( CPlayerDataCenter::GetInstance()->m_Access );
-	PlayerData* pData	= CPlayerDataCenter::GetInstance()->GetPlayerData( pCouple->GetFirst() );
+	const PlayerData* pData	= CPlayerDataCenter::GetInstance()->GetPlayerData( pCouple->GetFirst() );
 	if( pData )
-		nGenderFirst	= pData->data.nSex;
+		result.first	= pData->data.nSex;
 	pData	= CPlayerDataCenter::GetInstance()->GetPlayerData( pCouple->GetSecond() );
 	if( pData )
-		nGenderSecond	= pData->data.nSex;
+		result.second	= pData->data.nSex;
+	return result;
 }
 
 void CCoupleHelper::PostItem( u_long idPlayer, const COUPLE_ITEM& ci, int nLevel )

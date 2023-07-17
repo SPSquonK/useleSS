@@ -255,8 +255,8 @@ void CCoupleHelper::OnAddCoupleExperience( CAr & ar )
 	{
 		int nPreCouplelvl =	pCouple->GetLevel();
 		pCouple->AddExperience( nExperience );
-		CUser* pFirst	= static_cast<CUser*>( prj.GetUserByID( pCouple->GetFirst() ) );
-		CUser* pSecond	= static_cast<CUser*>( prj.GetUserByID( pCouple->GetSecond() ) );
+		CUser* pFirst	= prj.GetUserByID( pCouple->GetFirst() );
+		CUser* pSecond	= prj.GetUserByID( pCouple->GetSecond() );
 		if( IsValidObj( pFirst ) )
 		{
 			pFirst->RemoveIk3Buffs( IK3_COUPLE_BUFF );

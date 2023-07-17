@@ -130,63 +130,43 @@ int CCouple::GetLevel( BOOL bCalc )
 	return m_nLevel;
 }
 ////////////////////////////////////////////////////////////
-CCoupleMgr::CCoupleMgr()
-{
-}
 
-CCoupleMgr::~CCoupleMgr()
-{
-	Clear();
-}
-
-void CCoupleMgr::Clear()
-{
-	for( auto i = m_vCouples.begin(); i != m_vCouples.end(); ++i )
-		SAFE_DELETE( *i );
+void CCoupleMgr::Clear() {
 	m_mapPlayers.clear();
 	m_vCouples.clear();
 }
 
-CCouple* CCoupleMgr::GetCouple( u_long idPlayer )
-{
-	const auto i	= m_mapPlayers.find( idPlayer );
-	if( i != m_mapPlayers.end() )
-		return i->second;
-	return NULL;
+CCouple * CCoupleMgr::GetCouple(u_long idPlayer) {
+	const auto i = m_mapPlayers.find(idPlayer);
+	return i != m_mapPlayers.end() ? i->second : nullptr;
 }
 
-void CCoupleMgr::Couple( u_long idFirst, u_long idSecond )
-{
-	CCouple* pCouple	= new CCouple( idFirst, idSecond );
-	Couple( pCouple );
+void CCoupleMgr::Couple(u_long idFirst, u_long idSecond) {
+	Couple(std::make_unique<CCouple>(idFirst, idSecond));
 }
 
-BOOL CCoupleMgr::Decouple( u_long idFirst )
-{
-	for( auto i = m_vCouples.begin(); i != m_vCouples.end(); ++i )
-	{
-		if( (*i)->HasPlayer( idFirst ) )
-		{
-			m_mapPlayers.erase( idFirst );
-			m_mapPlayers.erase( (*i)->GetPartner( idFirst ) );
-			CCouple* pCouple	= *i;
-			m_vCouples.erase( i );
-			SAFE_DELETE( pCouple );
-			return TRUE;
-		}
+bool CCoupleMgr::Decouple(const u_long idFirst) {
+	const auto i = std::find_if(m_vCouples.begin(), m_vCouples.end(),
+		[idFirst](auto & pCouple) { return pCouple->HasPlayer(idFirst); }
+	);
+
+	if (i == m_vCouples.end()) return false;
+
+	m_mapPlayers.erase(idFirst);
+	m_mapPlayers.erase((*i)->GetPartner(idFirst));
+	m_vCouples.erase(i);
+	return true;
+}
+
+void CCoupleMgr::OnTimer() {
+	for (auto & pCouple : m_vCouples) {
+		pCouple->OnTimer();
 	}
-	return FALSE;
-}
-
-void CCoupleMgr::OnTimer()
-{
-	for( auto i2 = m_vCouples.begin(); i2 != m_vCouples.end(); ++i2 )
-		(*i2)->OnTimer();
 }
 
 CAr & operator<<(CAr & ar, const CCoupleMgr & self) {
 	ar << self.m_vCouples.size();
-	for (const CCouple * pCouple : self.m_vCouples) {
+	for (const auto & pCouple : self.m_vCouples) {
 		ar << *pCouple;
 	}
 
@@ -198,20 +178,20 @@ CAr & operator>>(CAr & ar, CCoupleMgr & self) {
 	size_t nSize;
 	ar >> nSize;
 	for (size_t i = 0; i < nSize; i++) {
-		CCouple * pCouple = new CCouple;
+		auto pCouple = std::make_unique<CCouple>();
 		ar >> *pCouple;
-		self.Couple(pCouple);
+		self.Couple(std::move(pCouple));
 	}
 
 	return ar;
 }
 
-void CCoupleMgr::Couple( CCouple* pCouple )
+void CCoupleMgr::Couple( std::unique_ptr<CCouple> pCouple_ )
 {
-	m_vCouples.push_back( pCouple );
-	bool bResult	= m_mapPlayers.emplace( pCouple->GetFirst(), pCouple ).second;
+	auto & pCouple = m_vCouples.emplace_back(std::move(pCouple_));
+	bool bResult	= m_mapPlayers.emplace( pCouple->GetFirst(), pCouple.get() ).second;
 	ASSERT( bResult );
-	bResult	= m_mapPlayers.emplace( pCouple->GetSecond(), pCouple ).second;
+	bResult	= m_mapPlayers.emplace( pCouple->GetSecond(), pCouple.get() ).second;
 	ASSERT( bResult );
 }
 
