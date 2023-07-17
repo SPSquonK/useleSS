@@ -1,42 +1,17 @@
 #include "stdafx.h"
-
-
 #include "couplehelper.h"
 #include "playerdata.h"
 #include "definetext.h"
 
-CCoupleHelper::CCoupleHelper()
-:
-m_pCouple( NULL )
-{
-}
+CCoupleHelper CCoupleHelper::Instance;
 
-CCoupleHelper::~CCoupleHelper()
-{
-	Clear();
-}
-
-void CCoupleHelper::Clear()
-{
-	SAFE_DELETE( m_pCouple );
-}
-
-CCoupleHelper* CCoupleHelper::Instance()
-{
-	static CCoupleHelper sCoupleHelper;
-	return &sCoupleHelper;
-}
-
-BOOL CCoupleHelper::Initialize()
-{
+BOOL CCoupleHelper::Initialize() {
 	return CCoupleProperty::Instance()->Initialize();
 }
 
-void CCoupleHelper::OnCouple( CAr & ar )
-{
-	election::OutputDebugString( "C: CCoupleHelper.OnCouple" );
-	SAFE_DELETE( m_pCouple );
-	m_pCouple	= new CCouple;
+void CCoupleHelper::OnCouple(CAr & ar) {
+	election::OutputDebugString("C: CCoupleHelper.OnCouple");
+	m_pCouple = std::make_unique<CCouple>();
 	ar >> *m_pCouple;
 }
 
@@ -49,19 +24,13 @@ void CCoupleHelper::OnProposeResult( CAr & ar )
 	election::OutputDebugString( "C: CCoupleHelper.OnProposeResult: %d, %s", idProposer, szProposer );
 	char szText[200]	= { 0,};
 	sprintf( szText, prj.GetText( TID_GAME_RECEIVEPROPOSAL ), szProposer );
-	CPlayerDataCenter::GetInstance()->GetPlayerString( idProposer );
 	OutputDebugString( szText );
 
 	// 프러포즈 받은 메세지 창 출력
-	if(g_WndMng.m_pWndCoupleMessage)
-		SAFE_DELETE(g_WndMng.m_pWndCoupleMessage);
-
+	SAFE_DELETE(g_WndMng.m_pWndCoupleMessage);
 	g_WndMng.m_pWndCoupleMessage = new CWndCoupleMessage;
-	if(g_WndMng.m_pWndCoupleMessage)
-	{
-		g_WndMng.m_pWndCoupleMessage->SetMessageMod(szText, CWndCoupleMessage::CM_RECEIVEPROPOSE);
-		g_WndMng.m_pWndCoupleMessage->Initialize();
-	}
+	g_WndMng.m_pWndCoupleMessage->SetMessageMod(szText, CWndCoupleMessage::CM_RECEIVEPROPOSE);
+	g_WndMng.m_pWndCoupleMessage->Initialize();
 }
 
 void CCoupleHelper::OnCoupleResult( CAr & ar )
@@ -72,39 +41,29 @@ void CCoupleHelper::OnCoupleResult( CAr & ar )
 	ar >> idPartner;
 	ar.ReadString( szPartner, MAX_PLAYER );
 	election::OutputDebugString( "C: CCoupleHelper.OnCoupleResult: %d, %s", idPartner, szPartner );
-	SAFE_DELETE( m_pCouple );
-	m_pCouple	= new CCouple( g_pPlayer->m_idPlayer, idPartner );
-	CPlayerDataCenter::GetInstance()->GetPlayerString( idPartner );		//
-	char szText[200]	= { 0,};
-	sprintf( szText, prj.GetText( TID_GAME_COUPLE_S02 ), szPartner );
-	g_WndMng.PutString( szText, NULL, prj.GetTextColor( TID_GAME_COUPLE_S02 ) );		// %s님과 커플이 되었습니다.
+
+	m_pCouple = std::make_unique<CCouple>(g_pPlayer->m_idPlayer, idPartner);
+
+	g_WndMng.PutString(TID_GAME_COUPLE_S02, szPartner);		// %s님과 커플이 되었습니다.
 }
 
-void CCoupleHelper::OnDecoupleResult()
-{
-	election::OutputDebugString( "C: CCoupleHelper.OnDecoupleResult" );
-	CCouple* pCouple	= GetCouple();
-	if( pCouple )
-	{
+void CCoupleHelper::OnDecoupleResult() {
+	election::OutputDebugString("C: CCoupleHelper.OnDecoupleResult");
+	CCouple * pCouple = GetCouple();
+	if (pCouple) {
 		Clear();
-		g_WndMng.PutString( prj.GetText( TID_GAME_COUPLE_S03 ), NULL, prj.GetTextColor( TID_GAME_COUPLE_S03 ) );		// %s님과 커플이 되었습니다.
+		g_WndMng.PutString(TID_GAME_COUPLE_S03);		// %s님과 커플이 되었습니다.
 	}
 }
 
-void CCoupleHelper::OnAddCoupleExperience( CAr & ar )
-{
+void CCoupleHelper::OnAddCoupleExperience(CAr & ar) {
 	int nExperience;
 	ar >> nExperience;
-	CCouple* pCouple	= GetCouple();
-	if( pCouple )
-	{
-		BOOL bLevelup	= pCouple->AddExperience( nExperience );
-		if( bLevelup )
-		{
-			char szString[200]	= { 0,};
-			sprintf( szString, prj.GetText( TID_GAME_COUPLE_LEVELUP ), pCouple->GetLevel() );
-			g_WndMng.PutString( szString, NULL, prj.GetTextColor( TID_GAME_COUPLE_LEVELUP ) );		// 커플이 %d레벨이 되었습니다.
-		}
+	CCouple * pCouple = GetCouple();
+	if (!pCouple) return;
+
+	const BOOL bLevelup = pCouple->AddExperience(nExperience);
+	if (bLevelup) {
+		g_WndMng.PutString(TID_GAME_COUPLE_LEVELUP, pCouple->GetLevel());		// 커플이 %d레벨이 되었습니다.
 	}
 }
-

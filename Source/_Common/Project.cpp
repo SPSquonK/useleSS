@@ -487,7 +487,7 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 #ifdef __WORLDSERVER
 	CCoupleHelper::Instance()->Initialize( &g_dpDBClient, &g_DPSrvr );
 #else	// __WORLDSERVER
-	CCoupleHelper::Instance()->Initialize();
+	CCoupleHelper::Instance.Initialize();
 #endif	// __WORLDSERVER
 
 	CTitleManager::Instance()->LoadTitle("honorList.txt");

@@ -15117,45 +15117,14 @@ void CDPClient::SendPropose( const char* pszTarget )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendRefuse()
-{
-	SendHdr( PACKETTYPE_REFUSE );
-}
-
-void CDPClient::SendCouple()
-{
-	SendHdr( PACKETTYPE_COUPLE );
-}
-
-void CDPClient::SendDecouple()
-{
-	SendHdr( PACKETTYPE_DECOUPLE );
-}
-
-void CDPClient::OnCouple( CAr & ar )
-{
-	CCoupleHelper::Instance()->OnCouple( ar );
-}
-
-void CDPClient::OnProposeResult( CAr & ar )
-{
-	CCoupleHelper::Instance()->OnProposeResult( ar );
-}
-
-void CDPClient::OnCoupleResult( CAr & ar )
-{
-	CCoupleHelper::Instance()->OnCoupleResult( ar );
-}
-
-void CDPClient::OnDecoupleResult( CAr & ar )
-{
-	CCoupleHelper::Instance()->OnDecoupleResult();
-}
-
-void CDPClient::OnAddCoupleExperience( CAr & ar )
-{
-	CCoupleHelper::Instance()->OnAddCoupleExperience( ar );
-}
+void CDPClient::SendRefuse()   { SendPacket<PACKETTYPE_REFUSE>(); }
+void CDPClient::SendCouple()   { SendPacket<PACKETTYPE_COUPLE>();   }
+void CDPClient::SendDecouple() { SendPacket<PACKETTYPE_DECOUPLE>(); }
+void CDPClient::OnCouple             (CAr & ar) { CCoupleHelper::Instance.OnCouple(ar);              }
+void CDPClient::OnProposeResult      (CAr & ar) { CCoupleHelper::Instance.OnProposeResult(ar);       }
+void CDPClient::OnCoupleResult       (CAr & ar) { CCoupleHelper::Instance.OnCoupleResult(ar);        }
+void CDPClient::OnDecoupleResult     (CAr & ar) { CCoupleHelper::Instance.OnDecoupleResult();        }
+void CDPClient::OnAddCoupleExperience(CAr & ar) { CCoupleHelper::Instance.OnAddCoupleExperience(ar); }
 
 void CDPClient::OnPCBangInfo( CAr & ar )
 {

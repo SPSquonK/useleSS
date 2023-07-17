@@ -10267,7 +10267,7 @@ void CWndCoupleTabInfo::OnDraw(C2DRender* p2DRender)
 	rect.BottomRight().y = lpStatic->rect.top + 48;
 	rect.BottomRight().x = lpStatic->rect.right - 10;
 
-	m_pCouple = CCoupleHelper::Instance()->GetCouple();
+	m_pCouple = CCoupleHelper::Instance.GetCouple();
 	if(m_pCouple)
 	{
 		u_long idPartner = m_pCouple->GetPartner(g_pPlayer->m_idPlayer);
@@ -10397,9 +10397,10 @@ void CWndCoupleTabSkill::OnDraw(C2DRender* p2DRender)
 
 	// Draw Active SKill
 	int nLevel = 0;
-	CCouple* pCouple = CCoupleHelper::Instance()->GetCouple();
-	if(pCouple)
+	
+	if (CCouple * pCouple = CCoupleHelper::Instance.GetCouple()) {
 		nLevel = pCouple->GetLevel();
+	}
 
 	VS& vSkills	= CCoupleProperty::Instance()->GetSkill( nLevel );
 	VSK& vSkillKinds = CCoupleProperty::Instance()->GetSKillKinds();

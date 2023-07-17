@@ -1,25 +1,22 @@
-#ifndef __COUPLEHELPER_H
-#define	__COUPLEHELPER_H
+#pragma once 
 
 #include "ar.h"
 #include "couple.h"
 
-class CCoupleHelper
-{
+class CCoupleHelper final {
 private:
-	CCoupleHelper();
+	CCoupleHelper() = default;
 public:
-	virtual	~CCoupleHelper();
-	static	CCoupleHelper*	Instance();
-	void	Clear();
+	static CCoupleHelper Instance;
+
+	void	Clear() { m_pCouple = nullptr; }
 	BOOL	Initialize();
 	void	OnCouple( CAr & ar );
 	void	OnProposeResult( CAr & ar );
 	void	OnCoupleResult( CAr & ar );
 	void	OnDecoupleResult();
 	void	OnAddCoupleExperience( CAr & ar );
-	CCouple*	GetCouple()		{	return m_pCouple;	}
+	CCouple*	GetCouple()		{	return m_pCouple.get();	}
 private:
-	CCouple*	m_pCouple;
+	std::unique_ptr<CCouple>	m_pCouple;
 };
-#endif	// __COUPLEHELPER_H
