@@ -223,7 +223,6 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 {
 #ifdef __WORLDSERVER
 	int nRange	= 4;	// 4m
-	CObj* pObj;
 	CCtrl *pSrc = this;
 	D3DXVECTOR3 vDist;
 
@@ -258,14 +257,11 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 	//------------ 적용대상이 플레이어인가 
 	if( nApplyType & OBJTYPE_PLAYER )	
 	{
-		for (CUser * pUser : 
+		for (CUser * pDefender :
 			LinkMapRange( GetWorld(), vPos, nRange, LinkType::Player, GetLayer() )
 			)
 		{
 			bApply = FALSE;	// 일단 FALSE로 초기화
-
-			if( pObj->GetType() != OT_MOVER )
-				Error( "ApplySkillRegion : pObj가 MOVER가 아니다 %d", pObj->GetType() );
 
 			if( pSrc->GetType() == OT_MOVER )		// 공격자가 무버냐.
 			{
@@ -273,9 +269,7 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 				if( pAttacker->IsPlayer() )			// 공격자가 플레이어냐
 				{
 					bApply = TRUE;
-					CMover *pDefender = (CMover *)pObj;
-					if( pDefender->IsPlayer() )
-					{
+
 						if( pCenter )
 							bTarget = (pCenter == pDefender);
 						else
@@ -287,7 +281,7 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 						else if( pAttacker->m_nDuel == 1 && pDefender->m_nDuel == 1 && pAttacker->GetHitType( pDefender, bTarget, FALSE ) != HITTYPE_PVP )
 							bApply = FALSE;
 //	#endif // __JHMA_VER_8_5_1	
-					}
+					
 				} else
 				{	// 공격자가 몬스터면
 					bApply = TRUE;		// 
@@ -299,20 +293,18 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 
 			if( bApply )
 			{
-				if( pObj != pSrc )		// 어태커는 검색대상에서 제외.
+				if( pDefender != pSrc )		// 어태커는 검색대상에서 제외.
 				{
-					if( pObj->IsRangeObj( vPos, fRange ) )	// vCenter + fRange와 pObj의 스피어가 충돌했느냐
-					{
-						CMover *pTarget = (CMover *)pObj;		// <- 여긴 무조건 pObj는 플레이어므로 해도됨.
-					
+					if( pDefender->IsRangeObj( vPos, fRange ) )	// vCenter + fRange와 pObj의 스피어가 충돌했느냐
+					{				
 						if( pCenter )
-							bTarget = (pCenter == pTarget);
+							bTarget = (pCenter == pDefender);
 						else
 							bTarget = FALSE;
 
-						if( IsValidObj( pTarget ) && pTarget->IsLive() )
+						if( IsValidObj( pDefender ) && pDefender->IsLive() )
 						{
-							pTarget->ApplySkill( pSrc, pSkillProp, pAddSkillProp, bIgnoreProb, 0, bOnlyDmg, bTarget );		// 대상에게 효과를 적용함.
+							pDefender->ApplySkill( pSrc, pSkillProp, pAddSkillProp, bIgnoreProb, 0, bOnlyDmg, bTarget );		// 대상에게 효과를 적용함.
 						}
 					}
 				}
@@ -347,12 +339,15 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 					bApply = TRUE;							
 			}
 
-			if( bApply )
-			{
+			if (!bApply) continue;
+
+			if (!pObj->IsRangeObj(vPos, fRange))	// vCenter + fRange와 pObj의 스피어가 충돌했느냐
+				continue;
+
+
 				if( pObj != pSrc )		// 공격자는 검사대상에서 제외.
 				{
-					if( pObj->IsRangeObj( vPos, fRange ) )	// vCenter + fRange와 pObj의 스피어가 충돌했느냐
-					{
+					
 						if( pObj->GetType() == OT_MOVER )	// 타겟이 무버냐?
 						{
 							if( IsValidObj( pObj ) && ((CMover *)pObj)->IsLive() )		// 타겟이 무버면 살아있는지 검사.
@@ -362,9 +357,9 @@ void	CCtrl::ApplySkillRegion( const D3DXVECTOR3 &vPos, int nApplyType, ItemProp 
 							// 타겟이 무버가 아니냐?
 							pObj->ApplySkill( pSrc, pSkillProp, pAddSkillProp, bIgnoreProb, 0, bOnlyDmg );		// 대상에게 효과를 적용함.
 						}
-					}
+					
 				}
-			} // bApply
+
 		}
 	}
 		
@@ -502,10 +497,11 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 					bApply = TRUE;							
 			}
 
-			if( bApply )
-			{
-				if( pObj->IsRangeObj( this, fRange ) )	// this(Center)의 스피어와 pObj의 스피어가 충돌했느냐
-				{
+			if (!bApply) continue;
+
+			if (!pObj->IsRangeObj(this, fRange))	// this(Center)의 스피어와 pObj의 스피어가 충돌했느냐
+				continue;
+				
 					if( pObj == this && fTargetRatio == 0.0f )	// 타겟데미지 비율이 0이면 자기자신(타겟)은 데미지를 주지않음.
 					{
 					} else
@@ -523,8 +519,8 @@ void	CCtrl::ApplySkillAround( CCtrl *pSrc, int nApplyType, ItemProp *pSkillProp,
 							}
 						}
 					}
-				}
-			} // bApply
+				
+
 		}
 	}
 		
@@ -542,7 +538,6 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 {
 #ifdef __WORLDSERVER
 	int nRange	= 4;	// 4m
-	CObj* pObj;
 	D3DXVECTOR3 vPos = GetPos();
 	D3DXVECTOR3 vDist;
 
@@ -579,12 +574,9 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 
 	if( nApplyType & OBJTYPE_PLAYER )	// 적용대상이 플레이어인가 
 	{
-		for (CUser * pUser : LinkMapRange( GetWorld(), vPos, nRange, LinkType::Player, GetLayer() ) )
+		for (CUser * pDefender : LinkMapRange( GetWorld(), vPos, nRange, LinkType::Player, GetLayer() ) )
 		{
 			bApply = FALSE;	// 시작은 FALSE
-
-			if( pObj->GetType() != OT_MOVER )
-				Error( "ApplySkillLine : pObj가 MOVER가 아니다 %d", pObj->GetType() );
 
 			if( GetType() == OT_MOVER )		// 공격자가 무버냐.
 			{
@@ -592,16 +584,14 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 				if( pAttacker->IsPlayer() )			// 공격자가 플레이어냐
 				{
 					bApply = TRUE;
-					CMover *pDefender = (CMover *)pObj;
-					if( pDefender->IsPlayer() )
-					{
+
 						if( bControl == FALSE && pAttacker->GetHitType( pDefender, bTarget, FALSE ) == HITTYPE_PK )
 							bApply = FALSE;
 //	#ifdef	__JHMA_VER_8_5_2			 // 8.5차 듀얼중인 두구룹이 연관되지않게 수정  World
 						else if( pAttacker->m_nDuel == 1 && pDefender->m_nDuel == 1 && pAttacker->GetHitType( pDefender, bTarget, FALSE ) != HITTYPE_PVP )
 							bApply = FALSE;
 //	#endif // __JHMA_VER_8_5_1	
-					}
+					
 				} else
 				{
 					// 공격자가 몬스터면
@@ -613,20 +603,19 @@ void	CCtrl::ApplySkillLine( int nApplyType, ItemProp *pSkillProp, AddSkillProp *
 				bApply = TRUE;
 			}
 			
-			if( bApply && pObj != this )		// this는 공격대상에서 제외.
+			if( bApply && pDefender != this )		// this는 공격대상에서 제외.
 			{
-				CMover *pTarget = (CMover *)pObj;
-				if( IsValidObj( pTarget ) && pTarget->IsLive() )
+				if( IsValidObj( pDefender ) && pDefender->IsLive() )
 				{
 					// 타겟측 좌표를 역변환.
-					const auto targetPos = pTarget->GetPos();
+					const auto targetPos = pDefender->GetPos();
 					D3DXVec3TransformCoord( &vDestLocal, &targetPos, &mInv );
 					// 타겟측 AABB
-					D3DXVECTOR3 vMin2 = vDestLocal + pTarget->m_pModel->m_vMin;
-					D3DXVECTOR3 vMax2 = vDestLocal + pTarget->m_pModel->m_vMax;
+					D3DXVECTOR3 vMin2 = vDestLocal + pDefender->m_pModel->m_vMin;
+					D3DXVECTOR3 vMax2 = vDestLocal + pDefender->m_pModel->m_vMax;
 					if( ::IsTouchAABB( vMin1, vMax1, vMin2, vMax2 ) )		// AABB충돌검사.
 					{
-						pTarget->ApplySkill( this, pSkillProp, pAddSkillProp, bIgnoreProb, 0, FALSE, bTarget );		// bTarget 타겟이 없으므로 FALSE로 넣음. PK시 선빵을 칠수없음
+						pDefender->ApplySkill( this, pSkillProp, pAddSkillProp, bIgnoreProb, 0, FALSE, bTarget );		// bTarget 타겟이 없으므로 FALSE로 넣음. PK시 선빵을 칠수없음
 					}
 				}
 			} // bApply
