@@ -913,21 +913,12 @@ BOOL CAIMonster::MoveProcessPatrol( const AIMSG & msg )
 
 void CAIMonster::CallHelper( const MoverProp* pMoverProp ) 
 {
-	CMover* pMover = GetMover();
-	D3DXVECTOR3 vPos = pMover->GetPos();
-	int anCountMonster[ 5 ];
-	int nCountPlayer = 0;
+	CMover* const pMover = GetMover();
+	const D3DXVECTOR3 vPos = pMover->GetPos();
 
-	ZeroMemory( anCountMonster, sizeof( anCountMonster ) );
 
-	CMover* pTarget = NULL;
-	CParty* pParty = NULL;
-	BOOL bParty = FALSE;
-
-	CObj* pObj;
-
-	CMover* apMonster[ MAX_ARRAY ][ 5 ];
-	CMover* apPlayer[ MAX_ARRAY ];
+	std::array<boost::container::small_vector<CMover *, 40>, 5> apMonster;
+	boost::container::small_vector<CMover *, 40> apPlayer;
 
 	///////////////////////////////////////////////////////
 
@@ -939,10 +930,12 @@ void CAIMonster::CallHelper( const MoverProp* pMoverProp )
 	default: nRange = pMoverProp->m_nAttackFirstRange * pMoverProp->m_nHelpRangeMul;	break;	// 시야범위의 배수.
 	}
 
-	FOR_LINKMAP( pMover->GetWorld(), vPos, pObj, nRange / MPU, LinkType::Dynamic, pMover->GetLayer() )
+	for (CObj * pObj : LinkMapRange(pMover->GetWorld(), vPos, nRange / MPU, LinkType::Dynamic, pMover->GetLayer()))
 	{
-		if( pObj != pMover && pObj->GetType() == OT_MOVER )
-		{
+		if (pObj == pMover) continue;
+		if (pObj->GetType() != OT_MOVER) continue;
+
+
 			// FOR_LINKMAP 자체가 느리기 때문에 이 루프를 안쪽에 넣었다.
 			for( int i = 0; i < pMoverProp->m_nCallHelperMax; i++ )
 			{
@@ -951,61 +944,60 @@ void CAIMonster::CallHelper( const MoverProp* pMoverProp )
 				// 아무나 부르는것이거나 || 같은 종족만 부르는 옵션일때 같은 인덱스인가?
 				// 그리고.............
 				if( (pMoverProp->m_bHelpWho == 1 || (pMoverProp->m_bHelpWho == 2 && pObj->GetIndex() == pMover->GetIndex())) &&
-					( anCountMonster[ i ] < nCallHelperNum || nCallHelperNum == 0 )	)	
+					(static_cast<int>(apMonster[ i ].size()) < nCallHelperNum || nCallHelperNum == 0 )	)
 				{
-					apMonster[ anCountMonster[ i ] ][ i ] = (CMover*)pObj;
-					anCountMonster[ i ]++;
-					if( anCountMonster[ i ] >= MAX_ARRAY ) 
-						goto NEXT;
+					apMonster[i].emplace_back((CMover *) pObj);
 				}
 			}
-		}
+
 	}
-	END_LINKMAP
-NEXT:
+
+
+
 	// 파티 가능 여부 
-	pTarget = prj.GetMover( m_dwIdTarget );
+
+	BOOL bParty = FALSE;
 	for( int i = 0; i < pMoverProp->m_nCallHelperMax; i++ )
 		bParty |= pMoverProp->m_bCallHelperParty[ i ] ? TRUE : FALSE;
 
-	if( bParty && IsValidObj( (CObj*)pTarget ) )
+	CMover * const pTarget = prj.GetMover(m_dwIdTarget);
+	CParty * pParty = nullptr;
+	if( bParty && IsValidObj( pTarget ) )
 	{
 		pParty = g_PartyMng.GetParty( pTarget->m_idparty );
 		// 파티가 확실하다면 파티원을 apPlayer에 수집한다.
 		if( pParty )
 		{
-			FOR_LINKMAP( pMover->GetWorld(), vPos, pObj, 20 / MPU, LinkType::Player, pMover->GetLayer() )
-			{
-				if( pObj->GetType() == OT_MOVER && ((CMover*)pObj)->IsPlayer() && pParty->IsMember( ((CMover*)pObj)->m_idPlayer ) )
-				{
-					apPlayer[ nCountPlayer++ ] = (CMover*)pObj;
-					if( nCountPlayer >= MAX_ARRAY )
-						goto NEXT2;
+			for (CUser * pObj : 
+				LinkMapRange( pMover->GetWorld(), vPos, 20 / MPU, LinkType::Player, pMover->GetLayer() )
+				){
+				if (pParty->IsMember(pObj->m_idPlayer)) {
+					apPlayer.emplace_back(pObj);
 				}
 			}
-			END_LINKMAP
+
 		}
 	}
-NEXT2:
+
 	for( int i = 0; i < pMoverProp->m_nCallHelperMax; i++ )
 	{
 		if( pParty  )
 		{
-			if( nCountPlayer )
+			if( !apPlayer.empty() )
 			{
-				for( int j = 0; j < anCountMonster[ i ]; j++ )
-				{
+				for (CMover * pMonster : apMonster[i]) {
 					// 각각의 몬스터에게 타겟을 랜덤으로 배정한다. 
-					CMover* pNewTarget = (CMover*)apPlayer[ rand() % nCountPlayer ];
+					CMover* pNewTarget = apPlayer[xRandom(apPlayer.size())];
 					if( pNewTarget )
-						apMonster[ j ][ i ]->PostAIMsg( AIMSG_SETSTATE, STATE_RAGE, pNewTarget->GetId() );
+						pMonster->PostAIMsg( AIMSG_SETSTATE, STATE_RAGE, pNewTarget->GetId() );
 				}
 			}
 		}
 		else
 		{ 
-			for( int j = 0; j < anCountMonster[ i ]; j++ )
-				apMonster[ j ][ i ]->PostAIMsg( AIMSG_SETSTATE, STATE_RAGE, m_dwIdTarget );
+			for (CMover * pMonster : apMonster[i]) {
+				pMonster->PostAIMsg(AIMSG_SETSTATE, STATE_RAGE, m_dwIdTarget);
+			}
 		}
 	}
 }
