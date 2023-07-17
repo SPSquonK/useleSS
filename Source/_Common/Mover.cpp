@@ -651,10 +651,10 @@ void CMover::SubSMMode()
 					}
 					else if( i == SM_VELOCIJUMP )
 					{
-						if( aItemprop->dwDestParam1 != -1 )
-							ResetDestParam( aItemprop->dwDestParam1, aItemprop->nAdjParamVal1 );
-						if( aItemprop->dwDestParam2 != -1 )
-							ResetDestParam( aItemprop->dwDestParam2, aItemprop->nAdjParamVal2 );
+						for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
+							if (aItemprop->dwDestParam[i] != -1)
+								ResetDestParam(aItemprop->dwDestParam[i], aItemprop->nAdjParamVal[i]);
+						}
 					}
 					// 090917 mirchang - 파스킬풀 아이템 사용 기간 종료
 					else if( i == SM_PARTYSKILL30 || i == SM_PARTYSKILL15 || i == SM_PARTYSKILL1 )
@@ -764,10 +764,10 @@ void CMover::ClearAllSMMode()
 				}
 				else if( i == SM_VELOCIJUMP )
 				{
-					if( aItemprop->dwDestParam1 != -1 )
-						ResetDestParam( aItemprop->dwDestParam1, aItemprop->nAdjParamVal1 );
-					if( aItemprop->dwDestParam2 != -1 )
-						ResetDestParam( aItemprop->dwDestParam2, aItemprop->nAdjParamVal2 );
+					for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
+						if (aItemprop->dwDestParam[i] != -1)
+							ResetDestParam(aItemprop->dwDestParam[i], aItemprop->nAdjParamVal[i]);
+					}
 				}
 				// 090917 mirchang - 파스킬풀 아이템 사용 기간 종료
 				else if( i == SM_PARTYSKILL30 || i == SM_PARTYSKILL15 || i == SM_PARTYSKILL1 )

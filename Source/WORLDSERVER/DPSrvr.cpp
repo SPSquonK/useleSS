@@ -5120,8 +5120,8 @@ void CDPSrvr::OnResurrectionOK(CAr & ar, CUser & pUser) {
 
 	pUser.ApplyParam(pSrc, pData.pSkillProp, pData.pAddSkillProp, TRUE, 0);
 
-	if (pData.pAddSkillProp->dwDestParam2 == DST_RECOVERY_EXP) {
-		pUser.SubDieDecExp(TRUE, pData.pAddSkillProp->nAdjParamVal2);	// 부활이 되면서 겸치가 조금 깎임.			
+	if (pData.pAddSkillProp->dwDestParam[1] == DST_RECOVERY_EXP) {
+		pUser.SubDieDecExp(TRUE, pData.pAddSkillProp->nAdjParamVal[1]);	// 부활이 되면서 겸치가 조금 깎임.			
 	}
 }
 

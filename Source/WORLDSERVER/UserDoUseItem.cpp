@@ -612,10 +612,11 @@ CUser::DoUseSystemAnswer CUser::DoUseItemSystem(ItemProp * pItemProp, CItemElem 
 		case II_SYS_SYS_SCR_VELOCIJUMP:
 		{
 			if (!(IsSMMode(SM_VELOCIJUMP))) {
-				if (pItemProp->dwDestParam1 != -1)
-					SetDestParam(pItemProp->dwDestParam1, pItemProp->nAdjParamVal1, pItemProp->nAdjParamVal1);
-				if (pItemProp->dwDestParam2 != -1)
-					SetDestParam(pItemProp->dwDestParam2, pItemProp->nAdjParamVal2, pItemProp->nAdjParamVal2);
+				for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
+					if (pItemProp->dwDestParam[i] != -1) {
+						SetDestParam(pItemProp->dwDestParam[i], pItemProp->nAdjParamVal[i], pItemProp->nAdjParamVal[i]);
+					}
+				}
 				SetSMMode(SM_VELOCIJUMP, pItemProp->dwCircleTime);
 			} else {
 				nResult = DoUseSystemAnswer::LimitedUse;

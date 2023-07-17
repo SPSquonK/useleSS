@@ -34,7 +34,6 @@
 
 #define		__ITEMDROPRATE					// 이벤트 아이템 드롭률 조정정
 
-#define		__PK_PVP_SKILL_REGION			// PK금지구역에서 악행 스킬은 PVP상대에게만 가능하도록..
 #define		__EVENT_1101_2					// 출첵 이벤트 64비트 변경
 #define		__S_RECOMMEND_EVE				// 추천 이벤트 Neuz, Trans, World
 #define		__EVE_MINIGAME					// 이벤트 미니게임 4종, Neuz, World
@@ -48,7 +47,6 @@
 //	#define		__REMOVE_ATTRIBUTE			// 속성제련 제거(10차로 변경)
 //	#define		__CHAO_DMGDEC				// 카오시 PKValue에 따라 PVP Damage 감소(9차)
 
-#define		__PROP_0827						// 아이템 프로퍼티 적용 파라미터 확장
 #define		__RIGHTHAND_SKILL				// 스마이트 엑스, 엑스 마스터리, 블레이징소드, 소드 마스터리 오른손의 무기만을 기준으로 스킬사용
 #define		__LOG_MATCHLESS					// 일반 유저가 무적상태가 되는 경우가 가끔 발생하여 로그 남김.
 

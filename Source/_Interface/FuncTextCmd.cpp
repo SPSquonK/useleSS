@@ -2331,7 +2331,7 @@ BOOL TextCmd_AngelExp(CScanner & s, CPlayer_ * pUser) {
 		{
 			ItemProp* pItemProp = prj.GetItemProp( wId );
 			if( pItemProp )
-				nAngel = (int)( (float)pItemProp->nAdjParamVal1 );
+				nAngel = (int)( (float)pItemProp->nAdjParamVal[0]);
 		}
 		if( nAngel <= 0 || 100 < nAngel  )
 			nAngel = 100;

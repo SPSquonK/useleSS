@@ -288,20 +288,14 @@ BOOL CProject::LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apOb
 		prop.dwAttackRange		= scanner.GetNumber();      
 		prop.nProbability		= scanner.GetNumber();      
 		prop.dwDestParam[0]		= scanner.GetNumber();      
-		prop.dwDestParam[1]		= scanner.GetNumber();      
-#ifdef __PROP_0827
-		prop.dwDestParam[2]		= scanner.GetNumber();      
-#endif	// __PROP_0827
+		prop.dwDestParam[1]		= scanner.GetNumber();
+		prop.dwDestParam[2]		= scanner.GetNumber();
 		prop.nAdjParamVal[0]	= scanner.GetNumber();      
-		prop.nAdjParamVal[1]	= scanner.GetNumber();      
-#ifdef __PROP_0827
-		prop.nAdjParamVal[2]	= scanner.GetNumber();      
-#endif	// __PROP_0827
+		prop.nAdjParamVal[1]	= scanner.GetNumber();
+		prop.nAdjParamVal[2]	= scanner.GetNumber();
 		prop.dwChgParamVal[0]	= scanner.GetNumber();      
-		prop.dwChgParamVal[1]	= scanner.GetNumber();      
-#ifdef __PROP_0827
-		prop.dwChgParamVal[2]	= scanner.GetNumber();      
-#endif	// __PROP_0827
+		prop.dwChgParamVal[1]	= scanner.GetNumber();
+		prop.dwChgParamVal[2]	= scanner.GetNumber();
 		prop.nDestData1[0]		= scanner.GetNumber();      
 		prop.nDestData1[1]		= scanner.GetNumber();   
 		prop.nDestData1[2]		= scanner.GetNumber();      

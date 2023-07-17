@@ -61,32 +61,29 @@ void CObj::Serialize( CAr & ar )	// 21
 // 장어구이, 신속의 두루마리 등의 예외처리
 void CMover::OnApplySM()
 {
-	ItemProp* aItemprop;
-	int nAdjParamVal;
-
 	if( m_dwSMTime[SM_MAX_HP] > 0 )
 	{
-		aItemprop = prj.GetItemProp( II_CHR_FOO_COO_BULLHAMS );
-		nAdjParamVal = aItemprop->nAdjParamVal2;
-		SetDestParam( aItemprop->dwDestParam1, nAdjParamVal, NULL_CHGPARAM, 1 );	// fixed by jeff
+		const ItemProp * aItemprop = prj.GetItemProp( II_CHR_FOO_COO_BULLHAMS );
+		const int nAdjParamVal = aItemprop->nAdjParamVal[1];
+		SetDestParam( aItemprop->dwDestParam[0], nAdjParamVal, NULL_CHGPARAM, 1);	// fixed by jeff
 	}
 
 	if( m_dwSMTime[SM_MAX_HP50] > 0 )
 	{
-		aItemprop = prj.GetItemProp( II_CHR_FOO_COO_GRILLEDEEL );
-		nAdjParamVal = m_nPlusMaxHitPoint;
-		SetDestParam( aItemprop->dwDestParam1, nAdjParamVal, NULL_CHGPARAM, 1 );	// fixed by jeff
+		const ItemProp * aItemprop = prj.GetItemProp( II_CHR_FOO_COO_GRILLEDEEL );
+		const int nAdjParamVal = m_nPlusMaxHitPoint;
+		SetDestParam( aItemprop->dwDestParam[0], nAdjParamVal, NULL_CHGPARAM, 1);	// fixed by jeff
 	}
 
 	if( m_dwSMTime[SM_VELOCIJUMP] > 0 )
 	{
-		aItemprop = prj.GetItemProp( g_AddSMMode.dwSMItemID[SM_VELOCIJUMP] );
+		const ItemProp * aItemprop = prj.GetItemProp( g_AddSMMode.dwSMItemID[SM_VELOCIJUMP] );
 		if( aItemprop )
 		{
-			if( aItemprop->dwDestParam1 != -1 )
-				SetDestParam( aItemprop->dwDestParam1, aItemprop->nAdjParamVal1, NULL_CHGPARAM );
-			if( aItemprop->dwDestParam2 != -1 )
-				SetDestParam( aItemprop->dwDestParam2, aItemprop->nAdjParamVal2, NULL_CHGPARAM );
+			for (int i = 0; i != ItemProp::NB_PROPS; ++i) {
+				if (aItemprop->dwDestParam[i] != -1)
+					SetDestParam(aItemprop->dwDestParam[i], aItemprop->nAdjParamVal[i], NULL_CHGPARAM);
+			}
 		}
 	}
 }

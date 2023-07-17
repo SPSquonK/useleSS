@@ -7428,7 +7428,7 @@ void CWndWorld::RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer
 		{
 			ItemProp* pItemProp = prj.GetItemProp( ptr->GetId() );
 			if( pItemProp )
-				nAngel = (int)( (float)pItemProp->nAdjParamVal1 );
+				nAngel = (int)( (float)pItemProp->nAdjParamVal[0]);
 		}
 		if( nAngel <= 0 || 100 < nAngel  )
 			nAngel = 100;

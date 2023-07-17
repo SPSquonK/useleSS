@@ -253,7 +253,7 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 	}
 
 #ifdef __WORLDSERVER
-#ifdef __PK_PVP_SKILL_REGION
+
 	if( pSkillProp->nEvildoing < 0 )	//PK 금지구역에서 악행 종류의 스킬은 PVP 상대에게만 사용하도록..
 	{
 		int nAttackerPK, nDefenderPK;
@@ -278,7 +278,7 @@ BOOL CMover::DoUseSkill( DWORD dwSkill, int nLevel, OBJID idFocusObj, SKILLUSETY
 			}
 		}
 	}
-#endif // __PK_PVP_SKILL_REGION
+
 	if( HasBuff( BUFF_SKILL, SI_BLD_SUP_BERSERK ) )		// 버서크가 걸려있는 상태에선 스킬사용 금지.
 		return FALSE;
 
@@ -950,11 +950,10 @@ void	CMover::OnEndSkillState( DWORD dwSkill, DWORD dwLevel )
 	BOOL	bSend = FALSE;
 #ifdef __WORLDSERVER
 	bSend = TRUE;			// 서버일경우 유저들에게 보내줌.
-	ResetDestParam( pAddSkillProp->dwDestParam1, pAddSkillProp->nAdjParamVal1, bSend );
-	ResetDestParam( pAddSkillProp->dwDestParam2, pAddSkillProp->nAdjParamVal2, bSend );
+	for (int i = 0; i != pAddSkillProp->NB_PROPS; ++i) {
+		ResetDestParam(pAddSkillProp->dwDestParam[i], pAddSkillProp->nAdjParamVal[i], bSend);
+	}
 #endif
-
-
 }
 
 // 일반 공격 동작이 끝났을때 호출.

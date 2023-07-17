@@ -662,9 +662,9 @@ void CAttackArbiter::StealHP( int nDamage, ATK_TYPE type )
 	const ItemProp *pHandItem = m_pAttacker->GetActiveHandItemProp();
 	if( pHandItem )
 	{
-		if( pHandItem->dwDestParam1 == DST_CHR_STEALHP )					// 들고 있던 무기에 흡혈 옵션이 있으면
+		if( pHandItem->dwDestParam[0] == DST_CHR_STEALHP)					// 들고 있던 무기에 흡혈 옵션이 있으면
 		{
-			int nStealHP = (int)( nDamage * (pHandItem->nAdjParamVal1 / 100.0f) );	// 실제가격한 데미지의 %를 취함.
+			int nStealHP = (int)( nDamage * (pHandItem->nAdjParamVal[0] / 100.0f) );	// 실제가격한 데미지의 %를 취함.
 			m_pAttacker->SetDestParam( DST_HP, nStealHP, NULL_CHGPARAM );				// 공격자에게 흡혈HP를 줌.
 		}
 	}

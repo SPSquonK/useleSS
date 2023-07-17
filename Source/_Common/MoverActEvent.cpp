@@ -359,18 +359,17 @@ BOOL	CMover::ApplyParam( CCtrl *pSrc, const ItemProp *pSkillProp, const AddSkill
 					}
 					
 					// 증가될 HP량.
-					int nIncHP = pAddSkillProp->nAdjParamVal1 + dwHp1 + dwHp2;
+					int nIncHP = pAddSkillProp->nAdjParamVal[0] + dwHp1 + dwHp2;
 					// 힐링계열 스킬을 썼냐?
-					if( (pAddSkillProp->dwDestParam1 == DST_HP || pAddSkillProp->dwDestParam2 == DST_HP) && nIncHP > 0 )
+					if( (pAddSkillProp->dwDestParam[0] == DST_HP || pAddSkillProp->dwDestParam[1] == DST_HP) && nIncHP > 0)
 					{
-						if( pSrc->GetType() == OT_MOVER )
-							if( ((CMover *)pSrc)->IsPlayer() )	// 시전자가 플레이어일때
-								if( pTarget->GetMaxHitPoint() > pTarget->GetHitPoint() + nIncHP )		// 타겟이 오버힐 됐냐?
-									((CUser *)pSrc)->m_nOverHeal = PROCESS_COUNT * 30;				// 시전자는 30초간 오버힐 상태. 
+						if( CUser * pUser = pSrc->ToUser() )
+							if( pTarget->GetMaxHitPoint() > pTarget->GetHitPoint() + nIncHP )		// 타겟이 오버힐 됐냐?
+								pUser->m_nOverHeal = PROCESS_COUNT * 30;				// 시전자는 30초간 오버힐 상태. 
 					}
 					
 					// 힐시작.
-					pTarget->SetDestParam( pAddSkillProp->dwDestParam1, nIncHP, pAddSkillProp->dwChgParamVal1, TRUE );
+					pTarget->SetDestParam( pAddSkillProp->dwDestParam[0], nIncHP, pAddSkillProp->dwChgParamVal[0], TRUE);
 					
 				}
 			}

@@ -30,15 +30,12 @@
 #define		__EVE_BALLOON				// 풍선 이벤트 관련
 #define		__CSC_GAME_GRADE			// 게임물등급관련 채팅창 알림 및 이미지 변경.
 
-#define		__PK_PVP_SKILL_REGION		// PK금지구역에서 악행 스킬은 PVP상대에게만 가능하도록..
 #define		__EVENT_1101_2				// 출첵 이벤트 64비트 변경
 #define		__S_RECOMMEND_EVE			// 추천 이벤트 Neuz, Trans, World
 #define		__EVE_MINIGAME				// Mini Game 4종 이벤트 추가 관련.
 #define		__S_ADD_EXP					// EXP_S 아이템 생성
 
 #define		__S_ADD_RESTATE				// 상용화 아이템 생성( 리스테트 힘, 민첩, 체력, 지능 )
-
-#define		__PROP_0827					// 아이템 프로퍼티 적용 파라미터 확장
 
 #define		__CSC_ENCHANT_EFFECT_2		// 기존 이펙트 + 향상된 이펙트
 

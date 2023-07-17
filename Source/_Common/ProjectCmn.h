@@ -45,19 +45,6 @@ const int	MAX_PROPMOVER =		2000;		// MoverProp배열의 최대갯수
 
 #define MAX_VENDOR_REVISION		20
 
-#define dwDestParam1	dwDestParam[0]
-#define dwDestParam2	dwDestParam[1]
-#define nAdjParamVal1	nAdjParamVal[0]
-#define nAdjParamVal2	nAdjParamVal[1]
-#define dwChgParamVal1	dwChgParamVal[0]
-#define dwChgParamVal2	dwChgParamVal[1]
-
-#ifdef __PROP_0827
-#define dwDestParam3	dwDestParam[2]
-#define nAdjParamVal3	nAdjParamVal[2]
-#define dwChgParamVal3	dwChgParamVal[2]
-#endif	// __PROP_0827
-
 #include "defineitemkind.h"
 
 struct tagColorText {
@@ -97,6 +84,8 @@ struct CtrlProp : ObjProp
 
 struct AddSkillProp
 {
+	static constexpr int NB_PROPS = 2;
+
 	DWORD	dwID;				// 변수명	
 	DWORD	dwName;				// 명칭
 	DWORD	dwSkillLvl;			// 스킬레벨
@@ -212,11 +201,7 @@ enum IP_TYPE
 
 struct ItemProp : CtrlProp
 {
-#ifdef __PROP_0827
 	static constexpr size_t NB_PROPS = 3;
-#else
-	static constexpr size_t NB_PROPS = 2;
-#endif
 
 	DWORD	dwMotion;			// 동작 
 	DWORD	dwNum;				// 기본생성개수	

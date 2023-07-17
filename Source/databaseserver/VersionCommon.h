@@ -25,8 +25,6 @@
 #define		__S_RECOMMEND_EVE			// 추천 이벤트 Neuz, Trans, World
 #define		__EXP_ANGELEXP_LOG			// 경험치, 엔젤 경험치 로그 관련 CHARACTER_TBL 컬럼 추가
 
-#define		__PROP_0827					// 아이템 프로퍼티 적용 파라미터 확장
-
 //11th
 //#define		__MA_VER11_04				// 길드 창고 로그 기능 world,database
 //#define		__MA_VER11_05				// 케릭터 봉인 거래 기능 world,database,neuz

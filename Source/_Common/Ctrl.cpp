@@ -760,8 +760,8 @@ BOOL CCtrl::ApplySkillHardCoding( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillPro
 				}
 
 				// 부활때 DST_RECOVERY_EXP가 있으면 겸치가 조금 깎임.
-				if( pAddSkillProp->dwDestParam2 == DST_RECOVERY_EXP )
-					pTarget->SubDieDecExp(TRUE, pAddSkillProp->nAdjParamVal2 );	// 부활이 되면서 겸치가 조금 깎임.
+				if( pAddSkillProp->dwDestParam[1] == DST_RECOVERY_EXP)
+					pTarget->SubDieDecExp(TRUE, pAddSkillProp->nAdjParamVal[1]);	// 부활이 되면서 겸치가 조금 깎임.
 			}
 		}
 		break;
@@ -983,7 +983,6 @@ BOOL CCtrl::IsPossibleApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillPro
 // pAddSkillProp은 NULL일수도 있음을 주의.
 void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp, bool bIgnoreProb, int nParam, BOOL bOnlyDmg, BOOL bTarget )
 {
-#ifdef __PK_PVP_SKILL_REGION
 	if( pSrc->GetType() == OT_MOVER && GetType() == OT_MOVER )
 	{
 		if( ((CMover *)pSrc)->IsPlayer() && ((CMover *)this)->IsPlayer() && pSkillProp->dwSkillType != NULL_ID )
@@ -1012,7 +1011,7 @@ void	CCtrl::ApplySkill( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillProp *pAddSki
 			}
 		}
 	}
-#endif // __PK_PVP_SKILL_REGION
+
 	// 적용가능한 스킬이냐?
 	if( IsPossibleApplySkill( pSrc, pSkillProp, pAddSkillProp ) == FALSE )
 		return;
