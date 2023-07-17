@@ -149,148 +149,122 @@ CMover* CAIInterface::ScanTargetNext( CObj* pObjCenter, int nRange, OBJID dwIdTa
 
 // pObjCenter를 중심으로 nRangeMeter반경내에 들어오는넘들중 가장먼저 걸리는 넘 골라냄/
 // nJobCond : 해당 직업만 감시함. 직업검사 안함.
-CMover* CAIInterface::ScanTarget( CObj* pObjCenter, int nRangeMeter, int nJobCond, DWORD dwQuest, DWORD dwItem, int nChao )
+CMover* CAIInterface::ScanTarget( CObj* pObjCenter, int nRangeMeter, int nJobCond, QuestId dwQuest, DWORD dwItem, int nChao )
 {
-	CObj* pObj;
 	D3DXVECTOR3 vPos = pObjCenter->GetPos();
 	D3DXVECTOR3 vDist;
-	CMover *pTarget = NULL;
-	int nAble = 0;
-	BOOL bCondScan = FALSE;
-	if( nJobCond || dwQuest || dwItem || nChao )
-		bCondScan = TRUE;
 
-	BOOL bGuard = ( GetMover()->GetProp()->dwClass == RANK_GUARD );
+	bool bCondScan = nJobCond || dwQuest || dwItem || nChao;
+	if (!bCondScan) return nullptr;
+
+	const bool bGuard = ( GetMover()->GetProp()->dwClass == RANK_GUARD );
 	BOOL bFlyMob = GetMover()->IsFlyingNPC();
 
 	float fRadius = (float)( nRangeMeter * nRangeMeter );	// 거리 
 
-	FOR_LINKMAP( pObjCenter->GetWorld(), vPos, pObj, nRangeMeter, LinkType::Player, GetMover()->GetLayer() )
+	for (CUser * pTarget : LinkMapRange(pObjCenter->GetWorld(), vPos, nRangeMeter, LinkType::Player, GetMover()->GetLayer()))
 	{
-		ASSERT( pObj->GetType() == OT_MOVER && ((CMover *)pObj)->IsPlayer() );
-		pTarget = (CMover *)pObj;
+		if (!pTarget->IsLive()) continue;
 
-		// 조건 스켄이 아니라면 늘 가능하다.
-		nAble = 0;
 		// 조건 스켄이라면 프랍과 일치하는 놈만 가능하다.
-		if( bCondScan == TRUE && pTarget->IsLive() ) 
-		{
-			// 1. 직업 조건 체크    
-			if( nJobCond == 0 )
-				nAble++;
-			else if( nJobCond == JOB_ALL || pTarget->GetJob() == nJobCond )		// JOB_ALL : 모든직업
-				nAble++;
-			// 2. 아이템 조건 체크  
-			if( dwItem == 0 )
-				nAble++;
-			else if( pTarget->GetItemNum( dwItem ) != 0 )	
-				nAble++;
-			// 3. 퀘스트 조건 체크 
-			if( dwQuest == 0 )
-				nAble++;
-			else if( pTarget->GetQuest( QuestId(dwQuest) ) != NULL )
-				nAble++;	
-			//4. 카오 조건 체크  
-			if( nChao == 0 )
-				nAble++;
-			else
-			{
-				// 100 = 카오유저, 101 = 비카오
-				if( nChao == 100 )
-				{
-					if( pTarget->IsChaotic() )
-						nAble++;
-				}
-				else if( nChao == 101 )
-				{
-					if( !pTarget->IsChaotic() )
-						nAble++;
-				}
-			}
-		}
-		if( nAble == 4 )
-		{
-			// 가드는 무조건 공격			
-			// 비행몹은 비행플레이어만 공격, 지상몹은 지상플레이어만만 공격 - 1. true true  2. false false
+		// 
+		// 
+		// 1. 직업 조건 체크    
+		if (nJobCond != 0 && nJobCond != JOB_ALL && pTarget->GetJob() != nJobCond)		// JOB_ALL : 모든직업
+			continue;
 
-			if( bGuard || bFlyMob == pTarget->IsFly() )		
-			{
-				vDist = pTarget->GetPos() - vPos;				
-				if( D3DXVec3LengthSq( &vDist ) < fRadius )	// 두 객체간의 거리가 범위 이내이면 
-				{
-					if( pTarget->IsMode( TRANSPARENT_MODE ) == FALSE )
-						if( !pTarget->HasBuffByIk3( IK3_TEXT_DISGUISE ) )
-							return pTarget;
-				}
+		// 2. 아이템 조건 체크  
+		if (dwItem != 0 && pTarget->GetItemNum(dwItem) == 0)
+			continue;
+
+		// 3. 퀘스트 조건 체크 
+		if (dwQuest && pTarget->GetQuest(dwQuest) == nullptr)
+			continue;
+
+		//4. 카오 조건 체크  
+		if( nChao != 0 ) {
+			// 100 = 카오유저, 101 = 비카오
+			if( nChao == 100 && pTarget->IsChaotic()) {
+				// ok
+			} else if( nChao == 101 && !pTarget->IsChaotic()) {
+				// ok
+			} else {
+				continue;
 			}
 		}
+		
+		// 가드는 무조건 공격			
+		// 비행몹은 비행플레이어만 공격, 지상몹은 지상플레이어만만 공격 - 1. true true  2. false false
+
+		if (pTarget->IsMode(TRANSPARENT_MODE)) continue;
+		if (pTarget->HasBuffByIk3(IK3_TEXT_DISGUISE)) continue;
+
+		if( bGuard || bFlyMob == pTarget->IsFly() )		
+		{
+			const D3DXVECTOR3 vDist = pTarget->GetPos() - vPos;
+			if( D3DXVec3LengthSq( &vDist ) < fRadius )	// 두 객체간의 거리가 범위 이내이면 
+			{
+				return pTarget;
+			}
+		}
+		
 	}
-	END_LINKMAP
-	return NULL;
+
+	return nullptr;
 }
 
 // 반경내에서 가장 강한넘(레벨로)을 골라냄.
 CMover* CAIInterface::ScanTargetStrong( CObj* pObjCenter, FLOAT fRangeMeter  )
 {
-	CObj *pObj;
-	CObj *pObjMax = NULL;	// 가장쎈넘 포인터.
-	D3DXVECTOR3 vPos = pObjCenter->GetPos();
-	D3DXVECTOR3 vDist;
+	const D3DXVECTOR3 vPos = pObjCenter->GetPos();
 	
 	// 지름 
-	FLOAT fRadius = fRangeMeter * fRangeMeter;
+	const FLOAT fRadius = fRangeMeter * fRangeMeter;
 	
-	FOR_LINKMAP( pObjCenter->GetWorld(), vPos, pObj, (int)( fRangeMeter / MPU ), LinkType::Player, GetMover()->GetLayer() )
+
+	CMover * pObjMax = NULL;	// 가장쎈넘 포인터.
+	for( CMover * pObj : LinkMapRange(pObjCenter->GetWorld(), vPos, (int)( fRangeMeter / MPU ), LinkType::Player, GetMover()->GetLayer()) )
 	{
-		vDist = pObj->GetPos() - vPos;	// 두좌표간 벡터
-		float fDistSq = D3DXVec3LengthSq( &vDist );		// 두오브젝트간의 거리Sq
+		const D3DXVECTOR3 vDist = pObj->GetPos() - vPos;	// 두좌표간 벡터
+		const float fDistSq = D3DXVec3LengthSq( &vDist );		// 두오브젝트간의 거리Sq
 		if( fDistSq < fRadius )	
 		{
-			if(  !( ((CMover*)pObj)->IsMode( TRANSPARENT_MODE ) ) )
-			{
-				if( pObjMax )
-				{
-					if( ((CMover *)pObj)->GetLevel() > ((CMover *)pObjMax)->GetLevel() )		// 더 쎈넘을 찾았다.
-						pObjMax = pObj;
-				} else
+			if (!pObj->IsMode(TRANSPARENT_MODE)) {
+				if (!pObjMax || pObj->GetLevel() > pObjMax->GetLevel()) {
 					pObjMax = pObj;
+				}
 
 			}
 		}
 	}
-	END_LINKMAP
 
-	return (CMover *)pObjMax;
+	return pObjMax;
 }
 
 // 반경내에서 오버힐 하는 어시 찾아서 죽이자.
 CMover* CAIInterface::ScanTargetOverHealer( CObj* pObjCenter, FLOAT fRangeMeter  )
 {
 #ifndef __CLIENT
-	CObj *pObj;
-	D3DXVECTOR3 vPos = pObjCenter->GetPos();
-	D3DXVECTOR3 vDist;
+	const D3DXVECTOR3 vPos = pObjCenter->GetPos();
 	
 	// 지름 
-	FLOAT fRadius = fRangeMeter * fRangeMeter;
+	const FLOAT fRadius = fRangeMeter * fRangeMeter;
 	
-	FOR_LINKMAP( pObjCenter->GetWorld(), vPos, pObj, (int)( fRangeMeter / MPU ), LinkType::Player, GetMover()->GetLayer() )
+	for (CUser * pMover : LinkMapRange(pObjCenter->GetWorld(), vPos, (int)( fRangeMeter / MPU ), LinkType::Player, GetMover()->GetLayer() ))
 	{
-		vDist = pObj->GetPos() - vPos;	// 두좌표간 벡터
+		const D3DXVECTOR3 vDist = pMover->GetPos() - vPos;	// 두좌표간 벡터
 		float fDistSq = D3DXVec3LengthSq( &vDist );		// 두오브젝트간의 거리Sq
 		if( fDistSq < fRadius )	
 		{
-			if(  !( ((CMover*)pObj)->IsMode( TRANSPARENT_MODE ) ) )
+			if(  ! pMover->IsMode( TRANSPARENT_MODE ) )
 			{
-				CMover *pMover = (CMover *)pObj;
 
-				if( pMover->IsPlayer() )
-					if( ((CUser *)pMover)->m_nOverHeal > 0 )		// 오버힐러를 찾았다.
+					if( pMover->m_nOverHeal > 0 )		// 오버힐러를 찾았다.
 						return pMover;
 			}
 		}
 	}
-	END_LINKMAP
+
 #endif	// __CLIENT
 	return NULL;
 }

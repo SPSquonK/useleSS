@@ -203,20 +203,15 @@ BOOL CAIMonster::SubItemLoot()
 {
 	CMover* pMover = GetMover();
 	CWorld* pWorld = GetWorld();
-	MoverProp *pProp = pMover->GetProp();
 	D3DXVECTOR3 vPos = pMover->GetPos();
-	CObj *pObj = NULL;
-	int nRange = 0;
-	D3DXVECTOR3 vDist;
-	FLOAT fDistSq;
-	CObj *pMinObj = NULL;
+	CItem *pMinObj = NULL;
 
 	// 근처의 아이템을 검색함.
-	FOR_LINKMAP( pWorld, vPos, pObj, nRange, LinkType::Dynamic, pMover->GetLayer() )
-	{
-		if( pObj->GetType() == OT_ITEM )
-		{
-			ItemProp* pItemProp	= ( (CItem*)pObj )->GetProp();
+	for (CObj * pObj : LinkMapRange(pWorld, vPos, 0, LinkType::Dynamic, pMover->GetLayer())) {
+		CItem * pItem = pObj->ToItem();
+		if (!pItem) continue;
+
+			ItemProp* pItemProp	= pItem->GetProp();
 			if( pItemProp && pItemProp->dwItemKind3 != IK3_QUEST && pItemProp->dwItemKind1 != IK1_GOLD
 #ifdef __EVENT_0117
 				&& pItemProp->dwID != II_SYS_SYS_SCR_BXPIG
@@ -224,25 +219,23 @@ BOOL CAIMonster::SubItemLoot()
 #endif	// __EVENT_0117
 				)
 			{
-				vDist = pObj->GetPos() - pMover->GetPos();
-				fDistSq = D3DXVec3LengthSq( &vDist );			// 거리 구함.
+				const D3DXVECTOR3 vDist = pObj->GetPos() - pMover->GetPos();
+				const FLOAT fDistSq = D3DXVec3LengthSq( &vDist );			// 거리 구함.
 				if( fDistSq < 10.0f * 10.0f )					// 10미터 이내고... random
 				{
-					pMinObj = pObj;			
-					goto NEXT;
+					pMinObj = pItem;			
+					break;
 				}
 			}
-		}
+		
 	}
-	END_LINKMAP
 
-NEXT:
-	if( pMinObj )
-	{
-		MoveToDst( pMinObj->GetPos() );		// 목표쪽으로 이동.
-		m_idLootItem = ((CItem *)pMinObj)->GetId();
+
+	if (pMinObj) {
+		MoveToDst(pMinObj->GetPos());		// 목표쪽으로 이동.
+		m_idLootItem = pMinObj->GetId();
 		m_bLootMove = TRUE;
-		g_UserMng.AddDlgEmoticon( pMover, DLGEMOT_LOOT );
+		g_UserMng.AddDlgEmoticon(pMover, DLGEMOT_LOOT);
 	}
 
 	return TRUE;
@@ -2223,19 +2216,19 @@ BOOL CMonsterSkill::ApplySkill( CMover* pAttacker, CMover* pTarget, DWORD dwAtkM
 	}
 	else	// 범위 스킬이면 범위안에 모든 캐릭터에게 스킬 적용
 	{		
-		CObj* pObj = NULL;
-		FOR_LINKMAP( pAttacker->GetWorld(), pAttacker->GetPos(), pObj, vecMonsterSkill[i].nRange, LinkType::Player, pAttacker->GetLayer() )
-		{
-			if( pObj->GetType() == OT_MOVER && ((CMover*)pObj)->IsPlayer() && ((CMover*)pObj)->IsLive()
-				&& pObj != pAttacker && pObj->IsRangeObj( pAttacker, (float)( vecMonsterSkill[i].nRange ) ) )
-			{
-				((CMover*)pObj)->ApplySkill( pAttacker, pSkillProp, pAddSkillProp, vecMonsterSkill[i].bIgnoreSkillProb );
-				if( pSkillProp->dwSfxObj2 != NULL_ID )
-					g_UserMng.AddCreateSfxObj( (CMover*)pObj, pSkillProp->dwSfxObj2 );
-				g_UserMng.AddCreateSfxObj( (CMover*)pObj, pSkillProp->dwSfxObj3 );
-			}
+		
+		for (CUser * pObj : LinkMapRange(
+			pAttacker->GetWorld(), pAttacker->GetPos(), vecMonsterSkill[i].nRange, LinkType::Player, pAttacker->GetLayer()
+		)) {
+			if (!pObj->IsLive()) continue;
+			if (pObj == pAttacker) continue;
+			if (!pObj->IsRangeObj(pAttacker, (float)(vecMonsterSkill[i].nRange))) continue;
+
+			pObj->ApplySkill( pAttacker, pSkillProp, pAddSkillProp, vecMonsterSkill[i].bIgnoreSkillProb );
+			if( pSkillProp->dwSfxObj2 != NULL_ID )
+				g_UserMng.AddCreateSfxObj( pObj, pSkillProp->dwSfxObj2 );
+			g_UserMng.AddCreateSfxObj( pObj, pSkillProp->dwSfxObj3 );
 		}
-		END_LINKMAP
 	}
 
 	//위에서 백업해둔 스킬 지속시간을 되돌린다.

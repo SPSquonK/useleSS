@@ -113,7 +113,7 @@ protected:
 	CWorld* GetWorld() { return m_pObj->GetWorld(); }
 
 	//기타 잡다한 매소드 
-	CMover* ScanTarget( CObj* pObjCenter, int nRangeMeter = 5, int nJobCond = 0, DWORD dwQuest = 0, DWORD dwItem = 0, int nChao = 0 );
+	CMover* ScanTarget( CObj* pObjCenter, int nRangeMeter = 5, int nJobCond = 0, QuestId dwQuest = QuestIdNone, DWORD dwItem = 0, int nChao = 0 );
 	CMover* ScanTargetStrong( CObj* pObjCenter, FLOAT fRangeMeter );
 	CMover* ScanTargetOverHealer( CObj* pObjCenter, FLOAT fRangeMeter  );
 	CMover*	ScanTargetNext( CObj* pObjCenter, int nRange,  OBJID dwIdTarget, u_long uParty );

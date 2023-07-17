@@ -604,14 +604,8 @@ BOOL	CAIMeteonyker::ProcessSummon( BOOL bUnconditional )
 
 		vPos	+= vDelta;
 
-		D3DXVECTOR3 vDist;
-		CMover* pPlayer	= NULL;
-		CObj* pObj;
-
 		// 반경 30 모든 사용자 소환
-		FOR_LINKMAP( pWorld, vPos, pObj, 15, LinkType::Player, pMover->GetLayer() )
-		{
-			pPlayer	= (CMover*)pObj;
+		for (CMover * pPlayer : LinkMapRange(pWorld, vPos, 15, LinkType::Player, pMover->GetLayer())) {
 			if( pPlayer->IsLive() )
 			{
 				// 플레이어 링크맵 기본 단위가 32미터이므로 거리 재검사
@@ -619,9 +613,8 @@ BOOL	CAIMeteonyker::ProcessSummon( BOOL bUnconditional )
 				FLOAT fDistSq	= D3DXVec3LengthSq( &vDist );
 				if( fDistSq <= 225.0F )
 				{
-					int nAttr = pWorld->GetHeightAttribute( vPos.x, vPos.z );
-					if(nAttr == HATTR_NOWALK || nAttr == HATTR_NOMOVE)
-					{
+					const int nAttr = pWorld->GetHeightAttribute(vPos.x, vPos.z);
+					if (nAttr == HATTR_NOWALK || nAttr == HATTR_NOMOVE) {
 						vPos = pMover->GetPos();
 						vPos.y += 7.0f;
 					}
@@ -630,7 +623,7 @@ BOOL	CAIMeteonyker::ProcessSummon( BOOL bUnconditional )
 				}
 			}
 		}
-		END_LINKMAP
+
 		// Mvr_Meteonyker_dmg2.ani
 		// 공격 패턴은 주변 사용자에 대한 광역이다.
 		m_dwAtk		= OBJMSG_ATK2;

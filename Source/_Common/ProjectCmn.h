@@ -612,7 +612,7 @@ struct MoverProp : CtrlProp
 	float	m_fBerserkDmgMul;	// 버서커가 되었을때 데미지 배수.
 	int		m_nLoot;			// 루팅몹인가.
 	int		m_nLootProb;		// 루팅 확률
-	DWORD   m_dwScanQuestId; 
+	QuestId   m_dwScanQuestId; 
 	DWORD   m_dwScanItemIdx; 
 	int		m_nScanChao;		// 카오, 비카오 검색
 #endif // !__CORESERVER
@@ -743,7 +743,7 @@ struct MoverProp : CtrlProp
 		m_fBerserkDmgMul	= 0;
 		m_nLoot				= 0;
 		m_nLootProb			= 0;
-		m_dwScanQuestId		= 0;
+		m_dwScanQuestId		= QuestIdNone;
 		m_dwScanItemIdx		= 0;
 		m_nScanChao			= 0;
 #endif // !__CORESERVER

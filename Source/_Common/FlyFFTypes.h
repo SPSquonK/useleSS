@@ -25,6 +25,13 @@ namespace useless_util {
       [[nodiscard]] const PropType * GetProp() const { return PropType::Get(this->underlying()); }
     };
   };
+
+  template<typename T>
+  struct BoolEvaluation : fluent::crtp<T, BoolEvaluation> {
+    explicit operator bool() const noexcept {
+      return this->underlying().get() != 0;
+    }
+  };
 }
 
 using PartyId = fluent::NamedType<unsigned long, struct PartyIdTag,
@@ -40,7 +47,8 @@ static constexpr auto WarIdNone = WarId(0);
 struct QuestProp;
 
 using QuestId = fluent::NamedType<unsigned short, struct QuestIdTag,
-  fluent::Comparable, useless_util::ArchivableType, useless_util::HasProjProp<QuestProp>::Type
+  fluent::Comparable, useless_util::ArchivableType, useless_util::HasProjProp<QuestProp>::Type,
+  useless_util::BoolEvaluation
 >;
 
 static constexpr auto QuestIdNone = QuestId(0);
