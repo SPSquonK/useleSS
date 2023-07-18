@@ -30,21 +30,19 @@
 
 // 일반 효과 생성 
 // SFX 새로 만들고도 여기다가 추가 안해주면 생성 안된다.
-CSfx* CreateSfx( DWORD dwSfxObj, 
-				 D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec )
+CSfx* CreateSfx(
+	DWORD dwSfxObj, 
+	D3DXVECTOR3 vPosSrc, OBJID idSrc,
+	D3DXVECTOR3 vPosDest, OBJID idDest,
+	int nSec )
 {
-	CSfx* pObj = NULL;
-#ifdef _DEBUG
-	if( dwSfxObj == 265 )	// 디버깅 하려면 이걸 바꿔 쓰세요.
-	{
-		int a = 0;
-	}
-#endif
+	if (dwSfxObj == 0) return nullptr;
+
+	CSfx* pObj = nullptr;
 
 	CMover *pSrc = prj.GetMover( idSrc );
 	CMover *pDst = prj.GetMover( idDest );
 	
-#ifndef __WORLDSERVER
 	switch( dwSfxObj )
 	{
 	case XI_SETIEM_EFFECTHAND:
@@ -57,6 +55,48 @@ CSfx* CreateSfx( DWORD dwSfxObj,
 	case XI_GEN_ITEM_SETITEM09:
 	case XI_GEN_ITEM_SETITEM10:
 			pObj = new CSfxPartsLinkShoulder(); break;
+
+	// 3rd job skills
+//	case XI_SKILL_LORDK_TEMPLARPULLING01:
+//		pObj = new CSfxAttackParts(CSfxAttackParts::HIT_RHAND);
+//		break;
+
+	case XI_SKILL_LORDK_SHILDSTRIKE01:
+	case XI_SKILL_ELE_FINALSPEAR01:
+	case XI_SKILL_MENT_DARKNESSSCREAM01:
+		pObj = new CSfx();
+		pObj->SetAngle(-pSrc->GetAngle());
+		break;
+
+	case XI_SKILL_MENT_DARKNESSRAKE02:
+		pObj = new CSfx();
+		pObj->SetAngle(-pSrc->GetAngle() + 90.0f);
+		break;
+
+//	case XI_SKILL_FLO_FETTERS02:
+//	case XI_SKILL_MENT_DARKNESSSCREAM02:
+//	case XI_SKILL_MENT_SPEEDDECREASE01:
+//	case XI_SKILL_MENT_DEFENDERDECREASE01:
+//	case XI_SKILL_MENT_ATTACKDECREASE01:
+//		pObj = new CSfxHitParts(CSfxHitParts::HIT_OVERHEAD);
+//		break;
+
+//	case XI_SKILL_FORCEM_AURORAOFTHERAGE02:
+//	case XI_SKILL_FORCEM_AURORAOFTHETENACITY02:
+//	case XI_SKILL_FORCEM_AURORAOFTHESPEED02:
+//	case XI_SKILL_FORCEM_AURORAOFTHEMAD02:
+//	case XI_SKILL_CRACK_HWAKEYE02:
+//		pObj = new CSfxRotate_New();
+//		break;
+
+//	case XI_SKILL_WINDL_CONTROLINCREASE01:
+//	case XI_SKILL_CRACK_POWERINCREASE01:
+//	case XI_SKILL_CRACK_CONTROL01:
+//	case XI_SKILL_FLO_FETTERS01:
+//		pObj = new CSfxAttackParts(CSfxAttackParts::HIT_OVERHEAD);
+//		break;
+
+	// Vanilla skills
 
 	case XI_HIT_SWORD01 : pObj = new CSfxGenNormalDmg01(); break;
 	case XI_HIT_SWORD02 : pObj = new CSfxGenNormalDmg01(); break;
@@ -109,7 +149,6 @@ CSfx* CreateSfx( DWORD dwSfxObj,
 		pObj = new CSfxFixed();		// fixed는 이펙트 
 		if( pObj && IsValidObj(pSrc) )
 			pObj->SetAngle( -pSrc->GetAngle() ); // 시전자의 방향과 일치시킨다.
-//			pObj->SetAngle( 180.0f - pSrc->GetAngle() ); // 시전자의 방향과 일치시킨다.
 
 		break;
 	case XI_SKILL_BIL_KNU_SONICHAND02:		// sfx 방향바껴서 각도 조절 따로 하는거
@@ -284,6 +323,7 @@ CSfx* CreateSfx( DWORD dwSfxObj,
 	case XI_SKILL_JST_SUP_ABSORB01:		
 	case XI_SKILL_JST_SUP_CRITICALSWING01:	
 		pObj = new CSfxPartsLinkJst();
+		break;
 
 	case XI_SKILL_BLD_DOUBLEAX_SPRINGATTACK01:		// 손에 링크되는 이펙
 	case XI_SKILL_BLD_DOUBLE_SONICBLADE01:
@@ -364,66 +404,50 @@ CSfx* CreateSfx( DWORD dwSfxObj,
 			}
 
 			// 월드에 오브젝트 추가.
-			g_WorldMng.Get()->AddObj(pObj);
+			if (!g_WorldMng.Get()->AddObj(pObj)) {
+				SAFE_DELETE(pObj);
+			}
 		} else
 		{
 			SAFE_DELETE( pObj );
 		}
 	}
-#endif	// __WORLDSERVER
 	return pObj;
 }
 
 // 요요무기는 무조건 여기만 호출
-CSfx* CreateSfxYoYo( DWORD dwSfxObj, 
-				 D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec )
+CSfx* CreateSfxYoYo(
+	DWORD dwSfxObj,
+	D3DXVECTOR3 vPosSrc, OBJID idSrc,
+	D3DXVECTOR3 vPosDest, OBJID idDest,
+	int nSec )
 {
-	CSfx* pObj = NULL;
-
-#ifdef _DEBUG
-	if( dwSfxObj == 116 )	// 디버깅 하려면 이걸 바꿔 쓰세요.
-	{
-		int a = 0;
-	}
-#endif
 	CMover *pSrc = prj.GetMover( idSrc );
 	CMover *pDst = prj.GetMover( idDest );
-	
-#ifndef __WORLDSERVER
-	/*
-	switch( dwSfxObj )
-	{
-	}
-	*/
+		
 	// 요요
-	pObj = new CSfxItemYoyoAtk();
+	CSfx * pObj = new CSfxItemYoyoAtk();
 
-	if( pObj )
-	{
-		int bRet = pObj->SetSfx( dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
-		if( bRet )
-		{
-			if( pObj->GetModel() == NULL )
-			{
-				LPCTSTR szErr = Error( "CreateSfxYoYo : %d sfx의 m_pModel이 없음", dwSfxObj );
-				//ADDERRORMSG( szErr );
-			}
-			if( pObj->GetModel()->m_pModelElem == NULL )
-			{
-				LPCTSTR szErr = Error( "CreateSfxYoYo : %d sfx의 m_pModelElem이 없음", dwSfxObj );
-				//ADDERRORMSG( szErr );
-			}
-			if( pObj->GetModel()->m_pModelElem->m_szPart[0] )
-				PLAYSND( pObj->GetModel()->m_pModelElem->m_szPart, &vPosSrc );
-
-			// 월드에 오브젝트 추가.
-			g_WorldMng.Get()->AddObj(pObj);
-		} else
-		{
-			SAFE_DELETE( pObj );
-		}
+	int bRet = pObj->SetSfx( dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
+	if (!bRet) {
+		SAFE_DELETE(pObj);
+		return nullptr;
 	}
-#endif	// __WORLDSERVER
+
+	if (pObj->GetModel() == NULL) {
+		Error("CreateSfxYoYo : %d sfx의 m_pModel이 없음", dwSfxObj);
+	}
+	if (pObj->GetModel()->m_pModelElem == NULL) {
+		Error("CreateSfxYoYo : %d sfx의 m_pModelElem이 없음", dwSfxObj);
+	}
+
+	if( pObj->GetModel()->m_pModelElem->m_szPart[0] )
+		PLAYSND( pObj->GetModel()->m_pModelElem->m_szPart, &vPosSrc );
+
+	// 월드에 오브젝트 추가.
+	g_WorldMng.Get()->AddObj(pObj);
+
+
 	return pObj;
 }
 
@@ -431,16 +455,10 @@ CSfxShoot* CreateShootSfx( DWORD dwSfxObj,
 						D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec )
 {
 	CSfxShoot* pObj = NULL;
-#ifdef _DEBUG
-	if( dwSfxObj == XI_SKILL_MAG_FIRE_FIRESTRIKE01 )	// 디버깅 하려면 이걸 바꿔 쓰세요.
-	{
-		int a = 0;
-	}
-#endif
+
 	CMover *pSrc = prj.GetMover( idSrc );
 	CMover *pDst = prj.GetMover( idDest );
 	
-#ifndef __WORLDSERVER
 	switch( dwSfxObj )
 	{
 	case XI_FIR_WAND01  : pObj = new CSfxItemWandAtk1(); break;
@@ -536,7 +554,7 @@ CSfxShoot* CreateShootSfx( DWORD dwSfxObj,
 			SAFE_DELETE( pObj );
 		}
 	}
-#endif	// __WORLDSERVER
+
 	return pObj;
 }
 
@@ -546,7 +564,7 @@ CSfx* CreateItemReadySfx( DWORD dwSfxObj,
 	CSfx* pObj = NULL;
 	CMover *pSrc = prj.GetMover( idSrc );
 	CMover *pDst = prj.GetMover( idDest );
-#ifndef __WORLDSERVER
+
 	pObj = new CSfxReady();
 	if( pObj )
 	{
@@ -571,7 +589,6 @@ CSfx* CreateItemReadySfx( DWORD dwSfxObj,
 		} else
 			SAFE_DELETE( pObj );
 	}
-#endif // not World
 
 	return pObj;
 }
