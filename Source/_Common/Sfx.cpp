@@ -4034,3 +4034,199 @@ void CSfxLinkMover::Render( )
 	m_pSfxObj->m_matScale = m_matScale;
 	m_pSfxObj->Render( NULL );
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// 3rd job skills sfx
+
+
+CSfxHitParts::CSfxHitParts(const HIT_PARTS eParts) {
+	m_eHitParts = eParts;
+}
+
+void CSfxHitParts::Process() {
+	m_nFrame++;
+
+	CMover * pMover = prj.GetMover(m_idDest);
+	if (IsInvalidObj(pMover)) {
+		// If the src mover is lost during the process, it is automatically deleted
+		Delete();
+		return;
+	}
+
+	if (m_pSfxObj->Process()) {
+		if (m_bBuff)
+			m_pSfxObj->m_nCurFrame = 0;
+		else Delete();
+	}
+}
+
+void CSfxHitParts::Render(LPDIRECT3DDEVICE9 pd3dDevice) {
+	if (!IsVisible() || (IsCull() && GetType() != 1))
+		return;
+	if (IsUpdateMatrix())
+		UpdateMatrix();
+
+	const MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem(m_dwType, m_dwIndex);
+	if (!lpModelElem) return;
+
+	CMover * pMover = prj.GetMover(m_idDest);
+	if (IsInvalidObj(pMover)) return;
+
+	CModelObject * pModel = (CModelObject *)pMover->m_pModel;
+	if (!pModel) return;
+
+	float fRadius = pMover->GetRadius();
+	if (fRadius > 2.0f)
+		fRadius = 2.0f;
+
+	D3DXMATRIX mPartMatrix;
+	switch (m_eHitParts) {
+		case HIT_PARTS::HIT_BODY:
+			mPartMatrix = *pModel->GetMatrixBone(2) * pMover->GetMatrixWorld();
+			break;
+		case HIT_PARTS::HIT_OVERHEAD:
+			mPartMatrix = *pModel->GetMatrixBone(6) * pMover->GetMatrixWorld();
+			mPartMatrix._42 += fRadius;
+			break;
+	}
+
+	//Set Position
+	D3DXVECTOR3 vPos;
+	D3DXVec3TransformCoord(&vPos, &vPos, &mPartMatrix);
+	SetPos(vPos);
+
+	//Set Roatation
+	D3DXQUATERNION qRst;
+	D3DXVECTOR3 vYPW;
+
+	D3DXQuaternionRotationMatrix(&qRst, &mPartMatrix); // Convert left arm matrix to quaternion
+	QuaternionRotationToYPW(qRst, vYPW);
+	vYPW.y += D3DXToRadian(-90.0f);
+	m_pSfxObj->m_vRotate.x = D3DXToDegree(vYPW.x);
+	m_pSfxObj->m_vRotate.y = D3DXToDegree(vYPW.y);
+	m_pSfxObj->m_vRotate.z = D3DXToDegree(vYPW.z);
+
+
+	m_pSfxObj->m_vPos = GetPos();
+	m_pSfxObj->m_vScale = GetScale();
+	m_pSfxObj->m_matScale = m_matScale;
+	m_pSfxObj->Render2(NULL);
+}
+
+///////////////////
+
+CSfxAttackParts::CSfxAttackParts(const HIT_PARTS eParts) {
+	m_eHitParts = eParts;
+}
+
+void CSfxAttackParts::Process() {
+	m_nFrame++;
+
+	CMover * pMover = prj.GetMover(m_idSrc);
+	if (IsInvalidObj(pMover)) {
+		// If the src mover is lost during the process, it is automatically deleted
+		Delete();
+		return;
+	}
+
+	if (m_pSfxObj->Process()) {
+		Delete();
+	}
+}
+
+void CSfxAttackParts::Render(LPDIRECT3DDEVICE9 pd3dDevice) {
+	if (!IsVisible() || (IsCull() && GetType() != 1))
+		return;
+	if (IsUpdateMatrix())
+		UpdateMatrix();
+
+	const MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem(m_dwType, m_dwIndex);
+	if (!lpModelElem) return;
+
+	CMover * pMover = prj.GetMover(m_idSrc);
+	if (IsInvalidObj(pMover)) return;
+
+	CModelObject * pModel = (CModelObject *)pMover->m_pModel;
+	if (!pModel) return;
+
+
+	float fRadius = pMover->GetRadius();
+	if (fRadius > 2.0f)
+		fRadius = 2.0f;
+
+	D3DXMATRIX mPartMatrix;
+	switch (m_eHitParts) {
+		case HIT_PARTS::HIT_BODY:
+			mPartMatrix = *pModel->GetMatrixBone(2) * pMover->GetMatrixWorld();
+			break;
+		case HIT_PARTS::HIT_OVERHEAD:
+			mPartMatrix = *pModel->GetMatrixBone(6) * pMover->GetMatrixWorld();
+			mPartMatrix._42 += fRadius;
+			break;
+		case HIT_PARTS::HIT_RHAND:
+			mPartMatrix = *pModel->GetMatrixBone(pModel->GetRHandIdx()) * pMover->GetMatrixWorld();
+			break;
+	}
+
+	//Set Position
+	D3DXVECTOR3 vPos;
+	D3DXVec3TransformCoord(&vPos, &vPos, &mPartMatrix);
+	SetPos(vPos);
+
+	//Set Roatation
+	D3DXQUATERNION qRst;
+	D3DXVECTOR3 vYPW;
+
+	D3DXQuaternionRotationMatrix(&qRst, &mPartMatrix);			// Convert left arm matrix to quaternion.
+	QuaternionRotationToYPW(qRst, vYPW);
+	m_pSfxObj->m_vRotate.x = D3DXToDegree(vYPW.x);
+	m_pSfxObj->m_vRotate.y = D3DXToDegree(vYPW.y);
+	m_pSfxObj->m_vRotate.z = D3DXToDegree(vYPW.z);
+
+	m_pSfxObj->m_vPos = GetPos();
+	m_pSfxObj->m_vScale = GetScale();
+	m_pSfxObj->m_matScale = m_matScale;
+	m_pSfxObj->Render2(NULL);
+}
+
+///////////////////
+
+void CSfxRotate_New::Process() {
+	CSfx::Process();
+
+	CMover * pMover = prj.GetMover(m_idSrc);
+	if (IsInvalidObj(pMover)) {
+		Delete();
+		return;
+	}
+
+	D3DXVECTOR3 vPos = pMover->GetPos();
+	vPos.y += 0.5f;
+	SetPos(vPos);
+	SetAngle(-pMover->GetAngle());
+
+	if (m_pSfxObj->Process())
+		m_pSfxObj->m_nCurFrame = 0;
+}
+
+void CSfxRotate_New::Render(LPDIRECT3DDEVICE9 pd3dDevice) {
+	if (!IsVisible() || (IsCull() && GetType() != 1))
+		return;
+	if (IsUpdateMatrix())
+		UpdateMatrix();
+
+	const MODELELEM * lpModelElem = prj.m_modelMng.GetModelElem(m_dwType, m_dwIndex);
+	if (!lpModelElem) return;
+
+	CMover * pMover = prj.GetMover(m_idSrc);
+	if (IsInvalidObj(pMover)) return;
+
+	m_pSfxObj->m_vPos = GetPos();
+	m_pSfxObj->m_vRotate.y = GetAngle();
+	m_pSfxObj->m_vScale = GetScale();
+	m_pSfxObj->m_matScale = m_matScale;
+	m_pSfxObj->Render(nullptr);
+}
+
+
+

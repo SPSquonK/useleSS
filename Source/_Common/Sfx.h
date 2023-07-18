@@ -1137,4 +1137,45 @@ protected:
 	DWORD  _idSFX;
 };
 
+
+
+class CSfxHitParts : public CSfxPartsLink {
+public:
+	enum class HIT_PARTS {
+		HIT_BODY,
+		HIT_OVERHEAD,
+	};
+	//gmpbigsun : For the general situation of being attached to the mover
+	CSfxHitParts(const HIT_PARTS eParts = HIT_PARTS::HIT_BODY);
+	virtual void Process();
+	virtual void Render(LPDIRECT3DDEVICE9 pd3dDevice);
+
+protected:
+	HIT_PARTS m_eHitParts;
+	BOOL m_bBuff;
+};
+
+class CSfxAttackParts : public CSfxPartsLink {
+public:
+	enum class HIT_PARTS {
+		HIT_BODY,
+		HIT_OVERHEAD,
+		HIT_RHAND,
+	};
+	//gmpbigsun : For the general situation of being attached to the mover
+	CSfxAttackParts(const HIT_PARTS eParts = HIT_PARTS::HIT_BODY);
+	virtual void Process();
+	virtual void Render(LPDIRECT3DDEVICE9 pd3dDevice);
+
+	HIT_PARTS m_eHitParts;
+};
+
+// It's the same as CSfx, and the rotation direction of idSrc is the same.
+class CSfxRotate_New : public CSfx {
+public:
+	virtual void Process();
+	virtual void Render(LPDIRECT3DDEVICE9 pd3dDevice);
+};
+
+
 #endif // !defined(AFX_SFX_H__D652787A_4E67_419F_AB52_0A8E2FED08AE__INCLUDED_)
