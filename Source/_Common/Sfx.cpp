@@ -4060,7 +4060,7 @@ void CSfxHitParts::Process() {
 	}
 }
 
-void CSfxHitParts::Render(LPDIRECT3DDEVICE9 pd3dDevice) {
+void CSfxHitParts::Render() {
 	if (!IsVisible() || (IsCull() && GetType() != 1))
 		return;
 	if (IsUpdateMatrix())
@@ -4134,7 +4134,7 @@ void CSfxAttackParts::Process() {
 	}
 }
 
-void CSfxAttackParts::Render(LPDIRECT3DDEVICE9 pd3dDevice) {
+void CSfxAttackParts::Render() {
 	if (!IsVisible() || (IsCull() && GetType() != 1))
 		return;
 	if (IsUpdateMatrix())
@@ -4209,7 +4209,7 @@ void CSfxRotate_New::Process() {
 		m_pSfxObj->m_nCurFrame = 0;
 }
 
-void CSfxRotate_New::Render(LPDIRECT3DDEVICE9 pd3dDevice) {
+void CSfxRotate_New::Render() {
 	if (!IsVisible() || (IsCull() && GetType() != 1))
 		return;
 	if (IsUpdateMatrix())

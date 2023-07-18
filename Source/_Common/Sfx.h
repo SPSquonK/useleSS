@@ -1147,8 +1147,8 @@ public:
 	};
 	//gmpbigsun : For the general situation of being attached to the mover
 	CSfxHitParts(const HIT_PARTS eParts = HIT_PARTS::HIT_BODY);
-	virtual void Process();
-	virtual void Render(LPDIRECT3DDEVICE9 pd3dDevice);
+	void Process() override;
+	void Render() override;
 
 protected:
 	HIT_PARTS m_eHitParts;
@@ -1164,8 +1164,8 @@ public:
 	};
 	//gmpbigsun : For the general situation of being attached to the mover
 	CSfxAttackParts(const HIT_PARTS eParts = HIT_PARTS::HIT_BODY);
-	virtual void Process();
-	virtual void Render(LPDIRECT3DDEVICE9 pd3dDevice);
+	void Process() override;
+	void Render() override;
 
 	HIT_PARTS m_eHitParts;
 };
@@ -1173,8 +1173,8 @@ public:
 // It's the same as CSfx, and the rotation direction of idSrc is the same.
 class CSfxRotate_New : public CSfx {
 public:
-	virtual void Process();
-	virtual void Render(LPDIRECT3DDEVICE9 pd3dDevice);
+	void Process() override;
+	void Render() override;
 };
 
 
