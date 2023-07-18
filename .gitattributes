@@ -1,0 +1,2 @@
+*.inc text eol=crlf
+*.txt.txt text eol=crlf
