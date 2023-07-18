@@ -57,9 +57,9 @@ CSfx* CreateSfx(
 			pObj = new CSfxPartsLinkShoulder(); break;
 
 	// 3rd job skills
-//	case XI_SKILL_LORDK_TEMPLARPULLING01:
-//		pObj = new CSfxAttackParts(CSfxAttackParts::HIT_RHAND);
-//		break;
+	case XI_SKILL_LORDK_TEMPLARPULLING01:
+		pObj = new CSfxAttackParts(CSfxAttackParts::HIT_PARTS::HIT_RHAND);
+		break;
 
 	case XI_SKILL_LORDK_SHILDSTRIKE01:
 	case XI_SKILL_ELE_FINALSPEAR01:
@@ -73,28 +73,28 @@ CSfx* CreateSfx(
 		pObj->SetAngle(-pSrc->GetAngle() + 90.0f);
 		break;
 
-//	case XI_SKILL_FLO_FETTERS02:
-//	case XI_SKILL_MENT_DARKNESSSCREAM02:
-//	case XI_SKILL_MENT_SPEEDDECREASE01:
-//	case XI_SKILL_MENT_DEFENDERDECREASE01:
-//	case XI_SKILL_MENT_ATTACKDECREASE01:
-//		pObj = new CSfxHitParts(CSfxHitParts::HIT_OVERHEAD);
-//		break;
+	case XI_SKILL_FLO_FETTERS02:
+	case XI_SKILL_MENT_DARKNESSSCREAM02:
+	case XI_SKILL_MENT_SPEEDDECREASE01:
+	case XI_SKILL_MENT_DEFENDERDECREASE01:
+	case XI_SKILL_MENT_ATTACKDECREASE01:
+		pObj = new CSfxHitParts(CSfxHitParts::HIT_PARTS::HIT_OVERHEAD);
+		break;
 
-//	case XI_SKILL_FORCEM_AURORAOFTHERAGE02:
-//	case XI_SKILL_FORCEM_AURORAOFTHETENACITY02:
-//	case XI_SKILL_FORCEM_AURORAOFTHESPEED02:
-//	case XI_SKILL_FORCEM_AURORAOFTHEMAD02:
-//	case XI_SKILL_CRACK_HWAKEYE02:
-//		pObj = new CSfxRotate_New();
-//		break;
+	case XI_SKILL_FORCEM_AURORAOFTHERAGE02:
+	case XI_SKILL_FORCEM_AURORAOFTHETENACITY02:
+	case XI_SKILL_FORCEM_AURORAOFTHESPEED02:
+	case XI_SKILL_FORCEM_AURORAOFTHEMAD02:
+	case XI_SKILL_CRACK_HWAKEYE02:
+		pObj = new CSfxRotate_New();
+		break;
 
-//	case XI_SKILL_WINDL_CONTROLINCREASE01:
-//	case XI_SKILL_CRACK_POWERINCREASE01:
-//	case XI_SKILL_CRACK_CONTROL01:
-//	case XI_SKILL_FLO_FETTERS01:
-//		pObj = new CSfxAttackParts(CSfxAttackParts::HIT_OVERHEAD);
-//		break;
+	case XI_SKILL_WINDL_CONTROLINCREASE01:
+	case XI_SKILL_CRACK_POWERINCREASE01:
+	case XI_SKILL_CRACK_CONTROL01:
+	case XI_SKILL_FLO_FETTERS01:
+		pObj = new CSfxAttackParts(CSfxAttackParts::HIT_PARTS::HIT_OVERHEAD);
+		break;
 
 	// Vanilla skills
 
@@ -561,13 +561,11 @@ CSfxShoot* CreateShootSfx( DWORD dwSfxObj,
 CSfx* CreateItemReadySfx( DWORD dwSfxObj, 
 				 D3DXVECTOR3 vPosSrc, OBJID idSrc, D3DXVECTOR3 vPosDest, OBJID idDest, int nSec )
 {
-	CSfx* pObj = NULL;
 	CMover *pSrc = prj.GetMover( idSrc );
 	CMover *pDst = prj.GetMover( idDest );
 
-	pObj = new CSfxReady();
-	if( pObj )
-	{
+	CSfx * pObj = new CSfxReady();
+
 		int bRet = pObj->SetSfx( dwSfxObj, vPosSrc, idSrc, vPosDest, idDest, nSec ); 
 		if( bRet )
 		{
@@ -588,7 +586,7 @@ CSfx* CreateItemReadySfx( DWORD dwSfxObj,
 
 		} else
 			SAFE_DELETE( pObj );
-	}
+	
 
 	return pObj;
 }
@@ -601,9 +599,7 @@ CMover *CreateMover( CWorld *pWorld, DWORD dwID, const D3DXVECTOR3 &vPos, int nL
 CMover *CreateMover( CWorld *pWorld, DWORD dwID, D3DXVECTOR3 vPos )
 #endif	// __LAYER_1015
 {
-	CMover *pMover;
-
-	pMover = (CMover *)CreateObj( OT_MOVER, dwID );
+	CMover *pMover = (CMover *)CreateObj( OT_MOVER, dwID );
 	if( pMover == NULL )	
 		return NULL;
 	pMover->SetPos( vPos );
