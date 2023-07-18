@@ -899,210 +899,127 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 	}
 #endif
 	
-	CObj* pObj	= (CObj*)prj.GetCtrl( objid );
-	if( pObj != NULL )
-	{
-		CWorld* pWorld	= pObj->GetWorld();
-		if( pWorld )
-		{
-			// waste it
-			CObj* pObjtmp	= CreateObj( dwObjType, dwObjIndex, dwObjType != OT_MOVER );
-			pObjtmp->Serialize( ar );
-			( (CCtrl*)pObjtmp )->SetId( NULL_ID );
-			safe_delete( pObjtmp );
+	bool existed = false;
 
-			// cancel deletion
-			const auto itDeleted = std::ranges::find(pWorld->m_aDeleteObjs, pObj);
-			if (itDeleted != pWorld->m_aDeleteObjs.end()) {
-				pObj->SetDelete(FALSE);
-				pWorld->m_aDeleteObjs.erase(itDeleted);
-			}
-
-			return;
-		}
-		else
-		{
-			safe_delete( pObj );
-			pObj	= (CCtrl*)CreateObj( dwObjType, dwObjIndex, dwObjType != OT_MOVER );
-			pObj->Serialize( ar );
-
-			if( dwObjType == OT_MOVER )
-			{
-				if( ( (CMover*)pObj )->IsPlayer() )
-				{
-					CMover* pPlayer	= (CMover*)pObj;
-//					pPlayer->RedoEquip( FALSE );
-					pPlayer->RedoEquip( g_pPlayer != NULL );
-					PlayerData pd;
-					pd.data.nJob	= pPlayer->GetJob();
-					pd.data.nLevel	= pPlayer->GetLevel();
-					pd.data.nSex	= pPlayer->GetSex();
-					lstrcpy( pd.szPlayer, pPlayer->GetName() );
-					CPlayerDataCenter::GetInstance()->AddPlayerData( ( (CMover*)pObj )->m_idPlayer, pd );
-				}
-				else 
-				{	
-					// npc
-					if( g_pPlayer )
-					{
-						D3DXVECTOR3 vTemp	=pObj->GetPos() - g_pPlayer->GetPos();
-						if( vTemp.x*vTemp.x + vTemp.z*vTemp.z < 32*32 )
-							CreateSfx( XI_GEN_MONSTER_SPAWN01, pObj->GetPos(), ( (CMover*)pObj )->GetId() );
-					}
-				}
-
-				if( !g_pPlayer )
-				{
-
-					if( ( (CMover*)pObj )->m_idPlayer != g_Neuz.m_idPlayer )
-					{
-						Error( "error - 0" );
-						ExitProcess( -1 );
-					}
-
-					g_WndMng.SetPlayer( g_pPlayer = (CMover*)pObj );
-					//GMPBIGSUN : check world loading
-					Error( "Created g_pPlayer but World is NULL" );
-					g_WndMng.OpenField();
-					InitFST();
-
-					g_Neuz.m_bTexLoadAlpha = TRUE;
-					
-					if( !g_pPlayer->IsFly() )
-						SendPlayerBehavior();
-					else
-						SendPlayerBehavior2();
-				}
-				CMover* pPlayer	= (CMover*)pObj;
-				if (pPlayer->m_pActMover->IsFly()) {
-					pPlayer->SetRide(pPlayer->GetRideItemIdx());
-				}
-				pPlayer->InitMotion( pPlayer->m_dwMotion );	
-			}
-			pObj->UpdateLocalMatrix();
+	if (CCtrl * pObj = prj.GetCtrl(objid)) {
+		if (CWorld * pWorld = pObj->GetWorld()) {
+			pObj->Delete();
+			pWorld->DeleteObjects();
+		} else {
+			delete pObj;
+			existed = true;
 		}
 	}
-	else
-	{
-		pObj	= (CCtrl*)CreateObj( dwObjType, dwObjIndex, dwObjType != OT_MOVER );
-		if( pObj == NULL )
-		{
-			CString string;
-			string.Format( "CreateObj Error: Type = %d, Index = %d", dwObjType, dwObjIndex );
-			//ADDERRORMSG( string );
-		}
-		pObj->Serialize( ar );
 
-		if( dwObjType == OT_MOVER )
-		{
-			TRACE( "%s Add\n", ( (CMover*)pObj )->GetName() );
-			if( ( (CMover*)pObj )->IsPlayer() )
-			{
-				CMover* pPlayer	= (CMover*)pObj;
-				pPlayer->RedoEquip( g_pPlayer != NULL );
-				PlayerData pd;
-				pd.data.nJob	= pPlayer->GetJob();
-				pd.data.nLevel	= pPlayer->GetLevel();
-				pd.data.nSex	= pPlayer->GetSex();
-				lstrcpy( pd.szPlayer, pPlayer->GetName() );
-				CPlayerDataCenter::GetInstance()->AddPlayerData( ( (CMover*)pObj )->m_idPlayer, pd );
-			}
-			else 
-			{
+	CCtrl * pObj = (CCtrl*)CreateObj( dwObjType, dwObjIndex, dwObjType != OT_MOVER );
+	if (!pObj) {
+		std::string str = std::format("CreateObj Error: Type = {}, Index = {}", dwObjType, dwObjIndex);
+		Error("%s", str.c_str());
+		throw std::runtime_error(str);
+	}
 
-				( (CMover*)pObj )->RedoEquip( TRUE );
-				// npc
-				if( !fJoin ) 
-				{
-					if( g_pPlayer )
-					{
-						D3DXVECTOR3 vTemp	=pObj->GetPos() - g_pPlayer->GetPos();
-						if( vTemp.x*vTemp.x + vTemp.z*vTemp.z < 32*32 )
-							CreateSfx( XI_GEN_MONSTER_SPAWN01, pObj->GetPos(), ( (CMover*)pObj )->GetId() );
+	pObj->Serialize(ar);
+
+	if (dwObjType == OT_MOVER) {
+		CMover * pMover = static_cast<CMover *>(pObj);
+
+		TRACE("%s Add\n", pMover->GetName());
+
+		if (pMover->IsPlayer()) {
+			pMover->RedoEquip(g_pPlayer != NULL);
+			PlayerData pd;
+			pd.data.nJob = pMover->GetJob();
+			pd.data.nLevel = pMover->GetLevel();
+			pd.data.nSex = pMover->GetSex();
+			lstrcpy(pd.szPlayer, pMover->GetName());
+			CPlayerDataCenter::GetInstance()->AddPlayerData(pMover->m_idPlayer, pd);
+		} else {
+			pMover->RedoEquip(TRUE);
+
+			if (!fJoin) {
+				if (g_pPlayer) {
+					D3DXVECTOR3 vTemp = pObj->GetPos() - g_pPlayer->GetPos();
+					if (vTemp.x * vTemp.x + vTemp.z * vTemp.z < 32 * 32) {
+						CreateSfx(XI_GEN_MONSTER_SPAWN01, pObj->GetPos(), pMover->GetId());
 					}
 				}
 			}
-
-			if( !g_pPlayer )
-			{
-				if( ( (CMover*)pObj )->m_idPlayer != g_Neuz.m_idPlayer )
-				{
-					Error( "error - 0" );
-					ExitProcess( -1 );
-				}
-
-				g_WndMng.SetPlayer( g_pPlayer = (CMover*)pObj );
-				//GMPBIGSUN : check world loading
-				Error( "g_pPlayer is ready" );			//월드가 생성되고 g_pPlayer가 생성되는지 check
-				g_WndMng.OpenField();
-				InitFST();
-
-				g_Neuz.m_bTexLoadAlpha = TRUE;
-
-				if( !g_pPlayer->IsFly() )
-					SendPlayerBehavior();
-				else
-					SendPlayerBehavior2();
-			}
-			if( ( (CMover*)pObj )->IsNPC() && ( (CMover*)pObj )->GetProp()->dwClass == RANK_BOSS )
-			{
-				D3DXVECTOR3 vDist = pObj->GetPos() - g_pPlayer->GetPos();
-				FLOAT fLength = D3DXVec3Length( &vDist );
-				if( fLength < 30 )
-				{
-					PlayMusic( BGM_IN_BOSS, 1 );
-					LockMusic();
-					CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-					g_Caption1.RemoveAll();
-					if( ::GetLanguage() != LANG_JAP )
-						g_Caption1.AddCaption( prj.GetText(TID_GAME_BIGMONSTER), pWndWorld->m_pFontAPITitle );
-					else
-						g_Caption1.AddCaption( prj.GetText(TID_GAME_BIGMONSTER), NULL );					
-				}
-			}
-			CMover* pPlayer	= (CMover*)pObj;
-			if( pPlayer->m_pActMover->IsFly() ) {
-				pPlayer->SetRide(pPlayer->GetRideItemIdx());
-				
-				ItemProp *pItemProp = prj.GetItemProp( pPlayer->GetRideItemIdx() );	// 빗자루 프로퍼티.
-				if( pItemProp )
-				{
-					if( pPlayer->m_nFuel == -1 )		// 초기값이면
-						pPlayer->m_nFuel = (int)(pItemProp->dwFFuelReMax * 0.2f);	// 빗자루 최대 연료량을 세팅.
-					// -1일때만 세팅해야지 연료를 반쯤 쓰다가 빗자루를 바꿔도 새로 세팅 되지 않는다.
-				}
-			}
-			pPlayer->InitMotion( pPlayer->m_dwMotion );	
 		}
-		else 
-		if( pObj->GetType() == OT_ITEM )
+
+		if (!g_pPlayer) {
+			if (pMover->m_idPlayer != g_Neuz.m_idPlayer) {
+				Error("error - connected on %lu but expected %lu", pMover->m_idPlayer, g_Neuz.m_idPlayer);
+				ExitProcess(-1);
+			}
+
+			g_WndMng.SetPlayer(g_pPlayer = pMover);
+			//GMPBIGSUN : check world loading
+			Error("g_pPlayer is ready", existed ? ", existed = true" : "");			//월드가 생성되고 g_pPlayer가 생성되는지 check
+			g_WndMng.OpenField();
+			InitFST();
+
+			g_Neuz.m_bTexLoadAlpha = TRUE;
+
+			if (!g_pPlayer->IsFly())
+				SendPlayerBehavior();
+			else
+				SendPlayerBehavior2();
+		}
+
+		if( pMover->IsNPC() && pMover->GetProp()->dwClass == RANK_BOSS )
 		{
-			ItemProp* pItemProp = ( (CItem*)pObj )->GetProp();
+			const D3DXVECTOR3 vDist = pObj->GetPos() - g_pPlayer->GetPos();
+			if(D3DXVec3LengthSq(&vDist) < 30 * 30 )
+			{
+				PlayMusic( BGM_IN_BOSS, 1 );
+				LockMusic();
+				CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
+				g_Caption1.RemoveAll();
+				if( ::GetLanguage() != LANG_JAP )
+					g_Caption1.AddCaption( prj.GetText(TID_GAME_BIGMONSTER), pWndWorld->m_pFontAPITitle );
+				else
+					g_Caption1.AddCaption( prj.GetText(TID_GAME_BIGMONSTER), NULL );					
+			}
+		}
+
+		if (pMover->m_pActMover->IsFly()) {
+			pMover->SetRide(pMover->GetRideItemIdx());
+
+			const ItemProp * pItemProp = prj.GetItemProp(pMover->GetRideItemIdx());	// 빗자루 프로퍼티.
+			if (pItemProp) {
+				if (pMover->m_nFuel == -1)		// 초기값이면
+					pMover->m_nFuel = (int)(pItemProp->dwFFuelReMax * 0.2f);	// 빗자루 최대 연료량을 세팅.
+				// -1일때만 세팅해야지 연료를 반쯤 쓰다가 빗자루를 바꿔도 새로 세팅 되지 않는다.
+			}
+		}
+		pMover->InitMotion(pMover->m_dwMotion);
+
+	}
+
+
+	if (!existed) {
+		if (CItem * pItem = pObj->ToItem()) {
+			const ItemProp * pItemProp = pItem->GetProp();
 			assert(pItemProp != NULL);
 			const auto pos = pObj->GetPos();
-			PLAYSND( pItemProp->dwSubDefine, &pos );
-		}
-		else
-		if( OT_CTRL == pObj->GetType( ) )
-		{
-			CtrlProp* pProp = ( CtrlProp* )pObj->GetProp( );
+			PLAYSND(pItemProp->dwSubDefine, &pos);
+		} else if (CCommonCtrl * pCCtrl = pObj->ToCommonCtrl()) {
+			const CtrlProp * pProp = pCCtrl->GetProp();
 
-			if( pProp && pProp->IsGuildHousingObj( ) )		//gmpbigsun : 길드 하우스 오브젝트는 애니메이션 돌림 
+			if (pProp && pProp->IsGuildHousingObj())		//gmpbigsun : 길드 하우스 오브젝트는 애니메이션 돌림 
 			{
-				CModel* pModel = (CModel*)pObj->GetModel();
-				assert( pModel );
+				CModel * pModel = pObj->GetModel();
+				assert(pModel);
 
-				if( pModel->m_nFrameMax > 0 )
-				{
-					((CCommonCtrl*)pObj)->m_bAniPlay = TRUE;
-					pModel->SetLoop( ANILOOP_LOOP );
+				if (pModel->m_nFrameMax > 0) {
+					pCCtrl->m_bAniPlay = TRUE;
+					pModel->SetLoop(ANILOOP_LOOP);
 				}
 			}
 		}
-	
-
-		pObj->UpdateLocalMatrix();
 	}
+
+	pObj->UpdateLocalMatrix();
 
 #ifdef __YSMOOTH_OBJ
 	DWORD dwType = pObj->GetType();
@@ -1111,10 +1028,6 @@ void CDPClient::OnAddObj( OBJID objid, CAr & ar )
 		pObj->m_bSmooth = TRUE;
 	}
 #endif //__YSMOOTH_OBJ	
-	
-	
-	
-	
 	
 	g_WorldMng.Get()->AddObj( pObj, TRUE );
 	if( pObj->GetType() == OT_MOVER && ( (CMover*)pObj )->m_vtInfo.IsVendorOpen() )

@@ -896,6 +896,16 @@ BOOL CWorld::ReadWorld()
 
 BOOL CWorld::ReadWorld( D3DXVECTOR3 vPos, BOOL bEraseOldLand  )
 {
+	//gmpbigsun: When m_apDeleteObjs, which has a pointer to be deleted among
+	// CWorld::Process, reads the landscape anew
+	// It crashed frequently due to a problem that was not initialized, and it
+	// seems that it had this problem for several years from the beginning of
+	// development to 201006.
+	// m_nDeleteObjs should be initialized to 0 if there is a Landsacpe being
+	// deleted for any reason. Objects in it are deleted...
+	DeleteObjects();
+
+
 	CString strFileName;
 	CString strLandName = m_szFileName;
 	CString strLandTemp;
@@ -914,33 +924,30 @@ BOOL CWorld::ReadWorld( D3DXVECTOR3 vPos, BOOL bEraseOldLand  )
 	{
 		for(int j = x - m_nVisibilityLand; j <= ( x + m_nVisibilityLand ); j++)
 		{
-			if( LandInWorld( j, i ) )
+			if (!LandInWorld(j, i)) continue;
+			
+			CLandscape* pLand = m_apLand[ i * m_nLandWidth + j];
+			if (pLand) continue;
+
+			strLandTemp.Format( "%s%s%02d-%02d.lnd", m_szFilePath, strLandName.GetString(), j, i);
+			pLand = new CLandscape;
+			pLand->m_nWorldX = j * MAP_SIZE;
+			pLand->m_nWorldY = i * MAP_SIZE;
+			pLand->InitDeviceObjects( this );
+			if( pLand->LoadLandscape( strLandTemp, j, i ) == FALSE )
 			{
-				CLandscape* pLand = m_apLand[ i * m_nLandWidth + j];
-				if( pLand == NULL )
-				{
-					//! gmpbigsun : pLand는 할당이 이미 끝난 녀석이다 왜 지우지 않았나;;;
-					// delete pLand;
+				safe_delete( pLand );
+				continue;
+			}
+			pLand->RestoreDeviceObjects( );
 
-					strLandTemp.Format( "%s%s%02d-%02d.lnd", m_szFilePath, strLandName, j , i );
-					pLand = new CLandscape;
-					pLand->m_nWorldX = j * MAP_SIZE;
-					pLand->m_nWorldY = i * MAP_SIZE;
-					pLand->InitDeviceObjects( this );
-					if( pLand->LoadLandscape( strLandTemp, j, i ) == FALSE )
-					{
-						safe_delete( pLand );
-						continue;
-					}
-					pLand->RestoreDeviceObjects( );
-
-					m_apLand[ i * m_nLandWidth + j] = pLand;
+			m_apLand[ i * m_nLandWidth + j] = pLand;
 
 #ifdef __MAP_SECURITY
-					g_WorldMng.AddMapCheckInfo( strLandTemp );
+			g_WorldMng.AddMapCheckInfo( strLandTemp );
 #endif // __MAP_SECURITY
-				}
-			}
+
+			
 		}
 	}
 
