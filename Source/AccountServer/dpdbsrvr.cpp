@@ -242,19 +242,6 @@ void CDPDBSrvr::OnBuyingInfo( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize
 
 }
 
-/*
-void CDPDBSrvr::OnOpenBattleServer( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
-{
-	g_dpSrvr.EnableServer( (DWORD)-1, (DWORD)0, 1L );
-	TRACE( "PACKETTYPE_OPEN_BATTLESERVER\n" );
-}
-
-void CDPDBSrvr::OnCloseBattleServer( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
-{
-	g_dpSrvr.EnableServer( (DWORD)-1, (DWORD)0, 0L );
-	TRACE( "PACKETTYPE_CLOSE_BATTLESERVER\n" );
-}
-*/
 void CDPDBSrvr::SendLogSMItem()
 {
 }

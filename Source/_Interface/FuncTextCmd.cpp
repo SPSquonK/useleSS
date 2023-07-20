@@ -2756,24 +2756,6 @@ BOOL TextCmd_sbend( CScanner & scanner )
 #endif	// __WORLDSERVER
 	return TRUE;
 }
-
-BOOL TextCmd_OpenBattleServer( CScanner & s )
-{
-#ifdef __WORLDSERVER
-	BEFORESENDDUAL( ar, PACKETTYPE_OPEN_BATTLESERVER, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
-#endif	// __WORLDSERVER
-	return TRUE;
-}
-
-BOOL TextCmd_CloseBattleServer( CScanner & s )
-{
-#ifdef __WORLDSERVER
-	BEFORESENDDUAL( ar, PACKETTYPE_CLOSE_BATTLESERVER, DPID_UNKNOWN, DPID_UNKNOWN );
-	SEND( ar, &g_dpDBClient, DPID_SERVERPLAYER );
-#endif	// __WORLDSERVER
-	return TRUE;
-}
 */
 
 BOOL TextCmd_ItemMode(CScanner & scanner, CPlayer_ * pUser) {
@@ -4604,8 +4586,6 @@ CmdFunc::AllCommands::AllCommands() {
 	//ON_TEXTCMDFUNC( TextCmd_sbstart2,              "sbstart2",           "sbstart2",       "sbstart2",       "sbstart2",TCM_SERVER, AUTH_ADMINISTRATOR   , "sbstart2" )
 	//ON_TEXTCMDFUNC( TextCmd_sbend,                 "sbend",              "sbend",          "sbend",          "sbend",   TCM_SERVER, AUTH_ADMINISTRATOR   , "sbend" )
 	//ON_TEXTCMDFUNC( TextCmd_sbreport,              "sbreport",           "sbreport",       "sbreport",       "sbreport",TCM_SERVER, AUTH_ADMINISTRATOR   , "sbreport" )
-	//ON_TEXTCMDFUNC( TextCmd_OpenBattleServer,      "bsopen",             "bsopen",         "bsopen",         "bsopen",  TCM_SERVER, AUTH_ADMINISTRATOR   , "bsopen" )
-	//ON_TEXTCMDFUNC( TextCmd_CloseBattleServer,     "bsclose",            "bsclose",        "bsclose",        "bsclose", TCM_SERVER, AUTH_ADMINISTRATOR   , "bsclose" )
 	ON_TEXTCMDFUNC( TextCmd_SetGuildQuest,         "SetGuildQuest",      "sgq",            "길드퀘스트",     "길퀘",    TCM_SERVER, AUTH_ADMINISTRATOR   , "길드 퀘스트 상태 변경" )
 	ON_TEXTCMDFUNC( TextCmd_SetSnoop,              "Snoop",              "snoop",          "감청",           "감청",    TCM_SERVER, AUTH_ADMINISTRATOR   , "감청" )
 	ON_TEXTCMDFUNC( TextCmd_SetSnoopGuild,         "SnoopGuild",         "sg",             "길드대화저장",   "길저",    TCM_SERVER, AUTH_ADMINISTRATOR   , "길드 대화 저장" )
