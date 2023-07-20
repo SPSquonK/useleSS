@@ -151,8 +151,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	g_DbManager.LoadEveSchoolAccount();
 	
-	if (!InitializeNetLib())
-		return FALSE;
+	if (!InitializeNetLib()) return FALSE;
 
 	if (!g_dpCertifier.StartServer(PN_CERTIFIER, FALSE, CSock::crcRead)) {
 		Error("Certifier: Could not created Cert-Neuz Server (Port %d)", PN_CERTIFIER);

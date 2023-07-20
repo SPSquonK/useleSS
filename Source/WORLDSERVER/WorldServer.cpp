@@ -244,8 +244,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	EnableFloatException();
 
-	if( InitializeNetLib() == FALSE )
-		return FALSE;
+	if (!InitializeNetLib()) return FALSE;
 
 	xSRand( timeGetTime()  );	// 속도를 요하는 랜덤은 xRandom()을 쓰도록...
 

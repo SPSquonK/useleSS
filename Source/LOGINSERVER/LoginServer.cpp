@@ -131,8 +131,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //   InitEH();
 #endif	// _DEBUG
 
-	if( InitializeNetLib() == FALSE )
-		return FALSE;
+	if (!InitializeNetLib()) return FALSE;
+
 	if( !g_dpDBClient.ConnectToServer( g_lpAddr.db, PN_DBSRVR_0 ) )
 	{
 		return FALSE;

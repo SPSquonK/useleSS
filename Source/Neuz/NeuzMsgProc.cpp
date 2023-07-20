@@ -325,8 +325,7 @@ BOOL InitApp()
  
 	InitUPS();					// 애니메이션 타이머 초기화
 
-	if( InitializeNetLib() == FALSE )
-		return FALSE;
+	if (!InitializeNetLib()) return FALSE;
 
 
 
@@ -338,8 +337,6 @@ BOOL InitApp()
 	//////////////////////////////////////////////////////////////////////////
 
 	g_Neuz.LoadOption();		// Neuz.ini를 로딩 	
-
-	TestNetLib( g_Neuz.m_lpCertifierAddr, PN_CERTIFIER );
 
 //	g_Neuz.BeginLoadThread();	// prj.OpenProject()
 	return TRUE;

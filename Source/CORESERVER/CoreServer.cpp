@@ -179,8 +179,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		return FALSE;
 	}
 	
-	if( InitializeNetLib() == FALSE )
-		return FALSE;
+	if( !InitializeNetLib() ) return FALSE;
 
 	if( !g_dpCoreSrvr.StartServer( PN_CORESRVR + 0 ) )
 		return FALSE;

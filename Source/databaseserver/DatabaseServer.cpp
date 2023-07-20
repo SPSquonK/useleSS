@@ -160,8 +160,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //   InitEH();
 #endif	// _DEBUG
 
-	if( InitializeNetLib() == FALSE )
-		return FALSE;
+	if (!InitializeNetLib()) return FALSE;
 
 	if( Script( g_szINI ) == FALSE )
 	{

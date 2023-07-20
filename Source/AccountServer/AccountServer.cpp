@@ -125,7 +125,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	static constexpr int y = 130;
 	SetWindowPos( hWnd, NULL, x, y, 400, 150, SWP_SHOWWINDOW );
 
-	LOAD_WS2_32_DLL;
+	if (!InitializeNetLib()) return FALSE;
 
 	::srand( timeGetTime() );
 
@@ -524,12 +524,11 @@ void ExitInstance( void )
 	
 	g_DbManager.CloseDbWorkers();
 	
-//	UninitializeNetLib();
 	SAFE_DELETE( CBuffer::m_pPool );
 	SAFE_DELETE( CBuffer2::m_pPool2 );	
 	SAFE_DELETE( CBuffer::m_pHeapMng );
 
-	UNLOAD_WS2_32_DLL;
+	WSACleanup();
 }
 
 BOOL CALLBACK ToggleDlgProc( HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam )

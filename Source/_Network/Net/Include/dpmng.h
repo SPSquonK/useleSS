@@ -1,6 +1,3 @@
-#ifndef __DPMNG_H__
-#define __DPMNG_H__
-
 #pragma once
 
 #include "dpsock.h"
@@ -8,22 +5,9 @@
 #include "mymap.h"
 #include <sqktd/flatter_map.hpp>
 
-extern void UninitializeNetLib();
-extern BOOL InitializeNetLib();
-extern	void	TestNetLib( const char* lpAddr, u_short uPort );
+bool InitializeNetLib();
+void UninitializeNetLib();
 
-#define LOAD_WS2_32_DLL	\
-	WSADATA wsaData;	\
-	int err;	\
-	err	= WSAStartup( 0x0202, &wsaData );	\
-	if( err == SOCKET_ERROR )	\
-	{	\
-		TRACE( "WSAStartup() failed with error %ld\n", WSAGetLastError() );	\
-		return FALSE;	\
-	}
-
-#define UNLOAD_WS2_32_DLL	\
-	WSACleanup();
 
 #define BEFORESEND( ar, dw )	\
 	CAr ar;	\
@@ -248,5 +232,3 @@ public:
 };
 
 }
-
-#endif //__DPMNG_H__

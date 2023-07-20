@@ -128,8 +128,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	if( !Script( "CacheServer.ini" ) )
 		return FALSE;
 
-	if( InitializeNetLib() == FALSE )
-		return FALSE;
+	if (!InitializeNetLib()) return FALSE;
 
 	if( !g_DPCoreClient.ConnectToServer( g_szCoreAddr, PN_CORESRVR + 1 ) )
 		return FALSE;

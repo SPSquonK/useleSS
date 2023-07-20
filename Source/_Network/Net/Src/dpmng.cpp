@@ -231,10 +231,14 @@ u_int __stdcall ReceiveThread( LPVOID lpvThreadParameter )
 	return( 0 );
 }
 
-BOOL InitializeNetLib()
-{
-	LOAD_WS2_32_DLL;
-	return TRUE;
+bool InitializeNetLib() {
+	WSADATA wsaData;
+	const int err = WSAStartup(0x0202, &wsaData);
+	if (err == SOCKET_ERROR) {
+		TRACE("WSAStartup() failed with error %ld\n", WSAGetLastError());	\
+		return false;
+	}
+	return true;
 }
 
 void UninitializeNetLib()
@@ -249,27 +253,5 @@ void UninitializeNetLib()
 #endif	// __VM_0820
 	SAFE_DELETE( CBuffer::m_pHeapMng );
 
-	UNLOAD_WS2_32_DLL;
-}
-
-void TestNetLib( const char* lpAddr, u_short uPort )
-{
-	struct sockaddr_in server;
-	struct hostent* host	= NULL;
-	SOCKET s	= socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-	if( s == INVALID_SOCKET )
-		return;
-	server.sin_family	= AF_INET;
-	server.sin_port		= htons( uPort );
-	server.sin_addr.s_addr	= inet_addr( lpAddr );
-	if( server.sin_addr.s_addr == INADDR_NONE )
-	{
-		host	= gethostbyname( lpAddr );
-		if( host == NULL )
-			return;
-		CopyMemory( &server.sin_addr, host->h_addr_list[0],
-			host->h_length );
-	}
-	connect( s, (struct sockaddr *)&server, sizeof(server) );
-	closesocket( s );
+	WSACleanup();
 }
