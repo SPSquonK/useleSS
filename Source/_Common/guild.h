@@ -196,12 +196,7 @@ enum CONTRIBUTION_RESULT
 
 #define	GF_WARTIME		(DWORD)0x00000001
 
-typedef	struct	_GUILD_MEMBER_INFO
-{
-	u_long	idPlayer = 0;
-	BYTE	nMultiNo = 100;
-}
-GUILD_MEMBER_INFO, *PGUILD_MEMBER_INFO;
+struct	GUILD_MEMBER_INFO { u_long	idPlayer = 0; };
 
 class	CGuildWar;
 
