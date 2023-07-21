@@ -292,8 +292,6 @@ void ExitInstance( void )
 	g_GuildMng.Clear();
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
-	SAFE_DELETE( CGuildMember::sm_pPool );
-	SAFE_DELETE( CGuild::sm_pPool );
 	SAFE_DELETE( CMover::m_pPool );
 #endif	// __MEM_TRACE
 #endif	// __VM_0820

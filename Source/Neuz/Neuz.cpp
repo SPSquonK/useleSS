@@ -520,8 +520,6 @@ HRESULT CNeuzApp::FinalCleanup()
 	g_GuildMng.Clear();
 
 	SAFE_DELETE( CParty::m_pPool );
-	SAFE_DELETE( CGuildMember::sm_pPool );
-	SAFE_DELETE( CGuild::sm_pPool );
 	SAFE_DELETE( CMover::m_pPool );
 	SAFE_DELETE( CActionMover::m_pPool );
 	SAFE_DELETE( CItem::m_pPool );

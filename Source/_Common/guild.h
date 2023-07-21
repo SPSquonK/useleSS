@@ -174,18 +174,8 @@ public:
 	CGuildMember & operator = (const CGuildMember & source) = delete;
 	
 #ifdef __CLIENT
-	CMover *GetMover( void ) { return prj.GetUserByID( m_idPlayer ); }
+	CMover * GetMover() { return prj.GetUserByID(m_idPlayer); }
 #endif // client
-public:
-#ifndef __VM_0820
-#ifndef __MEM_TRACE
-	static	MemPooler<CGuildMember>*	sm_pPool;
-	void*	operator new( size_t nSize )	{	return CGuildMember::sm_pPool->Alloc();	}
-	void*	operator new( size_t nSize, LPCSTR lpszFileName, int nLine )	{	return CGuildMember::sm_pPool->Alloc();	}
-	void	operator delete( void* lpMem )	{	CGuildMember::sm_pPool->Free( (CGuildMember*)lpMem );	}
-	void	operator delete( void* lpMem, LPCSTR lpszFileName, int nLine )	{	CGuildMember::sm_pPool->Free( (CGuildMember*)lpMem );	}
-#endif	// __MEM_TRACE
-#endif	// __VM_0820
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -321,16 +311,6 @@ public:
 	static	int	sm_anMaxMemberSize[MAX_GUILD_LEVEL];
 	static	int	sm_anMaxMemberLvSize[MAX_GM_LEVEL];
 public:
-#ifndef __VM_0820
-#ifndef __MEM_TRACE
-	static	MemPooler<CGuild>*	sm_pPool;
-	void*	operator new( size_t nSize )	{	return CGuild::sm_pPool->Alloc();	}
-	void*	operator new( size_t nSize, LPCSTR lpszFileName, int nLine )	{	return CGuild::sm_pPool->Alloc();	}
-	void	operator delete( void* lpMem )	{	CGuild::sm_pPool->Free( (CGuild*)lpMem );	}
-	void	operator delete( void* lpMem, LPCSTR lpszFileName, int nLine )	{	CGuild::sm_pPool->Free( (CGuild*)lpMem );	}
-#endif	// __MEM_TRACE
-#endif	// __VM_0820
-
 	[[nodiscard]] static bool IsValidName(const char * szGuild);
 
 #ifdef __WORLDSERVER

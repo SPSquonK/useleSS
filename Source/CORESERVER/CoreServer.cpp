@@ -230,8 +230,6 @@ void ExitInstance( void )
 	g_GuildMng.m_AddRemoveLock.Leave( theLineFile );
 
 	g_GuildMng.Clear();
-	SAFE_DELETE( CGuildMember::sm_pPool );
-	SAFE_DELETE( CGuild::sm_pPool );
 
 	UninitializeNetLib();
 }
