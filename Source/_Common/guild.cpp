@@ -244,27 +244,6 @@ CAr & operator>>(CAr & ar, CGuildMember & self) {
 	return ar;
 }
 
-CGuildMember & CGuildMember::operator = ( CGuildMember & source )
-{
-	// TODO: wtf? This copy constructor is not copying
-//	m_nGiveGold	= source.m_nGiveGold;
-//	m_dwGivePxpCount	= source.m_dwGivePxpCount;
-//	m_dwSex	= source.m_dwSex;
-	m_idPlayer	= source.m_idPlayer;
-//	m_idSelectedVote	= source.m_idSelectedVote;
-//	m_nJob	= source.m_nJob;
-//	m_nLevel	= source.m_nLevel;
-//	m_nLogin	= source.m_nLogin;
-//	m_nLose	= source.m_nLose;
-	m_nMemberLv	= source.m_nMemberLv;
-//	m_nMultiNo	= source.m_nMultiNo;
-//	m_nPay	= source.m_nPay;
-//	m_nSurrender	= source.m_nSurrender;
-//	m_nWin	= source.m_nWin;
-//	lstrcpy( m_szAlias, source.m_szAlias );
-	return *this;
-}
-
 //________________________________________________________________________________
 #ifndef __VM_0820
 #ifndef __MEM_TRACE
@@ -620,37 +599,6 @@ CGuildWar* CGuild::GetWar( void )
 {
 // must lock g_GuildMng
 	return g_GuildWarMng.GetWar( m_idWar );
-}
-
-CGuild & CGuild::operator = ( CGuild & source )
-{
-//	memcpy( m_adwPenya, source.m_adwPenya, sizeof(DWORD)*MAX_GM_LEVEL );
-//	memcpy( m_adwPower, source.m_adwPower, sizeof(DWORD)*MAX_GM_LEVEL );
-//	m_bActive	= source.m_bActive;
-//	m_bSendPay	= source.m_bSendPay;
-//	m_dwContributionPxp	= source.m_dwContributionPxp;
-//	m_dwFlag	= source.m_dwFlag;
-//	m_dwLogo	= source.m_dwLogo;
-//	m_idEnemyGuild	= source.m_idEnemyGuild;
-	m_idGuild	= source.m_idGuild;
-	m_idMaster	= source.m_idMaster;
-//	m_idWar	= source.m_idWar;
-//	m_nGoldGuild	= source.m_nGoldGuild;
-//	m_nLevel	= source.m_nLevel;
-//	m_nLose	= source.m_nLose;
-//	m_nSurrender	= source.m_nSurrender;
-//	m_nWin	= source.m_nWin;
-//	m_nWinPoint	= source.m_nWinPoint;
-	lstrcpy( m_szGuild, source.m_szGuild );
-//	lstrcpy( m_szNotice, source.m_szNotice );
-	for( auto i = source.m_mapPMember.begin(); i != source.m_mapPMember.end(); ++ i )
-	{
-		CGuildMember* pMember	= new CGuildMember;
-		*pMember	= *( i->second );
-		if( !AddMember( pMember ) )
-			{	SAFE_DELETE( pMember );	}
-	}
-	return *this;
 }
 
 //________________________________________________________________________________

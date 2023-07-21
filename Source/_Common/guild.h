@@ -171,7 +171,7 @@ public:
 	friend CAr & operator<<(CAr & ar, const CGuildMember & self);
 	friend CAr & operator>>(CAr & ar, CGuildMember & self);
 
-	CGuildMember &	operator = ( CGuildMember & source );
+	CGuildMember & operator = (const CGuildMember & source) = delete;
 	
 #ifdef __CLIENT
 	CMover *GetMover( void ) { return prj.GetUserByID( m_idPlayer ); }
@@ -301,7 +301,7 @@ public:
 	[[nodiscard]] int GetMemberLvSize(int nMemberLv) const;
 	int		GetMaxMemberLvSize( int nMemberLv );
 
-	CGuild &	operator = ( CGuild & source );
+	CGuild & operator = (const CGuild & source) = delete;
 
 	boost::container::flat_map<int /* QuestId */, int /* nState */> m_quests;
 	std::optional<int> GetStateOfQuest(int nQuestId) const;
