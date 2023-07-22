@@ -95,7 +95,7 @@ void CCtrl::AddItToGlobalId()
 {
 	prj.m_objmap.Add( this );
 
-	if (CMoverPlayer * const asUser = ToUser()) {
+	if (CUser * const asUser = ToUser()) {
 		bool bResult = prj.m_idPlayerToUserPtr.emplace(asUser->m_idPlayer, asUser).second;
 		if( bResult == false )
 			Error("AddItToGlobalId id:%d duplicated.", asUser->m_idPlayer );

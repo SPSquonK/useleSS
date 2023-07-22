@@ -73,9 +73,8 @@ class CCommonCtrl;
 
 #ifdef __WORLDSERVER
 class CUser;
-using CMoverPlayer = CUser;
 #else
-using CMoverPlayer = CMover;
+using CUser = CMover;
 #endif
 
 #ifdef __CLIENT
@@ -178,8 +177,8 @@ public:
 	[[nodiscard]] const CMover * ToMover() const;
 	[[nodiscard]]       CMover * ToNpc();
 	[[nodiscard]] const CMover * ToNpc() const;
-	[[nodiscard]]       CMoverPlayer * ToUser();
-	[[nodiscard]] const CMoverPlayer * ToUser() const;
+	[[nodiscard]]       CUser * ToUser();
+	[[nodiscard]] const CUser * ToUser() const;
 	[[nodiscard]]       CShip * ToShip();
 	[[nodiscard]] const CShip * ToShip() const;
 	[[nodiscard]]       CItem * ToItem();

@@ -695,7 +695,7 @@ public:
 	static DWORD				m_dwProSP;					// 2차직업 스킬의 레벨업때 필요한 SP포인트
 	static DWORD m_dwLegendSP;
 
-	std::map<u_long, CMoverPlayer *>		m_idPlayerToUserPtr;
+	std::map<u_long, CUser *>		m_idPlayerToUserPtr;
 	CObjMap						m_objmap;
 	CModelMng					m_modelMng;
 	int							m_nMoverPropSize;
@@ -854,7 +854,7 @@ public:
 	CItem*			GetItem( OBJID objid );
 	CMover*			GetMover( OBJID objid );
 	CShip*			GetShip( OBJID objid );
-	CMoverPlayer * GetUserByID(u_long idPlayer);
+	CUser * GetUserByID(u_long idPlayer);
 	LPCHARACTER		GetCharacter( LPCTSTR lpStrKey );
 	void			ProtectPropMover();
 	DWORD			GetLevelExp( int nLevel );
@@ -1006,7 +1006,7 @@ inline LPCTSTR CProject::GetText( DWORD dwIndex )
 	return m_colorText.GetAt( dwIndex )->lpszData.GetString(); 
 }
 
-inline CMoverPlayer * CProject::GetUserByID(const u_long idPlayer) {
+inline CUser * CProject::GetUserByID(const u_long idPlayer) {
 	const auto i = m_idPlayerToUserPtr.find( idPlayer );
 	return i != m_idPlayerToUserPtr.end() ? i->second : nullptr;
 }

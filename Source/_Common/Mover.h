@@ -1495,14 +1495,14 @@ inline const CMover * CObj::ToNpc() const {
 	return mover && mover->IsNPC() ? mover : nullptr;
 }
 
-inline CMoverPlayer * CObj::ToUser() {
+inline CUser * CObj::ToUser() {
 	CMover * mover = ToMover();
-	return mover && mover->IsPlayer() ? reinterpret_cast<CMoverPlayer *>(mover) : nullptr;
+	return mover && mover->IsPlayer() ? reinterpret_cast<CUser *>(mover) : nullptr;
 }
 
-inline const CMoverPlayer * CObj::ToUser() const {
+inline const CUser * CObj::ToUser() const {
 	const CMover * mover = ToMover();
-	return mover && mover->IsPlayer() ? reinterpret_cast<const CMoverPlayer *>(mover) : nullptr;
+	return mover && mover->IsPlayer() ? reinterpret_cast<const CUser *>(mover) : nullptr;
 }
 
 // 유저상태 알아봄

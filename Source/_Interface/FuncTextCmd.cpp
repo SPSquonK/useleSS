@@ -78,7 +78,7 @@ CmdFunc::AllCommands g_textCmdFuncs;
 
 
 
-BOOL TextCmd_InvenClear(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_InvenClear(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	D3DXVECTOR3 vPos	= pUser->GetPos();
 	CWorld* pWorld	= pUser->GetWorld();
@@ -143,7 +143,7 @@ BOOL TextCmd_Time( CScanner& scanner )
 	return TRUE;
 }
 
-BOOL TextCmd_SetMonsterRespawn(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_SetMonsterRespawn(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	D3DXVECTOR3 vPos	= pUser->GetPos();
 	CWorld* pWorld	= pUser->GetWorld();
@@ -233,14 +233,14 @@ BOOL TextCmd_PropMonster( CScanner & scanner )
 	return TRUE;
 }
 
-BOOL TextCmd_GameSetting(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_GameSetting(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->AddGameSetting();	
 #endif // __WORLDSERVER
 	return TRUE;	
 }
 
-BOOL TextCmd_ChangeFace(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_ChangeFace(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	DWORD dwFace = scanner.GetNumber();
 	if( dwFace < 0 || dwFace >= MAX_HEAD )
@@ -281,7 +281,7 @@ BOOL TextCmd_ChangeFace(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_AroundKill(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_AroundKill(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	if( pUser->GetWeaponItem() == NULL )
 		return TRUE;
@@ -293,7 +293,7 @@ BOOL TextCmd_AroundKill(CScanner &, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL	TextCmd_PetLevel(CScanner &, CPlayer_ * pUser) {
+BOOL	TextCmd_PetLevel(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CPet* pPet	= pUser->GetPet();
 	if( pPet && pPet->GetExpPercent() == 100 )
@@ -316,7 +316,7 @@ BOOL	TextCmd_MakePetFeed( CScanner & s )
 	return TRUE;
 }
 
-BOOL	TextCmd_PetExp(CScanner &, CPlayer_ * pUser) {
+BOOL	TextCmd_PetExp(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CPet* pPet	= pUser->GetPet();
 	if( pPet && pPet->GetLevel() != PL_S )
@@ -446,14 +446,14 @@ BOOL TextCmd_AvailPocket( CScanner & s )
 	return TRUE;
 }
 
-BOOL TextCmd_PocketView(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_PocketView(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->AddPocketView();
 #endif	// __WORLDSERVER
 	return TRUE;
 }
 
-BOOL TextCmd_RefineCollector(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_RefineCollector(CScanner & s, CUser * pUser) {
 // 0번째
 #ifdef __WORLDSERVER
 	int nAbilityOption	= s.GetNumber();
@@ -474,28 +474,28 @@ BOOL TextCmd_RefineCollector(CScanner & s, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_StartCollecting(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_StartCollecting(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->StartCollecting();
 #endif	// __WORLDSERVER
 	return TRUE;
 }
 
-BOOL TextCmd_StopCollecting(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_StopCollecting(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->StopCollecting();
 #endif	// __WORLDSERVER
 	return TRUE;
 }
 
-BOOL TextCmd_DoUseItemBattery(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_DoUseItemBattery(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->DoUseItemBattery();
 #endif	// __WORLDSERVER
 	return TRUE;
 }
 
-BOOL TextCmd_RefineAccessory(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_RefineAccessory(CScanner & s, CUser * pUser) {
 	// 0번째
 #ifdef __WORLDSERVER
 	int nAbilityOption	= s.GetNumber();
@@ -508,7 +508,7 @@ BOOL TextCmd_RefineAccessory(CScanner & s, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_SetRandomOption(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_SetRandomOption(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CItemElem * const pItemElem = pUser->m_Inventory.GetAt( 0 );
 	if (!pItemElem) return TRUE;
@@ -544,7 +544,7 @@ BOOL TextCmd_SetRandomOption(CScanner & s, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_GenRandomOption(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_GenRandomOption(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CItemElem* pItemElem	= pUser->m_Inventory.GetAt( 0 );
 	if( pItemElem )
@@ -571,7 +571,7 @@ BOOL TextCmd_PickupPetAwakeningCancel( CScanner & )
 	return TRUE;
 }
 
-BOOL TextCmd_InitializeRandomOption(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_InitializeRandomOption(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CItemElem* pItemElem	= pUser->m_Inventory.GetAt( 0 );
 	if( pItemElem )
@@ -587,7 +587,7 @@ BOOL TextCmd_InitializeRandomOption(CScanner & s, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_ItemLevel(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_ItemLevel(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	int i	= s.GetNumber();
 	if( s.tok == FINISHED )
@@ -606,7 +606,7 @@ BOOL TextCmd_ItemLevel(CScanner & s, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_Level(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Level(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 	CString strJob = scanner.Token;
@@ -647,7 +647,7 @@ BOOL TextCmd_SfxLv( CScanner & scanner )
 }
 #endif
 
-BOOL TextCmd_ChangeJob(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_ChangeJob(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 	CString strJob = scanner.Token;
@@ -687,7 +687,7 @@ BOOL TextCmd_ChangeJob(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_stat(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_stat(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 	CString strstat = scanner.Token;
@@ -757,7 +757,7 @@ BOOL TextCmd_stat(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_SetSnoop(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_SetSnoop(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	s.GetToken();
 	if( s.tok != FINISHED )
@@ -781,7 +781,7 @@ BOOL TextCmd_SetSnoop(CScanner & s, CPlayer_ * pUser) {
 	return FALSE;
 }
 
-BOOL TextCmd_SetSnoopGuild(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_SetSnoopGuild(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	s.GetToken();
 	if( s.tok != FINISHED )
@@ -800,7 +800,7 @@ BOOL TextCmd_SetSnoopGuild(CScanner & s, CPlayer_ * pUser) {
 	return FALSE;
 }
 
-BOOL TextCmd_QuerySetPlayerName(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_QuerySetPlayerName(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 	CString strPlayer	= scanner.Token;
@@ -811,7 +811,7 @@ BOOL TextCmd_QuerySetPlayerName(CScanner & scanner, CPlayer_ * pUser) {
 	return FALSE;
 }
 
-BOOL TextCmd_QuerySetGuildName(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_QuerySetGuildName(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 	CString strGuild	= scanner.Token;
@@ -830,7 +830,7 @@ BOOL TextCmd_QuerySetGuildName(CScanner & scanner, CPlayer_ * pUser) {
 	return FALSE;
 }
 
-BOOL TextCmd_CreateGuild(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_CreateGuild(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 	GUILD_MEMBER_INFO	info;
@@ -862,7 +862,7 @@ BOOL TextCmd_RemoveGuildMember( CScanner & scanner )
 	return FALSE;
 }
 
-BOOL TextCmd_GuildChat(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_GuildChat(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 #ifdef __JEFF_9_20
 	int nText	= pUser->GetMuteText();
@@ -941,7 +941,7 @@ BOOL TextCmd_GuildRankingDBUpdate( CScanner & )
 	return TRUE;
 }
 
-BOOL TextCmd_GuildStat(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_GuildStat(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 	CString strstat = scanner.Token;
@@ -1015,7 +1015,7 @@ BOOL TextCmd_SetGuildQuest(CScanner & s) {
 	return FALSE;
 }
 
-BOOL TextCmd_PartyLevel(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_PartyLevel(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	DWORD dwLevel = scanner.GetNumber();
 	DWORD dwPoint = scanner.GetNumber();
@@ -1034,7 +1034,7 @@ BOOL TextCmd_PartyLevel(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL  TextCmd_InitSkillExp(CScanner & scanner, CPlayer_ * pUser) {
+BOOL  TextCmd_InitSkillExp(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	if( pUser->InitSkillExp() == TRUE )
 		pUser->AddInitSkill();
@@ -1042,7 +1042,7 @@ BOOL  TextCmd_InitSkillExp(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_SkillLevel(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_SkillLevel(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	const DWORD dwSkillKind	= scanner.GetNumber();
 	const DWORD dwSkillLevel = scanner.GetNumber();
@@ -1087,7 +1087,7 @@ BOOL TextCmd_SkillLevel(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_SkillLevelAll(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_SkillLevelAll(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	for (SKILL & skill : pUser->m_jobSkills) {
 		const ItemProp * pSkillProp = skill.GetProp();
@@ -1100,7 +1100,7 @@ BOOL TextCmd_SkillLevelAll(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_whisper(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_whisper(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	static	CHAR	lpString[260];
 
@@ -1153,7 +1153,7 @@ BOOL TextCmd_whisper(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_say(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_say(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	static	CHAR	lpString[1024];
 
@@ -1205,7 +1205,7 @@ BOOL TextCmd_say(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_ResistItem(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_ResistItem(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	DWORD dwObjId	= scanner.GetNumber();
 	BYTE bItemResist = scanner.GetNumber();
@@ -1300,7 +1300,7 @@ namespace SqKItemEnchant {
 }
 #endif
 
-BOOL TextCmd_ItemEnchant(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_ItemEnchant(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CItemElem * pItemElem = pUser->m_Inventory.GetAt(0);
 	if (!pItemElem) return TRUE;
@@ -1320,7 +1320,7 @@ BOOL TextCmd_CommercialElem( CScanner& )
 	return FALSE;
 }
 
-BOOL TextCmd_Piercing(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Piercing(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	DWORD dwObjId	= scanner.GetNumber();
 	int bPierNum = scanner.GetNumber();
@@ -1396,7 +1396,7 @@ BOOL IsRight( CString &str )
 		return TRUE;
 }
 
-BOOL TextCmd_shout(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_shout(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	if( pUser->IsMode( SHOUTTALK_MODE ) )
 		return FALSE;
@@ -1666,7 +1666,7 @@ BOOL TextCmd_shout(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_PartyChat(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_PartyChat(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	static CHAR lpString[260];
 	
@@ -1738,21 +1738,21 @@ BOOL TextCmd_PartyChat(CScanner & scanner, CPlayer_ * pUser) {
 }
 
 
-BOOL TextCmd_Music(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Music(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	u_long idmusic	= scanner.GetNumber();
 	g_DPCoreClient.SendPlayMusic( pUser->GetWorld()->GetID(), idmusic );
 #endif	// __WORLDSERVER
 	return TRUE;
 }
-BOOL TextCmd_Sound(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Sound(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	u_long idsound	= scanner.GetNumber();
 	g_DPCoreClient.SendPlaySound( pUser->GetWorld()->GetID(), idsound );
 #endif	// __WORLDSERVER
 	return TRUE;
 }
-BOOL TextCmd_Summon(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Summon(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 	if( strcmp( pUser->GetName(), scanner.Token) )
@@ -1795,7 +1795,7 @@ BOOL TextCmd_ClearPetName( CScanner &)
 	return TRUE;
 }
 
-BOOL TextCmd_SetPetName(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_SetPetName(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CPet* pPet	= pUser->GetPet();
 	if( !pPet )
@@ -1837,7 +1837,7 @@ BOOL TextCmd_DeleteLayer( CScanner & s )
 	return TRUE;
 }
 
-BOOL TextCmd_Layer(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_Layer(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	DWORD dwWorld	= s.GetNumber();
 	CWorld* pWorld	= g_WorldMng.GetWorld( dwWorld );
@@ -1868,7 +1868,7 @@ BOOL TextCmd_Layer(CScanner & s, CPlayer_ * pUser) {
 }
 #endif	// __LAYER_1020
 
-BOOL TextCmd_NextCoupleLevel(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_NextCoupleLevel(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CCouple* pCouple	= CCoupleHelper::Instance()->GetCouple( pUser->m_idPlayer );
 	if( pCouple )
@@ -1887,7 +1887,7 @@ BOOL TextCmd_NextCoupleLevel(CScanner &, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_Propose(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_Propose(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	s.GetToken();
 	CCoupleHelper::Instance()->OnPropose( pUser, s.token );
@@ -1895,21 +1895,21 @@ BOOL TextCmd_Propose(CScanner & s, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_Refuse(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_Refuse(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CCoupleHelper::Instance()->OnRefuse( pUser );
 #endif	// __WORLDSERVER
 	return TRUE;
 }
 
-BOOL TextCmd_Couple(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_Couple(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CCoupleHelper::Instance()->OnCouple( pUser );
 #endif	// __WORLDSERVER
 	return TRUE;
 }
 
-BOOL TextCmd_Decouple(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_Decouple(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CCoupleHelper::Instance()->OnDecouple( pUser );
 #endif	// __WORLDSERVER
@@ -1945,7 +1945,7 @@ BOOL TextCmd_CoupleState( CScanner & s )
 }
 */
 
-BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Teleport(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	TCHAR *lpszPlayer = NULL;
 	int x, z;
@@ -2017,7 +2017,7 @@ BOOL TextCmd_Teleport(CScanner & scanner, CPlayer_ * pUser) {
 #endif // __WORLDSERVER
 	return TRUE;
 }
-BOOL TextCmd_Out(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Out(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 //	TCHAR lpszPlayer[MAX_PLAYER];
 	scanner.GetToken();
@@ -2056,7 +2056,7 @@ BOOL TextCmd_RemoveNpc(CScanner & s) {
 }
 
 
-BOOL TextCmd_CreateItem2(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_CreateItem2(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	s.GetToken();
 	ItemProp* pItemProp	= prj.GetItemProp( s.Token );
@@ -2079,7 +2079,7 @@ BOOL TextCmd_CreateItem2(CScanner & s, CPlayer_ * pUser) {
 #endif	// __WORLDSERVER
 }
 
-BOOL TextCmd_CreateItem(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_CreateItem(CScanner & scanner, CUser * pUser) {
 	scanner.GetToken();
 
 #ifdef __CLIENT
@@ -2137,7 +2137,7 @@ BOOL TextCmd_LocalEvent( CScanner & s )
 }
 
 // 무버이름 캐릭터키 갯수 선공 
-BOOL TextCmd_CreateChar(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_CreateChar(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	D3DXVECTOR3 vPos = pUser->GetPos();
 	CWorld* pWorld	= pUser->GetWorld();
@@ -2182,7 +2182,7 @@ BOOL TextCmd_CreateChar(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_CreateCtrl(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_CreateCtrl(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	D3DXVECTOR3 vPos	= pUser->GetPos();
 	CWorld* pWorld	= pUser->GetWorld();
@@ -2254,7 +2254,7 @@ BOOL TextCmd_GetMailGold( CScanner & s )
 	return TRUE;
 }
 
-BOOL TextCmd_Lua(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_Lua(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	s.GetToken();
 	s.Token.MakeLower();
@@ -2278,14 +2278,14 @@ BOOL TextCmd_Lua(CScanner & s, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_LuaEventList(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_LuaEventList(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	prj.m_EventLua.GetAllEventList( pUser );
 #endif // __WORLDSERVER
 	return TRUE;
 }
 
-BOOL TextCmd_LuaEventInfo(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_LuaEventInfo(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	prj.m_EventLua.GetEventInfo( pUser, s.GetNumber() );
 #endif // __WORLDSERVER
@@ -2293,7 +2293,7 @@ BOOL TextCmd_LuaEventInfo(CScanner & s, CPlayer_ * pUser) {
 }
 
 #ifdef __JEFF_9_20
-BOOL TextCmd_Mute(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_Mute(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	s.GetToken();
 	if( s.tok == FINISHED )
@@ -2318,7 +2318,7 @@ BOOL TextCmd_Mute(CScanner & s, CPlayer_ * pUser) {
 }
 #endif	// __JEFF_9_20
 
-BOOL TextCmd_AngelExp(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_AngelExp(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	int nAddExp	= s.GetNumber();
 
@@ -2354,7 +2354,7 @@ BOOL TextCmd_AngelExp(CScanner & s, CPlayer_ * pUser) {
 }
 
 #ifdef __EVENT_1101
-BOOL TextCmd_CallTheRoll(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_CallTheRoll(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	int nCount	= s.GetNumber();
 #ifdef __EVENT_1101_2
@@ -2376,7 +2376,7 @@ BOOL TextCmd_CallTheRoll(CScanner & s, CPlayer_ * pUser) {
 
 #endif	// __EVENT_1101
 
-BOOL TextCmd_CreateNPC(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_CreateNPC(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	D3DXVECTOR3 vPos	= pUser->GetPos();
 	CWorld* pWorld	= pUser->GetWorld();
@@ -2430,21 +2430,21 @@ BOOL TextCmd_CreateNPC(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_Invisible(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Invisible(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->m_dwMode |= TRANSPARENT_MODE;
 	g_UserMng.AddModifyMode( pUser );
 #endif // __WORLDSERVER
 	return TRUE;
 }
-BOOL TextCmd_NoInvisible(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_NoInvisible(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->m_dwMode &= (~TRANSPARENT_MODE);
 	g_UserMng.AddModifyMode( pUser );
 #endif // __WORLDSERVER
 	return TRUE;
 }
-BOOL TextCmd_NoUndying(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_NoUndying(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->m_dwMode &= (~MATCHLESS_MODE);
 	pUser->m_dwMode &= (~MATCHLESS2_MODE);
@@ -2454,7 +2454,7 @@ BOOL TextCmd_NoUndying(CScanner & scanner, CPlayer_ * pUser) {
 }
 
 // exp상승 금지 명령. 토글방식으로 동작.
-BOOL TextCmd_ExpUpStop(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_ExpUpStop(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	if( pUser->m_dwMode & MODE_EXPUP_STOP )
 		pUser->m_dwMode &= (~MODE_EXPUP_STOP);
@@ -2466,7 +2466,7 @@ BOOL TextCmd_ExpUpStop(CScanner & scanner, CPlayer_ * pUser) {
 	
 	return TRUE;
 }
-BOOL TextCmd_PartyInvite(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_PartyInvite(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	MoverProp* pMoverProp = NULL;
 	scanner.GetToken();
@@ -2487,7 +2487,7 @@ BOOL TextCmd_PartyInvite(CScanner & scanner, CPlayer_ * pUser) {
 
 	return TRUE;
 }
-BOOL TextCmd_GuildInvite(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_GuildInvite(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	MoverProp* pMoverProp = NULL;
 	scanner.GetToken();
@@ -2511,7 +2511,7 @@ BOOL TextCmd_GuildInvite(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_Undying(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Undying(CScanner & scanner, CUser * pUser) {
 	pUser->m_dwMode &= (~MATCHLESS2_MODE);
 	pUser->m_dwMode |= MATCHLESS_MODE;
 #ifdef __WORLDSERVER
@@ -2520,7 +2520,7 @@ BOOL TextCmd_Undying(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_Undying2(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_Undying2(CScanner &, CUser * pUser) {
 	pUser->m_dwMode &= (~MATCHLESS_MODE);
 	pUser->m_dwMode |= MATCHLESS2_MODE;
 #ifdef __WORLDSERVER
@@ -2530,7 +2530,7 @@ BOOL TextCmd_Undying2(CScanner &, CPlayer_ * pUser) {
 }
 
 
-BOOL TextCmd_NoDisguise(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_NoDisguise(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->NoDisguise( );
 	g_UserMng.AddNoDisguise( pUser );
@@ -2548,7 +2548,7 @@ BOOL DoDisguise( CUser* pUser, DWORD dwIndex )
 #endif // __WORLDSERVER
 
 
-BOOL TextCmd_Disguise(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Disguise(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	MoverProp* pMoverProp = NULL;
 	scanner.GetToken();
@@ -2565,7 +2565,7 @@ BOOL TextCmd_Disguise(CScanner & scanner, CPlayer_ * pUser) {
 #endif
 	return TRUE;
 }
-BOOL TextCmd_Freeze(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Freeze(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 
@@ -2593,7 +2593,7 @@ BOOL TextCmd_Freeze(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_NoFreeze(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_NoFreeze(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 	if( strcmp( pUser->GetName(), scanner.Token) )
@@ -2619,7 +2619,7 @@ BOOL TextCmd_NoFreeze(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_Talk(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Talk(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 
@@ -2639,7 +2639,7 @@ BOOL TextCmd_Talk(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_NoTalk(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_NoTalk(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	
 	scanner.GetToken();
@@ -2662,7 +2662,7 @@ BOOL TextCmd_NoTalk(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_GetGold(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_GetGold(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	int nGold = scanner.GetNumber();	
 	pUser->AddGold( nGold );
@@ -2758,7 +2758,7 @@ BOOL TextCmd_sbend( CScanner & scanner )
 }
 */
 
-BOOL TextCmd_ItemMode(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_ItemMode(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->SetMode( ITEM_MODE );
 	g_UserMng.AddModifyMode( pUser );
@@ -2766,7 +2766,7 @@ BOOL TextCmd_ItemMode(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_ItemNotMode(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_ItemNotMode(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->SetNotMode( ITEM_MODE );
 	g_UserMng.AddModifyMode( pUser );
@@ -2774,7 +2774,7 @@ BOOL TextCmd_ItemNotMode(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_AttackMode(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_AttackMode(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->SetMode( NO_ATTACK_MODE );
 	g_UserMng.AddModifyMode( pUser );
@@ -2782,7 +2782,7 @@ BOOL TextCmd_AttackMode(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_EscapeReset(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_EscapeReset(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CMover* pMover = prj.GetUserByID( scanner.GetNumber() );
 	if( IsValidObj( pMover ) ) {
@@ -2817,7 +2817,7 @@ BOOL TextCmd_EscapeReset(CScanner & scanner, CPlayer_ * pUser) {
 
 
 
-BOOL TextCmd_AttackNotMode(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_AttackNotMode(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->SetNotMode( NO_ATTACK_MODE );
 	g_UserMng.AddModifyMode( pUser );
@@ -2825,7 +2825,7 @@ BOOL TextCmd_AttackNotMode(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_CommunityMode(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_CommunityMode(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->SetMode( COMMUNITY_MODE );
 	g_UserMng.AddModifyMode( pUser );
@@ -2833,7 +2833,7 @@ BOOL TextCmd_CommunityMode(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_CommunityNotMode(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_CommunityNotMode(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->SetNotMode( COMMUNITY_MODE );
 	g_UserMng.AddModifyMode( pUser );
@@ -2841,7 +2841,7 @@ BOOL TextCmd_CommunityNotMode(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_ObserveMode(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_ObserveMode(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->SetMode( OBSERVE_MODE );
 	g_UserMng.AddModifyMode( pUser );
@@ -2849,7 +2849,7 @@ BOOL TextCmd_ObserveMode(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_ObserveNotMode(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_ObserveNotMode(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->SetNotMode( OBSERVE_MODE );
 	g_UserMng.AddModifyMode( pUser );
@@ -2857,7 +2857,7 @@ BOOL TextCmd_ObserveNotMode(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_Onekill(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Onekill(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->m_dwMode |= ONEKILL_MODE;
 	g_UserMng.AddModifyMode( pUser );
@@ -2881,7 +2881,7 @@ BOOL TextCmd_Position( CScanner& scanner )
 	return TRUE;
 }
 
-BOOL TextCmd_NoOnekill(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_NoOnekill(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->m_dwMode &= (~ONEKILL_MODE);
 	g_UserMng.AddModifyMode( pUser );
@@ -2893,7 +2893,7 @@ BOOL TextCmd_NoOnekill(CScanner & scanner, CPlayer_ * pUser) {
 #endif
 	return TRUE;
 }
-BOOL TextCmd_ip(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_ip(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	scanner.GetToken();
 
@@ -2928,14 +2928,14 @@ BOOL TextCmd_ip(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_userlist(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_userlist(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	g_DPCoreClient.SendGetCorePlayer( pUser->m_idPlayer );
 #endif	// __WORLDSERVER
 	return TRUE;
 }
 
-BOOL TextCmd_count(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_count(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	g_DPCoreClient.SendGetPlayerCount( pUser->m_idPlayer );
 
@@ -3173,7 +3173,7 @@ BOOL TextCmd_IgnoreList( CScanner & scanner )
 
 #endif // __CLIENT
 
-BOOL TextCmd_QuestState(CScanner & s, CPlayer_ * pAdmin) {
+BOOL TextCmd_QuestState(CScanner & s, CUser * pAdmin) {
 #ifdef __WORLDSERVER
 	CUser* pUser	= NULL;
 	const QuestId nQuest	= QuestId(s.GetNumber());
@@ -3210,7 +3210,7 @@ BOOL TextCmd_QuestState(CScanner & s, CPlayer_ * pAdmin) {
 	return TRUE;
 }
 
-BOOL TextCmd_BeginQuest(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_BeginQuest(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	const QuestId nQuest = QuestId(s.GetNumber());
 	QUEST quest;
@@ -3219,7 +3219,7 @@ BOOL TextCmd_BeginQuest(CScanner & s, CPlayer_ * pUser) {
 #endif
 	return TRUE;
 }
-BOOL TextCmd_EndQuest(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_EndQuest(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	const QuestId nQuest = QuestId(s.GetNumber());
 	QUEST quest;
@@ -3229,7 +3229,7 @@ BOOL TextCmd_EndQuest(CScanner & s, CPlayer_ * pUser) {
 	return TRUE;
 }
 // 지정한 것, 현재와 완료 다 뒤져서 삭제 
-BOOL TextCmd_RemoveQuest(CScanner & s, CPlayer_ * pAdmin) {
+BOOL TextCmd_RemoveQuest(CScanner & s, CUser * pAdmin) {
 #ifdef __WORLDSERVER
 	CUser* pUser	= NULL;
 	const QuestId nQuest	= QuestId(s.GetNumber());
@@ -3261,7 +3261,7 @@ BOOL TextCmd_RemoveQuest(CScanner & s, CPlayer_ * pAdmin) {
 	return TRUE;
 }
 // 현재, 완료 모두 삭제 
-BOOL TextCmd_RemoveAllQuest(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_RemoveAllQuest(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	int nQuest = s.GetNumber();
 	pUser->RemoveAllQuest();
@@ -3270,7 +3270,7 @@ BOOL TextCmd_RemoveAllQuest(CScanner & s, CPlayer_ * pUser) {
 	return TRUE;
 }
 // 완료만 삭제 
-BOOL TextCmd_RemoveCompleteQuest(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_RemoveCompleteQuest(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	int nQuest = s.GetNumber();
 	pUser->RemoveCompleteQuest();
@@ -3279,7 +3279,7 @@ BOOL TextCmd_RemoveCompleteQuest(CScanner & s, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_PvpParam(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_PvpParam(CScanner & scanner, CUser * pUser) {
 #if defined(__WORLDSERVER)
 	int	nFame       = scanner.GetNumber();
 	int nSlaughter  = scanner.GetNumber();
@@ -3290,7 +3290,7 @@ BOOL TextCmd_PvpParam(CScanner & scanner, CPlayer_ * pUser) {
 #endif
 	return TRUE;
 }
-BOOL TextCmd_PKParam(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_PKParam(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	int		nPKValue		= scanner.GetNumber();
 	int		nPKPropensity	= scanner.GetNumber();
@@ -3313,7 +3313,7 @@ BOOL TextCmd_PKParam(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_TransyItemList( CScanner& scanner, CPlayer_ * pUser )
+BOOL TextCmd_TransyItemList( CScanner& scanner, CUser * pUser )
 {
 #ifdef __CLIENT
 	CString szMsg;
@@ -3363,7 +3363,7 @@ BOOL TextCmd_ReloadConstant( CScanner& scanner )
 	return TRUE;
 }
 
-BOOL TextCmd_GuildCombatRequest(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_GuildCombatRequest(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	DWORD dwPenya = scanner.GetNumber();	
 	g_GuildCombatMng.GuildCombatRequest( pUser, dwPenya );
@@ -3371,14 +3371,14 @@ BOOL TextCmd_GuildCombatRequest(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_GuildCombatCancel(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_GuildCombatCancel(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	g_GuildCombatMng.GuildCombatCancel( pUser );
 #endif // __WORLDSERVER
 	return TRUE;
 }
 
-BOOL TextCmd_GuildCombatOpen(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_GuildCombatOpen(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	if( g_GuildCombatMng.m_nState != CGuildCombat::CLOSE_STATE )
 	{
@@ -3393,14 +3393,14 @@ BOOL TextCmd_GuildCombatOpen(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_GuildCombatIn(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_GuildCombatIn(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	g_GuildCombatMng.GuildCombatEnter( pUser );
 #endif // __WORLDSERVER
 	return TRUE;
 }
 
-BOOL TextCmd_GuildCombatClose(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_GuildCombatClose(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	int	nClose       = scanner.GetNumber();
 
@@ -3420,7 +3420,7 @@ BOOL TextCmd_GuildCombatClose(CScanner & scanner, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_GuildCombatNext(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_GuildCombatNext(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	if( g_GuildCombatMng.m_nState == CGuildCombat::CLOSE_STATE )
 	{
@@ -3466,7 +3466,7 @@ BOOL TextCmd_RemoveAttribute( CScanner& scanner )
 	return TRUE;	
 }
 
-BOOL	TextCmd_GC1to1Open(CScanner & scanner, CPlayer_ * pUser) {
+BOOL	TextCmd_GC1to1Open(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	if( g_GuildCombat1to1Mng.m_nState != g_GuildCombat1to1Mng.GC1TO1_OPEN )
 	{
@@ -3495,7 +3495,7 @@ BOOL	TextCmd_GC1to1Close(CScanner &) {
 	return TRUE;
 }
 
-BOOL	TextCmd_GC1to1Next(CScanner &, CPlayer_ * pUser) {
+BOOL	TextCmd_GC1to1Next(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	if( g_GuildCombat1to1Mng.m_nState == g_GuildCombat1to1Mng.GC1TO1_CLOSE ) // GC1TO1_CLOSE
 	{
@@ -3515,7 +3515,7 @@ BOOL	TextCmd_GC1to1Next(CScanner &, CPlayer_ * pUser) {
 }
 
 #ifdef __EVENTLUA_COUPON
-BOOL TextCmd_Coupon(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_Coupon(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->m_nCoupon = s.GetNumber();
 #endif // __WORLDSERVER
@@ -3524,7 +3524,7 @@ BOOL TextCmd_Coupon(CScanner & s, CPlayer_ * pUser) {
 #endif // __EVENTLUA_COUPON
 
 #ifdef __NPC_BUFF
-BOOL TextCmd_RemoveAllBuff(CScanner &, CPlayer_ * pUser) {
+BOOL TextCmd_RemoveAllBuff(CScanner &, CUser * pUser) {
 #ifdef __WORLDSERVER
 	pUser->RemoveAllBuff();
 	pUser->ClearAllSMMode();
@@ -3569,7 +3569,7 @@ BOOL TextCmd_TransEggs( CScanner& s )
 	return TRUE;
 }
 
-BOOL TextCmd_SecretRoomOpen(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_SecretRoomOpen(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	if( CSecretRoomMng::GetInstance()->m_nState == SRMNG_CLOSE )
 		CSecretRoomMng::GetInstance()->SecretRoomOpen();
@@ -3636,7 +3636,7 @@ BOOL TextCmd_SecretRoomLineUp( CScanner& s )
 	return TRUE;
 }
 
-BOOL TextCmd_SecretRoomClose(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_SecretRoomClose(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	if( CSecretRoomMng::GetInstance()->m_nState == SRMNG_WAR )
 	{
@@ -3691,7 +3691,7 @@ BOOL TextCmd_ElectionRequirement( CScanner& s )
 }
 
 //#ifdef __INTERNALSERVER
-BOOL TextCmd_RemoveTotalGold(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_RemoveTotalGold(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	__int64 iGold	= static_cast<__int64>( s.GetInt64() );
 	if( iGold > pUser->GetTotalGold() )
@@ -3815,7 +3815,7 @@ BOOL TextCmd_LSkill( CScanner & s )
 }
 //#endif	// __INTERNALSERVER
 
-BOOL TextCmd_SetTutorialState(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_SetTutorialState(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	int nTutorialState	= s.GetNumber();
 	pUser->SetTutorialState( nTutorialState );
@@ -3832,7 +3832,7 @@ BOOL TextCmd_TaxApplyNow( CScanner& s )
 	return TRUE;
 }
 
-BOOL TextCmd_HonorTitleSet(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_HonorTitleSet(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	int nIdx = -1;
 	s.GetToken();
@@ -3868,7 +3868,7 @@ BOOL TextCmd_RainbowRaceApp( CScanner& s )
 	return TRUE;
 }
 
-BOOL TextCmd_RainbowRacePass(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_RainbowRacePass(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CRainbowRace* pRainbowRace = CRainbowRaceMng::GetInstance()->GetRainbowRacerPtr( pUser->m_idPlayer );
 	if( pRainbowRace )
@@ -4037,7 +4037,7 @@ BOOL TextCmd_HousingVisitRoom( CScanner& s )
 	return TRUE;
 }
 
-BOOL TextCmd_HousingGMRemoveAll(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_HousingGMRemoveAll(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	CHousingMng::GetInstance()->ReqGMFunrnitureListAll( pUser );
 #endif // __WORLDSERVER
@@ -4123,7 +4123,7 @@ BOOL TextCmd_QuizEventEnterance( CScanner& s )
 	return TRUE;
 }
 
-BOOL TextCmd_QuizStateNext(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_QuizStateNext(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	if( CQuiz::GetInstance()->IsRun() )
 	{
@@ -4175,7 +4175,7 @@ BOOL TextCmd_GuildHouseUpkeep( CScanner & s )
 	return TRUE;
 }
 
-BOOL TextCmd_CampusInvite(CScanner & s, CPlayer_ * pRequest) {
+BOOL TextCmd_CampusInvite(CScanner & s, CUser * pRequest) {
 #ifdef __WORLDSERVER
 	if( !IsValidObj( pRequest ) )
 		return FALSE;
@@ -4204,7 +4204,7 @@ BOOL TextCmd_CampusInvite(CScanner & s, CPlayer_ * pRequest) {
 	return TRUE;
 }
 
-BOOL TextCmd_RemoveCampusMember(CScanner & s, CPlayer_ * pRequest) {
+BOOL TextCmd_RemoveCampusMember(CScanner & s, CUser * pRequest) {
 #ifdef __WORLDSERVER
 	if( !IsValidObj( pRequest ) )
 		return FALSE;
@@ -4222,7 +4222,7 @@ BOOL TextCmd_RemoveCampusMember(CScanner & s, CPlayer_ * pRequest) {
 	return TRUE;
 }
 
-BOOL TextCmd_UpdateCampusPoint(CScanner & s, CPlayer_ * pUser) {
+BOOL TextCmd_UpdateCampusPoint(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
 	if( !IsValidObj( pUser ) )
 		return FALSE;
@@ -4236,7 +4236,7 @@ BOOL TextCmd_UpdateCampusPoint(CScanner & s, CPlayer_ * pUser) {
 	return TRUE;
 }
 
-BOOL TextCmd_InvenRemove(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_InvenRemove(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	if( IsValidObj( pUser ) )
 	{
@@ -4254,7 +4254,7 @@ BOOL TextCmd_InvenRemove(CScanner & scanner, CPlayer_ * pUser) {
 
 #include "eveschool.h"
 #include <random>
-BOOL TextCmd_Arbitrary(CScanner & scanner, CPlayer_ * pUser) {
+BOOL TextCmd_Arbitrary(CScanner & scanner, CUser * pUser) {
 #ifdef __CLIENT
 	
 	std::vector<u_long> usablePlayers;
@@ -4371,7 +4371,7 @@ void CDPSrvr::OnSquonKArbitraryPacket(CAr & ar, CUser & thisIsMe) {
 
 
 TextCmdFunc::TextCmdFunc(
-	BOOL(*withPlayer)(CScanner & scanner, CPlayer_ * player),
+	BOOL(*withPlayer)(CScanner & scanner, CUser * player),
 	const TCHAR * m_pCommand,
 	const TCHAR * m_pAbbreviation,
 	const TCHAR * m_pKrCommand,
@@ -4725,7 +4725,7 @@ CmdFunc::AllCommands::AllCommands() {
 
 }
 
-BOOL CmdFunc::AllCommands::ParseCommand(LPCTSTR lpszString, CPlayer_ * pMover, BOOL bItem) {
+BOOL CmdFunc::AllCommands::ParseCommand(LPCTSTR lpszString, CUser * pMover, BOOL bItem) {
 	CScanner scanner;
 	scanner.SetProg( (LPTSTR)lpszString );
 	scanner.GetToken(); // skip /

@@ -2,17 +2,16 @@
 
 #if defined(__WORLDSERVER)
 class CUser;
-using CPlayer_ = CUser;
 #elif defined(__CLIENT)
 class CMover;
-using CPlayer_ = CMover;
+using CUser = CMover;
 #else
 static_assert(false, "FuncTextCmd.h should only be included in WORLD and in CLIENT");
 #endif
 
 struct TextCmdFunc {
 	union {
-		BOOL(*m_withPlayer)(CScanner & scanner, CPlayer_ * player);
+		BOOL(*m_withPlayer)(CScanner & scanner, CUser * player);
 		BOOL(*m_withoutPlayer)(CScanner & scanner);
 	};
 	bool m_ignoresPlayer;
@@ -25,7 +24,7 @@ struct TextCmdFunc {
 	const TCHAR * m_pszDesc;
 
 	TextCmdFunc(
-		BOOL(*withPlayer)(CScanner & scanner, CPlayer_ * player),
+		BOOL(*withPlayer)(CScanner & scanner, CUser * player),
 		const TCHAR * m_pCommand,
 		const TCHAR * m_pAbbreviation,
 		const TCHAR * m_pKrCommand,
@@ -46,7 +45,7 @@ struct TextCmdFunc {
 		const TCHAR * m_pszDesc
 	);
 
-	BOOL Call(CScanner & scanner, CPlayer_ * player) const {
+	BOOL Call(CScanner & scanner, CUser * player) const {
 		if (m_ignoresPlayer) {
 			return m_withoutPlayer(scanner);
 		} else {
@@ -59,7 +58,7 @@ namespace CmdFunc {
 	class AllCommands {
 	public:
 		AllCommands();
-		BOOL ParseCommand(LPCTSTR lpszString, CPlayer_ * pMover, BOOL bItem = FALSE);
+		BOOL ParseCommand(LPCTSTR lpszString, CUser * pMover, BOOL bItem = FALSE);
 
 		std::vector<TextCmdFunc>::const_iterator begin() const {
 			return m_allCommands.cbegin();
