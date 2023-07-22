@@ -1,6 +1,11 @@
 #pragma once
 
 #include "FlyFFTypes.h"
+#include <map>                               // ArHelper::Map
+#include <unordered_map>                     // ArHelper::Map
+#include <boost/container/flat_map.hpp>      // ArHelper::Map
+#include <vector>                            // ArHelper::Vector
+#include <boost/container/small_vector.hpp>  // ArHelper::Vector
 #include <boost/container/static_vector.hpp>
 #include <optional>
 #include <variant>
@@ -16,6 +21,27 @@ namespace ArHelper {
 		float, double, int, short,
 		char, unsigned int, __int64, bool
 		>;
+
+	template<typename T>
+	concept Map =
+		sqktd::IsOneOf<T,
+			std::map<typename T::key_type, typename T::mapped_type, typename T::key_compare, typename T::allocator_type>,
+			std::unordered_map<typename T::key_type, typename T::mapped_type, typename T::hasher, typename T::key_equal>,
+			boost::container::flat_map<typename T::key_type, typename T::mapped_type>
+		>;
+
+	template<typename T>
+	concept Vector =
+//		sqktd::IsOneOf<T,
+std::is_same_v<T,
+			std::vector<typename T::value_type, typename T::allocator_type>
+//		, boost::container::small_vector<typename T::value_type, T::static_capacity>
+		>;
+
+	template<typename T>
+	concept CanReserve = requires(T & obj, size_t size) {
+		obj.reserve(size);
+	};
 }
 
 
@@ -94,6 +120,32 @@ public:
 
 	template<typename T> CAr & operator<<(const std::optional<T> & opt);
 	template<typename T> CAr & operator>>(      std::optional<T> & opt);
+
+
+	// -- Unsafe containers
+	CAr & operator<<(const ArHelper::Map auto & values);
+	CAr & operator<<(const ArHelper::Vector auto & values);
+
+#ifdef __CLIENT
+	CAr & operator>>(ArHelper::Map auto & values);
+	CAr & operator>>(ArHelper::Vector auto & values);
+#else
+	// Only defined for client because all CAr sent to client come
+	// from the server
+
+	[[deprecated("operator>>(CAr, Map> is disabled in Server, use CAr::ReadMap instead")]]
+	CAr & operator>>(ArHelper::Map auto & values) = delete;
+
+	[[deprecated("operator>>(CAr, Vector> is disabled in Server, use CAr::ReadMap instead")]]
+	CAr & operator>>(ArHelper::Vector auto & values) = delete;
+
+#endif
+
+	template<ArHelper::Map Map>
+	std::optional<Map> ReadMap(std::uint32_t maximumSize);
+
+	template<ArHelper::Vector Vector>
+	std::optional<Vector> ReadVector(std::uint32_t maximumSize);
 
 public:
 	/** Push into the archiver each passed value */
@@ -402,3 +454,94 @@ template<typename T> CAr & CAr::operator>>(std::optional<T> & opt) {
 }
 
 #pragma endregion
+
+
+
+CAr & CAr::operator<<(const ArHelper::Map auto & values) {
+	*this << static_cast<std::uint32_t>(values.size());
+	for (const auto & [key, value] : values) {
+		*this << key << value;
+	}
+	return *this;
+}
+
+
+CAr & CAr::operator<<(const ArHelper::Vector auto & values) {
+	*this << static_cast<std::uint32_t>(values.size());
+	for (const auto & value : values) {
+		*this << value;
+	}
+	return *this;
+}
+
+#ifdef __CLIENT
+CAr & CAr::operator>>(ArHelper::Map auto & map) {
+	map.clear();
+	std::uint32_t size; *this >> size;
+
+	if constexpr (ArHelper::CanReserve<decltype(map)>) {
+		map.reserve(size);
+	}
+
+	for (std::uint32_t i = 0; i < size; ++i) {
+		typename Map::key_type key;
+		typename Map::mapped_type value;
+		*this >> key >> value;
+		map.emplace(key, value);
+	}
+
+	return *this;
+}
+
+CAr & CAr::operator>>(ArHelper::Vector auto & vector) {
+	vector.clear();
+	std::uint32_t size; *this >> size;
+
+	if constexpr (ArHelper::CanReserve<decltype(vector)>) {
+		vector.reserve(size);
+	}
+
+	for (std::uint32_t i = 0; i < size; ++i) {
+		*this >> vector.emplace_back();
+	}
+
+	return *this;
+}
+#endif
+
+template<ArHelper::Map Map>
+std::optional<Map> CAr::ReadMap(std::uint32_t maximumSize) {
+	std::uint32_t size; *this >> size;
+	if (size > maximumSize) return std::nullopt;
+
+	Map map;
+	if constexpr (ArHelper::CanReserve<decltype(map)>) {
+		map.reserve(size);
+	}
+
+	for (std::uint32_t i = 0; i < size; ++i) {
+		typename Map::key_type key;
+		typename Map::mapped_type value;
+		*this >> key >> value;
+		map.emplace(key, value);
+	}
+
+	return map;
+}
+
+template<ArHelper::Vector Vector>
+std::optional<Vector> CAr::ReadVector(std::uint32_t maximumSize) {
+	std::uint32_t size; *this >> size;
+	if (size > maximumSize) return std::nullopt;
+
+	Vector vector;
+	if constexpr (ArHelper::CanReserve<decltype(vector)>) {
+		vector.reserve(size);
+	}
+
+	for (std::uint32_t i = 0; i < size; ++i) {
+		*this >> vector.emplace_back();
+	}
+
+	return vector;
+}

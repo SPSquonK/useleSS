@@ -2697,9 +2697,8 @@ void CUser::AddGC1to1MemberLineUpOpenWnd( std::vector<u_long>& vecMemberId )
 	m_Snapshot.ar << g_GuildCombat1to1Mng.m_nMinJoinPlayerLevel;
 	m_Snapshot.ar << g_GuildCombat1to1Mng.m_nMinJoinPlayer;
 	m_Snapshot.ar << g_GuildCombat1to1Mng.m_nMaxJoinPlayer;
-	m_Snapshot.ar << vecMemberId.size();
-	for( int i=0; i<(int)( vecMemberId.size() ); i++ )
-		m_Snapshot.ar << vecMemberId[i];
+
+	m_Snapshot.ar << vecMemberId;
 }
 
 void CUser::AddGC1to1WarResult( int m_nState, u_long uIdPlayer, int nWinCount0, int nWinCount1 )

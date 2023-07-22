@@ -13549,11 +13549,9 @@ void CDPClient::OnGC1to1MemberLineUpOpenWnd( CAr & ar )
 	g_WndMng.m_pWndGuildCombat1to1Selection->Initialize();	
 
 	std::vector<u_long> selection;
+	ar >> selection;
 
-	int nSize; ar >> nSize;
-	for (int i = 0; i < nSize; i++) {
-		ar >> selection.emplace_back();
-	}
+
 	g_WndMng.m_pWndGuildCombat1to1Selection->SetSelection(selection);
 }
 
