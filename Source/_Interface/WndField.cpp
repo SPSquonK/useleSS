@@ -4489,7 +4489,7 @@ BOOL CWndRevival::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	{
 		case WIDC_REVIVAL_TO_LODELIGHT:
 			{
-				g_DPlay.SendHdr( PACKETTYPE_REVIVAL_TO_LODELIGHT );
+				g_DPlay.SendPacket<PACKETTYPE_REVIVAL_TO_LODELIGHT>();
 				
 				CWndBase* pWndBase = g_WndMng.GetWndBase( APP_RESURRECTION );
 

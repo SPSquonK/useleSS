@@ -423,7 +423,6 @@ public:
 	void			AddCommercialElem( DWORD dwItemId, int nResistSMItemId );
 	void			AddFlyffEvent();
 	void			AddEventLuaDesc( int nState, std::string strDesc );
-	void			AddQueryGetDestObj( OBJID objid );
 	void			AddGetDestObj( OBJID objid, OBJID objidDest, FLOAT fRange );
 //	BOOL			DoCollect( CMover *pTarget );		// 채집시작.
 //	int				OnActCollecting();					// 채집중 계속 호출.

@@ -685,7 +685,7 @@ void CDPSrvr::OnDropItem(CAr & ar, CUser & pUser) {
 	}
 }
 
-void CDPSrvr::OnScriptDialogReq( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnScriptDialogReq( CAr & ar, CUser * pUser )
 {
 	static TCHAR lpKey[256];
 	OBJID objid;
@@ -696,9 +696,6 @@ void CDPSrvr::OnScriptDialogReq( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 	ar >> nGlobal1 >> nGlobal2 >> nGlobal3 >> nGlobal4;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		DWORD dwTickCount	= GetTickCount();
 		if( dwTickCount < pUser->m_tickScript + 400 )
 			return;
@@ -749,15 +746,14 @@ void CDPSrvr::OnScriptDialogReq( CAr & ar, DPID dpidCache, DPID dpidUser )
 				}
 			}
 		}
-	}
+	
 }
 
-void CDPSrvr::OnRevival( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRevival( CAr & ar, CUser * pUser )
 {
-	CWorld* pWorld;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) )
-	{
+	CWorld* pWorld = pUser->GetWorld();
+	if (!pWorld) return;
+
 		pUser->m_Resurrection_Data = std::nullopt;
 
 		if( pUser->IsDie() == FALSE )
@@ -766,11 +762,12 @@ void CDPSrvr::OnRevival( CAr & ar, DPID dpidCache, DPID dpidUser )
 			return;
 		}
 		
-		BOOL bGuildCombat = FALSE;
-
 		CItemElem* pItemElem = pUser->m_Inventory.GetAtItemId( II_SYS_SYS_SCR_RESURRECTION );
-		if( IsUsableItem( pItemElem ) )
-		{
+		if (!IsUsableItem(pItemElem)) {
+			Error("Error CMover::OnRevival Not Inventory RevivalItem");
+			return;
+		}
+		
 			pUser->m_nDead = PROCESS_COUNT * 5;		// 죽은 후 5초간은 무적
 
 			if( pUser->IsChaotic() )
@@ -817,20 +814,15 @@ void CDPSrvr::OnRevival( CAr & ar, DPID dpidCache, DPID dpidUser )
 			nVal	= (int)(pUser->GetMaxFatiguePoint() * fRate);			// fp 회복
 			if( pUser->GetFatiguePoint() < nVal )
 				pUser->SetPointParam( DST_FP, nVal );			
-		}
-		else
-		{
-			Error( "Error CMover::OnRevival Not Inventory RevivalItem" );
-		}
-	}
+		
+	
 }
 
-void CDPSrvr::OnRevivalLodestar( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRevivalLodestar( CAr & ar, CUser * pUser )
 {
-	CWorld* pWorld;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) )
-	{
+	CWorld * pWorld = pUser->GetWorld();
+	if (!pWorld) return;
+
 		pUser->m_Resurrection_Data = std::nullopt;
 
 		if( pUser->IsDie() == FALSE )
@@ -847,9 +839,7 @@ void CDPSrvr::OnRevivalLodestar( CAr & ar, DPID dpidCache, DPID dpidUser )
 			pWorld->ADDOBJ( pCtrl, FALSE, pUser->GetLayer() );
 			g_dpDBClient.SendLogExpBox( pUser->m_idPlayer, pCtrl->GetId(), pCtrl->m_nExpBox );
 		}
-		
-		BOOL bGuildCombat = FALSE;
-		
+				
 		g_dpDBClient.SendLogLevelUp( (CMover*)pUser, 9 );	// 로드스타로 부활 로그
 
 		pUser->m_nDead = PROCESS_COUNT * 5;		// 죽은 후 5초간은 무적
@@ -911,48 +901,35 @@ void CDPSrvr::OnRevivalLodestar( CAr & ar, DPID dpidCache, DPID dpidUser )
 			pUser->Replace( *pRgnElem, REPLACE_FORCE, nRevivalLayer );
 		else 
 			pUser->Replace( pWorld->GetID(), pUser->GetPos(), REPLACE_FORCE, pUser->GetLayer() );
-	}
+	
 }
 
-void CDPSrvr::OnRevivalLodelight( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRevivalLodelight( CAr & ar, CUser * pUser )
 {
+	// TODO: if dead, spawn at MarkingPos (see SetLodelight)?
 }
 
-void CDPSrvr::OnSetLodelight( CAr & ar, DPID dpidCache, DPID dpidUser )
-{
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_MARKING>(pUser) )
-			return;
-		pUser->SetMarkingPos();
-		pUser->AddDefinedText( TID_GAME_LODELIGHT, "" );
-	}
+void CDPSrvr::OnSetLodelight(CAr & ar, CUser * pUser) {
+	if (!CNpcChecker::GetInstance()->IsCloseNpc<MMI_MARKING>(pUser))
+		return;
+	pUser->SetMarkingPos();
+	pUser->AddDefinedText(TID_GAME_LODELIGHT);
 }
 
-void CDPSrvr::OnCorrReq( CAr & ar, DPID dpidCache, DPID dpidUser )
-{
+void CDPSrvr::OnCorrReq(CAr & ar, CUser * pUser) {
 	OBJID idObj;
 	ar >> idObj;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );		// 어느유저로부터 날아온거냐.
-	if( IsValidObj( pUser ) )
-	{
-		CMover *pMover = prj.GetMover( idObj );	// 선택된 오브젝트의 포인터
-		if( IsValidObj( pMover ) )
-		{
-			pUser->AddCorrReq( pMover );	// 요청한 클라에게 선택된 오브젝트의 정보를 보냄.
-		}
-	}
+	// 어느유저로부터 날아온거냐.
+	CMover * pMover = prj.GetMover(idObj);	// 선택된 오브젝트의 포인터
+	if (!pMover) return;
+	pUser->AddCorrReq(pMover);	// 요청한 클라에게 선택된 오브젝트의 정보를 보냄.
 }
 
-void CDPSrvr::OnCreateGuildCloak( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnCreateGuildCloak( CAr & ar, CUser * pUser )
 {
 	if( g_eLocal.GetState( ENABLE_GUILD_INVENTORY ) == FALSE )		
 		return;
-
-	CUser * const pUser = g_UserMng.GetUser(dpidCache, dpidUser);
-	if (!IsValidObj(pUser)) return;
 
 	CGuild * const pGuild = pUser->GetGuild();
 	if (!pGuild) return;
@@ -1031,64 +1008,31 @@ void CDPSrvr::OnCreateGuildCloak( CAr & ar, DPID dpidCache, DPID dpidUser )
 	pUser->AddDefinedText( TID_GAME_GUILDCREATECLOAK, "" );
 }
 
-void CDPSrvr::OnQueryGetDestObj( CAr & ar, DPID dpidCache, DPID dpidUser )
-{
+void CDPSrvr::OnQueryGetDestObj(CAr & ar, CUser * pUser) {
 	OBJID objid;
 	ar >> objid;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		CMover* pMover	= prj.GetMover( objid );
-		if( IsValidObj( pMover ) && !pMover->IsEmptyDestObj() )
-			pUser->AddGetDestObj( objid, pMover->GetDestId(), pMover->m_fArrivalRange );
-	}
+	CMover * pMover = prj.GetMover(objid);
+	if (IsValidObj(pMover) && !pMover->IsEmptyDestObj())
+		pUser->AddGetDestObj(objid, pMover->GetDestId(), pMover->m_fArrivalRange);
 }
 
-void CDPSrvr::OnGetDestObj( CAr & ar, DPID dpidCache, DPID dpidUser )
-{
-	OBJID objid, objidDest;
-	ar >> objid >> objidDest;
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-		pUser->SetDestObj( objidDest );
-/*
-	{
-		if( NULL_ID == objid )
-		{
-			pUser->SetDestObj( objidDest );
-		}
-		else
-		{
-			CUser* ptr	= prj.GetUser( objid );
-			if( IsValidObj( ptr ) )
-				ptr->AddGetDestObj( pUser->GetId(), objidDest, ptr->m_fArrivalRange );
-		}
-	}
-*/
+void CDPSrvr::OnGetDestObj(CAr & ar, CUser * pUser) {
+	OBJID objidDest; ar >> objidDest;
+	pUser->SetDestObj(objidDest);
 }
 
-void CDPSrvr::OnQueryGetPos( CAr & ar, DPID dpidCache, DPID dpidUser )
-{
+void CDPSrvr::OnQueryGetPos(CAr & ar, CUser * pUser) {
 	OBJID objid;
 	ar >> objid;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		CMover* pMover	= prj.GetMover( objid );
-		if( IsValidObj( pMover ) )
-		{
-			if( FALSE == pMover->IsPlayer() )
-			{
-				pUser->AddGetPos( objid, pMover->GetPos(), pMover->GetAngle() );
-			}
-			else
-			{
-				( (CUser*)pMover )->AddQueryGetPos( pUser->GetId() );
-			}
-		}
+	CMover * pMover = prj.GetMover(objid);
+	if (!IsValidObj(pMover)) return;
+
+	if (CUser * pTarget = pMover->ToUser()) {
+		pTarget->AddQueryGetPos(pUser->GetId());
+	} else {
+		pUser->AddGetPos(objid, pMover->GetPos(), pMover->GetAngle());
 	}
 }
 

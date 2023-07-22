@@ -205,7 +205,6 @@ public:
 	void	SendGetPos( const D3DXVECTOR3 & vPos, float fAngle, OBJID objid );
 	void	SendCtrlCoolTimeCancel();		
 	void	SendQueryGetDestObj( CMover* pMover );
-	void	SendGetDestObj( OBJID objid, OBJID objidDest );
 	void	SendSkillTaskBar( void );
 
 	void SendAddInTaskbar(std::optional<unsigned int> where, unsigned int nIndex, const SHORTCUT & shortcut);

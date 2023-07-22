@@ -6967,12 +6967,10 @@ void CDPClient::OnMoverCorr2( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::OnQueryGetDestObj( CAr & ar )
-{
-	OBJID objid;
-	ar >> objid;
-	if( g_pPlayer && !g_pPlayer->IsEmptyDestObj() )
-		SendGetDestObj( objid, g_pPlayer->GetDestId() );
+void CDPClient::OnQueryGetDestObj(CAr & ar) {
+	if (g_pPlayer && !g_pPlayer->IsEmptyDestObj()) {
+		SendPacket<PACKETTYPE_GETDESTOBJ, OBJID>(g_pPlayer->GetDestId());
+	}
 }
 
 void CDPClient::OnGetDestObj( OBJID objid, CAr & ar )
@@ -8546,13 +8544,6 @@ void CDPClient::SendQueryGetDestObj( CMover* pMover )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_QUERYGETDESTOBJ, DPID_UNKNOWN );
 	ar << pMover->GetId();
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendGetDestObj( OBJID objid, OBJID objidDest )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_GETDESTOBJ, DPID_UNKNOWN );
-	ar << objid << objidDest;
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 

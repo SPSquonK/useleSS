@@ -1778,17 +1778,6 @@ void CUser::AddSetQuest(LPQUEST lpQuest) {
 	SendSnapshotThisId<SNAPSHOTTYPE_SETQUEST, QUEST>(*lpQuest);
 }
 
-void CUser::AddQueryGetDestObj( OBJID idFrom )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_QUERYGETDESTOBJ;
-	m_Snapshot.ar << idFrom;
-	
-}
-
 void CUser::AddGetDestObj( OBJID objid, OBJID objidDest, FLOAT fRange )
 {
 	if( IsDelete() )	return;

@@ -308,8 +308,9 @@ void CMover::ProcessMoveArrival( CCtrl *pObj )
 
 	SetCmd( OBJACT_NONE );
 	
-	if( IsPlayer() )
-		((CUser*)this)->AddQueryGetDestObj( NULL_ID );
+	if (IsPlayer()) {
+		((CUser *)this)->SendSnapshotNoTarget<SNAPSHOTTYPE_QUERYGETDESTOBJ>();
+	}
 }
 #endif // not CLIENT
 
