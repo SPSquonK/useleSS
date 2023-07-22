@@ -57,7 +57,7 @@ private:
 	void	OnRemoveUser( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnChat( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void  OnDoEquip(CAr & ar, CUser & pUser);
-	void	OnCtrlCoolTimeCancel( CAr & ar, DPID dpidCache, DPID dpidUser );		
+	void	OnCtrlCoolTimeCancel( CAr & ar, CUser * pUser );		
 	void	OnMoveItem( CAr & ar, CUser & pUser );
 	void	OnDropItem( CAr & ar, CUser & pUser );
 	void	OnTrade( CAr & ar, DPID dpidCache, DPID dpidUser );
@@ -91,7 +91,6 @@ private:
 	void	OnMotion( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnRepairItem( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnScriptDialogReq( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnReplace( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnOpenShopWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnCloseShopWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser );

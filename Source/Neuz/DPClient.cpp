@@ -106,7 +106,6 @@ CDPClient::CDPClient()
 
 	ON_MSG( PACKETTYPE_JOIN_WorldNeuz, &CDPClient::OnJoin );
 	ON_MSG( PACKETTYPE_SNAPSHOT, &CDPClient::OnSnapshot );
-	ON_MSG( PACKETTYPE_REPLACE, &CDPClient::OnReplace );
 	ON_MSG( PACKETTYPE_ERROR, &CDPClient::OnError );
 	ON_MSG( PACKETTYPE_WHISPER, &CDPClient::OnWhisper );
 	ON_MSG( PACKETTYPE_SAY, &CDPClient::OnSay );

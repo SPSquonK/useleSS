@@ -75,7 +75,6 @@ CDPSrvr::CDPSrvr()
 {
 	OnMsg( PACKETTYPE_JOIN_CacheWorld, &CDPSrvr::OnAddUser );
 	OnMsg( PACKETTYPE_LEAVE, &CDPSrvr::OnRemoveUser );
-	OnMsg( PACKETTYPE_REPLACE, &CDPSrvr::OnReplace );
 	OnMsg( PACKETTYPE_CORR_REQ, &CDPSrvr::OnCorrReq );
 	OnMsg( PACKETTYPE_SCRIPTDLG, &CDPSrvr::OnScriptDialogReq );
 	OnMsg( PACKETTYPE_TRADEPUT, &CDPSrvr::OnTradePut );
@@ -603,11 +602,7 @@ void CDPSrvr::OnChat( CAr & ar, DPID dpidCache, DPID dpidUser )
 	}
 }
 
-void CDPSrvr::OnCtrlCoolTimeCancel(CAr &, DPID dpidCache, DPID dpidUser) {
-	CUser * const pUser = g_UserMng.GetUser(dpidCache, dpidUser);
-
-	if (!IsValidObj(pUser)) return;
-
+void CDPSrvr::OnCtrlCoolTimeCancel(CAr &, CUser * pUser) {
 	pUser->m_dwCtrlReadyTime = 0xffffffff;
 
 	CCommonCtrl * pCtrl = (CCommonCtrl *)prj.GetCtrl(pUser->m_dwCtrlReadyId);
@@ -690,12 +685,6 @@ void CDPSrvr::OnDropItem(CAr & ar, CUser & pUser) {
 	}
 }
 
-void CDPSrvr::OnReplace( CAr & ar, DPID dpidCache, DPID dpidUser )
-{
-	ASSERT( 0 );
-	Error("CDPSrvr::OnReplace called\n");
-}
-
 void CDPSrvr::OnScriptDialogReq( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
 	static TCHAR lpKey[256];
@@ -724,7 +713,7 @@ void CDPSrvr::OnScriptDialogReq( CAr & ar, DPID dpidCache, DPID dpidUser )
 			OutputDebugString( lpOutputString );
 
 			D3DXVECTOR3 vOut	= pUser->GetPos() - pMover->GetPos();
-			if( fabs( (double)D3DXVec3LengthSq( &vOut ) ) > MAX_LEN_MOVER_MENU )
+			if( fabs( D3DXVec3LengthSq( &vOut ) ) > MAX_LEN_MOVER_MENU )
 			{
 				return;
 			}
