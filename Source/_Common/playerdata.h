@@ -24,18 +24,18 @@ typedef struct	_PlayerData
 	}
 }	PlayerData;
 
-typedef struct	_PDVer
+struct	PDVer
 {
 	u_long	idPlayer;
 	int		nVer;
-	_PDVer()
+	PDVer()
 	{	idPlayer	= nVer	= 0;	}
-	_PDVer( u_long u, int n )
+	PDVer( u_long u, int n )
 	{
 		idPlayer	= u;
 		nVer	= n;
 	}
-}	PDVer;
+}	;
 
 class CPlayerDataCenter
 {

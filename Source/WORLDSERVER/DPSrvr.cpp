@@ -559,7 +559,7 @@ void CDPSrvr::OnRemoveUser( CAr & ar, DPID dpidCache, DPID dpidUser )
 	g_UserMng.RemoveUser( (DWORD)dpidUser ); // dpidUser는 CACHE에서 사용되는 serial한 값 
 }
 
-void CDPSrvr::OnChat( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnChat( CAr & ar, CUser * pUser )
 {
 	if( ar.GetBuffer().size() > 1031)	// 4 + 4 + 1024 - 1		= 1031
 		return;
@@ -569,9 +569,6 @@ void CDPSrvr::OnChat( CAr & ar, DPID dpidCache, DPID dpidUser )
 	CString strChat	= sChat;
 	strChat.Replace( "\\n", " " );
 	
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
 		if( pUser->m_dwAuthorization >= AUTH_LOGCHATTING )		// 일반유저가 아니면 로그남김 모든 로그남김
 		{
 			g_dpDBClient.SendLogGamemaChat( pUser, strChat );
@@ -598,7 +595,7 @@ void CDPSrvr::OnChat( CAr & ar, DPID dpidCache, DPID dpidUser )
 		strChat.Replace( "\\n", " " );
 	
 		g_UserMng.AddChat( pUser, strChat );
-	}
+	
 }
 
 void CDPSrvr::OnCtrlCoolTimeCancel(CAr &, CUser * pUser) {
@@ -1190,23 +1187,19 @@ void CDPSrvr::OnAddFriendCancel( CAr & ar, DPID dpidCache, DPID dpidUser )
 		pLeader->AddFriendCancel();	// uMemberid
 }
 
-void CDPSrvr::OnRemoveQuest( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRemoveQuest( CAr & ar, CUser * pUser )
 {
 	QuestId dwQuestCancelID; ar >> dwQuestCancelID;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		DWORD dwTickCount	= GetTickCount();
 		if( dwTickCount < pUser->m_tickScript + 400 )
 			return;
 		pUser->m_tickScript	= dwTickCount;
 
 		LPQUEST lpQuest = pUser->GetQuest( dwQuestCancelID );
-		if( lpQuest )
-		{
-			if( lpQuest->m_nState != QS_END )
-			{
+		if (!lpQuest) return;
+		if (lpQuest->m_nState == QS_END) return;
+			
 				const QuestProp * pQuestProp = lpQuest->GetProp();
 				if( pQuestProp && pQuestProp->m_bNoRemove == FALSE )
 				{
@@ -1220,85 +1213,63 @@ void CDPSrvr::OnRemoveQuest( CAr & ar, DPID dpidCache, DPID dpidUser )
 						g_UserMng.AddNoDisguise( pUser );
 					}
 				}
-			}
-		}
-	}
+			
+		
+	
 }
 
-void CDPSrvr::OnQueryPlayerData( CAr & ar, DPID dpidCache, DPID dpidUser )
-{
-	u_long idPlayer;
-	ar >> idPlayer;
-	int nVer;
-	ar >> nVer;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( idPlayer );
-		if( pPlayerData && pPlayerData->data.nVer != nVer )
-			pUser->AddQueryPlayerData( idPlayer, pPlayerData );
-	}
+void CDPSrvr::OnQueryPlayerData(CAr & ar, CUser * pUser) {
+	const auto [idPlayer, nVer] = ar.Extract<u_long, int>();
+
+	const PlayerData * pPlayerData = CPlayerDataCenter::GetInstance()->GetPlayerData(idPlayer);
+	if (pPlayerData && pPlayerData->data.nVer != nVer)
+		pUser->AddQueryPlayerData(idPlayer, pPlayerData);
 }
 
-void CDPSrvr::OnQueryPlayerData2( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQueryPlayerData2( CAr & ar, CUser * pUser )
 {
 	int nSize;
-//	u_long idPlayer;
 	ar >> nSize;
 
 	if( nSize > 1024 )
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
+
 		for( int i = 0; i < nSize; i++ )
 		{
 			PDVer	pdv;
 			ar.Read( &pdv, sizeof(PDVer) );
-			PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pdv.idPlayer );
+			const PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pdv.idPlayer );
 			if( pPlayerData && pPlayerData->data.nVer != pdv.nVer )
 				pUser->AddQueryPlayerData( pdv.idPlayer, pPlayerData );
 		}
-	}
+
 }
 
-void CDPSrvr::OnGuildInvite( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGuildInvite( CAr & ar, CUser * pUser )
 {
 	OBJID objid;
 	ar >> objid;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	InviteCompany( pUser, objid );
 }
 
-void CDPSrvr::OnIgnoreGuildInvite( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnIgnoreGuildInvite( CAr & ar, CUser * pUser )
 {
 	u_long idPlayer;
 	ar >> idPlayer;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		CUser* pPlayer	= g_UserMng.GetUserByPlayerID( idPlayer );		// kingpin
 		if( IsValidObj( pPlayer ) )
 		{
 			pPlayer->AddDefinedText( TID_GAME_COMACCEPTDENY, "%s", pUser->GetName( TRUE ) );
 		}
-	}
 }
 
 // 로고 변경 
-void CDPSrvr::OnGuildLogo( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGuildLogo( CAr & ar, CUser * pUser )
 {
 	DWORD dwLogo;
 	ar >> dwLogo;
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == FALSE )
-		return;
 
 	if( dwLogo > CUSTOM_LOGO_MAX )
 		return;
@@ -1310,7 +1281,7 @@ void CDPSrvr::OnGuildLogo( CAr & ar, DPID dpidCache, DPID dpidUser )
 }
 
 // 공헌도 
-void CDPSrvr::OnGuildContribution( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGuildContribution( CAr & ar, CUser * pUser )
 {
 	BYTE cbPxpCount, cbItemFlag;
 	int nGold;
@@ -1320,10 +1291,6 @@ void CDPSrvr::OnGuildContribution( CAr & ar, DPID dpidCache, DPID dpidUser )
 	ar >> cbItemFlag;
 
 	if( g_eLocal.GetState( ENABLE_GUILD_INVENTORY ) == FALSE )
-		return;
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == FALSE ) 
 		return;
 
 	if( nGold > 0 )
@@ -1392,27 +1359,21 @@ void CDPSrvr::OnGuildContribution( CAr & ar, DPID dpidCache, DPID dpidUser )
 }
 
 // 공지사항
-void CDPSrvr::OnGuildNotice( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGuildNotice( CAr & ar, CUser * pUser )
 {
 	const auto [szNotice] = ar.Extract<char[MAX_BYTE_NOTICE]>();
-
 	if (std::strlen(szNotice) == 0) return;
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == FALSE )
-		return;
 
 	g_DPCoreClient.SendGuildStatNotice( pUser, szNotice );
 }
 
-void CDPSrvr::OnDuelRequest( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnDuelRequest( CAr & ar, CUser * pUser )
 {
 	u_long uidSrc, uidDst;
 	ar >> uidSrc >> uidDst;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	CUser* pDstUser = g_UserMng.GetUserByPlayerID( uidDst );
-	if( IsValidObj( pUser ) && IsValidObj( pDstUser ) )
+	if( IsValidObj( pDstUser ) )
 	{
 		if( 0 < pUser->m_idparty && pUser->m_idparty == pDstUser->m_idparty )
 		{
@@ -1450,16 +1411,14 @@ void CDPSrvr::OnDuelRequest( CAr & ar, DPID dpidCache, DPID dpidUser )
 }
 
 // 듀얼승락을 받음.  두캐릭터에게 시작하라고 보내줘야 함.
-void CDPSrvr::OnDuelYes( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnDuelYes( CAr & ar, CUser * pDst )
 {
 	u_long uidSrc, uidDst;
 	ar >> uidSrc >> uidDst;
 
 	CUser* pSrc = g_UserMng.GetUserByPlayerID( uidSrc );
-	CUser* pDst	=	g_UserMng.GetUser( dpidCache, dpidUser );
 
-
-	if( IsValidObj(pSrc) && IsValidObj(pDst) )
+	if( IsValidObj(pSrc) )
 	{
 		if( 0 < pSrc->m_idparty && pSrc->m_idparty == pDst->m_idparty )
 		{
@@ -1505,30 +1464,25 @@ void CDPSrvr::OnDuelYes( CAr & ar, DPID dpidCache, DPID dpidUser )
 }
 
 // pUser가 듀얼 신청을 거부했다. pSrc에게 알려야 한다.
-void CDPSrvr::OnDuelNo( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnDuelNo( CAr & ar, CUser * pUser )
 {
 	u_long uidSrc; //, uidDst;
 	ar >> uidSrc;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj(pUser) )
-	{
 		CUser* pSrc = g_UserMng.GetUserByPlayerID( uidSrc );
 		if( IsValidObj(pSrc) )
 			pSrc->AddDuelNo( pUser->GetId() );	// pSrc에게 pUser가 거부했다는걸 알림.
-	}
 }
 
 // 파티듀얼 ----------------------------------------------------------------
 // Src가 Dst에게 한판 붙자고 신청해왔다.
-void CDPSrvr::OnDuelPartyRequest( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnDuelPartyRequest( CAr & ar, CUser * pSrcUser )
 {
 	u_long uidSrc, uidDst;
 	ar >> uidSrc >> uidDst;
 	
-	CUser* pSrcUser	= g_UserMng.GetUser( dpidCache, dpidUser );	// 신청자 유저.
 	CUser* pDstUser	= g_UserMng.GetUserByPlayerID( uidDst );	// 상대 유저
-	if( IsValidObj( pDstUser ) && IsValidObj( pSrcUser ) )
+	if( IsValidObj( pDstUser ) )
 	{
 		if( pDstUser->IsMode( PVPCONFIRM_MODE ) )
 		{
@@ -1599,32 +1553,24 @@ void CDPSrvr::OnDuelPartyYes( CAr & ar, DPID dpidCache, DPID dpidUser )
 }
 
 // pUser가 듀얼 신청을 거부했다. pSrc에게 알려야 한다.
-void CDPSrvr::OnDuelPartyNo( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnDuelPartyNo( CAr & ar, CUser * pUser )
 {
 	u_long uidSrc; //, uidDst;
 	ar >> uidSrc;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj(pUser) )
-	{
 		CUser* pSrc = g_UserMng.GetUserByPlayerID( uidSrc );
 		if( IsValidObj(pSrc) )
 			pSrc->AddDuelPartyNo( pUser->GetId() );		// pSrc에게 pUser가 거부했다는걸 알림.
-	}
 }
 
-void CDPSrvr::OnMoverFocus( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnMoverFocus( CAr & ar, CUser * pUser )
 {
 	u_long uidPlayer;
 	ar >> uidPlayer;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj(pUser) )
-	{
-		CUser* pFocus = g_UserMng.GetUserByPlayerID( uidPlayer );
-		if( IsValidObj(pFocus) )
-			pUser->AddMoverFocus( pFocus );
-	}
+	CUser* pFocus = g_UserMng.GetUserByPlayerID( uidPlayer );
+	if( IsValidObj(pFocus) )
+		pUser->AddMoverFocus( pFocus );
 }
 
 void CDPSrvr::OnSkillTaskBar(CAr & ar, CUser & pUser) {
@@ -1680,12 +1626,8 @@ void CDPSrvr::OnModifyTaskBar(CAr & ar, CUser & pUser) {
 }
 
 
-void CDPSrvr::OnPlayerMoved( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPlayerMoved( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsInvalidObj( pUser ) )
-		return;
-
 	if( pUser->GetIndex() == 0 )
 	{
 		WriteError( "PACKETTYPE_PLAYERMOVED" );
@@ -1758,14 +1700,9 @@ void CDPSrvr::OnPlayerMoved( CAr & ar, DPID dpidCache, DPID dpidUser )
 		( pUser, v, vd, f, dwState, dwStateFlag, dwMotion,  nMotionEx, nLoop, dwMotionOption, nTickCount );
 }
 
-void CDPSrvr::OnPlayerBehavior( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPlayerBehavior( CAr & ar, CUser * pUser )
 {
 //	TRACE( "OnPlayerBehavior()\n" );
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-
-	if( IsInvalidObj( pUser ) )
-		return;
-
 	if( pUser->GetIndex() == 0 )
 	{
 		WriteError( "PACKETTYPE_PLAYERBEHAVIOR" );
@@ -1806,11 +1743,8 @@ void CDPSrvr::OnPlayerBehavior( CAr & ar, DPID dpidCache, DPID dpidUser )
 	g_UserMng.AddMoverBehavior( pUser, v, vd, f, dwState, dwStateFlag, dwMotion,  nMotionEx, nLoop, dwMotionOption, nTickCount );
 }
 
-void CDPSrvr::OnPlayerMoved2( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPlayerMoved2( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
 		if( pUser->GetIndex() == 0 )
 		{
 			WriteError( "PACKETTYPE_PLAYERMOVED2" );
@@ -1872,14 +1806,11 @@ void CDPSrvr::OnPlayerMoved2( CAr & ar, DPID dpidCache, DPID dpidUser )
 			g_UserMng.AddMoverMoved2
 				( pUser, v, vd, f, fAngleX, fAccPower, fTurnAngle, dwState, dwStateFlag, dwMotion,  nMotionEx, nLoop, dwMotionOption, nTickCount, nFrame );
 		} 
-	}
+	
 }
 
-void CDPSrvr::OnPlayerBehavior2( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPlayerBehavior2( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->GetIndex() == 0 )
 		{
 			WriteError( "PACKETTYPE_PLAYERBEHAVIOR2" );
@@ -1901,12 +1832,6 @@ void CDPSrvr::OnPlayerBehavior2( CAr & ar, DPID dpidCache, DPID dpidUser )
 		ar >> dwMotion >> nMotionEx;
 		ar >> nLoop >> dwMotionOption;
 		ar >> nTickCount;
-#ifdef _DEBUG
-		if( dwStateFlag & OBJSTAF_ACC )	
-		{
-			int a = 0;
-		}
-#endif
 
 		if( pUser->m_pActMover->IsFly() == FALSE )	return;	// 비행상태가 아닌데 이리로 들어왔다면 취소.
 
@@ -1917,17 +1842,13 @@ void CDPSrvr::OnPlayerBehavior2( CAr & ar, DPID dpidCache, DPID dpidUser )
 		// 4
 		g_UserMng.AddMoverBehavior2
 			( pUser, v, vd, f, fAngleX, fAccPower, fTurnAngle, dwState, dwStateFlag, dwMotion,  nMotionEx, nLoop, dwMotionOption, nTickCount );
-	}
+	
 }
 
 // 클라로부터 올라온 각도를 세팅.
 // 보통 비행중 사용.
-void CDPSrvr::OnPlayerAngle( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPlayerAngle( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->GetIndex() == 0 )
 		{
 			WriteError( "PACKETTYPE_PLAYERANGLE" );
@@ -1977,21 +1898,16 @@ void CDPSrvr::OnPlayerAngle( CAr & ar, DPID dpidCache, DPID dpidUser )
 			}
 			g_UserMng.AddMoverAngle( pUser, v, vd, f, fAngleX, fAccPower, fTurnAngle, nTickCount );
 		}
-	}
+	
 }
 
-void CDPSrvr::OnPlayerSetDestObj( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPlayerSetDestObj( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		OBJID objid;
 		float fRange;
 		ar >> objid >> fRange;
 
-		CCtrl* pCtrl;
-
-		pCtrl	= prj.GetCtrl( objid );
+		CCtrl * pCtrl	= prj.GetCtrl( objid );
 		if( IsValidObj( pCtrl ) )
 		{
 #ifdef __TRAFIC_1222
@@ -2005,12 +1921,12 @@ void CDPSrvr::OnPlayerSetDestObj( CAr & ar, DPID dpidCache, DPID dpidUser )
 			g_UserMng.AddMoverSetDestObj( (CMover*)pUser, objid, fRange );
 		}
 
-	}
+	
 }
 
 
 // raider_test 없는 아이템을 사용했다고 하면?
-void CDPSrvr::OnDoUseItem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnDoUseItem( CAr & ar, CUser * pUser )
 {
 	DWORD dwData;
 	OBJID objid;
@@ -2018,10 +1934,6 @@ void CDPSrvr::OnDoUseItem( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 	ar >> dwData >> objid >> nPart;
 	if( nPart >= MAX_HUMAN_PARTS )	
-		return;
-
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == FALSE )
 		return;
 
 	WORD nId = HIWORD( dwData );
@@ -2060,12 +1972,9 @@ void CDPSrvr::OnDoUseItem( CAr & ar, DPID dpidCache, DPID dpidUser )
 	pUser->OnDoUseItem( dwData, objid, nPart );
 }
 
-void CDPSrvr::OnPlayerCorr( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPlayerCorr( CAr & ar, CUser * pUser )
 {
 //	TRACE( "OnPlayerCorr\n" );
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->GetIndex() == 0 )
 		{
 			WriteError( "PACKETTYPE_PLAYERCORR" );
@@ -2106,15 +2015,12 @@ void CDPSrvr::OnPlayerCorr( CAr & ar, DPID dpidCache, DPID dpidUser )
 			g_UserMng.AddMoverCorr
 				( pUser, v, vd, f, dwState, dwStateFlag, dwMotion,  nMotionEx, nLoop, dwMotionOption, nTickCount );
 		}
-	}
+	
 }
 
-void CDPSrvr::OnPlayerCorr2( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPlayerCorr2( CAr & ar, CUser * pUser )
 {
 //	TRACE( "OnPlayerCorr2()\n" );
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->GetIndex() == 0 )
 		{
 			WriteError( "PACKETTYPE_PLAYERCORR2" );
@@ -2150,14 +2056,11 @@ void CDPSrvr::OnPlayerCorr2( CAr & ar, DPID dpidCache, DPID dpidUser )
 			g_UserMng.AddMoverCorr2
 				( pUser, v, vd, f, fAngleX, fAccPower, fTurnAngle, dwState, dwStateFlag, dwMotion,  nMotionEx, nLoop, dwMotionOption, nTickCount );
 		}
-	}
+	
 }
 
-void CDPSrvr::OnOpenShopWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnOpenShopWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		OBJID objid;
 		ar >> objid;
 		
@@ -2197,27 +2100,20 @@ void CDPSrvr::OnOpenShopWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
 			pUser->m_vtInfo.SetOther( pVendor );
 			pUser->AddOpenShopWnd( pVendor );
 		}
-	}
+	
 }
 
-void CDPSrvr::OnCloseShopWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnCloseShopWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
-		CMover* pMover = pUser->m_vtInfo.GetOther();
-		if( IsValidObj( pMover ) && pMover->IsNPC() )
-			pUser->m_vtInfo.SetOther( NULL );
-	}
+	CMover* pMover = pUser->m_vtInfo.GetOther();
+	if( IsValidObj( pMover ) && pMover->IsNPC() )
+		pUser->m_vtInfo.SetOther( NULL );
 }
 
-void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnBuyItem( CAr & ar, CUser * pUser )
 {
 	auto [cTab, nId, nNum, dwItemId] = ar.Extract<CHAR, BYTE, short, DWORD>();
 	if (cTab >= MAX_VENDOR_INVENTORY_TAB || nNum < 1) return;
-
-	CUser * pUser = g_UserMng.GetUser(dpidCache, dpidUser);
-	if (!IsValidObj(pUser)) return;
 
 	CMover * pVendor = pUser->m_vtInfo.GetOther();
 	if (!pVendor) return;
@@ -2334,15 +2230,15 @@ void CDPSrvr::OnBuyItem( CAr & ar, DPID dpidCache, DPID dpidUser )
 }
 
 // 칩으로 아이템 구매
-void CDPSrvr::OnBuyChipItem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnBuyChipItem( CAr & ar, CUser * pUser )
 {
 	auto [cTab, nId, nNum, dwItemId] = ar.Extract<CHAR, BYTE, short, DWORD>();
 	if( cTab >= MAX_VENDOR_INVENTORY_TAB || nNum < 1 )
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) && pUser->m_vtInfo.GetOther() )
-	{
+	if (!pUser->m_vtInfo.GetOther())
+		return;
+
 		CMover* pVendor = pUser->m_vtInfo.GetOther();
 		LPCHARACTER lpChar = prj.GetCharacter( pVendor->m_szCharacterKey );
 		if (!lpChar) return;
@@ -2455,11 +2351,11 @@ void CDPSrvr::OnBuyChipItem( CAr & ar, DPID dpidCache, DPID dpidUser )
 			aLogItem.Gold_1 = (DWORD)( (-1) * (int)( (itemElem.GetChipCost() * nNum) ) );
 			OnLogItem( aLogItem, &itemElem, nNum );
 		}
-	}
+	
 }
 
 //NPC에게 파는 경우
-void CDPSrvr::OnSellItem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnSellItem( CAr & ar, CUser * pUser )
 {
 	BYTE nId;
 	short nNum;
@@ -2468,9 +2364,8 @@ void CDPSrvr::OnSellItem( CAr & ar, DPID dpidCache, DPID dpidUser )
 	if( nNum < 1 )
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) && IsValidObj( pUser->m_vtInfo.GetOther() ) )
-	{
+	if( !IsValidObj( pUser->m_vtInfo.GetOther() ) )
+	
 		if( pUser->m_vtInfo.GetOther()->IsNPC() == FALSE )		// 판매할 대상이 NPC가 아니면?
 			return;
 
@@ -2552,18 +2447,15 @@ void CDPSrvr::OnSellItem( CAr & ar, DPID dpidCache, DPID dpidUser )
 		if( nTax )
 			CTax::GetInstance()->AddTax( CTax::GetInstance()->GetContinent( pUser ), nTax, TAX_SALES );
 		pUser->RemoveItem( nId, nNum );
-	}
+	
 }
 
 // 패스워드 변경창을 띄울것인지 패스워드 확인창을 띄을것인지를 알려준다
-void CDPSrvr::OnOpenBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnOpenBankWnd( CAr & ar, CUser * pUser )
 {
 	DWORD	dwId;
 	ar >> dwId;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( dwId == NULL_ID && !CNpcChecker::GetInstance()->IsCloseNpc<MMI_BANKING>(pUser) )
 			return;
 		if( pUser->IsChaotic() )
@@ -2582,17 +2474,14 @@ void CDPSrvr::OnOpenBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
 				SNAPSHOTTYPE_BANK, Subsnapshot::Bank, OBJID
 			>(Subsnapshot::Bank::AskCurrentPassword, dwId);
 		}
-	}
+	
 }
 
-void CDPSrvr::OnOpenGuildBankWnd(CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnOpenGuildBankWnd(CAr & ar, CUser * pUser)
 {
 	if( g_eLocal.GetState( ENABLE_GUILD_INVENTORY ) == FALSE )		
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->m_vtInfo.GetOther() )	// 거래중인 대상이 있으면?
 			return;
 		if( pUser->m_vtInfo.VendorIsVendor() )		// 내가 팔고 있으면?
@@ -2606,17 +2495,13 @@ void CDPSrvr::OnOpenGuildBankWnd(CAr & ar, DPID dpidCache, DPID dpidUser )
 
 		pUser->AddGuildBankWindow( 0 );
 		pUser->m_bGuildBank = TRUE;
-	}
+	
 }
 
-void CDPSrvr::OnCloseBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnCloseBankWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );	
-	if( IsValidObj( pUser ) )
-	{
-		pUser->m_bBank = FALSE;
-		pUser->m_bInstantBank	= FALSE;
-	}
+	pUser->m_bBank = FALSE;
+	pUser->m_bInstantBank	= FALSE;
 }
 
 void CDPSrvr::OnDoUseSkillPoint( CAr & ar, CUser & pUser ) {
@@ -2680,20 +2565,15 @@ void CDPSrvr::OnDoUseSkillPoint( CAr & ar, CUser & pUser ) {
 #endif // __S_NEW_SKILL_2
 }
 
-void CDPSrvr::OnCloseGuildBankWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnCloseGuildBankWnd( CAr & ar, CUser * pUser )
 {
 	if( g_eLocal.GetState( ENABLE_GUILD_INVENTORY ) == FALSE )		
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) )
-	{
-		pUser->m_bGuildBank = FALSE;
-	}
+	pUser->m_bGuildBank = FALSE;
 }
 
-void CDPSrvr::OnBankToBank( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnBankToBank( CAr & ar, CUser * pUser )
 {
 	BYTE nFlag, nPutSlot, nSlot, nId;
 	short nItemNum;
@@ -2703,9 +2583,6 @@ void CDPSrvr::OnBankToBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 	if( nPutSlot >= 3 || nSlot >= 3 )
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->m_idPlayerBank[nPutSlot] != 0 && pUser->m_idPlayerBank[nSlot] != 0 && pUser->IsCommBank() )
 		{
 			if( nFlag == 1 )	// Item
@@ -2778,9 +2655,9 @@ void CDPSrvr::OnBankToBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 				 }	
 			}
 		}
-	}
+	
 }
-void CDPSrvr::OnPutItemBank( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPutItemBank( CAr & ar, CUser * pUser )
 {
 	BYTE nSlot, nId;
 	short nItemNum;
@@ -2789,9 +2666,6 @@ void CDPSrvr::OnPutItemBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 	if( nSlot >= 3 )
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( !pUser->m_bInstantBank )
 		{
 			if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_BANKING>(pUser) )
@@ -2872,10 +2746,10 @@ void CDPSrvr::OnPutItemBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 				pUser->AddBankIsFull();
 			}
 		}
-	}
+	
 }
 
-void CDPSrvr::OnPutItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPutItemGuildBank( CAr & ar, CUser * pUser )
 {
 	if( g_eLocal.GetState( ENABLE_GUILD_INVENTORY ) == FALSE )		
 		return;
@@ -2885,9 +2759,6 @@ void CDPSrvr::OnPutItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 	ar >> nId >> nItemNum >> mode;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );	
-	if( IsValidObj( pUser ) )
-	{
 		if( !pUser->GetWorld() || !GuildHouseMng->IsGuildHouse( pUser->GetWorld()->GetID() ) )
 			if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_GUILDBANKING>(pUser) )
 				return;
@@ -2953,10 +2824,10 @@ void CDPSrvr::OnPutItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 				pUser->AddDefinedText( TID_GAME_GUILDBANKFULL, "" );		// 길드창고가 꽉찼시유~
 			}
 		}
-	}
+	
 }
 
-void CDPSrvr::OnGetItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGetItemGuildBank( CAr & ar, CUser * pUser )
 {
 	if( g_eLocal.GetState( ENABLE_GUILD_INVENTORY ) == FALSE )		
 		return;
@@ -2966,9 +2837,6 @@ void CDPSrvr::OnGetItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 	ar >> nId >> dwItemNum >> mode;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );	
-	if( IsValidObj( pUser ) )
-	{
 		if( !pUser->GetWorld() || !GuildHouseMng->IsGuildHouse( pUser->GetWorld()->GetID() ) )
 			if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_GUILDBANKING>(pUser) )
 				return;
@@ -3056,31 +2924,26 @@ void CDPSrvr::OnGetItemGuildBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 				}
 			}
 		}
-	}
+	
 }
 
 
-void CDPSrvr::OnGuildBankMoveItem( CAr & ar, DPID dpidCache, DPID dpidUser)
+void CDPSrvr::OnGuildBankMoveItem( CAr & ar, CUser * pUser )
 {
 	if( g_eLocal.GetState( ENABLE_GUILD_INVENTORY ) == FALSE )		
 		return;
 
 	BYTE nSrcIndex, nDestIndex;
-	
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		ar >> nSrcIndex >> nDestIndex;
+	ar >> nSrcIndex >> nDestIndex;
 		
-		// 길드 창고의 아이템을 스왑한다.
-		CGuild* pGuild = pUser->GetGuild();
-		if ( pGuild )
-		{
-			pGuild->m_GuildBank.Swap( nSrcIndex, nDestIndex );
-			// 모든 클라이언트에게 길드창고에서 아이템이 이동했음을 알려준다.
-			// 길드창고를 업데이트한다.
-			UpdateGuildBank(pGuild, 4); // 4번은 아이템이 스왑된것임
-		}
+	// 길드 창고의 아이템을 스왑한다.
+	CGuild* pGuild = pUser->GetGuild();
+	if ( pGuild )
+	{
+		pGuild->m_GuildBank.Swap( nSrcIndex, nDestIndex );
+		// 모든 클라이언트에게 길드창고에서 아이템이 이동했음을 알려준다.
+		// 길드창고를 업데이트한다.
+		UpdateGuildBank(pGuild, 4); // 4번은 아이템이 스왑된것임
 	}
 }
 
@@ -3115,7 +2978,7 @@ void CDPSrvr::UpdateGuildBank(CGuild* p_GuildBank, int p_Mode, BYTE cbUpdate, u_
 }
 
 
-void CDPSrvr::OnGetItemBank( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGetItemBank( CAr & ar, CUser * pUser )
 {
 	BYTE nSlot, nId;
 	short nItemNum;
@@ -3124,10 +2987,6 @@ void CDPSrvr::OnGetItemBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 	if( nSlot >= 3 )
 		return;
 	
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) )
-	{
 		if( !pUser->m_bInstantBank )
 		{
 			if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_BANKING>(pUser) )
@@ -3169,12 +3028,11 @@ void CDPSrvr::OnGetItemBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 				pUser->AddBankIsFull();
 			}
 		}		
-	}
+	
 }
 
-void CDPSrvr::OnPutGoldBank( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPutGoldBank( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	DWORD dwGold;
 	BYTE nSlot;
 	ar >> nSlot >> dwGold;
@@ -3186,8 +3044,6 @@ void CDPSrvr::OnPutGoldBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 	if( nSlot >= 3 )
 		return;
 
-	if( IsValidObj( pUser ) )
-	{
 		if( !pUser->m_bInstantBank )
 		{
 			if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_BANKING>(pUser) )
@@ -3221,13 +3077,11 @@ void CDPSrvr::OnPutGoldBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 				pUser->AddPutGoldBank( nSlot, pUser->GetGold(), pUser->m_dwGoldBank[nSlot] );
 			}
 		}		
-	}
+	
 }
 
-void CDPSrvr::OnGetGoldBank( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGetGoldBank( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-
 	DWORD dwGold;
 	BYTE nSlot;
 	ar >> nSlot >> dwGold;
@@ -3239,8 +3093,6 @@ void CDPSrvr::OnGetGoldBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 	if( nSlot >= 3 )
 		return;
 
-	if( IsValidObj( pUser ) )
-	{
 		if( !pUser->m_bInstantBank )
 		{
 			if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_BANKING>(pUser ) )
@@ -3272,11 +3124,12 @@ void CDPSrvr::OnGetGoldBank( CAr & ar, DPID dpidCache, DPID dpidUser )
 				pUser->AddPutGoldBank( nSlot, pUser->GetGold(), pUser->m_dwGoldBank[nSlot] );		
 			}
 		}		
-	}
+	
 }
 
-void CDPSrvr::OnMoveBankItem( CAr & ar, DPID dpidCache, DPID dpidUser)
+void CDPSrvr::OnMoveBankItem( CAr & ar, CUser * pUser )
 {
+	// BYTE, BYTE
 }
 
 void CDPSrvr::OnChangeBankPass( CAr & ar, CUser & pUser ) {
@@ -3312,10 +3165,8 @@ void CDPSrvr::OnChangeBankPass( CAr & ar, CUser & pUser ) {
 	}
 }
 
-void CDPSrvr::OnConfirmBank( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnConfirmBank( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if (!IsValidObj(pUser)) return;
 	if( pUser->m_vtInfo.GetOther() ) return;
 	if( pUser->m_vtInfo.VendorIsVendor() ) return;
 	if( pUser->m_bGuildBank ) return;
@@ -3384,19 +3235,15 @@ void CDPSrvr::OnSfxHit( CAr & ar, DPID dpidCache, DPID dpidUser )
 }
 
 // 클라로부터 받은 idSfx를 어레이에 추가시켜둠
-void CDPSrvr::OnSfxID( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnSfxID( CAr & ar, CUser * pUser )
 {
 	OBJID	idTarget;
 	int		idSfxHit;
 	DWORD	dwType,	dwSkill;
 	int		nMaxDmgCnt;
 
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		ar >> idTarget >> idSfxHit >> dwType >> dwSkill >> nMaxDmgCnt;
-		pUser->m_sfxHitArray.Add( idSfxHit, idTarget, dwType, dwSkill, nMaxDmgCnt );		
-	}
+	ar >> idTarget >> idSfxHit >> dwType >> dwSkill >> nMaxDmgCnt;
+	pUser->m_sfxHitArray.Add( idSfxHit, idTarget, dwType, dwSkill, nMaxDmgCnt );		
 }
 
 // 공격이 빗나가서 저절로 없어졌을때 삭제 명령.
@@ -3422,7 +3269,7 @@ void CDPSrvr::OnSfxClear( CAr & ar, DPID dpidCache, DPID dpidUser )
 }
 
 
-void CDPSrvr::OnMeleeAttack( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnMeleeAttack( CAr & ar, CUser * pUser )
 {
 	DWORD dwAtkMsg;
 	OBJID objid;
@@ -3434,9 +3281,6 @@ void CDPSrvr::OnMeleeAttack( CAr & ar, DPID dpidCache, DPID dpidUser )
 	ar >> dwAtkMsg >> objid >> nParam2 >> nParam3;
 #endif	// __HACK_1023
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->GetIndex() == 0 )
 		{
 			WriteError( "PACKETTYPE_MELEE_ATTACK" );
@@ -3465,19 +3309,16 @@ void CDPSrvr::OnMeleeAttack( CAr & ar, DPID dpidCache, DPID dpidUser )
 				g_UserMng.AddMeleeAttack( pUser, dwAtkMsg, objid, nParam2, nParam3 );
 			}
 		}
-	}
+	
 }
 
-void CDPSrvr::OnMeleeAttack2( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnMeleeAttack2( CAr & ar, CUser * pUser )
 {
 	DWORD dwAtkMsg;
 	OBJID objid;
 	int nParam2, nParam3;
 	ar >> dwAtkMsg >> objid >> nParam2 >> nParam3;
 	
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->GetIndex() == 0 )
 		{
 			WriteError( "PACKETTYPE_MELEE_ATTACK2" );
@@ -3494,11 +3335,11 @@ void CDPSrvr::OnMeleeAttack2( CAr & ar, DPID dpidCache, DPID dpidUser )
 			if( nRet != -2 )	// -2는 명령 완전 무시.
 				g_UserMng.AddMeleeAttack2( pUser, dwAtkMsg, objid, nParam2, nParam3 );
 		}
-	}
+	
 }
 
 
-void CDPSrvr::OnMagicAttack( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnMagicAttack( CAr & ar, CUser * pUser )
 {
 	DWORD dwAtkMsg;
 	OBJID objid;
@@ -3507,9 +3348,6 @@ void CDPSrvr::OnMagicAttack( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 	nParam2 = 0;		//  m_qMagicAtkMsg에서 nParam2가 0이면 range attack으로 간주된다.
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		CMover* pTargetObj	= prj.GetMover( objid );
 
 		if( IsValidObj( pTargetObj ) ) 
@@ -3519,10 +3357,9 @@ void CDPSrvr::OnMagicAttack( CAr & ar, DPID dpidCache, DPID dpidUser )
 			if( nRet == 0 && pUser->IsFly() == FALSE )
 				pUser->m_pActMover->m_qMagicAtkMsg.AddTail( MAGICATKMSG( dwAtkMsg, objid, nParam2, nParam3, nMagicPower, idSfxHit ) );
 		}
-	}
 }
 
-void CDPSrvr::OnRangeAttack( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRangeAttack( CAr & ar, CUser * pUser )
 {	
 	DWORD dwAtkMsg;
 	OBJID objid;
@@ -3531,9 +3368,6 @@ void CDPSrvr::OnRangeAttack( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 	ar >> dwAtkMsg >> objid >> dwItemID >> idSfxHit;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		CMover* pTargetObj	= prj.GetMover( objid );
 
 		if( IsValidObj( pTargetObj ) ) 
@@ -3541,17 +3375,14 @@ void CDPSrvr::OnRangeAttack( CAr & ar, DPID dpidCache, DPID dpidUser )
 			if( pUser->DoAttackRange( pTargetObj, dwItemID, idSfxHit ) == 0 )
 				pUser->m_pActMover->m_qMagicAtkMsg.AddTail( MAGICATKMSG( dwAtkMsg, objid, 1, dwItemID, 0, idSfxHit ) );
 		}
-	}
 }
 
-void CDPSrvr::OnTeleSkill( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnTeleSkill( CAr & ar, CUser * pUser )
 {
 //	OBJID objid;
 	D3DXVECTOR3 vPos;
 	ar >> vPos;
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
+
 		const SKILL * blinkpool = pUser->GetSkill(SI_MAG_MAG_BLINKPOOL);
 
 		if (!blinkpool || blinkpool->dwLevel == 0) return;
@@ -3568,18 +3399,15 @@ void CDPSrvr::OnTeleSkill( CAr & ar, DPID dpidCache, DPID dpidUser )
 				return;
 		}
 		pUser->Replace( pUser->GetWorld()->GetID(), vPos, REPLACE_NORMAL, pUser->GetLayer() );
-	}
+	
 }
 
 
-void CDPSrvr::OnSetTarget( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnSetTarget( CAr & ar, CUser * pUser )
 {
 	OBJID idTarget;
 	BYTE bClear;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		ar >> idTarget >> bClear;	// idTarget은 MOVER라고 가정하자.
+	ar >> idTarget >> bClear;	// idTarget은 MOVER라고 가정하자.
 
 		if( bClear == 2 )		// 2 : 타겟잡은놈을 기억.
 			pUser->m_idSetTarget = idTarget;
@@ -3609,17 +3437,14 @@ void CDPSrvr::OnSetTarget( CAr & ar, DPID dpidCache, DPID dpidUser )
 				}
 			}
 		}
-	}
+	
 }
 
 
-void CDPSrvr::OnSnapshot( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnSnapshot( CAr & ar, CUser * pUser )
 {
 	BYTE c;
 	WORD	wHdr;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		ar >> c;
 		while( c-- )
 		{
@@ -3635,7 +3460,6 @@ void CDPSrvr::OnSnapshot( CAr & ar, DPID dpidCache, DPID dpidUser )
 					}
 			}
 		}
-	}
 }
 
 
