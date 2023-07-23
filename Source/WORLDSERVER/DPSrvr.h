@@ -60,21 +60,21 @@ private:
 	void	OnCtrlCoolTimeCancel( CAr & ar, CUser * pUser );		
 	void	OnMoveItem( CAr & ar, CUser & pUser );
 	void	OnDropItem( CAr & ar, CUser & pUser );
-	void	OnTrade( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnConfirmTrade( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnTrade( CAr & ar, CUser * pUser );
+	void	OnConfirmTrade( CAr & ar, CUser * pUser );
 	void	OnConfirmTradeCancel( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnTradePut( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnTradePull( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnTradePutGold( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnTradeClearGold( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnTradeCancel( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnTradeOk( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnTradelastConfrim( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnPVendorOpen( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnPVendorClose( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnUnregisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnQueryPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnTradePut( CAr & ar, CUser * pUser );
+	void	OnTradePull( CAr & ar, CUser * pUser );
+	void	OnTradePutGold( CAr & ar, CUser * pUser );
+	void	OnTradeClearGold( CAr & ar, CUser * pUser );
+	void	OnTradeCancel( CAr & ar, CUser * pUser );
+	void	OnTradeOk( CAr & ar, CUser * pUser );
+	void	OnTradelastConfrim( CAr & ar, CUser * pUser );
+	void	OnPVendorOpen( CAr & ar, CUser * pUser );
+	void	OnPVendorClose( CAr & ar, CUser * pUser );
+	void	OnRegisterPVendorItem( CAr & ar, CUser * pUser );
+	void	OnUnregisterPVendorItem( CAr & ar, CUser * pUser );
+	void	OnQueryPVendorItem( CAr & ar, CUser * pUser );
 	void	OnBuyPVendorItem( CAr & ar, CUser & pUser );
 	void	OnEnchant( CAr & ar, CUser * pUser );
 	void	OnSmeltSafety( CAr & ar, CUser * pUser );
@@ -86,7 +86,7 @@ private:
 	void	OnPiercingRemove(CAr & ar, CUser & pUser);
 	void	OnExpBoxInfo( CAr & ar, CUser & pUser );
 	void	OnItemTransy( CAr & ar, CUser & pUser );
-	void	OnCommercialElem( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnCommercialElem( CAr & ar, CUser * pUser );
 	void	OnMotion( CAr & ar, CUser * pUser );
 	void	OnRepairItem( CAr & ar, CUser * pUser );
 	void	OnScriptDialogReq( CAr & ar, CUser * pUser );
@@ -148,23 +148,23 @@ private:
 	void	OnRemoveQuest( CAr & ar, CUser * pUser );
 	void	OnQueryPlayerData( CAr & ar, CUser * pUser );
 	void	OnQueryPlayerData2( CAr & ar, CUser * pUser );
-	void	OnAvailPocket( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnMoveItemOnPocket( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnAvailPocket( CAr & ar, CUser * pUser );
+	void	OnMoveItemOnPocket( CAr & ar, CUser * pUser );
 #ifdef __JEFF_11
-	void	OnQuePetResurrection( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnQuePetResurrection( CAr & ar, CUser * pUser );
 #endif	// __JEFF_11
 #ifdef __JEFF_11_4
-	void	OnArenaEnter( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnArenaExit( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnArenaEnter( CAr & ar, CUser * pUser );
+	void	OnArenaExit( CAr & ar, CUser * pUser );
 #endif	// __JEFF_11_4
 	void	OnGuildInvite( CAr & ar, CUser * pUser );
 	void	OnIgnoreGuildInvite( CAr & ar, CUser * pUser );
 	void	OnEndSkillQueue( CAr & ar, CUser & pUser );
 	void	OnDoUseItem( CAr & ar, CUser * pUser );
 	void	OnDoUseItemTarget( CAr & ar, CUser * pUser );
-	void	OnAwakening( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnAwakening( CAr & ar, CUser * pUser );
 	void	OnRemoveItemLevelDown( CAr & ar, CUser * pUser );
-	void	OnBlessednessCancel( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnBlessednessCancel( CAr & ar, CUser * pUser );
 	void	OnMeleeAttack( CAr & ar, CUser * pUser );
 	void	OnMeleeAttack2( CAr & ar, CUser * pUser );
 	void	OnMagicAttack( CAr & ar, CUser * pUser );
@@ -197,129 +197,129 @@ private:
 	void	OnCloseChattingRoom( CAr & ar, CUser & pUser );
 	void	OnCommonPlace( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnSetNaviPoint( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGameMasterWhisper( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnNWWantedGold( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnNWWantedList( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnNWWantedInfo( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnNWWantedName( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnGameMasterWhisper( CAr & ar, CUser * pUser );
+	void	OnNWWantedGold( CAr & ar, CUser * pUser );
+	void	OnNWWantedList( CAr & ar, CUser * pUser );
+	void	OnNWWantedInfo( CAr & ar, CUser * pUser );
+	void	OnNWWantedName( CAr & ar, CUser * pUser );
 	void	OnReqLeave(CAr & ar, CUser & pUser);
 	void	OnResurrectionOK(CAr & ar, CUser & pUser);
-	void	OnResurrectionCancel( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnChangeMode( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnStateMode( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnQuerySetPlayerName( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnQuerySetGuildName( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnDoEscape( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnCheering( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnQueryEquip( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnOptionEnableRenderMask( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnQueryEquipSetting( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnFoucusObj( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnReturnScroll ( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnResurrectionCancel( CAr & ar, CUser * pUser );
+	void	OnChangeMode( CAr & ar, CUser * pUser );
+	void	OnStateMode( CAr & ar, CUser * pUser );
+	void	OnQuerySetPlayerName( CAr & ar, CUser * pUser );
+	void	OnQuerySetGuildName( CAr & ar, CUser * pUser );
+	void	OnDoEscape( CAr & ar, CUser * pUser );
+	void	OnCheering( CAr & ar, CUser * pUser );
+	void	OnQueryEquip( CAr & ar, CUser * pUser );
+	void	OnOptionEnableRenderMask( CAr & ar, CUser * pUser );
+	void	OnQueryEquipSetting( CAr & ar, CUser * pUser );
+	void	OnFoucusObj( CAr & ar, CUser * pUser );
+	void	OnReturnScroll ( CAr & ar, CUser * pUser );
 	void	OnChangeFace(CAr & ar, CUser & pUser);
-	void	OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnQueryRemoveMail( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnQueryGetMailItem( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnQueryGetMailGold( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnQueryReadMail( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnQueryPostMail( CAr & ar, CUser * pUser );
+	void	OnQueryRemoveMail( CAr & ar, CUser * pUser );
+	void	OnQueryGetMailItem( CAr & ar, CUser * pUser );
+	void	OnQueryGetMailGold( CAr & ar, CUser * pUser );
+	void	OnQueryReadMail( CAr & ar, CUser * pUser );
 	void	OnQueryMailBox( CAr & ar, CUser * pUser );
-	void	OnGCApp( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGCCancel( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGCRequestStatus( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGCSelectPlayer( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGCSelectMap( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGCJoin( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGCGetPenyaGuild( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGCGetPenyaPlayer( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGCTele( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGCPlayerPoint( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnGCApp( CAr & ar, CUser * pUser );
+	void	OnGCCancel( CAr & ar, CUser * pUser );
+	void	OnGCRequestStatus( CAr & ar, CUser * pUser );
+	void	OnGCSelectPlayer( CAr & ar, CUser * pUser );
+	void	OnGCSelectMap( CAr & ar, CUser * pUser );
+	void	OnGCJoin( CAr & ar, CUser * pUser );
+	void	OnGCGetPenyaGuild( CAr & ar, CUser * pUser );
+	void	OnGCGetPenyaPlayer( CAr & ar, CUser * pUser );
+	void	OnGCTele( CAr & ar, CUser * pUser );
+	void	OnGCPlayerPoint( CAr & ar, CUser * pUser );
 	void	OnSummonFriend( CAr & ar, CUser * pUser );
 	void	OnSummonFriendConfirm( CAr & ar, CUser * pUser );
 	void	OnSummonFriendCancel( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnSummonParty( CAr & ar, CUser * pUser );
 	void	OnSummonPartyConfirm( CAr & ar, CUser * pUser );
 
-	void	OnRemoveInvenItem( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnRemoveInvenItem( CAr & ar, CUser * pUser );
 	void	OnRandomScroll( CAr & ar, CUser * pUser );
 	
-	void	OnCreateMonster( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnCreateMonster( CAr & ar, CUser * pUser );
 	
 	void	OnCreateAngel(CAr & ar, CUser & pUser);
 	void	OnAngleBuff(CAr & ar, CUser & pUser);
 	
 #ifdef __EVE_MINIGAME
-	void OnKawibawiboStart( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnKawibawiboGetItem( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnReassembleStart( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnReassembleOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnAlphabetOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnAlphabetStart( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnFiveSystemOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnFiveSystemBet( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnFiveSystemStart( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnFiveSystemDestroyWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void OnKawibawiboStart( CAr & ar, CUser * pUser );
+	void OnKawibawiboGetItem( CAr & ar, CUser * pUser );
+	void OnReassembleStart( CAr & ar, CUser * pUser );
+	void OnReassembleOpenWnd( CAr & ar, CUser * pUser );
+	void OnAlphabetOpenWnd( CAr & ar, CUser * pUser );
+	void OnAlphabetStart( CAr & ar, CUser * pUser );
+	void OnFiveSystemOpenWnd( CAr & ar, CUser * pUser );
+	void OnFiveSystemBet( CAr & ar, CUser * pUser );
+	void OnFiveSystemStart( CAr & ar, CUser * pUser );
+	void OnFiveSystemDestroyWnd( CAr & ar, CUser * pUser );
 #endif // __EVE_MINIGAME
 
 	void OnUltimateMakeItem(CAr & ar, CUser & pUser);
 	void OnUltimateMakeGem(CAr & ar, CUser & pUser);
 	void OnUltimateTransWeapon(CAr & ar, CUser & pUser);
-	void OnUltimateSetGem( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnUltimateRemoveGem( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnUltimateEnchantWeapon( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void OnUltimateSetGem( CAr & ar, CUser * pUser );
+	void OnUltimateRemoveGem( CAr & ar, CUser * pUser );
+	void OnUltimateEnchantWeapon( CAr & ar, CUser * pUser );
 	
 #ifdef __TRADESYS
-	void OnExchange( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void OnExchange( CAr & ar, CUser * pUser );
 #endif // __TRADESYS
 
-	void	OnPetRelease( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnUsePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnMakePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnPetTamerMistake( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnPetTamerMiracle( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnFeedPocketInactive( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnPetRelease( CAr & ar, CUser * pUser );
+	void	OnUsePetFeed( CAr & ar, CUser * pUser );
+	void	OnMakePetFeed( CAr & ar, CUser * pUser );
+	void	OnPetTamerMistake( CAr & ar, CUser * pUser );
+	void	OnPetTamerMiracle( CAr & ar, CUser * pUser );
+	void	OnFeedPocketInactive( CAr & ar, CUser * pUser );
 
-	void	OnQueryStartCollecting( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnQueryStopCollecting( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnQueryStartCollecting( CAr & ar, CUser * pUser );
+	void	OnQueryStopCollecting( CAr & ar, CUser * pUser );
 
 	void OnLegendSkillStart(CAr & ar, CUser & pUser);
 	
-	void OnModifyStatus( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void OnModifyStatus( CAr & ar, CUser * pUser );
 
-	void OnGC1to1TenderOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnGC1to1TenderView( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnGC1to1Tender( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnGC1to1CancelTender( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnGC1to1FailedTender( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnGC1to1MemberLineUpOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnGC1to1MemberLineUp( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnGC1to1TeleportToNPC( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnGC1to1TeleportToStage( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void OnGC1to1TenderOpenWnd( CAr & ar, CUser * pUser );
+	void OnGC1to1TenderView( CAr & ar, CUser * pUser );
+	void OnGC1to1Tender( CAr & ar, CUser * pUser );
+	void OnGC1to1CancelTender( CAr & ar, CUser * pUser );
+	void OnGC1to1FailedTender( CAr & ar, CUser * pUser );
+	void OnGC1to1MemberLineUpOpenWnd( CAr & ar, CUser * pUser );
+	void OnGC1to1MemberLineUp( CAr & ar, CUser * pUser );
+	void OnGC1to1TeleportToNPC( CAr & ar, CUser * pUser );
+	void OnGC1to1TeleportToStage( CAr & ar, CUser * pUser );
 
-	void OnQueryGuildBankLogList( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void OnQueryGuildBankLogList( CAr & ar, CUser * pUser );
 	void OnSealCharReq(CAr & ar, CUser & pUser);
-	void OnSealCharConmReq( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void OnSealCharConmReq( CAr & ar, CUser * pUser );
 	void OnSealCharGetReq(CAr & ar, CUser & pUser);
-	void OnHonorListReq( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnHonorChangeReq( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void OnHonorListReq( CAr & ar, CUser * pUser );
+	void OnHonorChangeReq( CAr & ar, CUser * pUser );
 #ifdef __NPC_BUFF
-	void OnNPCBuff( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void OnNPCBuff( CAr & ar, CUser * pUser );
 #endif // __NPC_BUFF
 
-	void OnSecretRoomTenderOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnSecretRoomLineUpOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnSecretRoomTender( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnSecretRoomTenderCancelReturn( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnSecretRoomLineUpMember( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnSecretRoomEntrance( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnSecretRoomTeleportToNPC( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnSecretRoomTenderView( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void OnTeleportSecretRoomDungeon( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void OnSecretRoomTenderOpenWnd( CAr & ar, CUser * pUser );
+	void OnSecretRoomLineUpOpenWnd( CAr & ar, CUser * pUser );
+	void OnSecretRoomTender( CAr & ar, CUser * pUser );
+	void OnSecretRoomTenderCancelReturn( CAr & ar, CUser * pUser );
+	void OnSecretRoomLineUpMember( CAr & ar, CUser * pUser );
+	void OnSecretRoomEntrance( CAr & ar, CUser * pUser );
+	void OnSecretRoomTeleportToNPC( CAr & ar, CUser * pUser );
+	void OnSecretRoomTenderView( CAr & ar, CUser * pUser );
+	void OnTeleportSecretRoomDungeon( CAr & ar, CUser * pUser );
 
 	BOOL IsInviteAbleGuild( CUser* pUser );	//길드원 변경가능한 길드인가?(초대 및 탈퇴)
 
-	void OnSetTaxRate( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void OnSetTaxRate( CAr & ar, CUser * pUser );
 
-	void OnTeleportToHeavenTower( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void OnTeleportToHeavenTower( CAr & ar, CUser * pUser );
 
 public:
 	void	QueryDestroyPlayer( DPID dpidCache, DPID dpidUser, DWORD dwAuthKey, u_long idPlayer );
@@ -343,68 +343,68 @@ public:
 	void	PutItemLog( CUser* pUser, const char* szAction, const char* szContext, CItemElem* pItem, int nNum = 0 );
 	void	PutPenyaLog( CUser* pUser, const char* szAction, const char* szContext, int nCost );
 private:
-	void	OnElectionAddDeposit( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnElectionSetPledge( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnElectionIncVote( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnLEventCreate( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnLordSkillUse( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnElectionAddDeposit( CAr & ar, CUser * pUser );
+	void	OnElectionSetPledge( CAr & ar, CUser * pUser );
+	void	OnElectionIncVote( CAr & ar, CUser * pUser );
+	void	OnLEventCreate( CAr & ar, CUser * pUser );
+	void	OnLordSkillUse( CAr & ar, CUser * pUser );
 	void	OnTransformItem( CAr & ar, CUser & pUser );		// 알변환 핸들러
-	void	OnPickupPetAwakeningCancel( CAr & ar, DPID dpidCache, DPID dpidUser );		// 픽업펫 각성 취소
+	void	OnPickupPetAwakeningCancel( CAr & ar, CUser * pUser );		// 픽업펫 각성 취소
 
-	void	OnTutorialState( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnTutorialState( CAr & ar, CUser * pUser );
 
 #ifdef __AZRIA_1023
-	void	OnDoUseItemInput( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnDoUseItemInput( CAr & ar, CUser * pUser );
 #endif	// __AZRIA_1023
-	void	OnClearPetName( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnClearPetName( CAr & ar, CUser * pUser );
 
-	void	OnRainbowRacePrevRankingOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnRainbowRaceApplicationOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnRainbowRaceApplication( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnRainbowRaceMiniGamePacket( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnRainbowRaceReqFinish( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnRainbowRacePrevRankingOpenWnd( CAr & ar, CUser * pUser );
+	void	OnRainbowRaceApplicationOpenWnd( CAr & ar, CUser * pUser );
+	void	OnRainbowRaceApplication( CAr & ar, CUser * pUser );
+	void	OnRainbowRaceMiniGamePacket( CAr & ar, CUser * pUser );
+	void	OnRainbowRaceReqFinish( CAr & ar, CUser * pUser );
 
-	void	OnHousingSetupFurniture( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnHousingSetVisitAllow( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnHousingVisitRoom( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnHousingVisitableList( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnHousingGoOut( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnHousingSetupFurniture( CAr & ar, CUser * pUser );
+	void	OnHousingSetVisitAllow( CAr & ar, CUser * pUser );
+	void	OnHousingVisitRoom( CAr & ar, CUser * pUser );
+	void	OnHousingVisitableList( CAr & ar, CUser * pUser );
+	void	OnHousingGoOut( CAr & ar, CUser * pUser );
 
-	void	OnReqQuestNPCPos( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnReqQuestNPCPos( CAr & ar, CUser * pUser );
 
-	void	OnPropose( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnRefuse( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnCouple( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnDecouple( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnPropose( CAr & ar, CUser * pUser );
+	void	OnRefuse( CAr & ar, CUser * pUser );
+	void	OnCouple( CAr & ar, CUser * pUser );
+	void	OnDecouple( CAr & ar, CUser * pUser );
 #ifdef __MAP_SECURITY
-	void	OnMapKey( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnMapKey( CAr & ar, CUser * pUser );
 #endif // __MAP_SECURITY
 #ifdef __QUIZ
-	void	OnQuizEventEntrance( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnQuizEventTeleport( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnQuizEventEntrance( CAr & ar, CUser * pUser );
+	void	OnQuizEventTeleport( CAr & ar, CUser * pUser );
 #endif // __QUIZ
-	void	OnRemoveVis( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnSwapVis( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnBuyGuildHouse( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGuildHousePacket( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGuildHouseEnter( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGuildHouseGoOut( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnTeleporterReq( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnRemoveVis( CAr & ar, CUser * pUser );
+	void	OnSwapVis( CAr & ar, CUser * pUser );
+	void	OnBuyGuildHouse( CAr & ar, CUser * pUser );
+	void	OnGuildHousePacket( CAr & ar, CUser * pUser );
+	void	OnGuildHouseEnter( CAr & ar, CUser * pUser );
+	void	OnGuildHouseGoOut( CAr & ar, CUser * pUser );
+	void	OnTeleporterReq( CAr & ar, CUser * pUser );
 	void	OnCheckedQuest( CAr & ar, CUser & pUser );
-	void	OnInviteCampusMember( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnInviteCampusMember( CAr & ar, CUser * pRequest );
 	void	OnAcceptCampusMember( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnRefuseCampusMember( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnRemoveCampusMember( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnRemoveCampusMember( CAr & ar, CUser * pRequest );
 
 
 	//	mulcom	BEGIN100405	각성 보호의 두루마리
-	void	OnItemSelectAwakeningValue( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnItemSelectAwakeningValue( CAr & ar, CUser * pRequest );
 	//	mulcom	END100405	각성 보호의 두루마리
 
 #ifdef __GUILD_HOUSE_MIDDLE
-	void	OnGuildHouseTenderMainWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGuildHouseTenderInfoWnd( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnGuildHouseTenderJoin( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnGuildHouseTenderMainWnd( CAr & ar, CUser * pUser );
+	void	OnGuildHouseTenderInfoWnd( CAr & ar, CUser * pUser );
+	void	OnGuildHouseTenderJoin( CAr & ar, CUser * pUser );
 #endif // __GUILD_HOUSE_MIDDLE
 
 	void OnSquonKArbitraryPacket(CAr & ar, CUser & pUser);

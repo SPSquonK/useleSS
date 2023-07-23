@@ -4316,14 +4316,11 @@ void CDPSrvr::OnRandomScroll( CAr & ar, CUser * pUser )
 	
 }
 
-void CDPSrvr::OnCommercialElem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnCommercialElem( CAr & ar, CUser * pUser )
 {
 	DWORD dwItemId0, dwItemId1;
 	ar >> dwItemId0 >> dwItemId1;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		// 인벤토리에 있는지 장착되어 있는지 확인을 해야 함
 		// 인벤토리에 있는지 검사
 		CItemElem* pItemElem0	= pUser->m_Inventory.GetAtId( dwItemId0 );
@@ -4445,7 +4442,7 @@ void CDPSrvr::OnCommercialElem( CAr & ar, DPID dpidCache, DPID dpidUser )
 		g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_SYS_EXPAN01, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
 		pUser->AddCommercialElem( pItemElem0->m_dwObjId, pItemElem0->m_nResistSMItemId );
 		
-	}
+	
 }
 
 void CDPSrvr::OnRequestGuildRank( CAr & ar, DPID dpidCache, DPID dpidUser )
@@ -4617,32 +4614,24 @@ void CDPSrvr::OnSetNaviPoint( CAr & ar, DPID dpidCache, DPID dpidUser )
 	}
 }
 
-void CDPSrvr::OnGameMasterWhisper( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGameMasterWhisper( CAr & ar, CUser * pUser )
 {
 	CHAR	sPlayerFrom[MAX_PLAYER], lpString[260], szChat[1024];
 	ar.ReadString( sPlayerFrom, MAX_PLAYER );
 	ar.ReadString( lpString, 260 );
 
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{	
-		sprintf( szChat, "%s -> %s", sPlayerFrom, lpString );
-		g_dpDBClient.SendLogGamemaChat( pUser, szChat );
-	}
+	sprintf( szChat, "%s -> %s", sPlayerFrom, lpString );
+	g_dpDBClient.SendLogGamemaChat( pUser, szChat );
 }
 
 // 현상금 걸기 패킷 
-void CDPSrvr::OnNWWantedGold( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnNWWantedGold( CAr & ar, CUser * pUser )
 {
 	int		nGold;
 	char	szMsg[WANTED_MSG_MAX + 1];
 
 	ar >> nGold;
 	ar.ReadString( szMsg, WANTED_MSG_MAX + 1 );
-
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
 
 	if( pUser->m_idMurderer == 0 )		// 나를 죽인자가 없었으면 현상금을 걸 수 없다.
 		return;
@@ -4671,25 +4660,15 @@ void CDPSrvr::OnNWWantedGold( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 
 // 현상금 리스트 요청 패킷
-void CDPSrvr::OnNWWantedList( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnNWWantedList( CAr &, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
-	{
-		BEFORESENDSOLE( out, PACKETTYPE_WN_WANTED_LIST, pUser->m_Snapshot.dpidUser );
-		out << CWantedListSnapshot::GetInstance();
-		SEND( out, this, dpidCache );
-	}
+	BEFORESENDSOLE( out, PACKETTYPE_WN_WANTED_LIST, pUser->m_Snapshot.dpidUser );
+	out << CWantedListSnapshot::GetInstance();
+	SEND( out, this, pUser->m_Snapshot.dpidCache );
 }
 
-void CDPSrvr::OnNWWantedName( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnNWWantedName( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	LPCSTR lpszPlayer = "";
 	if( pUser->m_idMurderer )		
 	{
@@ -4701,20 +4680,16 @@ void CDPSrvr::OnNWWantedName( CAr & ar, DPID dpidCache, DPID dpidUser )
 	{
 		BEFORESENDSOLE( ar, PACKETTYPE_WN_WANTED_NAME, pUser->m_Snapshot.dpidUser );
 		ar.WriteString( lpszPlayer );
-		SEND( ar, this, dpidCache );
+		SEND( ar, this, pUser->m_Snapshot.dpidCache );
 	}
 }
 
 
 // 현상범 자세한정보 요청 패킷 
-void CDPSrvr::OnNWWantedInfo( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnNWWantedInfo( CAr & ar, CUser * pUser )
 {
 	char szPlayer[64];
 	ar.ReadString( szPlayer, 64 );
-
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
 
 	const bool isWanted = CWantedListSnapshot::GetInstance().IsWantedPlayer(szPlayer);
 	if (!isWanted) return;
@@ -4750,17 +4725,13 @@ void CDPSrvr::OnReqLeave(CAr & ar, CUser & pUser) {
 		pUser.m_dwLeavePenatyTime = ::timeGetTime() + TIMEWAIT_CLOSE * 1000;	//  세팅 
 }
 
-void CDPSrvr::OnStateMode( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnStateMode( CAr & ar, CUser * pUser )
 {
 	DWORD dwStateMode;
 	BYTE nFlag;
 	ar >> dwStateMode;
 	ar >> nFlag;
 
-
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj(pUser) )
-	{	
 		if( pUser->IsStateMode( dwStateMode ) )
 		{
 			if( nFlag == STATEMODE_BASEMOTION_CANCEL )
@@ -4770,14 +4741,12 @@ void CDPSrvr::OnStateMode( CAr & ar, DPID dpidCache, DPID dpidUser )
 				pUser->m_dwUseItemId = 0;
 			}
 		}
-	}
 }
 
 // 부활취소
-void CDPSrvr::OnResurrectionCancel( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnResurrectionCancel( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj(pUser) && pUser->m_Resurrection_Data )
+	if( pUser->m_Resurrection_Data )
 	{	
 		pUser->m_Resurrection_Data = std::nullopt;
 	}
@@ -4814,36 +4783,32 @@ void CDPSrvr::OnResurrectionOK(CAr & ar, CUser & pUser) {
 	}
 }
 
-void CDPSrvr::OnChangeMode( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnChangeMode( CAr & ar, CUser * pUser )
 {
 	int nFlag;
 	DWORD dwMode;
 	ar >> dwMode;
 	ar >> nFlag;
 	
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj(pUser) )
-	{	
-		switch( nFlag )
-		{
-		case 0:	// 자동 PK ON
-			pUser->SetMode( FREEPK_MODE );
-			break;
-		case 1:	// 자동 PK OFF
-			pUser->SetNotMode( FREEPK_MODE );
-			break;
-		case 2:	// 자동 PVP ON
-			pUser->SetMode( PVPCONFIRM_MODE );
-			break;
-		case 3:	// 자동 PVP OFF
-			pUser->SetNotMode( PVPCONFIRM_MODE );
-			break;
-		}
-		g_UserMng.AddModifyMode( pUser );
+	switch( nFlag )
+	{
+	case 0:	// 자동 PK ON
+		pUser->SetMode( FREEPK_MODE );
+		break;
+	case 1:	// 자동 PK OFF
+		pUser->SetNotMode( FREEPK_MODE );
+		break;
+	case 2:	// 자동 PVP ON
+		pUser->SetMode( PVPCONFIRM_MODE );
+		break;
+	case 3:	// 자동 PVP OFF
+		pUser->SetNotMode( PVPCONFIRM_MODE );
+		break;
 	}
+	g_UserMng.AddModifyMode( pUser );
 }
 
-void CDPSrvr::OnQuerySetPlayerName( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQuerySetPlayerName( CAr & ar, CUser * pUser )
 {
 // II_SYS_SYS_SCR_CHANAM
 	DWORD dwData;
@@ -4852,9 +4817,6 @@ void CDPSrvr::OnQuerySetPlayerName( CAr & ar, DPID dpidCache, DPID dpidUser )
 	ar >> dwData;
 	ar.ReadString( lpszPlayer, MAX_PLAYER );
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 #ifdef __QUIZ
 		if( pUser->GetWorld() && pUser->GetWorld()->GetID() == WI_WORLD_QUIZ )
 			return;
@@ -4887,19 +4849,16 @@ void CDPSrvr::OnQuerySetPlayerName( CAr & ar, DPID dpidCache, DPID dpidUser )
 			g_dpDBClient.SendQuerySetPlayerName( pUser->m_idPlayer, lpszPlayer, dwData );
 		}
 #endif // __S_SERVER_UNIFY
-	}
+	
 }
 
-void CDPSrvr::OnQuerySetGuildName( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQuerySetGuildName( CAr & ar, CUser * pUser )
 {
 	BYTE nId;
 	char lpszGuild[MAX_G_NAME]	= { 0, };
 
 	ar >> nId;
 	ar.ReadString( lpszGuild, MAX_G_NAME );
-
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if (!IsValidObj(pUser)) return;
 
 	if (prj.nameValider.IsNotAllowedName(lpszGuild)) {
 		pUser->AddDiagText(prj.GetText(TID_DIAG_0020));
@@ -4939,90 +4898,76 @@ void CDPSrvr::PutCreateItemLog( CUser* pUser, CItemElem* pItemElem, const char* 
 }
 
 // 클라로부터 탈출요청이 들어옴
-void CDPSrvr::OnDoEscape( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnDoEscape( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
+	const ItemProp* pItemProp = prj.GetItemProp( II_CHR_SYS_SCR_ESCAPEBLINKWING );
+	if( pItemProp )
 	{
-		ItemProp* pItemProp = prj.GetItemProp( II_CHR_SYS_SCR_ESCAPEBLINKWING );
-		if( pItemProp )
-		{
-			if( !pUser->IsSMMode( SM_ESCAPE ) )
-				pUser->DoUseItemVirtual( II_CHR_SYS_SCR_ESCAPEBLINKWING, FALSE );
-			else
-				pUser->AddDefinedText( TID_GAME_STILLNOTUSE );		
-		}
-	}
-}
-
-void CDPSrvr::OnCheering( CAr & ar, DPID dpidCache, DPID dpidUser )
-{
-	OBJID objid;
-	ar >> objid;
-
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		if( pUser->GetId() == objid )
-			return;
-
-		CMover* pTarget		= prj.GetMover( objid );
-		if( IsValidObj( pTarget ) && pTarget->GetType() == OT_MOVER && pTarget->IsPlayer() )
-		{
-			DWORD dwTickCount	= GetTickCount();
-			if( pUser->m_nCheerPoint <= 0 )
-			{
-				pUser->AddDefinedText( TID_CHEER_NO1, "%d", (pUser->m_dwTickCheer - dwTickCount) / 60000 );
-				return;
-			}
-
-			if( pUser->m_nCheerPoint == MAX_CHEERPOINT )
-				pUser->SetCheerParam( pUser->m_nCheerPoint - 1, dwTickCount, TICK_CHEERPOINT );
-			else
-				pUser->SetCheerParam( pUser->m_nCheerPoint - 1, dwTickCount, pUser->m_dwTickCheer - dwTickCount );
-
-			FLOAT fAngle = GetDegree(pTarget->GetPos(), pUser->GetPos());
-			pUser->SetAngle(fAngle);
-
-			if( pTarget->GetSex() == pUser->GetSex() )
-			{
-				((CUser*)pTarget)->AddDefinedText( TID_CHEER_MESSAGE3, "%s", pUser->GetName() );
-				pUser->SendActMsg( OBJMSG_MOTION, MTI_CHEERSAME, ANILOOP_1PLAY );
-			}
-			else
-			{
-				((CUser*)pTarget)->AddDefinedText( TID_CHEER_MESSAGE4, "%s", pUser->GetName() );
-				pUser->SendActMsg( OBJMSG_MOTION, MTI_CHEEROTHER, ANILOOP_1PLAY );
-			}
-
-			g_UserMng.AddCreateSfxObj(pUser, XI_CHEERSENDEFFECT );
-			g_UserMng.AddCreateSfxObj(pTarget, XI_CHEERRECEIVEEFFECT );
-
-
-			CMover* pSrc = pUser ;
-			g_UserMng.AddMoverBehavior( pSrc, pSrc->GetPos(), pSrc->m_pActMover->m_vDelta,
-				pSrc->GetAngle(), pSrc->m_pActMover->GetState(), pSrc->m_pActMover->GetStateFlag(), 
-				pSrc->m_dwMotion, pSrc->m_pActMover->m_nMotionEx, pSrc->m_pModel->m_nLoop, pSrc->m_dwMotionOption, g_TickCount.GetTickCount(), TRUE );
-
-			ItemProp *pItemProp = prj.GetItemProp( II_CHEERUP ); // 응원 아이템
-			if( pItemProp )
-				pTarget->DoApplySkill( pTarget, pItemProp, NULL );
-		}
+		if( !pUser->IsSMMode( SM_ESCAPE ) )
+			pUser->DoUseItemVirtual( II_CHR_SYS_SCR_ESCAPEBLINKWING, FALSE );
 		else
-		{
-			pUser->AddDefinedText( TID_CHEER_NO2, "" );	
-		}
+			pUser->AddDefinedText( TID_GAME_STILLNOTUSE );		
 	}
 }
 
-void CDPSrvr::OnQueryEquip( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnCheering( CAr & ar, CUser * pUser )
 {
 	OBJID objid;
 	ar >> objid;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
+	if( pUser->GetId() == objid )
+		return;
+
+	CMover * pTargetMover = prj.GetMover(objid);
+	if (!IsValidObj(pTargetMover)) return pUser->AddDefinedText(TID_CHEER_NO2);
+
+	CUser * pTarget = pTargetMover->ToUser();
+	if (!pTarget) return pUser->AddDefinedText(TID_CHEER_NO2);
+
+	DWORD dwTickCount	= GetTickCount();
+	if( pUser->m_nCheerPoint <= 0 )
 	{
+		pUser->AddDefinedText( TID_CHEER_NO1, "%d", (pUser->m_dwTickCheer - dwTickCount) / 60000 );
+		return;
+	}
+
+	if( pUser->m_nCheerPoint == MAX_CHEERPOINT )
+		pUser->SetCheerParam( pUser->m_nCheerPoint - 1, dwTickCount, TICK_CHEERPOINT );
+	else
+		pUser->SetCheerParam( pUser->m_nCheerPoint - 1, dwTickCount, pUser->m_dwTickCheer - dwTickCount );
+
+	FLOAT fAngle = GetDegree(pTarget->GetPos(), pUser->GetPos());
+	pUser->SetAngle(fAngle);
+
+	if( pTarget->GetSex() == pUser->GetSex() )
+	{
+		pTarget->AddDefinedText( TID_CHEER_MESSAGE3, "%s", pUser->GetName() );
+		pUser->SendActMsg( OBJMSG_MOTION, MTI_CHEERSAME, ANILOOP_1PLAY );
+	}
+	else
+	{
+		pTarget->AddDefinedText( TID_CHEER_MESSAGE4, "%s", pUser->GetName() );
+		pUser->SendActMsg( OBJMSG_MOTION, MTI_CHEEROTHER, ANILOOP_1PLAY );
+	}
+
+	g_UserMng.AddCreateSfxObj(pUser, XI_CHEERSENDEFFECT );
+	g_UserMng.AddCreateSfxObj(pTarget, XI_CHEERRECEIVEEFFECT );
+
+	g_UserMng.AddMoverBehavior(pUser, pUser->GetPos(), pUser->m_pActMover->m_vDelta,
+		pUser->GetAngle(), pUser->m_pActMover->GetState(), pUser->m_pActMover->GetStateFlag(),
+		pUser->m_dwMotion, pUser->m_pActMover->m_nMotionEx, pUser->m_pModel->m_nLoop, pUser->m_dwMotionOption, g_TickCount.GetTickCount(), TRUE );
+
+	ItemProp *pItemProp = prj.GetItemProp( II_CHEERUP ); // 응원 아이템
+	if( pItemProp )
+		pTarget->DoApplySkill( pTarget, pItemProp, NULL );
+
+}
+
+void CDPSrvr::OnQueryEquip( CAr & ar, CUser * pUser )
+{
+	OBJID objid;
+	ar >> objid;
+
 		CUser* pUsertmp		= prj.GetUser( objid );
 		if( IsValidObj( pUsertmp ) )
 		{
@@ -5034,49 +4979,37 @@ void CDPSrvr::OnQueryEquip( CAr & ar, DPID dpidCache, DPID dpidUser )
 			}
 			pUser->AddQueryEquip( pUsertmp );
 		}
-	}
+
 }
 
-void CDPSrvr::OnQueryEquipSetting( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQueryEquipSetting( CAr & ar, CUser * pUser )
 {
 	BOOL bAllow;
 	ar >> bAllow;
 
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		if( bAllow )
-			pUser->SetNotMode( EQUIP_DENIAL_MODE );
-		else
-			pUser->SetMode( EQUIP_DENIAL_MODE );
-		g_UserMng.AddModifyMode( pUser );
-	}
+	if( bAllow )
+		pUser->SetNotMode( EQUIP_DENIAL_MODE );
+	else
+		pUser->SetMode( EQUIP_DENIAL_MODE );
+	g_UserMng.AddModifyMode( pUser );
 }
 
-void CDPSrvr::OnOptionEnableRenderMask( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnOptionEnableRenderMask( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		BOOL bEnable;
-		ar >> bEnable;
-		if( bEnable )
-			pUser->SetNotMode( MODE_OPTION_DONT_RENDER_MASK );
-		else
-			pUser->SetMode( MODE_OPTION_DONT_RENDER_MASK );
-		g_UserMng.AddModifyMode( pUser );
-	}
+	BOOL bEnable;
+	ar >> bEnable;
+	if( bEnable )
+		pUser->SetNotMode( MODE_OPTION_DONT_RENDER_MASK );
+	else
+		pUser->SetMode( MODE_OPTION_DONT_RENDER_MASK );
+	g_UserMng.AddModifyMode( pUser );
 }
 
-void CDPSrvr::OnReturnScroll( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnReturnScroll( CAr & ar, CUser * pUser )
 {
 	int nSelect;
 	ar >> nSelect;
 	if( nSelect < -1 || nSelect > 2 )
-		return;
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == FALSE )
 		return;
 
 	if( nSelect >= 0 )
@@ -5097,7 +5030,7 @@ void CDPSrvr::OnEndSkillQueue(CAr & ar, CUser & pUser) {
 	pUser.m_playTaskBar.OnEndSkillQueue(&pUser);
 }
 
-void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQueryPostMail( CAr & ar, CUser * pUser )
 {
 	char lpszReceiver[MAX_PLAYER]	= { 0, };
 	char lpszTitle[MAX_MAILTITLE]	= { 0, };
@@ -5120,9 +5053,6 @@ void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser )
 	if( nItem < 0 || nGold < 0 || ( nGold + nPostGold ) <= 0 )
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		//raiders.2006.11.27
 		if( pUser->m_vtInfo.GetOther() )	// 거래중인 대상이 있으면?
 			return;
@@ -5234,23 +5164,15 @@ void CDPSrvr::OnQueryPostMail( CAr & ar, DPID dpidCache, DPID dpidUser )
 			// input name is wrong
 			pUser->AddDiagText(prj.GetText(TID_MAIL_UNKNOW));
 		}
-	}
-	else
-	{
-// 		//	BEGINTEST
-// 		Error( "OnQueryPostMail  pUser == NULL [%d]", dpidUser );
-	}
+
 
 }
 
-void CDPSrvr::OnQueryRemoveMail( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQueryRemoveMail( CAr & ar, CUser * pUser )
 {
 	u_long nMail;
 	ar >> nMail;
 
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		CMailBox* pMailBox = CPost::GetInstance()->GetMailBox( pUser->m_idPlayer );
 		if( pMailBox != NULL )
 		{
@@ -5268,17 +5190,14 @@ void CDPSrvr::OnQueryRemoveMail( CAr & ar, DPID dpidCache, DPID dpidUser )
 		{
 			Error( "CDPSrvr::OnQueryRemoveMail - Invalid pMailBox. idReceiver : %07d, nMail :[%d]", pUser->m_idPlayer, nMail );
 		}
-	}
+	
 }
 
-void CDPSrvr::OnQueryGetMailItem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQueryGetMailItem( CAr & ar, CUser * pUser )
 {
 	u_long nMail;
 	ar >> nMail;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->m_Inventory.GetEmptyCount() < 1 )
 		{
 			pUser->AddDiagText(  prj.GetText( TID_GAME_LACKSPACE ) );
@@ -5314,17 +5233,14 @@ void CDPSrvr::OnQueryGetMailItem( CAr & ar, DPID dpidCache, DPID dpidUser )
 			}
 		}
 		g_dpDBClient.SendQueryGetMailItem( pUser->m_idPlayer, nMail );
-	}
+	
 }
 
-void CDPSrvr::OnQueryGetMailGold( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQueryGetMailGold( CAr & ar, CUser * pUser )
 {
 	u_long nMail;
 	ar >> nMail;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		CMailBox* pMailBox = CPost::GetInstance()->GetMailBox( pUser->m_idPlayer );
 		if( pMailBox != NULL )
 		{
@@ -5342,17 +5258,14 @@ void CDPSrvr::OnQueryGetMailGold( CAr & ar, DPID dpidCache, DPID dpidUser )
 		{
 			Error( "CDPSrvr::OnQueryGetMailGold - Invalid pMailBox. idReceiver : %07d, nMail :[%d]", pUser->m_idPlayer, nMail );
 		}
-	}
+	
 }
 
-void CDPSrvr::OnQueryReadMail( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQueryReadMail( CAr & ar, CUser * pUser )
 {
 	u_long nMail;
 	ar >> nMail;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		CMailBox* pMailBox = CPost::GetInstance()->GetMailBox( pUser->m_idPlayer );
 		if( pMailBox != NULL )
 		{
@@ -5370,7 +5283,7 @@ void CDPSrvr::OnQueryReadMail( CAr & ar, DPID dpidCache, DPID dpidUser )
 		{
 			Error( "CDPSrvr::OnQueryReadMail - Invalid pMailBox. idReceiver : %07d, nMail :[%d]", pUser->m_idPlayer, nMail );
 		}
-	}
+	
 }
 
 void CDPSrvr::OnQueryMailBox( CAr & ar, CUser * pUser) {
@@ -5408,13 +5321,11 @@ void CDPSrvr::OnQueryMailBox( CAr & ar, CUser * pUser) {
 
 }
 
-void CDPSrvr::OnGCApp( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGCApp( CAr & ar, CUser * pUser )
 {
 	BYTE nState;
 	ar >> nState;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
+
 		CGuild *pGuild = pUser->GetGuild();
 
 		// 길드가 없거나 길드장이 아니면 신청 불가
@@ -5445,27 +5356,21 @@ void CDPSrvr::OnGCApp( CAr & ar, DPID dpidCache, DPID dpidUser )
 			ar >> dwPenya;
 			g_GuildCombatMng.GuildCombatRequest( pUser, dwPenya );	// 
 		}
-	}
+	
 }
-void CDPSrvr::OnGCCancel( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGCCancel( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-		g_GuildCombatMng.GuildCombatCancel( pUser );
+	g_GuildCombatMng.GuildCombatCancel( pUser );
 }
-void CDPSrvr::OnGCRequestStatus( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGCRequestStatus( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-		pUser->AddGCRequestStatus( g_GuildCombatMng.GetPrizePenya( 2 ), g_GuildCombatMng.vecRequestRanking );
+	pUser->AddGCRequestStatus( g_GuildCombatMng.GetPrizePenya( 2 ), g_GuildCombatMng.vecRequestRanking );
 }
 
-void CDPSrvr::OnGCSelectPlayer( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGCSelectPlayer( CAr & ar, CUser * pUser )
 {
 	BOOL bWindow;
 	ar >> bWindow;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if (!IsValidObj(pUser)) return;
 	
 	// 캐릭터를 선택할수 있는 시간인지 검사
 	if (g_GuildCombatMng.m_nGCState != CGuildCombat::NOTENTER_COUNT_STATE) {
@@ -5548,29 +5453,19 @@ void CDPSrvr::OnGCSelectPlayer( CAr & ar, DPID dpidCache, DPID dpidUser )
 	}
 }
 
-void CDPSrvr::OnGCSelectMap( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGCSelectMap( CAr & ar, CUser * pUser )
 {
 	int nMap;
 	ar >> nMap;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-		g_GuildCombatMng.SetSelectMap( pUser, nMap );
+	g_GuildCombatMng.SetSelectMap( pUser, nMap );
 }
-void CDPSrvr::OnGCJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
-{
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_GUILDWAR_JOIN>(pUser) )
-			return;
-		g_GuildCombatMng.GuildCombatEnter( pUser );
-	}
+void CDPSrvr::OnGCJoin(CAr & ar, CUser * pUser) {
+	if (!CNpcChecker::GetInstance()->IsCloseNpc<MMI_GUILDWAR_JOIN>(pUser))
+		return;
+	g_GuildCombatMng.GuildCombatEnter(pUser);
 }
-void CDPSrvr::OnGCGetPenyaGuild( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGCGetPenyaGuild( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		CGuild *pGuild = pUser->GetGuild();		
 		if( pGuild && pGuild->IsMaster( pUser->m_idPlayer ) )
 		{
@@ -5602,14 +5497,11 @@ void CDPSrvr::OnGCGetPenyaGuild( CAr & ar, DPID dpidCache, DPID dpidUser )
 				pUser->AddGCGetPenyaGuild( 2, nGetPenya );
 			}
 		}
-	}
+	
 }
 
-void CDPSrvr::OnGCGetPenyaPlayer( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGCGetPenyaPlayer( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		// 보상이 있는가?
 		__int64 nGetPenya = 0;
 		BOOL bFind = FALSE;
@@ -5637,24 +5529,17 @@ void CDPSrvr::OnGCGetPenyaPlayer( CAr & ar, DPID dpidCache, DPID dpidUser )
 		{
 			pUser->AddGCGetPenyaPlayer( 1, nGetPenya );
 		}
-	}
+	
 }
 
-void CDPSrvr::OnGCTele( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGCTele( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if (g_WorldMng.GetRevivalPos(WI_WORLD_MADRIGAL, "flaris")) {
 			pUser->Replace(WI_WORLD_MADRIGAL, D3DXVECTOR3(6983.0f, 0.0f, 3330.0f), REPLACE_NORMAL, nDefaultLayer);
 		}
-	}
 }
-void CDPSrvr::OnGCPlayerPoint( CAr & ar, DPID dpidCache, DPID dpidUser )
-{
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-		pUser->AddGCPlayerPoint();
+void CDPSrvr::OnGCPlayerPoint(CAr &, CUser * pUser) {
+	pUser->AddGCPlayerPoint();
 }
 
 void CDPSrvr::OnSummonFriend( CAr & ar, CUser * pUser )
@@ -5997,7 +5882,7 @@ void CDPSrvr::OnSummonPartyConfirm( CAr & ar, CUser * pUser )
 	}
 }
 
-void CDPSrvr::OnRemoveInvenItem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRemoveInvenItem( CAr & ar, CUser * pUser )
 {
 	DWORD	dwId;
 	int		nNum;
@@ -6005,10 +5890,6 @@ void CDPSrvr::OnRemoveInvenItem( CAr & ar, DPID dpidCache, DPID dpidUser )
 	ar >> nNum;
 
 	if( nNum <= 0 )
-		return;
-
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == FALSE )
 		return;
 	
 	CItemElem* pItemElem = pUser->m_Inventory.GetAtId( dwId );
@@ -6045,16 +5926,12 @@ void CDPSrvr::OnRemoveInvenItem( CAr & ar, DPID dpidCache, DPID dpidUser )
 	pUser->RemoveItem( (BYTE)( dwId ), (short)nNum );
 }
 
-void CDPSrvr::OnCreateMonster( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnCreateMonster( CAr & ar, CUser * pUser )
 {
 	DWORD dwItemIdRec;
 	D3DXVECTOR3 vPos;
 	ar >> dwItemIdRec;
 	ar >> vPos;
-
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == FALSE )
-		return;
 	
 	DWORD dwId = HIWORD( dwItemIdRec );
 	
@@ -6065,24 +5942,21 @@ void CDPSrvr::OnCreateMonster( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 }
 
-void CDPSrvr::OnFoucusObj( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnFoucusObj( CAr & ar, CUser * pUser )
 {
 	OBJID objid;
 	ar >> objid;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-		pUser->AddFocusObj(objid);
+	pUser->AddFocusObj(objid);
 }
 
-void CDPSrvr::OnTrade( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnTrade( CAr & ar, CUser * pUser )
 {
 	OBJID objidTrader;
 	ar >> objidTrader;
 
 	CWorld* pWorld;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) && pUser->m_vtInfo.GetOther() == NULL )
+	if( ( pWorld = pUser->GetWorld() ) && pUser->m_vtInfo.GetOther() == NULL )
 	{
 		CMover* pTrader		= prj.GetMover( objidTrader );
 		if( IsValidObj( pTrader ) && pTrader->GetWorld() && pTrader->m_vtInfo.GetOther() == NULL )
@@ -6129,14 +6003,13 @@ void CDPSrvr::OnTrade( CAr & ar, DPID dpidCache, DPID dpidUser )
 	}
 }
 
-void CDPSrvr::OnConfirmTrade( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnConfirmTrade( CAr & ar, CUser * pUser )
 {
 	OBJID objidTrader;
 	ar >> objidTrader;
 
 	CWorld* pWorld;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) && pUser->m_vtInfo.GetOther() == NULL )
+	if( ( pWorld = pUser->GetWorld() ) && pUser->m_vtInfo.GetOther() == NULL )
 	{
 		// 대전장에서는 거래를 할수 없습니다.
 		if( pWorld && pWorld->GetID() == WI_WORLD_GUILDWAR )
@@ -6181,7 +6054,7 @@ void CDPSrvr::OnConfirmTradeCancel( CAr & ar, DPID dpidCache, DPID dpidUser )
 		( (CUser*)pTrader )->AddComfirmTradeCancel( objidTrader );
 }
 
-void CDPSrvr::OnTradePut( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnTradePut( CAr & ar, CUser * pUser )
 {
 	BYTE i, nItemType, nId;
 	short nItemNum;
@@ -6190,11 +6063,10 @@ void CDPSrvr::OnTradePut( CAr & ar, DPID dpidCache, DPID dpidUser )
 	if( i >= MAX_TRADE || nItemNum < 1 )
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	CMover* pTrader	= ( pUser ? pUser->m_vtInfo.GetOther() : NULL );
 	CWorld* pWorld;
 
-	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) && 
+	if( ( pWorld = pUser->GetWorld() ) && 
 		IsValidObj( pTrader ) && pTrader->GetWorld() == pWorld && pTrader->m_vtInfo.GetOther() == pUser )
 	{
 		CItemElem* pItem	= pUser->GetItemId( nId );
@@ -6222,7 +6094,7 @@ void CDPSrvr::OnTradePut( CAr & ar, DPID dpidCache, DPID dpidUser )
 	}
 }
 
-void CDPSrvr::OnTradePull( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnTradePull( CAr & ar, CUser * pUser )
 {
 	BYTE i;
 	ar >> i;
@@ -6230,11 +6102,10 @@ void CDPSrvr::OnTradePull( CAr & ar, DPID dpidCache, DPID dpidUser )
 	if( i >= MAX_TRADE )
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	CMover* pTrader	= ( pUser ? pUser->m_vtInfo.GetOther() : NULL );
 	CWorld* pWorld;
 
-	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) && 
+	if( ( pWorld = pUser->GetWorld() ) && 
 		IsValidObj( pTrader ) && pTrader->GetWorld() == pWorld && pTrader->m_vtInfo.GetOther() == pUser )
 	{
 
@@ -6249,7 +6120,7 @@ void CDPSrvr::OnTradePull( CAr & ar, DPID dpidCache, DPID dpidUser )
 	}
 }
 
-void CDPSrvr::OnTradePutGold( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnTradePutGold( CAr & ar, CUser * pUser )
 {
 	DWORD dwGold;
 	ar >> dwGold;
@@ -6258,11 +6129,10 @@ void CDPSrvr::OnTradePutGold( CAr & ar, DPID dpidCache, DPID dpidUser )
 	if( nGold <= 0 )
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	CMover* pTrader	= ( pUser ? pUser->m_vtInfo.GetOther() : NULL );
 	CWorld* pWorld;
 
-	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) && 
+	if( ( pWorld = pUser->GetWorld() ) && 
 		IsValidObj( pTrader ) && pTrader->GetWorld() == pWorld && pTrader->m_vtInfo.GetOther() == pUser )
 	{
 		if( pUser->m_vtInfo.TradeGetState() == TRADE_STEP_ITEM && pTrader->m_vtInfo.TradeGetState() == TRADE_STEP_ITEM )
@@ -6280,13 +6150,12 @@ void CDPSrvr::OnTradePutGold( CAr & ar, DPID dpidCache, DPID dpidUser )
 }
 //raiders.2006.11.28
 /*
-void CDPSrvr::OnTradeClearGold( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnTradeClearGold( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
 	CMover* pTrader	= ( pUser ? pUser->m_vtInfo.GetOther() : NULL );
 	CWorld* pWorld;
 
-	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) && 
+	if( ( pWorld = pUser->GetWorld() ) && 
 		IsValidObj( pTrader ) && pTrader->GetWorld() == pWorld && pTrader->m_vtInfo.GetOther() == pUser )
 	{
 		if( pUser->m_vtInfo.TradeGetState() == TRADE_STEP_ITEM && pTrader->m_vtInfo.TradeGetState() == TRADE_STEP_ITEM )
@@ -6299,16 +6168,15 @@ void CDPSrvr::OnTradeClearGold( CAr & ar, DPID dpidCache, DPID dpidUser )
 	}
 }
 */
-void CDPSrvr::OnTradeCancel( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnTradeCancel( CAr & ar, CUser * pUser )
 {
 	int nMode;
 	ar >> nMode;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	CMover* pTrader	= ( pUser ? pUser->m_vtInfo.GetOther() : NULL );
+	CMover* pTrader	= pUser->m_vtInfo.GetOther();
 	CWorld* pWorld;
 
-	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) &&
+	if( ( pWorld = pUser->GetWorld() ) &&
 		IsValidObj( pTrader ) && pTrader->GetWorld() == pWorld && pTrader->m_vtInfo.GetOther() == pUser )
 	{
 		pUser->m_vtInfo.TradeClear();
@@ -6321,13 +6189,12 @@ void CDPSrvr::OnTradeCancel( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 
 // pPlayer는 지금 ok를 누른 사용자이고 pTrdaer는 먼저 ok를 누른 사용자이다.	
-void CDPSrvr::OnTradelastConfrim( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnTradelastConfrim( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	CMover* pTrader	= ( pUser ? pUser->m_vtInfo.GetOther() : NULL );	
+	CMover* pTrader	= pUser->m_vtInfo.GetOther();	
 	CWorld* pWorld;
 
-	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) && 
+	if( ( pWorld = pUser->GetWorld() ) && 
 		IsValidObj( pTrader ) && pTrader->GetWorld() == pWorld && pTrader->m_vtInfo.GetOther() == pUser )
 	{
 		if( pUser->m_vtInfo.TradeGetState() != TRADE_STEP_OK )
@@ -6366,13 +6233,12 @@ void CDPSrvr::OnTradelastConfrim( CAr & ar, DPID dpidCache, DPID dpidUser )
 }
 
 // 사용자가 ok 버튼을 눌렀을 때
-void CDPSrvr::OnTradeOk( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnTradeOk( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	CMover* pTrader	= ( pUser ? pUser->m_vtInfo.GetOther() : NULL );
+	CMover* pTrader	= pUser->m_vtInfo.GetOther();
 	CWorld* pWorld;
 
-	if( IsValidObj( pUser ) && ( pWorld = pUser->GetWorld() ) && 
+	if( ( pWorld = pUser->GetWorld() ) && 
 		IsValidObj( pTrader ) && pTrader->GetWorld() == pWorld && pTrader->m_vtInfo.GetOther() == pUser )
 	{
 		if( pUser->m_vtInfo.TradeGetState() == TRADE_STEP_ITEM )
@@ -6393,7 +6259,7 @@ void CDPSrvr::OnTradeOk( CAr & ar, DPID dpidCache, DPID dpidUser )
 	}
 }
 
-void CDPSrvr::OnPVendorOpen( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPVendorOpen( CAr & ar, CUser * pUser )
 {
 	if( ar.GetBuffer().size() > 55)	// 4 + 4 + 48 - 1		= 55
 		return;
@@ -6401,9 +6267,6 @@ void CDPSrvr::OnPVendorOpen( CAr & ar, DPID dpidCache, DPID dpidUser )
 	char szPVendor[MAX_VENDORNAME];	// 개인 상점 이름( 48 )
 	ar.ReadString( szPVendor, MAX_VENDORNAME );	
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 /*		
 #ifdef __Y_BEAUTY_SHOP_CHARGE
 		if( ::GetLanguage() == LANG_TWN )
@@ -6486,19 +6349,15 @@ void CDPSrvr::OnPVendorOpen( CAr & ar, DPID dpidCache, DPID dpidUser )
 				pUser->m_dwHonorCheckTime = GetTickCount();
 			}
 		}
-	}
+	
 }
 
-void CDPSrvr::OnPVendorClose( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPVendorClose( CAr & ar, CUser * pUser )
 {
 	OBJID objidVendor;
 	ar >> objidVendor;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		ClosePVendor( pUser, objidVendor );
-	}	
+	ClosePVendor( pUser, objidVendor );
 }
 
 BOOL CDPSrvr::ClosePVendor( CUser* pUser, OBJID objidVendor )
@@ -6604,14 +6463,11 @@ void CDPSrvr::OnBuyPVendorItem(CAr & ar, CUser & pUser) {
 	OnLogItem( info, &result.item, nNum );
 }
 
-void CDPSrvr::OnQueryPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQueryPVendorItem( CAr & ar, CUser * pUser )
 {
 	OBJID objidVendor;
 	ar >> objidVendor;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->m_vtInfo.GetOther() )
 			return;
 		if( pUser->m_pActMover->IsFly() )
@@ -6632,30 +6488,26 @@ void CDPSrvr::OnQueryPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser )
 			}
 		}
 
-	}
+	
 }
 
-void CDPSrvr::OnUnregisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnUnregisterPVendorItem( CAr & ar, CUser * pUser )
 {
 	BYTE i;
 	ar >> i;
 	if( i >= MAX_VENDITEM )
 		return;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		if( pUser->m_vtInfo.GetOther() )
-			return;
-		if( pUser->m_vtInfo.IsVendorOpen() )
-			return;
+	if( pUser->m_vtInfo.GetOther() )
+		return;
+	if( pUser->m_vtInfo.IsVendorOpen() )
+		return;
 
-		if( pUser->m_vtInfo.VendorClearItem( i ) )
-			pUser->AddUnregisterPVendorItem( i );
-	}
+	if( pUser->m_vtInfo.VendorClearItem( i ) )
+		pUser->AddUnregisterPVendorItem( i );
 }
 
-void CDPSrvr::OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRegisterPVendorItem( CAr & ar, CUser * pUser )
 {
 	BYTE iIndex, nType, nId;
 	short nNum;
@@ -6667,9 +6519,6 @@ void CDPSrvr::OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser )
 	if( nCost < 1 )	
 		nCost = 1;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->m_vtInfo.GetOther() )
 			return;
 		if( pUser->m_vtInfo.IsVendorOpen() )
@@ -6747,7 +6596,7 @@ void CDPSrvr::OnRegisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser )
 			pUser->m_vtInfo.VendorSetItem( nId, iIndex, nNum, nCost );
 			pUser->AddRegisterPVendorItem( iIndex, 0, nId, nNum, nCost );
 		}
-	}
+	
 }
 
 void CDPSrvr::OnCreateAngel( CAr & ar, CUser & pUser )
@@ -6926,13 +6775,8 @@ void CDPSrvr::OnAngleBuff(CAr & ar, CUser & pUser) {
 }
 
 #ifdef __EVE_MINIGAME
-void CDPSrvr::OnKawibawiboStart( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnKawibawiboStart( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	pUser->m_nKawibawiboState = prj.m_MiniGame.Result_Kawibawibo( pUser );
 	if( pUser->m_nKawibawiboState == CMiniGame::KAWIBAWIBO_WIN )
 	{
@@ -6943,23 +6787,13 @@ void CDPSrvr::OnKawibawiboStart( CAr & ar, DPID dpidCache, DPID dpidUser )
 	else
 		pUser->AddKawibawiboResult( pUser->m_nKawibawiboState, pUser->m_nKawibawiboWin );
 }
-void CDPSrvr::OnKawibawiboGetItem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnKawibawiboGetItem( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-	
 	prj.m_MiniGame.ResultItem_Kawibawibo( pUser );
 }
 
-void CDPSrvr::OnReassembleStart( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnReassembleStart( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-	
 	OBJID objItemId[9];
 	
 	for( int i=0; i<9; ++i )
@@ -6971,33 +6805,18 @@ void CDPSrvr::OnReassembleStart( CAr & ar, DPID dpidCache, DPID dpidUser )
 		
 }
 
-void CDPSrvr::OnReassembleOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnReassembleOpenWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	prj.m_MiniGame.OpenWnd_Reassemble( pUser );
 }
 
-void CDPSrvr::OnAlphabetOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnAlphabetOpenWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	prj.m_MiniGame.OpenWnd_Alphabet( pUser );
 }
 
-void CDPSrvr::OnAlphabetStart( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnAlphabetStart( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-	
 	int nQuestionID = 0;
 	OBJID objItemId[5];
 
@@ -7013,23 +6832,13 @@ void CDPSrvr::OnAlphabetStart( CAr & ar, DPID dpidCache, DPID dpidUser )
 //	else
 }
 
-void CDPSrvr::OnFiveSystemOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnFiveSystemOpenWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-	
 	prj.m_MiniGame.OpenWnd_FiveSystem( pUser );
 }
 
-void CDPSrvr::OnFiveSystemBet( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnFiveSystemBet( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	int nBetNum;
 	int nBetPenya;
 	
@@ -7051,26 +6860,16 @@ void CDPSrvr::OnFiveSystemBet( CAr & ar, DPID dpidCache, DPID dpidUser )
 	}
 }
 
-void CDPSrvr::OnFiveSystemStart( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnFiveSystemStart( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	int nResult = prj.m_MiniGame.Result_FiveSystem( pUser );
 
 	if( !( prj.m_MiniGame.ResultPenya_FiveSystem( pUser, nResult ) ) )
 		pUser->AddFiveSystemResult( CMiniGame::FIVESYSTEM_FAILED );
 }	
 
-void CDPSrvr::OnFiveSystemDestroyWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnFiveSystemDestroyWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-	
 	prj.m_MiniGame.DestroyWnd_FiveSystem( pUser );
 }
 #endif // __EVE_MINIGAME
@@ -7100,13 +6899,8 @@ void CDPSrvr::OnUltimateTransWeapon(CAr & ar, CUser & pUser) {
 	pUser.AddUltimateWeapon(ULTIMATE_TRANSWEAPON, nResult);
 }
 
-void CDPSrvr::OnUltimateSetGem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnUltimateSetGem( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	OBJID objItemWeapon;
 	OBJID objItemGem;
 
@@ -7117,13 +6911,8 @@ void CDPSrvr::OnUltimateSetGem( CAr & ar, DPID dpidCache, DPID dpidUser )
 	pUser->AddUltimateWeapon( ULTIMATE_SETGEM, nResult );
 }
 
-void CDPSrvr::OnUltimateRemoveGem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnUltimateRemoveGem( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-	
 	OBJID objItemWeapon;
 	OBJID objItemGem;
 	
@@ -7151,13 +6940,8 @@ void CDPSrvr::OnUltimateRemoveGem( CAr & ar, DPID dpidCache, DPID dpidUser )
 	pUser->AddUltimateWeapon( ULTIMATE_REMOVEGEM, nResult );
 }
 
-void CDPSrvr::OnUltimateEnchantWeapon( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnUltimateEnchantWeapon( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	OBJID objItemWeapon;
 	OBJID objItemGem;
 	
@@ -7186,12 +6970,8 @@ void CDPSrvr::OnUltimateEnchantWeapon( CAr & ar, DPID dpidCache, DPID dpidUser )
 }
 
 #ifdef __TRADESYS
-void CDPSrvr::OnExchange( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnExchange( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	int nMMIid;
 	int nListNum;
 
@@ -7426,11 +7206,8 @@ CCommonCtrl* CreateExpBox( CUser* pUser )
 	return pCtrl;
 }
 
-void CDPSrvr::OnPetRelease( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPetRelease( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( !pUser->HasActivatedSystemPet() )
 		{
 			pUser->AddDefinedText( TID_GAME_PET_NOT_FOUND );
@@ -7441,14 +7218,10 @@ void CDPSrvr::OnPetRelease( CAr & ar, DPID dpidCache, DPID dpidUser )
 			if( pItemElem && pItemElem->m_pPet )
 				pUser->PetRelease();
 		}
-	}
 }
 
-void CDPSrvr::OnUsePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnUsePetFeed( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		CPet* pPet	= pUser->GetPet();
 		if( pPet == NULL )
 		{
@@ -7498,14 +7271,11 @@ void CDPSrvr::OnUsePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser )
 		// log
 		CItemElem* pPetItem	= pUser->GetPetItem();
 		g_dpDBClient.CalluspPetLog( pUser->m_idPlayer, pPetItem->GetSerialNumber(), nNum, PETLOGTYPE_FEED, pPet );
-	}
+	
 }
 
-void CDPSrvr::OnMakePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnMakePetFeed( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		DWORD dwMaterialId, dwToolId;
 		short nNum;
 
@@ -7595,15 +7365,13 @@ void CDPSrvr::OnMakePetFeed( CAr & ar, DPID dpidCache, DPID dpidUser )
 			if (bTool) pUser->UpdateItem(*pTool, UI::Num::ConsumeOne);
 		}
 		pUser->AddPetFoodMill(nResult, itemElem.m_nItemNum);
-	}
+	
 }
 
-void CDPSrvr::OnPetTamerMistake( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPetTamerMistake( CAr & ar, CUser * pUser )
 {
 	DWORD dwId;
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
+
 		ar >> dwId;
 		CItemElem* pItemElem	= pUser->GetItemId( dwId );
 		if( pItemElem && pItemElem->m_dwItemId == II_SYS_SYS_SCR_PET_TAMER_MISTAKE ) // m_dwItemId
@@ -7643,15 +7411,13 @@ void CDPSrvr::OnPetTamerMistake( CAr & ar, DPID dpidCache, DPID dpidUser )
 		{
 			// error
 		}
-	}
+	
 }
 
-void CDPSrvr::OnPetTamerMiracle( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPetTamerMiracle( CAr & ar, CUser * pUser )
 {
 	DWORD dwId;
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
+
 		ar >> dwId;
 		CItemElem* pItemElem	= pUser->GetItemId( dwId );
 		if( pItemElem && pItemElem->m_dwItemId == II_SYS_SYS_SCR_PET_TAMER_MIRACLE )
@@ -7695,26 +7461,18 @@ void CDPSrvr::OnPetTamerMiracle( CAr & ar, DPID dpidCache, DPID dpidUser )
 		{
 			// error
 		}
-	}
+	
 }
 
-void CDPSrvr::OnFeedPocketInactive( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnFeedPocketInactive( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_PET_FEED_POCKET ) )
 			pUser->RemoveBuff( BUFF_ITEM, II_SYS_SYS_SCR_PET_FEED_POCKET );
-	}
 }
 
-void CDPSrvr::OnModifyStatus( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnModifyStatus( CAr & ar, CUser * pUser )
 {
 	int nStrCount, nStaCount, nDexCount, nIntCount;
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
 
 	ar >> nStrCount >> nStaCount >> nDexCount >> nIntCount;
 	
@@ -7805,77 +7563,42 @@ void CDPSrvr::OnLegendSkillStart( CAr & ar, CUser & pUser )
 	pUser.AddLegendSkillResult(1);
 }
 
-void CDPSrvr::OnGC1to1TenderOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGC1to1TenderOpenWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	g_GuildCombat1to1Mng.SendTenderGuildOpenWnd( pUser );
 }
 
-void CDPSrvr::OnGC1to1TenderView( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGC1to1TenderView( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	g_GuildCombat1to1Mng.SendTenderGuildView( pUser );
 }
 
-void CDPSrvr::OnGC1to1Tender( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGC1to1Tender( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-	
 	int nPenya;
 	ar >> nPenya;
 
 	g_GuildCombat1to1Mng.SetTenderGuild( pUser, nPenya );
 }
 
-void CDPSrvr::OnGC1to1CancelTender( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGC1to1CancelTender( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	g_GuildCombat1to1Mng.SetCancelTenderGuild( pUser );
 }
 
-void CDPSrvr::OnGC1to1FailedTender( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGC1to1FailedTender( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	g_GuildCombat1to1Mng.SetFailedTenderGuild( pUser );
 }
 
 
-void CDPSrvr::OnGC1to1MemberLineUpOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGC1to1MemberLineUpOpenWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	g_GuildCombat1to1Mng.SendMemberLineUpOpenWnd( pUser );
 }
 
-void CDPSrvr::OnGC1to1MemberLineUp( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGC1to1MemberLineUp( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	std::vector<u_long> vecMemberId;
 	u_long nTemp;
 	int nSize;
@@ -7894,51 +7617,33 @@ void CDPSrvr::OnGC1to1MemberLineUp( CAr & ar, DPID dpidCache, DPID dpidUser )
 	g_GuildCombat1to1Mng.SetMemberLineUp( pUser, vecMemberId );
 }
 
-void CDPSrvr::OnGC1to1TeleportToNPC( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGC1to1TeleportToNPC( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	g_GuildCombat1to1Mng.SetTeleportToNPC( pUser );
 }
 
-void CDPSrvr::OnGC1to1TeleportToStage( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGC1to1TeleportToStage( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	g_GuildCombat1to1Mng.SetTeleportToStage( pUser );
 }
 
-void CDPSrvr::OnQueryStartCollecting( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQueryStartCollecting( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
 		if( pUser->IsDisguise() )
 			return;
 		pUser->StartCollecting();
-	}
 }
 
-void CDPSrvr::OnQueryStopCollecting( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQueryStopCollecting( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
 		pUser->StopCollecting();
 }
 
 	
-void CDPSrvr::OnQueryGuildBankLogList( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQueryGuildBankLogList( CAr & ar, CUser * pUser )
 {
 	bool bMK = FALSE;
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
+
 		BYTE byListType;
 		ar >> byListType;
 		CGuild *pGuild = pUser->GetGuild();
@@ -7953,21 +7658,14 @@ void CDPSrvr::OnQueryGuildBankLogList( CAr & ar, DPID dpidCache, DPID dpidUser )
 			}
 		}
 		// 길드가 없거나 길드장이 아니면 신청 불가
-	}
+	
 }
-void CDPSrvr::OnHonorListReq( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnHonorListReq( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
-		pUser->AddHonorListAck();
-	}
+	pUser->AddHonorListAck();
 }
-void CDPSrvr::OnHonorChangeReq( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnHonorChangeReq( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
 		int nChange;
 		ar >> nChange;
 		if( nChange > -1 && nChange < MAX_HONOR_TITLE )
@@ -7986,7 +7684,7 @@ void CDPSrvr::OnHonorChangeReq( CAr & ar, DPID dpidCache, DPID dpidUser )
 			pUser->m_nHonor = nChange;
 			g_UserMng.AddHonorTitleChange( pUser, nChange );
 		}
-	}
+	
 }
 
 void CDPSrvr::OnSealCharReq( CAr & ar, CUser & pUser ) {
@@ -8039,14 +7737,11 @@ void CDPSrvr::OnSealCharReq( CAr & ar, CUser & pUser ) {
 	g_dpDBClient.SendQueryGetSealChar(pUser.m_idPlayer, pUser.m_playAccount.lpszAccount);
 }
 
-void CDPSrvr::OnSealCharConmReq( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnSealCharConmReq( CAr & ar, CUser * pUser )
 {
 	OBJID objidSend;
 	ar >> objidSend;
 
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
 		CGuild *pGuild = pUser->GetGuild();
 		if( pGuild != NULL )
 		{
@@ -8163,7 +7858,7 @@ void CDPSrvr::OnSealCharConmReq( CAr & ar, DPID dpidCache, DPID dpidUser )
 		g_dpDBClient.SendQueryGetSealCharConm( pUser->m_idPlayer);
 
 		QueryDestroyPlayer( pUser->m_Snapshot.dpidCache, pUser->m_Snapshot.dpidUser, pUser->m_dwSerial, pUser->m_idPlayer ); // pUser->m_Snapshot.dpidUser에는 소켓번호가 들어가 있다.
-	}
+	
 }
 void CDPSrvr::OnSealCharGetReq( CAr & ar, CUser & pUser )
 {
@@ -8180,11 +7875,8 @@ void CDPSrvr::OnSealCharGetReq( CAr & ar, CUser & pUser )
 }
 
 
-void	CDPSrvr::OnMoveItemOnPocket( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnMoveItemOnPocket( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		int nPocket1, nItem, nPocket2;
 		short nNum;
 		ar >> nPocket1 >> nItem >> nNum >> nPocket2;
@@ -8224,14 +7916,11 @@ void	CDPSrvr::OnMoveItemOnPocket( CAr & ar, DPID dpidCache, DPID dpidUser )
 				OnLogItem( log, &item, nNum );
 			}
 		}
-	}
+	
 }
 
-void	CDPSrvr::OnAvailPocket( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnAvailPocket( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
 		int nPocket, nItem;
 		ar >> nPocket >> nItem;
 		if( nPocket <= 0 && nPocket >= MAX_POCKET )
@@ -8262,14 +7951,11 @@ void	CDPSrvr::OnAvailPocket( CAr & ar, DPID dpidCache, DPID dpidUser )
 				}
 			}
 		}
-	}
+	
 }
 
-void	CDPSrvr::OnBlessednessCancel( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnBlessednessCancel( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
 		if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_BLESSING_CANCEL>(pUser) )
 			return;
 
@@ -8299,14 +7985,11 @@ void	CDPSrvr::OnBlessednessCancel( CAr & ar, DPID dpidCache, DPID dpidUser )
 				pUser->AddDefinedText( TID_GAME_BLESSEDNESS_CANCEL );	
 			}
 		}		
-	}
+	
 }
 
-void	CDPSrvr::OnAwakening( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnAwakening( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
 		if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_ITEM_AWAKENING>(pUser) )
 			return;
 
@@ -8349,15 +8032,12 @@ void	CDPSrvr::OnAwakening( CAr & ar, DPID dpidCache, DPID dpidUser )
 			log.Gold_1	= -nCost;
 			OnLogItem( log, pItem, 1 );
 		}
-	}
+	
 }
 
 #ifdef __NPC_BUFF
-void	CDPSrvr::OnNPCBuff( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnNPCBuff( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
 		CHAR	m_szKey[64];
 		ar.ReadString(m_szKey, 64);
 		LPCHARACTER lpChar = prj.GetCharacter( m_szKey );
@@ -8416,39 +8096,32 @@ void	CDPSrvr::OnNPCBuff( CAr & ar, DPID dpidCache, DPID dpidUser )
 				}
 			}
 		}
-	}
+	
 }
 #endif // __NPC_BUFF
 
 #ifdef __JEFF_11_4
-void	CDPSrvr::OnArenaEnter( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnArenaEnter( CAr & ar, CUser * pUser )
 {
 // 아레나 지역 입장
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->IsBaseJob() )	// 1차 전직을 완료한 유저만 가능
 			return;
 		pUser->SetMarkingPos();
 		pUser->Replace( WI_WORLD_ARENA, D3DXVECTOR3( 540.0F, 140.0F, 485.0F ), REPLACE_NORMAL, nDefaultLayer );
-	}
+	
 }
 
-void	CDPSrvr::OnArenaExit( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnArenaExit( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-		pUser->Replace( pUser->m_idMarkingWorld, pUser->m_vMarkingPos, REPLACE_NORMAL, nTempLayer );
+	// TODO: Check if in arena
+	pUser->Replace( pUser->m_idMarkingWorld, pUser->m_vMarkingPos, REPLACE_NORMAL, nTempLayer );
 }
 #endif	// __JEFF_11_4
 
 #ifdef __JEFF_11
 // 펫을 조각으로 교환
-void	CDPSrvr::OnQuePetResurrection( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnQuePetResurrection( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		int nItem;
 		ar >> nItem;
 		CItemElem*	pItem	= pUser->GetItemId( nItem );
@@ -8487,27 +8160,17 @@ void	CDPSrvr::OnQuePetResurrection( CAr & ar, DPID dpidCache, DPID dpidUser )
 		pUser->RemoveItem( nItem, 1 );
 		pUser->CreateItem( &itemElem );
 		pUser->AddQuePetResurrectionResult( TRUE );
-	}
+	
 }
 #endif	// __JEFF_11
 
-void	CDPSrvr::OnSecretRoomTenderOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnSecretRoomTenderOpenWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	CSecretRoomMng::GetInstance()->SetTenderOpenWnd( pUser );
 }
 
-void	CDPSrvr::OnSecretRoomTender( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnSecretRoomTender( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	int nPenya;
 	ar >> nPenya;
 
@@ -8517,33 +8180,18 @@ void	CDPSrvr::OnSecretRoomTender( CAr & ar, DPID dpidCache, DPID dpidUser )
 	CSecretRoomMng::GetInstance()->SetTender( pUser, nPenya );
 }
 
-void	CDPSrvr::OnSecretRoomTenderCancelReturn( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnSecretRoomTenderCancelReturn( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	CSecretRoomMng::GetInstance()->SetTenderCancelReturn( pUser );
 }
 
-void	CDPSrvr::OnSecretRoomLineUpOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnSecretRoomLineUpOpenWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	CSecretRoomMng::GetInstance()->SetLineUpOpenWnd( pUser );
 }
 
-void	CDPSrvr::OnSecretRoomLineUpMember( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnSecretRoomLineUpMember( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	std::set<DWORD> checker;
 	std::vector<DWORD> vecLineUpMember;
 	int nSize;
@@ -8572,41 +8220,23 @@ void	CDPSrvr::OnSecretRoomLineUpMember( CAr & ar, DPID dpidCache, DPID dpidUser 
 	CSecretRoomMng::GetInstance()->SetLineUp( pUser, vecLineUpMember );
 }
 
-void	CDPSrvr::OnSecretRoomEntrance( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnSecretRoomEntrance( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	CSecretRoomMng::GetInstance()->SetTeleportSecretRoom( pUser );
 }
 
-void	CDPSrvr::OnSecretRoomTeleportToNPC( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnSecretRoomTeleportToNPC( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-
-	if( IsValidObj( pUser ) == FALSE )
-		return;
 	pUser->Replace( WI_WORLD_MADRIGAL, CSecretRoomMng::GetInstance()->GetRevivalPos( pUser ), REPLACE_NORMAL, nDefaultLayer );
 }
 
-void CDPSrvr::OnSecretRoomTenderView( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnSecretRoomTenderView( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-
-	if( IsValidObj( pUser ) == FALSE )
-		return;
-
 	CSecretRoomMng::GetInstance()->GetTenderView( pUser );
 }
 
-void CDPSrvr::OnTeleportSecretRoomDungeon( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnTeleportSecretRoomDungeon( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-
-	if( IsValidObj( pUser ) == FALSE )
-		return;
 	if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_SECRET_ENTRANCE_1>(pUser) )
 		return;
 
@@ -8623,11 +8253,8 @@ void CDPSrvr::OnTeleportSecretRoomDungeon( CAr & ar, DPID dpidCache, DPID dpidUs
 		pUser->AddDefinedText( TID_GAME_SECRETROOM_NOENTRANCE_1 );
 }
 
-void CDPSrvr::OnElectionAddDeposit( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnElectionAddDeposit( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		__int64 iTotal;
 		ar >> iTotal;
 
@@ -8642,7 +8269,7 @@ void CDPSrvr::OnElectionAddDeposit( CAr & ar, DPID dpidCache, DPID dpidUser )
 		g_dpDBClient.SendElectionAddDeposit( pUser->m_idPlayer, iDeposit );
 
 		PutPenyaLog( pUser, "d", "DEPOSIT", static_cast<int>( iDeposit ) );
-	}
+	
 }
 
 void CDPSrvr::PutItemLog( CUser* pUser, const char* szAction, const char* szContext, CItemElem* pItem, int nNum )
@@ -8674,16 +8301,13 @@ void CDPSrvr::PutPenyaLog( CUser* pUser, const char* szAction, const char* szCon
 	OnLogItem( log );
 }
 
-void CDPSrvr::OnElectionSetPledge( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnElectionSetPledge( CAr & ar, CUser * pUser )
 {
 	char szPledge[CCandidate::nMaxPledgeLen]	= { 0,};
 	ar.ReadString( szPledge, CCandidate::nMaxPledgeLen );
 	if( strlen( szPledge ) == 0 )
 		return;
 
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		int nCost;
 		int nRet	= election::SetPledgeRequirements( pUser, nCost );
 		if( nRet )
@@ -8695,14 +8319,11 @@ void CDPSrvr::OnElectionSetPledge( CAr & ar, DPID dpidCache, DPID dpidUser )
 		g_dpDBClient.SendElectionSetPledge( pUser->m_idPlayer, szPledge );
 
 		PutPenyaLog( pUser, "p", "PLEDGE", nCost );
-	}
+	
 }
 
-void CDPSrvr::OnElectionIncVote( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnElectionIncVote( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		u_long idPlayer;
 		ar >> idPlayer;
 
@@ -8713,14 +8334,10 @@ void CDPSrvr::OnElectionIncVote( CAr & ar, DPID dpidCache, DPID dpidUser )
 			return;
 		}
 		g_dpDBClient.SendElectionIncVote( idPlayer, pUser->m_idPlayer );
-	}
 }
 
-void CDPSrvr::OnLEventCreate( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnLEventCreate( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		int iEEvent, iIEvent;
 		ar >> iEEvent >> iIEvent;
 		int nRet	= lordevent::CreateRequirements( pUser, iEEvent, iIEvent );
@@ -8737,14 +8354,11 @@ void CDPSrvr::OnLEventCreate( CAr & ar, DPID dpidCache, DPID dpidUser )
 		PutPenyaLog( pUser, "e", szContext, 0 );
 
 		g_dpDBClient.SendLEventCreate( pUser->m_idPlayer, iEEvent, iIEvent );
-	}
+	
 }
 
-void CDPSrvr::OnLordSkillUse( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnLordSkillUse( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		int nSkill;
 		char szTarget[MAX_PLAYER]	= { 0,};
 		ar >> nSkill;
@@ -8757,15 +8371,10 @@ void CDPSrvr::OnLordSkillUse( CAr & ar, DPID dpidCache, DPID dpidUser )
 			return;
 		}
 		g_dpDBClient.SendLordSkillUse( pUser->m_idPlayer, idTarget, nSkill );
-	}
 }
 
-void CDPSrvr::OnSetTaxRate( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnSetTaxRate( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	BYTE nCont;
 	int nSalesTaxRate, nPurchaseTaxRate;
 	ar >> nCont;
@@ -8778,12 +8387,8 @@ void CDPSrvr::OnSetTaxRate( CAr & ar, DPID dpidCache, DPID dpidUser )
 		Error( "\"%\"s User Is Not Next Win Guild Master!!!", pUser->GetName() );
 }
 
-void CDPSrvr::OnTeleportToHeavenTower( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnTeleportToHeavenTower( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_HEAVEN_TOWER>(pUser) )
 		return;
     	
@@ -9015,12 +8620,8 @@ void CDPSrvr::OnTransformItem(CAr & ar, CUser & pUser) {
 	CTransformItemProperty::Instance()->Transform(&pUser, stuff);
 }
 
-void CDPSrvr::OnTutorialState( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnTutorialState( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	int nState;
 	char szState[64]	= { 0,};
 	char szOut[64]	= { 0,};
@@ -9035,11 +8636,8 @@ void CDPSrvr::OnTutorialState( CAr & ar, DPID dpidCache, DPID dpidUser )
 }
 
 // 픽업펫 각성 취소 메뉴 선택 핸들러
-void CDPSrvr::OnPickupPetAwakeningCancel( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPickupPetAwakeningCancel( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
 	if( !CNpcChecker::GetInstance()->IsCloseNpc<MMI_PET_AWAK_CANCEL>(pUser) )
 		return;
 
@@ -9059,26 +8657,21 @@ void CDPSrvr::OnPickupPetAwakeningCancel( CAr & ar, DPID dpidCache, DPID dpidUse
 }
 
 #ifdef __AZRIA_1023
-void CDPSrvr::OnDoUseItemInput( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnDoUseItemInput( CAr & ar, CUser * pUser )
 {
 	DWORD dwData;
 	ar >> dwData;
 	char szInput[MAX_INPUT_LEN]		= { 0,};
 	ar.ReadString( szInput, MAX_INPUT_LEN );
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
+
 	pUser->SetInput( szInput );
 	pUser->OnDoUseItem( dwData, 0, -1 );
 	pUser->ResetInput();
 }
 #endif	// __AZRIA_1023
 
-void CDPSrvr::OnClearPetName( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnClearPetName( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		CPet* pPet	= pUser->GetPet();
 		if( !pPet )
 		{
@@ -9087,40 +8680,23 @@ void CDPSrvr::OnClearPetName( CAr & ar, DPID dpidCache, DPID dpidUser )
 		}
 		pPet->SetName( "" );
 		g_UserMng.AddSetPetName( pUser, pPet->GetName() );
-	}
 }
 
-void CDPSrvr::OnRainbowRacePrevRankingOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRainbowRacePrevRankingOpenWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	pUser->AddRainbowRacePrevRankingOpenWnd();
 }
 
-void CDPSrvr::OnRainbowRaceApplicationOpenWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRainbowRaceApplicationOpenWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	pUser->AddRainbowRaceApplicationOpenWnd();
 }
-void CDPSrvr::OnRainbowRaceApplication( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRainbowRaceApplication( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-	
 	CRainbowRaceMng::GetInstance()->SetApplicationUser( pUser );
 }
-void CDPSrvr::OnRainbowRaceMiniGamePacket( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRainbowRaceMiniGamePacket( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-	
 	BOOL bExt;
 	ar >> bExt;
 
@@ -9133,21 +8709,13 @@ void CDPSrvr::OnRainbowRaceMiniGamePacket( CAr & ar, DPID dpidCache, DPID dpidUs
 	SAFE_DELETE( pMiniGamePacket );
 }
 
-void CDPSrvr::OnRainbowRaceReqFinish( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRainbowRaceReqFinish( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	CRainbowRaceMng::GetInstance()->SetRanking( pUser );
 }
 
-void CDPSrvr::OnHousingSetupFurniture( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnHousingSetupFurniture( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	HOUSINGINFO housingInfo;
 	ar >> housingInfo;
 
@@ -9155,12 +8723,8 @@ void CDPSrvr::OnHousingSetupFurniture( CAr & ar, DPID dpidCache, DPID dpidUser )
 	CHousingMng::GetInstance()->ReqSetupFurniture( pUser, housingInfo );
 }
 
-void CDPSrvr::OnHousingSetVisitAllow( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnHousingSetVisitAllow( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	DWORD dwPlayerId;
 	BOOL  bAllow;
 
@@ -9169,42 +8733,26 @@ void CDPSrvr::OnHousingSetVisitAllow( CAr & ar, DPID dpidCache, DPID dpidUser )
 	CHousingMng::GetInstance()->ReqSetAllowVisit( pUser, dwPlayerId, bAllow );
 }
 
-void CDPSrvr::OnHousingVisitRoom( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnHousingVisitRoom( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	DWORD dwPlayerId;
 	ar >> dwPlayerId;
 
 	CHousingMng::GetInstance()->SetVisitRoom( pUser, dwPlayerId );
 }
 
-void CDPSrvr::OnHousingVisitableList( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnHousingVisitableList( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	CHousingMng::GetInstance()->OnReqVisitableList( pUser );
 }
 
-void CDPSrvr::OnHousingGoOut( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnHousingGoOut( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	CHousingMng::GetInstance()->GoOut( pUser );
 }
 
-void CDPSrvr::OnReqQuestNPCPos( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnReqQuestNPCPos( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	char szCharKey[64] = {0,};
 	ar.ReadString( szCharKey, 64 );
 
@@ -9218,72 +8766,48 @@ void CDPSrvr::OnReqQuestNPCPos( CAr & ar, DPID dpidCache, DPID dpidUser )
 	}
 }
 
-void CDPSrvr::OnPropose( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPropose( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
 		char szPlayer[MAX_PLAYER]	= { 0,};
 		ar.ReadString( szPlayer, MAX_PLAYER );
 		CCoupleHelper::Instance()->OnPropose( pUser, szPlayer );
-	}
 }
 
-void CDPSrvr::OnRefuse( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRefuse( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
 		CCoupleHelper::Instance()->OnRefuse( pUser );
 }
 
-void CDPSrvr::OnCouple( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnCouple( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
 		CCoupleHelper::Instance()->OnCouple( pUser );
 }
 
-void CDPSrvr::OnDecouple( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnDecouple( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
 		CCoupleHelper::Instance()->OnDecouple( pUser );
 }
 
 #ifdef __MAP_SECURITY
-void CDPSrvr::OnMapKey( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnMapKey( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
 		char szFileName[33] = {0,}, szMapKey[33] = {0,};
 		ar.ReadString( szFileName, 33 );
 		ar.ReadString( szMapKey, 33 );
 		g_WorldMng.CheckMapKey( pUser, szFileName, szMapKey );
-	}
 }
 #endif // __MAP_SECURITY
 
 #ifdef __QUIZ
-void CDPSrvr::OnQuizEventEntrance( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQuizEventEntrance( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-
-	if( !IsValidObj( pUser ) )
-		return;
-
 	int nResult;
 	nResult = CQuiz::GetInstance()->EntranceQuizEvent( pUser );
 	if( nResult > 0 )
 		pUser->AddDefinedText( nResult );
 }
-void CDPSrvr::OnQuizEventTeleport( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnQuizEventTeleport( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-
-	if( !IsValidObj( pUser ) )
-		return;
-
 	int nZone;
 	ar >> nZone;
 
@@ -9294,45 +8818,29 @@ void CDPSrvr::OnQuizEventTeleport( CAr & ar, DPID dpidCache, DPID dpidUser )
 }
 #endif // __QUIZ
 
-void CDPSrvr::OnRemoveVis( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRemoveVis( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	int nPos;
 	ar >> nPos;
 
 	CItemUpgrade::GetInstance()->RemovePetVisItem( pUser, nPos );
 }
 
-void CDPSrvr::OnSwapVis( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnSwapVis( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	int nPos1, nPos2;
 	ar >> nPos1 >> nPos2;
 
 	CItemUpgrade::GetInstance()->SwapVis( pUser, nPos1, nPos2 );
 }
 
-void CDPSrvr::OnBuyGuildHouse( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnBuyGuildHouse( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	GuildHouseMng->ReqBuyGuildHouse( pUser );
 }
 
-void CDPSrvr::OnGuildHousePacket( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGuildHousePacket( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	int nPacketType, nIndex;
 	GH_Fntr_Info gfi;
 
@@ -9344,29 +8852,18 @@ void CDPSrvr::OnGuildHousePacket( CAr & ar, DPID dpidCache, DPID dpidUser )
 	GuildHouseMng->SendWorldToDatabase( pUser, nPacketType, gfi, nIndex );
 }
 
-void CDPSrvr::OnGuildHouseEnter( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGuildHouseEnter( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	GuildHouseMng->EnteranceGuildHouse( pUser );
 }
 
-void CDPSrvr::OnGuildHouseGoOut( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGuildHouseGoOut( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( !IsValidObj( pUser ) )
-		return;
-
 	GuildHouseMng->GoOutGuildHouse( pUser );
 }
 
-void CDPSrvr::OnTeleporterReq( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnTeleporterReq( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) ) 
-	{
 		CHAR	m_szKey[64];
 		int		nIndex;
 		ar.ReadString(m_szKey, 64);
@@ -9383,7 +8880,6 @@ void CDPSrvr::OnTeleporterReq( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 			pUser->Replace( WI_WORLD_MADRIGAL, lpChar->m_vecTeleportPos[nIndex], REPLACE_NORMAL, nDefaultLayer );
 		}
-	}
 }
 
 void CDPSrvr::OnCheckedQuest( CAr & ar, CUser & pUser ) {
@@ -9411,18 +8907,14 @@ void CDPSrvr::OnCheckedQuest( CAr & ar, CUser & pUser ) {
 	if (!stable) pUser.AddCheckedQuest();
 }
 
-void CDPSrvr::OnInviteCampusMember( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnInviteCampusMember( CAr & ar, CUser * pRequest )
 {
-	CUser* pRequest = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pRequest ) )
-	{
 		u_long idTarget;
 		ar >> idTarget;
 
 		CUser* pTarget = g_UserMng.GetUserByPlayerID( idTarget );
 		if( IsValidObj( pTarget ) )
 			CCampusHelper::GetInstance()->OnInviteCampusMember( pRequest, pTarget );
-	}
 }
 
 void CDPSrvr::OnAcceptCampusMember( CAr & ar, DPID dpidCache, DPID dpidUser )
@@ -9450,85 +8942,60 @@ void CDPSrvr::OnRefuseCampusMember( CAr & ar, DPID dpidCache, DPID dpidUser )
 		CUser* pRequest = g_UserMng.GetUserByPlayerID( idRequest );
 		if( IsValidObj( pRequest ) )
 			pRequest->AddDefinedText( TID_GAME_TS_REFUSAL, "\"%s\"", pTarget->GetName() );
-	}
+		}
 }
 
-void CDPSrvr::OnRemoveCampusMember( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRemoveCampusMember( CAr & ar, CUser * pRequest )
 {
-	CUser* pRequest = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pRequest ) )
-	{
 		u_long idTarget;
 		ar >> idTarget;
 
 		if( idTarget > 0 )
 			CCampusHelper::GetInstance()->OnRemoveCampusMember( pRequest, idTarget );
-	}
 }
 
 
 
 
 //	mulcom	BEGIN100405	각성 보호의 두루마리
-void	CDPSrvr::OnItemSelectAwakeningValue( CAr & ar, DPID dpidCache, DPID dpidUser )
+void	CDPSrvr::OnItemSelectAwakeningValue( CAr & ar, CUser * pRequest)
 {
-	CUser* pRequest = g_UserMng.GetUser( dpidCache, dpidUser );
+	DWORD	dwItemObjID		= 0;
+	DWORD	dwSerialNumber	= 0;
+	BYTE	bySelectFlag	= 0;
 
-	if( IsValidObj( pRequest ) == TRUE )
-	{
-		DWORD	dwItemObjID		= 0;
-		DWORD	dwSerialNumber	= 0;
-		BYTE	bySelectFlag	= 0;
+	ar >> dwItemObjID;
+	ar >> dwSerialNumber;
+	ar >> bySelectFlag;
 
-		ar >> dwItemObjID;
-		ar >> dwSerialNumber;
-		ar >> bySelectFlag;
-
-		pRequest->SelectAwakeningValue( dwItemObjID, dwSerialNumber, bySelectFlag );
-	}
-	else
-	{
-		WriteLog( "pUser is invalid in OnItemSelectAwakeningValue function." );
-	}
+	pRequest->SelectAwakeningValue( dwItemObjID, dwSerialNumber, bySelectFlag );
 }
 //	mulcom	END100405	각성 보호의 두루마리
 
 #ifdef __GUILD_HOUSE_MIDDLE
-void CDPSrvr::OnGuildHouseTenderMainWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGuildHouseTenderMainWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == TRUE )
-	{
 		DWORD dwGHType;
 		OBJID objNpcId;
 		ar >> dwGHType >> objNpcId;
 
 		GuildHouseMng->ReqTenderGuildHouseList( pUser, dwGHType, objNpcId );
-	}
 }
 
-void CDPSrvr::OnGuildHouseTenderInfoWnd( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGuildHouseTenderInfoWnd( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == TRUE )
-	{
 		OBJID objGHId;
 		ar >> objGHId;
 
 		GuildHouseMng->ReqTenderGuildHouseInfo( pUser, objGHId );
-	}
 }
 
-void CDPSrvr::OnGuildHouseTenderJoin( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnGuildHouseTenderJoin( CAr & ar, CUser * pUser )
 {
-	CUser* pUser = g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) == TRUE )
-	{
 		OBJID objGHId;
 		int nTenderPerin, nTenderPenya;
 		ar >> objGHId >> nTenderPerin >> nTenderPenya;
 		
 		GuildHouseMng->OnGuildHouseTenderJoin( pUser, objGHId, nTenderPerin, nTenderPenya );
-	}
 }
 #endif // __GUILD_HOUSE_MIDDLE
