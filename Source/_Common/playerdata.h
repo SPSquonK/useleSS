@@ -24,18 +24,17 @@ typedef struct	_PlayerData
 	}
 }	PlayerData;
 
-struct	PDVer
-{
+struct	PDVer {
+	static constexpr bool Archivable = true;
+
 	u_long	idPlayer;
 	int		nVer;
-	PDVer()
-	{	idPlayer	= nVer	= 0;	}
-	PDVer( u_long u, int n )
-	{
-		idPlayer	= u;
-		nVer	= n;
+	PDVer() { idPlayer = nVer = 0; }
+	PDVer(u_long u, int n) {
+		idPlayer = u;
+		nVer = n;
 	}
-}	;
+};
 
 class CPlayerDataCenter
 {
@@ -44,6 +43,11 @@ public:
 	virtual	~CPlayerDataCenter();
 	static	CPlayerDataCenter*	GetInstance( void );
 	void		Clear();
+
+#ifdef __CLIENT
+	PDVer ToPDVer(u_long idPlayer);
+#endif
+
 #ifdef __CLIENT
 	PlayerData*	GetPlayerData( u_long idPlayer, BOOL bQuery = TRUE );
 #else	// __CLIENT

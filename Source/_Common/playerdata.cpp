@@ -60,6 +60,14 @@ PlayerData*	CPlayerDataCenter::GetPlayerData( u_long idPlayer )
 	return pPlayerData;
 }
 
+#ifdef __CLIENT
+PDVer CPlayerDataCenter::ToPDVer(u_long idPlayer) {
+	CMclAutoLock	Lock(m_Access);
+	const PlayerData * playerData = GetPlayerData(idPlayer, FALSE);
+	return PDVer(idPlayer, playerData->data.nVer);
+}
+#endif
+
 PlayerData*	CPlayerDataCenter::AddPlayerData( u_long idPlayer, PlayerData & pd )
 {
 	CMclAutoLock	Lock( m_Access );

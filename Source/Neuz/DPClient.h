@@ -791,7 +791,7 @@ public:
 	void	OnEventCoupon( CAr & ar );
 #endif // __EVENTLUA_COUPON
 
-	void	SendQueryPlayerData( u_long idPlayer, int nVer = 0 );
+	void	SendQueryPlayerData( u_long idPlayer );
 	void	SendQueryPlayerData( const std::vector<PDVer> & vecPlayer );
 
 public:

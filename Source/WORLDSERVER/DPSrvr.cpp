@@ -1219,31 +1219,27 @@ void CDPSrvr::OnRemoveQuest( CAr & ar, CUser * pUser )
 }
 
 void CDPSrvr::OnQueryPlayerData(CAr & ar, CUser * pUser) {
-	const auto [idPlayer, nVer] = ar.Extract<u_long, int>();
+	const auto [idPlayer] = ar.Extract<u_long>();
 
 	const PlayerData * pPlayerData = CPlayerDataCenter::GetInstance()->GetPlayerData(idPlayer);
-	if (pPlayerData && pPlayerData->data.nVer != nVer)
+	if (pPlayerData && pPlayerData->data.nVer != 0)
 		pUser->AddQueryPlayerData(idPlayer, pPlayerData);
 }
 
 void CDPSrvr::OnQueryPlayerData2( CAr & ar, CUser * pUser )
 {
-	int nSize;
-	ar >> nSize;
+	std::uint32_t nSize; ar >> nSize;
+	if (nSize > 1024ul) return;
 
-	if( nSize > 1024 )
-		return;
+	for( std::uint32_t i = 0; i < nSize; i++ )
+	{
+		PDVer	pdv;
+		ar >> pdv;
 
-
-		for( int i = 0; i < nSize; i++ )
-		{
-			PDVer	pdv;
-			ar.Read( &pdv, sizeof(PDVer) );
-			const PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pdv.idPlayer );
-			if( pPlayerData && pPlayerData->data.nVer != pdv.nVer )
-				pUser->AddQueryPlayerData( pdv.idPlayer, pPlayerData );
-		}
-
+		const PlayerData* pPlayerData		= CPlayerDataCenter::GetInstance()->GetPlayerData( pdv.idPlayer );
+		if( pPlayerData && pPlayerData->data.nVer != pdv.nVer )
+			pUser->AddQueryPlayerData( pdv.idPlayer, pPlayerData );
+	}
 }
 
 void CDPSrvr::OnGuildInvite( CAr & ar, CUser * pUser )

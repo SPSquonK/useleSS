@@ -5974,25 +5974,20 @@ void CDPClient::OnGCPlayerPoint( CAr & ar )
 
 	SAFE_DELETE( g_WndMng.m_pWndGuildCombatRanking );
 	g_WndMng.m_pWndGuildCombatRanking = new CWndGuildCombatRank_Person;	
-	
-	if( g_WndMng.m_pWndGuildCombatRanking )
+	g_WndMng.m_pWndGuildCombatRanking->Initialize();
+
+	std::vector<PDVer> vecPlayer;
+
+	for( int i = 0 ; i < (int)( uSize ) ; ++i )
 	{
-		g_WndMng.m_pWndGuildCombatRanking->Initialize();
+		CGuildCombat::__GCPLAYERPOINT GCPlayerPoint;
+		ar >> GCPlayerPoint;
+		g_GuildCombatMng.m_vecGCPlayerPoint.push_back( GCPlayerPoint );
 
-		CString str;
-		CString strFormat;
-		std::vector<PDVer> vecPlayer;
+		vecPlayer.emplace_back(CPlayerDataCenter::GetInstance()->ToPDVer(GCPlayerPoint.uidPlayer));
 
-		for( int i = 0 ; i < (int)( uSize ) ; ++i )
-		{
-			CGuildCombat::__GCPLAYERPOINT GCPlayerPoint;
-			ar >> GCPlayerPoint;
-			g_GuildCombatMng.m_vecGCPlayerPoint.push_back( GCPlayerPoint );
-			PDVer pdv( GCPlayerPoint.uidPlayer, CPlayerDataCenter::GetInstance()->GetPlayerData( GCPlayerPoint.uidPlayer, FALSE )->data.nVer );
-			vecPlayer.push_back( pdv );
-
-			g_WndMng.m_pWndGuildCombatRanking->InsertRank( GCPlayerPoint.nJob, GCPlayerPoint.uidPlayer, GCPlayerPoint.nPoint );
-		}
+		g_WndMng.m_pWndGuildCombatRanking->InsertRank( GCPlayerPoint.nJob, GCPlayerPoint.uidPlayer, GCPlayerPoint.nPoint );
+	}
 
 		CWndGuildCombatRank_Person* pWndRank	= (CWndGuildCombatRank_Person*)g_WndMng.GetWndBase( APP_GUILDCOMBAT_RANK_P );
 		if( pWndRank )
@@ -6000,7 +5995,7 @@ void CDPClient::OnGCPlayerPoint( CAr & ar )
 
 		SendQueryPlayerData( vecPlayer );
 
-	}
+	
 }
 void CDPClient::OnGuildCombatState( CAr & ar )
 {
@@ -10007,9 +10002,7 @@ void CDPClient::OnGuild( CAr & ar )
 		for( auto i = pGuild->m_mapPMember.begin(); i != pGuild->m_mapPMember.end(); ++i )
 		{
 			pMember		= i->second;
-			PlayerData* pPlayerData	= CPlayerDataCenter::GetInstance()->GetPlayerData( pMember->m_idPlayer, FALSE );
-			PDVer pdv( pMember->m_idPlayer, pPlayerData->data.nVer );
-			aPDVer.push_back( pdv );
+			aPDVer.emplace_back(CPlayerDataCenter::GetInstance()->ToPDVer(pMember->m_idPlayer));
 		}
 		SendQueryPlayerData( aPDVer );
 	}
@@ -10718,19 +10711,18 @@ void CDPClient::OnGuildRank(CAr & ar) {
 	ar >> CGuildRank::Instance;
 }
 
-void CDPClient::SendQueryPlayerData( u_long idPlayer, int nVer )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_QUERY_PLAYER_DATA, DPID_UNKNOWN );
-	ar << idPlayer << nVer;
-	SEND( ar, this, DPID_SERVERPLAYER );
+void CDPClient::SendQueryPlayerData(u_long idPlayer) {
+	SendPacket<PACKETTYPE_QUERY_PLAYER_DATA, u_long>(idPlayer);
 }
 
 void CDPClient::SendQueryPlayerData( const std::vector<PDVer>& vecPlayer )
 {
+	if (vecPlayer.empty()) return;
 	BEFORESENDSOLE( ar, PACKETTYPE_QUERY_PLAYER_DATA2, DPID_UNKNOWN );
-	ar << vecPlayer.size();
-	for( int i=0; i< (int)( vecPlayer.size() ); i++ )
-		ar.Write( &vecPlayer[i], sizeof(PDVer) );
+	ar << static_cast<std::uint32_t>(vecPlayer.size());
+	for (const PDVer & pdVer : vecPlayer) {
+		ar << pdVer;
+	}
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
