@@ -11670,22 +11670,6 @@ void CDPClient::OnDoUseSkillPoint(CAr & ar) {
 	CWndSkillTreeCommon::ReInitIfOpen();
 }
 
-void CDPClient::SendUpgradeBase( DWORD dwItemId0, DWORD dwItemId1, 
-								 DWORD dwItemId2, DWORD dwItemCount2, 
-								 DWORD dwItemId3, DWORD dwItemCount3, 
-								 DWORD dwItemId4, DWORD dwItemCount4,
-								 DWORD dwItemId5, DWORD dwItemCount5 )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_UPGRADEBASE, DPID_UNKNOWN );
-	ar << dwItemId0;
-	ar << dwItemId1;
-	ar << dwItemId2 << dwItemCount2;
-	ar << dwItemId3 << dwItemCount3;
-	ar << dwItemId4 << dwItemCount4;
-	ar << dwItemId5 << dwItemCount5;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendRandomScroll( OBJID objid, OBJID objid2 )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_RANDOMSCROLL, DPID_UNKNOWN );

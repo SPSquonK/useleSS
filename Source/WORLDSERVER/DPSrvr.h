@@ -86,7 +86,6 @@ private:
 	void	OnPiercingRemove(CAr & ar, CUser & pUser);
 	void	OnExpBoxInfo( CAr & ar, CUser & pUser );
 	void	OnItemTransy( CAr & ar, CUser & pUser );
-	void	OnUpgradeBase( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnCommercialElem( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnMotion( CAr & ar, CUser * pUser );
 	void	OnRepairItem( CAr & ar, CUser * pUser );

@@ -220,11 +220,6 @@ public:
 #endif	// __JEFF_11
 	void	SendGetFriendState();
 	void	SendRemoveFriend( u_long uidPlayer );
-	void	SendUpgradeBase( DWORD dwItemId0, DWORD dwItemId1, 
-							DWORD dwItemId2, DWORD dwItemCount2, 
-							DWORD dwItemId3, DWORD dwItemCount3, 
-							DWORD dwItemId4, DWORD dwItemCount4,
-							DWORD dwItemId5, DWORD dwItemCount5 );
 
 	void	SendRandomScroll( OBJID objid, OBJID objid2 );
 	void	SendEnchant( OBJID objid, OBJID objMaterialId );

@@ -477,7 +477,7 @@ BOOL CWndUpgradeBase::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				dwobjId[0] = m_slots[0]->m_dwObjId;
 				dwobjId[1] = m_slots[1]->m_dwObjId;
 				
-				const auto ConsiderSlot = [&](const size_t pos) {
+				for (size_t pos = 2; pos <= 5; ++pos) {
 					if (m_slots[pos] == NULL) {
 						ItemCount[pos] = 0;
 						dwobjId  [pos] = NULL_ID;
@@ -486,12 +486,7 @@ BOOL CWndUpgradeBase::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						dwobjId  [pos]      = m_slots[pos]->m_dwObjId;
 						dwCount  [pos % 2] += m_slots[pos]->GetExtra();
 					}
-				};
-
-				ConsiderSlot(2);
-				ConsiderSlot(4);
-				ConsiderSlot(3);
-				ConsiderSlot(5);
+				}
 
 				if( (int)( dwCount[0] ) < m_nMaxCount || (int)( dwCount[1] ) < m_nMaxCount )
 				{
@@ -499,12 +494,6 @@ BOOL CWndUpgradeBase::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 					return FALSE;
 				}
 
-				g_DPlay.SendUpgradeBase( dwobjId[0], 
-									 	dwobjId[1], 
-										dwobjId[2], ItemCount[2],
-										dwobjId[3], ItemCount[3],
-										dwobjId[4], ItemCount[4],
-										dwobjId[5], ItemCount[5] );
 				Destroy();
 			}
 			break;

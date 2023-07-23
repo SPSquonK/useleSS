@@ -199,7 +199,6 @@ CDPSrvr::CDPSrvr()
 	OnMsg( PACKETTYPE_MOTION, &CDPSrvr::OnMotion );
 	OnMsg( PACKETTYPE_SHIP_ACTMSG, &CDPSrvr::OnShipActMsg );
 	OnMsg( PACKETTYPE_LOCALPOSFROMIA, &CDPSrvr::OnLocalPosFromIA );
-	OnMsg( PACKETTYPE_UPGRADEBASE, &CDPSrvr::OnUpgradeBase );
 	OnMsg( PACKETTYPE_ENCHANT, &CDPSrvr::OnEnchant );
 	OnMsg( PACKETTYPE_SMELT_SAFETY, &CDPSrvr::OnSmeltSafety );
 	OnMsg( PACKETTYPE_REMVOE_ATTRIBUTE, &CDPSrvr::OnRemoveAttribute );
@@ -4316,11 +4315,6 @@ void CDPSrvr::OnRandomScroll( CAr & ar, CUser * pUser )
 		}
 	
 }
-	
-void CDPSrvr::OnUpgradeBase( CAr & ar, DPID dpidCache, DPID dpidUser)
-{
-}
-
 
 void CDPSrvr::OnCommercialElem( CAr & ar, DPID dpidCache, DPID dpidUser )
 {
