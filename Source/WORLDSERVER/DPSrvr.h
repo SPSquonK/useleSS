@@ -135,7 +135,7 @@ private:
 	void	OnPartyRequest(CAr & ar, CUser & pUser);
 	void	OnAddFriendNameReqest( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnPartyRequestCancle( CAr & ar, CUser & pUser);
-	void	OnPartySkillUse( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnPartySkillUse( CAr & ar, CUser * pUser );
 	void	OnAddFriendReqest( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnAddFriendCancel( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnGetFriendName( CAr & ar, DPID dpidCache, DPID dpidUser );
@@ -161,7 +161,6 @@ private:
 	void	OnGuildInvite( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnIgnoreGuildInvite( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnEndSkillQueue( CAr & ar, CUser & pUser );
-	void	OnActionPoint( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnDoUseItem( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnDoUseItemTarget( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnAwakening( CAr & ar, DPID dpidCache, DPID dpidUser );

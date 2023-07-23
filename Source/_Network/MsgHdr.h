@@ -87,8 +87,6 @@
 
 #define PACKETTYPE_SEND_TO_SERVER_EXP			(DWORD)0x00000f31  // seghope 서버에 경험치를 보냄(속성으로 렙업이 가능하게하는 패킷)
 #define PACKETTYPE_SEND_TO_SERVER_CHANGEJOB		(DWORD)0x00000f32  // 전직( 속성으로 전직 번호를 줌 )
-#define PACKETTYPE_SEND_TO_SERVER_AP			(DWORD)0x00000f33  // 액션 포인트 보냄.
-#define PACKETTYPE_CHANGEJOB					(DWORD)0x00000f34  // 액션 포인트 보냄.
 
 
 

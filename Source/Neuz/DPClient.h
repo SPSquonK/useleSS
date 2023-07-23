@@ -277,7 +277,6 @@ public:
 	void	OnRemoveAllSkillInfluence( OBJID objid, CAr & ar );
 	
 	void	OnRequestGuildRank( CAr & ar );
-	void	SendActionPoint( int nAP );
 		
 //________________________________________________________________________________
 

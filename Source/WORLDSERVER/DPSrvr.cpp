@@ -179,7 +179,6 @@ CDPSrvr::CDPSrvr()
 	OnMsg( PACKETTYPE_DUELPARTYREQUEST, &CDPSrvr::OnDuelPartyRequest );
 	OnMsg( PACKETTYPE_DUELPARTYYES, &CDPSrvr::OnDuelPartyYes );
 	OnMsg( PACKETTYPE_DUELPARTYNO, &CDPSrvr::OnDuelPartyNo );
-	OnMsg( PACKETTYPE_SEND_TO_SERVER_AP, &CDPSrvr::OnActionPoint );
 	OnMsg( PACKETTYPE_QUERY_PLAYER_DATA, &CDPSrvr::OnQueryPlayerData );
 	OnMsg( PACKETTYPE_QUERY_PLAYER_DATA2, &CDPSrvr::OnQueryPlayerData2 );
 	OnMsg( PACKETTYPE_GUILD_INVITE, &CDPSrvr::OnGuildInvite );
@@ -1097,14 +1096,10 @@ void CDPSrvr::OnPartyRequestCancle(CAr & ar, CUser & pMember) {
 	}
 }
 
-void CDPSrvr::OnPartySkillUse( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnPartySkillUse( CAr & ar, CUser * pUser )
 {
 	int nSkill;
 	ar >> nSkill;	
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsInvalidObj( pUser ) )		
-		return;
 	
 	CParty* pParty	= g_PartyMng.GetParty( pUser->m_idparty );
 	if( pParty )
@@ -1194,22 +1189,6 @@ void CDPSrvr::OnAddFriendCancel( CAr & ar, DPID dpidCache, DPID dpidUser )
 	if( IsValidObj( pLeader ) )
 		pLeader->AddFriendCancel();	// uMemberid
 }
-
-void CDPSrvr::OnActionPoint( CAr & ar, DPID dpidCache, DPID dpidUser )
-{
-	int nAP;
-	ar >> nAP;
-
-	if( nAP < 0 )
-		return;
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		pUser->m_playTaskBar.m_nActionPoint = nAP;
-	}
-}
-
 
 void CDPSrvr::OnRemoveQuest( CAr & ar, DPID dpidCache, DPID dpidUser )
 {

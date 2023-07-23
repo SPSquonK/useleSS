@@ -10798,13 +10798,6 @@ void CDPClient::OnQueryPlayerData( CAr & ar )
 
 }
 
-void CDPClient::SendActionPoint( int nAP )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_SEND_TO_SERVER_AP, DPID_UNKNOWN );
-	if( nAP < 0 )	nAP = 0;
-	ar << nAP;
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
 void CDPClient::OnDisguise( OBJID objid, CAr & ar )
 {
 	DWORD dwMoverIdx;
