@@ -170,7 +170,7 @@ void CCampusHelper::LoadScript()
 	Lua.PushNil();
 	while( Lua.TableLoop( -2 ) )
 	{
-		const QuestId nQuestId		= QuestId( CScript::GetDefineNum( Lua.GetFieldToString( -1, "strQuestId" ) ) );
+		const QuestId nQuestId		= QuestId::From( CScript::GetDefineNum( Lua.GetFieldToString( -1, "strQuestId" ) ) );
 		m_vecCQuest.push_back( nQuestId );
 		Lua.Pop( 1 );
 	}

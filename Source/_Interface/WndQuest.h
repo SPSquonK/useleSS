@@ -49,7 +49,7 @@ private:
 	CWndQuestTreeCtrl* GetQuestTreeSelf( QuestId dwQuestID );
 	void OpenTreeArray( TreeElems & rPtrArray, BOOL bOpen = TRUE );
 	void InsertQuestItem(QuestId dwQuestID, std::set<QuestId> & raOldHeadQuestID, BOOL bCompleteQuest, int nNewQuestId = -1 );
-	BOOL IsCheckedQuestID( DWORD dwQuestID );
+	[[nodiscard]] bool IsCheckedQuestID(QuestId dwQuestID) const;
 
 private:
 	CWndQuestTreeCtrl m_WndScenario;
@@ -66,7 +66,7 @@ public:
 		void OnLButtonDown(UINT nFlags, CPoint point) override;
 	};
 
-	CWndQuestDetail( DWORD dwQuestID = -1 );
+	CWndQuestDetail( QuestId dwQuestID = QuestIdNone );
 
 public:
 	BOOL Initialize( CWndBase* pWndParent = nullptr );
@@ -77,12 +77,12 @@ public:
 
 public:
 	void UpdateQuestText( BOOL bClick = FALSE );
-	void UpdateQuestDetailText( DWORD dwQuestID, LPQUEST lpQuest, BOOL bComplete, BOOL bClick = FALSE );
-	void SetQuestID( DWORD dwQuestID );
-	DWORD GetQuestID( void ) const;
+	void UpdateQuestDetailText( QuestId dwQuestID, LPQUEST lpQuest, BOOL bComplete, BOOL bClick = FALSE );
+	void SetQuestID(QuestId dwQuestID) { m_dwQuestID = dwQuestID; }
+	[[nodiscard]] QuestId GetQuestID() const { return m_dwQuestID; }
 
 private:
-	DWORD m_dwQuestID;
+	QuestId m_dwQuestID = QuestIdNone;
 	CWndQConditionTreeCtrl m_WndQConditionTreeCtrl;
 };
 
@@ -96,7 +96,7 @@ void MakeQuestConditionItems( QuestId dwQuestID,
 const CString MakeString( const CString& string, BOOL bCond );
 DWORD MakeTextColor( DWORD dwStartColor = D3DCOLOR_ARGB( 255, 0, 0, 0 ), DWORD dwEndColor = D3DCOLOR_ARGB( 255, 0, 0, 0 ), int nCurrentNumber = 0, int nCompleteNumber = 0 );
 QuestId GetRootHeadQuest( QuestId dwHeadQuest );
-DWORD SetQuestDestinationInformation( DWORD dwQuestID, DWORD dwGoalIndex );
+DWORD SetQuestDestinationInformation( QuestId dwQuestID, DWORD dwGoalIndex );
 void ProcessQuestDestinationWorldMap( DWORD dwGoalTextID );
 
 #endif

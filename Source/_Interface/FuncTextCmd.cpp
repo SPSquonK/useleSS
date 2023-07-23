@@ -3176,7 +3176,7 @@ BOOL TextCmd_IgnoreList( CScanner & scanner )
 BOOL TextCmd_QuestState(CScanner & s, CUser * pAdmin) {
 #ifdef __WORLDSERVER
 	CUser* pUser	= NULL;
-	const QuestId nQuest	= QuestId(s.GetNumber());
+	const QuestId nQuest	= QuestId::From(s.GetNumber());
 	const int nState = s.GetNumber();
 	s.GetToken();
 	if( s.tok != FINISHED )
@@ -3212,7 +3212,7 @@ BOOL TextCmd_QuestState(CScanner & s, CUser * pAdmin) {
 
 BOOL TextCmd_BeginQuest(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
-	const QuestId nQuest = QuestId(s.GetNumber());
+	const QuestId nQuest = QuestId::From(s.GetNumber());
 	QUEST quest;
 	if( pUser->SetQuest( nQuest, 0, &quest ) )
 		pUser->AddSetQuest( &quest );
@@ -3221,7 +3221,7 @@ BOOL TextCmd_BeginQuest(CScanner & s, CUser * pUser) {
 }
 BOOL TextCmd_EndQuest(CScanner & s, CUser * pUser) {
 #ifdef __WORLDSERVER
-	const QuestId nQuest = QuestId(s.GetNumber());
+	const QuestId nQuest = QuestId::From(s.GetNumber());
 	QUEST quest;
 	if( pUser->SetQuest( nQuest, QS_END, &quest ) )
 		pUser->AddSetQuest( &quest );
@@ -3232,7 +3232,7 @@ BOOL TextCmd_EndQuest(CScanner & s, CUser * pUser) {
 BOOL TextCmd_RemoveQuest(CScanner & s, CUser * pAdmin) {
 #ifdef __WORLDSERVER
 	CUser* pUser	= NULL;
-	const QuestId nQuest	= QuestId(s.GetNumber());
+	const QuestId nQuest	= QuestId::From(s.GetNumber());
 	s.GetToken();
 	if( s.tok != FINISHED )
 	{

@@ -69,7 +69,7 @@ BOOL CProject::LoadPropMoverEx_AI_SCAN( LPCTSTR szFileName, CScript &script, int
 					pProp->m_nAttackFirstRange = script.GetNumber();
 				else 
 				if( strcmpi( script.token, "quest" ) == 0 )	// 퀘스트를 갖은 플레이어 스켄 
-					pProp->m_dwScanQuestId = QuestId(script.GetNumber());
+					pProp->m_dwScanQuestId = QuestId::From(script.GetNumber());
 				else 
 				if( strcmpi( script.token, "item" ) == 0 )	// 해당 아이템을 갖은 플레이어 스켄 
 					pProp->m_dwScanItemIdx = script.GetNumber();

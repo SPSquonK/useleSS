@@ -935,10 +935,10 @@ void CMover::ProcessQuest()
 			if( lpQuest == NULL && !pMover->IsCompleteQuest(nQuest) )
 			{
 				// 내가 퀘스트 시작 조건인가?
-				if( __IsBeginQuestCondition( pMover, nQuest.get() ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
+				if( __IsBeginQuestCondition( pMover, nQuest ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
 					m_nQuestEmoticonIndex = 1;
 				// 새로운 퀘스트가 없고 근레벨에 받을 수 있는 퀘스트가 존재한다면..
-				else if( m_nQuestEmoticonIndex != 1 && __IsNextLevelQuest( pMover, nQuest.get() ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
+				else if( m_nQuestEmoticonIndex != 1 && __IsNextLevelQuest( pMover, nQuest ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
 					m_nQuestEmoticonIndex = 4;
 			}
 			// 진행중인 퀘스트일 경우
@@ -956,7 +956,7 @@ void CMover::ProcessQuest()
 			if( lpQuest && lpQuest->GetProp() && !pMover->IsCompleteQuest(nQuest) && lpQuest->m_nState != QS_END)
 			{
 				// 내가 퀘스트 종료 조건인가?
-				if( __IsEndQuestCondition( pMover, nQuest.get() ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
+				if( __IsEndQuestCondition( pMover, nQuest ) && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
 					m_nQuestEmoticonIndex = 3;
 				// 내가 퀘스트 종료 조건이 아니고 새로운 퀘스트가 존재하지 않으면..
 				else if( m_nQuestEmoticonIndex != 3 && m_nQuestEmoticonIndex != 1 && ( nItem == 0 || pMover->GetItemNum( nItem ) ) )
@@ -1677,7 +1677,7 @@ BOOL CMover::ReplaceInspection(const REGIONELEM * pPortkey )
 	}
 	if( bResult != FALSE && pPortkey->m_iQuest != 0xffffffff )
 	{
-		LPQUEST pCurQuest = GetQuest( QuestId(pPortkey->m_iQuest) );
+		LPQUEST pCurQuest = GetQuest( QuestId::From(pPortkey->m_iQuest) );
 		if( pCurQuest && ( pPortkey->m_iQuestFlag == 0 || pPortkey->m_iQuestFlag == pCurQuest->m_nState ) )
 			bResult = TRUE;
 		else
@@ -7064,14 +7064,14 @@ BOOL CMover::IsStateDbuff()
 #endif
 
 
-int __IsEndQuestCondition( CMover* pMover, int nQuestId )
+int __IsEndQuestCondition( CMover* pMover, QuestId nQuestId )
 {
-	QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( nQuestId );
+	const QuestProp* pQuestProp = nQuestId.GetProp();
 
 	if( pQuestProp )
 	{
 		int nResult = 0;
-		LPQUEST pCurQuest = pMover->GetQuest( QuestId(nQuestId) );
+		LPQUEST pCurQuest = pMover->GetQuest( nQuestId );
 		if( pCurQuest == NULL || pCurQuest->m_nState == QS_END ) 
 			return 0;
 		// 시간 제한 체크 1
@@ -7383,14 +7383,14 @@ int __IsEndQuestCondition( CMover* pMover, int nQuestId )
 #ifdef __WORLDSERVER
 #include "User.h"
 #endif // __WORLDSERVER
-int __IsBeginQuestCondition( CMover* pMover, int nQuestId )
+int __IsBeginQuestCondition( CMover* pMover, QuestId nQuestId )
 {
-	QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( nQuestId );
+	const QuestProp* pQuestProp = nQuestId.GetProp();
 	if( pQuestProp )
 	{
 		int nResult = 0;
-		LPQUEST pCurQuest = pMover->GetQuest( QuestId(nQuestId) );
-		BOOL bComplete = pMover->IsCompleteQuest( QuestId(nQuestId) );
+		LPQUEST pCurQuest = pMover->GetQuest( nQuestId );
+		BOOL bComplete = pMover->IsCompleteQuest( nQuestId );
 		// 퀘스트가 존재하거나, 이미 완료된 적이 있는 퀘스트는 조건 성립 안됨. 반복하기 위해서는 완전히 제거하여 완료 배열에 없어여 한다.
 		if( pCurQuest || bComplete ) 
 			return 0;
@@ -7712,14 +7712,14 @@ int __IsBeginQuestCondition( CMover* pMover, int nQuestId )
 	return 0;
 }
 
-int __IsNextLevelQuest( CMover* pMover, int nQuestId )
+int __IsNextLevelQuest( CMover* pMover, QuestId nQuestId )
 {
-	QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( nQuestId );
+	const QuestProp* pQuestProp = nQuestId.GetProp();
 	if( pQuestProp )
 	{
 		int nResult = 0;
-		LPQUEST pCurQuest = pMover->GetQuest( QuestId(nQuestId) );
-		BOOL bComplete = pMover->IsCompleteQuest( QuestId(nQuestId) );
+		LPQUEST pCurQuest = pMover->GetQuest( nQuestId );
+		BOOL bComplete = pMover->IsCompleteQuest( nQuestId );
 		// 퀘스트가 존재하거나, 이미 완료된 적이 있는 퀘스트는 조건 성립 안됨. 반복하기 위해서는 완전히 제거하여 완료 배열에 없어여 한다.
 		if( pCurQuest || bComplete ) 
 			return 0;

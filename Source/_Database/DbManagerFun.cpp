@@ -688,7 +688,7 @@ void CDbManager::GetOneSkill( LPSKILL pSkill, char* pstrSkill, int *pLocation )
 QUEST CDbManager::GetOneQuest( const char* pstrQuest, int *pLocation )
 {
 	QUEST pQuest;
-	pQuest.m_wId				= QuestId(GetIntPaFromStr( pstrQuest, pLocation ));
+	pQuest.m_wId				= QuestId::From(GetIntPaFromStr( pstrQuest, pLocation ));
 	pQuest.m_nState			= (BYTE)GetIntPaFromStr( pstrQuest, pLocation );
 	pQuest.m_wTime				= (WORD)GetIntPaFromStr( pstrQuest, pLocation );
 
@@ -1058,7 +1058,7 @@ BOOL CDbManager::RemoveQuest( void )
 	int	nQuestId	= s.GetNumber();
 	while( s.tok != FINISHED )
 	{
-		vecRemoveQuestId.push_back( QuestId(nQuestId) );
+		vecRemoveQuestId.push_back( QuestId::From(nQuestId) );
 		nQuestId	= s.GetNumber();
 	}
 

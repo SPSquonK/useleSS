@@ -158,7 +158,7 @@ bool CUser::DoUseItem(DWORD dwData, DWORD dwFocusId, int nPart) {
 		case IK2_TEXT: //텍스트 문서 처리 
 			// 퀘스트가 있으면 퀘스트 시작 
 			if (pItemProp->dwQuestId != QuestIdNone && pItemBase->m_bItemResist == FALSE) {
-				::__SetQuest(GetId(), pItemProp->dwQuestId.get());
+				::__SetQuest(GetId(), pItemProp->dwQuestId);
 				UpdateItem(*pItemBase, UI::Element::ActivatedQuest);
 			}
 			break;

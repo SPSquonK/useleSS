@@ -5661,7 +5661,7 @@ void CUser::OnMsgArrival( DWORD dwParam )
 			}
 			if( pCommonCtrl->m_CtrlElem.m_dwSet & UA_QUEST )
 			{
-				const QUEST * pQuest = GetQuest( QuestId(pCommonCtrl->m_CtrlElem.m_dwSetQuestNum) );
+				const QUEST * pQuest = GetQuest( QuestId::From(pCommonCtrl->m_CtrlElem.m_dwSetQuestNum) );
 
 				if( pQuest )
 				{
@@ -5724,7 +5724,7 @@ void CUser::OnMsgArrival( DWORD dwParam )
 			{
 				if( pCommonCtrl->m_CtrlElem.m_dwSetQuestNum1 != 0 )
 				{
-					LPQUEST pQuest = GetQuest( QuestId(pCommonCtrl->m_CtrlElem.m_dwSetQuestNum1) );
+					LPQUEST pQuest = GetQuest( QuestId::From(pCommonCtrl->m_CtrlElem.m_dwSetQuestNum1) );
 					if( pQuest )
 					{
 						QUEST quest;
@@ -5736,7 +5736,7 @@ void CUser::OnMsgArrival( DWORD dwParam )
 				}
 				if( pCommonCtrl->m_CtrlElem.m_dwSetQuestNum2 != 0 )
 				{
-					LPQUEST pQuest = GetQuest(QuestId(pCommonCtrl->m_CtrlElem.m_dwSetQuestNum2 ));
+					LPQUEST pQuest = GetQuest(QuestId::From(pCommonCtrl->m_CtrlElem.m_dwSetQuestNum2 ));
 					if( pQuest )
 					{
 						QUEST quest;

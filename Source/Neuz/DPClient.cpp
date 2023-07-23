@@ -11349,7 +11349,7 @@ void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
 				ar >> rsf.dwVal2;
 				if (pWndDialog) {
 					const bool isNewQuest = wFuncType == FUNCTYPE_NEWQUEST;
-					pWndDialog->AddQuestInList(rsf.lpszVal1, rsf.lpszVal2, QuestId(rsf.dwVal2), isNewQuest);
+					pWndDialog->AddQuestInList(rsf.lpszVal1, rsf.lpszVal2, QuestId::From(rsf.dwVal2), isNewQuest);
 				}
 				break;
 			}

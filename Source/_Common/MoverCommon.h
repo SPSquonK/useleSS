@@ -29,7 +29,6 @@ namespace MoverSub {
 #if defined(__WORLDSERVER) || defined(__CLIENT)
 
 	public:
-		// bool IsCheckedQuestID(BYTE questId) const;
 		void RemoveQuest(QuestId questId);
 		void Clear();
 		QUEST * FindQuest(QuestId questId);

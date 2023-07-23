@@ -1600,7 +1600,7 @@ inline void CMover::ClearActParam()
 }
 
 
-extern int __IsEndQuestCondition( CMover* pMover, int nQuestId );
-extern int __IsBeginQuestCondition( CMover* pMover, int nQuestId );
-extern int __IsNextLevelQuest( CMover* pMover, int nQuestId );
+extern int __IsEndQuestCondition( CMover* pMover, QuestId nQuestId );
+extern int __IsBeginQuestCondition( CMover* pMover, QuestId nQuestId );
+extern int __IsNextLevelQuest( CMover* pMover, QuestId nQuestId );
 extern	BOOL AttackBySFX( CMover* pAttacker, SFXHIT_INFO & info );

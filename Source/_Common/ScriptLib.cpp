@@ -139,14 +139,13 @@ int APIENTRY AddCondKey( NPCDIALOG_INFO* pInfo, LPCTSTR szWord, LPCTSTR szKey, D
 
 int APIENTRY AddAnswer( NPCDIALOG_INFO*  pInfo, LPCTSTR szWord, LPCTSTR szKey, DWORD dwParam )
 {
-	DWORD nParam1, nParam2;
+	DWORD nParam1;
 	CString strWord, strKey;
 
 	strWord = szWord;
 	strKey = szKey;
 
 	nParam1 = dwParam;
-	nParam2 = 0;
 
 	if( strKey.IsEmpty() )	
 		strKey = strWord;
@@ -156,12 +155,12 @@ int APIENTRY AddAnswer( NPCDIALOG_INFO*  pInfo, LPCTSTR szWord, LPCTSTR szKey, D
 		Error( "key error AddAnswer %s %s", pInfo->GetName(), strKey );
 		return 1;
 	}
-	return __AddAnswer( pInfo->GetPcId(), strWord, strKey, nParam1, nParam2 );
+	return __AddAnswer( pInfo->GetPcId(), strWord, strKey, nParam1, QuestIdNone );
 }
 
 int APIENTRY RemoveQuest( NPCDIALOG_INFO* pInfo, int nQuest )      
 {
-	return __RemoveQuest( pInfo->GetPcId(), nQuest );
+	return __RemoveQuest( pInfo->GetPcId(), QuestId::From(nQuest) );
 }
 
 int APIENTRY RemoveAllKey(NPCDIALOG_INFO*  pInfo)
@@ -172,18 +171,18 @@ int APIENTRY RemoveAllKey(NPCDIALOG_INFO*  pInfo)
 
 int APIENTRY SayQuest( NPCDIALOG_INFO* pInfo, int nQuest, int nDialog )
 {
-	__SayQuest( pInfo->GetPcId(), nQuest, nDialog );
+	__SayQuest( pInfo->GetPcId(), QuestId::From(nQuest), nDialog );
 	return 1;
 }
 
 int APIENTRY BeginQuest( NPCDIALOG_INFO* pInfo, int nQuest )
 {
-	return __RunQuest( pInfo->GetPcId(), pInfo->GetNpcId(), nQuest );
+	return __RunQuest( pInfo->GetPcId(), pInfo->GetNpcId(), QuestId::From(nQuest) );
 }
 
 int APIENTRY EndQuest( NPCDIALOG_INFO* pInfo, int nQuest )
 {
-	return __EndQuest( pInfo->GetPcId(), nQuest, FALSE );
+	return __EndQuest( pInfo->GetPcId(), QuestId::From(nQuest), FALSE );
 }
 
 int APIENTRY AddQuestKey( NPCDIALOG_INFO* pInfo, int nQuest, LPCTSTR szKey )
@@ -203,7 +202,7 @@ int APIENTRY AddQuestKey( NPCDIALOG_INFO* pInfo, int nQuest, LPCTSTR szKey )
 		return 1;
 	}
 
-	return __AddQuestKey( pInfo->GetPcId(), QuestId(nQuest), strKey, false);
+	return __AddQuestKey( pInfo->GetPcId(), QuestId::From(nQuest), strKey, false);
 }
 
 
@@ -262,12 +261,12 @@ int APIENTRY GetEmptyInventoryNum( NPCDIALOG_INFO* pInfo )
 int APIENTRY GetQuestState( NPCDIALOG_INFO* pInfo, int nQuest )
 {
 	CUser* pUser	= prj.GetUser( pInfo->GetPcId() );
-	return pUser->GetQuestState(QuestId(nQuest)).value_or(-1);
+	return pUser->GetQuestState(QuestId::From(nQuest)).value_or(-1);
 }
 int APIENTRY IsSetQuest( NPCDIALOG_INFO* pInfo, int nQuest )
 {
 	CUser* pUser	= prj.GetUser( pInfo->GetPcId() );
-	const auto questId = QuestId(nQuest);
+	const auto questId = QuestId::From(nQuest);
 	LPQUEST pQuest = pUser->GetQuest( questId);
 
 	return (pQuest && pUser->IsCompleteQuest(questId)) ? TRUE : FALSE;
@@ -613,11 +612,11 @@ int	APIENTRY InitInt( NPCDIALOG_INFO*  pInfo )
 
 int APIENTRY SetQuestState( NPCDIALOG_INFO* pInfo, int nQuest, int n )      
 {
-	return __SetQuestState( pInfo->GetPcId(), nQuest, n );
+	return __SetQuestState( pInfo->GetPcId(), QuestId::From(nQuest), n );
 }
 int APIENTRY SetQuest( NPCDIALOG_INFO* pInfo, int nQuest )      
 {
-	__SetQuest(  pInfo->GetPcId(), nQuest );
+	__SetQuest(  pInfo->GetPcId(), QuestId::From(nQuest) );
 	return 1;
 }
 

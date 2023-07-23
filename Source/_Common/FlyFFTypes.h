@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NamedType/named_type.hpp"
+#include <concepts>
 
 namespace useless_util {
   template <typename T>
@@ -32,6 +33,20 @@ namespace useless_util {
       return this->underlying().get() != 0;
     }
   };
+
+  template<typename T>
+  struct NamedTypeFrom : fluent::crtp<T, NamedTypeFrom> {
+    [[nodiscard]] static T From(std::integral auto value) {
+      using Underlying = typename T::UnderlyingType;
+      if (std::cmp_less(value, std::numeric_limits<Underlying>::min())) {
+        return T(0);
+      } else if (std::cmp_greater(value, std::numeric_limits<Underlying>::max())) {
+        return T(0);
+      } else {
+        return T(static_cast<Underlying>(value));
+      }
+    }
+  };
 }
 
 using PartyId = fluent::NamedType<unsigned long, struct PartyIdTag,
@@ -48,7 +63,7 @@ struct QuestProp;
 
 using QuestId = fluent::NamedType<unsigned short, struct QuestIdTag,
   fluent::Comparable, useless_util::ArchivableType, useless_util::HasProjProp<QuestProp>::Type,
-  useless_util::BoolEvaluation
+  useless_util::BoolEvaluation, useless_util::NamedTypeFrom
 >;
 
 static constexpr auto QuestIdNone = QuestId(0);

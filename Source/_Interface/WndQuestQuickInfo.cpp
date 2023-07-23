@@ -57,7 +57,7 @@ void CWndQITreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 		{
 			if( !pTreeElem->m_ptrArray.empty() || pTreeElem->m_lpParent == NULL)
 			{
-				DWORD dwQuestID = pTreeElem->m_dwData;
+				QuestId dwQuestID = QuestId::From(pTreeElem->m_dwData);
 				if( g_WndMng.m_pWndQuestDetail && dwQuestID == g_WndMng.m_pWndQuestDetail->GetQuestID() )
 					SAFE_DELETE( g_WndMng.m_pWndQuestDetail )
 				else
@@ -65,15 +65,15 @@ void CWndQITreeCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 					SAFE_DELETE( g_WndMng.m_pWndQuestDetail )
 					g_WndMng.m_pWndQuestDetail = new CWndQuestDetail( dwQuestID );
 					g_WndMng.m_pWndQuestDetail->Initialize();
-					LPQUEST lpQuest = g_pPlayer->FindQuest( QuestId(dwQuestID) );
-					BOOL bComplete = dwQuestID != -1 && g_pPlayer->IsCompleteQuest( QuestId(dwQuestID) );
+					LPQUEST lpQuest = g_pPlayer->FindQuest( dwQuestID );
+					BOOL bComplete = dwQuestID != QuestIdNone && g_pPlayer->IsCompleteQuest( dwQuestID );
 					g_WndMng.m_pWndQuestDetail->UpdateQuestDetailText( dwQuestID, lpQuest, bComplete );
 				}
 				SetQuestDestinationInformation( dwQuestID, 0 );
 			}
 			else
 			{
-				DWORD dwGoalTextID = SetQuestDestinationInformation( pTreeElem->m_lpParent->m_dwData, pTreeElem->m_dwData );
+				DWORD dwGoalTextID = SetQuestDestinationInformation( QuestId::From(pTreeElem->m_lpParent->m_dwData), pTreeElem->m_dwData );
 				ProcessQuestDestinationWorldMap( dwGoalTextID );
 			}
 			SetFocusElem( pTreeItem.m_lpTreeElem );

@@ -1085,7 +1085,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 	TCHAR szLinkChar[ 10 ][ 64 ];
 	int szLinkCharNum;
 	int szEndCondCharNum;
-	QuestId nQuest = QuestId(script.GetNumber());  // id
+	QuestId nQuest = QuestId::From(script.GetNumber());  // id
 	static DWORD dwGoalIndex = 0;
 
 	while( script.tok != FINISHED )
@@ -1309,7 +1309,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				int nCnt = 0;
 				do
 				{
-					propQuest.m_anBeginCondPreviousQuest[ nCnt++ ] = QuestId(script.GetNumber());
+					propQuest.m_anBeginCondPreviousQuest[ nCnt++ ] = QuestId::From(script.GetNumber());
 					script.GetToken(); // , or )
 				} while( *script.token != ')' && nCnt < 6 );
 			}
@@ -1320,7 +1320,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				int nCnt = 0;
 				do
 				{
-					propQuest.m_anBeginCondExclusiveQuest[ nCnt++ ] = QuestId(script.GetNumber());
+					propQuest.m_anBeginCondExclusiveQuest[ nCnt++ ] = QuestId::From(script.GetNumber());
 					script.GetToken(); // , or )
 				} while( *script.token != ')' && nCnt < 6 );
 			}
@@ -1443,7 +1443,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 				int nIdx = 0;
 				while( *script.token != ')' )
 				{
-					propQuest.m_nEndCondCompleteQuest[ nIdx++ ] = QuestId(script.GetNumber());
+					propQuest.m_nEndCondCompleteQuest[ nIdx++ ] = QuestId::From(script.GetNumber());
 					script.GetToken(); // ,
 				}
 			}
@@ -1962,7 +1962,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 								return QuestId(QUEST_KIND_SCENARIO);
 						}
 					} else {
-						return QuestId(headQuest);
+						return QuestId::From(headQuest);
 					}
 				};
 
@@ -2109,7 +2109,7 @@ BOOL CProject::LoadPropQuest( LPCTSTR lpszFileName, BOOL bOptimize )
 		if( bAdd )
 			m_aPropQuest.SetAtGrow( nQuest.get(), propQuest);
 
-		nQuest = QuestId(script.GetNumber());  // id
+		nQuest = QuestId::From(script.GetNumber());  // id
 	}
 
 	if( bOptimize )
