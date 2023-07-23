@@ -3711,11 +3711,8 @@ void	CDPSrvr::OnLogItem( LogItemInfo & info, CItemElem* pItemElem, int nItemCoun
 }
 
 
-void CDPSrvr::OnMotion( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnMotion( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( pUser->GetIndex() == 0 )
 		{
 			WriteError( "PACKETTYPE_MOTION" );
@@ -3739,14 +3736,11 @@ void CDPSrvr::OnMotion( CAr & ar, DPID dpidCache, DPID dpidUser )
 		}
 		else
 			pUser->AddMotionError();
-	}
+
 }
 
-void CDPSrvr::OnRepairItem( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRepairItem( CAr & ar, CUser * pUser )
 {
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		BYTE c, nId;
 		ar >> c;
 
@@ -3790,16 +3784,13 @@ void CDPSrvr::OnRepairItem( CAr & ar, DPID dpidCache, DPID dpidUser )
 		}
 
 		pUser->AddDefinedText( TID_GAME_REPAIRITEM );
-	}
+	
 }
 
-void CDPSrvr::OnSetHair( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnSetHair( CAr & ar, CUser * pUser )
 {
 	BYTE nHair, nR, nG, nB;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		BOOL bUseCoupon;
 		ar >> nHair >> nR >> nG >> nB >> bUseCoupon;
 
@@ -3835,7 +3826,7 @@ void CDPSrvr::OnSetHair( CAr & ar, DPID dpidCache, DPID dpidUser )
 
 		pUser->SetHairColor( r, g, b );
 		g_UserMng.AddSetHair( pUser, nHair, nR, nG, nB );
-	}
+	
 }
 
 void CDPSrvr::OnBlock( CAr & ar, DPID dpidCache, DPID dpidUser )
@@ -3855,17 +3846,15 @@ void CDPSrvr::OnBlock( CAr & ar, DPID dpidCache, DPID dpidUser )
 		g_DPCoreClient.SendBlock( nGu, uidPlayerTo, szNameTo, uidPlayerFrom );
 }
 
-void CDPSrvr::OnPiercingSize( CAr & ar, DPID dpidCache, DPID dpidUser)
+void CDPSrvr::OnPiercingSize( CAr & ar, CUser * pUser )
 {
 	DWORD dwId1, dwId2, dwId3;
 	
 	ar >> dwId1;
 	ar >> dwId2;
 	ar >> dwId3;
-	
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-		CItemUpgrade::GetInstance()->OnPiercingSize( pUser, dwId1, dwId2, dwId3 );
+
+	CItemUpgrade::GetInstance()->OnPiercingSize( pUser, dwId1, dwId2, dwId3 );
 }
 
 void CDPSrvr::OnItemTransy(CAr & ar, CUser & pUser) {
@@ -3925,13 +3914,11 @@ void CDPSrvr::OnCreateSfxObj( CAr & ar, DPID dpidCache, DPID dpidUser)
 	}
 }
 
-void CDPSrvr::OnRemoveItemLevelDown( CAr & ar, DPID dpidCache, DPID dpidUser)
+void CDPSrvr::OnRemoveItemLevelDown( CAr & ar, CUser * pUser )
 {
 	DWORD dwId;
 	ar >> dwId;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
+
 		CItemElem* pItemElem	= pUser->GetItemId( dwId );
 		if( !IsUsableItem( pItemElem ) )
 			return;
@@ -3943,16 +3930,14 @@ void CDPSrvr::OnRemoveItemLevelDown( CAr & ar, DPID dpidCache, DPID dpidUser)
 		PutItemLog( pUser, "v", "OnRemoveItemLevelDown", pItemElem );
 		pItemElem->SetLevelDown();
 		pUser->UpdateItem(*pItemElem, UI::RandomOptItem::Sync);
-	}
+	
 }
 
-void CDPSrvr::OnDoUseItemTarget( CAr & ar, DPID dpidCache, DPID dpidUser)
+void CDPSrvr::OnDoUseItemTarget( CAr & ar, CUser * pUser )
 {
 	DWORD dwMaterial, dwTarget;
 	ar >> dwMaterial >> dwTarget;
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
+
 		CItemElem* pMaterial	= pUser->GetItemId( dwMaterial );
 		CItemElem* pTarget	= pUser->GetItemId( dwTarget );
 		if( !IsUsableItem( pMaterial ) || !IsUsableItem( pTarget ) )
@@ -4049,20 +4034,16 @@ void CDPSrvr::OnDoUseItemTarget( CAr & ar, DPID dpidCache, DPID dpidUser)
 
 			pUser->UpdateItem(*pMaterial, UI::Num::ConsumeOne);
 		}
-	}
+	
 }
 
-void CDPSrvr::OnSmeltSafety( CAr & ar, DPID dpidCache, DPID dpidUser)
+void CDPSrvr::OnSmeltSafety( CAr & ar, CUser * pUser )
 {
 	OBJID dwItemId, dwItemMaterialId, dwItemProtScrId, dwItemSmeltScrId;
 
 	//	pItemSmeltScrId - 일반제련시의 제련두루마리(사용안할시엔 Client에서 NULL_ID를 입력)
 	ar >> dwItemId >> dwItemMaterialId >> dwItemProtScrId >> dwItemSmeltScrId;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-
-	if( IsValidObj( pUser ) )
-	{
 #ifdef __QUIZ
 		if( pUser->GetWorld() && pUser->GetWorld()->GetID() == WI_WORLD_QUIZ )
 		{
@@ -4111,19 +4092,16 @@ void CDPSrvr::OnSmeltSafety( CAr & ar, DPID dpidCache, DPID dpidUser)
 		BYTE nResult = CItemUpgrade::GetInstance()->OnSmeltSafety( pUser, pItemElem0, pItemElem1, pItemElem2, pItemElem3 );
 
 		pUser->AddSmeltSafety( nResult );
-	}
+	
 }
 
-void CDPSrvr::OnEnchant( CAr & ar, DPID dpidCache, DPID dpidUser)
+void CDPSrvr::OnEnchant( CAr & ar, CUser * pUser )
 {
 	DWORD dwItemId, dwItemMaterialId;
 	
 	ar >> dwItemId;
 	ar >> dwItemMaterialId;
 
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 #ifdef __QUIZ
 		if( pUser->GetWorld() && pUser->GetWorld()->GetID() == WI_WORLD_QUIZ )
 			return;
@@ -4150,15 +4128,13 @@ void CDPSrvr::OnEnchant( CAr & ar, DPID dpidCache, DPID dpidUser)
 
 
 		CItemUpgrade::GetInstance()->OnEnchant( pUser, pItemElem0, pItemElem1 );
-	}	
+	
 }
 
-void CDPSrvr::OnRemoveAttribute( CAr & ar, CUser & pUser_) {
+void CDPSrvr::OnRemoveAttribute( CAr & ar, CUser * pUser ) {
 	int nPayPenya = 100000; //속성제련 제거시 필요한 페냐
 
 	OBJID objItemId; ar >> objItemId;
-
-	CUser * pUser = &pUser_;
 
 	CItemElem* pItemElem = pUser->m_Inventory.GetAtId( objItemId );
 
@@ -4227,16 +4203,13 @@ void CDPSrvr::OnChangeAttribute(CAr & ar, CUser & pUser) {
 	CItemUpgrade::GetInstance()->ChangeAttribute(&pUser, objTargetItem, objMaterialItem, static_cast<SAI79::ePropType>(nAttribute));
 }
 
-void CDPSrvr::OnRandomScroll( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnRandomScroll( CAr & ar, CUser * pUser )
 {
 	DWORD dwId1, dwId2;
 	
 	ar >> dwId1;
 	ar >> dwId2;
 	
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		// 인벤토리에 있는지 장착되어 있는지 확인을 해야 함
 		CItemElem* pItemElem0	= pUser->m_Inventory.GetAtId( dwId1 );
 		CItemElem* pItemElem1	= pUser->m_Inventory.GetAtId( dwId2 );
@@ -4341,7 +4314,7 @@ void CDPSrvr::OnRandomScroll( CAr & ar, DPID dpidCache, DPID dpidUser )
 			strMessage.Format( prj.GetText( TID_GAME_RANDOMSCROLL_SUCCESS ), pItemElem0->GetProp()->szName, prj.GetText( dwStringNum ), nValue );
 			pUser->AddText( strMessage );
 		}
-	}
+	
 }
 	
 void CDPSrvr::OnUpgradeBase( CAr & ar, DPID dpidCache, DPID dpidUser)

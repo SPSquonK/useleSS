@@ -76,20 +76,20 @@ private:
 	void	OnUnregisterPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnQueryPVendorItem( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnBuyPVendorItem( CAr & ar, CUser & pUser );
-	void	OnEnchant( CAr & ar, DPID dpidCache, DPID dpidUser);
-	void	OnSmeltSafety( CAr & ar, DPID dpidCache, DPID dpidUser);
-	void	OnRemoveAttribute( CAr & ar, CUser & pUser_);
+	void	OnEnchant( CAr & ar, CUser * pUser );
+	void	OnSmeltSafety( CAr & ar, CUser * pUser );
+	void	OnRemoveAttribute( CAr & ar, CUser * pUser );
 	void	OnChangeAttribute(CAr & ar, CUser & pUser);
 	void	OnCreateSfxObj( CAr & ar, DPID dpidCache, DPID dpidUser);
 	void	OnPiercing(CAr & ar, CUser & pUser);
-	void	OnPiercingSize( CAr & ar, DPID dpidCache, DPID dpidUser);
+	void	OnPiercingSize( CAr & ar, CUser * pUser );
 	void	OnPiercingRemove(CAr & ar, CUser & pUser);
 	void	OnExpBoxInfo( CAr & ar, CUser & pUser );
 	void	OnItemTransy( CAr & ar, CUser & pUser );
 	void	OnUpgradeBase( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnCommercialElem( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnMotion( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnRepairItem( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnMotion( CAr & ar, CUser * pUser );
+	void	OnRepairItem( CAr & ar, CUser * pUser );
 	void	OnScriptDialogReq( CAr & ar, CUser * pUser );
 	void	OnOpenShopWnd( CAr & ar, CUser * pUser );
 	void	OnCloseShopWnd( CAr & ar, CUser * pUser );
@@ -162,9 +162,9 @@ private:
 	void	OnIgnoreGuildInvite( CAr & ar, CUser * pUser );
 	void	OnEndSkillQueue( CAr & ar, CUser & pUser );
 	void	OnDoUseItem( CAr & ar, CUser * pUser );
-	void	OnDoUseItemTarget( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnDoUseItemTarget( CAr & ar, CUser * pUser );
 	void	OnAwakening( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnRemoveItemLevelDown( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnRemoveItemLevelDown( CAr & ar, CUser * pUser );
 	void	OnBlessednessCancel( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnMeleeAttack( CAr & ar, CUser * pUser );
 	void	OnMeleeAttack2( CAr & ar, CUser * pUser );
@@ -183,7 +183,7 @@ private:
 //	void	OnPlayerDestAngle( CAr & ar, CUser* pUser );
 	void	OnExpUp( CAr & ar, CUser & pUser);
 	void	OnChangeJob(CAr & ar, CUser & pUser);
-	void	OnSetHair( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnSetHair( CAr & ar, CUser * pUser );
 	void	OnBlock( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnError( CAr & ar, DPID dpidCache, DPID dpidUser);
 	void	OnShipActMsg( CAr & ar, DPID dpidCache, DPID dpidUser );
@@ -241,7 +241,7 @@ private:
 	void	OnSummonPartyConfirm( CAr & ar, CUser * pUser );
 
 	void	OnRemoveInvenItem( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnRandomScroll( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnRandomScroll( CAr & ar, CUser * pUser );
 	
 	void	OnCreateMonster( CAr & ar, DPID dpidCache, DPID dpidUser );
 	
