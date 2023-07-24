@@ -22,6 +22,7 @@
 #include "mover.h"
 #include "Ship.h"
 #include "Sfx.h"
+#include "RunFuncScript.h"
 
 #include "wndvendor.h"
 #include "..\_Network\ErrorCode.h"
@@ -11299,7 +11300,7 @@ void CDPClient::OnRunScriptFunc( OBJID, CAr & ar )
 
 		void operator()(const AddKey & rsf) const {
 			if (pWndDialog) {
-				pWndDialog->AddKeyButton(rsf.lpszVal1, rsf.lpszVal2, rsf.dwVal1, rsf.dwVal2);
+				pWndDialog->AddKeyButton(rsf);
 			}
 		}
 
@@ -11317,7 +11318,7 @@ void CDPClient::OnRunScriptFunc( OBJID, CAr & ar )
 
 		void operator()(const AddAnswer & rsf) const {
 			if (pWndDialog)
-				pWndDialog->AddAnswerButton(rsf.lpszVal1, rsf.lpszVal2, rsf.dwVal1, rsf.dwVal2);
+				pWndDialog->AddAnswerButton(rsf);
 		}
 
 		void operator()(const Say & rsf) const {

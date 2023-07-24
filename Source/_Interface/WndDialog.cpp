@@ -610,24 +610,20 @@ const char * CWndDialog::GetOriginalOfWord(const CString & strWord) const {
 	return strWord.GetString();
 }
 
-void CWndDialog::AddKeyButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam, QuestId dwQuest )
+void CWndDialog::AddKeyButton(const RunScriptFunc::Message & message )
 {
-	WORDBUTTON* lpKeyButton;// = &m_aKeyButton[ m_nKeyButtonNum ];
 	// 같은 워드가 발견되면 무시한다. 키는 같아도 되지만 워드는 같으면 하나는 무시함.
 	for( int i = 0; i < m_nKeyButtonNum; i++ )
 	{
-		lpKeyButton = &m_aKeyButton[ i ];
-		if( strcmp( lpKeyButton->szWord, lpszWord ) == 0 )
+		WORDBUTTON * lpKeyButton = &m_aKeyButton[ i ];
+		if( strcmp( lpKeyButton->szWord, message.szWord ) == 0 )
 			return; 
 		
 	}
-	lpKeyButton = &m_aKeyButton[ m_nKeyButtonNum ];
-	strcpy( lpKeyButton->szWord, lpszWord );
-	strcpy( lpKeyButton->szKey, lpszKey );
+
+	WORDBUTTON * lpKeyButton = &m_aKeyButton[ m_nKeyButtonNum ];
+	*(RunScriptFunc::Message *)(lpKeyButton) = message;
 	lpKeyButton->bStatus = FALSE;
-	//lpWordButton->rect
-	lpKeyButton->dwParam = dwParam;
-	lpKeyButton->dwParam2 = dwQuest;
 	m_nKeyButtonNum++;
 	EndSay();
 }
@@ -659,15 +655,12 @@ void CWndDialog::RemoveKeyButton( LPCTSTR lpszKey )
 	EndSay();
 }
 // 하얀색 대화영역에 나오는 버튼 
-void CWndDialog::AddAnswerButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam, QuestId dwQuest )
+void CWndDialog::AddAnswerButton( const RunScriptFunc::Message & message )
 {
 	WORDBUTTON* lpWordButton = &m_aWordButton[ m_nWordButtonNum ];
-	strcpy( lpWordButton->szWord, lpszWord );
-	strcpy( lpWordButton->szKey, lpszKey );
+	*(RunScriptFunc::Message *)(lpWordButton) = message;
 	lpWordButton->bStatus = FALSE;
 	//lpWordButton->rect
-	lpWordButton->dwParam  = dwParam;
-	lpWordButton->dwParam2 = dwQuest;
 	m_nWordButtonNum++;
 	EndSay();
 }

@@ -23,6 +23,7 @@ class CPCBangInfo;
 #include "GuildHouse.h"
 
 #include "CampusHelper.h"
+#include "RunFuncScript.h"
 
 #define GETID( pCtrl )		( (pCtrl) ? (pCtrl)->GetId() : NULL_ID )
 typedef	MemPooler<CUser>	CUserPool;

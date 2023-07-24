@@ -3,6 +3,7 @@
 #include <array>
 #include <memory>
 #include "WndTListBox.hpp"
+#include "RunFuncScript.h"
 
 class CWndDialog final : public CWndNeuz 
 { 
@@ -10,13 +11,9 @@ public:
 	static constexpr UINT WIDC_NewQuests = 901;
 	static constexpr UINT WIDC_CurrentQuests = 902;
 
-	struct WORDBUTTON {
+	struct WORDBUTTON : public RunScriptFunc::Message {
 		BOOL bStatus;
 		CRect rect;
-		TCHAR szWord[64];
-		TCHAR szKey[64];
-		DWORD dwParam;
-		QuestId dwParam2;
 		int nLinkIndex; // Index to concatenate if word is broken by a newline
 	};
 
@@ -89,8 +86,8 @@ public:
 
 	void RemoveAllKeyButton();
 	void RemoveKeyButton( LPCTSTR lpszKey );
-	void AddAnswerButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam, QuestId dwQuest );
-	void AddKeyButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam, QuestId dwQuest );
+	void AddAnswerButton( const RunScriptFunc::Message & message );
+	void AddKeyButton( const RunScriptFunc::Message & message );
 	void ParsingString( LPCTSTR lpszString );
 	void Say( LPCTSTR lpszString, QuestId dwQuest );
 	void EndSay();

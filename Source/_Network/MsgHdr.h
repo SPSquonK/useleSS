@@ -1351,60 +1351,6 @@
 #define	QPS_GENERIC	(BYTE)0x03
 #define	QPS_GUILDCOMBAT_RANKING	(BYTE)0x04
 
-
-#include <variant>
-#include <tuple>
-
-namespace RunScriptFunc {
-	struct AddKey {
-		char	lpszVal1[1024];
-		char	lpszVal2[1024];
-		DWORD	dwVal1;
-		QuestId   dwVal2;
-	};
-
-	struct AddAnswer {
-		char	lpszVal1[1024];
-		char	lpszVal2[1024];
-		DWORD	dwVal1;
-		QuestId   dwVal2;
-	};
-
-	struct RemoveKey {
-		char	lpszVal1[1024];
-	};
-
-	struct Say {
-		char	lpszVal1[1024];
-		QuestId   dwVal2;
-	};
-
-	struct InitStat { DWORD dwVal1; };
-	struct InitStr  { DWORD dwVal1; };
-	struct InitSta  { DWORD dwVal1; };
-	struct InitDex  { DWORD dwVal1; };
-	struct InitInt  { DWORD dwVal1; };
-
-	struct Quest {
-		bool isNew;
-		char	lpszVal1[1024];
-		char	lpszVal2[1024];
-		QuestId   dwVal2;
-	};
-
-	struct RemoveAllKey {};
-	struct Exit {};
-	struct QuestSetPlayerName {};
-
-	using Variant = std::variant<
-		AddKey, AddAnswer,
-		RemoveKey, RemoveAllKey, Say,
-		InitStat, InitStr, InitSta, InitInt, InitDex,
-		Quest,
-		Exit, QuestSetPlayerName
-	>;
-}
-
 // port num
 #define	PN_PATCHSRVR	1100
 #define	PN_WORLDSRVR	39000

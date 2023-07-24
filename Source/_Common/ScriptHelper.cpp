@@ -12,6 +12,7 @@
 #include "guild.h"
 #include "ScriptHelper.h"
 #include "WorldDialog.h"
+#include "RunFuncScript.h"
 
 #if defined(__REMOVE_SCIRPT_060712)
 
@@ -94,23 +95,25 @@ CWorld* __GetWorld( int nPcId, int nSrcId, int nCaller )
 	return pWorld;
 }
 
+static void CopyKeyAndWord(RunScriptFunc::Message & dest, LPCTSTR lpszWord, LPCTSTR lpszKey) {
+	_tcscpy_s(dest.szWord, lpszWord);
+
+	if (lpszKey[0] != '\0') {
+		_tcscpy_s(dest.szKey, lpszKey);
+	} else {
+		_tcscpy_s(dest.szKey, lpszWord);
+	}
+}
+
 int __AddKey( int nPcId, LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam )
 {
-	CHAR szKey[ 128 ], szWord[ 128 ];
-
-	strcpy( szWord, lpszWord );
-
-	if( lpszKey[0] == '\0' ) 
-		strcpy( szKey, szWord );
-	else
-		strcpy( szKey, lpszKey );
-
-	CUser* pUser	= prj.GetUser( nPcId );
 	RunScriptFunc::AddKey rsf;
-	lstrcpy( rsf.lpszVal1, szWord );
-	lstrcpy( rsf.lpszVal2, szKey );
-	rsf.dwVal1	= dwParam;
-	rsf.dwVal2 = QuestIdNone;
+	CopyKeyAndWord(rsf, lpszWord, lpszKey);
+
+	rsf.dwParam = dwParam;
+	rsf.dwParam2 = QuestIdNone;
+
+	CUser * pUser = prj.GetUser(nPcId);
 	pUser->AddRunScriptFunc( rsf );
 	return 1;
 }
@@ -118,16 +121,10 @@ int __AddKey( int nPcId, LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam )
 int __AddAnswer( int nPcId, LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam1, QuestId nQuest )
 {
 	RunScriptFunc::AddAnswer rsf;
-	strcpy( rsf.lpszVal1, lpszWord );
+	CopyKeyAndWord(rsf, lpszWord, lpszKey);
 
-	if( lpszKey[0] == '\0' ) 
-		strcpy( rsf.lpszVal2, lpszWord );
-	else
-		strcpy( rsf.lpszVal2, lpszKey );
-
-
-	rsf.dwVal1 = (DWORD)dwParam1;
-	rsf.dwVal2 = nQuest;
+	rsf.dwParam = dwParam1;
+	rsf.dwParam2 = nQuest;
 
 	CUser * pUser = prj.GetUser(nPcId);
 	pUser->AddRunScriptFunc( rsf );
