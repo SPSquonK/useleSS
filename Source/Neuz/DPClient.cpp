@@ -7417,7 +7417,7 @@ void CDPClient::SendMoverFocus(u_long uidPlayer) {
 	SendPacket<PACKETTYPE_MOVERFOCOUS, u_long>(uidPlayer);
 }
 
-void CDPClient::SendScriptDialogReq( OBJID objid, LPCTSTR lpKey, int nGlobal1, int nGlobal2, int nGlobal3, int nGlobal4 )
+void CDPClient::SendScriptDialogReq( OBJID objid, LPCTSTR lpKey, int nGlobal1, QuestId nGlobal2, int nGlobal3, int nGlobal4 )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SCRIPTDLG, DPID_UNKNOWN );
 	ar << objid;
@@ -11285,181 +11285,107 @@ void CDPClient::OnTag( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::OnRunScriptFunc( OBJID objid, CAr & ar )
+void CDPClient::OnRunScriptFunc( OBJID, CAr & ar )
 {
-	CWndDialog* pWndDialog	= (CWndDialog*)g_WndMng.GetWndBase( APP_DIALOG_EX );
-	CMover *pMover = prj.GetMover( objid );
+	CWndDialog* pWndDialog	= g_WndMng.GetWndBase<CWndDialog>( APP_DIALOG_EX );
 
-	RunScriptFunc	rsf;
-	WORD wFuncType;
-	ar >> wFuncType;
-	switch ( wFuncType )
-	{
-		case FUNCTYPE_ADDKEY:
-			{
-				ar.ReadString( rsf.lpszVal1, 1024 );
-				ar.ReadString( rsf.lpszVal2, 1024 );
-				ar >> rsf.dwVal1;
-				ar >> rsf.dwVal2;
-				if( pWndDialog )
-					pWndDialog->AddKeyButton( rsf.lpszVal1, rsf.lpszVal2, rsf.dwVal1, rsf.dwVal2 );
-				break;
-			}
-		case FUNCTYPE_REMOVEKEY:
-			{
-				ar.ReadString( rsf.lpszVal1, 1024 );
-				if( pWndDialog )
-					pWndDialog->RemoveKeyButton( rsf.lpszVal1 );
-				break;
-			}
-		case FUNCTYPE_REMOVEALLKEY:
-			{
-				if( pWndDialog )
-					pWndDialog->RemoveAllKeyButton();
-				break;
-			}
-		case FUNCTYPE_ADDANSWER:
-			{
-				ar.ReadString( rsf.lpszVal1, 1024 );
-				ar.ReadString( rsf.lpszVal2, 1024 );
-				ar >> rsf.dwVal1;
-				ar >> rsf.dwVal2;
-				if( pWndDialog )
-					pWndDialog->AddAnswerButton( rsf.lpszVal1, rsf.lpszVal2, rsf.dwVal1, rsf.dwVal2 );
-				break;
-			}
-		case FUNCTYPE_SAY:
-			{
-				ar.ReadString( rsf.lpszVal1, 1024 );
-				ar >> rsf.dwVal2; // quest
-				if( pWndDialog )
-				{
-					pWndDialog->m_bSay = TRUE;
-					pWndDialog->Say( rsf.lpszVal1, rsf.dwVal2 );
-				}
-				TRACE( "FUNCTYPE_SAY, %s\n", rsf.lpszVal1 );
-				break;
-			}
-		case FUNCTYPE_NEWQUEST:
-		case FUNCTYPE_CURRQUEST:
-			{
-				ar.ReadString( rsf.lpszVal1, 1024 );
-				ar.ReadString( rsf.lpszVal2, 1024 );
-				ar >> rsf.dwVal1; /* always = 0 */
-				ar >> rsf.dwVal2;
-				if (pWndDialog) {
-					const bool isNewQuest = wFuncType == FUNCTYPE_NEWQUEST;
-					pWndDialog->AddQuestInList(rsf.lpszVal1, rsf.lpszVal2, QuestId::From(rsf.dwVal2), isNewQuest);
-				}
-				break;
-			}
-		case FUNCTYPE_SETMARK:
-		case FUNCTYPE_GOMARK:
-			{
-				if( pWndDialog )
-					pWndDialog->MakeKeyButton();
-				break;
-			}
-		case FUNCTYPE_EXIT:
-			{
-				if( pWndDialog )
-					pWndDialog->Destroy();
-				break;
-			}
-		case FUNCTYPE_CREATEGUILD:
-			{
-				break;
-			}
-		case FUNCTYPE_DESTROYGUILD:
-			{
-				break;
-			}
-		case FUNCTYPE_ENDSAY:
-			break;
-		case FUNCTYPE_INITSTAT:
-			{
-				ar >> rsf.dwVal1;
-				CMover* pMover	= g_pPlayer;
-				if( IsValidObj( pMover ) )
-				{
-					pMover->SetStr( 15 );
-					pMover->SetInt( 15 );
-					pMover->SetDex( 15 );
-					pMover->SetSta( 15 );
-					pMover->m_nRemainGP	= (long)rsf.dwVal1;
-				}
-				break;
-			}
+	RunScriptFunc::Variant rsf;
+	ar.Read(&rsf, sizeof(rsf));
 
-		case FUNCTYPE_INITSTR:
-			{
-				ar >> rsf.dwVal1;
-				CMover* pMover	= g_pPlayer;
-				if( IsValidObj( pMover ) )
-				{
-					pMover->SetStr( 15 );
-					pMover->m_nRemainGP	= (long)rsf.dwVal1;
-				}
-				break;
-			}
-		case FUNCTYPE_INITSTA:
-			{
-				ar >> rsf.dwVal1;
-				CMover* pMover	= g_pPlayer;
-				if( IsValidObj( pMover ) )
-				{
-					pMover->SetSta( 15 );
-					pMover->m_nRemainGP	= (long)rsf.dwVal1;
-				}
-				break;
-			}
-		case FUNCTYPE_INITDEX:
-			{
-				ar >> rsf.dwVal1;
-				CMover* pMover	= g_pPlayer;
-				if( IsValidObj( pMover ) )
-				{
-					pMover->SetDex( 15 );
-					pMover->m_nRemainGP	= (long)rsf.dwVal1;
-				}
-				break;
-			}
-		case FUNCTYPE_INITINT:
-			{
-				ar >> rsf.dwVal1;
-				CMover* pMover	= g_pPlayer;
-				if( IsValidObj( pMover ) )
-				{
-					pMover->SetInt( 15 );
-					pMover->m_nRemainGP	= (long)rsf.dwVal1;
-				}
-				break;
-			}
-		case FUNCTYPE_QUERYSETPLAYERNAME:
-			{
-				if( NULL == g_WndMng.m_pWndChangeName )
-				{
-					g_WndMng.m_pWndChangeName		= new CWndChangeName;
-					g_WndMng.m_pWndChangeName->Initialize();
-				}
-				g_WndMng.m_pWndChangeName->SetData( 0xffff, 1 );
-				break;
-			}
+	using namespace RunScriptFunc;
 
-		case FUNCTYPE_QUERYSETGUILDNAME:
-		{
-			CWndGuildName *pWndGuildName	= (CWndGuildName*)g_WndMng.GetWndBase( APP_GUILDNAME );
-			if( !pWndGuildName )
-			{
-				pWndGuildName	= new CWndGuildName;
-				pWndGuildName->Initialize();
+	struct Visitor {
+		CWndDialog * pWndDialog;
+
+		void operator()(const AddKey & rsf) const {
+			if (pWndDialog) {
+				pWndDialog->AddKeyButton(rsf.lpszVal1, rsf.lpszVal2, rsf.dwVal1, rsf.dwVal2);
 			}
-			pWndGuildName->SetData( 0x7f );
-			break;
 		}
-		default:
-			break;
-	}
+
+		void operator()(const RemoveKey & rsf) const {
+			if (pWndDialog) {
+				pWndDialog->RemoveKeyButton(rsf.lpszVal1);
+			}
+		}
+
+		void operator()(const RemoveAllKey &) const {
+			if (pWndDialog) {
+				pWndDialog->RemoveAllKeyButton();
+			}
+		}
+
+		void operator()(const AddAnswer & rsf) const {
+			if (pWndDialog)
+				pWndDialog->AddAnswerButton(rsf.lpszVal1, rsf.lpszVal2, rsf.dwVal1, rsf.dwVal2);
+		}
+
+		void operator()(const Say & rsf) const {
+			if (pWndDialog) {
+				pWndDialog->m_bSay = TRUE;
+				pWndDialog->Say(rsf.lpszVal1, rsf.dwVal2);
+			}
+		}
+
+		void operator()(const Quest & rsf) const {
+			if (pWndDialog) {
+				pWndDialog->AddQuestInList(rsf.lpszVal1, rsf.lpszVal2, rsf.dwVal2, rsf.isNew);
+			}
+		}
+
+		void operator()(const Exit &) const {
+			if (pWndDialog)
+				pWndDialog->Destroy();
+		}
+
+		void operator()(const InitStat & rsf) const {
+			if (IsValidObj(g_pPlayer)) {
+				g_pPlayer->SetStr(15);
+				g_pPlayer->SetInt(15);
+				g_pPlayer->SetDex(15);
+				g_pPlayer->SetSta(15);
+				g_pPlayer->m_nRemainGP = (long)rsf.dwVal1;
+			}
+		}
+
+		void operator()(const InitStr & rsf) const {
+			if (IsValidObj(g_pPlayer)) {
+				g_pPlayer->SetStr(15);
+				g_pPlayer->m_nRemainGP = (long)rsf.dwVal1;
+			}
+		}
+
+		void operator()(const InitSta & rsf) const {
+			if (IsValidObj(g_pPlayer)) {
+				g_pPlayer->SetSta(15);
+				g_pPlayer->m_nRemainGP = (long)rsf.dwVal1;
+			}
+		}
+
+		void operator()(const InitDex & rsf) const {
+			if (IsValidObj(g_pPlayer)) {
+				g_pPlayer->SetDex(15);
+				g_pPlayer->m_nRemainGP = (long)rsf.dwVal1;
+			}
+		}
+
+		void operator()(const InitInt & rsf) const {
+			if (IsValidObj(g_pPlayer)) {
+				g_pPlayer->SetInt(15);
+				g_pPlayer->m_nRemainGP = (long)rsf.dwVal1;
+			}
+		}
+
+		void operator()(const QuestSetPlayerName & rsf) const {
+			if (!g_WndMng.m_pWndChangeName) {
+				g_WndMng.m_pWndChangeName = new CWndChangeName;
+				g_WndMng.m_pWndChangeName->Initialize();
+			}
+			g_WndMng.m_pWndChangeName->SetData(0xffff, 1);
+		}
+	};
+
+	std::visit(Visitor{ pWndDialog }, rsf);
 }
 
 void CDPClient::PostPlayerAngle(bool f) {

@@ -4958,59 +4958,14 @@ void CUserMng::AddGCPlayerPrecedence( CUser* pSendUser )
 	}
 }
 
-void CUser::AddRunScriptFunc( const RunScriptFunc & runScriptFunc )
+void CUser::AddRunScriptFunc( const RunScriptFunc::Variant & runScriptFunc )
 {
 	if( IsDelete() )	return;
 	
 	m_Snapshot.cb++;
 	m_Snapshot.ar << GetId();
 	m_Snapshot.ar << SNAPSHOTTYPE_RUNSCRIPTFUNC;
-	m_Snapshot.ar << runScriptFunc.wFuncType;
-	switch( runScriptFunc.wFuncType )
-	{
-		case FUNCTYPE_ADDKEY:
-		case FUNCTYPE_ADDANSWER:
-			{
-				m_Snapshot.ar.WriteString( runScriptFunc.lpszVal1 );
-				m_Snapshot.ar.WriteString( runScriptFunc.lpszVal2 );
-				m_Snapshot.ar << runScriptFunc.dwVal1;
-				m_Snapshot.ar << runScriptFunc.dwVal2;
-				break;
-			}
-		case FUNCTYPE_REMOVEKEY:
-			{
-				m_Snapshot.ar.WriteString( runScriptFunc.lpszVal1 );
-				break;
-			}
-		case FUNCTYPE_SAY:
-		case FUNCTYPE_SAYQUEST:
-			{
-				m_Snapshot.ar.WriteString( runScriptFunc.lpszVal1 );
-				m_Snapshot.ar << runScriptFunc.dwVal2;
-				break;
-			}
-		case FUNCTYPE_INITSTAT:
-		case FUNCTYPE_INITSTR:
-		case FUNCTYPE_INITSTA:			
-		case FUNCTYPE_INITDEX:
-		case FUNCTYPE_INITINT:
-			{
-				m_Snapshot.ar << runScriptFunc.dwVal1;
-				break;
-			}
-		case FUNCTYPE_NEWQUEST:
-		case FUNCTYPE_CURRQUEST:
-			{
-				m_Snapshot.ar.WriteString( runScriptFunc.lpszVal1 );
-				m_Snapshot.ar.WriteString( runScriptFunc.lpszVal2 );
-				m_Snapshot.ar << runScriptFunc.dwVal1;
-				m_Snapshot.ar << runScriptFunc.dwVal2;
-				break;
-			}
-		default:
-			break;
-	}
-	
+	m_Snapshot.ar.Write(&runScriptFunc, sizeof(runScriptFunc));
 }
 
 void CUser::AddEnterChatting( CUser* pUser )

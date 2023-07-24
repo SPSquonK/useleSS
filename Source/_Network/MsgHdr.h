@@ -1352,37 +1352,58 @@
 #define	QPS_GUILDCOMBAT_RANKING	(BYTE)0x04
 
 
-typedef	struct	_runscriptfunc
-{
-	char	lpszVal1[1024];
-	char	lpszVal2[1024];
-	DWORD	dwVal1;
-	DWORD   dwVal2;
-	WORD	wFuncType;
-	D3DXVECTOR3 vPos;
-}	RunScriptFunc, *PRunScriptFunc;
+#include <variant>
+#include <tuple>
 
-#define	FUNCTYPE_ADDKEY			(WORD)0x0010
-#define	FUNCTYPE_REMOVEKEY		(WORD)0x0011
-#define	FUNCTYPE_SAY			(WORD)0x0012
-#define	FUNCTYPE_ADDANSWER		(WORD)0x0013
-#define	FUNCTYPE_SETMARK		(WORD)0x0014
-#define	FUNCTYPE_GOMARK			(WORD)0x0015
-#define	FUNCTYPE_EXIT			(WORD)0x0016
-#define	FUNCTYPE_ENDSAY			(WORD)0x0017
-#define	FUNCTYPE_CREATEGUILD	(WORD)0x0018
-#define	FUNCTYPE_DESTROYGUILD	(WORD)0x0019
-#define	FUNCTYPE_INITSTAT		(WORD)0x001a
-#define	FUNCTYPE_REMOVEALLKEY	(WORD)0x001d
-#define	FUNCTYPE_SAYQUEST		(WORD)0x001e
-#define	FUNCTYPE_INITSTR		(WORD)0x0020
-#define	FUNCTYPE_INITSTA		(WORD)0x0021
-#define	FUNCTYPE_INITDEX		(WORD)0x0022
-#define	FUNCTYPE_INITINT		(WORD)0x0023
-#define	FUNCTYPE_QUERYSETPLAYERNAME	(DWORD)0x0024
-#define	FUNCTYPE_QUERYSETGUILDNAME	(DWORD)0x0025
-#define	FUNCTYPE_NEWQUEST		(WORD)0x0026
-#define	FUNCTYPE_CURRQUEST		(WORD)0x0027
+namespace RunScriptFunc {
+	struct AddKey {
+		char	lpszVal1[1024];
+		char	lpszVal2[1024];
+		DWORD	dwVal1;
+		QuestId   dwVal2;
+	};
+
+	struct AddAnswer {
+		char	lpszVal1[1024];
+		char	lpszVal2[1024];
+		DWORD	dwVal1;
+		QuestId   dwVal2;
+	};
+
+	struct RemoveKey {
+		char	lpszVal1[1024];
+	};
+
+	struct Say {
+		char	lpszVal1[1024];
+		QuestId   dwVal2;
+	};
+
+	struct InitStat { DWORD dwVal1; };
+	struct InitStr  { DWORD dwVal1; };
+	struct InitSta  { DWORD dwVal1; };
+	struct InitDex  { DWORD dwVal1; };
+	struct InitInt  { DWORD dwVal1; };
+
+	struct Quest {
+		bool isNew;
+		char	lpszVal1[1024];
+		char	lpszVal2[1024];
+		QuestId   dwVal2;
+	};
+
+	struct RemoveAllKey {};
+	struct Exit {};
+	struct QuestSetPlayerName {};
+
+	using Variant = std::variant<
+		AddKey, AddAnswer,
+		RemoveKey, RemoveAllKey, Say,
+		InitStat, InitStr, InitSta, InitInt, InitDex,
+		Quest,
+		Exit, QuestSetPlayerName
+	>;
+}
 
 // port num
 #define	PN_PATCHSRVR	1100

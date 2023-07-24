@@ -292,8 +292,7 @@ int APIENTRY RemoveKey(NPCDIALOG_INFO* pInfo, LPCTSTR szKey )
 	{
 		CUser* pUser = prj.GetUser( pInfo->GetPcId() );
 
-		RunScriptFunc rsf;
-		rsf.wFuncType = FUNCTYPE_REMOVEKEY;
+		RunScriptFunc::RemoveKey rsf;
 		lstrcpy( rsf.lpszVal1, szKey );
 		pUser->AddRunScriptFunc( rsf );
 	}
@@ -303,10 +302,9 @@ int APIENTRY RemoveKey(NPCDIALOG_INFO* pInfo, LPCTSTR szKey )
 int APIENTRY Say(NPCDIALOG_INFO* pInfo, LPCTSTR szMsg )
 {
 	CUser* pUser = prj.GetUser( pInfo->GetPcId() );
-	RunScriptFunc rsf;
-	rsf.wFuncType = FUNCTYPE_SAY;
+	RunScriptFunc::Say rsf;
 	lstrcpy( rsf.lpszVal1, szMsg );
-	rsf.dwVal2 = 0;
+	rsf.dwVal2 = QuestIdNone;
 	pUser->AddRunScriptFunc( rsf );
 	return 1;
 }
@@ -324,9 +322,7 @@ int APIENTRY Random( NPCDIALOG_INFO*  pInfo, int n )
 int APIENTRY Exit( NPCDIALOG_INFO* pInfo )
 {
 	CUser* pUser = prj.GetUser( pInfo->GetPcId() );
-	RunScriptFunc rsf;
-	rsf.wFuncType = FUNCTYPE_EXIT;
-	pUser->AddRunScriptFunc( rsf );
+	pUser->AddRunScriptFunc(RunScriptFunc::Exit{});
 	return TRUE;
 }
 
@@ -342,9 +338,7 @@ int APIENTRY Replace( NPCDIALOG_INFO*  pInfo, int nWorld, float x, float y, floa
 
 	if( x > 0.0f && z > 0.0f )
 	{
-		RunScriptFunc rsf;
-		rsf.wFuncType = FUNCTYPE_EXIT;
-		pUser->AddRunScriptFunc( rsf );
+		pUser->AddRunScriptFunc(RunScriptFunc::Exit{});
 		if( g_eLocal.GetState( EVE_SCHOOL ) )
 			g_dpDBClient.SendLogSchool( pUser->m_idPlayer, pUser->GetName() );
 
@@ -356,9 +350,7 @@ int APIENTRY Replace( NPCDIALOG_INFO*  pInfo, int nWorld, float x, float y, floa
 int APIENTRY ReplaceKey( NPCDIALOG_INFO* pInfo, int nWorld, LPCTSTR szKey )
 {
 	CUser* pUser = prj.GetUser( pInfo->GetPcId() );
-	RunScriptFunc rsf;	
-	rsf.wFuncType = FUNCTYPE_EXIT;
-	pUser->AddRunScriptFunc( rsf );
+	pUser->AddRunScriptFunc(RunScriptFunc::Exit{});
 
 	const REGIONELEM * pRgnElem = g_WorldMng.GetRevivalPos( nWorld, szKey );
 	if( pRgnElem )
@@ -434,9 +426,7 @@ int APIENTRY  MonHuntStart( NPCDIALOG_INFO* pInfo, int nQuest, int nState, int n
 					CWorld* pWorld = pUser->GetWorld();
 					if( pWorld )
 					{
-						RunScriptFunc rsf;	// Exit()
-						rsf.wFuncType = FUNCTYPE_EXIT;
-						pUser->AddRunScriptFunc( rsf );
+						pUser->AddRunScriptFunc(RunScriptFunc::Exit{});
 						pWormon->AddItToGlobalId();
 						pWorld->ADDOBJ( pWormon, FALSE, pUser->GetLayer() );
 						pGuild->SetQuest( nQuest, nState );
@@ -501,9 +491,7 @@ int APIENTRY  MonHuntStartParty( NPCDIALOG_INFO*  pInfo, int nQuest, int nState,
 						CWorld* pWorld	= g_WorldMng.GetWorld( pProp->dwWorldId );
 						if( pWorld )
 						{
-							RunScriptFunc rsf;	// Exit()
-							rsf.wFuncType		= FUNCTYPE_EXIT;
-							pUser->AddRunScriptFunc( rsf );
+							pUser->AddRunScriptFunc(RunScriptFunc::Exit{});
 							pWormon->AddItToGlobalId();
 							pWormon->m_bActiveAttack = TRUE;
 							pWorld->ADDOBJ( pWormon, FALSE, pUser->GetLayer() );
@@ -538,8 +526,7 @@ int APIENTRY InitStat( NPCDIALOG_INFO*  pInfo )
 	pUser->SetDex( 15 );
 	pUser->SetSta( 15 );
 	pUser->m_nRemainGP	= ( pUser->GetLevel() - 1 ) * 2;
-	RunScriptFunc rsf;
-	rsf.wFuncType		= FUNCTYPE_INITSTAT;
+	RunScriptFunc::InitStat rsf;
 	rsf.dwVal1	= pUser->m_nRemainGP;
 	pUser->AddRunScriptFunc( rsf );
 	return 1;
@@ -555,8 +542,7 @@ int	APIENTRY InitStr( NPCDIALOG_INFO*  pInfo )
 		pUser->m_nRemainGP	+= nStr - 15;
 	}
 	
-	RunScriptFunc rsf;
-	rsf.wFuncType		= FUNCTYPE_INITSTR;
+	RunScriptFunc::InitStr rsf;
 	rsf.dwVal1	= pUser->m_nRemainGP;
 	pUser->AddRunScriptFunc( rsf );
 	return 1;
@@ -571,8 +557,7 @@ int	APIENTRY InitSta( NPCDIALOG_INFO*  pInfo )
 		pUser->m_nRemainGP	+= nSta - 15;
 	}
 	
-	RunScriptFunc rsf;
-	rsf.wFuncType		= FUNCTYPE_INITSTA;
+	RunScriptFunc::InitSta rsf;
 	rsf.dwVal1	= pUser->m_nRemainGP;
 	pUser->AddRunScriptFunc( rsf );
 	return 1;
@@ -587,8 +572,7 @@ int	APIENTRY InitDex( NPCDIALOG_INFO*  pInfo )
 		pUser->m_nRemainGP	+= nDex - 15;
 	}
 	
-	RunScriptFunc rsf;
-	rsf.wFuncType		= FUNCTYPE_INITDEX;
+	RunScriptFunc::InitDex rsf;
 	rsf.dwVal1	= pUser->m_nRemainGP;
 	pUser->AddRunScriptFunc( rsf );
 	return 1;
@@ -603,8 +587,7 @@ int	APIENTRY InitInt( NPCDIALOG_INFO*  pInfo )
 		pUser->m_nRemainGP	+= nInt - 15;
 	}
 	
-	RunScriptFunc rsf;
-	rsf.wFuncType		= FUNCTYPE_INITINT;
+	RunScriptFunc::InitInt rsf;
 	rsf.dwVal1	= pUser->m_nRemainGP;
 	pUser->AddRunScriptFunc( rsf );
 	return 1;
@@ -798,9 +781,7 @@ int APIENTRY DestroyGuild( NPCDIALOG_INFO* pInfo )
 	{
 		if( pGuild->IsMaster( pUser->m_idPlayer ) )
 		{
-			RunScriptFunc rsf;
-			rsf.wFuncType	= FUNCTYPE_DESTROYGUILD;
-			pUser->AddRunScriptFunc( rsf );
+			// This does nothing
 		}
 		else
 			pUser->AddDefinedText( TID_GAME_COMDELNOTKINGPIN );
@@ -988,7 +969,7 @@ int APIENTRY Run( NPCDIALOG_INFO* pInfo, LPCTSTR szKey, int n )
 
 	CMover* pMover = prj.GetMover( pInfo->GetNpcId() );
 	int nResult = 0;
-	pMover->m_pNpcProperty->RunDialog( string, &nResult, v1, pInfo->GetNpcId(), pInfo->GetPcId(), 0 );
+	pMover->m_pNpcProperty->RunDialog( string, &nResult, v1, pInfo->GetNpcId(), pInfo->GetPcId(), QuestIdNone );
 
 	return nResult;
 }
@@ -1008,9 +989,7 @@ int	APIENTRY QuerySetPlayerName( NPCDIALOG_INFO* pInfo )
 	CUser* pUser = prj.GetUser( pInfo->GetPcId()  );
 	if( pUser->IsAuthHigher( AUTH_GAMEMASTER ) || pUser->IsMode( QUERYSETPLAYERNAME_MODE ) )
 	{
-		RunScriptFunc rsf;
-		rsf.wFuncType = FUNCTYPE_QUERYSETPLAYERNAME;
-		pUser->AddRunScriptFunc( rsf );
+		pUser->AddRunScriptFunc(RunScriptFunc::QuestSetPlayerName{});
 		return 1;
 	}
 	return 0;

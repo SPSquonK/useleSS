@@ -14,7 +14,7 @@ public:
 	BOOL			IsDialogLoaded();
 	BOOL			IsTimeOut();
 	void			ResetTimer();
-	BOOL			RunDialog( LPCTSTR pKey, int* nResult, int nValue, int nDstId, int nSrcId, int nQuestId );
+	BOOL			RunDialog( LPCTSTR pKey, int* nResult, int nValue, int nDstId, int nSrcId, QuestId nQuestId );
 
 protected:
 

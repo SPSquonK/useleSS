@@ -1106,7 +1106,7 @@ void CMover::ProcessScript()
 	if( m_szCharacterKey[ 0 ] && m_pNpcProperty->IsTimeOut() ) 
 	{
 		m_pNpcProperty->ResetTimer();
-		m_pNpcProperty->RunDialog("#auto",NULL,0,GetId(),GetId(),0);
+		m_pNpcProperty->RunDialog("#auto",NULL,0,GetId(),GetId(),QuestIdNone);
 	}
 }
 

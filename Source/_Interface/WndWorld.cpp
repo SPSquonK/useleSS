@@ -4055,7 +4055,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 				if( pWndBase )
 					break;
 			}
-			g_DPlay.SendScriptDialogReq( ( (CMover*)pFocusObj )->GetId(), NULL, 0, 0, 0, 0 );
+			g_DPlay.SendScriptDialogReq( ( (CMover*)pFocusObj )->GetId(), NULL, 0, QuestIdNone, 0, 0 );
 			SAFE_DELETE( g_WndMng.m_pWndDialog );
 			g_WndMng.m_pWndDialog = new CWndDialog;
 			g_WndMng.m_pWndDialog->m_idMover = ((CMover*)pFocusObj)->GetId();

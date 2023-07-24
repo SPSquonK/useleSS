@@ -429,7 +429,7 @@ public:
 	void			AddCommonSkill( DWORD dwSkill, DWORD dwLevel );
 	void			AddExpBoxCoolTime( OBJID objid, DWORD dwTime );
 	void			AddPlaySound2( const char* szSound );
-	void			AddRunScriptFunc( const RunScriptFunc & runScriptFunc );
+	void			AddRunScriptFunc( const RunScriptFunc::Variant & runScriptFunc );
 	void			AddRemoveSkillInfluence( WORD wType, WORD wID );
 	void			AddGCWindow( __int64 dwPrizePenya, DWORD dwRequstPenya, DWORD dwMinRequestPenya );
 	void			AddGCRequestStatus( __int64 nPrizePenya, std::vector<CGuildCombat::__GuildCombatMember *> & vecRequestStatus );

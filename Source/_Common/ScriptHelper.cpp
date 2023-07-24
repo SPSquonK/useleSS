@@ -106,34 +106,30 @@ int __AddKey( int nPcId, LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam )
 		strcpy( szKey, lpszKey );
 
 	CUser* pUser	= prj.GetUser( nPcId );
-	RunScriptFunc rsf;
-	rsf.wFuncType		= FUNCTYPE_ADDKEY;
+	RunScriptFunc::AddKey rsf;
 	lstrcpy( rsf.lpszVal1, szWord );
 	lstrcpy( rsf.lpszVal2, szKey );
 	rsf.dwVal1	= dwParam;
-	rsf.dwVal2 = 0;
+	rsf.dwVal2 = QuestIdNone;
 	pUser->AddRunScriptFunc( rsf );
 	return 1;
 }
 
 int __AddAnswer( int nPcId, LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam1, QuestId nQuest )
 {
-	CHAR szKey[ 128 ], szWord[ 128 ];
-
-	strcpy( szWord, lpszWord );
+	RunScriptFunc::AddAnswer rsf;
+	strcpy( rsf.lpszVal1, lpszWord );
 
 	if( lpszKey[0] == '\0' ) 
-		strcpy( szKey, szWord );
+		strcpy( rsf.lpszVal2, lpszWord );
 	else
-		strcpy( szKey, lpszKey );
+		strcpy( rsf.lpszVal2, lpszKey );
 
-	CUser* pUser = prj.GetUser( nPcId );
-	RunScriptFunc rsf;
-	rsf.wFuncType		= FUNCTYPE_ADDANSWER;
-	lstrcpy( rsf.lpszVal1, szWord );
-	lstrcpy( rsf.lpszVal2, szKey );
+
 	rsf.dwVal1 = (DWORD)dwParam1;
-	rsf.dwVal2 = nQuest.get();
+	rsf.dwVal2 = nQuest;
+
+	CUser * pUser = prj.GetUser(nPcId);
 	pUser->AddRunScriptFunc( rsf );
 	return 1;
 }
@@ -164,9 +160,7 @@ int __RemoveQuest( int nPcId, QuestId nQuest )
 int __RemoveAllKey( int nPcId )
 {
 	CUser* pUser	= prj.GetUser( nPcId );
-	RunScriptFunc rsf;
-	rsf.wFuncType		= FUNCTYPE_REMOVEALLKEY;
-	pUser->AddRunScriptFunc( rsf );
+	pUser->AddRunScriptFunc(RunScriptFunc::RemoveAllKey{});
 
 	return 1;
 }
@@ -182,10 +176,9 @@ int __SayQuest( int nPcId, QuestId nQuestId, int nIdx )
 		return FALSE;
 
 	CUser* pUser = prj.GetUser( nPcId );
-	RunScriptFunc rsf;
-	rsf.wFuncType		= FUNCTYPE_SAY;//QUEST;
+	RunScriptFunc::Say rsf;
 	lstrcpy( rsf.lpszVal1, strToken );
-	rsf.dwVal2 = nQuestId.get();
+	rsf.dwVal2 = nQuestId;
 	pUser->AddRunScriptFunc( rsf );
 	return 1;
 }
@@ -274,9 +267,7 @@ int __EndQuest( int nPcId, QuestId nQuestId, BOOL IsEndQuestCondition /* = TRUE 
 		if( nItemNum > pUser->m_Inventory.GetEmptyCount() ) 
 		{
 			pUser->AddDefinedText( TID_QUEST_NOINVENTORYSPACE ); // 인벤토리 공간이 없어서 퀘스트를 완료할 수 없습니다.
-			RunScriptFunc rsf;
-			rsf.wFuncType		= FUNCTYPE_EXIT;
-			pUser->AddRunScriptFunc( rsf );
+			pUser->AddRunScriptFunc(RunScriptFunc::Exit{});
 			return FALSE;
 		}
 		////////////////////////////
@@ -447,15 +438,11 @@ int __AddQuestKey( int nPcId, QuestId nQuestId, LPCTSTR lpKey, bool bNew )
 		strcpy( szKey, lpKey );
 
 	CUser* pUser	= prj.GetUser( nPcId );
-	RunScriptFunc rsf;
-	if( bNew )
-		rsf.wFuncType		= FUNCTYPE_NEWQUEST;
-	else
-		rsf.wFuncType		= FUNCTYPE_CURRQUEST;
+	RunScriptFunc::Quest rsf;
+	rsf.isNew = bNew;
 	lstrcpy( rsf.lpszVal1, szWord );
 	lstrcpy( rsf.lpszVal2, szKey );
-	rsf.dwVal1	= 0;
-	rsf.dwVal2 = nQuestId.get();
+	rsf.dwVal2 = nQuestId;
 	pUser->AddRunScriptFunc( rsf );
 	return 1;
 }
@@ -470,7 +457,7 @@ void __QuestBegin( int nPcId, int nNpcId, QuestId nQuestId )
 	__AddAnswer( nPcId, "__NO__", "QUEST_BEGIN_NO", 0, nQuestId  );
 	// 기타 대화를 위한 키를 추가한다.
 	CMover* pMover = prj.GetMover( nNpcId );
-	pMover->m_pNpcProperty->RunDialog( "#questBegin", NULL, 0, nNpcId, nPcId, nQuestId.get() );
+	pMover->m_pNpcProperty->RunDialog( "#questBegin", NULL, 0, nNpcId, nPcId, nQuestId );
 }
 void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, QuestId nQuestId, BOOL bButtOK )
 {
@@ -481,7 +468,7 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, QuestId nQuestId, BOOL bBu
 	BOOL bNewQuest = FALSE;
 
 	__RemoveAllKey( nPcId );
-	pMover->m_pNpcProperty->RunDialog( "#addKey", NULL, 0, nNpcId, nPcId, 0 );
+	pMover->m_pNpcProperty->RunDialog( "#addKey", NULL, 0, nNpcId, nPcId, QuestIdNone );
 	
 	// 퀘스트 리스트 send
 	std::vector<QuestId> vecNewQuest;
@@ -585,10 +572,10 @@ void __QuestEnd( int nPcId, int nNpcId, int& nGlobal, QuestId nQuestId, BOOL bBu
 			if( vecNewQuest.size() == 1 && bCompleteCheck )	// 진행가능한 퀘스트가 하나면 바로 퀘스트 수락창 표시
 				__QuestBegin( nPcId, nNpcId, vecNewQuest[ 0 ] );
 			else
-				pMover->m_pNpcProperty->RunDialog( "#yesQuest", NULL, 0, nNpcId, nPcId, 0 ); // 준비된 퀘스트가 있을 때의 인사말
+				pMover->m_pNpcProperty->RunDialog( "#yesQuest", NULL, 0, nNpcId, nPcId, QuestIdNone ); // 준비된 퀘스트가 있을 때의 인사말
 		}
 		else
-			pMover->m_pNpcProperty->RunDialog( "#noQuest", NULL, 0, nNpcId, nPcId, 0 );	// 준비된 퀘스트가 없을 때의 인사말
+			pMover->m_pNpcProperty->RunDialog( "#noQuest", NULL, 0, nNpcId, nPcId, QuestIdNone );	// 준비된 퀘스트가 없을 때의 인사말
 	}
 }
 void __QuestBeginYes( int nPcId, int nNpcId, QuestId nQuestId )
@@ -621,7 +608,7 @@ void __QuestBeginYes( int nPcId, int nNpcId, QuestId nQuestId )
 		__RunQuest( nPcId, nNpcId, nQuestId );
 		CMover* pMover = prj.GetMover( nNpcId );
 		__RemoveAllKey( nPcId );
-		pMover->m_pNpcProperty->RunDialog( "#addKey", NULL, 0, nNpcId, nPcId, 0 );
+		pMover->m_pNpcProperty->RunDialog( "#addKey", NULL, 0, nNpcId, nPcId, QuestIdNone );
 		LPQUEST lpQuestList;
 		// 퀘스트 리스트 send
 		std::vector<QuestId> vecNewQuest;
@@ -660,7 +647,7 @@ void __QuestBeginYes( int nPcId, int nNpcId, QuestId nQuestId )
 
 			AddQuestKeys(nPcId, vecNewQuest, vecNextQuest, vecEndQuest, vecCurrQuest);
 		}
-		pMover->m_pNpcProperty->RunDialog( "#questBeginYes", NULL, 0, nNpcId, nPcId, nQuestId.get() );
+		pMover->m_pNpcProperty->RunDialog( "#questBeginYes", NULL, 0, nNpcId, nPcId, nQuestId );
 	}
 
 }
@@ -668,7 +655,7 @@ void __QuestBeginNo( int nPcId, int nNpcId, QuestId nQuestId )
 {
 	__SayQuest( nPcId, nQuestId, QSAY_BEGIN_NO );
 	CMover* pMover = prj.GetMover( nNpcId );
-	pMover->m_pNpcProperty->RunDialog( "#questBeginNo", NULL, 0, nNpcId, nPcId, nQuestId.get() );
+	pMover->m_pNpcProperty->RunDialog( "#questBeginNo", NULL, 0, nNpcId, nPcId, nQuestId );
 }
 void __QuestEndComplete( int nPcId, int nNpcId, int& nGlobal, int nVal, QuestId nQuestId )
 {
@@ -697,7 +684,7 @@ void __QuestEndComplete( int nPcId, int nNpcId, int& nGlobal, int nVal, QuestId 
 	{
 		CMover* pMover = prj.GetMover( nNpcId );
 		if( __EndQuest( nPcId, nQuestId ) == TRUE )
-			pMover->m_pNpcProperty->RunDialog( "#questEndComplete", NULL, 0, nNpcId, nPcId, nQuestId.get() );
+			pMover->m_pNpcProperty->RunDialog( "#questEndComplete", NULL, 0, nNpcId, nPcId, nQuestId );
 		__QuestEnd( nPcId, nNpcId, nGlobal, nQuestId, TRUE );
 	}	
 }

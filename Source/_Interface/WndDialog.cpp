@@ -178,7 +178,7 @@ void CWndDialog::OnMouseWndSurface( CPoint point )
 	SetMouseCursor( CUR_BASE );
 }
 
-void CWndDialog::RunScript( const char* szKey, DWORD dwParam, DWORD dwQuest )
+void CWndDialog::RunScript( const char* szKey, DWORD dwParam, QuestId dwQuest )
 {
 	CMover* pMover = prj.GetMover( m_idMover );
 	if( pMover )
@@ -333,16 +333,16 @@ void CWndDialog::OnLButtonUp( UINT nFlags, CPoint point )
 		{
 			CString strKey = pContextButton->szKey;
 			BeginText();
-			RunScript( strKey, 0, 0 );
+			RunScript( strKey, 0, QuestIdNone );
 		}
 	}
 } 
 void CWndDialog::OnLButtonDown( UINT nFlags, CPoint point ) 
 { 
 } 
-void CWndDialog::Say( LPCTSTR lpszString, DWORD dwQuest )
+void CWndDialog::Say( LPCTSTR lpszString, QuestId dwQuest )
 {
- 	QuestProp* pQuestProp = prj.m_aPropQuest.GetAt( dwQuest );
+	const QuestProp * pQuestProp = dwQuest.GetProp();
  	CString string = "  ";
 	if( dwQuest )
 	{
@@ -610,7 +610,7 @@ const char * CWndDialog::GetOriginalOfWord(const CString & strWord) const {
 	return strWord.GetString();
 }
 
-void CWndDialog::AddKeyButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam, DWORD dwQuest )
+void CWndDialog::AddKeyButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam, QuestId dwQuest )
 {
 	WORDBUTTON* lpKeyButton;// = &m_aKeyButton[ m_nKeyButtonNum ];
 	// 같은 워드가 발견되면 무시한다. 키는 같아도 되지만 워드는 같으면 하나는 무시함.
@@ -659,7 +659,7 @@ void CWndDialog::RemoveKeyButton( LPCTSTR lpszKey )
 	EndSay();
 }
 // 하얀색 대화영역에 나오는 버튼 
-void CWndDialog::AddAnswerButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam, DWORD dwQuest )
+void CWndDialog::AddAnswerButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam, QuestId dwQuest )
 {
 	WORDBUTTON* lpWordButton = &m_aWordButton[ m_nWordButtonNum ];
 	strcpy( lpWordButton->szWord, lpszWord );
@@ -852,7 +852,7 @@ BOOL CWndDialog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				m_bSay = FALSE;
 				m_newQuestListBox.SetVisible(FALSE);
 				BeginText();
-				RunScript(quest->strKey, 0, quest->questId.get());
+				RunScript(quest->strKey, 0, quest->questId);
 				MakeKeyButton();
 				UpdateButtonEnable();
 			}
@@ -865,7 +865,7 @@ BOOL CWndDialog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			m_bSay = FALSE;
 			m_currentQuestListBox.SetVisible(FALSE);
 			BeginText();
-			RunScript(quest->strKey, 0, quest->questId.get());
+			RunScript(quest->strKey, 0, quest->questId);
 			MakeKeyButton();
 			UpdateButtonEnable();
 		}
@@ -903,7 +903,7 @@ void CWndDialog::MakeQuestKeyButton( const CString& rstrKeyButton )
 	strcpy( lpKeyButton->szKey, rstrKeyButton );
 	lpKeyButton->bStatus = FALSE;
 	lpKeyButton->dwParam = 0;
-	lpKeyButton->dwParam2 = 0;
+	lpKeyButton->dwParam2 = QuestIdNone;
 	++m_nKeyButtonNum;
 	EndSay();
 }

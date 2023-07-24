@@ -64,10 +64,10 @@ BOOL CNpcProperty::LoadDialog( LPCHARACTER lpCharacter )
 #endif	// not __REMOVE_SCIRPT_060712
 }
 
-BOOL CNpcProperty::RunDialog( LPCTSTR szKey, int* pResult, int nValue, int nDstId, int nSrcId, int nQuestId )
+BOOL CNpcProperty::RunDialog( LPCTSTR szKey, int* pResult, int nValue, int nDstId, int nSrcId, QuestId nQuestId )
 {
 #if! defined(__REMOVE_SCIRPT_060712)
-	return m_Dialog.Run( szKey, pResult, nValue, nDstId, nSrcId, nQuestId );
+	return m_Dialog.Run( szKey, pResult, nValue, nDstId, nSrcId, nQuestId.get() );
 #else
 	if( m_szName[0] == 0 )		// character.inc에서 dialog 이름을 등록하지 않은 경우 대사가 없다고 간주.
 		return TRUE;
@@ -79,7 +79,7 @@ BOOL CNpcProperty::RunDialog( LPCTSTR szKey, int* pResult, int nValue, int nDstI
 	info.m_nValue    = nValue;
 	info.m_nSrcId    = nSrcId;
 	info.m_nDstId    = nDstId;
-	info.m_nQuestId  = nQuestId;
+	info.m_nQuestId  = nQuestId.get();
 	info.m_pszName   = m_szName; 
 	info.m_pnGlobal  = &m_nGlobal;
 	info.m_pFuctions = GetDialogFunctions();

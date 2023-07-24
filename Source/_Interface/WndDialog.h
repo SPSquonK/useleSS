@@ -16,7 +16,7 @@ public:
 		TCHAR szWord[64];
 		TCHAR szKey[64];
 		DWORD dwParam;
-		DWORD dwParam2;
+		QuestId dwParam2;
 		int nLinkIndex; // Index to concatenate if word is broken by a newline
 	};
 
@@ -43,7 +43,7 @@ public:
 	WORDBUTTON m_aContextButton[ 32 ];
 	CEditString m_string;
 
-	DWORD m_dwQuest = 0;// context 버튼에서 사용함 
+	QuestId m_dwQuest = QuestIdNone;// context 버튼에서 사용함 
 	BOOL m_bSay;
 	size_t m_nCurArray;
 	std::vector<std::unique_ptr<CEditString>> m_strArray;
@@ -89,10 +89,10 @@ public:
 
 	void RemoveAllKeyButton();
 	void RemoveKeyButton( LPCTSTR lpszKey );
-	void AddAnswerButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam, DWORD dwQuest );
-	void AddKeyButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam, DWORD dwQuest );
+	void AddAnswerButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam, QuestId dwQuest );
+	void AddKeyButton( LPCTSTR lpszWord, LPCTSTR lpszKey, DWORD dwParam, QuestId dwQuest );
 	void ParsingString( LPCTSTR lpszString );
-	void Say( LPCTSTR lpszString, DWORD dwQuest );
+	void Say( LPCTSTR lpszString, QuestId dwQuest );
 	void EndSay();
 	void BeginText();
 	void MakeKeyButton();
@@ -100,7 +100,7 @@ public:
 	void MakeAnswerButton();
 	void UpdateButtonEnable();
 	BOOL OnChildNotify(UINT message,UINT nID,LRESULT* pLResult);
-	void RunScript( const char* szKey, DWORD dwParam, DWORD dwQuest );
+	void RunScript( const char* szKey, DWORD dwParam, QuestId dwQuest );
 	void AddQuestInList(const LPCTSTR lpszWord, const LPCTSTR lpszKey, QuestId dwQuest, bool isNewQuest);
 	void MakeQuestKeyButton( const CString& rstrKeyButton );
 

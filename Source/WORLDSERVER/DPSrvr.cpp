@@ -684,7 +684,8 @@ void CDPSrvr::OnScriptDialogReq( CAr & ar, CUser * pUser )
 {
 	static TCHAR lpKey[256];
 	OBJID objid;
-	int nGlobal1, nGlobal2, nGlobal3, nGlobal4;
+	int nGlobal1, nGlobal3, nGlobal4;
+	QuestId nGlobal2;
 
 	ar >> objid;
  	ar.ReadString( lpKey, 256 );
@@ -701,7 +702,7 @@ void CDPSrvr::OnScriptDialogReq( CAr & ar, CUser * pUser )
 		{
 			char lpOutputString[512]	= { 0,};
 			sprintf( lpOutputString, "npc = %s, key = %s, n1 = %d, n2 = %d, n3 = %d, n4 = %d",
-				pMover->GetName(), lpKey, nGlobal1, nGlobal2, nGlobal3, nGlobal4 );
+				pMover->GetName(), lpKey, nGlobal1, nGlobal2.get(), nGlobal3, nGlobal4);
 			OutputDebugString( lpOutputString );
 
 			D3DXVECTOR3 vOut	= pUser->GetPos() - pMover->GetPos();

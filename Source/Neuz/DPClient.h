@@ -132,7 +132,7 @@ public:
 	void	SendMoverFocus( u_long uidPlayer );
 	void	SendChangeFace(DWORD dwFaceNum);
 	
-	void	SendScriptDialogReq( OBJID objid, LPCTSTR lpKey, int nGlobal1, int nGlobal2, int nGlobal3, int nGlobal4 );
+	void	SendScriptDialogReq( OBJID objid, LPCTSTR lpKey, int nGlobal1, QuestId nGlobal2, int nGlobal3, int nGlobal4 );
 	void	SendOpenShopWnd( OBJID objid );
 	void	SendCloseShopWnd( void );
 	void	SendBuyItem( CHAR cTab, BYTE nId, short nNum, DWORD dwItemId );
