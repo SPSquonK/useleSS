@@ -12154,20 +12154,22 @@ void CDPClient::OnSetNaviPoint( OBJID objid, CAr & ar )
 	nv.Name = szName;
 	nv.objid = objid;
 	nv.Time = 200;
-	int tChk = 0;
 
-	for ( int i = 0 ; i < (int)( g_pPlayer->m_vOtherPoint.size() ) ; i++)
-	{
-		if ( g_pPlayer->m_vOtherPoint[i].objid == nv.objid )
-		{
-			tChk = 1;
-			g_pPlayer->m_vOtherPoint[i] = nv;
-			break;
-		}
+	const auto existingPoint = std::find_if(
+		g_pPlayer->m_vOtherPoint.begin(), g_pPlayer->m_vOtherPoint.end(),
+		[objid](const NaviPoint & point) { return point.objid == objid; }
+	);
+
+	if (existingPoint != g_pPlayer->m_vOtherPoint.end()) {
+		*existingPoint = nv;
+		return;
 	}
 
-	if ( g_pPlayer->m_vOtherPoint.size() < 10 && tChk == 0 )
-		g_pPlayer->m_vOtherPoint.push_back( nv );
+	if (g_pPlayer->m_vOtherPoint.size() >= 10) {
+		return;
+	}
+
+	g_pPlayer->m_vOtherPoint.emplace_back(nv);
 }
 
 void CDPClient::SendSetNaviPoint(const D3DXVECTOR3 & Pos, OBJID objidTarget) {

@@ -1991,14 +1991,14 @@ void CUser::AddPartyMapInfo( int nIndex, D3DXVECTOR3 vPos )
 	
 }
 
-void CUser::AddSetNaviPoint( const NaviPoint & nv, OBJID objid, const char* Name )
+void CUser::AddSetNaviPoint( const D3DXVECTOR3 & vPos, OBJID objid, const char* Name )
 {
 	if( IsDelete() )	return;
 	
 	m_Snapshot.cb++;
 	m_Snapshot.ar << objid;
 	m_Snapshot.ar << SNAPSHOTTYPE_SETNAVIPOINT;
-	m_Snapshot.ar << nv.Pos;// << nv.On;
+	m_Snapshot.ar << vPos;
 	m_Snapshot.ar.WriteString( Name );
 	
 }

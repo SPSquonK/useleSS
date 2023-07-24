@@ -460,7 +460,7 @@ public:
 	void			AddGameRate( FLOAT fRate, BYTE nFlag );
 	void			AddGameSetting();
 	void			AddInitSkill();	
-	void			AddSetNaviPoint( const NaviPoint & nv, OBJID objid, const char* Name );
+	void			AddSetNaviPoint( const D3DXVECTOR3 & vPos, OBJID objid, const char* Name );
 	void			AddEscape( DWORD tmMaxEscape );
 	void			AddSetActionPoint( int nAP );	
 	void			AddSetTarget( OBJID idTarget );

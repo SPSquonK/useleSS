@@ -4584,21 +4584,15 @@ void CDPSrvr::QueryDestroyPlayer( DPID dpidCache, DPID dpidSocket, DWORD dwSeria
 	SEND( ar, this, dpidCache );
 }
 
-void CDPSrvr::OnSetNaviPoint( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnSetNaviPoint( CAr & ar, CUser * pUser )
 {
 	const auto [pos, objidTarget] = ar.Extract<D3DXVECTOR3, OBJID>();
 
-	NaviPoint nv;
-	nv.Pos = pos;
-
-	CUser* pUser	=	g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( objidTarget == NULL_ID )
 		{
 			if(CParty * pParty = g_PartyMng.GetParty(pUser->m_idparty)) {
 				for (CUser * pUsertmp : AllMembers(*pParty)) {
-					pUsertmp->AddSetNaviPoint(nv, pUser->GetId(), pUser->GetName(TRUE));
+					pUsertmp->AddSetNaviPoint(pos, pUser->GetId(), pUser->GetName(TRUE));
 				}
 			}
 		}
@@ -4607,11 +4601,11 @@ void CDPSrvr::OnSetNaviPoint( CAr & ar, DPID dpidCache, DPID dpidUser )
 			CUser* pUsertmp	= prj.GetUser( objidTarget );
 			if( IsValidObj( pUsertmp ) )
 			{
-				pUser->AddSetNaviPoint( nv, pUser->GetId(), pUser->GetName( TRUE ) );
-				pUsertmp->AddSetNaviPoint( nv, pUser->GetId(), pUser->GetName( TRUE ) );
+				pUser->AddSetNaviPoint( pos, pUser->GetId(), pUser->GetName( TRUE ) );
+				pUsertmp->AddSetNaviPoint( pos, pUser->GetId(), pUser->GetName( TRUE ) );
 			}
 		}
-	}
+	
 }
 
 void CDPSrvr::OnGameMasterWhisper( CAr & ar, CUser * pUser )

@@ -100,16 +100,13 @@ void CDPSrvr::OnError( CAr & ar, DPID dpidCache, DPID dpidUser)
 		Error( "CDPSrvr::OnError pUser - Invalid %d %d", dpidCache, dpidUser );
 }
 
-void CDPSrvr::OnShipActMsg( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnShipActMsg( CAr & ar, CUser * pUser )
 {
 	DWORD dwMsg;
 	OBJID idShip;
 	int nParam1, nParam2;
 	ar >> dwMsg >> nParam1 >> nParam2 >> idShip;
 	
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		if( IsInvalidObj( pUser->GetIAObjLink() ) )		return;
 		if( idShip != pUser->GetIAObjLink()->GetId() )
 		{
@@ -124,18 +121,15 @@ void CDPSrvr::OnShipActMsg( CAr & ar, DPID dpidCache, DPID dpidUser )
 			//			g_DPCoreClient.SendShipActMsg( pUser, dwMsg, nParam1, nParam2 );
 			g_UserMng.AddShipActMsg( pUser, pShip, dwMsg, nParam1, nParam2 );
 		}
-	}
+	
 }
 
-void CDPSrvr::OnLocalPosFromIA( CAr & ar, DPID dpidCache, DPID dpidUser )
+void CDPSrvr::OnLocalPosFromIA( CAr & ar, CUser * pUser )
 {
 	D3DXVECTOR3 vLocal;
 	OBJID		idIA;
 	ar >> vLocal >> idIA;
 	
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
 		// 클라이언트로부터 착지한지점의 상대좌표를 받았다.
 		// 이 좌표를 서버에서 동기화 하자
 		CShip *pIA = prj.GetShip( idIA );
@@ -145,5 +139,5 @@ void CDPSrvr::OnLocalPosFromIA( CAr & ar, DPID dpidCache, DPID dpidUser )
 		D3DXVECTOR3 vPos = pIA->GetPos() + vLocal;		// 서버상에서의 IA오브젝트와 클라에서 받은 로컬좌표를 합쳐서 새로운 좌표생성
 		pUser->SetPos( vPos );
 		pUser->SetIAObjLink( pIA );
-	}
+	
 }

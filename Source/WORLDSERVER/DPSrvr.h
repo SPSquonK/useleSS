@@ -185,8 +185,8 @@ private:
 	void	OnSetHair( CAr & ar, CUser * pUser );
 	void	OnBlock( CAr & ar, DPID dpidCache, DPID dpidUser );
 	void	OnError( CAr & ar, DPID dpidCache, DPID dpidUser);
-	void	OnShipActMsg( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnLocalPosFromIA( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnShipActMsg( CAr & ar, CUser * pUser );
+	void	OnLocalPosFromIA( CAr & ar, CUser * pUser );
 	void	OnGuildLogo( CAr & ar, CUser * pUser );
 	void	OnGuildContribution( CAr & ar, CUser * pUser );
 	void	OnGuildNotice( CAr & ar, CUser * pUser );
@@ -196,7 +196,7 @@ private:
 	void	OnOpenChattingRoom( CAr & ar, CUser & pUser );
 	void	OnCloseChattingRoom( CAr & ar, CUser & pUser );
 	void	OnCommonPlace( CAr & ar, DPID dpidCache, DPID dpidUser );
-	void	OnSetNaviPoint( CAr & ar, DPID dpidCache, DPID dpidUser );
+	void	OnSetNaviPoint( CAr & ar, CUser * pUser );
 	void	OnGameMasterWhisper( CAr & ar, CUser * pUser );
 	void	OnNWWantedGold( CAr & ar, CUser * pUser );
 	void	OnNWWantedList( CAr & ar, CUser * pUser );
