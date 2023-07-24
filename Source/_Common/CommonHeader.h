@@ -19,9 +19,16 @@
 // string / CString / string_view instead of C style functions anyway
 #pragma warning(disable: 4996)
 
+// Allocates too much bytes on stack: that's mostly due to CAr size
+#pragma warning(disable: 6262)
+
 // Other things
 #pragma warning(error: 4045 4066 4067 4068 4098 4138 4146 4156 4179 5030 5222)
+#pragma warning(error: 26819 4003 4005)
+#pragma warning(error: 4099)
 
+// Invalid use of Format
+#pragma warning(error: 4473 4474 4476 4477 6284)
 
 namespace std_ {
   // Overloaded helper for std::visit. Should be in std but for some reason

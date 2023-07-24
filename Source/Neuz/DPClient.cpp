@@ -9413,7 +9413,7 @@ CHAR	sPlayerFrom[MAX_PLAYER], sPlayerTo[MAX_PLAYER], lpString[260];
 			if( pWndMessage == NULL )
 			{
 				char szText[512];
-				sprintf( szText, "OnSay : pWndMessage°¡ NULL %s %s %s", strFrom, strTo, lpString );
+				sprintf( szText, "OnSay : pWndMessage°¡ NULL %s %s %s", strFrom.GetString(), strTo.GetString(), lpString);
 				//ADDERRORMSG( szText );
 			}
 				

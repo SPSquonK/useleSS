@@ -11,7 +11,7 @@ namespace DBDeserialize {
 	/// A sentinel for the Slasher iterator
 	struct Sentinel {};
 
-	struct WordSplitter;
+	class WordSplitter;
 
 
 	/// Splits a string with the / symbol. The substrings are expected to be

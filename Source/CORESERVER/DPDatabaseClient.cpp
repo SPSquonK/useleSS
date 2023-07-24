@@ -146,8 +146,7 @@ void CDPDatabaseClient::SendAcptWar(const WarId idWar, u_long idDecl, u_long idA
 void CDPDatabaseClient::SendWarEnd(WarId idWar, u_long idDecl, u_long idAcpt, int nWptDecl, int nWptAcpt, int nType, CTime Time, int nWinPointDecl, int nWinPointAcpt, int nGetPointDecl, int nGetPointAcpt )
 {
 	char GuildWarStartTime[15] = {0,};
-	
-	sprintf( GuildWarStartTime, "%s", Time.Format( "%Y%m%d%H%M%S" ) );
+	strcpy(GuildWarStartTime, Time.Format("%Y%m%d%H%M%S").GetString());
 
 	BEFORESEND( ar, PACKETTYPE_WAR_END );
 	ar << idWar << idDecl << idAcpt << nWptDecl << nWptAcpt << nType;

@@ -1006,7 +1006,7 @@ int	COption::Save( LPCTSTR szFileName )
 		return 0;
 
 	_ftprintf(fp, _T( "// neuz browser ini file\n\n" ) );
-	_ftprintf(fp, _T( "// option\n" ) ,0);
+	_ftprintf(fp, _T( "// option\n" ));
 	_ftprintf(fp, _T( "resolution %d %d\n" ) ,m_nResWidth, m_nResHeight );
 	_ftprintf(fp, _T( "fullscreen %d\n" ) ,m_bStartFullScreen );
 	_ftprintf(fp, _T( "texture %d\n" ) ,m_nTextureQuality );

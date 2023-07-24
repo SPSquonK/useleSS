@@ -360,7 +360,7 @@ BOOL CDbManager::SaveConvGuildBank( char* pszSQL, int nGuildId, CItemContainer* 
 	sprintf( pszSQL, "UPDATE GUILD_BANK_TBL"
 		" SET m_GuildBank = '%s'"
 		" where m_idGuild = '%06d' and serverindex = '%02d'",
-		icsGuildBank.szItem, g_appInfo.dwSys );
+		icsGuildBank.szItem, nGuildId, g_appInfo.dwSys );
 
 	if( prj.IsConvMode( SAVE_TEXT ) )
 	{

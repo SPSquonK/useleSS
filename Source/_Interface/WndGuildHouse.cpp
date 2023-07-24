@@ -726,7 +726,7 @@ BOOL CWndGHUpkeep::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			{
 				//ADDERRORMSG( "CWndConfirmBuy::OnChildNotify : m_pEdit == NULL" );
 				char szMsg[256];
-				sprintf( szMsg, "CWndConfirmBuy::OnChildNotify : more info(%d, %d)", pLResult, GetDlgItem( WIDC_CONTROL2 ) );
+				sprintf( szMsg, "CWndConfirmBuy::OnChildNotify : more info(%p, %p)", pLResult, GetDlgItem( WIDC_CONTROL2 ) );
 				//ADDERRORMSG( szMsg );
 
 				nBuyNum = 1;

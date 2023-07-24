@@ -240,7 +240,7 @@ void CWndPetStatus::PaintFrame( C2DRender* p2DRender )
 				}
 				if( m_pPetElem->m_pPet->HasName() )
 					strName		= m_pPetElem->m_pPet->GetName();
-				sprintf( szNameLevel, "%s", strName );
+				sprintf( szNameLevel, "%s", strName.GetString() );
 				SetTitle( szNameLevel );
 				
 				p2DRender->SetFont( pOldFont );

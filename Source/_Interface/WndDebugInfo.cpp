@@ -36,7 +36,7 @@ void CWndDebugInfo::OnDraw(C2DRender* p2DRender)
 	}
 	else
 	{
-		_stprintf( strDebug, _T( "x:0.0 y:0.0 z:%0.0 0.0" ) );
+		_stprintf( strDebug, _T( "x:0.0 y:0.0 z:0.0 0.0" ) );
 		p2DRender->TextOut( 2, 40, strDebug, D3DCOLOR_ARGB( 255, 0, 0, 0 ) );
 		_stprintf( strDebug, _T("Objects:0  Faces:0" ) );
 		p2DRender->TextOut( 2, 55, strDebug, D3DCOLOR_ARGB( 255, 0, 0, 0 ) );

@@ -325,8 +325,7 @@ namespace world {
 #ifdef __WORLDSERVER
 #define LinkMapRange(pWorld, vPos, nRange, dwLinkType, nLayer) useless_impl::world::GetLinkMapRange_<dwLinkType, LinkMapRange_MostSpecializedKnownType(dwLinkType)>(pWorld, vPos, nRange, nLayer)
 #else
-#define LinkMapRange(pWorld, vPos, nRange, dwLinkType        ) useless_impl::world::GetLinkMapRange_<dwLinkType, LinkMapRange_MostSpecializedKnownType(dwLinkType)>(pWorld, vPos, nRange, 0)
-#define LinkMapRange(pWorld, vPos, nRange, dwLinkType, nLayer) useless_impl::world::GetLinkMapRange_<dwLinkType, LinkMapRange_MostSpecializedKnownType(dwLinkType)>(pWorld, vPos, nRange, 0)
+#define LinkMapRange(pWorld, vPos, nRange, dwLinkType, ...   ) useless_impl::world::GetLinkMapRange_<dwLinkType, LinkMapRange_MostSpecializedKnownType(dwLinkType)>(pWorld, vPos, nRange, 0)
 #endif
 
 

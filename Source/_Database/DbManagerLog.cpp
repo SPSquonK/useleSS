@@ -644,7 +644,7 @@ void CDbManager::Gamema_Chat( CQuery *qry, CAr & arRead)
 	// LOG_GAMEMASTER_STR '%s','%s','%s'
 	char szQuery[QUERY_SIZE]	= { 0,};
 	sprintf( szQuery,
-		"LOG_GAMEMASTER_STR @im_idPlayer='%07d',@iserverindex='%02d',@iszWords='%s'", uidPlayer, g_appInfo.dwSys, strBuf );
+		"LOG_GAMEMASTER_STR @im_idPlayer='%07d',@iserverindex='%02d',@iszWords='%s'", uidPlayer, g_appInfo.dwSys, strBuf.GetString() );
 
 //	qry->Clear();
 	if ( FALSE == qry->Exec( szQuery ) )

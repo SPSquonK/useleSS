@@ -1333,7 +1333,7 @@ void CMover::RenderName( CD3DFont* pFont, DWORD dwColor )
 		CMover *pAttacker = prj.GetMover( m_idAttacker );
 		if( pAttacker )
 			strName = pAttacker->m_szName;
-		sprintf( szBuff, "0x%x %08x, %d %d, %d(%s)", m_pActMover->GetStateFlag(), m_pActMover->GetState(), GetId(), m_pActMover->m_bGround, (int)m_idAttacker, strName );
+		sprintf( szBuff, "0x%x %08x, %d %d, %d(%s)", m_pActMover->GetStateFlag(), m_pActMover->GetState(), GetId(), m_pActMover->m_bGround, (int)m_idAttacker, strName.GetString() );
 		pFont->DrawText( vOut.x, vOut.y - 50, dwColor, szBuff );
 		
 	}

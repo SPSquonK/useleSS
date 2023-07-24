@@ -319,7 +319,7 @@ int CMiniGame::Result_Alphabet( CUser* pUser, OBJID* objItemId, int nCount, int 
 	aLogItem.Action = "+";
 	aLogItem.SendName = pUser->GetName();
 	char szTemp[32] = {0,};
-	sprintf( szTemp, "ALPHABET_USE_%s", strWord );
+	sprintf( szTemp, "ALPHABET_USE_%s", strWord.GetString() );
 	aLogItem.RecvName = szTemp;
 	aLogItem.WorldId = pUser->GetWorld()->GetID();
 	aLogItem.Gold = pUser->GetGold() + m_nPayPenya;

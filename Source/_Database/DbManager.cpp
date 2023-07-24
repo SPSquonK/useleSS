@@ -4178,7 +4178,7 @@ void CDbManager::SnoopGuild( CQuery* pQueryLog, CAr & ar )
 	OutputDebugString( "DATABASESERVER.EXE\t// QM_SNOOPGUILD\n" );
 	// LOG_GAMEMASTER_STR '%s','%s','%s'
 	char szQuery[QUERY_SIZE]	= { 0,};
-	sprintf( szQuery, "LOG_GAMEMASTER_STR  '@im_idPlayer=%07d',@iserverindex='%02d',@iszWords='%s',@im_idGuild='%06d'", idPlayer, g_appInfo.dwSys, strChat, idGuild );
+	sprintf( szQuery, "LOG_GAMEMASTER_STR  '@im_idPlayer=%07d',@iserverindex='%02d',@iszWords='%s',@im_idGuild='%06d'", idPlayer, g_appInfo.dwSys, strChat.GetString(), idGuild);
 	if ( FALSE == pQueryLog->Exec( szQuery ) )
 		WriteLog( "%s, %d\t%s", __FILE__, __LINE__, szQuery );
 }

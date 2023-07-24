@@ -193,7 +193,7 @@ BOOL CDbManager::GetInventory( CMover* pMover, CQuery *qry, LPDB_OVERLAPPED_PLUS
 	}
 
 	char debugString[256];
-	std::sprintf(debugString, __FUNCTION__" Player %s Pocket %d", szPlayerName);
+	std::sprintf(debugString, __FUNCTION__" Player %s", szPlayerName);
 
 	ItemContainerSerialization serialization = {
 		.main = qry->GetStrPtr("m_Inventory"),
