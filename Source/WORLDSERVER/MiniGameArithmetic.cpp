@@ -2,20 +2,31 @@
 
 #include ".\minigamearithmetic.h"
 
-CMiniGameArithmetic::CMiniGameArithmetic(void)
-{
-	InitPrimeNumber();
+std::vector<int> InitPrimeNumber(int maximum) {
+	std::vector<int> result;
+
+	for (int i = 2; i < maximum; i++) {
+		int nCount = 0;
+
+		bool isPrime = true;
+		for (int j = 2; j < i; j++) {
+			if (i % j == 0) {
+				isPrime = false;
+				break;
+			}
+		}
+
+		if (isPrime)
+			result.push_back(i);
+	}
+
+	return result;
 }
 
-CMiniGameArithmetic::CMiniGameArithmetic( CMiniGameBase* pMiniGame )
-: m_nResult( 0 ), m_nCorrectCount( 0 )
-{
-	CMiniGameArithmetic* pMiniGameArithmetic = static_cast<CMiniGameArithmetic*>( pMiniGame );
+const static std::vector<int> PrimeNumbers = InitPrimeNumber(1000);
 
-	m_vecnPrimeNumber = pMiniGameArithmetic->m_vecnPrimeNumber;
-}
-
-CMiniGameArithmetic::~CMiniGameArithmetic(void)
+CMiniGameArithmetic::CMiniGameArithmetic()
+	: m_nResult(0), m_nCorrectCount(0)
 {
 }
 
@@ -62,60 +73,29 @@ BOOL CMiniGameArithmetic::Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePac
 	return bReturn;
 }
 
-void CMiniGameArithmetic::InitPrimeNumber()
-{
-	for( int i=0; i<1000; i++ )
-	{
-		int nCount	= 0;
-		for( int j = 2; j <= i; j++ )
-		{
-			if( (float)i / (float)j == i / j )
-				nCount++;
-			if( nCount > 1 )
-				break;
-		}
-		if( nCount == 1 )
-			m_vecnPrimeNumber.push_back( i );
-	}
-}
 
-int	CMiniGameArithmetic::GetDivisor( int nDivided )
-{
+int	CMiniGameArithmetic::GetDivisor( int nDivided, std::span<const int> primes ) {
 	std::vector<int> vDivisors;
 	vDivisors.push_back( 1 );
-	int nFound	= 0;
-	BOOL bLoop = TRUE;
-	while( bLoop )
-	{
-		for( int i = 0; i < (int)( m_vecnPrimeNumber.size() ); ++i )
-		{
-			if( m_vecnPrimeNumber[i] > nDivided )
-			{
-				bLoop = FALSE;
-				break;
-			}
 
-			if( (float)nDivided / (float)m_vecnPrimeNumber[i] == nDivided / m_vecnPrimeNumber[i] )
-			{
-				vDivisors.push_back( m_vecnPrimeNumber[i] );
-				nDivided	/= m_vecnPrimeNumber[i];
-				break;
-			}
+	for (const int prime : primes) {
+		if (nDivided > prime) break;
+
+		while (nDivided % prime == 0) {
+			nDivided /= prime;
+			vDivisors.emplace_back(prime);
 		}
-//		if( nFound == 0 )
-//			bLoop = FALSE;
 	}
 
-	int n	= xRandom( vDivisors.size() ) + 1;
+	int n	= xRandom( vDivisors.size() - 1 ) + 1;
 	int nDivisor	=1;
-	while( n-- > 0 )
-	{
-		int iIndex	= xRandom( vDivisors.size() );
-		nDivisor	*= vDivisors[iIndex];
-		auto it = vDivisors.begin();
-		it += iIndex;
-		vDivisors.erase( it );
+	
+	for (int i = 0; i < n; ++i) {
+		const auto itDivisor = vDivisors.begin() + xRandom( vDivisors.size() );
+		nDivisor *= *itDivisor;
+		vDivisors.erase(itDivisor);
 	}
+
 	return nDivisor;
 }
 
@@ -164,7 +144,7 @@ int CMiniGameArithmetic::Calculate( int n1, int& n2, int nOper )
 		case 0:	return n1 + n2;
 		case 1:	return n1 - n2;
 		case 2:	return n1 * n2;
-		case 3:	n2 = GetDivisor( n1 );
+		case 3:	n2 = GetDivisor( n1, PrimeNumbers );
 				return n1 / n2;
 	}
 

@@ -71,13 +71,12 @@ public:
 	static CRainbowRaceMng* GetInstance();
 	
 	BOOL	LoadScript();
-	int		GetMiniGameSize()			{ return m_vecMiniGame.size(); }	// 미니게임 갯수
+	int		GetMiniGameSize()			{ return RMG_MAX; }	// 미니게임 갯수
 	void	SetState( int nState )	{ m_nState = nState; }				// State 변경
 	int		GetState()				{ return m_nState; }				// 현재 State
 
 	void	Process();
 	void	SetNextTime( DWORD dwTick )		{ m_dwNextTime = dwTick; }			// 다음 단계 시간 설정
-	CMiniGameBase* GetMiniGame( int nGameNum ) { return m_vecMiniGame[nGameNum]; }
 
 	CRainbowRace*	GetRainbowRacerPtr( DWORD dwPlayerId );	// 해당 플레이어의 레이스 정보를 갖는 포인터를 얻는다.
 	BOOL			IsEntry( DWORD dwPlayerId );	// 해당 플레이어가 진행중인 선수인가?(블링크윙, 스킬, 아이템 막기위해...)
@@ -115,7 +114,6 @@ private:
 	void	SetPrize();					// 상품을 우편으로 전달한다.
 	
 	MAPRR					m_mapRainbowRace;	// 각 플레이어에 대한 상태 목록
-	std::vector<CMiniGameBase*>	m_vecMiniGame;		// 미니게임 목록
 	CLuaBase				m_Lua;
 
 	int			m_nState;					// 현재 상태

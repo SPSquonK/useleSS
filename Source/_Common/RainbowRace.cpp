@@ -134,12 +134,12 @@ void CRainbowRace::SetNextMiniGame()
 void CRainbowRace::SetMiniGame( int nGameNum )
 {
 	m_wNowGame = 0x0001 << nGameNum;
-	CMiniGameBase* pMiniGame = CRainbowRaceMng::GetInstance()->GetMiniGame( nGameNum );
+
 	switch( nGameNum )
 	{
 		case RMG_GAWIBAWIBO:	m_pMiniGame = new CMiniGameGawibawibo(); break;
 		case RMG_DICEPLAY:		m_pMiniGame = new CMiniGameDiceplay();	break;
-		case RMG_ARITHMATIC:	m_pMiniGame = new CMiniGameArithmetic( pMiniGame );		break;
+		case RMG_ARITHMATIC:	m_pMiniGame = new CMiniGameArithmetic();		break;
 		case RMG_STOPWATCH:		m_pMiniGame = new CMiniGameStopwatch();		break;
 		case RMG_TYPING:		m_pMiniGame = new CMiniGameTyping();		break;
 		case RMG_PAIRGAME:		m_pMiniGame = new CMiniGamePairgame();		break;
@@ -194,26 +194,12 @@ int	CRainbowRace::GetCompletedGameNum()
 #ifdef __WORLDSERVER
 CRainbowRaceMng::CRainbowRaceMng(void)
 {
-	m_vecMiniGame.resize( RMG_MAX, NULL );
-	m_vecMiniGame[RMG_GAWIBAWIBO]	= new CMiniGameGawibawibo;
-	m_vecMiniGame[RMG_DICEPLAY]		= new CMiniGameDiceplay;
-	m_vecMiniGame[RMG_ARITHMATIC]	= new CMiniGameArithmetic;
-	m_vecMiniGame[RMG_STOPWATCH]	= new CMiniGameStopwatch;
-	m_vecMiniGame[RMG_TYPING]		= new CMiniGameTyping;
-	m_vecMiniGame[RMG_PAIRGAME]		= new CMiniGamePairgame;
-	m_vecMiniGame[RMG_LADDER]		= new CMiniGameLadder;
-
 	Init();
 }
 
 CRainbowRaceMng::~CRainbowRaceMng(void)
 {
 	Clear();
-
-	for( DWORD i=0; i<m_vecMiniGame.size(); i++ )
-		SAFE_DELETE( m_vecMiniGame[i] );
-	
-	m_vecMiniGame.clear();
 }
 
 BOOL CRainbowRaceMng::Init()
