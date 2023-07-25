@@ -4,9 +4,15 @@
 #include "mempooler.h"
 #include <DPlay.h>
 
+// @SPSquonK, 2019-08~2022-05
+// Improve CSnapshot class with size of snapshorts
+// - This lets the client only parse partially the received snapshots
+// and detect more easily programming errors.
+// - Released under the Boost Licence
+
 class CSnapshot final {
 public:
-	// This class provides backward compatibility with the
+	// Proxy class to provide backward compatibility with the
 	// old m_Snapshot.ar.cb++ instructions.
 	struct Cb {
 		friend CSnapshot;
@@ -29,7 +35,7 @@ public:
 	Cb    cb;
 
 private:
-	short	cb_ = 0;
+	short	nbOfSnapshots = 0;
 	u_long previousOffset = 0;
 public:
 	// Constructions
@@ -44,29 +50,25 @@ public:
 	void	Flush() {
 		dpidCache = dpidUser = DPID_UNKNOWN;
 		ar.Flush();
-		cb_ = 0;
+		nbOfSnapshots = 0;
 		previousOffset = 0;
 	}
-	
-	// @SPSquonK, 2019-08~2022-05
-	// - Sized snapshot to let the client only parse partially the received snapshots
-	// and detect more easily programming errors.
-	// - License: http://squonk.fr/SquonK-Hidden-Boss-License.txt
 
 	// Declares a new snapshot, registering the size of the previous one if any
 	void OnNewSnapshot() {
-		if (cb_ != 0) {
+		if (nbOfSnapshots != 0) {
 			FinalizeSnapshot();
 		}
 
-		++cb_;
+		++nbOfSnapshots;
 		previousOffset = ar.GetOffset();
 		ar << u_long(0);
 	}
 
 	// Returns the number of ducks encountered since the player connection
 	[[nodiscard]] WORD GetNumberOfSnapshots() const {
-		return cb_;
+		// TODO: maybe check if nbOfSnapshots < std::numeric_limits<WORD>::max?
+		return static_cast<WORD>(nbOfSnapshots);
 	}
 
 	// Considering this is the end of the currently written snapshot,
@@ -77,20 +79,20 @@ public:
 
 		int _;
 		BYTE * buffer = ar.GetBuffer(&_);
-		*(u_long *)(buffer + previousOffset) = size;
+		*(UNALIGNED u_long *)(buffer + previousOffset) = size;
 	}
 
-	// Finalizes the current snapshot and return if there are any
+	// Finalizes the current snapshot and return true if there are any
 	// snapshot to send.
 	bool PrepareSend() {
-		if (cb_ == 0) return false;
+		if (nbOfSnapshots == 0) return false;
 		FinalizeSnapshot();
 		return true;
 	}
 
-	// NO MORE SNAPSHOT ;_;
+	// Clears the list of snapshots
 	void Reset(u_long reelTowards) {
-		cb_ = 0;
+		nbOfSnapshots = 0;
 		ar.ReelIn(reelTowards);
 	}
 };

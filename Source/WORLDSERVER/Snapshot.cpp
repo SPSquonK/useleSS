@@ -14,7 +14,7 @@ CSnapshot::CSnapshot( DPID idCache, DPID idUser, OBJID objid, DWORD dwHdr )
 void CSnapshot::SetSnapshot( OBJID objid, DWORD dwHdr )
 {
 	ASSERT( DPID_UNKNOWN != dpidUser );
-	cb_	= 0;
+	nbOfSnapshots = 0;
 	ar.Flush();
-	ar << dpidUser << dwHdr << objid << cb_;
+	ar << dpidUser << dwHdr << objid << nbOfSnapshots;
 }
