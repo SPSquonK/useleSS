@@ -1719,7 +1719,7 @@ BOOL CWndRRMiniGameTyping::OnChildNotify( UINT message, UINT nID, LRESULT* pLRes
 				vecStrValue.push_back(pWndEdit->GetString());
 		}
 		
-		CRainbowRace::GetInstance()->SendMinigameExtPacket( vecStrValue, RMG_MAX, MP_NONE, 0, 0 );
+		CRainbowRace::GetInstance()->SendMinigamePacket( RMG_MAX, MP_NONE, 0, 0, vecStrValue );
 	}
 
 	return CWndNeuz::OnChildNotify( message, nID, pLResult );

@@ -6748,24 +6748,6 @@ void CUser::AddRainbowRaceState( CRainbowRace* pRainbowRace )
 	m_Snapshot.ar << *pRainbowRace;
 }
 
-void CUser::AddMiniGameState(__MINIGAME_PACKET MiniGamePacket )
-{
-	if( IsDelete() )	return;
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_RAINBOWRACE_MINIGAMESTATE;
-	MiniGamePacket.Serialize( m_Snapshot.ar );
-}
-
-void CUser::AddMiniGameExtState( __MINIGAME_PACKET MiniGameExtPacket )
-{
-	if( IsDelete() )	return;
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_RAINBOWRACE_MINIGAMEEXTSTATE;
-	MiniGameExtPacket.Serialize( m_Snapshot.ar );
-}
-
 void CUser::AddHousingAllInfo( CHousing* pHousing )
 {
 	if( IsDelete() )	return;

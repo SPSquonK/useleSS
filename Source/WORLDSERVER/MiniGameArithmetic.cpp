@@ -31,7 +31,7 @@ BOOL CMiniGameArithmetic::Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePac
 			m_nCorrectCount = 0;		// 창을 새로 열면 정답수 초기화..
 		MP.nParam1 = m_nCorrectCount;
 		MP.vecszData.push_back( MakeQuestion() );
-		SendExtPacket( pUser, MP );
+		SendPacket( pUser, MP );
 		return bReturn;
 	}
 
@@ -58,7 +58,7 @@ BOOL CMiniGameArithmetic::Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePac
 
 	MP.nParam1 = m_nCorrectCount;
 
-	SendExtPacket( pUser, MP );
+	SendPacket( pUser, MP );
 	return bReturn;
 }
 

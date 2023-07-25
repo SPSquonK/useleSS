@@ -25,7 +25,7 @@ BOOL CMiniGameTyping::Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket 
 		MP.nState = MP_OPENWND;
 		MakeQuestion();
 		MP.vecszData = m_vecTyping;
-		SendExtPacket( pUser, MP );
+		SendPacket( pUser, MP );
 		return bReturn;
 	}
 
@@ -43,7 +43,7 @@ BOOL CMiniGameTyping::Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket 
 		}
 	}
 
-	SendExtPacket( pUser, MP );
+	SendPacket( pUser, MP );
 	return bReturn;
 }
 

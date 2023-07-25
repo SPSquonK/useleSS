@@ -867,13 +867,11 @@ private:
 	void	OnRainbowRacePrevRankingOpenWnd( CAr & ar );
 	void	OnRainbowRaceApplicationOpenWnd( CAr & ar );
 	void	OnRainbowRaceNowState( CAr & ar );
-	void	OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt );
+	void	OnRainbowRaceMiniGameState( CAr & ar );
 public:
 	void	SendRainbowRacePrevRankingOpenWnd();
 	void	SendRainbowRaceApplicationOpenWnd();
 	void	SendRainbowRaceApplication();
-	void	SendRainbowRaceMiniGameState( __MINIGAME_PACKET MiniGamePacket );
-	void	SendRainbowRaceMiniGameExtState( __MINIGAME_PACKET MiniGameExtPacket );
 	void	SendRainbowRaceReqFinish();
 
 private:

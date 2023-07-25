@@ -655,8 +655,7 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_RAINBOWRACE_PREVRANKING_OPENWND: OnRainbowRacePrevRankingOpenWnd( ar ); break;
 			case SNAPSHOTTYPE_RAINBOWRACE_APPLICATION_OPENWND: OnRainbowRaceApplicationOpenWnd( ar ); break;
 			case SNAPSHOTTYPE_RAINBOWRACE_NOWSTATE:	OnRainbowRaceNowState( ar ); break;
-			case SNAPSHOTTYPE_RAINBOWRACE_MINIGAMESTATE: OnRainbowRaceMiniGameState( ar, FALSE ); break;
-			case SNAPSHOTTYPE_RAINBOWRACE_MINIGAMEEXTSTATE: OnRainbowRaceMiniGameState( ar, TRUE ); break;
+			case SNAPSHOTTYPE_RAINBOWRACE_MINIGAMESTATE: OnRainbowRaceMiniGameState( ar ); break;
 			case SNAPSHOTTYPE_SET_PET_NAME:		OnSetPetName( objid, ar );	break;
 			case SNAPSHOTTYPE_HOUSING_ALLINFO: OnHousingAllInfo( ar ); break;
 			case SNAPSHOTTYPE_HOUSING_FURNITURELIST: OnHousingSetFunitureList( ar ); break;
@@ -14325,22 +14324,6 @@ void CDPClient::SendRainbowRaceApplication()
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendRainbowRaceMiniGameState( __MINIGAME_PACKET MiniGamePacket )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_RAINBOWRACE_MINIGAME_PACKET, DPID_UNKNOWN );
-	ar << FALSE;
-	MiniGamePacket.Serialize( ar );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendRainbowRaceMiniGameExtState( __MINIGAME_PACKET MiniGameExtPacket )
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_RAINBOWRACE_MINIGAME_PACKET, DPID_UNKNOWN );
-	ar << TRUE;
-	MiniGameExtPacket.Serialize( ar );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
 void CDPClient::SendRainbowRaceReqFinish()
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_RAINBOWRACE_REQ_FINISH, DPID_UNKNOWN );
@@ -14390,10 +14373,10 @@ void CDPClient::OnRainbowRaceNowState(CAr & ar) {
 	ar >> *CRainbowRace::GetInstance();
 }
 
-void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
+void CDPClient::OnRainbowRaceMiniGameState( CAr & ar )
 {
 	__MINIGAME_PACKET pMiniGamePacket;
-	pMiniGamePacket.Serialize( ar );
+	ar >> pMiniGamePacket;
 
 	if( !(CRainbowRace::GetInstance()->m_wNowGame & pMiniGamePacket.wNowGame) )
 	{

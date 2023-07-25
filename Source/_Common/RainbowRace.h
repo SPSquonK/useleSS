@@ -27,9 +27,8 @@ public:
 #ifdef __CLIENT
 	static CRainbowRace* GetInstance();
 	int		GetGameKey();
-	WORD	GetGameKeyToNowGame( int nGameKey ) {	return (0x0001 << nGameKey); }
-	void	SendMinigamePacket( int nGameKey = RMG_MAX, int nState = MP_NONE, int nParam1 = 0, int nParam2 = 0 );
-	void	SendMinigameExtPacket(std::vector<std::string> &vecszData, int nGameKey = RMG_MAX, int nState = MP_NONE, int nParam1 = 0, int nParam2 = 0 );
+	[[nodiscard]] static WORD GetGameKeyToNowGame(int nGameKey) { return (0x0001 << nGameKey); }
+	void	SendMinigamePacket(int nGameKey = RMG_MAX, int nState = MP_NONE, int nParam1 = 0, int nParam2 = 0, const std::vector<std::string> & vecszData = {});
 
 	DWORD	m_dwRemainTime;
 	BOOL	m_bRRFinishMsg;

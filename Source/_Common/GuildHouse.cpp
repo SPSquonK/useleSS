@@ -711,7 +711,7 @@ CAr & operator>>(CAr & ar, CGuildHouseBase & self) {
 	size_t nSize;
 	ar >> nSize;
 	self.m_vecFntInfo.clear(); self.m_vecFntInfo.resize(nSize);
-	for (int i = 0; i < nSize; i++)
+	for (size_t i = 0; i < nSize; i++)
 		ar >> self.m_vecFntInfo[i];
 
 	return ar;

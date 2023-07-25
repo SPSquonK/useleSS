@@ -8692,14 +8692,10 @@ void CDPSrvr::OnRainbowRaceApplication( CAr & ar, CUser * pUser )
 }
 void CDPSrvr::OnRainbowRaceMiniGamePacket( CAr & ar, CUser * pUser )
 {
-	BOOL bExt;
-	ar >> bExt;
+	__MINIGAME_PACKET pMiniGamePacket{};
+	ar >> pMiniGamePacket;
 
-	__MINIGAME_PACKET * pMiniGamePacket = new __MINIGAME_PACKET();
-
-	pMiniGamePacket->Serialize( ar );
-	CRainbowRaceMng::GetInstance()->OnMiniGamePacket( pUser, pMiniGamePacket );
-	SAFE_DELETE( pMiniGamePacket );
+	CRainbowRaceMng::GetInstance()->OnMiniGamePacket( pUser, &pMiniGamePacket );
 }
 
 void CDPSrvr::OnRainbowRaceReqFinish( CAr & ar, CUser * pUser )

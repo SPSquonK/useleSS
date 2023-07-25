@@ -25,7 +25,7 @@ BOOL CMiniGamePairgame::Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacke
 		MP.nState = MP_OPENWND;
 		m_nCorrectCount = 0;
 		MP.vecszData.push_back( MakeGame() );
-		SendExtPacket( pUser, MP );
+		SendPacket( pUser, MP );
 		return bReturn;
 	}
 

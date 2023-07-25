@@ -1,26 +1,15 @@
 #include "stdafx.h"
-
+#include "MsgHdr.h"
 
 #ifdef __WORLDSERVER
 #include ".\minigamebase.h"
 #include "User.h"
 
-CMiniGameBase::CMiniGameBase(void)
-{
+CMiniGameBase::~CMiniGameBase() {}
+
+void CMiniGameBase::SendPacket(CUser * pUser, const __MINIGAME_PACKET & MiniGamePacket) {
+	pUser->SendSnapshotNoTarget<SNAPSHOTTYPE_RAINBOWRACE_MINIGAMESTATE, __MINIGAME_PACKET>(MiniGamePacket);
 }
 
-CMiniGameBase::~CMiniGameBase(void)
-{
-}
-
-void CMiniGameBase::SendPacket( CUser* pUser, __MINIGAME_PACKET MiniGamePacket )
-{
-	pUser->AddMiniGameState( MiniGamePacket );
-}
-
-void CMiniGameBase::SendExtPacket( CUser* pUser, __MINIGAME_PACKET MiniGameExtPacket )
-{
-	pUser->AddMiniGameExtState( MiniGameExtPacket );
-}
 #endif // __WORLDSERVER
 

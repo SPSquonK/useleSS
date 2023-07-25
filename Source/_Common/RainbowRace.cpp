@@ -2,6 +2,7 @@
 
 
 #include "RainbowRace.h"
+#include "MsgHdr.h"
 #ifdef __CLIENT
 #include "DPClient.h"
 #endif // __CLIENT
@@ -104,23 +105,17 @@ int	CRainbowRace::GetGameKey()
 	return -1;
 }
 
-void CRainbowRace::SendMinigamePacket( int nGameKey, int nState, int nParam1, int nParam2 )
+void CRainbowRace::SendMinigamePacket( int nGameKey, int nState, int nParam1, int nParam2, const std::vector<std::string> & vecszData )
 {
 	__MINIGAME_PACKET MiniGamePacket( m_wNowGame, nState, nParam1, nParam2 );
+	MiniGamePacket.vecszData = vecszData;
 	if( nGameKey != RMG_MAX )
 		MiniGamePacket.wNowGame = GetGameKeyToNowGame( nGameKey );
-    g_DPlay.SendRainbowRaceMiniGameState( MiniGamePacket );
+   
+
+	g_DPlay.SendPacket<PACKETTYPE_RAINBOWRACE_MINIGAME_PACKET, __MINIGAME_PACKET>(MiniGamePacket);
 }
 
-void CRainbowRace::SendMinigameExtPacket(std::vector<std::string> & vecszData, int nGameKey, int nState, int nParam1, int nParam2 )
-{
-	__MINIGAME_PACKET MiniGameExtPacket( m_wNowGame, nState, nParam1, nParam2 );
-	MiniGameExtPacket.vecszData = vecszData;
-	
-	if( nGameKey != RMG_MAX )
-		MiniGameExtPacket.wNowGame = GetGameKeyToNowGame( nGameKey );
-	g_DPlay.SendRainbowRaceMiniGameExtState( MiniGameExtPacket );
-}
 #endif // __CLIENT
 
 #ifdef __WORLDSERVER
