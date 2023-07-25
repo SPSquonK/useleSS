@@ -672,12 +672,12 @@ BOOL CBuffMgr::Overwrite( IBuff* pBuff )
 }
 
 BOOL CBuffMgr::HasBuff( WORD wType, WORD wId ) const {
-	return m_mapBuffs.contains(MAKELONG(wId, wType)) ? TRUE : FALSE;
+	return m_mapBuffs.contains(Key(wId, wType)) ? TRUE : FALSE;
 }
 
 IBuff* CBuffMgr::GetBuff( WORD wType, WORD wId )
 {
-	MAPBUFF::iterator i	= m_mapBuffs.find( MAKELONG( wId, wType ) );
+	MAPBUFF::iterator i	= m_mapBuffs.find( Key( wId, wType ) );
 	if( i != m_mapBuffs.end() )
 		return i->second;
 	return NULL;
@@ -748,7 +748,7 @@ void CBuffMgr::RemoveBuff( IBuff* pBuff, BOOL bFake )
 	}
 	g_UserMng.AddRemoveSkillInfluence( GetMover(), pBuff->GetType(), pBuff->GetId() );
 #endif	// __WORLDSERVER
-	int nResult	= m_mapBuffs.erase( MAKELONG( pBuff->GetId(), pBuff->GetType() ) );
+	int nResult	= m_mapBuffs.erase( Key( pBuff->GetId(), pBuff->GetType() ) );
 	if( !nResult )
 	{
 		Error( "CBuffMgr.RemoveBuff: could not erase(type: %d, id: %d)", pBuff->GetType(), pBuff->GetId() );

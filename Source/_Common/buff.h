@@ -187,7 +187,7 @@ public:
 };
 #endif	// __DBSERVER
 
-typedef	std::map<DWORD, IBuff*>	MAPBUFF;
+typedef	std::map<std::pair<WORD, WORD>, IBuff*>	MAPBUFF;
 
 #ifdef __CLIENT
 class	CWndWorld;
@@ -196,6 +196,10 @@ class CMover;
 class CBuffMgr
 {
 public:
+	[[nodiscard]] static constexpr std::pair<WORD, WORD> Key(const WORD wId, const WORD wType) {
+		return std::pair<WORD, WORD>(wType, wId);
+	}
+
 	CBuffMgr( CMover* pMover );
 	virtual	~CBuffMgr();
 	void	Clear();
@@ -205,13 +209,17 @@ public:
 	virtual	IBuff*	CreateBuff( WORD wType );
 protected:
 	virtual	DWORD	GetCurrentTime()	{	return timeGetTime();	}
+
+
 #ifdef __DBSERVER
 public:
-	bool	Add( IBuff* pBuff )	{	return m_mapBuffs.insert( MAPBUFF::value_type( MAKELONG( pBuff->GetId(), pBuff->GetType() ), pBuff ) ).second;	}
 #else	// __DBSERVER
 private:
-	bool	Add( IBuff* pBuff )	{	return m_mapBuffs.insert( MAPBUFF::value_type( MAKELONG( pBuff->GetId(), pBuff->GetType() ), pBuff ) ).second;	}
 #endif	// __DBSERVER
+	bool	Add(IBuff * pBuff) {
+		return m_mapBuffs.emplace(Key(pBuff->GetId(), pBuff->GetType()), pBuff).second;
+	}
+
 	////////////////////////////////////////
 #ifndef __DBSERVER
 public:
