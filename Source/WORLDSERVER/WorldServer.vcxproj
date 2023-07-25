@@ -145,8 +145,7 @@
     </ClCompile>
     <ClCompile Include="MiniGameLadder.cpp">
     </ClCompile>
-    <ClCompile Include="MiniGamePairgame.cpp">
-    </ClCompile>
+    <ClCompile Include="MiniGames.cpp" />
     <ClCompile Include="MiniGameStopwatch.cpp">
     </ClCompile>
     <ClCompile Include="MiniGameTyping.cpp">
@@ -455,6 +454,7 @@
     <ClInclude Include="..\_Common\WorldLandIterator.hpp" />
     <ClInclude Include="DisplayedInfo.h" />
     <ClInclude Include="GroupedEmission.h" />
+    <ClInclude Include="MiniGames.h" />
     <ClInclude Include="WantedListSnapshot.h" />
     <ClInclude Include="AttackArbiter.h" />
     <ClInclude Include="..\_Common\Campus.h" />
@@ -480,7 +480,6 @@
     <ClInclude Include="MiniGameDiceplay.h" />
     <ClInclude Include="MiniGameGawibawibo.h" />
     <ClInclude Include="MiniGameLadder.h" />
-    <ClInclude Include="MiniGamePairgame.h" />
     <ClInclude Include="MiniGameStopwatch.h" />
     <ClInclude Include="MiniGameTyping.h" />
     <ClInclude Include="MySplashWnd.h" />

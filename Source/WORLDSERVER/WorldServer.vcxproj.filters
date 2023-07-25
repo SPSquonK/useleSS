@@ -126,9 +126,6 @@
     <ClCompile Include="MiniGameLadder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MiniGamePairgame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MiniGameStopwatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -594,6 +591,9 @@
     <ClCompile Include="..\_Common\NameValidation.cpp">
       <Filter>Neuz Common Files\Common Files</Filter>
     </ClCompile>
+    <ClCompile Include="MiniGames.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WantedListSnapshot.h">
@@ -657,27 +657,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MiniDumper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MiniGameArithmetic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MiniGameDiceplay.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MiniGameGawibawibo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MiniGameLadder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MiniGamePairgame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MiniGameStopwatch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MiniGameTyping.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MySplashWnd.h">
@@ -1155,6 +1134,27 @@
       <Filter>Neuz Common Files\Common Files</Filter>
     </ClInclude>
     <ClInclude Include="..\_Common\RunFuncScript.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniGames.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniGameTyping.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniGameArithmetic.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniGameDiceplay.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniGameGawibawibo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniGameLadder.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniGameStopwatch.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

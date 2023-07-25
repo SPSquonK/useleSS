@@ -51,6 +51,9 @@ struct __MINIGAME_PACKET
 #ifdef __WORLDSERVER
 class CMiniGameBase {
 public:
+	CMiniGameBase() = default;
+	CMiniGameBase(const CMiniGameBase &) = delete;
+	CMiniGameBase & operator=(const CMiniGameBase &) = delete;
 	virtual ~CMiniGameBase();
 
 	virtual BOOL Excute(CUser * pUser, __MINIGAME_PACKET * pMiniGamePacket) = 0;

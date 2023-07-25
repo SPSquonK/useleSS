@@ -8,12 +8,12 @@
 #endif // __CLIENT
 
 #ifdef __WORLDSERVER
+#include "MiniGames.h"
 #include "MiniGameGawibawibo.h"
 #include "MiniGameDiceplay.h"
 #include "MiniGameArithmetic.h"
 #include "MiniGameStopwatch.h"
 #include "MiniGameTyping.h"
-#include "MiniGamePairgame.h"
 #include "MiniGameLadder.h"
 
 #include "defineObj.h"
@@ -147,7 +147,7 @@ void CRainbowRace::SetMiniGame( int nGameNum )
 		case RMG_ARITHMATIC:	m_pMiniGame = new CMiniGameArithmetic( pMiniGame );		break;
 		case RMG_STOPWATCH:		m_pMiniGame = new CMiniGameStopwatch( pMiniGame );		break;
 		case RMG_TYPING:		m_pMiniGame = new CMiniGameTyping( pMiniGame );		break;
-		case RMG_PAIRGAME:		m_pMiniGame = new CMiniGamePairgame( pMiniGame );		break;
+		case RMG_PAIRGAME:		m_pMiniGame = new CMiniGamePairgame();		break;
 		case RMG_LADDER:		m_pMiniGame = new CMiniGameLadder( pMiniGame );		break;
 	}
 }
