@@ -301,7 +301,7 @@ public:
 	
 	void RenderArrow();
 	BOOL UseSkillToFocusObj( CCtrl* pFocusObj );
-	void GetBoundRect( CObj* pObj, CRect* pRect );
+	[[nodiscard]] CRect GetBoundRect( CObj* pObj );
 
 	void RenderArrow_Text( const D3DXVECTOR3& vDest, const D3DXMATRIX& mat );	//gmpbigsun : refactoring
 	
@@ -408,7 +408,7 @@ public:
 	CWndWorld();
 	virtual ~CWndWorld();
 	void RenderAltimeter();
-	void RenderFocusObj( CObj* pObj, CRect rect, DWORD dwColor1, DWORD dwColor2 );
+	void RenderFocusObj( CObj* pObj, DWORD dwColor1, DWORD dwColor2 );
 	void SetNextTarget();
 	void RenderFocusArrow( CPoint pt );
 	void RenderGauFlight( C2DRender* p2DRender );		// 비행모드시 게이지 인터페이스 Draw

@@ -956,7 +956,6 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 	else
 		HighlightObj( GetMousePoint() );
 
-	CRect rect = GetClientRect();
 	D3DXVECTOR3 vRayEnd;
 	
 	g_DamageNumMng.Render();
@@ -978,7 +977,7 @@ BOOL CWndWorld::OnEraseBkgnd(C2DRender* p2DRender)
 			CMover * pMover = prj.GetMover(objid);
 			if (!IsValidObj(pMover)) continue;
 			
-			GetBoundRect( pMover, &rect );		// 화면상에서의 바운드 렉트를 구함.
+			CRect rect = GetBoundRect( pMover );		// 화면상에서의 바운드 렉트를 구함.
 			g_Neuz.m_2DRender.RenderRect( rect, D3DCOLOR_ARGB(0xff, 255, 32, 32) );
 		}
 	}
@@ -1904,11 +1903,12 @@ void CWndWorld::OnSetCursor()
 	else
 		SetMouseCursor( dwCursor );
 }
-void CWndWorld::GetBoundRect( CObj* pObj, CRect* pRect )
+
+CRect CWndWorld::GetBoundRect( CObj* pObj )
 {
 	CWorld* pWorld	= g_WorldMng.Get();
 	CModel* pModel = pObj->m_pModel;
-	D3DXVECTOR3 vMin, vMax, vPos;
+	D3DXVECTOR3 vPos;
 
 	//소환수만 GetScrPos로 위치를 구한다.
 	if(pObj->GetType() == OT_ITEM)
@@ -1929,10 +1929,8 @@ void CWndWorld::GetBoundRect( CObj* pObj, CRect* pRect )
 	vp.Y = 0;
 
 	D3DXMATRIX matTrans;
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
 	D3DXMatrixTranslation( &matTrans, vPos.x, vPos.y , vPos.z);
-	matWorld = matWorld * pObj->GetMatrixScale() * pObj->GetMatrixRotation() * matTrans;
+	const D3DXMATRIX matWorld = pObj->GetMatrixScale() * pObj->GetMatrixRotation() * matTrans;
 
 	const BOUND_BOX* pBB = pModel->GetBBVector();
 	D3DXVECTOR3 vOut[ 8 ];
@@ -1940,20 +1938,22 @@ void CWndWorld::GetBoundRect( CObj* pObj, CRect* pRect )
 		D3DXVec3Project( &vOut[ i ], &pBB->m_vPos[ i ], &vp, &pWorld->m_matProj, &pWorld->m_pCamera->m_matView, &matWorld );	
 
 	CRect rectClient = GetClientRect();
-	//m_rectBound.SetRect( rectClient.right, rectClient.bottom, rectClient.left, rectClient.top );
-	pRect->SetRect( 65535, 65535, -65535, -65535 );
+
+	CRect pRect( 65535, 65535, -65535, -65535 );
 	for( int i = 0; i < 8; i++ )
 	{
 		vPos = vOut[ i ];
-		if( vPos.x < pRect->left )
-			pRect->left = (LONG)( vPos.x );
-		if( vPos.x > pRect->right )
-			pRect->right = (LONG)( vPos.x );
-		if( vPos.y < pRect->top )
-			pRect->top = (LONG)( vPos.y );
-		if( vPos.y > pRect->bottom )
-			pRect->bottom = (LONG)( vPos.y );
+		if( vPos.x < pRect.left )
+			pRect.left = (LONG)( vPos.x );
+		if( vPos.x > pRect.right )
+			pRect.right = (LONG)( vPos.x );
+		if( vPos.y < pRect.top )
+			pRect.top = (LONG)( vPos.y );
+		if( vPos.y > pRect.bottom )
+			pRect.bottom = (LONG)( vPos.y );
 	}
+
+	return pRect;
 }
 
 void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
@@ -2210,9 +2210,7 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 		{
 			if( pObj == pWorld->GetObjFocus() )
 			{
-				CRect rectBound;
-				GetBoundRect( pObj, &rectBound );
-				RenderFocusObj( pObj, rectBound, D3DCOLOR_ARGB( 100, 255,  0,  0 ), 0xffffff00 );
+				RenderFocusObj( pObj, D3DCOLOR_ARGB( 100, 255,  0,  0 ), 0xffffff00 );
 			}
 		}
 	}
@@ -2223,9 +2221,7 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 		CCtrl* pCtrl = prj.GetCtrl( GuildHouse->m_dwSelectedObjID );
 		if( pCtrl )
 		{
-			CRect recBound;
-			GetBoundRect( pCtrl, &recBound );
-			RenderFocusObj( pCtrl, recBound, D3DCOLOR_ARGB( 100, 255,  0,  0 ), 0xffffff00 );
+			RenderFocusObj( pCtrl, D3DCOLOR_ARGB( 100, 255,  0,  0 ), 0xffffff00 );
 		}
 	}
 	
@@ -2239,9 +2235,7 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 		{
 			if( m_pNextTargetObj )
 			{
-				CRect rectBound;
-				GetBoundRect( m_pNextTargetObj, &rectBound );
-				RenderFocusObj( m_pNextTargetObj, rectBound, D3DCOLOR_ARGB( 100, 255,  0,  0 ), 0xffffff00 );
+				RenderFocusObj( m_pNextTargetObj, D3DCOLOR_ARGB( 100, 255,  0,  0 ), 0xffffff00 );
 			}
 		}
 	}
@@ -2265,8 +2259,10 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 */
 }
 
-void CWndWorld::RenderFocusObj( CObj* pObj, CRect rect, DWORD dwColor1, DWORD dwColor2 )
+void CWndWorld::RenderFocusObj( CObj* pObj, DWORD dwColor1, DWORD dwColor2 )
 {
+	const CRect rect = GetBoundRect(pObj);
+
 	BOOL bFly = g_pPlayer->m_pActMover->IsFly();		
 
 	CPoint pt1, pt2, pt3, pt4;
@@ -2352,7 +2348,6 @@ void CWndWorld::RenderFocusArrow( CPoint pt )
 	BOOL bAdjust = FALSE;		// 타겟방향 화살표 표시검사 대상이다.
 	BOOL bAdjust2 = FALSE;		// 방향 화살표를 표시해야하는 상황이냐.
 	CPoint	ptOut;				// 타겟이 화면을 벗어났을경우 화면테두리 좌표.
-	CRect rectBound;
 	if( g_pPlayer->m_pActMover->IsFly() )	// 주인공이 비행중이고
 	{
 		if( pObj->GetType() == OT_MOVER || pObj->GetType() == OT_SHIP ) // 잡은 타겟이 무버라면.
@@ -2360,7 +2355,7 @@ void CWndWorld::RenderFocusArrow( CPoint pt )
 	}
 	if( bAdjust )
 	{
-		GetBoundRect( pObj, &rectBound );
+		CRect rectBound = GetBoundRect( pObj );
 		int nWidth = (rectBound.right - rectBound.left);	// 타겟사각형의 가로세로 폭.
 		int nHeight = (rectBound.bottom - rectBound.top);
 		// 타겟의 중심좌표.
@@ -5210,8 +5205,7 @@ CObj* CWndWorld::HighlightObj( POINT point )
 	CObj::m_pObjHighlight = pObj;
 	if( pObj && pObj->GetType() == OT_ITEM )
 	{
-		CRect rect;
-		GetBoundRect( pObj, &rect );
+		CRect rect = GetBoundRect( pObj );
 		ClientToScreen( &point );
 		ClientToScreen( &rect );
 		g_WndMng.PutToolTip_Item( ((CItem*)pObj)->m_pItemBase, point, &rect );
@@ -5445,8 +5439,7 @@ void CWndWorld::ShowMoverMenu( CMover* pTarget )
 
 		if( bView )
 		{
-			CRect rectBound;
-			GetBoundRect( pTarget, &rectBound );
+			CRect rectBound = GetBoundRect( pTarget );
 			m_wndMenuMover.Move( CPoint( rectBound.right, rectBound.top ) );
 			m_wndMenuMover.SetVisible( TRUE );
 			m_wndMenuMover.SetFocus();
@@ -8804,8 +8797,7 @@ void CWndWorld::ShowCCtrlMenu( CCtrl* pCCtrl )
 	m_wndMenuMover.AddButton( MMI_GHOUSE_REINSTALL, GETTEXT(TID_MMI_GHOUSE_REINSTALL) );
 	m_wndMenuMover.AddButton( MMI_GHOUSE_RECALL, GETTEXT(TID_MMI_GHOUSE_RECALL) );
 
-	CRect rectBound;
-	GetBoundRect( pCCtrl, &rectBound );
+	CRect rectBound = GetBoundRect( pCCtrl );
 	m_wndMenuMover.Move( CPoint( rectBound.right, rectBound.top ) );
 	m_wndMenuMover.SetVisible( TRUE );
 }
