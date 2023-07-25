@@ -117,21 +117,6 @@
     <ClCompile Include="MiniGameArithmetic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MiniGameDiceplay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MiniGameGawibawibo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MiniGameLadder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MiniGameStopwatch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MiniGameTyping.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\_Common\moverbuff.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1139,22 +1124,7 @@
     <ClInclude Include="MiniGames.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="MiniGameTyping.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="MiniGameArithmetic.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MiniGameDiceplay.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MiniGameGawibawibo.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MiniGameLadder.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MiniGameStopwatch.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

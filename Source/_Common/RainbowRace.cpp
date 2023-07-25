@@ -9,12 +9,7 @@
 
 #ifdef __WORLDSERVER
 #include "MiniGames.h"
-#include "MiniGameGawibawibo.h"
-#include "MiniGameDiceplay.h"
 #include "MiniGameArithmetic.h"
-#include "MiniGameStopwatch.h"
-#include "MiniGameTyping.h"
-#include "MiniGameLadder.h"
 
 #include "defineObj.h"
 #include "defineText.h"
@@ -142,13 +137,13 @@ void CRainbowRace::SetMiniGame( int nGameNum )
 	CMiniGameBase* pMiniGame = CRainbowRaceMng::GetInstance()->GetMiniGame( nGameNum );
 	switch( nGameNum )
 	{
-		case RMG_GAWIBAWIBO:	m_pMiniGame = new CMiniGameGawibawibo( pMiniGame ); break;
-		case RMG_DICEPLAY:		m_pMiniGame = new CMiniGameDiceplay( pMiniGame );	break;
+		case RMG_GAWIBAWIBO:	m_pMiniGame = new CMiniGameGawibawibo(); break;
+		case RMG_DICEPLAY:		m_pMiniGame = new CMiniGameDiceplay();	break;
 		case RMG_ARITHMATIC:	m_pMiniGame = new CMiniGameArithmetic( pMiniGame );		break;
-		case RMG_STOPWATCH:		m_pMiniGame = new CMiniGameStopwatch( pMiniGame );		break;
-		case RMG_TYPING:		m_pMiniGame = new CMiniGameTyping( pMiniGame );		break;
+		case RMG_STOPWATCH:		m_pMiniGame = new CMiniGameStopwatch();		break;
+		case RMG_TYPING:		m_pMiniGame = new CMiniGameTyping();		break;
 		case RMG_PAIRGAME:		m_pMiniGame = new CMiniGamePairgame();		break;
-		case RMG_LADDER:		m_pMiniGame = new CMiniGameLadder( pMiniGame );		break;
+		case RMG_LADDER:		m_pMiniGame = new CMiniGameLadder();		break;
 	}
 }
 

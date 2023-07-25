@@ -139,17 +139,7 @@
     </ClCompile>
     <ClCompile Include="MiniGameArithmetic.cpp">
     </ClCompile>
-    <ClCompile Include="MiniGameDiceplay.cpp">
-    </ClCompile>
-    <ClCompile Include="MiniGameGawibawibo.cpp">
-    </ClCompile>
-    <ClCompile Include="MiniGameLadder.cpp">
-    </ClCompile>
     <ClCompile Include="MiniGames.cpp" />
-    <ClCompile Include="MiniGameStopwatch.cpp">
-    </ClCompile>
-    <ClCompile Include="MiniGameTyping.cpp">
-    </ClCompile>
     <ClCompile Include="..\_Common\moverbuff.cpp">
     </ClCompile>
     <ClCompile Include="MoverExp.cpp" />
@@ -477,11 +467,6 @@
     <ClInclude Include="..\_Common\memtrace.h" />
     <ClInclude Include="MiniDumper.h" />
     <ClInclude Include="MiniGameArithmetic.h" />
-    <ClInclude Include="MiniGameDiceplay.h" />
-    <ClInclude Include="MiniGameGawibawibo.h" />
-    <ClInclude Include="MiniGameLadder.h" />
-    <ClInclude Include="MiniGameStopwatch.h" />
-    <ClInclude Include="MiniGameTyping.h" />
     <ClInclude Include="MySplashWnd.h" />
     <ClInclude Include="npchecker.h" />
     <ClInclude Include="..\_Common\pocket.h" />
