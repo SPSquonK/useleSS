@@ -9,7 +9,7 @@ public:
 	CMiniGameDiceplay( CMiniGameBase* pMiniGame );
 	virtual ~CMiniGameDiceplay(void);
 
-	virtual BOOL Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket );
+	BOOL Excute(CUser * pUser, __MINIGAME_PACKET * pMiniGamePacket) override;
 
 private:
 	int m_nTargetNum;

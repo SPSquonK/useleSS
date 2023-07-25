@@ -14333,7 +14333,7 @@ void CDPClient::SendRainbowRaceMiniGameState( __MINIGAME_PACKET MiniGamePacket )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::SendRainbowRaceMiniGameExtState( __MINIGAME_EXT_PACKET MiniGameExtPacket )
+void CDPClient::SendRainbowRaceMiniGameExtState( __MINIGAME_PACKET MiniGameExtPacket )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_RAINBOWRACE_MINIGAME_PACKET, DPID_UNKNOWN );
 	ar << TRUE;
@@ -14392,13 +14392,10 @@ void CDPClient::OnRainbowRaceNowState(CAr & ar) {
 
 void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 {
-	std::unique_ptr<__MINIGAME_PACKET> pMiniGamePacket;
-	if( bExt )	pMiniGamePacket = std::make_unique<__MINIGAME_EXT_PACKET>();
-	else		pMiniGamePacket = std::make_unique<__MINIGAME_PACKET>();
+	__MINIGAME_PACKET pMiniGamePacket;
+	pMiniGamePacket.Serialize( ar );
 
-	pMiniGamePacket->Serialize( ar );
-
-	if( !(CRainbowRace::GetInstance()->m_wNowGame & pMiniGamePacket->wNowGame) )
+	if( !(CRainbowRace::GetInstance()->m_wNowGame & pMiniGamePacket.wNowGame) )
 	{
 		return;
 	}
@@ -14407,7 +14404,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 	{
 		case RMG_GAWIBAWIBO:
 			{
-				if(pMiniGamePacket->nState == MP_OPENWND)
+				if(pMiniGamePacket.nState == MP_OPENWND)
 				{
 					SAFE_DELETE(g_WndMng.m_pWndRRMiniGameKawiBawiBo);
 					g_WndMng.m_pWndRRMiniGameKawiBawiBo = new CWndRRMiniGameKawiBawiBo;
@@ -14415,7 +14412,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 				}
 				else 
 				{
-					if(pMiniGamePacket->nState == MP_FINISH)
+					if(pMiniGamePacket.nState == MP_FINISH)
 					{
 						if(g_WndMng.m_pWndRainbowRaceMiniGame)
 							g_WndMng.m_pWndRainbowRaceMiniGame->m_bGameInfoRefresh = FALSE;
@@ -14423,22 +14420,22 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 
 					CWndRRMiniGameKawiBawiBo* pWndRRMiniGameKawiBawiBo = (CWndRRMiniGameKawiBawiBo*)g_WndMng.GetWndBase( APP_RR_MINIGAME_KAWIBAWIBO );
 					if(pWndRRMiniGameKawiBawiBo != NULL)
-						pWndRRMiniGameKawiBawiBo->ReceiveResult(pMiniGamePacket->nState);
+						pWndRRMiniGameKawiBawiBo->ReceiveResult(pMiniGamePacket.nState);
 				}
 			}
 			break;
 		case RMG_DICEPLAY:
 			{
-				if(pMiniGamePacket->nState == MP_OPENWND)
+				if(pMiniGamePacket.nState == MP_OPENWND)
 				{
 					SAFE_DELETE(g_WndMng.m_pWndRRMiniGameDice);
 					g_WndMng.m_pWndRRMiniGameDice = new CWndRRMiniGameDice;
-					g_WndMng.m_pWndRRMiniGameDice->SetTargetNumber(pMiniGamePacket->nParam1);
+					g_WndMng.m_pWndRRMiniGameDice->SetTargetNumber(pMiniGamePacket.nParam1);
 					g_WndMng.m_pWndRRMiniGameDice->Initialize();
 				}
 				else
 				{
-					if(pMiniGamePacket->nState == MP_FINISH)
+					if(pMiniGamePacket.nState == MP_FINISH)
 					{
 						if(g_WndMng.m_pWndRainbowRaceMiniGame)
 							g_WndMng.m_pWndRainbowRaceMiniGame->m_bGameInfoRefresh = FALSE;
@@ -14446,42 +14443,41 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 
 					CWndRRMiniGameDice* m_pWndRRMiniGameDice = (CWndRRMiniGameDice*)g_WndMng.GetWndBase( APP_RR_MINIGAME_DICE );
 					if(m_pWndRRMiniGameDice != NULL)
-						m_pWndRRMiniGameDice->ReceiveResult(pMiniGamePacket->nState, pMiniGamePacket->nParam1, pMiniGamePacket->nParam2);
+						m_pWndRRMiniGameDice->ReceiveResult(pMiniGamePacket.nState, pMiniGamePacket.nParam1, pMiniGamePacket.nParam2);
 				}
 			}
 			break;
 		case RMG_ARITHMATIC:
 			{
-				__MINIGAME_EXT_PACKET* pPacket = static_cast<__MINIGAME_EXT_PACKET*>(pMiniGamePacket.get());
-				if(pPacket->nState == MP_OPENWND)
+				if(pMiniGamePacket.nState == MP_OPENWND)
 				{
 					SAFE_DELETE(g_WndMng.m_pWndRRMiniGameArithmetic);
 					g_WndMng.m_pWndRRMiniGameArithmetic = new CWndRRMiniGameArithmetic;
-					const std::string strQuestion = pPacket->vecszData.empty() ? "" : pPacket->vecszData.back();
+					const std::string strQuestion = pMiniGamePacket.vecszData.empty() ? "" : pMiniGamePacket.vecszData.back();
 						
 					g_WndMng.m_pWndRRMiniGameArithmetic->Initialize();
-					g_WndMng.m_pWndRRMiniGameArithmetic->SetNextQuestion(strQuestion.c_str(), pPacket->nParam1);
+					g_WndMng.m_pWndRRMiniGameArithmetic->SetNextQuestion(strQuestion.c_str(), pMiniGamePacket.nParam1);
 				}
-				else if(pPacket->nState == MP_TRUE || pPacket->nState == MP_FAIL)
+				else if(pMiniGamePacket.nState == MP_TRUE || pMiniGamePacket.nState == MP_FAIL)
 				{
 					if(g_WndMng.m_pWndRRMiniGameArithmetic)
 					{
-						const std::string strQuestion = pPacket->vecszData.empty() ? "" : pPacket->vecszData.back();
+						const std::string strQuestion = pMiniGamePacket.vecszData.empty() ? "" : pMiniGamePacket.vecszData.back();
 
-						g_WndMng.m_pWndRRMiniGameArithmetic->SetNextQuestion(strQuestion.c_str(), pPacket->nParam1);
+						g_WndMng.m_pWndRRMiniGameArithmetic->SetNextQuestion(strQuestion.c_str(), pMiniGamePacket.nParam1);
 					}
 				}
-				else if(pPacket->nState == MP_FALSE)
+				else if(pMiniGamePacket.nState == MP_FALSE)
 				{
 					g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_REMOVE_ARITHMETIC_FAIL ) );
 					if(g_WndMng.m_pWndRRMiniGameArithmetic)
 					{
-						const std::string strQuestion = pPacket->vecszData.empty() ? "" : pPacket->vecszData.back();
+						const std::string strQuestion = pMiniGamePacket.vecszData.empty() ? "" : pMiniGamePacket.vecszData.back();
 						
-						g_WndMng.m_pWndRRMiniGameArithmetic->SetNextQuestion(strQuestion.c_str(), pPacket->nParam1);
+						g_WndMng.m_pWndRRMiniGameArithmetic->SetNextQuestion(strQuestion.c_str(), pMiniGamePacket.nParam1);
 					}
 				}
-				else if(pMiniGamePacket->nState == MP_FINISH)
+				else if(pMiniGamePacket.nState == MP_FINISH)
 				{
 					if(g_WndMng.m_pWndRainbowRaceMiniGame)
 						g_WndMng.m_pWndRainbowRaceMiniGame->m_bGameInfoRefresh = FALSE;
@@ -14499,22 +14495,21 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 			break;
 		case RMG_STOPWATCH:
 			{
-				__MINIGAME_EXT_PACKET* pPacket = static_cast<__MINIGAME_EXT_PACKET*>(pMiniGamePacket.get());
-				if(pMiniGamePacket->nState == MP_OPENWND)
+				if(pMiniGamePacket.nState == MP_OPENWND)
 				{
 					SAFE_DELETE(g_WndMng.m_pWndRRMiniGameStopWatch);
 
 					g_WndMng.m_pWndRRMiniGameStopWatch = new CWndRRMiniGameStopWatch;
 					g_WndMng.m_pWndRRMiniGameStopWatch->Initialize();
-					g_WndMng.m_pWndRRMiniGameStopWatch->SetTargetTime(pPacket->nParam1);
+					g_WndMng.m_pWndRRMiniGameStopWatch->SetTargetTime(pMiniGamePacket.nParam1);
 				}
-				else if(pPacket->nState == MP_FAIL)
+				else if(pMiniGamePacket.nState == MP_FAIL)
 				{
 					g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_REMOVE_ARITHMETIC_FAIL ) );
 					if(g_WndMng.m_pWndRRMiniGameStopWatch)
-						g_WndMng.m_pWndRRMiniGameStopWatch->SetTargetTime(pPacket->nParam1);
+						g_WndMng.m_pWndRRMiniGameStopWatch->SetTargetTime(pMiniGamePacket.nParam1);
 				}
-				else if(pMiniGamePacket->nState == MP_FINISH)
+				else if(pMiniGamePacket.nState == MP_FINISH)
 				{
 					if(g_WndMng.m_pWndRainbowRaceMiniGame)
 						g_WndMng.m_pWndRainbowRaceMiniGame->m_bGameInfoRefresh = FALSE;
@@ -14532,8 +14527,7 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 			break;
 		case RMG_TYPING:
 			{
-				__MINIGAME_EXT_PACKET* pPacket = static_cast<__MINIGAME_EXT_PACKET*>(pMiniGamePacket.get());
-				if(pMiniGamePacket->nState == MP_OPENWND)
+				if(pMiniGamePacket.nState == MP_OPENWND)
 				{
 					SAFE_DELETE(g_WndMng.m_pWndRRMiniGameTyping);
 
@@ -14541,19 +14535,19 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 
 						g_WndMng.m_pWndRRMiniGameTyping->Initialize();
 
-						for( int i=0; i<(int)( pPacket->vecszData.size() ); i++ )
+						for( int i=0; i<(int)(pMiniGamePacket.vecszData.size() ); i++ )
 						{
-							g_WndMng.m_pWndRRMiniGameTyping->SetQuestion(i, pPacket->vecszData[i].c_str());
+							g_WndMng.m_pWndRRMiniGameTyping->SetQuestion(i, pMiniGamePacket.vecszData[i].c_str());
 						}						
 				}
-				else if(pPacket->nState == MP_FAIL)
+				else if(pMiniGamePacket.nState == MP_FAIL)
 				{
 					g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_REMOVE_ARITHMETIC_FAIL ) );
 
 					if(g_WndMng.m_pWndRRMiniGameTyping)
 						g_WndMng.m_pWndRRMiniGameTyping->ResetQuestion();
 				}
-				else if(pMiniGamePacket->nState == MP_FINISH)
+				else if(pMiniGamePacket.nState == MP_FINISH)
 				{
 					if(g_WndMng.m_pWndRainbowRaceMiniGame)
 						g_WndMng.m_pWndRainbowRaceMiniGame->m_bGameInfoRefresh = FALSE;
@@ -14569,23 +14563,21 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 			break;
 		case RMG_PAIRGAME:
 			{
-				if(pMiniGamePacket->nState == MP_OPENWND)
-				{
-					__MINIGAME_EXT_PACKET* pPacket = static_cast<__MINIGAME_EXT_PACKET*>(pMiniGamePacket.get());
-					
+				if(pMiniGamePacket.nState == MP_OPENWND)
+				{				
 					SAFE_DELETE(g_WndMng.m_pWndRRMiniGameCard);
 
 					g_WndMng.m_pWndRRMiniGameCard = new CWndRRMiniGameCard;
 					g_WndMng.m_pWndRRMiniGameCard->Initialize();
 
-					g_WndMng.m_pWndRRMiniGameCard->SetQuestion(pPacket->vecszData[0].c_str());
+					g_WndMng.m_pWndRRMiniGameCard->SetQuestion(pMiniGamePacket.vecszData[0].c_str());
 				}
-				else if(pMiniGamePacket->nState == MP_TRUE || pMiniGamePacket->nState == MP_FAIL || pMiniGamePacket->nState == MP_FALSE)
+				else if(pMiniGamePacket.nState == MP_TRUE || pMiniGamePacket.nState == MP_FAIL || pMiniGamePacket.nState == MP_FALSE)
 				{
 					if(g_WndMng.m_pWndRRMiniGameCard)
-						g_WndMng.m_pWndRRMiniGameCard->ReceiveResult(pMiniGamePacket->nState);
+						g_WndMng.m_pWndRRMiniGameCard->ReceiveResult(pMiniGamePacket.nState);
 				}
-				else if(pMiniGamePacket->nState == MP_FINISH)
+				else if(pMiniGamePacket.nState == MP_FINISH)
 				{
 					if(g_WndMng.m_pWndRainbowRaceMiniGame)
 						g_WndMng.m_pWndRainbowRaceMiniGame->m_bGameInfoRefresh = FALSE;
@@ -14602,25 +14594,25 @@ void CDPClient::OnRainbowRaceMiniGameState( CAr & ar, BOOL bExt )
 			break;
 		case RMG_LADDER:
 			{
-				if(pMiniGamePacket->nState == MP_OPENWND)
+				if(pMiniGamePacket.nState == MP_OPENWND)
 				{
 					SAFE_DELETE(g_WndMng.m_pWndRRMiniGameLadder);
 
 					g_WndMng.m_pWndRRMiniGameLadder = new CWndRRMiniGameLadder;
 					g_WndMng.m_pWndRRMiniGameLadder->Initialize();
 				}
-				else if(pMiniGamePacket->nState == MP_FAIL)
+				else if(pMiniGamePacket.nState == MP_FAIL)
 				{
 					if(g_WndMng.m_pWndRRMiniGameLadder)
-						g_WndMng.m_pWndRRMiniGameLadder->ReceiveResult(pMiniGamePacket->nState);
+						g_WndMng.m_pWndRRMiniGameLadder->ReceiveResult(pMiniGamePacket.nState);
 				}
-				else if(pMiniGamePacket->nState == MP_FINISH)
+				else if(pMiniGamePacket.nState == MP_FINISH)
 				{
 					if(g_WndMng.m_pWndRainbowRaceMiniGame)
 						g_WndMng.m_pWndRainbowRaceMiniGame->m_bGameInfoRefresh = FALSE;
 					
 					if(g_WndMng.m_pWndRRMiniGameLadder)
-						g_WndMng.m_pWndRRMiniGameLadder->ReceiveResult(pMiniGamePacket->nState);
+						g_WndMng.m_pWndRRMiniGameLadder->ReceiveResult(pMiniGamePacket.nState);
 				}
 			}
 			break;

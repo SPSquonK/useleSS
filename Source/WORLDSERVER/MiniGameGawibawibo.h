@@ -9,7 +9,7 @@ public:
 	CMiniGameGawibawibo( CMiniGameBase* pMiniGame );
 	virtual ~CMiniGameGawibawibo(void);
 
-	virtual BOOL Excute( CUser* pUser, __MINIGAME_PACKET* MiniGamePacket );
+	virtual BOOL Excute( CUser* pUser, __MINIGAME_PACKET * MiniGamePacket );
 
 
 private:

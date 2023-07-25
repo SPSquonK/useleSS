@@ -22,7 +22,7 @@ CMiniGameGawibawibo::~CMiniGameGawibawibo(void)
 {
 }
 
-BOOL CMiniGameGawibawibo::Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket )
+BOOL CMiniGameGawibawibo::Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket )
 {
 	BOOL bReturn = FALSE;		// 미니게임 완료 상태
 

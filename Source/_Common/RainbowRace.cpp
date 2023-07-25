@@ -114,7 +114,7 @@ void CRainbowRace::SendMinigamePacket( int nGameKey, int nState, int nParam1, in
 
 void CRainbowRace::SendMinigameExtPacket(std::vector<std::string> & vecszData, int nGameKey, int nState, int nParam1, int nParam2 )
 {
-	__MINIGAME_EXT_PACKET MiniGameExtPacket( m_wNowGame, nState, nParam1, nParam2 );
+	__MINIGAME_PACKET MiniGameExtPacket( m_wNowGame, nState, nParam1, nParam2 );
 	MiniGameExtPacket.vecszData = vecszData;
 	
 	if( nGameKey != RMG_MAX )
@@ -157,7 +157,7 @@ void CRainbowRace::SetMiniGame( int nGameNum )
 	}
 }
 
-void CRainbowRace::OnMiniGamePacket( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket )
+void CRainbowRace::OnMiniGamePacket( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket )
 {
 	if( m_wNowGame != pMiniGamePacket->wNowGame )	// 클라로 부터 받은 패킷에 지정된 미니게임이 서버와 다르면..
 	{
@@ -570,7 +570,7 @@ void CRainbowRaceMng::RemoveNPC()
 	m_vecNPCId.clear();
 }
 
-void CRainbowRaceMng::OnMiniGamePacket( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket )
+void CRainbowRaceMng::OnMiniGamePacket( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket )
 {
 	CRainbowRace* pRainbowRace = GetRainbowRacerPtr( pUser->m_idPlayer );
 	if( pRainbowRace )

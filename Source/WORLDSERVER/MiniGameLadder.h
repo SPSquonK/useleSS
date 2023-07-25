@@ -9,6 +9,6 @@ public:
 	CMiniGameLadder( CMiniGameBase* pMiniGame );
 	virtual ~CMiniGameLadder(void);
 
-	virtual BOOL Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket );
+	BOOL Excute(CUser * pUser, __MINIGAME_PACKET * pMiniGamePacket) override;
 };
 

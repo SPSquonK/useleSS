@@ -19,11 +19,11 @@ CMiniGameArithmetic::~CMiniGameArithmetic(void)
 {
 }
 
-BOOL CMiniGameArithmetic::Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket )
+BOOL CMiniGameArithmetic::Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket )
 {
 	BOOL bReturn = FALSE;
 	
-	__MINIGAME_EXT_PACKET MP( pMiniGamePacket->wNowGame );	
+	__MINIGAME_PACKET MP( pMiniGamePacket->wNowGame );	
 	if( pMiniGamePacket->nState == MP_OPENWND || pMiniGamePacket->nState == MP_FAIL )
 	{
 		MP.nState = pMiniGamePacket->nState;

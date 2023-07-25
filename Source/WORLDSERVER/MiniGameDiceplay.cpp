@@ -18,7 +18,7 @@ CMiniGameDiceplay::~CMiniGameDiceplay(void)
 {
 }
 
-BOOL CMiniGameDiceplay::Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket )
+BOOL CMiniGameDiceplay::Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket )
 {
 	BOOL bReturn = FALSE;		// 현재 미니 게임이 완료되는건지...
 	__MINIGAME_PACKET MP( pMiniGamePacket->wNowGame );

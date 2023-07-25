@@ -18,7 +18,7 @@ void CMiniGameBase::SendPacket( CUser* pUser, __MINIGAME_PACKET MiniGamePacket )
 	pUser->AddMiniGameState( MiniGamePacket );
 }
 
-void CMiniGameBase::SendExtPacket( CUser* pUser, __MINIGAME_EXT_PACKET MiniGameExtPacket )
+void CMiniGameBase::SendExtPacket( CUser* pUser, __MINIGAME_PACKET MiniGameExtPacket )
 {
 	pUser->AddMiniGameExtState( MiniGameExtPacket );
 }

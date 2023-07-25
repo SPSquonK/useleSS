@@ -873,7 +873,7 @@ public:
 	void	SendRainbowRaceApplicationOpenWnd();
 	void	SendRainbowRaceApplication();
 	void	SendRainbowRaceMiniGameState( __MINIGAME_PACKET MiniGamePacket );
-	void	SendRainbowRaceMiniGameExtState( __MINIGAME_EXT_PACKET MiniGameExtPacket );
+	void	SendRainbowRaceMiniGameExtState( __MINIGAME_PACKET MiniGameExtPacket );
 	void	SendRainbowRaceReqFinish();
 
 private:

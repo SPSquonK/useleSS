@@ -597,8 +597,8 @@ public:
 	void AddRainbowRacePrevRankingOpenWnd();
 	void AddRainbowRaceApplicationOpenWnd();
 	void AddRainbowRaceState( CRainbowRace* pRainbowRace );
-	void AddMiniGameState( __MINIGAME_PACKET MiniGamePacket );
-	void AddMiniGameExtState( __MINIGAME_EXT_PACKET MiniGameExtPacket );
+	void AddMiniGameState(__MINIGAME_PACKET MiniGamePacket );
+	void AddMiniGameExtState( __MINIGAME_PACKET MiniGameExtPacket );
 
 	void AddHousingAllInfo( CHousing* pHousing );
 	void AddHousingSetFurnitureList( HOUSINGINFO& housingInfo, BOOL bAdd );

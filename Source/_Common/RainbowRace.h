@@ -38,7 +38,7 @@ public:
 #ifdef __WORLDSERVER
 	void	SetNowGameComplete( CUser* pUser );	// 이번 게임을 완료상태로 만들고 다음 게임을 셋팅한다.
 	void	SetNextMiniGame();	// 다음 게임 셋팅...
-	void	OnMiniGamePacket( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket );
+	void	OnMiniGamePacket( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket );
 
 	void	SetFinish()	{ m_bFinished = TRUE; m_wGameState = 0x0000; }		// 완주 설정
 	BOOL	IsFinished() const { return m_bFinished; }	// 이미 완주한 놈인가..
@@ -88,7 +88,7 @@ public:
 	void			SetApplication( DWORD dwPlayerId );		// 신청 등록
 	BOOL			SetDropOut( DWORD dwPlayerId );			// 탈락
 	DWORD			GetNextTime()				{ return m_dwNextTime; }			// 다음 단계로 넘어가는 시간
-	void			OnMiniGamePacket( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket );	// 미니게임 패킷을 받은뒤 처리
+	void			OnMiniGamePacket( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket );	// 미니게임 패킷을 받은뒤 처리
 	void			SetRanking( CUser* pUser );	// 레이스를 종료한 캐릭터를 순위에 등록
 	void			SetPrevRanking( std::vector<DWORD> & vecPrevRanking );	// 지난 순위 등록
 	std::vector<DWORD>	GetPrevRanking();

@@ -9,25 +9,17 @@ struct __MINIGAME_PACKET
 	int nState;
 	int nParam1;
 	int nParam2;
+	std::vector<std::string> vecszData;
 	__MINIGAME_PACKET( WORD wG = 0x0000, int nS = MP_NONE, int nP1 = 0, int nP2 = 0 )
-	: wNowGame(wG), nState(nS), nParam1(nP1), nParam2(nP2) {}
-	virtual void Serialize( CAr & ar )
+	{ wNowGame=wG; nState=nS; nParam1=nP1; nParam2=nP2; }
+
+	void Serialize( CAr & ar )
 	{
-		if( ar.IsStoring() )
+		if (ar.IsStoring())
 			ar << wNowGame << nState << nParam1 << nParam2;
 		else
 			ar >> wNowGame >> nState >> nParam1 >> nParam2;
-	}
-};
 
-struct __MINIGAME_EXT_PACKET : public __MINIGAME_PACKET
-{
-	std::vector<std::string> vecszData;
-	__MINIGAME_EXT_PACKET( WORD wG = 0x0000, int nS = MP_NONE, int nP1 = 0, int nP2 = 0 )
-	{ wNowGame=wG; nState=nS; nParam1=nP1; nParam2=nP2; vecszData.clear(); }
-	virtual void Serialize( CAr & ar )
-	{
-		__MINIGAME_PACKET::Serialize( ar );
 		if( ar.IsStoring() )
 		{
 			ar << vecszData.size();
@@ -65,9 +57,9 @@ public:
 	CMiniGameBase(void);
 	virtual ~CMiniGameBase(void);
 
-	virtual BOOL Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket ) = FALSE;
+	virtual BOOL Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket ) = FALSE;
 	void	SendPacket( CUser* pUser, __MINIGAME_PACKET MiniGamePacket );	// 클라이언트로 미니게임 패킷을 보낸다.
-	void	SendExtPacket( CUser* pUser, __MINIGAME_EXT_PACKET MiniGameExtPacket );
+	void	SendExtPacket( CUser* pUser, __MINIGAME_PACKET MiniGameExtPacket );
 };
 #endif // __WORLDSERVER
 

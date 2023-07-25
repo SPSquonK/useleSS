@@ -16,7 +16,7 @@ CMiniGameLadder::~CMiniGameLadder(void)
 {
 }
 
-BOOL CMiniGameLadder::Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket )
+BOOL CMiniGameLadder::Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket )
 {
 	BOOL bReturn = FALSE;
 	

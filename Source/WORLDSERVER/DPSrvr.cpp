@@ -8695,9 +8695,7 @@ void CDPSrvr::OnRainbowRaceMiniGamePacket( CAr & ar, CUser * pUser )
 	BOOL bExt;
 	ar >> bExt;
 
-	__MINIGAME_PACKET* pMiniGamePacket;
-	if( bExt )	pMiniGamePacket = new __MINIGAME_EXT_PACKET;
-	else		pMiniGamePacket = new __MINIGAME_PACKET;
+	__MINIGAME_PACKET * pMiniGamePacket = new __MINIGAME_PACKET();
 
 	pMiniGamePacket->Serialize( ar );
 	CRainbowRaceMng::GetInstance()->OnMiniGamePacket( pUser, pMiniGamePacket );

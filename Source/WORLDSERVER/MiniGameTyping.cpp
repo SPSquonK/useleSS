@@ -15,11 +15,11 @@ CMiniGameTyping::~CMiniGameTyping(void)
 {
 }
 
-BOOL CMiniGameTyping::Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket )
+BOOL CMiniGameTyping::Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket )
 {
 	BOOL bReturn = FALSE;
 
-	__MINIGAME_EXT_PACKET MP( pMiniGamePacket->wNowGame );	
+	__MINIGAME_PACKET MP( pMiniGamePacket->wNowGame );	
 	if( pMiniGamePacket->nState == MP_OPENWND )
 	{
 		MP.nState = MP_OPENWND;
@@ -29,7 +29,7 @@ BOOL CMiniGameTyping::Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket )
 		return bReturn;
 	}
 
-	__MINIGAME_EXT_PACKET* pPacket = static_cast<__MINIGAME_EXT_PACKET*>( pMiniGamePacket );
+	__MINIGAME_PACKET* pPacket = static_cast<__MINIGAME_PACKET*>( pMiniGamePacket );
 
 	MP.nState = MP_FINISH;
 	bReturn = TRUE;

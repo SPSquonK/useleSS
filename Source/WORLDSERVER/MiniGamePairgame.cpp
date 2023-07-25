@@ -16,12 +16,12 @@ CMiniGamePairgame::~CMiniGamePairgame(void)
 
 }
 
-BOOL CMiniGamePairgame::Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket )
+BOOL CMiniGamePairgame::Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket )
 {
 	BOOL bReturn = FALSE;
 	if( pMiniGamePacket->nState == MP_OPENWND )
 	{
-		__MINIGAME_EXT_PACKET MP( pMiniGamePacket->wNowGame );	
+		__MINIGAME_PACKET MP( pMiniGamePacket->wNowGame );	
 		MP.nState = MP_OPENWND;
 		m_nCorrectCount = 0;
 		MP.vecszData.push_back( MakeGame() );
@@ -29,7 +29,7 @@ BOOL CMiniGamePairgame::Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket
 		return bReturn;
 	}
 
-	__MINIGAME_PACKET MP( pMiniGamePacket->wNowGame );	
+	__MINIGAME_PACKET MP( pMiniGamePacket->wNowGame );
 
 	int nPos_1 = pMiniGamePacket->nParam1;
 	int nPos_2 = pMiniGamePacket->nParam2;

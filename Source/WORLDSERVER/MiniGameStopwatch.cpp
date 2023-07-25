@@ -22,11 +22,11 @@ int	CMiniGameStopwatch::SetTargetTime()
 	return m_nTargetTime;
 }
 
-BOOL CMiniGameStopwatch::Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket )
+BOOL CMiniGameStopwatch::Excute( CUser* pUser, __MINIGAME_PACKET * pMiniGamePacket )
 {
 	BOOL bReturn = FALSE;
 
-	__MINIGAME_PACKET MP( pMiniGamePacket->wNowGame );	
+	__MINIGAME_PACKET MP( pMiniGamePacket->wNowGame );
 	if( pMiniGamePacket->nState == MP_OPENWND )
 	{
 		MP.nState = MP_OPENWND;
