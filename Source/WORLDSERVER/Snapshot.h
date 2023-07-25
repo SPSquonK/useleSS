@@ -5,15 +5,15 @@
 #include <DPlay.h>
 
 // @SPSquonK, 2019-08~2022-05
-// Improve CSnapshot class with size of snapshorts
+// Improve CSnapshot class with size of snapshots
 // - This lets the client only parse partially the received snapshots
 // and detect more easily programming errors.
-// - Released under the Boost Licence
+// - Released under the Boost License
 
 class CSnapshot final {
 public:
 	// Proxy class to provide backward compatibility with the
-	// old m_Snapshot.ar.cb++ instructions.
+	// old m_Snapshot.cb++ instructions.
 	struct Cb {
 		friend CSnapshot;
 		CSnapshot * m_self;
