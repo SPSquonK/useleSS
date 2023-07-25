@@ -1267,7 +1267,6 @@ public:
 
 	BYTE			GetLegendChar()	;
 	void			SetLegendChar(	BYTE	nLegend	)	{	m_nLegend	=	nLegend;	}
-	void			SetMasterSkillPointUp();
 
 	// 직업 타입
 	[[nodiscard]] DWORD GetJobType(int nJob = NULL_ID) const {

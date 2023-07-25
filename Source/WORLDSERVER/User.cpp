@@ -5138,27 +5138,12 @@ void CUser::AddMonsterProp()
 	
 }
 
-void CUser::AddInitSkill()
-{
-
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_INITSKILLPOINT;
-	m_Snapshot.ar << m_nSkillPoint;
+void CUser::AddInitSkill() {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_INITSKILLPOINT, int>(m_nSkillPoint);
 }
 
-
-void CUser::AddDoUseSkillPoint(const MoverSkills & skills, int nSkillPoint )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_DOUSESKILLPOINT;
-	m_Snapshot.ar << skills;
-	m_Snapshot.ar << nSkillPoint;
+void CUser::AddDoUseSkillPoint() {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_DOUSESKILLPOINT>(m_jobSkills, m_nSkillPoint);
 }
 
 void CUser::AddWantedInfo( const D3DXVECTOR3& vPos, BYTE byOnline, DWORD dwWorldID, LPCTSTR lpszWorld )
@@ -5190,15 +5175,8 @@ void CUserMng::AddCommonPlace( CCtrl* pCtrl, BYTE nType )
 	NEXT_VISIBILITYRANGE( pCtrl )
 }
 
-void CUser::AddReturnScroll()
-{
-	if( IsDelete() )	return;
-
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_RETURNSCORLL;
-	
+void CUser::AddReturnScroll() {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_RETURNSCORLL>();
 }
 
 void CUser::AddRemoveMail(u_long nMail, int nType) {
@@ -5437,14 +5415,8 @@ void CUser::AddGCWarPlayerlist()
 	
 }
 
-void CUser::AddCtrlCoolTimeCancel()
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_EXPBOXCOLLTIMECANCEL;
-	
+void CUser::AddCtrlCoolTimeCancel() {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_EXPBOXCOLLTIMECANCEL>();
 }
 
 void CUser::AddGuildCombatState( void )
@@ -5495,17 +5467,6 @@ void CUser::AddQuestTextTime( BOOL bFlag, GroupQuest::ProcessState nState, DWORD
 	m_Snapshot.ar << bFlag;
 	m_Snapshot.ar << nState;
 	m_Snapshot.ar << dwTime;
-	
-}
-
-void CUser::AddFocusObj(OBJID objid)
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_FOCUSOBJ;
-	m_Snapshot.ar << objid;
 	
 }
 

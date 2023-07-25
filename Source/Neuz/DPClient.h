@@ -156,8 +156,6 @@ public:
 
 	void	SendOpenBankWnd( DWORD dwId );
 	
-	void	SendFocusObj();
-
 	void	SendOpenGuildBankWnd();
 	void	SendCloseGuildBankWnd();
 	void	SendCloseBankWnd();
@@ -443,8 +441,6 @@ private:
 	void	OnUpdateBankItem( OBJID objid, CAr & ar );
 	void	OnErrorBankIsFull( OBJID objid, CAr & ar );
 	void	OnBank(OBJID objid, CAr & ar);
-
-	void    OnFocusObj( CAr & ar );
 	
 	void	OnGuildBankWindow( OBJID objid, CAr & ar );
 	void	OnPutItemGuildBank( OBJID objid, CAr & ar );
@@ -505,7 +501,7 @@ private:
 	void	OnChatText( CAr & ar );
 	void	OnDefinedText1( CAr & ar );
 	void	OnDefinedCaption( CAr & ar );
-	void	OnCtrlCoolTimeCancel( OBJID objid, CAr & ar );
+	void	OnCtrlCoolTimeCancel( CAr & ar );
 	void	OnGameTimer( CAr & ar );
 	void	OnGameJoin( CAr & ar );
 	void	OnResurrection( OBJID objid );

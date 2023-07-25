@@ -238,6 +238,7 @@ public:
 private:
 	bool AddExperience(EXPINTEGER nExp, bool applyMultipliers, bool reducePropency);
 	bool AddRawExperience(EXPINTEGER nExp);
+	void SetMasterSkillPointUp();
 
 public:
 #pragma endregion
@@ -451,7 +452,6 @@ public:
 	void			AddQuestTextTime( BOOL bFlag, GroupQuest::ProcessState nState, DWORD dwTime );
 	void			AddGCLog( void );
 	void			AddGCPlayerPoint( void );
-	void			AddFocusObj(OBJID objid);
 	void			AddEnterChatting( CUser* pUser );
 	void			AddNewChatting( CChatting* pChatting );
 	void			AddRemoveChatting( u_long uidPlayer );
@@ -477,7 +477,7 @@ public:
 	void			AddSummonFriendConfirm( OBJID objid, DWORD dwData, const char* szName, const char* szWorldName );
 	void			AddSummonPartyConfirm( OBJID objid, DWORD dwData, const char * szWorldName );
 
-	void			AddDoUseSkillPoint( const MoverSkills & skills, int nSkillPoint );
+	void			AddDoUseSkillPoint();
 	void			AddPartyMapInfo( int nIndex, D3DXVECTOR3 vPos );	// __S1005_PARTY_MAP
 	void			AddSetExperience( EXPINTEGER nExp1, WORD wLevel, int nSkillPoint, int nSkillLevel, EXPINTEGER nDeathExp = (EXPINTEGER)-1, WORD wDeathLevel = 0xffff );
 #ifdef __S_SERVER_UNIFY

@@ -219,7 +219,6 @@ CDPSrvr::CDPSrvr()
 	OnMsg( PACKETTYPE_LOG_GAMEMASTER_CHAT, &CDPSrvr::OnGameMasterWhisper );
 	OnMsg( PACKETTYPE_RETURNSCROLL, &CDPSrvr::OnReturnScroll );
 	OnMsg( PACKETTYPE_ENDSKILLQUEUE, &CDPSrvr::OnEndSkillQueue );
-	OnMsg( PACKETTYPE_FOCUSOBJ, &CDPSrvr::OnFoucusObj );
 
 	OnMsg( PACKETTYPE_REMOVEQUEST, &CDPSrvr::OnRemoveQuest );
 	OnMsg( PACKETTYPE_COMMERCIALELEM, &CDPSrvr::OnCommercialElem );
@@ -2555,7 +2554,7 @@ void CDPSrvr::OnDoUseSkillPoint( CAr & ar, CUser & pUser ) {
 	}	
 
 	g_UserMng.AddCreateSfxObj(&pUser, XI_SYS_EXCHAN01, pUser.GetPos().x, pUser.GetPos().y, pUser.GetPos().z);
-	pUser.AddDoUseSkillPoint(pUser.m_jobSkills, pUser.m_nSkillPoint);
+	pUser.AddDoUseSkillPoint();
 #ifdef __S_NEW_SKILL_2
 	g_dpDBClient.SaveSkill( pUser );
 #endif // __S_NEW_SKILL_2
@@ -5937,14 +5936,6 @@ void CDPSrvr::OnCreateMonster( CAr & ar, CUser * pUser )
 
 }
 
-void CDPSrvr::OnFoucusObj( CAr & ar, CUser * pUser )
-{
-	OBJID objid;
-	ar >> objid;
-
-	pUser->AddFocusObj(objid);
-}
-
 void CDPSrvr::OnTrade( CAr & ar, CUser * pUser )
 {
 	OBJID objidTrader;
@@ -7551,7 +7542,7 @@ void CDPSrvr::OnLegendSkillStart( CAr & ar, CUser & pUser )
 	g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_USE, 1, &pUser, &*lpSkill);
 
 	g_UserMng.AddCreateSfxObj(&pUser, XI_SYS_EXCHAN01, pUser.GetPos().x, pUser.GetPos().y, pUser.GetPos().z);
-	pUser.AddDoUseSkillPoint(pUser.m_jobSkills, pUser.m_nSkillPoint);
+	pUser.AddDoUseSkillPoint();
 #ifdef __S_NEW_SKILL_2
 	g_dpDBClient.SaveSkill( pUser );
 #endif // __S_NEW_SKILL_2

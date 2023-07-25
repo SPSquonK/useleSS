@@ -40,29 +40,33 @@
 #include "GuildHouse.h"
 #endif
 
-extern void __SetQuest( DWORD dwIdMover, int nQuest );
-
 #ifdef __WORLDSERVER
 
-void	CMover::SetMasterSkillPointUp()
-{
-	if( m_nLevel != 72 && m_nLevel != 84 && m_nLevel != 96 && m_nLevel != 108 )
-		return;
+void	CUser::SetMasterSkillPointUp()
+{	
 	if( IsJobTypeOrBetter(JTYPE_HERO) )
 		return;
+
+	std::optional<DWORD> expectedLevel;
+	if (m_nLevel == 72) expectedLevel = 2;
+	else if (m_nLevel == 84) expectedLevel = 3;
+	else if (m_nLevel == 96) expectedLevel = 4;
+	else if (m_nLevel == 108) expectedLevel = 5;
+	
+	if (!expectedLevel) return;
 
 	for (SKILL & skill : m_jobSkills) {
 		const ItemProp * pSkillProp = prj.GetSkillProp(skill.dwSkill);
 		if (!pSkillProp) continue;
 		if (pSkillProp->dwItemKind1 != JTYPE_MASTER) continue;
 
-		skill.dwLevel++;
+		if (skill.dwLevel < *expectedLevel) skill.dwLevel = *expectedLevel;
+
 		g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_USE, 1, this, &skill);
 	}	
 	g_UserMng.AddCreateSfxObj(this, XI_SYS_EXCHAN01, GetPos().x, GetPos().y, GetPos().z);
 
-	CUser *pUser = (CUser *)this;
-	pUser->AddDoUseSkillPoint( m_jobSkills, m_nSkillPoint );
+	AddDoUseSkillPoint();
 
 #ifdef __S_NEW_SKILL_2
 	g_dpDBClient.SaveSkill( this );

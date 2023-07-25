@@ -214,7 +214,6 @@ private:
 	void	OnQueryEquip( CAr & ar, CUser * pUser );
 	void	OnOptionEnableRenderMask( CAr & ar, CUser * pUser );
 	void	OnQueryEquipSetting( CAr & ar, CUser * pUser );
-	void	OnFoucusObj( CAr & ar, CUser * pUser );
 	void	OnReturnScroll ( CAr & ar, CUser * pUser );
 	void	OnChangeFace(CAr & ar, CUser & pUser);
 	void	OnQueryPostMail( CAr & ar, CUser * pUser );

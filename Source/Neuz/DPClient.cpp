@@ -445,7 +445,6 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_PUTITEMGUILDBANK:	OnPutItemGuildBank( objid, ar ); break;
 			case SNAPSHOTTYPE_GETITEMGUILDBANK: OnGetItemGuildBank( objid, ar ); break;
 			case SNAPSHOTTYPE_QUERY_PLAYER_DATA:	OnQueryPlayerData( ar );	break;
-			case SNAPSHOTTYPE_FOCUSOBJ:				OnFocusObj( ar );	break;
 				
 			case SNAPSHOTTYPE_GUILD_INVITE:	OnGuildInvite( ar );	break;
 			case SNAPSHOTTYPE_SET_GUILD:	OnSetGuild( objid, ar );	break;
@@ -561,7 +560,7 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_RETURNSCORLL: OnReturnScrollACK( ar ); break;
 			case SNAPSHOTTYPE_GUILDCOMBAT: OnGuildCombat( ar ); break;
 			case SNAPSHOTTYPE_QUEST_TEXT_TIME: OnQuestTextTime( ar ); break;
-			case SNAPSHOTTYPE_EXPBOXCOLLTIMECANCEL: OnCtrlCoolTimeCancel( objid, ar ); break;
+			case SNAPSHOTTYPE_EXPBOXCOLLTIMECANCEL: OnCtrlCoolTimeCancel( ar ); break;
 			case SNAPSHOTTYPE_POSTMAIL:		OnPostMail( ar );	break;
 			case SNAPSHOTTYPE_REMOVEMAIL:	OnRemoveMail( ar );		break;
 			case SNAPSHOTTYPE_QUERYMAILBOX:		OnMailBox( ar );	break;
@@ -7366,36 +7365,6 @@ void CDPClient::SendDuelNo(CMover * pSrc) {
 	SendPacket<PACKETTYPE_DUELNO, u_long>(pSrc->m_idPlayer);
 }
 
-void CDPClient::SendFocusObj()
-{
-	CObj* pFocusObj = g_WorldMng()->GetObjFocus();
-	if( pFocusObj && IsValidObj(pFocusObj) && pFocusObj->GetType() == OT_MOVER )	
-	{
-		CMover* pMover = ((CMover*)pFocusObj);
-		if( pMover->GetWorld() && pMover->GetWorld()->GetObjFocus() )
-		{			
-			BEFORESENDSOLE( ar, PACKETTYPE_FOCUSOBJ, DPID_UNKNOWN );
-			ar << ((CMover*)pMover->GetWorld()->GetObjFocus())->GetId();
-			SEND( ar, this, DPID_SERVERPLAYER );
-		}
-	}
-}
-
-void CDPClient::OnFocusObj( CAr & ar )
-{
-	OBJID objid;
-	ar >> objid;
-
-	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj( pMover ) ) 
-	{
-		CWorld* pWorld = g_WorldMng.Get();
-
-		if( pWorld )
-			pWorld->SetObjFocus(pMover);
-	}
-}
-
 /// ÆÄÆ¼ µà¾ó.
 // pSrc : µà¾ó ½ÅÃ»ÀÚ
 // pDst : µà¾ó Å¸°Ù
@@ -9580,16 +9549,10 @@ void CDPClient::OnCaption( CAr & ar )
 	}
 }
 
-void CDPClient::OnCtrlCoolTimeCancel( OBJID objid, CAr & ar )
-{
-	CMover* pPlayer	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pPlayer ) ) 
-	{
-		if( pPlayer->IsActiveMover() )
-		{
-			pPlayer->m_dwCtrlReadyId   = NULL_ID;
-			pPlayer->m_dwCtrlReadyTime = 0xffffffff;
-		}
+void CDPClient::OnCtrlCoolTimeCancel(CAr & ar) {
+	if (g_pPlayer) {
+		g_pPlayer->m_dwCtrlReadyId = NULL_ID;
+		g_pPlayer->m_dwCtrlReadyTime = 0xffffffff;
 	}
 }
 
@@ -11971,7 +11934,7 @@ void CDPClient::OnCommonPlace( OBJID objid, CAr & ar )
 			break;
 		case COMMONPLACE_QUAKE:
 			{
-				CWorld* pWorld = ((CMover*)pObj)->GetWorld();
+				CWorld* pWorld = pObj->GetWorld();
 				
 				if( pWorld )
 				{
