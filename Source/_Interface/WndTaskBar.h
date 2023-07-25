@@ -41,7 +41,7 @@ public:
 	void SetItemSlot( int nSlot );
 	BOOL CheckAddSkill( int nSkillStyleSrc, int nQueueDest );
 	BOOL UseSkillQueue( CCtrl* pTargetObj );
-	LPSKILL GetCurrentSkillQueue();
+	[[nodiscard]] LPSKILL GetCurrentSkillQueue() const;
 	BOOL SetSkillQueue( int nIndex, DWORD skillId, CTexture* pTexture = NULL );
 
 	void OnEndSkill( void );

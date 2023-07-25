@@ -1465,16 +1465,12 @@ void CWndTaskBar::OnLButtonUp(UINT nFlags, CPoint point)
 
 }
 
-LPSKILL CWndTaskBar::GetCurrentSkillQueue()
-{
-	LPSKILL pSkill = NULL;
-	LPSHORTCUT pShortcut = &m_aSlotQueue[ m_nUsedSkillQueue ];
-
-	if( pShortcut && pShortcut->IsEmpty() == FALSE )
-		pSkill = g_pPlayer->GetSkill( pShortcut->m_dwId );
-
-	return pSkill;
+LPSKILL CWndTaskBar::GetCurrentSkillQueue() const {
+	const SHORTCUT & pShortcut = m_aSlotQueue[m_nUsedSkillQueue];
+	if (pShortcut.IsEmpty()) return nullptr;
+	return g_pPlayer->GetSkill(pShortcut.m_dwId);
 }
+
 //
 // 스킬큐 실행 고!
 //
@@ -1494,12 +1490,12 @@ BOOL CWndTaskBar::UseSkillQueue( CCtrl* pTargetObj )
 		if( pTargetObj->GetType() == OT_OBJ )		// 오브젝트가 OT_OBJ(배경)이면 선택 안한걸로 간주함.
 			m_idTarget = NULL_ID;
 		else
-			m_idTarget = ((CCtrl*)pTargetObj)->GetId();		// OT_OBJ가 아니면 아이디를 가져옴
+			m_idTarget = pTargetObj->GetId();		// OT_OBJ가 아니면 아이디를 가져옴
 	}
 	else
 		m_idTarget = NULL_ID;		// 타겟을 선택하지 않았으면 NULL_ID
-	CMover *pTargetMover = (CMover*)pTargetObj;		// prj.GetMover( m_idTarget );
-	if( IsInvalidObj( pTargetMover ) )		// 거시기한 타겟이었으면 타겟 안한걸로 간주.
+
+	if( IsInvalidObj( pTargetObj ) )		// 거시기한 타겟이었으면 타겟 안한걸로 간주.
 		m_idTarget = NULL_ID;
 
 	
@@ -1507,35 +1503,37 @@ BOOL CWndTaskBar::UseSkillQueue( CCtrl* pTargetObj )
 	
 	LPSHORTCUT pShortcut = &m_aSlotQueue[ m_nUsedSkillQueue ];
 
-	if( pShortcut->IsEmpty() == FALSE )
-	{
-		LPSKILL pSkill = g_pPlayer->GetSkill( pShortcut->m_dwId );
-		if( pSkill == NULL )	return FALSE;
+	if (pShortcut->IsEmpty()) {
+		g_WndMng.m_pWndWorld->SetNextSkill(NEXTSKILL_NONE);	// 액션스킬이 비어있으면 취소.
+
+		return FALSE;
+	}
+
+	LPSKILL pSkill = g_pPlayer->GetSkill( pShortcut->m_dwId );
+	if( pSkill == NULL )	return FALSE;
 		
-		if( g_pPlayer->IsBullet( pSkill->GetProp() ) == FALSE )
-			return FALSE;
+	if( g_pPlayer->IsBullet( pSkill->GetProp() ) == FALSE )
+		return FALSE;
 
-		m_nExecute = 1;		// 1 스킬바사용 실행대기중 
-		// 여기엔 m_idTarget이 NULL_ID가 들어갈수도 있다.
-		if( g_pPlayer->CMD_SetUseSkill( m_idTarget, pShortcut->m_dwId, SUT_QUEUESTART ) == 0 )		// 실행할 명령을 셋팅. 이동 + 스킬사용이 합쳐진 명령.
-		{
-			OnCancelSkill();	// 첫스킬부터 실패했다면 스킬큐 사용을 취소.
-		} else
-		{	// success
-			// 1단계 쓸때는 ap가 소모되지 않는다.
-			const ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
-			if( pItemProp )
-			{   // 손에 들고 있는게 스태프나 치어스틱이 아닐때만 NEXTSKILL_NONE로 변경. 안하면 스킬이 이어지지 않음.
-				if( pItemProp->dwItemKind3 != IK3_STAFF && pItemProp->dwItemKind3 != IK3_CHEERSTICK )			
-					g_WndMng.m_pWndWorld->SetNextSkill( NEXTSKILL_NONE );	// 2006/06/12 스킬큐를 실행했으니 스킬큐사용 명령 클리어.-xuzhu-
-			}
-
-		}
-		return TRUE;
+	m_nExecute = 1;		// 1 스킬바사용 실행대기중 
+	// 여기엔 m_idTarget이 NULL_ID가 들어갈수도 있다.
+	if( g_pPlayer->CMD_SetUseSkill( m_idTarget, pShortcut->m_dwId, SUT_QUEUESTART ) == 0 )		// 실행할 명령을 셋팅. 이동 + 스킬사용이 합쳐진 명령.
+	{
+		OnCancelSkill();	// 첫스킬부터 실패했다면 스킬큐 사용을 취소.
 	} else
-		g_WndMng.m_pWndWorld->SetNextSkill( NEXTSKILL_NONE );	// 액션스킬이 비어있으면 취소.
+	{	// success
+		// 1단계 쓸때는 ap가 소모되지 않는다.
+		const ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
+		if( pItemProp )
+		{   // 손에 들고 있는게 스태프나 치어스틱이 아닐때만 NEXTSKILL_NONE로 변경. 안하면 스킬이 이어지지 않음.
+			if( pItemProp->dwItemKind3 != IK3_STAFF && pItemProp->dwItemKind3 != IK3_CHEERSTICK )			
+				g_WndMng.m_pWndWorld->SetNextSkill( NEXTSKILL_NONE );	// 2006/06/12 스킬큐를 실행했으니 스킬큐사용 명령 클리어.-xuzhu-
+		}
 
-	return FALSE;
+	}
+	return TRUE;
+
+
 }
 
 BOOL CWndTaskBar::Process( void )

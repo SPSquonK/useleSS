@@ -5041,37 +5041,32 @@ BOOL CWndWorld::UseFocusObj( CCtrl* pFocusObj )
 	return TRUE;
 }
 
-BOOL CWndWorld::UseSkillToFocusObj( CCtrl* pFocusObj )
-{
-//	if( pFocusObj && IsValidObj( pFocusObj ) && pFocusObj->GetType() != OT_OBJ )
-//	if( pFocusObj && pFocusObj->GetType() != OT_OBJ )
-	{
-		CWndTaskBar* pTaskBar = g_WndMng.m_pWndTaskBar;
-		BOOL bRet = pTaskBar->UseSkillQueue( (CCtrl*)pFocusObj );
-		LPSKILL pSkill = pTaskBar->GetCurrentSkillQueue();
-		if( bRet )
-		{
-			const ItemProp *pItemProp = g_pPlayer->GetActiveHandItemProp();
-			if( pItemProp )
-			{   
-				ItemProp* pSkillProp;
-				if(pSkill != NULL)				
-					pSkillProp = prj.GetSkillProp( pSkill->dwSkill );
+BOOL CWndWorld::UseSkillToFocusObj(CCtrl * pFocusObj) {
+	CWndTaskBar * pTaskBar = g_WndMng.m_pWndTaskBar;
+	const BOOL bRet = pTaskBar->UseSkillQueue(pFocusObj);
+	if (!bRet) return FALSE;
 
-				// 손에 들고 있는게 스태프나 치어스틱이 아닐때만 자동공격.
-				if( pItemProp->dwItemKind3 != IK3_STAFF && pItemProp->dwItemKind3 != IK3_CHEERSTICK && 
-					pSkillProp != NULL && pSkillProp->dwExeTarget != EXT_SELFCHGPARAMET )
-				{
-					if( g_Option.m_bAutoAttack )		// 여기야여기 - 자동공격 ON
-						m_bAutoAttack = TRUE;		// 스킬공격 시작되면 자동공격도 시작.
-				}
-			}
-		}
-		return bRet;
+	if (!g_Option.m_bAutoAttack) return TRUE; // 여기야여기 - 자동공격 ON
+
+	const ItemProp * pItemProp = g_pPlayer->GetActiveHandItemProp();
+	if (!pItemProp) return TRUE;
+
+	const SKILL * pSkill = pTaskBar->GetCurrentSkillQueue();
+	if (!pSkill) return TRUE;
+
+	const ItemProp * pSkillProp = pSkill->GetProp();
+	if (!pSkillProp) return TRUE;
+
+	// 손에 들고 있는게 스태프나 치어스틱이 아닐때만 자동공격.
+	if( pItemProp->dwItemKind3 != IK3_STAFF && pItemProp->dwItemKind3 != IK3_CHEERSTICK && 
+		pSkillProp->dwExeTarget != EXT_SELFCHGPARAMET )
+	{
+		m_bAutoAttack = TRUE;		// 스킬공격 시작되면 자동공격도 시작.
 	}
-	
-	return FALSE;
+
+	return TRUE;
 }
+
 CObj* CWndWorld::PickObj( POINT point, BOOL bOnlyNPC )
 {
 	CWorld* pWorld = g_WorldMng();
