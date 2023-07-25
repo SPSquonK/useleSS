@@ -401,9 +401,7 @@ void CWndCommItemCtrl::DrawSkill( C2DRender* p2DRender, CPoint* pPoint, int x, i
 			|| dwSkillID == II_SYS_SYS_SCR_AMPESS
 			)
 		{
-			for( MAPBUFF::iterator it2 = g_pPlayer->m_buffs.m_mapBuffs.begin(); it2 != g_pPlayer->m_buffs.m_mapBuffs.end(); ++it2 )
-			{
-				IBuff* ptr2	= it2->second;
+			for (const auto & [_, ptr2] : g_pPlayer->m_buffs.m_mapBuffs) {
 				if( dwSkillID == II_SYS_SYS_SCR_AMPESE )	// 중복되지 않는 ES증폭의 두루마리 defineitem에서 처리 잘못되어 따로 분기
 				{
 					if( ptr2->GetId() == dwSkillID )

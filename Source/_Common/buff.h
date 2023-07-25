@@ -243,7 +243,7 @@ protected:
 private:
 	BOOL	Overwrite( IBuff* pBuff );
 	void	PrepareBS( IBuff* pBuff );
-	BOOL	IsBSFull();
+	[[nodiscard]] bool IsBSFull() const;
 	IBuff*	GetFirstBS();
 #endif	// __DBSERVER
 	////////////////////////////////////////
@@ -272,8 +272,6 @@ private:
 	friend	class	CWndWorld;
 	friend	class	CMover;
 #endif	// __CLIENT
-// chipi_090217
-	size_t	GetRemoveBuffSize();
 };
 
 

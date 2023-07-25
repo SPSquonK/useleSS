@@ -627,8 +627,9 @@ CBuffMgr::~CBuffMgr()
 
 void CBuffMgr::Clear()
 {
-	for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
-		SAFE_DELETE( i->second );
+	for (auto & [_, ptr] : m_mapBuffs) {
+		SAFE_DELETE(ptr);
+	}
 	m_mapBuffs.clear();
 }
 
@@ -675,23 +676,17 @@ BOOL CBuffMgr::HasBuff( WORD wType, WORD wId ) const {
 	return m_mapBuffs.contains(Key(wId, wType)) ? TRUE : FALSE;
 }
 
-IBuff* CBuffMgr::GetBuff( WORD wType, WORD wId )
-{
-	MAPBUFF::iterator i	= m_mapBuffs.find( Key( wId, wType ) );
-	if( i != m_mapBuffs.end() )
-		return i->second;
-	return NULL;
+IBuff * CBuffMgr::GetBuff(WORD wType, WORD wId) {
+	const auto i = m_mapBuffs.find(Key(wId, wType));
+	return i != m_mapBuffs.end() ? i->second : nullptr;
 }
 
-IBuff* CBuffMgr::GetBuffByIk3( DWORD dwIk3 )
-{
-	for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
-	{
-		IBuff* pBuff	= i->second;
-		if( pBuff->IsIk3( dwIk3 ) )
+IBuff * CBuffMgr::GetBuffByIk3(DWORD dwIk3) {
+	for (auto & [_key, pBuff] : m_mapBuffs) {
+		if (pBuff->IsIk3(dwIk3))
 			return pBuff;
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool CBuffMgr::HasBuffByIk3(const DWORD dwIk3) const {
@@ -769,34 +764,28 @@ void CBuffMgr::PrepareBS( IBuff* pBuff )
 	if( pBuff->GetType() == BUFF_SKILL && IsBSFull() )
 	{
 		IBuff* pFirst	= GetFirstBS();
-		//ItemProp* pProp	= pBuff->GetProp();
-		//if( pProp && pProp->nEvildoing >= 0 )
+
 		if( pFirst )
 			RemoveBuff( pFirst, FALSE );
 	}
 }
 
-int CBuffMgr::IsBSFull()
-{
-	int nNum	= 0;
-	for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
-	{
-		IBuff* pBuff	= i->second;
-		if( pBuff->GetType() == BUFF_SKILL )
-			nNum++;
+bool CBuffMgr::IsBSFull() const {
+	size_t nNum = 0;
+	for (IBuff * pBuff : m_mapBuffs | std::views::values) {
+		if (pBuff->GetType() == BUFF_SKILL) {
+			++nNum;
+		}
 	}
 	return nNum >= MAX_SKILLBUFF_COUNT;
 }
 
-IBuff* CBuffMgr::GetFirstBS()
-{
-	for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
-	{
-		if( i->second->GetType() == BUFF_SKILL )
-		{
-			ItemProp* pProp = i->second->GetProp();
-			if( pProp && pProp->nEvildoing >= 0 )
-				return i->second;
+IBuff * CBuffMgr::GetFirstBS() {
+	for (IBuff * pBuff : m_mapBuffs | std::views::values) {
+		if (pBuff->GetType() == BUFF_SKILL) {
+			ItemProp * pProp = pBuff->GetProp();
+			if (pProp && pProp->nEvildoing >= 0)
+				return pBuff;
 		}
 	}
 
@@ -805,28 +794,27 @@ IBuff* CBuffMgr::GetFirstBS()
 
 void CBuffMgr::Process()
 {
-	std::vector<LONG> vTemp;
-	for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
-	{
-		IBuff* pBuff	= i->second;
-		BOOL bExpired	= pBuff->Process( GetMover(), this->GetCurrentTime() );
+	std::stack<std::pair<WORD, WORD>> vTemp;
+
+	for (IBuff * pBuff : m_mapBuffs | std::views::values) {
+		const BOOL bExpired	= pBuff->Process( GetMover(), this->GetCurrentTime() );
 		if( bExpired )
-			vTemp.push_back( MAKELONG( pBuff->GetId(), pBuff->GetType() ) );
+			vTemp.emplace( pBuff->GetId(), pBuff->GetType() );
 	}
+
 	while( !vTemp.empty() )
 	{
-		LONG l	= vTemp.back();
-		RemoveBuff( HIWORD( l ), LOWORD( l ), FALSE );
-		vTemp.pop_back();
+		auto pair = vTemp.top();
+		RemoveBuff( pair.second, pair.first, FALSE );
+		vTemp.pop();
 	}
 }
 
 void CBuffMgr::RemoveBuffs( DWORD dwFlags, DWORD dwParam )
 {
-	std::vector<LONG> vTemp;
-	for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
-	{
-		IBuff* pBuff	= i->second;
+	std::stack<std::pair<WORD, WORD>> vTemp;
+	for (IBuff * pBuff : m_mapBuffs | std::views::values) {
+
 		if(
 			( ( dwFlags & RBF_UNCONDITIONAL )
 				&& !pBuff->IsIk1( IK1_HOUSING )	// 하우징 버프는 "버프해제" 명령으로 삭제 안됨.
@@ -840,24 +828,23 @@ void CBuffMgr::RemoveBuffs( DWORD dwFlags, DWORD dwParam )
 			|| ( ( dwFlags & RBF_ATTACKER ) && pBuff->IsAttacker( GetMover(), dwParam ) )
 		)
 		{
-			vTemp.push_back( MAKELONG( pBuff->GetId(), pBuff->GetType() ) );
+			vTemp.emplace( pBuff->GetType(), pBuff->GetId() );
 			if( dwFlags & RBF_ONCE )
 				break;
 		}
 	}
 	while( !vTemp.empty() )
 	{
-		LONG l	= vTemp.back();
-		RemoveBuff( HIWORD( l ), LOWORD( l ) );
-		vTemp.pop_back();
+		auto l	= vTemp.top();
+		RemoveBuff( l.first, l.second );
+		vTemp.pop();
 	}
 }
 
 DWORD CBuffMgr::GetDisguise()
 {
-	for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
-	{
-		DWORD dwIndex	= i->second->GetDisguise();
+	for (IBuff * pBuff : m_mapBuffs | std::views::values) {
+		DWORD dwIndex	= pBuff->GetDisguise();
 		if( dwIndex != NULL_ID )
 			return dwIndex;
 	}
@@ -868,9 +855,7 @@ DWORD CBuffMgr::GetDisguise()
 #ifdef __WORLDSERVER
 IBuff* CBuffMgr::GetBuffPet()
 {
-	for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
-	{
-		IBuff* pBuff	= i->second;
+	for (IBuff * pBuff : m_mapBuffs | std::views::values) {
 		if( pBuff->GetType() == BUFF_PET )
 			return pBuff;
 	}
@@ -898,13 +883,12 @@ void CBuffMgr::Serialize( CAr & ar )
 {
 	if( ar.IsStoring() )
 	{
-		// ar << m_mapBuffs.size();
-		// chipi_090217
-		ar << m_mapBuffs.size() - GetRemoveBuffSize();
-		for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
-		{
-			if( !i->second->GetRemove() )	// chipi_090217
-				i->second->Serialize( ar, GetMover() );
+		auto pSize = ar.PushBack<size_t>(0);
+		for (const auto & [_, pBuff] : m_mapBuffs) {
+			if (!pBuff->GetRemove()) {
+				pBuff->Serialize(ar, GetMover());
+				++*pSize;
+			}
 		}
 	}
 	else
@@ -931,9 +915,7 @@ void CBuffMgr::Serialize( CAr & ar )
 CBuffMgr& CBuffMgr::operator =( CBuffMgr & bm )
 {
 	Clear();
-	for( MAPBUFF::iterator i = bm.m_mapBuffs.begin(); i != bm.m_mapBuffs.end(); ++i )
-	{
-		IBuff* pSource	= i->second;
+	for (const auto & [_, pSource] : bm.m_mapBuffs) {
 		IBuff* pDest	= CreateBuff( pSource->GetType() );
 		*pDest	= *pSource;
 		bool bResult	= Add( pDest );
@@ -946,19 +928,18 @@ CBuffMgr& CBuffMgr::operator =( CBuffMgr & bm )
 #ifdef __CLIENT
 int CBuffMgr::GetCommercialCount()
 {
-	int nCount	= 0;
-	for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
-	{
-		if( i->second->IsCommercial() )
-			nCount++;
-	}
-	return nCount;
+	return static_cast<int>(
+		std::ranges::count_if(
+			m_mapBuffs | std::views::values,
+			[](IBuff * pBuff) { return pBuff->IsCommercial(); }
+		)
+		);
 }
 
-void CBuffMgr::ClearInst()
-{
-	for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
-		i->second->SetInst( 0 );
+void CBuffMgr::ClearInst() {
+	for (IBuff * pBuff : m_mapBuffs | std::views::values) {
+		pBuff->SetInst(0);
+	}
 }
 #endif	// __CLIENT
 
@@ -966,9 +947,7 @@ void CBuffMgr::ClearInst()
 void CBuffMgr::ToString( char* szString )
 {
 	char szBuff[256]	= { 0,};
-	for( MAPBUFF::iterator i = m_mapBuffs.begin(); i != m_mapBuffs.end(); ++i )
-	{
-		IBuff* pBuff	= i->second;
+	for (const auto & [_, pBuff] : m_mapBuffs) {
 		if( pBuff->GetType() == BUFF_EQUIP )
 			continue;
 		if( pBuff->GetType() == BUFF_ITEM )
@@ -985,17 +964,4 @@ void CBuffMgr::ToString( char* szString )
 }
 
 #endif	// DBSERVER
-
-// chipi_090217
-size_t CBuffMgr::GetRemoveBuffSize()
-{
-	size_t nCount = 0;
-	for( MAPBUFF::iterator it=m_mapBuffs.begin(); it!=m_mapBuffs.end(); it++ )
-	{
-		if( it->second->GetRemove() )
-			nCount++;
-	}
-
-	return nCount;
-}
 

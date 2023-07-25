@@ -7882,9 +7882,7 @@ void CWndWorld::RenderExpBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BUFFICON_
 	else if( dwItemID == II_SYS_SYS_SCR_AMPESE)
 		IsOverlap = FALSE;
 
-	for( MAPBUFF::iterator it = g_pPlayer->m_buffs.m_mapBuffs.begin(); it != g_pPlayer->m_buffs.m_mapBuffs.end(); ++it )
-	{
-		IBuff* ptr	= it->second;
+	for (const auto & [_, ptr] : g_pPlayer->m_buffs.m_mapBuffs) {
 		if( dwItemID == II_SYS_SYS_SCR_AMPESE ) // 중복되지 않는 ES증폭의 두루마리 defineitem에서 처리 잘못되어 따로 분기
 		{
 			if( ptr->GetId() == dwItemID )
@@ -8189,9 +8187,7 @@ void CWndWorld::RenderBuff(C2DRender *p2DRender)
 	BUFFICON_INFO* pInfo;
 	BOOL bExpRander[6];
 	ZeroMemory( bExpRander, sizeof( bExpRander ) );
-	for( MAPBUFF::iterator it = g_pPlayer->m_buffs.m_mapBuffs.begin(); it != g_pPlayer->m_buffs.m_mapBuffs.end(); ++it )
-	{
-		IBuff* pBuff	= it->second;
+	for (const auto & [_, pBuff] : g_pPlayer->m_buffs.m_mapBuffs) {
 		WORD wType	= pBuff->GetType();
 		WORD wId	= pBuff->GetId();
 
@@ -8247,9 +8243,7 @@ void CWndWorld::RenderBuff(C2DRender *p2DRender)
 
 	if( g_Party.m_nModeTime[PARTY_PARSKILL_MODE] || bNearByLeader )
 	{
-		for( MAPBUFF::iterator it2 = m_buffs.m_mapBuffs.begin(); it2 != m_buffs.m_mapBuffs.end(); ++it2 )
-		{
-			IBuff* ptr2	= it2->second;
+		for (const auto & [_, ptr2] : m_buffs.m_mapBuffs) {
 			pInfo = &left;
 			RenderBuffIcon( p2DRender, ptr2, FALSE, pInfo, ptMouse );		// 
 		}
@@ -8346,9 +8340,7 @@ void CWndWorld::RenderMoverBuff( CMover* pMover, C2DRender *p2DRender)
 	BOOL bExpRander = FALSE;
 	
 	// 일반 스킬 버프 표시
-	for( MAPBUFF::iterator i = pMover->m_buffs.m_mapBuffs.begin(); i != pMover->m_buffs.m_mapBuffs.end(); ++i )
-	{
-		IBuff* pBuff	= i->second;
+	for (const auto & [_, pBuff] : pMover->m_buffs.m_mapBuffs) {
 		WORD wType	= pBuff->GetType();
 		DWORD dwSkillID	= pBuff->GetId();
 		ItemProp* pItem = NULL;

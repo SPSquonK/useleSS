@@ -1288,9 +1288,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 
 								DWORD	dwSkillTimeTmp = 0;
 								CWndWorld *pWndWorld = (CWndWorld *)g_WndMng.m_pWndWorld;
-								for( MAPBUFF::iterator i = pWndWorld->m_buffs.m_mapBuffs.begin(); i != pWndWorld->m_buffs.m_mapBuffs.end(); ++i )
-								{
-									IBuff* ptr	= i->second;
+								for (const auto & [_, ptr] : pWndWorld->m_buffs.m_mapBuffs) {
 									if( ptr->GetId() == pShortcut->m_dwId )	
 										dwSkillTimeTmp = ptr->GetTotal();
 								}
