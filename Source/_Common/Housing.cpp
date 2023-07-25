@@ -72,7 +72,7 @@ CHousing* CHousing::GetInstance()
 
 void CHousing::GetHousingList(std::vector<HOUSINGINFO> & vHousingList )
 {
-	vHousingList.assign( m_vecHousingInfo.begin(), m_vecHousingInfo.end() );
+	vHousingList = m_vecHousingInfo;
 }
 
 #endif // __CLIENT

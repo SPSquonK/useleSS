@@ -979,7 +979,7 @@ void CSecretRoomContinent::SecretRoomContOpen()
 		else // 순위안에 들었으면 각 비밀의 방에 출현시킬 몬스터 목록을 준비한다.
 		{
 			(*it).nWarState = MONSTER_NORMAL;
-			(*it).vecMonster.assign( CSecretRoomMng::GetInstance()->m_vecNormalMonster.begin(), CSecretRoomMng::GetInstance()->m_vecNormalMonster.end() );
+			(*it).vecMonster = CSecretRoomMng::GetInstance()->m_vecNormalMonster;
 			it++;
 		}
 	}
@@ -1153,7 +1153,7 @@ void CSecretRoomContinent::SetSecretRoomContKill( DWORD dwWorldId, DWORD dwMonst
 				case MONSTER_NORMAL :
 					{
 						m_vecSecretRoomTender[i].nWarState = MONSTER_MIDBOSS;
-						m_vecSecretRoomTender[i].vecMonster.assign( CSecretRoomMng::GetInstance()->m_vecMidBossMonster.begin(), CSecretRoomMng::GetInstance()->m_vecMidBossMonster.end() );
+						m_vecSecretRoomTender[i].vecMonster = CSecretRoomMng::GetInstance()->m_vecMidBossMonster;
 						UpdateInfoToAllMember( SECRETROOM_WARSTATE, i );
 						SetSecretRoomContKill( dwWorldId, NULL_ID, FALSE );
 					}
@@ -1162,7 +1162,7 @@ void CSecretRoomContinent::SetSecretRoomContKill( DWORD dwWorldId, DWORD dwMonst
 				case MONSTER_MIDBOSS :
 					{
 						m_vecSecretRoomTender[i].nWarState = MONSTER_BOSS;
-						m_vecSecretRoomTender[i].vecMonster.assign( CSecretRoomMng::GetInstance()->m_vecBossMonster.begin(), CSecretRoomMng::GetInstance()->m_vecBossMonster.end() );
+						m_vecSecretRoomTender[i].vecMonster = CSecretRoomMng::GetInstance()->m_vecBossMonster;
 						UpdateInfoToAllMember( SECRETROOM_WARSTATE, i );
 						// 모든 구성원을 보스 방으로 텔레포트
 						for( DWORD j=0; j<m_vecSecretRoomTender[i].vecLineUpMember.size(); j++ )

@@ -574,11 +574,7 @@ void CEventLua::SetSpawnEvent( BYTE nId, BOOL bState )
 				m_Lua.Pop( 1 );
 			}
 
-			const auto it = m_mapSpawnList.find( nId );
-			if( it == m_mapSpawnList.end() )
-				m_mapSpawnList.insert( make_pair( nId, vecTemp ) );
-			else
-				it->second.assign( vecTemp.begin(), vecTemp.end() );
+			m_mapSpawnList.insert_or_assign(nId, vecTemp);
 
 			// 완료 리스트에서 재적용된 이벤트를 제거한다.
 			for( auto itVec=m_vecEndSpawnEvent.begin(); itVec!=m_vecEndSpawnEvent.end(); )

@@ -2155,7 +2155,6 @@ BOOL CMonsterSkill::ApplySkill( CMover* pAttacker, CMover* pTarget, DWORD dwAtkM
 		return FALSE;
 
 	std::vector<__MONSTERSKILL> &vecMonsterSkill	= it->second;
-//	vecMonsterSkill.assign( it->second.begin(), it->second.end() );
 	
 	// 사용될 스킬을 결정한다.
 	BOOL bSuccess = FALSE;

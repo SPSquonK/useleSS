@@ -24,7 +24,7 @@ BOOL CMiniGameTyping::Excute( CUser* pUser, __MINIGAME_PACKET* pMiniGamePacket )
 	{
 		MP.nState = MP_OPENWND;
 		MakeQuestion();
-		MP.vecszData.assign( m_vecTyping.begin(), m_vecTyping.end() );
+		MP.vecszData = m_vecTyping;
 		SendExtPacket( pUser, MP );
 		return bReturn;
 	}

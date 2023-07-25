@@ -212,8 +212,8 @@ void CInstanceDungeonBase::DestroyAllDungeonByDungeonID( DWORD dwDungeonId )
 	VEC_IDINFO* pvecTemp = GetDungeonVector( dwDungeonId );
 	if( pvecTemp )
 	{
-		VEC_IDINFO vecTemp;
-		vecTemp.assign( pvecTemp->begin(), pvecTemp->end() );
+		VEC_IDINFO vecTemp = *pvecTemp;
+
 		for( VEC_IDINFO::iterator itVec=vecTemp.begin(); itVec!=vecTemp.end(); itVec++ )
 #ifdef __CORESERVER
 			DestroyDungeon( (*itVec), dwDungeonId );		// 090525 현재까지 사용할 일 없다^^

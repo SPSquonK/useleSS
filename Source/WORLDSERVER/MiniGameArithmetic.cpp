@@ -12,7 +12,7 @@ CMiniGameArithmetic::CMiniGameArithmetic( CMiniGameBase* pMiniGame )
 {
 	CMiniGameArithmetic* pMiniGameArithmetic = static_cast<CMiniGameArithmetic*>( pMiniGame );
 
-	m_vecnPrimeNumber.assign( pMiniGameArithmetic->m_vecnPrimeNumber.begin(), pMiniGameArithmetic->m_vecnPrimeNumber.end() );
+	m_vecnPrimeNumber = pMiniGameArithmetic->m_vecnPrimeNumber;
 }
 
 CMiniGameArithmetic::~CMiniGameArithmetic(void)

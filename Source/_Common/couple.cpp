@@ -309,7 +309,7 @@ void CCoupleProperty::LoadSkillLevel( CScript & s )
 	for( int i = 1; i <(int)( m_vSkills.size() ); i++ )
 	{
 		if( m_vSkills[i].empty() )
-			m_vSkills[i].assign( m_vSkills[i-1].begin(), m_vSkills[i-1].end() );
+			m_vSkills[i] = m_vSkills[i-1];
 	}
 }
 

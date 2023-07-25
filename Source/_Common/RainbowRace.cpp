@@ -115,7 +115,7 @@ void CRainbowRace::SendMinigamePacket( int nGameKey, int nState, int nParam1, in
 void CRainbowRace::SendMinigameExtPacket(std::vector<std::string> & vecszData, int nGameKey, int nState, int nParam1, int nParam2 )
 {
 	__MINIGAME_EXT_PACKET MiniGameExtPacket( m_wNowGame, nState, nParam1, nParam2 );
-	MiniGameExtPacket.vecszData.assign( vecszData.begin(), vecszData.end() );
+	MiniGameExtPacket.vecszData = vecszData;
 	
 	if( nGameKey != RMG_MAX )
 		MiniGameExtPacket.wNowGame = GetGameKeyToNowGame( nGameKey );
@@ -694,8 +694,7 @@ void CRainbowRaceMng::SetPrevRanking(std::vector<DWORD> & vecPrevRanking )
 	if( !g_eLocal.GetState( EVE_RAINBOWRACE ) )
 		return;
 
-	m_vecPrevRanking.clear();
-	m_vecPrevRanking.assign( vecPrevRanking.begin(), vecPrevRanking.end() );
+	m_vecPrevRanking = vecPrevRanking;
 }
 
 std::vector<DWORD>	CRainbowRaceMng::GetPrevRanking()

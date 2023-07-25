@@ -3095,7 +3095,7 @@ void CDPDatabaseClient::OnSecretRoomTenderInfo( CAr & ar, DPID, DPID )
 		__SECRETROOM_TENDER srTender;
 		srTender.dwGuildId = dwGuildId;
 		srTender.nPenya = nPenya;
-		srTender.vecLineUpMember.assign( vecMemberId.begin(), vecMemberId.end() );
+		srTender.vecLineUpMember = vecMemberId;
 		pSRCont->m_vecSecretRoomTender.push_back( srTender );
 	}
 }
