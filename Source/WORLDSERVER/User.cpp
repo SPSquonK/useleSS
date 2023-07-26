@@ -6602,13 +6602,8 @@ void CUserMng::AddLEventInitialize() {
 	Broadcast<SNAPSHOTTYPE_L_EVENT_INITIALIZE>();
 }
 
-void CUserMng::AddLEventTick( ILordEvent* pEvent )
-{
-	CAr ar;
-	ar << NULL_ID << SNAPSHOTTYPE_L_EVENT_TICK;
-	pEvent->SerializeTick( ar );
-	GETBLOCK( ar, lpBuf, uBufSize );
-	AddBlock( lpBuf, uBufSize );
+void CUserMng::AddLEventTick(const ILordEvent & pEvent) {
+	Broadcast<SNAPSHOTTYPE_L_EVENT_TICK>(pEvent.AsTickView());
 }
 
 void CUserMng::AddLordSkillUse( CUser* pUser, u_long idTarget, int nSkill )

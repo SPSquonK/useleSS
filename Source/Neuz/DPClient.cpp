@@ -14159,7 +14159,7 @@ void CDPClient::OnLordSkillTick( CAr & ar )
 void CDPClient::OnLEventTick( CAr & ar )
 {	// 군주 이벤트 지속 시간 처리
 	ILordEvent* pEvent		= CCLord::Instance()->GetEvent();
-	pEvent->SerializeTick( ar );
+	ar >> pEvent->AsTickView();
 	pEvent->EraseExpiredComponents();
 }
 

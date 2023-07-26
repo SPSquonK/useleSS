@@ -1566,11 +1566,9 @@ void CDPTrans::SendLordSkillTick( CLordSkill* pSkills )
 	SEND( ar, this, DPID_ALLPLAYERS );
 }
 
-void CDPTrans::SendLEventTick( ILordEvent* pEvent )
+void CDPTrans::SendLEventTick( const ILordEvent & pEvent )
 {	// 해당 군주 이벤트의 남아있는 틱을 전송
-	BEFORESENDDUAL( ar, PACKETTYPE_L_EVENT_TICK, DPID_UNKNOWN, DPID_UNKNOWN );
-	pEvent->SerializeTick( ar );
-	SEND( ar, this, DPID_ALLPLAYERS );
+	BroadcastPacket<PACKETTYPE_L_EVENT_TICK>(pEvent.AsTickView());
 }
 
 void CDPTrans::SendTaxInfo( DPID dpId, BOOL bConnect, BOOL bToAllClient )

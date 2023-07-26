@@ -358,12 +358,13 @@ void CLord::Serialize( CAr & ar )
 	if (ar.IsStoring()) {
 		ar << m_idPlayer;
 		ar << *m_pElection;
+		ar << *m_pEvent;
 	} else {
 		ar >> m_idPlayer;
 		ar >> *m_pElection;
+		ar >> *m_pEvent;
 	}
 
-	m_pEvent->Serialize( ar );
 	m_pSkills->SerializeTick( ar );
 }
 
@@ -549,51 +550,43 @@ float ILordEvent::GetIFactor() {
 	return fExpFactor;
 }
 
-void ILordEvent::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_vComponents.size();
-		for (const CLEComponent & component : m_vComponents) {
-			ar << component;
-		}
+
+CAr & operator<<(CAr & ar, const ILordEvent & self) {
+	ar << self.m_vComponents.size();
+	for (const CLEComponent & component : self.m_vComponents) {
+		ar << component;
 	}
-	else
-	{
-		Clear();
-		size_t nSize;
-		ar >> nSize;
-		for( size_t i = 0; i < nSize; i++ )
-		{
-			CLEComponent pComponent;
-			ar >> pComponent;
-			AddComponent( pComponent, false );
-		}
-	}
+	return ar;
 }
 
-void ILordEvent::SerializeTick( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_vComponents.size();
-		for (const CLEComponent & component : m_vComponents) {
-			ar << component.GetIdPlayer() << component.GetTick();
-		}
+CAr & operator>>(CAr & ar, ILordEvent & self) {
+	self.m_vComponents.clear();
+	size_t nSize;
+	ar >> nSize;
+	for (size_t i = 0; i < nSize; i++) {
+		CLEComponent pComponent;
+		ar >> pComponent;
+		self.AddComponent(pComponent, false);
 	}
-	else
-	{
-		size_t nSize;
-		ar >> nSize;
-		for( size_t i = 0; i < nSize; i++ )
-		{
-			u_long idPlayer;
-			int nTick;
-			ar >> idPlayer >> nTick;
+	return ar;
+}
 
-			SetComponentTick(idPlayer, nTick);
-		}
+CAr & operator<<(CAr & ar, ILordEvent::ConstTickView view) {
+	ar << view.self->m_vComponents.size();
+	for (const CLEComponent & component : view.self->m_vComponents) {
+		ar << component.GetIdPlayer() << component.GetTick();
 	}
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, ILordEvent::TickView view) {
+	size_t nSize;
+	ar >> nSize;
+	for (size_t i = 0; i < nSize; i++) {
+		const auto [idPlayer, nTick] = ar.Extract<u_long, int>();
+		view.self->SetComponentTick(idPlayer, nTick);
+	}
+	return ar;
 }
 
 void ILordEvent::EraseExpiredComponents() {

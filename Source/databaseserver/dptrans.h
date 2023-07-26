@@ -185,7 +185,7 @@ public:
 	// 해당 군주 스킬의 재사용 대기 시간을 전송
 	void	SendLordSkillTick( CLordSkill* pSkills );
 	// 해당 군주 이벤트의 남아있는 틱을 전송
-	void	SendLEventTick( ILordEvent* pEvent ); 
+	void	SendLEventTick( const ILordEvent & pEvent ); 
 private:
 	// /군주입찰
 	void	OnElectionAddDeposit( CAr & ar, DPID dpid, DPID dpidCache, DPID dpidUser, LPBYTE lpBuf, u_long uBufSize );

@@ -578,7 +578,7 @@ void CLEvent::OnTimer( void )
 {	// 틱
 	// 모든 군주 이벤트의 시간을 감소시킨다
 	BOOL bExpired	= DecrementAllComponentTick();
-	CDPTrans::GetInstance()->SendLEventTick( this );
+	CDPTrans::GetInstance()->SendLEventTick( *this );
 	// 시간 만료된 이벤트가 있다면 제거한다
 	if( bExpired )	
 		EraseExpiredComponents();

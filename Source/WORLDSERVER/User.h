@@ -901,7 +901,7 @@ public:
 	void	AddElectionIncVote( u_long idPlayer, u_long idElector );
 	void	AddLEventCreate(const CLEComponent & pComponent);
 	void	AddLEventInitialize( void );
-	void	AddLEventTick( ILordEvent* pEvent );
+	void	AddLEventTick( const ILordEvent & pEvent );
 	void	AddLordSkillUse( CUser* pUser, u_long idTarget, int nSkill );
 	void	AddQueryPlayerData( u_long idPlayer );
 	void	AddTaxInfo( void );
