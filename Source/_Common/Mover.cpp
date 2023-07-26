@@ -7383,7 +7383,10 @@ int __IsEndQuestCondition( CMover* pMover, QuestId nQuestId )
 #ifdef __WORLDSERVER
 #include "User.h"
 #endif // __WORLDSERVER
-int __IsBeginQuestCondition( CMover* pMover, QuestId nQuestId )
+
+
+
+bool IsOkQuestContidion( CMover* pMover, QuestId nQuestId , bool isBegin )
 {
 	const QuestProp* pQuestProp = nQuestId.GetProp();
 	if( pQuestProp )
@@ -7396,6 +7399,7 @@ int __IsBeginQuestCondition( CMover* pMover, QuestId nQuestId )
 			return 0;
 
 #ifdef __WORLDSERVER
+if (isBegin) {
 		// 시작 아이템이 존재할 때 인벤토리에 빈칸이 있는지 검사
 		int nItemCount = 0;
 		for( int j=0; j<4; j++ )
@@ -7408,6 +7412,8 @@ int __IsBeginQuestCondition( CMover* pMover, QuestId nQuestId )
 			return 0;
 		}
 		// 시작 아이템이 존재할 때 인벤토리에 빈칸이 있는지 검사_END
+
+}
 #endif // __WORLDSERVER
 		// 이전 퀘스트 1,2,3,4,5,6
 		for( int i = 0; i < 6; i++ )
@@ -7463,8 +7469,17 @@ int __IsBeginQuestCondition( CMover* pMover, QuestId nQuestId )
 			}
 		}
 		// 레벨 14
-		if( pQuestProp->m_nBeginCondLevelMin == 0 || ( pMover->GetLevel() >= pQuestProp->m_nBeginCondLevelMin && pMover->GetLevel() <= pQuestProp->m_nBeginCondLevelMax ) )
+if (isBegin) {
+
+		if( pQuestProp->m_nBeginCondLevelMin == 0 ||
+                         ( pMover->GetLevel() >= pQuestProp->m_nBeginCondLevelMin && pMover->GetLevel() <= pQuestProp->m_nBeginCondLevelMax ) )
 			nResult++;
+
+} else {
+		if( 
+pMover->GetLevel() < pQuestProp->m_nBeginCondLevelMin && pMover->GetLevel() + 5 >= pQuestProp->m_nBeginCondLevelMin )
+			nResult++;
+}
 		// 파티 여부 15
 		if( pQuestProp->m_nBeginCondParty == 0 )
 			nResult++;
@@ -7712,319 +7727,15 @@ int __IsBeginQuestCondition( CMover* pMover, QuestId nQuestId )
 	return 0;
 }
 
+
+int __IsBeginQuestCondition( CMover* pMover, QuestId nQuestId )
+{
+	return IsOkQuestContidion(static_cast<CUser *>(pMover), nQuestId, true) ? 1 : 0;
+}
+
 int __IsNextLevelQuest( CMover* pMover, QuestId nQuestId )
 {
-	const QuestProp* pQuestProp = nQuestId.GetProp();
-	if( pQuestProp )
-	{
-		int nResult = 0;
-		LPQUEST pCurQuest = pMover->GetQuest( nQuestId );
-		BOOL bComplete = pMover->IsCompleteQuest( nQuestId );
-		// 퀘스트가 존재하거나, 이미 완료된 적이 있는 퀘스트는 조건 성립 안됨. 반복하기 위해서는 완전히 제거하여 완료 배열에 없어여 한다.
-		if( pCurQuest || bComplete ) 
-			return 0;
-
-		// 이전 퀘스트 1,2,3,4,5,6
-		for( int i = 0; i < 6; i++ )
-		{
-			if( pQuestProp->m_anBeginCondPreviousQuest[ i ] == QuestIdNone ) 
-				nResult++;
-			else
-			{
-				LPQUEST pPreQuest = pMover->GetQuest( pQuestProp->m_anBeginCondPreviousQuest[ i ] );
-				BOOL bPreComplete = pMover->IsCompleteQuest( pQuestProp->m_anBeginCondPreviousQuest[ i ] );
-				if( pQuestProp->m_nBeginCondPreviousQuestType == 0 )
-				{
-					if( pPreQuest || bPreComplete )
-						nResult++;
-				}
-				else
-				if( pQuestProp->m_nBeginCondPreviousQuestType == 1 )
-				{
-					if( pPreQuest == NULL && bPreComplete )
-						nResult++;
-				}
-				else
-				if( pQuestProp->m_nBeginCondPreviousQuestType == 2 )
-				{
-					if( pPreQuest && bPreComplete == FALSE )
-						nResult++;
-				}
-			}
-		}
-		// 이전 퀘스트 7,8,9,10,11,12
-		for( int i = 0; i < 6; i++ )
-		{
-			if( pQuestProp->m_anBeginCondExclusiveQuest[ i ] == QuestIdNone ) 
-				nResult++;
-			else
-			{
-				LPQUEST pPreQuest = pMover->GetQuest( pQuestProp->m_anBeginCondExclusiveQuest[ i ] );
-				BOOL bPreComplete = pMover->IsCompleteQuest( pQuestProp->m_anBeginCondPreviousQuest[ i ] );
-				if( pPreQuest == NULL && bPreComplete == FALSE )
-					nResult++;
-			}
-		}
-		// 직업 13
-		if( pQuestProp->m_nBeginCondJobNum == 0 )
-			nResult++;
-		else
-		for( int i = 0; i < pQuestProp->m_nBeginCondJobNum; i++ )
-		{
-			if( pQuestProp->m_nBeginCondJob[ i ] == pMover->GetJob() )
-			{
-				nResult++;
-				break;
-			}
-		}
-		// 레벨 14
-		if( pMover->GetLevel() < pQuestProp->m_nBeginCondLevelMin && pMover->GetLevel() + 5 >= pQuestProp->m_nBeginCondLevelMin )
-			nResult++;
-		// 파티 여부 15
-		if( pQuestProp->m_nBeginCondParty == 0 )
-			nResult++;
-		else
-		{
-			BOOL bParty = FALSE;
-			BOOL bLeader = FALSE;
-			int nSize = 0;
-#ifdef __WORLDSERVER
-			CParty* pParty = g_PartyMng.GetParty( pMover->m_idparty );
-			if( pParty )
-			{
-				bParty = TRUE;
-				nSize = pParty->GetSizeofMember();
-				
-			}
-#else
-			bParty = g_Party.IsMember( g_pPlayer->m_idPlayer );
-			nSize = g_Party.GetSizeofMember();
-#endif
-			if( pQuestProp->m_nBeginCondParty == 1 && bParty == FALSE )
-				nResult++;
-			else
-			if( pQuestProp->m_nBeginCondParty == 2 && bParty == TRUE )
-			{
-				if( pQuestProp->m_nBeginCondPartyLeader == -1 || pQuestProp->m_nBeginCondPartyLeader == bLeader )
-				{
-					if( pQuestProp->m_nBeginCondPartyNum == 0 )
-						nResult++;
-					else
-					if( pQuestProp->m_nBeginCondPartyNumComp == 0 )
-					{
-						if( nSize == pQuestProp->m_nBeginCondPartyNum )
-							nResult++;
-					}
-					else
-					if( pQuestProp->m_nBeginCondPartyNumComp == 1 )
-					{
-						if( nSize >= pQuestProp->m_nBeginCondPartyNum )
-							nResult++;
-					}	
-					else
-					if( pQuestProp->m_nBeginCondPartyNumComp == -1 )
-					{
-						if( nSize <= pQuestProp->m_nBeginCondPartyNum )
-							nResult++;
-					}			
-				}
-			}
-		}
-		// 길드 여부 16
-		if( pQuestProp->m_nBeginCondGuild == 0 )
-			nResult++;
-		else
-		{
-			BOOL bGuild = FALSE;
-			BOOL bLeader = FALSE;
-			int nSize = 0;
-			/*
-#ifdef __WORLDSERVER
-			g_PartyMng.m_AddRemoveLock.Enter( theLineFile );
-			CParty* pParty = g_PartyMng.GetParty( pMover->m_idparty );
-			if( pParty )
-			{
-				bParty = TRUE;
-				nSize = pParty->GetSizeofMember();
-			}
-			g_PartyMng.m_AddRemoveLock.Leave( theLineFile );
-#else
-			bParty = g_Party.IsMember( g_pPlayer->m_idPlayer );
-			nSize = g_Party.GetSizeofMember();
-#endif
-			*/
-			if( pQuestProp->m_nBeginCondGuild == 1 && bGuild == FALSE )
-				nResult++;
-			else
-			if( pQuestProp->m_nBeginCondGuild == 2 && bGuild == TRUE )
-			{
-				if( pQuestProp->m_nBeginCondGuildLeader == -1 || pQuestProp->m_nBeginCondGuildLeader == bLeader )
-				{
-					if( pQuestProp->m_nBeginCondGuildNum == 0 )
-						nResult++;
-					else
-					if( pQuestProp->m_nBeginCondGuildNumComp == 0 )
-					{
-						if( nSize == pQuestProp->m_nBeginCondGuildNum )
-							nResult++;
-					}
-					else
-					if( pQuestProp->m_nBeginCondGuildNumComp == 1 )
-					{
-						if( nSize >= pQuestProp->m_nBeginCondGuildNum )
-							nResult++;
-					}	
-					else
-					if( pQuestProp->m_nBeginCondGuildNumComp == -1 )
-					{
-						if( nSize <= pQuestProp->m_nBeginCondGuildNum )
-							nResult++;
-					}			
-				}
-			}
-		}
-		// 성별 17
-		if( pQuestProp->m_nBeginCondSex == -1 || pQuestProp->m_nBeginCondSex == pMover->GetSex() )
-			nResult++;
-		// 스킬 18
-		if( pQuestProp->m_nBeginCondSkillIdx == 0 )
-			nResult++;
-		else
-		{
-			LPSKILL lpSkill = pMover->GetSkill( pQuestProp->m_nBeginCondSkillIdx );
-			if( lpSkill )
-			{
-				if( pMover->CheckSkill( pQuestProp->m_nBeginCondSkillLvl ) && (int)( lpSkill->dwLevel ) >= pQuestProp->m_nBeginCondSkillLvl )
-					nResult++;
-			}
-		}
-		// PK Value 19
-		if( pQuestProp->m_nBeginCondPKValue == 0 )
-			nResult++;
-		else
-		{
-			if( pQuestProp->m_nBeginCondPKValue <= pMover->GetPKValue() )			
-				nResult++;
-		}
-		// 아이템이 없는것 검사 MAX_QUESTCONDITEM
-		if( pQuestProp->m_nBeginCondNotItemNum == 0 )
-			nResult += MAX_QUESTCONDITEM;
-		else
-		for( int i = 0; i < MAX_QUESTCONDITEM; i++ )
-		{
-			if( i < pQuestProp->m_nBeginCondNotItemNum )
-			{
-				QuestPropItem* pBeginCondItem = &pQuestProp->m_paBeginCondNotItem[ i ];
-				if( pBeginCondItem->m_nSex == -1 || pBeginCondItem->m_nSex == pMover->GetSex() )
-				{
-					if( pBeginCondItem->m_nType == 0 )
-					{
-						if( pBeginCondItem->m_nJobOrItem == -1 || pBeginCondItem->m_nJobOrItem == pMover->GetJob() )
-						{
-							if( pBeginCondItem->m_nItemIdx == 0 || pMover->GetItemNum( pBeginCondItem->m_nItemIdx ) < pBeginCondItem->m_nItemNum ) 
-								nResult++;
-						}
-						else
-							nResult++;
-					}
-					else
-					if( pBeginCondItem->m_nType == 1 )
-					{
-						if( pBeginCondItem->m_nJobOrItem == -1 || pMover->GetItemNum( pBeginCondItem->m_nJobOrItem ) )
-						{
-							if( pBeginCondItem->m_nItemIdx == 0 || pMover->GetItemNum( pBeginCondItem->m_nItemIdx ) < pBeginCondItem->m_nItemNum ) 
-								nResult++;
-						}
-						else
-							nResult++;
-					}
-				}
-			}
-			else
-				nResult++;
-		}
-		// 변신 21 
-		if( pQuestProp->m_nBeginCondDisguiseMoverIndex == 0 )
-			nResult++;
-		else
-		{
-			if( pQuestProp->m_nBeginCondDisguiseMoverIndex == -1 && pMover->IsDisguise() == FALSE )
-				nResult++;
-			else
-			if( pQuestProp->m_nBeginCondDisguiseMoverIndex == pMover->GetIndex() )
-				nResult++;
-		}
-
-		if( pQuestProp->m_nBeginCondPetExp == 0 )
-			nResult++;
-		else
-		{
-			CPet* pPet	= pMover->GetPet();
-			if( pPet && pPet->GetExpPercent() >= pQuestProp->m_nBeginCondPetExp )
-				nResult++;
-		}
-		if( pQuestProp->m_nBeginCondPetLevel == -1 )
-			nResult++;
-		else
-		{
-			CPet* pPet	= pMover->GetPet();
-			if( pPet && pPet->GetLevel() == pQuestProp->m_nBeginCondPetLevel )
-				nResult++;
-		}
-		if( pQuestProp->m_nBeginCondTutorialState == -1
-			|| pMover->GetTutorialState() >= pQuestProp->m_nBeginCondTutorialState )
-			nResult++;
-
-		// 수집 아이템 갯수  21 + MAX_QUESTCONDITEM
-		if( pQuestProp->m_nBeginCondItemNum == 0 )
-			nResult += MAX_QUESTCONDITEM;
-		else
-		for( int i = 0; i < MAX_QUESTCONDITEM; i++ )
-		{
-			if( i < pQuestProp->m_nBeginCondItemNum )
-			{
-				QuestPropItem* pBeginCondItem = &pQuestProp->m_paBeginCondItem[ i ];
-				if( pBeginCondItem->m_nSex == -1 || pBeginCondItem->m_nSex == pMover->GetSex() )
-				{
-					if( pBeginCondItem->m_nType == 0 )
-					{
-						if( pBeginCondItem->m_nJobOrItem == -1 || pBeginCondItem->m_nJobOrItem == pMover->GetJob() )
-						{
-							if( pBeginCondItem->m_nItemIdx == 0 || pMover->GetItemNum( pBeginCondItem->m_nItemIdx ) >= pBeginCondItem->m_nItemNum ) 
-								nResult++;
-						}
-						else
-							nResult++;
-					}
-					else
-					if( pBeginCondItem->m_nType == 1 )
-					{
-						if( pBeginCondItem->m_nJobOrItem == -1 || pMover->GetItemNum( pBeginCondItem->m_nJobOrItem ) )
-						{
-							if( pBeginCondItem->m_nItemIdx == 0 || pMover->GetItemNum( pBeginCondItem->m_nItemIdx ) >= pBeginCondItem->m_nItemNum ) 
-								nResult++;
-						}
-						else
-							nResult++;
-					}
-				}
-			}
-			else
-				nResult++;
-		}
-		if( pQuestProp->m_nBeginCondTSP == 0 )
-			++nResult;
-		else
-		{
-			if( pMover->GetCampusPoint() >= pQuestProp->m_nBeginCondTSP )
-				++nResult;
-		}
-
-		if( nResult == 24 + MAX_QUESTCONDITEM + MAX_QUESTCONDITEM )
-			return 1;
-	}
-
-	return 0;
+	return IsOkQuestContidion(static_cast<CUser *>(pMover), nQuestId, false) ? 1 : 0;
 }
 
 void CMover::SetPKValue( int nValue )
