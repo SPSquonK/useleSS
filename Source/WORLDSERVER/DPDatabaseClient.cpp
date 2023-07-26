@@ -2916,7 +2916,7 @@ void CDPDatabaseClient::OnLEventTick( CAr & ar, DPID, DPID )
 {
 	election::OutputDebugString( "CDPDatabaseClient.OnLEventTick" );
 	ILordEvent* pEvent		= CSLord::Instance()->GetEvent();
-	ar >> pEvent->AsTickView();
+	pEvent->ReadTick(ar);
 	g_UserMng.AddLEventTick( *pEvent );
 	pEvent->EraseExpiredComponents();
 }

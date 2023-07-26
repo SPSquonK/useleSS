@@ -6603,7 +6603,9 @@ void CUserMng::AddLEventInitialize() {
 }
 
 void CUserMng::AddLEventTick(const ILordEvent & pEvent) {
-	Broadcast<SNAPSHOTTYPE_L_EVENT_TICK>(pEvent.AsTickView());
+	Broadcast<SNAPSHOTTYPE_L_EVENT_TICK>(
+		[&](CAr & ar) { pEvent.WriteTick(ar); }
+	);
 }
 
 void CUserMng::AddLordSkillUse( CUser* pUser, u_long idTarget, int nSkill )

@@ -42,6 +42,9 @@ std::is_same_v<T,
 	concept CanReserve = requires(T & obj, size_t size) {
 		obj.reserve(size);
 	};
+
+	template<typename T>
+	concept ArchivableByCall = requires (T & obj, CAr & ar) { obj(ar); };
 }
 
 
@@ -138,6 +141,11 @@ public:
 
 	[[deprecated("operator>>(CAr, Vector> is disabled in Server, use CAr::ReadMap instead")]]
 	CAr & operator>>(ArHelper::Vector auto & values) = delete;
+
+	// Lambda evaluation
+	CAr & operator<<(ArHelper::ArchivableByCall auto && lambda) {
+		lambda(*this); return *this;
+	}
 
 #endif
 

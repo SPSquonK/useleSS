@@ -571,20 +571,20 @@ CAr & operator>>(CAr & ar, ILordEvent & self) {
 	return ar;
 }
 
-CAr & operator<<(CAr & ar, ILordEvent::ConstTickView view) {
-	ar << view.self->m_vComponents.size();
-	for (const CLEComponent & component : view.self->m_vComponents) {
+CAr & ILordEvent::WriteTick(CAr & ar) const {
+	ar << m_vComponents.size();
+	for (const CLEComponent & component : m_vComponents) {
 		ar << component.GetIdPlayer() << component.GetTick();
 	}
 	return ar;
 }
 
-CAr & operator>>(CAr & ar, ILordEvent::TickView view) {
+CAr & ILordEvent::ReadTick(CAr & ar) {
 	size_t nSize;
 	ar >> nSize;
 	for (size_t i = 0; i < nSize; i++) {
 		const auto [idPlayer, nTick] = ar.Extract<u_long, int>();
-		view.self->SetComponentTick(idPlayer, nTick);
+		SetComponentTick(idPlayer, nTick);
 	}
 	return ar;
 }

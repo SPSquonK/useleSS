@@ -228,17 +228,10 @@ public:
 	float	GetEFactor( void );
 	float	GetIFactor( void );
 
-
-	struct      TickView {       ILordEvent * self; };
-	struct ConstTickView { const ILordEvent * self; };
-	[[nodiscard]] TickView       AsTickView()       { return TickView{ this }; }
-	[[nodiscard]] ConstTickView  AsTickView() const { return ConstTickView{ this }; }
-
 	friend CAr & operator<<(CAr & ar, const ILordEvent & self);
 	friend CAr & operator>>(CAr & ar, ILordEvent & self);
-	friend CAr & operator<<(CAr & ar, ILordEvent::TickView view) { return ar << ConstTickView{ view.self }; }
-	friend CAr & operator<<(CAr & ar, ILordEvent::ConstTickView view);
-	friend CAr & operator>>(CAr & ar, ILordEvent::TickView view);
+	CAr & WriteTick(CAr & ar) const;
+	CAr & ReadTick(CAr & ar);
 
 	BOOL	Initialize( const char* szFile );
 	void	EraseExpiredComponents();
