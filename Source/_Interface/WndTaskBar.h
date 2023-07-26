@@ -39,7 +39,7 @@ public:
 	void UpdateItem();
 	void PutTooTip( LPSHORTCUT pShortcut, CPoint point, CRect* pRect );
 	void SetItemSlot( int nSlot );
-	BOOL CheckAddSkill( int nSkillStyleSrc, int nQueueDest );
+	bool CheckAddSkill( int nSkillStyleSrc, int nQueueDest );
 	BOOL UseSkillQueue( CCtrl* pTargetObj );
 	[[nodiscard]] LPSKILL GetCurrentSkillQueue() const;
 	BOOL SetSkillQueue( int nIndex, DWORD skillId, CTexture* pTexture = NULL );
@@ -47,7 +47,7 @@ public:
 	void OnEndSkill( void );
 	void OnCancelSkill( void );
 	LPSHORTCUT Select( CPoint point );
-	void RemoveSkillQueue( int nIndex, BOOL bSend = TRUE );
+	void RemoveSkillQueue( int nIndex, bool bSend = true );
 	void UpdateAllTaskbarTexture();
 	
 

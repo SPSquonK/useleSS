@@ -878,32 +878,37 @@ void CWndTaskBar::OnSize(UINT nType, int cx, int cy)
 {
 	CWndNeuz::OnSize( nType, cx, cy );
 }
-void CWndTaskBar::RemoveSkillQueue( int nIndex, BOOL bSend )
+void CWndTaskBar::RemoveSkillQueue( int nIndex, bool bSend )
 {
 	if( m_nExecute )	return;		// 스킬큐 실행중엔 빼지지도 않는다.
-BACK:
-	if( !m_aSlotQueue[ nIndex ].IsEmpty() )
-	{
-		const ItemProp* pItemProp = g_pPlayer->GetSkill( m_aSlotQueue[ nIndex ].m_dwId )->GetProp();
-		DWORD dwComboStyleSrc = pItemProp->dwComboStyle;
-		int i = NULL;
-		for( i = nIndex; i < MAX_SLOT_QUEUE - 1; i++ )
-		{
-			memcpy( &m_aSlotQueue[ i ], &m_aSlotQueue[ i + 1 ], sizeof( SHORTCUT ) );
-			m_aSlotQueue[ i ].m_dwIndex = i;
+
+	while (true) {
+		if (m_aSlotQueue[nIndex].IsEmpty()) break;
+
+		const ItemProp * pItemProp = g_pPlayer->GetSkill(m_aSlotQueue[nIndex].m_dwId)->GetProp();
+		const DWORD dwComboStyleSrc = pItemProp->dwComboStyle;
+
+		for (int i = nIndex; i < MAX_SLOT_QUEUE - 1; i++) {
+			m_aSlotQueue[i] = m_aSlotQueue[i + 1];
+			m_aSlotQueue[i].m_dwIndex = i;
 		}
-		m_aSlotQueue[i].Empty();
+
+		m_aSlotQueue[MAX_SLOT_QUEUE - 1].Empty();
 		m_nCurQueueNum--;
-		if( m_nCurQueueNum < 0 ) 
+
+		if (m_nCurQueueNum < 0)
 			m_nCurQueueNum = 0;
-		if( CheckAddSkill( dwComboStyleSrc, nIndex /*- 1*/ ) == FALSE )
-			goto BACK;
+
+		if (CheckAddSkill(dwComboStyleSrc, nIndex)) {
+			break;
+		}
 	}
+
 	if( bSend )
 		g_DPlay.SendSkillTaskBar( );
 	// 스킬을 지우는 곳 서버로 보내야함.	
-
 }
+
 void CWndTaskBar::OnRButtonUp( UINT nFlags, CPoint point )
 {
 	CRect rect = RECT_APPLET;
@@ -981,7 +986,7 @@ void CWndTaskBar::SetShortcut( int nIndex, ShortcutType dwShortcut, DWORD dwType
 
 	g_DPlay.SendAddInTaskbar(where, nIndex, pShortcut);
 }
-BOOL CWndTaskBar::CheckAddSkill( int nSkillStyleSrc, int nQueueDest  )
+bool CWndTaskBar::CheckAddSkill( int nSkillStyleSrc, int nQueueDest  )
 {
 	/*
 	START -> FINISH, FG 
@@ -1144,9 +1149,8 @@ BOOL CWndTaskBar::SetSkillQueue( int nIndex, const DWORD skillId, CTexture* pTex
 	{
 		if( !CheckAddSkill( dwComboStyleSrc, nIndex ) )		// Src를 nIndex에 넣어도 되는지 체크
 			return FALSE;
-		for( int i = m_nCurQueueNum; i > nIndex; i-- )
-		{
-			memcpy( &m_aSlotQueue[ i ], &m_aSlotQueue[ i - 1 ], sizeof( SHORTCUT ) );
+		for (int i = m_nCurQueueNum; i > nIndex; i--) {
+			m_aSlotQueue[i] = m_aSlotQueue[i - 1];
 		}
 		pShortcut = &m_aSlotQueue[ nIndex ];
 		m_nCurQueueNum++;
@@ -1200,7 +1204,6 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			{
 				RemoveSkillQueue( lpShortcut->m_dwIndex );
 				return TRUE;
-				//g_DPlay.SendSkillTaskBar( );
 			}
 			lpShortcut->Empty();
 			return TRUE;
@@ -1260,9 +1263,6 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					//SetForbid( TRUE );
 					return FALSE;
 				}
-				// 오리지날이 액션슬롯이다.
-				//if( lpCurShortcut->m_dwData == 2 )
-				//	RemoveSkillQueue( lpCurShortcut->m_dwIndex );
 			}
 			if( pShortcut->m_dwShortcut == ShortcutType::Skill)
 			{
@@ -1296,9 +1296,6 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				LPSHORTCUT lpCurShortcut = (LPSHORTCUT) pShortcut->m_dwData;
 				if( &m_aSlotItem[ m_nSlotIndex ][ point.x ] == lpCurShortcut )
 					return FALSE;
-				// 오리지날이 액션슬롯이다.
-				//if( lpCurShortcut->m_dwData == 2 )
-				//	RemoveSkillQueue( lpCurShortcut->m_dwIndex );
 			}
 			if( pShortcut->m_dwShortcut == ShortcutType::Chat)
 			{
@@ -1336,8 +1333,8 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 					LPSHORTCUT lpShortcut = (LPSHORTCUT) pShortcut->m_dwData;
 					if( lpShortcut->m_dwData == 2 )
 					{
-						RemoveSkillQueue( lpShortcut->m_dwIndex, FALSE );
-						SetSkillQueue( point.x, pShortcut->m_dwId, pShortcut->m_pTexture );// == FALSE )
+						RemoveSkillQueue( lpShortcut->m_dwIndex, false );
+						SetSkillQueue( point.x, pShortcut->m_dwId, pShortcut->m_pTexture );
 						return TRUE;
 					}
 				}
@@ -1364,7 +1361,6 @@ BOOL CWndTaskBar::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 		if( lpShortcut->m_dwData == 2 )
 		{
 			RemoveSkillQueue( lpShortcut->m_dwIndex );
-			//g_DPlay.SendSkillTaskBar( );
 			return TRUE;
 		}
 		lpShortcut->Empty();
