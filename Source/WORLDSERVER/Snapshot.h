@@ -15,9 +15,10 @@ public:
 	// Proxy class to provide backward compatibility with the
 	// old m_Snapshot.cb++ instructions.
 	struct Cb {
-		friend CSnapshot;
+	private:
 		CSnapshot * m_self;
 
+	public:
 		explicit Cb(CSnapshot * self) : m_self(self) {}
 		
 		// The pointer to self makes it uncopyable
