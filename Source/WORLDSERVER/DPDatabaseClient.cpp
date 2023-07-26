@@ -2855,22 +2855,17 @@ void CDPDatabaseClient::OnLord( CAr & ar, DPID, DPID )
 void CDPDatabaseClient::OnLEventCreate( CAr & ar, DPID, DPID )
 {
 	election::OutputDebugString( "CDPDatabaseClient.OnLEventCreate" );
-	CLEComponent* pComponent	= new CLEComponent;
-	pComponent->Serialize( ar );
-	BOOL bResult;
-	ar >> bResult;
 
-	CUser* pUser	= g_UserMng.GetUserByPlayerID( pComponent->GetIdPlayer() );
+	const auto [pComponent, bResult] = ar.Extract<CLEComponent, BOOL>();
+
+	CUser* pUser	= g_UserMng.GetUserByPlayerID( pComponent.GetIdPlayer() );
 	if( IsValidObj( pUser ) )
 		pUser->SetQuerying( FALSE );
 
-	if( bResult )
-	{
-		ILordEvent* pEvent		= CSLord::Instance()->GetEvent();
-		pEvent->AddComponent( pComponent );
+	if (bResult) {
+		ILordEvent * pEvent = CSLord::Instance()->GetEvent();
+		pEvent->AddComponent(pComponent);
 	}
-	else
-		safe_delete( pComponent );
 }
 
 void CDPDatabaseClient::OnLEventInitialize( CAr & ar, DPID, DPID )

@@ -34,15 +34,13 @@ protected:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-class CLEvent :
-	public ILordEvent
-{
+class CLEvent final : public ILordEvent {
 public:
-		CLEvent( CLord* pLord );
-		virtual	~CLEvent();
+	CLEvent(CLord * pLord) : ILordEvent(pLord) {}
+
 protected:
-	virtual	BOOL	DoTestAddComponent( CLEComponent* pComponent );
-	virtual	BOOL	DoTestInitialize( void );
+	bool DoTestAddComponent(const CLEComponent & pComponent) override;
+	virtual	BOOL	DoTestInitialize(void);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

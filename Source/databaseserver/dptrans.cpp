@@ -1540,12 +1540,9 @@ void CDPTrans::SendLord( DPID dpid )
 	SEND( ar, this, dpid );
 }
 
-void CDPTrans::SendLEventCreate( CLEComponent* pComponent, BOOL bResult )
+void CDPTrans::SendLEventCreate( const CLEComponent & pComponent, BOOL bResult )
 {	// 월드 서버에 군주 이벤트 현재 상태를 전송
-	BEFORESENDDUAL( ar, PACKETTYPE_L_EVENT_CREATE, DPID_UNKNOWN, DPID_UNKNOWN );
-	pComponent->Serialize( ar );
-	ar << bResult;
-	SEND( ar, this, DPID_ALLPLAYERS );
+	BroadcastPacket<PACKETTYPE_L_EVENT_CREATE, CLEComponent, BOOL>(pComponent, bResult);
 }
 
 void CDPTrans::SendLEventInitialize( void )

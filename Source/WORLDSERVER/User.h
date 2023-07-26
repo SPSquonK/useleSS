@@ -899,7 +899,7 @@ public:
 	void	AddElectionAddDeposit( u_long idPlayer, __int64 iDeposit, time_t tCreate );
 	void	AddElectionSetPledge( u_long idPlayer, const char* szPledge );
 	void	AddElectionIncVote( u_long idPlayer, u_long idElector );
-	void	AddLEventCreate( CLEComponent* pComponent );
+	void	AddLEventCreate(const CLEComponent & pComponent);
 	void	AddLEventInitialize( void );
 	void	AddLEventTick( ILordEvent* pEvent );
 	void	AddLordSkillUse( CUser* pUser, u_long idTarget, int nSkill );
@@ -914,6 +914,9 @@ public:
 
 
 public:
+	template<WORD SnapshotId, typename... Ts>
+	void Broadcast(const Ts ... ts);
+
 	template<WORD SnapshotId, typename... Ts>
 	void BroadcastAround(CCtrl * pCenter, const Ts ... ts);
 
@@ -955,6 +958,22 @@ void CUser::SendSnapshotWithTarget(DWORD targetId, const Ts & ... ts) {
 
 #pragma warning( push )
 #pragma warning( disable : 6262 )
+
+template<WORD SnapshotId, typename... Ts>
+void CUserMng::Broadcast(const Ts ... ts) {
+	CAr ar;
+	ar << NULL_ID << SnapshotId;
+	ar.Accumulate<Ts...>(ts ...);
+
+	const std::span<BYTE> buffer = ar.GetBuffer();
+
+	for (auto it = m_users.begin(); it != m_users.end(); ++it) {
+		CUser * pUser = it->second;
+		if (pUser->IsValid() && pUser->GetWorld()) {
+			pUser->AddBlock(buffer.data(), buffer.size());
+		}
+	}
+}
 
 template<WORD SnapshotId, typename... Ts>
 void CUserMng::BroadcastAround(CCtrl * pCenter, const Ts ... ts) {

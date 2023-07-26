@@ -564,12 +564,12 @@ BOOL CLEvent::Restore( CQuery* pQuery )
 		return FALSE;
 	while( pQuery->Fetch() )
 	{
-		int nTick	= pQuery->GetInt( "nTick" );
-		u_long idPlayer		= pQuery->GetInt( "idPlayer" );
-		float fEFactor	= pQuery->GetFloat( "fEFactor" );
-		float fIFactor	= pQuery->GetFloat( "fIFactor" );
-		CLEComponent* pComponent	= new CLEComponent( nTick, idPlayer, fEFactor, fIFactor );
-		AddComponent( pComponent, FALSE );
+		const int nTick	= pQuery->GetInt( "nTick" );
+		const u_long idPlayer		= pQuery->GetInt( "idPlayer" );
+		const float fEFactor	= pQuery->GetFloat( "fEFactor" );
+		const float fIFactor	= pQuery->GetFloat( "fIFactor" );
+		CLEComponent pComponent( nTick, idPlayer, fEFactor, fIFactor );
+		AddComponent( pComponent, false );
 	}
 	return TRUE;
 }
@@ -584,20 +584,22 @@ void CLEvent::OnTimer( void )
 		EraseExpiredComponents();
 }
 
-BOOL CLEvent::DecrementAllComponentTick( void )
+bool CLEvent::DecrementAllComponentTick()
 {	// 모든 군주 이벤트의 남은 시간을 감소시키고 저장한 후
 	// 남은 시간이 0인 이벤트가 있다면 TRUE를 반환한다
-	BOOL bExpired	= FALSE;
-	for( VLEC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
-	{
-		if( ( *i )->Decrement() == 0 )
-			bExpired	= TRUE;
-		m_pLord->GetController()->UpdateLordEventTick( *i );
+	bool bExpired	= false;
+	for (CLEComponent & component : m_vComponents) {
+		if (component.Decrement() == 0) {
+			bExpired = true;
+		}
+
+		m_pLord->GetController()->UpdateLordEventTick(component);
 	}
+
 	return bExpired;
 }
 
-BOOL CLEvent::DoTestAddComponent( CLEComponent* pComponent )
+bool CLEvent::DoTestAddComponent( const CLEComponent & pComponent )
 {	// 추가된 군주 이벤트를 저장하고 전송한다
 	// ILordEvent::AddComponent
 	CLController* pController	= m_pLord->GetController();
@@ -715,9 +717,9 @@ BOOL CLController::IncVote( u_long idPlayer, u_long idElector )
 	return static_cast<BOOL>( GetQueryObject()->GetInt( "bResult" ) );
 }
 
-BOOL CLController::AddLEComponent( CLEComponent* pComponent )
+BOOL CLController::AddLEComponent( const CLEComponent& pComponent )
 {	// 군주 이벤트 생성 저장
-	if( GetQueryObject()->Execute( "uspAddLEComponent %d, %d, %d, %3.2f, %3.2f", g_appInfo.dwSys, pComponent->GetIdPlayer(), pComponent->GetTick(), pComponent->GetEFactor(), pComponent->GetIFactor() ) 
+	if( GetQueryObject()->Execute( "uspAddLEComponent %d, %d, %d, %3.2f, %3.2f", g_appInfo.dwSys, pComponent.GetIdPlayer(), pComponent.GetTick(), pComponent.GetEFactor(), pComponent.GetIFactor() ) 
 		&& GetQueryObject()->Fetch() )
 		return static_cast<BOOL>( GetQueryObject()->GetInt( "bResult" ) );
 	return FALSE;
@@ -733,9 +735,9 @@ BOOL CLController::UpdateLordSkillTick( CLordSkillComponent* pSkill, int nTick )
 	return GetQueryObject()->Execute( "uspLordSkillTick %d, %d, %d", g_appInfo.dwSys, pSkill->GetId(), nTick );
 }
 
-BOOL CLController::UpdateLordEventTick( CLEComponent* pComponent )
+bool CLController::UpdateLordEventTick( const CLEComponent & pComponent )
 {	// 군주 이벤트 남은 시간 저장
-	return GetQueryObject()->Execute( "uspLordEventTick %d, %d, %d", g_appInfo.dwSys, pComponent->GetIdPlayer(), pComponent->GetTick() );
+	return GetQueryObject()->Execute( "uspLordEventTick %d, %d, %d", g_appInfo.dwSys, pComponent.GetIdPlayer(), pComponent.GetTick() );
 }
 ////////////////////////////////////////////////////////////////////////////////
 // 트랜스 서버용 군주 스킬 제어 클래스

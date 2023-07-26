@@ -8248,23 +8248,23 @@ void CWndWorld::RenderEventIcon( C2DRender* p2DRender, BUFFICON_INFO* pInfo, CPo
 {
 	RECT rectHittest;
 	ILordEvent* pEvent	= CCLord::Instance()->GetEvent();
-	for( int i = 0; i < pEvent->GetComponentSize(); i++ )
-	{
-		CLEComponent* pComponent	= pEvent->GetComponentAt( i );
+
+	for (const CLEComponent & rComponent : pEvent->GetComponents()) {
 		pInfo->pt.x	+= ( 32 + 5 );
-		p2DRender->RenderTexture( pInfo->pt, pComponent->GetTexture(), 192 );
-		SetRect( &rectHittest, pInfo->pt.x, pInfo->pt.y, pInfo->pt.x + 32, pInfo->pt.y + 32 );
+		p2DRender->RenderTexture( pInfo->pt, rComponent.GetTexture(), 192 );
+
+		rectHittest = CRect(pInfo->pt, CSize(32, 32));
 		ClientToScreen( &rectHittest );
 		// 군주 %s님이 경험치 %3.1f%%, 드롭률 %3.1f%% 상승 이벤트를 진행 중 입니다."
 		CEditString editString;
 		char szTooltip[255]	= { 0,};
 		sprintf( szTooltip, prj.GetText( TID_GAME_LORD_EVENT_TOOLTIP ),
-			CPlayerDataCenter::GetInstance()->GetPlayerString( pComponent->GetIdPlayer() ),
-			pComponent->GetEFactor() * 100, pComponent->GetIFactor() * 100 );
+			CPlayerDataCenter::GetInstance()->GetPlayerString( rComponent.GetIdPlayer() ),
+			rComponent.GetEFactor() * 100, rComponent.GetIFactor() * 100 );
 		editString.AddString( szTooltip, D3DCOLOR_XRGB( 0, 93, 0 ), ESSTY_BOLD );
-		CString strRest;
-		CTimeSpan timeSpan( 0, 0, pComponent->GetTick(), 0 );
-		strRest.Format( "\n%d", timeSpan.GetTotalMinutes() );
+		
+		CTimeSpan timeSpan( 0, 0, rComponent.GetTick(), 0 );
+		CString strRest; strRest.Format( "\n%d", timeSpan.GetTotalMinutes() );
 		editString	+= strRest;
 		g_toolTip.PutToolTip( TTI_LORD_EVENT, editString, rectHittest, ptMouse, 1 );
 		pInfo->nCount++;

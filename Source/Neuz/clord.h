@@ -59,7 +59,7 @@ public:
 	virtual	~CLEvent();
 	void	UpdateUI();
 protected:
-	virtual	BOOL	DoTestAddComponent( CLEComponent* pComponent );
+	bool DoTestAddComponent(const CLEComponent & pComponent) override;
 	virtual	BOOL	DoTestInitialize( void );
 };
 

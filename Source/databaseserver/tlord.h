@@ -136,11 +136,11 @@ public:
 protected:
 	// 템플릿 메소드 함수
 	// 군주 이벤트 추가에 대한 저장 및 결과 전송
-	virtual	BOOL	DoTestAddComponent( CLEComponent* pComponent );
+	bool DoTestAddComponent(const CLEComponent & pComponent) override;
 	// 군주 이벤트 초기화 적용 및 결과 전송
 	virtual	BOOL	DoTestInitialize( void );
 	// 모든 군주 이벤트의 지속 시간 감소
-	BOOL	DecrementAllComponentTick( void );
+	bool	DecrementAllComponentTick();
 };
 
 // 입찰금 반환을 처리하기 위한 함수자 클래스
@@ -177,13 +177,13 @@ public:
 	// 투표 저장
 	BOOL	IncVote( u_long idPlayer, u_long idElector );
 	// 군주 이벤트 생성 저장
-	BOOL	AddLEComponent( CLEComponent* pComponent );
+	BOOL	AddLEComponent( const CLEComponent & pComponent );
 	// 군주 이벤트 초기화 저장
 	BOOL	InitializeLEvent( void );
 	// 군주 스킬 재사용 대기 시간 저장
 	BOOL	UpdateLordSkillTick( CLordSkillComponent* pSkill, int nTick );
 	// 군주 이벤트 지속 시간 저장
-	BOOL	UpdateLordEventTick( CLEComponent* pComponent );
+	bool	UpdateLordEventTick( const CLEComponent & pComponent );
 	// 처리를 m_pLord에 위임
 	virtual	void	Handler( LPDB_OVERLAPPED_PLUS pov, DWORD dwCompletionKey );
 	// 처리를 m_pLord에 위임

@@ -373,9 +373,6 @@ CLEComponent::CLEComponent()
 nTick( 0 ),
 idPlayer( NULL_ID ),
 fEFactor( 1.0F ),
-#ifdef __CLIENT
-m_pTexture( NULL ),
-#endif	// __CLIENT
 fIFactor( 1.0F )
 {
 }
@@ -385,28 +382,21 @@ CLEComponent::CLEComponent( int t, u_long p, float e, float i )
 nTick( t ),
 idPlayer( p ),
 fEFactor( e ),
-#ifdef __CLIENT
-m_pTexture( NULL ),
-#endif	// __CLIENT
 fIFactor( i )
 {
 }
 
-CLEComponent::~CLEComponent()
-{
+CAr & operator<<(CAr & ar, const CLEComponent & self) {
+	ar << self.nTick << self.idPlayer << self.fEFactor << self.fIFactor;
+	return ar;
 }
 
-void CLEComponent::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-		ar << nTick << idPlayer << fEFactor<< fIFactor;
-	else
-	{
-		ar >> nTick >> idPlayer >> fEFactor >> fIFactor;
+CAr & operator>>(CAr & ar, CLEComponent & self) {
+	ar >> self.nTick >> self.idPlayer >> self.fEFactor >> self.fIFactor;
 #ifdef __CLIENT
-		SetTexture();
+	self.SetTexture();
 #endif	// __CLIENT
-	}
+	return ar;
 }
 
 int CLEComponent::Decrement( void )
@@ -430,15 +420,8 @@ m_pLord( pLord )
 {
 }
 
-ILordEvent::~ILordEvent()
-{
-	Clear();
-}
-
 void ILordEvent::Clear( void )
 {
-	for( auto i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
-		safe_delete( *i );
 	m_vComponents.clear();
 }
 
@@ -524,56 +507,46 @@ void ILordEvent::AddComponent( u_long idPlayer, int iEEvent, int iIEvent )
 #endif	// __DBSERVER
 		return;
 	}
-	CLEComponent* pComponent
-		= new CLEComponent( eTick, idPlayer, m_vEFactor[iEEvent].first, m_vIFactor[iIEvent].first );
+	CLEComponent pComponent( eTick, idPlayer, m_vEFactor[iEEvent].first, m_vIFactor[iIEvent].first );
 	AddComponent( pComponent );
 }
 
-void ILordEvent::AddComponent( CLEComponent* pComponent, BOOL bHook )
-{
-	if( !bHook || DoTestAddComponent( pComponent ) )
-	{
-		m_vComponents.push_back( pComponent );
+void ILordEvent::AddComponent(const CLEComponent & pComponent, bool checkUnique) {
+	if (checkUnique && !DoTestAddComponent(pComponent)) return;
+
+	m_vComponents.push_back(pComponent);
+}
+
+bool ILordEvent::HasComponent(u_long idPlayer) const {
+	return std::ranges::any_of(m_vComponents,
+		[&](const CLEComponent & component) { return component.GetIdPlayer() == idPlayer; }
+	);
+}
+
+void ILordEvent::SetComponentTick(u_long idPlayer, int nTick) {
+	const auto it = std::find_if(m_vComponents.begin(), m_vComponents.end(),
+		[&](const CLEComponent & component) { return component.GetIdPlayer() == idPlayer; }
+	);
+
+	if (it != m_vComponents.end()) {
+		it->SetTick(nTick);
 	}
-	else
-		safe_delete( pComponent );
 }
 
-VLEC::iterator ILordEvent::Remove( VLEC::iterator i )
-{
-	return m_vComponents.erase( i );
-}
-
-CLEComponent* ILordEvent::GetComponent( u_long idPlayer )
-{
-	for( VLEC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
-	{
-		if( ( *i )->GetIdPlayer() == idPlayer )
-			return( *i );
+float ILordEvent::GetEFactor() {
+	float fExpFactor = 1.0F;
+	for (const CLEComponent & component : m_vComponents) {
+		fExpFactor *= component.GetEFactor();
 	}
-	return NULL;
-}
-
-CLEComponent* ILordEvent::GetComponentAt( int i )
-{
-	ASSERT( i >= 0 && i < GetComponentSize() );
-	return m_vComponents[i];
-}
-
-float ILordEvent::GetEFactor()
-{
-	float fExpFactor	= 1.0F;
-	for( VLEC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
-		fExpFactor	+= ( *i )->GetEFactor();
 	return fExpFactor;
 }
 
-float ILordEvent::GetIFactor()
-{
-	float fItemFactor		= 1.0F;
-	for( VLEC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
-		fItemFactor		+= ( *i )->GetIFactor();
-	return fItemFactor;
+float ILordEvent::GetIFactor() {
+	float fExpFactor = 1.0F;
+	for (const CLEComponent & component : m_vComponents) {
+		fExpFactor *= component.GetIFactor();
+	}
+	return fExpFactor;
 }
 
 void ILordEvent::Serialize( CAr & ar )
@@ -581,8 +554,9 @@ void ILordEvent::Serialize( CAr & ar )
 	if( ar.IsStoring() )
 	{
 		ar << m_vComponents.size();
-		for( VLEC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
-			( *i )->Serialize( ar );
+		for (const CLEComponent & component : m_vComponents) {
+			ar << component;
+		}
 	}
 	else
 	{
@@ -591,9 +565,9 @@ void ILordEvent::Serialize( CAr & ar )
 		ar >> nSize;
 		for( size_t i = 0; i < nSize; i++ )
 		{
-			CLEComponent* pComponent	= new CLEComponent;
-			pComponent->Serialize( ar );
-			AddComponent( pComponent, FALSE );
+			CLEComponent pComponent;
+			ar >> pComponent;
+			AddComponent( pComponent, false );
 		}
 	}
 }
@@ -603,10 +577,8 @@ void ILordEvent::SerializeTick( CAr & ar )
 	if( ar.IsStoring() )
 	{
 		ar << m_vComponents.size();
-		for( VLEC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
-		{
-			ar << ( *i )->GetIdPlayer();
-			ar << ( *i )->GetTick();
+		for (const CLEComponent & component : m_vComponents) {
+			ar << component.GetIdPlayer() << component.GetTick();
 		}
 	}
 	else
@@ -618,25 +590,19 @@ void ILordEvent::SerializeTick( CAr & ar )
 			u_long idPlayer;
 			int nTick;
 			ar >> idPlayer >> nTick;
-			CLEComponent* pComponent	= GetComponent( idPlayer );
-			if( pComponent )
-				pComponent->SetTick( nTick );
+
+			SetComponentTick(idPlayer, nTick);
 		}
 	}
 }
 
-void ILordEvent::EraseExpiredComponents( void )
-{
-	for( VLEC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); )
-	{
-		if( ( *i )->GetTick() == 0 )
-		{
-			safe_delete( *i );
-			i	= m_vComponents.erase( i );
-		}
-		else	++i;
-	}
+void ILordEvent::EraseExpiredComponents() {
+	std::erase_if(
+		m_vComponents,
+		[](const CLEComponent & component) { return component.GetTick() == 0; }
+	);
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 namespace	election
 {

@@ -236,33 +236,30 @@ BOOL CLEvent::DoTestInitialize( void )
 	return TRUE;
 }
 
-BOOL CLEvent::DoTestAddComponent( CLEComponent* pComponent )
+bool CLEvent::DoTestAddComponent(const CLEComponent & pComponent )
 {	// 이벤트 시작 화면 출력
 	char lpString[255]	= { 0,};
 	char lpCaption[255]		= { 0,};
 	
-	if( pComponent->GetEFactor() > 0.0F && pComponent->GetIFactor() > 0.0F )
+	if( pComponent.GetEFactor() > 0.0F && pComponent.GetIFactor() > 0.0F )
 	{
 		lstrcpy( lpCaption, prj.GetText( TID_GAME_L_EVENT_CREATE_S001 ) );
-		sprintf( lpString, prj.GetText( TID_GAME_L_EVENT_CREATE_S004 ), CPlayerDataCenter::GetInstance()->GetPlayerString( m_pLord->Get() ), pComponent->GetEFactor() * 100, pComponent->GetIFactor() * 100 );
+		sprintf( lpString, prj.GetText( TID_GAME_L_EVENT_CREATE_S004 ), CPlayerDataCenter::GetInstance()->GetPlayerString( m_pLord->Get() ), pComponent.GetEFactor() * 100, pComponent.GetIFactor() * 100 );
 	}
-	else if( pComponent->GetEFactor() > 0.0F )
+	else if( pComponent.GetEFactor() > 0.0F )
 	{
 		lstrcpy( lpCaption, prj.GetText( TID_GAME_L_EVENT_CREATE_S002 ) );
-		sprintf( lpString, prj.GetText( TID_GAME_L_EVENT_CREATE_S005 ), CPlayerDataCenter::GetInstance()->GetPlayerString( m_pLord->Get() ), pComponent->GetEFactor() * 100 );
+		sprintf( lpString, prj.GetText( TID_GAME_L_EVENT_CREATE_S005 ), CPlayerDataCenter::GetInstance()->GetPlayerString( m_pLord->Get() ), pComponent.GetEFactor() * 100 );
 	}
-	else if( pComponent->GetIFactor() > 0.0F )
+	else if( pComponent.GetIFactor() > 0.0F )
 	{
 		lstrcpy( lpCaption, prj.GetText( TID_GAME_L_EVENT_CREATE_S003 ) );
-		sprintf( lpString, prj.GetText( TID_GAME_L_EVENT_CREATE_S006 ), CPlayerDataCenter::GetInstance()->GetPlayerString( m_pLord->Get() ), pComponent->GetIFactor() * 100 );
+		sprintf( lpString, prj.GetText( TID_GAME_L_EVENT_CREATE_S006 ), CPlayerDataCenter::GetInstance()->GetPlayerString( m_pLord->Get() ), pComponent.GetIFactor() * 100 );
 	}
 	
-//	if( ::GetLanguage() != LANG_GER && ::GetLanguage() != LANG_FRE )
-	{
-		CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
-		if( pWndWorld )
-			g_Caption1.AddCaption( lpCaption, pWndWorld->m_pFontAPITitle, FALSE, D3DCOLOR_ARGB( 255, 255, 255, 153 ) );
-	}
+	CWndWorld* pWndWorld = (CWndWorld*)g_WndMng.GetWndBase( APP_WORLD );
+	if( pWndWorld )
+		g_Caption1.AddCaption( lpCaption, pWndWorld->m_pFontAPITitle, FALSE, D3DCOLOR_ARGB( 255, 255, 255, 153 ) );
 
 	g_WndMng.PutString( lpString, NULL, prj.GetTextColor( TID_ADMIN_ANNOUNCE ), CHATSTY_SYSTEM );
 	UpdateUI();

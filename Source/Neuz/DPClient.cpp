@@ -14137,8 +14137,9 @@ void CDPClient::OnLord( CAr & ar )
 
 void CDPClient::OnLEventCreate( CAr & ar )
 {	// 군주 이벤트 시작 처리
-	CLEComponent* pComponent	= new CLEComponent;
-	pComponent->Serialize( ar );
+	CLEComponent pComponent;
+	ar >> pComponent;
+
 	ILordEvent* pEvent	= CCLord::Instance()->GetEvent();
 	pEvent->AddComponent( pComponent );
 }

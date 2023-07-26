@@ -164,21 +164,23 @@ public:
 	}
 
 ////////////////////////////////////////////////////////////////////////////////
-class CLEComponent
-{
+class CLEComponent final {
 public:
 	CLEComponent();
 	CLEComponent( int t, u_long p, float e, float i );
-	virtual	~CLEComponent();
-	void	Serialize( CAr & ar );
-	int		GetTick( void )		{	return nTick;	}
+
+	friend CAr & operator<<(CAr & ar, const CLEComponent & self);
+	friend CAr & operator>>(CAr & ar,       CLEComponent & self);
+
+	[[nodiscard]] auto GetTick() const noexcept { return nTick; }
+	[[nodiscard]] auto GetIdPlayer() const noexcept { return idPlayer; }
+	[[nodiscard]] auto GetEFactor() const noexcept { return fEFactor; }
+	[[nodiscard]] auto GetIFactor() const noexcept { return fIFactor; }
+
 	void	SetTick( const int nTick )	{	this->nTick	= nTick;	}
-	u_long	GetIdPlayer( void )	{	return idPlayer;	}
-	float	GetEFactor( void )	{	return fEFactor;	}
-	float	GetIFactor( void )	{	return fIFactor;		}
 	int		Decrement( void );
 #ifdef __CLIENT
-	CTexture*	GetTexture( void )	{	return m_pTexture;	}
+	[[nodiscard]] CTexture * GetTexture() const { return m_pTexture; }
 	void	SetTexture( void );
 #endif	// __CLIENT
 
@@ -188,14 +190,13 @@ private:
 	float	fEFactor;
 	float	fIFactor;
 #ifdef __CLIENT
-	CTexture*	m_pTexture;
+	CTexture*	m_pTexture = nullptr;
 #endif	// __CLIENT
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 typedef std::pair<float, __int64>	PFI64;
 typedef std::vector<PFI64>	VPFI64;
-typedef	std::vector<CLEComponent*>	VLEC;
 
 class CLord;
 class ILordEvent
@@ -205,15 +206,19 @@ public:
 protected:
 	ILordEvent( CLord* pLord );
 public:
-	virtual	~ILordEvent();
+	virtual	~ILordEvent() = default;
 
 	void	Clear( void );
-	void	AddComponent( CLEComponent* pComponent, BOOL bHook = TRUE );
+	void	AddComponent( const CLEComponent & pComponent, bool checkUnique = true );
 	void	AddComponent( u_long idPlayer, int iEEvent, int iIEvent );
 	void	Initialize( void );
-	CLEComponent*	GetComponent( u_long idPlayer );
-	CLEComponent*	GetComponentAt( int i );
-	int		GetComponentSize( void )		{	return m_vComponents.size();	} 
+
+	[[nodiscard]] bool HasComponent(u_long idPlayer) const;
+	void SetComponentTick(u_long idPlayer, int nTick);
+
+
+	[[nodiscard]] std::span<const CLEComponent> GetComponents() const { return m_vComponents; }
+
 	__int64		GetCost( int iEEvent, int iIEvent );
 	
 	float	GetEFactor( int iEEvent );
@@ -226,20 +231,17 @@ public:
 	void	Serialize( CAr & ar );
 	BOOL	Initialize( const char* szFile );
 	void	SerializeTick( CAr & ar );
-	void	EraseExpiredComponents( void );
+	void	EraseExpiredComponents();
 
 protected:
-	virtual	BOOL	DoTestAddComponent( CLEComponent* pComponent )	= 0;
+	virtual	bool DoTestAddComponent(const CLEComponent & pComponent) = 0;
 	virtual	BOOL	DoTestInitialize( void )	= 0;
-	
-private:
-	VLEC::iterator	Remove( VLEC::iterator i );
 
 private:
 	VPFI64	m_vEFactor;
 	VPFI64	m_vIFactor;
 protected:
-	VLEC	m_vComponents;
+	std::vector<CLEComponent> m_vComponents;
 	CLord*	m_pLord;
 };
 

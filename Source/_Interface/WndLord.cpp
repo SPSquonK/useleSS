@@ -610,7 +610,7 @@ BOOL CWndLordEvent::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			break;
 
 		case WIDC_BUTTON5:
-			if( !CCLord::Instance()->GetEvent()->GetComponent( g_pPlayer->m_idPlayer ) )
+			if( !CCLord::Instance()->GetEvent()->HasComponent( g_pPlayer->m_idPlayer ) )
 				g_DPlay.SendLEventCreate(m_nEEvent, m_nDEvent);
 			break;
 	};

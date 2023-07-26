@@ -91,20 +91,10 @@ BOOL CSElection::DoTestIncVote( u_long idPlayer, u_long idElector )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-CLEvent::CLEvent( CLord* pLord )
-:
-ILordEvent( pLord )
-{
-}
 
-CLEvent::~CLEvent()
-{
-}
-
-BOOL CLEvent::DoTestAddComponent( CLEComponent* pComponent )
-{
-	g_UserMng.AddLEventCreate( pComponent );
-	return TRUE;
+bool CLEvent::DoTestAddComponent(const CLEComponent & pComponent) {
+	g_UserMng.AddLEventCreate(pComponent);
+	return true;
 }
 
 BOOL CLEvent::DoTestInitialize( void )
@@ -221,7 +211,7 @@ namespace	lordevent
 		ILordEvent* pEvent		= CSLord::Instance()->GetEvent();
 		if( !CSLord::Instance()->IsLord( pUser->m_idPlayer ) )	// is he lord?
 			 return TID_GAME_L_EVENT_CREATE_E001;
-		if( pEvent->GetComponent( pUser->m_idPlayer ) )		// is there no event?
+		if( pEvent->HasComponent( pUser->m_idPlayer ) )		// is there no event?
 			return TID_GAME_L_EVENT_CREATE_E002;
 		if( pUser->IsQuerying() )
 			return TID_GAME_LORD_IS_QUERYING;

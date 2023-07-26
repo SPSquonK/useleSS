@@ -6594,21 +6594,12 @@ void CUserMng::AddElectionIncVote( u_long idPlayer, u_long idElector )
 	AddBlock( lpBuf, uBufSize );
 }
 
-void CUserMng::AddLEventCreate( CLEComponent* pComponent )
-{
-	CAr ar;
-	ar << NULL_ID << SNAPSHOTTYPE_L_EVENT_CREATE;
-	pComponent->Serialize( ar );
-	GETBLOCK( ar, lpBuf, uBufSize );
-	AddBlock( lpBuf, uBufSize );
+void CUserMng::AddLEventCreate(const CLEComponent & pComponent) {
+	Broadcast<SNAPSHOTTYPE_L_EVENT_CREATE, CLEComponent>(pComponent);
 }
 
-void CUserMng::AddLEventInitialize( void )
-{
-	CAr ar;
-	ar << NULL_ID << SNAPSHOTTYPE_L_EVENT_INITIALIZE;
-	GETBLOCK( ar, lpBuf, uBufSize );
-	AddBlock( lpBuf, uBufSize );
+void CUserMng::AddLEventInitialize() {
+	Broadcast<SNAPSHOTTYPE_L_EVENT_INITIALIZE>();
 }
 
 void CUserMng::AddLEventTick( ILordEvent* pEvent )

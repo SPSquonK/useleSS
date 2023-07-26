@@ -176,7 +176,7 @@ public:
 	// 모든 군주 시스템 정보를 월드 서버에 전송
 	void	SendLord( DPID dpid );
 	// 월드 서버에 군주 이벤트 현재 상태를 전송
-	void	SendLEventCreate( CLEComponent* pComponent, BOOL bResult );
+	void	SendLEventCreate( const CLEComponent & pComponent, BOOL bResult );
 	// 월드 서버에 군주 이벤트 초기화를 전송
 	void	SendLEventInitialize( void );
 	// 월드 서버에 군주 스킬 사용 결과를 전송
