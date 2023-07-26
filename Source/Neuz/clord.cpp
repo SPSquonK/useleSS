@@ -82,9 +82,8 @@ BOOL CCElection::DoTestBeginVote( int & nRequirement )
 	// 투표 시작
 	PrintCaption( prj.GetText( TID_GAME_ELECTION_CAPTION_BEGIN_VOTE_01 ) );
 	PrintCaption( prj.GetText( TID_GAME_ELECTION_CAPTION_BEGIN_VOTE_02 ) );
-	for( VSPC::iterator i = m_vCandidates.begin(); i != m_vCandidates.end(); ++i )
-	{
-		SPC ptr	= *i;
+	
+	for (const auto & ptr : m_vCandidates) {
 		if( election::IsActivePlayer( ptr->GetIdPlayer() ) )
 			g_WndMng.OpenMessageBoxUpper( prj.GetText( TID_GAME_ELECTION_BEGIN_VOTE_S001 ) );	// "축하합니다. 최종 10명의 군주 후보가 되셨습니다. 군주보좌관 NPC를 통해 공약을 설정하실 수 있습니다."
 	}

@@ -25,73 +25,67 @@ m_tCreate( tCreate )
 	lstrcpy( m_szPledge, szPledge );
 }
 
-CCandidate::~CCandidate()
-{
-}
-
 __int64 CCandidate::AddDeposit( __int64 iDeposit )
 {
 	m_iDeposit		+= iDeposit;
 	return m_iDeposit;
 }
 
-void CCandidate::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_idPlayer << m_iDeposit << m_nVote;
-		ar << m_tCreate;
-		ar.WriteString( m_szPledge );
-	}
-	else
-	{
-		ar >> m_idPlayer >> m_iDeposit >> m_nVote;
-		ar >> m_tCreate;
-		ar.ReadString( m_szPledge, nMaxPledgeLen );
-	}
+CAr & operator<<(CAr & ar, const CCandidate & self) {
+	ar << self.m_idPlayer << self.m_iDeposit << self.m_nVote;
+	ar << self.m_tCreate;
+	ar.WriteString(self.m_szPledge);
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, CCandidate & self) {
+	ar >> self.m_idPlayer >> self.m_iDeposit >> self.m_nVote;
+	ar >> self.m_tCreate;
+	ar.ReadString(self.m_szPledge);
+	return ar;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void IElection::sProperty::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << nDayOfWeek << nHour << tCandidacy << tVote << fRequirementFactor << nDays;
-		ar << m_vReturnDepositRates.size();
-		for( auto i1 = m_vReturnDepositRates.begin(); i1 != m_vReturnDepositRates.end(); ++i1 )
-			ar << *( i1 );
-		for( int iIndex = 0; iIndex < 2; iIndex++ )
-		{
-			ar << m_vItems[iIndex].size();
-			for( auto i2 = m_vItems[iIndex].begin(); i2 != m_vItems[iIndex].end(); ++i2 )
-				ar << *( i2 );
-		}
+
+CAr & operator<<(CAr & ar, const IElection::sProperty & self) {
+	ar << self.nDayOfWeek << self.nHour << self.tCandidacy << self.tVote << self.fRequirementFactor << self.nDays;
+	
+	ar << self.m_vReturnDepositRates.size();
+	for (const float returnDepositeRate : self.m_vReturnDepositRates) {
+		ar << returnDepositeRate;
 	}
-	else
-	{
-		ar >> nDayOfWeek >> nHour >> tCandidacy >> tVote >> fRequirementFactor >> nDays;
-		m_vReturnDepositRates.clear();
-		size_t nSize;
-		ar >> nSize;
-		float f;
-		for( size_t i = 0; i < nSize; i++ )
-		{
-			ar >> f;
-			m_vReturnDepositRates.push_back( f );
-		}
-		for( int iIndex = 0; iIndex < 2; iIndex++ )
-		{
-			m_vItems[iIndex].clear();
-			ar >> nSize;
-			int n;
-			for( int i = 0; i < nSize; i++ )
-			{
-				ar >> n;
-				m_vItems[iIndex].push_back( n );
-			}
-		}
+
+	for (int iIndex = 0; iIndex < 2; iIndex++) {
+		ar << self.m_vItems[iIndex].size();
+		for (const int item : self.m_vItems[iIndex]) {
+			ar << item;
+		};
 	}
+
+	return ar;
 }
+
+CAr & operator>>(CAr & ar, IElection::sProperty & self) {
+	ar >> self.nDayOfWeek >> self.nHour >> self.tCandidacy >> self.tVote >> self.fRequirementFactor >> self.nDays;
+
+	self.m_vReturnDepositRates.clear();
+	size_t nSize;
+	ar >> nSize;
+	for (size_t i = 0; i < nSize; i++) {
+		ar >> self.m_vReturnDepositRates.emplace_back();
+	}
+
+	for (int iIndex = 0; iIndex < 2; iIndex++) {
+		self.m_vItems[iIndex].clear();
+		ar >> nSize;
+		for (int i = 0; i < nSize; i++) {
+			ar >> self.m_vItems[iIndex].emplace_back();
+		}
+	}
+
+	return ar;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 IElection::IElection( CLord* pLord )
 :
@@ -147,32 +141,34 @@ void IElection::SetProperty( int nDayOfWeek, int nHour, time_t tCandidacy, time_
 	property.tVote	= tVote;
 }
 
-void IElection::Serialize( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_idElection << m_eState << m_tBegin;
-		ar << m_nRequirement;
-		property.Serialize( ar );
-		ar << m_vCandidates.size();
-		for( auto i = m_vCandidates.begin(); i != m_vCandidates.end(); ++i )
-			( *i )->Serialize( ar );
+CAr & operator<<(CAr & ar, const IElection & self) {
+	ar << self.m_idElection << self.m_eState << self.m_tBegin;
+	ar << self.m_nRequirement;
+	ar << self.property;
+
+	ar << self.m_vCandidates.size();
+	for (const auto & pCandidate : self.m_vCandidates) {
+		ar << *pCandidate;
 	}
-	else
-	{
-		m_vCandidates.clear();
-		ar >> m_idElection >> m_eState >> m_tBegin;
-		ar >> m_nRequirement;
-		property.Serialize( ar );
-		size_t nSize;
-		ar >> nSize;
-		for( size_t i = 0; i < nSize; i++ )
-		{
-			CCandidate* pCandidate	= new CCandidate;
-			pCandidate->Serialize( ar );
-			AddCandidate( pCandidate );
-		}
+
+	return ar;
+}
+
+CAr & operator>>(CAr & ar, IElection & self) {
+	ar >> self.m_idElection >> self.m_eState >> self.m_tBegin;
+	ar >> self.m_nRequirement;
+	ar >> self.property;
+
+	self.m_vCandidates.clear();
+	size_t nSize;
+	ar >> nSize;
+	for (size_t i = 0; i < nSize; i++) {
+		CCandidate * pCandidate = new CCandidate;
+		ar >> *pCandidate;
+		self.AddCandidate(pCandidate);
 	}
+
+	return ar;
 }
 
 void IElection::SetNextBegin( void )
@@ -359,12 +355,14 @@ CLord::~CLord()
 
 void CLord::Serialize( CAr & ar )
 {
-	if( ar.IsStoring() )
+	if (ar.IsStoring()) {
 		ar << m_idPlayer;
-	else
+		ar << *m_pElection;
+	} else {
 		ar >> m_idPlayer;
+		ar >> *m_pElection;
+	}
 
-	m_pElection->Serialize( ar );
 	m_pEvent->Serialize( ar );
 	m_pSkills->SerializeTick( ar );
 }

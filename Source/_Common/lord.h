@@ -16,24 +16,28 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 class CAr;
-class	CCandidate
-{
+
+class	CCandidate final {
 public:
-	enum	{	nMaxPledgeLen	= 255, nMinDeposit	= 100000000, nSetPledgeCost	= 1000000	};
+	static constexpr size_t nMaxPledgeLen = 255;
+	static constexpr __int64 nMinDeposit = 100000000;
+	static constexpr int nSetPledgeCost = 1000000;
 
 	CCandidate();
 	CCandidate( u_long idPlayer, __int64 iDeposit, const char* szPledge, int nVote, time_t tCreate );
-	~CCandidate();
+
+	friend CAr & operator<<(CAr & ar, const CCandidate & self);
+	friend CAr & operator>>(CAr & ar, CCandidate & self);
+	
+	[[nodiscard]] u_long GetIdPlayer() const noexcept { return m_idPlayer; }
+	[[nodiscard]] __int64 GetDeposit() const noexcept { return m_iDeposit; }
+	[[nodiscard]] const char * GetPledge() const noexcept { return m_szPledge; }
+	[[nodiscard]] int GetVote() const noexcept { return m_nVote; }
+	[[nodiscard]] time_t GetCreate() const noexcept { return m_tCreate; }
 
 	__int64		AddDeposit( __int64 iDeposit );
 	void	SetPledge( const char*	szPledge )	{	lstrcpy( m_szPledge, szPledge );	}
-	u_long	GetIdPlayer( void )		{	return m_idPlayer;		}
-	const char*		GetPledge( void )	const	{	return m_szPledge;	}
-	__int64		GetDeposit( void )	const	{	return m_iDeposit;	}
 	void	SetVote( int nVote )	{	m_nVote		= nVote;	}
-	int		GetVote( void )		{	return m_nVote;		}
-	void	Serialize( CAr & ar );
-	time_t	GetCreate( void )	{	return m_tCreate;	}
 
 private:
 	u_long	m_idPlayer;
@@ -45,7 +49,6 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 typedef	std::shared_ptr<CCandidate>	SPC;		// smart pointer to CCandidate
-typedef	std::vector<SPC>		VSPC;
 
 class IElection	// abstract
 {
@@ -65,7 +68,9 @@ public:
 	CCandidate*		GetCandidate( u_long idPlayer );
 	int		GetOrder( u_long idPlayer );
 	void	SetProperty( int nDayOfWeek, int nHour, time_t tCandidacy, time_t tVote );
-	void	Serialize( CAr & ar );
+
+	friend CAr & operator<<(CAr & ar, const IElection & self);
+	friend CAr & operator>>(CAr & ar,       IElection & self);
 
 	void	SetState( ELECTION_STATE eState )	{	m_eState	= eState;	}
 	ELECTION_STATE	GetState( void )	{	return m_eState;	}
@@ -118,9 +123,10 @@ protected:
 	u_long	m_idElection;
 	int		m_nRequirement;
 	ELECTION_STATE	m_eState;
-	VSPC	m_vCandidates;
+	std::vector<SPC>	m_vCandidates;
 	time_t	m_tBegin;
 
+public:
 	// 스크립트
 	struct	sProperty
 		{	
@@ -133,7 +139,9 @@ protected:
 			std::vector<int>	m_vItems[2];	// 군주 아이템
 			float	fRequirementFactor;		// 최소 군주 득표 비율
 			sProperty()	: nDayOfWeek( 0 ), nHour( 0 ), tCandidacy( 0 ), tVote( 0 ), fRequirementFactor( 0.0f ), nDays( 0 )	{}
-			void	Serialize( CAr & ar );
+
+			friend CAr & operator<<(CAr & ar, const sProperty & self);
+			friend CAr & operator>>(CAr & ar, sProperty & self);
 		}	property;
 };
 
