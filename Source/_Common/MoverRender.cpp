@@ -1634,14 +1634,9 @@ void CMover::RenderHP()
 	CPoint p = CPoint( rect.left, rect.top );
 	MakeEven( p.x );
 
-	BOOL bDbuff = FALSE;
+	const bool bDbuff = IsStateDbuff();
 
-	if( IsStateDbuff() )
-		bDbuff = TRUE;
-
-	{
-		g_Neuz.m_TextureHPGauge[0].RenderScal(&(g_Neuz.m_2DRender), p, 200, 0.8f, 0.55f);		
-	}
+	g_Neuz.m_TextureHPGauge[0].RenderScal(&(g_Neuz.m_2DRender), p, 200, 0.8f, 0.55f);		
 	
 	int nWidth = g_Neuz.m_TextureHPGauge[1].m_size.cx * GetHitPoint() / GetMaxHitPoint();
 	

@@ -7050,16 +7050,10 @@ BOOL CMover::IsDropable( CItemElem* pItemElem, BOOL bPK )
 }
 
 #ifdef __CLIENT
-BOOL CMover::IsStateDbuff()
-{
-	int nAdjParam = GetAdjParam( DST_CHRSTATE );
-	if( nAdjParam & CHS_STUN || nAdjParam & CHS_POISON || nAdjParam & CHS_DARK ||
-		nAdjParam & CHS_GROGGY || nAdjParam & CHS_SILENT || nAdjParam & CHS_BLEEDING )
-	{
-		return TRUE;
-	}
-
-	return FALSE;
+bool CMover::IsStateDbuff() const {
+	const int nAdjParam = GetAdjParam(DST_CHRSTATE);
+	static constexpr int BadStates = (CHS_STUN | CHS_SLEEPING | CHS_POISON | CHS_DARK | CHS_GROGGY | CHS_SILENT | CHS_BLEEDING);
+	return nAdjParam & BadStates;
 }
 #endif
 

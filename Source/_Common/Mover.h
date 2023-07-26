@@ -1347,7 +1347,7 @@ public:
 
 	void			InitInterpolation();
 	void			Interpolate();
-	BOOL			IsStateDbuff();
+	[[nodiscard]] bool IsStateDbuff() const;
 	BOOL			EndMotion();
 	BOOL			IsPKAttackAble( CMover* pMover );
 	BOOL			IsPVPAttackAble( CMover* pMover );
