@@ -104,28 +104,22 @@ BOOL CLEvent::DoTestInitialize( void )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-CSLordSkill::CSLordSkill( CLord* pLord )
-: CLordSkill( pLord )
-{
-}
 
-CSLordSkill::~CSLordSkill()
-{
-}
+std::unique_ptr<CLordSkillComponentExecutable> CSLordSkill::CreateSkillComponent(CScript & script) {
+	const int nId = script.GetNumber();
+	if (script.tok == FINISHED) return nullptr;
+	const int nType = script.GetNumber();
 
-CLordSkillComponentExecutable* CSLordSkill::CreateSkillComponent( int nType )
-{
-	switch( nType )
-	{
+	switch (nType) {
 		case LT_ITEMBUF:
-			return new CLordSkillComponentItemBuf;
-		case LT_SUMMON:	
-			return new CLordSkillComponentSummon;
+			return std::make_unique<CLordSkillComponentItemBuf>(nId, script);
+		case LT_SUMMON:
+			return std::make_unique<CLordSkillComponentSummon>(nId, script);
 		case LT_TELEPORT:
-			return new CLordSkillComponentTeleport;
+			return std::make_unique<CLordSkillComponentTeleport>(nId, script);
 		case LT_PASSIVE:
 		default:
-			return new CLordSkillComponentExecutable;
+			return std::make_unique<CLordSkillComponentExecutable>(nId, script);
 	}
 }
 

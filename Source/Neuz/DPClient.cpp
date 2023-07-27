@@ -14132,7 +14132,7 @@ void CDPClient::OnElectionEndVote( CAr & ar )
 
 void CDPClient::OnLord( CAr & ar )
 {	// 군주 시스템 정보를 수신하여 복원
-	CCLord::Instance()->Serialize( ar );
+	ar >> *CCLord::Instance();
 }
 
 void CDPClient::OnLEventCreate( CAr & ar )
@@ -14153,7 +14153,7 @@ void CDPClient::OnLEventInitialize( CAr & ar )
 void CDPClient::OnLordSkillTick( CAr & ar )
 {	// 군주 스킬 재사용 대기 시간 처리
 	CLordSkill* pSkills		= CCLord::Instance()->GetSkills();
-	pSkills->SerializeTick( ar );
+	pSkills->ReadTick( ar );
 }
 
 void CDPClient::OnLEventTick( CAr & ar )

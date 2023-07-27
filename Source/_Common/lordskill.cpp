@@ -11,48 +11,38 @@
 #include "dpsrvr.h"
 #endif	// __WORLDSERVER
 
-CLordSkillComponent::CLordSkillComponent()
-:
-m_nId( 0 ),
-m_nCooltime( 0 ),
-m_nTick( 0 ),
-m_nItem( 0 ),
-m_bPassive( 0 ),
-m_nTargetType( LTT_NA )
-#ifdef __CLIENT
-, m_pTexture( NULL )
-, m_dwSrcSfx( NULL_ID )
-, m_dwDstSfx( NULL_ID )
-#endif	// __CLIENT
-{
-	*m_szName	= '\0';
-	*m_szDesc	= '\0';
-	*m_szIcon	= '\0';
-}
 
-CLordSkillComponent::~CLordSkillComponent()
+CLordSkillComponent::CLordSkillComponent(int nId, CScript & s)
+	: m_nId(nId)
 {
-}
+#ifndef __CLIENT
+	DWORD m_dwSrcSfx, m_dwDstSfx;
+#endif
+#ifdef __DBSERVER
+	FLOAT	m_fRange;
+#endif
 
-void CLordSkillComponent::Initialize( int nId, int nCooltime, int nItem, const char* szName,
-									 const char* szDesc, const char* szIcon, BOOL bPassive, int nTargetType,
-									 DWORD dwSrcSfx, DWORD dwDstSfx, FLOAT fRange )
-{
-	m_nId	= nId;
-	m_nCooltime		= nCooltime;
-	m_nItem		= nItem;
-	lstrcpy( m_szName, szName );
-	lstrcpy( m_szDesc, szDesc );
-	lstrcpy( m_szIcon, szIcon );
-	m_bPassive	= bPassive;
-	m_nTargetType	= nTargetType;
-#ifdef __CLIENT
-	m_dwSrcSfx	= dwSrcSfx;
-	m_dwDstSfx	= dwDstSfx;
-#endif	// __CLIENT
-#ifndef __DBSERVER
-	m_fRange	= fRange;
-#endif	// __DBSERVER
+	s.GetToken();
+	strncpy(m_szName, s.token, CLordSkillComponent::eMaxName);
+	m_szName[CLordSkillComponent::eMaxName - 1] = '\0';
+
+	s.GetToken();
+	strncpy(m_szDesc, s.token, CLordSkillComponent::eMaxDesc);
+	m_szDesc[CLordSkillComponent::eMaxDesc - 1] = '\0';
+
+	m_nTargetType = s.GetNumber();
+	m_nItem = s.GetNumber();
+	m_nCooltime = s.GetNumber();
+
+	s.GetToken();
+	strncpy(m_szIcon, s.token, CLordSkillComponent::eMaxIcon);
+	m_szIcon[CLordSkillComponent::eMaxIcon - 1] = '\0';
+
+	m_bPassive = static_cast<BOOL>(s.GetNumber());
+
+	m_dwSrcSfx = s.GetNumber();
+	m_dwDstSfx = s.GetNumber();
+	m_fRange = s.GetFloat();
 }
 
 #ifdef __CLIENT
@@ -76,42 +66,28 @@ m_pLord( pLord )
 {
 }
 
-CLordSkill::~CLordSkill()
-{
-	Clear();
-}
-
-void CLordSkill::Clear( void )
-{
-	for( auto i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
-		safe_delete( *i );
-	m_vComponents.clear();
-}
-
-void CLordSkill::AddSkillComponent( CLordSkillComponentExecutable* pComponent )
-{
-	m_vComponents.push_back( pComponent );
-}
-
-CLordSkillComponentExecutable* CLordSkill::GetSkill( int nId )
-{
-	for( auto i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
-	{
-		if( ( *i )->GetId() == nId )
-			return ( *i );
+CLordSkillComponentExecutable * CLordSkill::GetSkill(int nId) {
+	for (const auto & pSkill : m_vComponents) {
+		if (pSkill->GetId() == nId) {
+			return pSkill.get();
+		}
 	}
-	return NULL;
+
+	return nullptr;
 }
 
-CLordSkillComponentExecutable* CLordSkill::CreateSkillComponent( int nType )
-{
-	return new CLordSkillComponentExecutable;
+std::unique_ptr<CLordSkillComponentExecutable> CLordSkill::CreateSkillComponent(CScript & script) {
+	const int nId = script.GetNumber();
+	if (script.tok == FINISHED) return nullptr;
+	script.GetNumber(); // skip type
+	
+	return std::make_unique<CLordSkillComponentExecutable>(nId, script);
 }
 
-void CLordSkill::Reset( void )
-{
-	for( auto i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
-		( *i )->SetTick( 0 );
+void CLordSkill::Reset() {
+	for (const auto & pLordSkillComponent : m_vComponents) {
+		pLordSkillComponent->SetTick(0);
+	}
 }
 
 BOOL CLordSkill::Initialize( const char* szFile )
@@ -120,61 +96,38 @@ BOOL CLordSkill::Initialize( const char* szFile )
 	if( !s.Load( szFile, FALSE ) )
 		return FALSE;
 
-	int nId		= s.GetNumber();
-	while( s.tok != FINISHED )
-	{
-		char szName[CLordSkillComponent::eMaxName]	= { 0,};
-		char szDesc[CLordSkillComponent::eMaxDesc]	= { 0,};
-		char szIcon[CLordSkillComponent::eMaxIcon]	= { 0,};
-		int nType	= s.GetNumber();
-		s.GetToken();
-		strncpy( szName, s.token, CLordSkillComponent::eMaxName );
-		szName[CLordSkillComponent::eMaxName - 1]	= '\0';
-		s.GetToken();
-		strncpy( szDesc, s.token, CLordSkillComponent::eMaxDesc );
-		szDesc[CLordSkillComponent::eMaxDesc - 1]	= '\0';
-		int nTargetType		= s.GetNumber();
-		int	nItem	= s.GetNumber();
-		int nCooltime	= s.GetNumber();
-		s.GetToken();
-		strncpy( szIcon, s.token, CLordSkillComponent::eMaxIcon );
-		szIcon[CLordSkillComponent::eMaxIcon - 1]	= '\0';
-		BOOL bPassive	= static_cast<BOOL>( s.GetNumber() );
-		DWORD dwSrcSfx	= s.GetNumber();
-		DWORD dwDstSfx	= s.GetNumber();
-		FLOAT fRange	= s.GetFloat();
-		CLordSkillComponentExecutable* pComponent		= CreateSkillComponent( nType );
-		pComponent->Initialize( nId, nCooltime, nItem, szName, szDesc, szIcon, bPassive, nTargetType, dwSrcSfx, dwDstSfx, fRange );
-		AddSkillComponent( pComponent );
-		nId		= s.GetNumber();
+	while (true) {
+		std::unique_ptr<CLordSkillComponentExecutable> pComponent = CreateSkillComponent(s);
+		if (pComponent) {
+			m_vComponents.emplace_back(std::move(pComponent));
+		} else {
+			break;
+		}
 	}
+
 	return TRUE;
 }
 
-void CLordSkill::SerializeTick( CAr & ar )
-{
-	if( ar.IsStoring() )
-	{
-		ar << m_vComponents.size();
-		for( auto i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
-		{
-			ar << ( *i )->GetId();
-			ar << ( *i )->GetTick();
+CAr & CLordSkill::WriteTick(CAr & ar) const {
+	ar << m_vComponents.size();
+	for (const auto & pLordSkillComponent : m_vComponents) {
+		ar << pLordSkillComponent->GetId();
+		ar << pLordSkillComponent->GetTick();
+	}
+	return ar;
+}
+
+CAr & CLordSkill::ReadTick(CAr & ar) {
+	size_t nSize;
+	ar >> nSize;
+	for (size_t i = 0; i < nSize; i++) {
+		const auto [nSkill, nTick] = ar.Extract<int, int>();
+		
+		if (CLordSkillComponent * pSkill = GetSkill(nSkill)) {
+			pSkill->SetTick(nTick);
 		}
 	}
-	else
-	{
-		size_t nSize;
-		ar >> nSize;
-		for( size_t i = 0; i < nSize; i++ )
-		{
-			int nSkill, nTick;
-			ar >> nSkill >> nTick;
-			CLordSkillComponent* pSkill		= GetSkill( nSkill );
-			if( pSkill )
-				pSkill->SetTick( nTick );
-		}
-	}
+	return ar;
 }
 
 #ifdef __WORLDSERVER

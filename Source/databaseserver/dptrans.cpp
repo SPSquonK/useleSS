@@ -1536,7 +1536,7 @@ void CDPTrans::OnElectionEndVote( CAr & ar, DPID dpid, DPID dpidCache, DPID dpid
 void CDPTrans::SendLord( DPID dpid )
 {	// 모든 군주 시스템 정보를 월드 서버에 전송
 	BEFORESENDDUAL( ar, PACKETTYPE_LORD, DPID_UNKNOWN, DPID_UNKNOWN );
-	CTLord::Instance()->Serialize( ar );
+	ar << *CTLord::Instance();
 	SEND( ar, this, dpid );
 }
 
@@ -1559,11 +1559,11 @@ void CDPTrans::SendLordSkillUse( u_long idPlayer, u_long idTarget, int nSkill, i
 	);
 }
 
-void CDPTrans::SendLordSkillTick( CLordSkill* pSkills )
+void CDPTrans::SendLordSkillTick( const CLordSkill & pSkills )
 {	// 해당 군주 스킬의 재사용 대기 시간을 전송
-	BEFORESENDDUAL( ar, PACKETTYPE_LORD_SKILL_TICK, DPID_UNKNOWN, DPID_UNKNOWN );
-	pSkills->SerializeTick( ar );
-	SEND( ar, this, DPID_ALLPLAYERS );
+	BroadcastPacket<PACKETTYPE_LORD_SKILL_TICK>(
+		[&](CAr & ar) { pSkills.WriteTick(ar); }
+	);
 }
 
 void CDPTrans::SendLEventTick( const ILordEvent & pEvent )

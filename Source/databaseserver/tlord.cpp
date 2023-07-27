@@ -730,9 +730,9 @@ BOOL CLController::InitializeLEvent( void )
 	return GetQueryObject()->Execute( "uspInitializeLEvent %d", g_appInfo.dwSys );
 }
 
-BOOL CLController::UpdateLordSkillTick( CLordSkillComponent* pSkill, int nTick )
+BOOL CLController::UpdateLordSkillTick( const CLordSkillComponent & pSkill, int nTick )
 {	// 군주 스킬 재사용 대기 시간 저장
-	return GetQueryObject()->Execute( "uspLordSkillTick %d, %d, %d", g_appInfo.dwSys, pSkill->GetId(), nTick );
+	return GetQueryObject()->Execute( "uspLordSkillTick %d, %d, %d", g_appInfo.dwSys, pSkill.GetId(), nTick );
 }
 
 bool CLController::UpdateLordEventTick( const CLEComponent & pComponent )
@@ -741,19 +741,14 @@ bool CLController::UpdateLordEventTick( const CLEComponent & pComponent )
 }
 ////////////////////////////////////////////////////////////////////////////////
 // 트랜스 서버용 군주 스킬 제어 클래스
-CTLordSkill::CTLordSkill( CLord* pLord )
-: CLordSkill( pLord )
-{
-}
 
-CTLordSkill::~CTLordSkill()
-{
-}
-
-CLordSkillComponentExecutable* CTLordSkill::CreateSkillComponent( int nType )
+std::unique_ptr<CLordSkillComponentExecutable> CTLordSkill::CreateSkillComponent(CScript & script)
 {	// 트랜스 서버에서의 모든 군주 스킬은
-	// CLordSkillComponentODBC
-	return new CLordSkillComponentODBC;
+	const int nId = script.GetNumber();
+	if (script.tok == FINISHED) return nullptr;
+	script.GetNumber(); // skip type
+
+	return std::make_unique<CLordSkillComponentODBC>(nId, script);
 }
 
 BOOL CTLordSkill::Restore( CQuery* pQuery )
@@ -770,19 +765,18 @@ BOOL CTLordSkill::Restore( CQuery* pQuery )
 
 void CTLordSkill::OnTimer( void )
 {	// 틱
-	CLController* pController	= m_pLord->GetController();
-	for( VLSC::iterator i = m_vComponents.begin(); i != m_vComponents.end(); ++i )
-	{
-		CLordSkillComponentExecutable* pSkill	= *i ;
+	CLController * pController = m_pLord->GetController();
+
+	for (const auto & pSkill : m_vComponents) {
 		if( pSkill->GetTick() > 0 )
 		{
 			// 재사용 대기 시간을 감소시킨다
 			pSkill->SetTick( pSkill->GetTick() - 1 );
 			// 저장
-			pController->UpdateLordSkillTick( pSkill, pSkill->GetTick() );
+			pController->UpdateLordSkillTick( *pSkill, pSkill->GetTick() );
 		}
 	}
-	CDPTrans::GetInstance()->SendLordSkillTick( this );
+	CDPTrans::GetInstance()->SendLordSkillTick( *this );
 }
 ////////////////////////////////////////////////////////////////////////////////
 

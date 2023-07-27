@@ -13,11 +13,12 @@ class CLordSkillComponent
 public:
 	enum	{	eMaxName	= 32,	eMaxDesc	= 128, eMaxIcon	= 64	};
 public:
-	CLordSkillComponent();
-	virtual	~CLordSkillComponent();
-	void Initialize( int nId, int nCooltime, int nItem, const char* szName, const char* szDesc, const char* szIcon, BOOL bPassive, int nTargetType, DWORD dwSrcSfx, DWORD dwDstSfx, FLOAT fRange );
+	CLordSkillComponent(int nId, CScript & script);
+	CLordSkillComponent(const CLordSkillComponent &) = delete;
+	CLordSkillComponent & operator=(const CLordSkillComponent &) = delete;
+	virtual	~CLordSkillComponent() = default;
 public:
-	int		GetId( void )	{	return m_nId;	}
+	[[nodiscard]] int GetId() const noexcept { return m_nId; }
 	int		GetCooltime( void )		{	return m_nCooltime;		}
 	int		GetItem( void )		{	return m_nItem;		}
 	const	char*	GetName( void )	const		{	return m_szName;	}
@@ -48,21 +49,21 @@ private:
 	char	m_szIcon[eMaxIcon];
 	BOOL	m_bPassive;
 	int		m_nTargetType;
-#ifdef __CLIENT
-	CTexture*	m_pTexture;
 	DWORD	m_dwSrcSfx;
 	DWORD	m_dwDstSfx;
-#endif	// __CLIENT
-#ifndef __DBSERVER
 	FLOAT	m_fRange;
-#endif	// __DBSERVER
+#ifdef __CLIENT
+	CTexture*	m_pTexture = nullptr;
+#endif	// __CLIENT
 };
 
 class CLordSkillComponentExecutable :
 	public CLordSkillComponent
 {
 public:
-	CLordSkillComponentExecutable() : CLordSkillComponent()	{}
+	CLordSkillComponentExecutable(int nId, CScript & script)
+		: CLordSkillComponent(nId, script) {}
+
 	virtual	~CLordSkillComponentExecutable()	{}
 protected:
 	void	Use()	{	SetTick( GetCooltime() );	}
@@ -76,23 +77,24 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-typedef std::vector<CLordSkillComponentExecutable*>	VLSC;
 class CLord;
-class CLordSkill
-{
+class CLordSkill {
 public:
-	CLordSkill( CLord* pLord );
-	virtual ~CLordSkill();
-	void	Clear( void );
-	virtual	CLordSkillComponentExecutable*	CreateSkillComponent( int nType );
-	void	AddSkillComponent( CLordSkillComponentExecutable* pComponent );
-	CLordSkillComponentExecutable*	GetSkill( int nId );
-	size_t	GetSkillSize( void )	{	return m_vComponents.size();	}
+	CLordSkill(CLord * pLord);
+	virtual ~CLordSkill() = default;
+	void Clear() { m_vComponents.clear(); }
+	virtual std::unique_ptr<CLordSkillComponentExecutable> CreateSkillComponent(CScript & script);
+
+	CLordSkillComponentExecutable * GetSkill(int nId);
+
 	BOOL	Initialize( const char* szFile );
-	void	Reset( void );
-	void	SerializeTick( CAr & ar );
+	void	Reset();
+
+	CAr & WriteTick(CAr & ar) const;
+	CAr & ReadTick(CAr & ar);
+
 protected:
 	CLord*	m_pLord;
-	VLSC	m_vComponents;
+	std::vector<std::unique_ptr<CLordSkillComponentExecutable>> m_vComponents;
 };
 #endif	// __LORD_SKILL_H__

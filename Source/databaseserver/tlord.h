@@ -108,13 +108,12 @@ private:
 };
 
 // 트랜스 서버용 군주 스킬
-class CTLordSkill
-	: public CLordSkill
+class CTLordSkill : public CLordSkill
 {
 public:
-	CTLordSkill( CLord* pLord );
-	virtual	~CTLordSkill();
-	virtual	CLordSkillComponentExecutable*	CreateSkillComponent( int nType );	// template method
+	CTLordSkill(CLord * pLord) : CLordSkill(pLord) {}
+	std::unique_ptr<CLordSkillComponentExecutable> CreateSkillComponent(CScript & script) override;
+
 	// 복원
 	BOOL	Restore( CQuery* pQuery );
 	// 틱
@@ -181,7 +180,7 @@ public:
 	// 군주 이벤트 초기화 저장
 	BOOL	InitializeLEvent( void );
 	// 군주 스킬 재사용 대기 시간 저장
-	BOOL	UpdateLordSkillTick( CLordSkillComponent* pSkill, int nTick );
+	BOOL	UpdateLordSkillTick( const CLordSkillComponent & pSkill, int nTick );
 	// 군주 이벤트 지속 시간 저장
 	bool	UpdateLordEventTick( const CLEComponent & pComponent );
 	// 처리를 m_pLord에 위임

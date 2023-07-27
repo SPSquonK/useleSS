@@ -562,7 +562,7 @@ public:
 	void	AddSecretRoomTenderView( int nTenderPenya, int nRanking, time_t t, std::vector<__SECRETROOM_TENDER>& vecSRTender );
 
 	void	AddLord( void );
-	void	AddLordSkillTick( CLordSkill* pSkills );
+	void	AddLordSkillTick( const CLordSkill & pSkills );
 	int		GetMuteText( void );
 	void	SetElection( u_long idElection )	{	m_idElection	= idElection;	}
 	u_long	GetElection( void )	{	return m_idElection;	}

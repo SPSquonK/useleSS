@@ -6480,13 +6480,8 @@ void CUser::AddSecretRoomTenderView( int nTenderPenya, int nRanking, time_t t, s
 		m_Snapshot.ar << vecSRTender[i].dwGuildId;
 }
 
-void CUser::AddLord( void )
-{
-	if( IsDelete() )	return;
-	m_Snapshot.cb++;
-	m_Snapshot.ar << NULL_ID;
-	m_Snapshot.ar << SNAPSHOTTYPE_LORD;
-	CSLord::Instance()->Serialize( m_Snapshot.ar );
+void CUser::AddLord() {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_LORD>(*CSLord::Instance());
 }
 
 int CUser::GetMuteText( void )
@@ -6498,13 +6493,10 @@ int CUser::GetMuteText( void )
 	return 0;
 }
 
-void CUser::AddLordSkillTick( CLordSkill* pSkills )
-{
-	if( IsDelete() )	return;
-	m_Snapshot.cb++;
-	m_Snapshot.ar << NULL_ID;
-	m_Snapshot.ar << SNAPSHOTTYPE_LORD_SKILL_TICK;
-	pSkills->SerializeTick( m_Snapshot.ar );	
+void CUser::AddLordSkillTick(const CLordSkill & pSkills) {
+	SendSnapshotNoTarget<SNAPSHOTTYPE_LORD_SKILL_TICK>(
+		[&](CAr & ar) { pSkills.WriteTick(ar); }
+	);
 }
 
 // 

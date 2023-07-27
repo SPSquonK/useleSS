@@ -256,7 +256,8 @@ class CLord	// mediator
 {
 public:
 	~CLord();
-	void	Serialize( CAr & ar );
+	friend CAr & operator<<(CAr & ar, const CLord & self);
+	friend CAr & operator>>(CAr & ar, CLord & self);
 	
 	void	Set( u_long idPlayer )	{	m_idPlayer	= idPlayer;	}
 	u_long	Get( void )		{	return m_idPlayer;	}

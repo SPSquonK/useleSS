@@ -44,13 +44,10 @@ protected:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-class CSLordSkill
-	: public CLordSkill
-{
+class CSLordSkill : public CLordSkill {
 public:
-	CSLordSkill( CLord* pLord );
-	virtual	~CSLordSkill();
-	virtual	CLordSkillComponentExecutable*	CreateSkillComponent( int nType );	// template method
+	CSLordSkill(CLord * pLord) : CLordSkill(pLord) {}
+	std::unique_ptr<CLordSkillComponentExecutable> CreateSkillComponent(CScript & script) override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

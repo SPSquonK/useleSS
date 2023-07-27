@@ -8,14 +8,12 @@
 // 효과 적용 처리 아님
 // 재사용 대기 시간에 따라 성공 여부 판단
 // 선 쿼리 후 적용
-class CLordSkillComponentODBC
-	: public CLordSkillComponentExecutable
+class CLordSkillComponentODBC : public CLordSkillComponentExecutable
 {
 public:
-	CLordSkillComponentODBC();
-	virtual ~CLordSkillComponentODBC();
-public:
-	virtual	void	Execute( u_long idPlayer, u_long idTarget, VOID* pParam );
+	CLordSkillComponentODBC(int nId, CScript & script) : CLordSkillComponentExecutable(nId, script) {}
+
+	void	Execute( u_long idPlayer, u_long idTarget, VOID* pParam ) override;
 };
 
 #endif	// __LORD_SKILL_EXECUTABLE_H__

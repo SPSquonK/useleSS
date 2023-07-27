@@ -353,19 +353,19 @@ CLord::~CLord()
 	SAFE_DELETE( m_pSkills );
 }
 
-void CLord::Serialize( CAr & ar )
-{
-	if (ar.IsStoring()) {
-		ar << m_idPlayer;
-		ar << *m_pElection;
-		ar << *m_pEvent;
-	} else {
-		ar >> m_idPlayer;
-		ar >> *m_pElection;
-		ar >> *m_pEvent;
-	}
-
-	m_pSkills->SerializeTick( ar );
+CAr & operator<<(CAr & ar, const CLord & self) {
+	ar << self.m_idPlayer;
+	ar << *self.m_pElection;
+	ar << *self.m_pEvent;
+	self.m_pSkills->WriteTick(ar);
+	return ar;
+}
+CAr & operator>>(CAr & ar, CLord & self) {
+	ar >> self.m_idPlayer;
+	ar >> *self.m_pElection;
+	ar >> *self.m_pEvent;
+	self.m_pSkills->ReadTick(ar);
+	return ar;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -2849,7 +2849,7 @@ void CDPDatabaseClient::OnElectionEndVote( CAr & ar, DPID, DPID )
 void CDPDatabaseClient::OnLord( CAr & ar, DPID, DPID )
 {
 	election::OutputDebugString( "CDPDatabaseClient.OnLord" );
-	CSLord::Instance()->Serialize( ar );
+	ar >> *CSLord::Instance();
 }
 
 void CDPDatabaseClient::OnLEventCreate( CAr & ar, DPID, DPID )
@@ -2904,12 +2904,12 @@ void CDPDatabaseClient::OnLordSkillTick( CAr & ar, DPID, DPID )
 	election::OutputDebugString( "CDPDatabaseClient.OnLordSkillTick" );
 
 	CLordSkill* pSkills		= CSLord::Instance()->GetSkills();
-	pSkills->SerializeTick( ar );
+	pSkills->ReadTick( ar );
 	if( CSLord::Instance()->Get() == NULL_ID )
 		return;
 	CUser* pLord	= g_UserMng.GetUserByPlayerID( CSLord::Instance()->Get() );
 	if( IsValidObj( pLord ) )
-		pLord->AddLordSkillTick( pSkills );
+		pLord->AddLordSkillTick( *pSkills );
 }
 
 void CDPDatabaseClient::OnLEventTick( CAr & ar, DPID, DPID )
