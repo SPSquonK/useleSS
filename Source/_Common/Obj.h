@@ -240,7 +240,6 @@ public:
 	void			SetOnLand();
 
 	void			SetAIInterface( DWORD dwAIInterface, DWORD dwState = 2 );
-	ObjProp*		GetProp();
 	[[nodiscard]] DWORD GetType() const { return m_dwType; }
 	DWORD			GetIndex() { return m_dwIndex; }
 	BOOL			SetTypeIndex( DWORD dwType, DWORD dwIndex, BOOL bInitProp = FALSE );

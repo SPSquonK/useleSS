@@ -52,34 +52,20 @@ struct tagColorText {
 	CString lpszData;
 };
 
-struct ObjProp
-{
-	DWORD	dwID;		// 변수명	
-	TCHAR	szName[64];	// 한글명칭 
-	DWORD	dwType; 
-	DWORD	dwAI;		// AIInterface
-	DWORD	dwHP;
-	ObjProp()
-	{
-		*szName	= '\0';
-		dwID	= dwType	= dwAI	= dwHP	= 0;
-	}
-};
+struct CtrlProp {
+	DWORD	dwID          = 0;		// 변수명	
+	TCHAR	szName[64]    = _T("");	// 한글명칭 
+	DWORD	dwType        = 0; 
+	DWORD	dwAI          = 0;		// AIInterface
+	DWORD	dwHP          = 0;
+	DWORD   dwCtrlKind1 = 0;
+	DWORD   dwCtrlKind2 = 0;
+	DWORD   dwCtrlKind3 = 0;
+	DWORD   dwSfxCtrl   = 0;
+	DWORD   dwSndDamage = 0;
 
-struct CtrlProp : ObjProp
-{
-	DWORD   dwCtrlKind1;
-	DWORD   dwCtrlKind2;
-	DWORD   dwCtrlKind3;
-	DWORD   dwSfxCtrl;
-	DWORD   dwSndDamage;
-	CtrlProp() : ObjProp()
-	{
-		dwCtrlKind1	= dwCtrlKind2	= dwCtrlKind3	= dwSfxCtrl	= dwSndDamage	= 0;
-	}
-
-	BOOL IsGuildHousingObj( ) const	{ return CK1_GUILD_HOUSE == dwCtrlKind1; } //길드 하우징 전용 오브젝트 인가?
-	BOOL IsHousingObj( )		{ return CK1_HOUSING == dwCtrlKind1; }		//개인 하우징 전용 오브젝트 
+	//길드 하우징 전용 오브젝트 인가?
+	[[nodiscard]] bool IsGuildHousingObj() const noexcept { return CK1_GUILD_HOUSE == dwCtrlKind1; }
 };
 
 struct AddSkillProp
@@ -136,37 +122,6 @@ struct AddSkillProp
 	}
 };
 
-struct PartySkillProp
-{
-	DWORD	dwID;				// 변수명	
-	DWORD	dwName;				// 명칭
-	DWORD	dwSkillLvl;			// 스킬레벨
-	DWORD	dwAbilityMin;		// 최소능력
-	DWORD	dwAtkAbilityMax;	// 최대능력
-	DWORD	dwAttackSpeed;		// 공격속도
-	DWORD	dwDmgShift;			// 타격시 반동
-	DWORD	dwGroggy;			// 그로키
-	DWORD	dwTaunt;			// 타운트
-	DWORD	dwDestParam[2];		// 적용대상1
-	DWORD	nAdjParamVal[2];	// 적용값1;
-	DWORD	dwChgParamVal[2];	//적용변화값1
-	DWORD	dwReqMp;			//필요MP
-	DWORD	dwReqFp;			//필요FP
-	DWORD	dwSkillReady;		//기술 준비시간
-	DWORD	dwCircleTime;		//유지시간
-	DWORD	dwSkillTime;		//지속시간
-	DWORD	dwExp;				//현재경험치
-	DWORD	dwComboSkillTime;	//콤보스킬타임
-	PartySkillProp()
-	{
-		dwID = dwName = 0;
-		dwSkillLvl = dwAbilityMin = dwAtkAbilityMax = dwAttackSpeed = dwDmgShift = dwGroggy = dwTaunt = 0;
-		dwDestParam[0] = dwDestParam[1] = nAdjParamVal[0] = nAdjParamVal[1] = dwChgParamVal[0] = dwChgParamVal[1] = 0;
-		dwReqMp = dwReqFp = dwSkillReady = 0;
-		dwCircleTime = dwSkillTime = dwExp = dwComboSkillTime = 0;
-	}
-};
-
 enum class _FILEWITHTEXT
 {	
 	FILE_FILTER	= 0, 
@@ -199,9 +154,20 @@ enum IP_TYPE
 //	0x04
 };
 
-struct ItemProp : CtrlProp
+struct ItemProp
 {
 	static constexpr size_t NB_PROPS = 3;
+
+	DWORD	dwID = 0;		// 변수명	
+	TCHAR	szName[64] = _T("");	// 한글명칭 
+	DWORD	dwType = 0;
+	DWORD	dwAI = 0;		// AIInterface
+	DWORD	dwHP = 0;
+	DWORD   dwCtrlKind1 = 0;
+	DWORD   dwCtrlKind2 = 0;
+	DWORD   dwCtrlKind3 = 0;
+	DWORD   dwSfxCtrl = 0;
+	DWORD   dwSndDamage = 0;
 
 	DWORD	dwMotion;			// 동작 
 	DWORD	dwNum;				// 기본생성개수	

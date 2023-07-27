@@ -800,7 +800,6 @@ public:
 
 	PSETITEMAVAIL	GetSetItemAvail( int nAbilityOption );
 	[[nodiscard]] std::span<const ItemProp * const> GetItemKind3WithRarity(DROPKIND dropKind) const;
-	ObjProp*		GetProp( int nType, int nIndex );
 	GUILDQUESTPROP*	GetGuildQuestProp( int nQuestId );
 	PARTYQUESTPROP*	GetPartyQuestProp( int nQuestId );
 	BOOL			IsGuildQuestRegion( const D3DXVECTOR3 & vPos );

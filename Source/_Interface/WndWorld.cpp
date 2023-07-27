@@ -1843,17 +1843,11 @@ void CWndWorld::OnSetCursor()
 			else
 			if( CObj::m_pObjHighlight->GetType() == OT_ITEM )
 				dwCursor = CUR_GETITEM;
-			else if( CObj::m_pObjHighlight->GetType() == OT_CTRL )
+			else if( CCommonCtrl * pCtrl = CObj::m_pObjHighlight->ToCommonCtrl() )
 			{
-				ObjProp* pObjProp = CObj::m_pObjHighlight->GetProp();
-
-				if( pObjProp )
+				if(CtrlProp * pCtrlProp = pCtrl->GetProp() )
 				{
-					CtrlProp* pCtrlProp;
-					pCtrlProp = prj.GetCtrlProp(pObjProp->dwID);
-
-					if( pCtrlProp )
-					{
+					
 						switch(pCtrlProp->dwCtrlKind1) 
 						{
 							case CK1_HOUSING:
@@ -1867,7 +1861,7 @@ void CWndWorld::OnSetCursor()
 								dwCursor = CUR_CONTROL;
 								break;
 						}
-					}
+					
 				}
 			}
 			else

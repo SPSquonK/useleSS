@@ -3013,17 +3013,6 @@ CUser * CProject::GetUser(OBJID objid) {
 }
 #endif	
 
-ObjProp* CProject::GetProp( int nType, int nIndex )
-{
-	switch( nType )
-	{
-	case OT_CTRL: return m_aPropCtrl.GetAt( nIndex ); 
-	case OT_ITEM: return m_aPropItem.GetAt( nIndex ); 
-	case OT_MOVER: return GetMoverProp( nIndex ); 
-	}
-	return NULL;
-}
-
 // ������Ƽ �޸𸮸� �б��������� �����Ѵ�.
 void CProject::ProtectPropMover()
 {

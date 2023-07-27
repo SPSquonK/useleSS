@@ -115,11 +115,6 @@ void CObj::InitProp( BOOL bInitAI )
 {
 }
 
-ObjProp* CObj::GetProp() 
-{ 
-	return prj.GetProp( m_dwType, m_dwIndex ); 
-}
-
 void CObj::UpdateLocalMatrix(void)
 {
 	D3DXMatrixScaling( &m_matScale, m_vScale.x, m_vScale.y, m_vScale.z );
