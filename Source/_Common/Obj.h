@@ -62,7 +62,6 @@ class		CLandscape;
 class		CWorld;
 class		CAIInterface;
 class		CModel;
-struct		ObjProp;
 class		CAr;
 
 #if defined(__WORLDSERVER) || defined(__CLIENT)
@@ -241,7 +240,7 @@ public:
 
 	void			SetAIInterface( DWORD dwAIInterface, DWORD dwState = 2 );
 	[[nodiscard]] DWORD GetType() const { return m_dwType; }
-	DWORD			GetIndex() { return m_dwIndex; }
+	DWORD			GetIndex() const { return m_dwIndex; }
 	BOOL			SetTypeIndex( DWORD dwType, DWORD dwIndex, BOOL bInitProp = FALSE );
 	void			ProcessAI();
 	void			ProcessAirShip();		
@@ -291,9 +290,9 @@ public:
 	BOOL			IsCull() { return m_cullstate == CS_OUTSIDE; } 
 	void			SetCullState( CULLSTATE cullState ) { m_cullstate = cullState; }
 
-	D3DXVECTOR3		GetScrPos()				{ return m_vScrPos;		}
-	float			GetScrAngle()			{ return m_fScrAngle;	}
-	float			GetScrAngleX()			{ return m_fScrAngleX;	}
+	[[nodiscard]] D3DXVECTOR3 GetScrPos() const noexcept { return m_vScrPos; }
+	[[nodiscard]] float GetScrAngle()  const noexcept { return m_fScrAngle ; }
+	[[nodiscard]] float GetScrAngleX() const noexcept { return m_fScrAngleX; }
 
 #endif	// !__WORLDSERVER
 

@@ -67,3 +67,8 @@ using QuestId = fluent::NamedType<unsigned short, struct QuestIdTag,
 >;
 
 static constexpr auto QuestIdNone = QuestId(0);
+
+
+using ItemId_ = fluent::NamedType<
+  std::uint32_t, struct ItemIdTag
+>;

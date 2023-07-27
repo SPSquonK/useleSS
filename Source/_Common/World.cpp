@@ -384,10 +384,8 @@ BOOL CWorld::AddObj( CObj* pObj, BOOL bAddItToGlobalId )
 		if( pObj->m_dwType == OT_CTRL )
 		{
 			CCommonCtrl* pCCtrl = (CCommonCtrl*)pObj;
-			CtrlProp* pProp = pCCtrl->GetProp();
-			if( pProp )
-			{
-				if( pProp->dwCtrlKind1 == CK1_DOOR )
+			const CtrlProp* pProp = pCCtrl->GetProp();
+			if( pProp && pProp->dwCtrlKind1 == CK1_DOOR ) {
 					v.y = pObj->GetPos().y;
 			}
 		}

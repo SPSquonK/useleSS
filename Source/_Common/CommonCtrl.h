@@ -111,7 +111,7 @@ public:
 //#ifdef __WORLDSERVER
 //	void			SendActionError();
 //#endif //__WORLDSERVER
-	CtrlProp*		GetProp() { return prj.GetCtrlProp( GetIndex() ); }
+	[[nodiscard]] const CtrlProp * GetProp() const { return prj.GetCtrlProp(GetIndex()); }
 
 	virtual void Process();
 	virtual void Render( );

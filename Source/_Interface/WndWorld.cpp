@@ -1845,7 +1845,7 @@ void CWndWorld::OnSetCursor()
 				dwCursor = CUR_GETITEM;
 			else if( CCommonCtrl * pCtrl = CObj::m_pObjHighlight->ToCommonCtrl() )
 			{
-				if(CtrlProp * pCtrlProp = pCtrl->GetProp() )
+				if(const CtrlProp * pCtrlProp = pCtrl->GetProp() )
 				{
 					
 						switch(pCtrlProp->dwCtrlKind1) 
@@ -1898,22 +1898,22 @@ void CWndWorld::OnSetCursor()
 		SetMouseCursor( dwCursor );
 }
 
-CRect CWndWorld::GetBoundRect( CObj* pObj )
+CRect CWndWorld::GetBoundRect( const CObj* pObj )
 {
 	CWorld* pWorld	= g_WorldMng.Get();
-	CModel* pModel = pObj->m_pModel;
+	const CModel* pModel = pObj->m_pModel;
 	D3DXVECTOR3 vPos;
 
 	//소환수만 GetScrPos로 위치를 구한다.
-	if(pObj->GetType() == OT_ITEM)
-		vPos = pObj->GetPos();
-	else
-	{
-		MoverProp* pMoverProp = ((CMover*)pObj)->GetProp();
-		if( pMoverProp && ( pMoverProp->dwAI == AII_PET || pMoverProp->dwAI == AII_EGG ) )
+	if (const CMover * pMover = pObj->ToMover()) {
+		const MoverProp * pMoverProp = pMover->GetProp();
+		if (pMoverProp && (pMoverProp->dwAI == AII_PET || pMoverProp->dwAI == AII_EGG)) {
 			vPos = pObj->GetScrPos();
-		else
+		} else {
 			vPos = pObj->GetPos();
+		}
+	} else {
+		vPos = pObj->GetPos();
 	}
 
 	D3DVIEWPORT9 vp;
@@ -5760,10 +5760,10 @@ void CWndWorld::OnLButtonDown(UINT nFlags, CPoint point)
 		{
 			m_bSelectTarget = TRUE;
 		}
-		else if( pSelectObj->GetType() == OT_CTRL )
+		else if( const CCommonCtrl * pCtrl = pSelectObj->ToCommonCtrl() )
 		{
 			m_bSelectTarget = TRUE;
-			ShowCCtrlMenu( (CCtrl*)pSelectObj );	
+			ShowCCtrlMenu(pCtrl);
 		}
 	}
 
@@ -8754,17 +8754,14 @@ void CWndWorld::InitEyeFlash()
 	}
 }
 
-void CWndWorld::ShowCCtrlMenu( CCtrl* pCCtrl )
-{
-	if( !pCCtrl )
-	{
-		assert( 0 );
+void CWndWorld::ShowCCtrlMenu(const CCommonCtrl * pCCtrl) {
+	if (!pCCtrl) {
+		assert(0);
 		return;
 	}
 
-	CtrlProp* pProp = prj.GetCtrlProp( pCCtrl->GetIndex( ) );
-	if( !pProp )
-		return;
+	const CtrlProp * pProp = pCCtrl->GetProp();
+	if (!pProp) return;
 
 	if( !pProp->IsGuildHousingObj( ) ) //길드 하우징 가구일경우만!		//sun!!
 		return;

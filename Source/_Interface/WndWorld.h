@@ -301,7 +301,7 @@ public:
 	
 	void RenderArrow();
 	BOOL UseSkillToFocusObj( CCtrl* pFocusObj );
-	[[nodiscard]] CRect GetBoundRect( CObj* pObj );
+	[[nodiscard]] CRect GetBoundRect( const CObj* pObj );
 
 	void RenderArrow_Text( const D3DXVECTOR3& vDest, const D3DXMATRIX& mat );	//gmpbigsun : refactoring
 	
@@ -484,7 +484,7 @@ private:
 	void	ShowMoverMenu( CMover* pTarget );
 	int		GetGaugePower( int* pnValue );
 
-	void	ShowCCtrlMenu( CCtrl* pCCtrl );		
+	void ShowCCtrlMenu(const CCommonCtrl * pCCtrl);
 	BOOL MenuException( CPoint point );	// 메뉴를 띄우기 전에 처리해 줘야 할 예외 사항들
 };
 #endif // !defined(AFX_WNDFIELD_H__A93F3186_63D6_43C1_956F_EC8691E0C7D9__INCLUDED_)

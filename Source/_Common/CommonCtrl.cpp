@@ -280,7 +280,7 @@ void CCommonCtrl::Process()
 	if( m_pModel == NULL )
 		return;
 	
-	CtrlProp* pProp = GetProp();
+	const CtrlProp* pProp = GetProp();
 	if( pProp == NULL )
 		return;
 
@@ -435,7 +435,7 @@ void CCommonCtrl::_ProcessTrap()
 	// 트랩발동시간을 체크하여 발생함
 	if( m_dwTrapProcessTime < g_tmCurrent )
 	{
-		CtrlProp* pProp = GetProp();
+		const CtrlProp* pProp = GetProp();
 		if( pProp == NULL )
 			return;
 		
@@ -544,9 +544,7 @@ void CCommonCtrl::Render( )
 		m_pSfxModel->RenderZ( NULL );
 		return;
 	}
-		
-	CtrlProp *pCtrlProp = GetProp();
-
+	
 	if( GetIndex() == CI_EXPBOX )		// 싸이킥월일경우 따로 처리 - 일단 땜빵.
 	{
 		AddAngle( 1.0f );
@@ -586,7 +584,7 @@ void CCommonCtrl::SetActionPlay()
 #ifdef __CLIENT
 	if( !m_bAniPlay )
 	{
-		CtrlProp* pCtrlProp = GetProp();		
+		const CtrlProp* pCtrlProp = GetProp();		
 		
 		if( pCtrlProp )
 		{
