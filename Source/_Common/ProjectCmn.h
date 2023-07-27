@@ -55,14 +55,11 @@ struct tagColorText {
 struct CtrlProp {
 	DWORD	dwID          = 0;		// 변수명	
 	TCHAR	szName[64]    = _T("");	// 한글명칭 
-	DWORD	dwType        = 0; 
 	DWORD	dwAI          = 0;		// AIInterface
-	DWORD	dwHP          = 0;
 	DWORD   dwCtrlKind1 = 0;
 	DWORD   dwCtrlKind2 = 0;
 	DWORD   dwCtrlKind3 = 0;
 	DWORD   dwSfxCtrl   = 0;
-	DWORD   dwSndDamage = 0;
 
 	//길드 하우징 전용 오브젝트 인가?
 	[[nodiscard]] bool IsGuildHousingObj() const noexcept { return CK1_GUILD_HOUSE == dwCtrlKind1; }
@@ -160,14 +157,6 @@ struct ItemProp
 
 	DWORD	dwID = 0;		// 변수명	
 	TCHAR	szName[64] = _T("");	// 한글명칭 
-	DWORD	dwType = 0;
-	DWORD	dwAI = 0;		// AIInterface
-	DWORD	dwHP = 0;
-	DWORD   dwCtrlKind1 = 0;
-	DWORD   dwCtrlKind2 = 0;
-	DWORD   dwCtrlKind3 = 0;
-	DWORD   dwSfxCtrl = 0;
-	DWORD   dwSndDamage = 0;
 
 	DWORD	dwMotion;			// 동작 
 	DWORD	dwNum;				// 기본생성개수	

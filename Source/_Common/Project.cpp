@@ -3896,7 +3896,7 @@ BOOL CProject::LoadPropCtrl( LPCTSTR lpszFileName, CFixedArray<CtrlProp>*	apObjP
 		ctrlProp.dwCtrlKind2 = scanner.GetNumber();
 		ctrlProp.dwCtrlKind3 = scanner.GetNumber();
 		ctrlProp.dwSfxCtrl = scanner.GetNumber();
-		ctrlProp.dwSndDamage = scanner.GetNumber();
+		/* dwSndDamage */ scanner.GetNumber();
 
 		scanner.GetToken();		// skip szCommand (������� �ʴ´�. )
 		apObjProp->SetAtGrow( i, ctrlProp);
