@@ -22,15 +22,11 @@
 #include "GuildHouse.h"
 #endif // __GUILD_HOUSE_MIDDLE
 
-CProject::CProject()
-{
-	memset( m_apszWorld, 0, sizeof(TCHAR) * 64 * MAX_WORLD );
-//	for( int i = 0; i < MAX_WORLD; i++ )
-//		m_apszWorld[i][0]	= '\0';
-//	m_mapII.SetSize( 128, 128, 128 );
+CProject::CProject() {
+	memset(m_apszWorld, 0, sizeof(m_apszWorld));
+
 	m_nMoverPropSize	= 0;
-	m_pPropMover	= new MoverProp[MAX_PROPMOVER];
-//	m_pPropMover	= (MoverProp*)::VirtualAlloc( NULL, sizeof(MoverProp) * MAX_PROPMOVER, MEM_COMMIT, PAGE_READWRITE );
+	m_pPropMover = std::make_unique<MoverProp[]>(MAX_PROPMOVER);
 
 	m_fItemDropRate = 1.0f;
 	m_fGoldDropRate = 1.0f;
@@ -54,11 +50,6 @@ CProject::CProject()
 #ifdef __ITEM_REMOVE_LIST
 	m_dwConvMode = 0;
 #endif // __ITEM_REMOVE_LIST
-}
-
-CProject::~CProject()
-{
-	SAFE_DELETE_ARRAY( m_pPropMover );
 }
 
 BOOL CProject::OpenProject( LPCTSTR lpszFileName )

@@ -699,7 +699,7 @@ public:
 	CObjMap						m_objmap;
 	CModelMng					m_modelMng;
 	int							m_nMoverPropSize;
-	MoverProp*					m_pPropMover;				// m_aPropMover배열에 메모리 침범이 있어서 수정함.04.10.14
+	std::unique_ptr<MoverProp[]> m_pPropMover;				// m_aPropMover배열에 메모리 침범이 있어서 수정함.04.10.14
 	CFixedArray< ItemProp >		m_aPartySkill;
 	CFixedArray< CtrlProp >		m_aPropCtrl;
 	CFixedArray< MotionProp >	m_aPropMotion;
@@ -719,8 +719,6 @@ public:
 	GUILD_APPELL				m_aGuildAppell[ MAX_GUILDAPPELL ];
 	EXPCHARACTER				m_aExpCharacter[ MAX_EXPCHARACTER ];
 	FXPCHARACTER				m_aFxpCharacter[ MAX_FXPCHARACTER ];
-	DWORD						m_aExpLPPoint[ MAX_EXPLPPOINT ];
-	DWORD						m_aExpSkill[ MAX_EXPSKILL ];
 	EXPPARTY					m_aExpParty[MAX_PARTYLEVEL];
 	
 	std::vector<ItemProp *> m_itemKindAry[MAX_ITEM_KIND3];
@@ -855,7 +853,6 @@ public:
 	CShip*			GetShip( OBJID objid );
 	CUser * GetUserByID(u_long idPlayer);
 	LPCHARACTER		GetCharacter( LPCTSTR lpStrKey );
-	void			ProtectPropMover();
 	DWORD			GetLevelExp( int nLevel );
 	CHAO_PROPENSITY GetPropensityPenalty( DWORD dwPropensity );
 	BOOL			LoadExcept( LPCTSTR lpszFilename );
@@ -979,7 +976,7 @@ inline ItemProp* CProject::GetSkillProp( int nIndex )
 inline MoverProp* CProject::GetMoverProp( int nIndex ) 
 { 
 	VERIFY_RANGE( nIndex, 0, m_nMoverPropSize, "GetMoverProp range_error", NULL );
-	return m_pPropMover + nIndex;
+	return &m_pPropMover[nIndex];
 }
 
 inline MoverProp* CProject::GetMoverPropEx( int nIndex )

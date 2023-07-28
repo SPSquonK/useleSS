@@ -11,19 +11,13 @@
 #include <variant>
 
 #define	MAX_OBJARRAY			8
-#define	MAX_QUICKSLOT			21
-#define	MAX_EQUIPMENT			18
 #define	MAX_INVENTORY			42			// 60 //42
 #define MAX_GUILDBANK			42
 #define	MAX_BANK				42
-#define	MAX_REPAIR				16
 #define	MAX_TRADE				25
 #define	MAX_VENDITEM			30
 #define	MAX_REPAIRINGITEM		25
 #define	MAX_VENDORNAME			48
-#define	MAX_STUFF				( MAX_INVENTORY + MAX_QUICKSLOT )
-#define	MAX_EXPLPPOINT			41
-#define	MAX_EXPSKILL			21
 #define	MAX_EXPCHARACTER		200
 #define	MAX_FXPCHARACTER		200
 #define	MAX_CHARACTER_LIST		3 
@@ -33,16 +27,10 @@
 #define	MAX_COMPLETE_QUEST		300 
 #define MAX_CHECKED_QUEST		5
 #define MAX_PARTYLEVEL			10
-#define MAX_RENEWEVENT			8000
-#define MAX_REALITEM			8			// 이벤트 상품 아이템
-#define MAX_EVENTREALITEM		4096
-#define MAX_EXPJOBLEVEL			90
-#define	ITEM_KIND_MAX			100
 
-const int	MAX_PROPMOVER =		2000;		// MoverProp배열의 최대갯수 
+static constexpr size_t MAX_PROPMOVER = 2000; // MoverProp배열의 최대갯수 
 
 #define	MAX_HONOR_TITLE		150	// 달인타이틀 제한
-
 #define MAX_VENDOR_REVISION		20
 
 #include "defineitemkind.h"
@@ -249,7 +237,6 @@ struct ItemProp
 	DWORD   dwReferValue2;
 	DWORD	dwSkillType;		// 기술속성	
 	int		nItemResistElecricity;
-	int		nItemResistDark;
 	int		nItemResistFire;
 	int		nItemResistWind;
 	int		nItemResistWater;

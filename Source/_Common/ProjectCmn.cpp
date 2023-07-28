@@ -53,7 +53,7 @@ BOOL CProject::LoadPropMover( LPCTSTR lpszFileName )
 		if( i == 0 )
 			continue;
 
-		if( i<0 || i>=MAX_PROPMOVER )		// 범위체크 
+		if( i<0 || std::cmp_greater_equal(i, MAX_PROPMOVER) )		// 범위체크 
 		{
 			Error( "too many mover property or invalid id:%d FILE:%s\n", i, lpszFileName );
 			return FALSE;

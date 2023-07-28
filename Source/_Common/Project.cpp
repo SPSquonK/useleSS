@@ -150,8 +150,7 @@ m_nMaxSequence( 0 )
 	memset( m_aSetItemAvail, 0, sizeof(m_aSetItemAvail) );
 
 	m_nMoverPropSize = 0;
-	m_pPropMover = new MoverProp[MAX_PROPMOVER];
-//	m_pPropMover = (MoverProp*)::VirtualAlloc( NULL, sizeof(MoverProp) * MAX_PROPMOVER, MEM_COMMIT, PAGE_READWRITE );
+	m_pPropMover = std::make_unique<MoverProp[]>(MAX_PROPMOVER);
 #ifdef __CLIENT
 #ifdef __SHOP_COST_RATE
 	m_fShopBuyRate = 1.0f;
@@ -201,9 +200,6 @@ CProject::~CProject()
 			SAFE_DELETE_ARRAY( pQuestProp->m_paEndCondOneItem );
 		}
 	}
-
-	SAFE_DELETE_ARRAY( m_pPropMover );
-//	::VirtualFree( m_pPropMover, sizeof(MoverProp) * MAX_PROPMOVER, MEM_DECOMMIT );
 
 #ifdef __YS_CHATTING_BLOCKING_SYSTEM
 #ifdef __CLIENT
@@ -461,8 +457,6 @@ BOOL CProject::OpenProject( LPCTSTR lpszFileName )
 	GuildHouseMng->LoadScript();
 #endif // __GUILD_HOUSE_MIDDLE
 #endif // __WORLDSERVER
-
-	ProtectPropMover();
 
 #ifdef __WORLDSERVER
 	CSLord::Instance()->CreateColleagues();
@@ -2827,13 +2821,10 @@ BOOL CProject::LoadExpTable( LPCTSTR lpszFileName )
 		else
 		if( script.Token == _T( "expLPPoint" ) )
 		{
-			ZeroMemory( m_aExpLPPoint, sizeof( m_aExpLPPoint ) );
 			script.GetToken(); // { 
-			dwVal = script.GetNumber();
-			while( *script.token != '}' )
-			{
-				m_aExpLPPoint[ i++ ] = dwVal;
-				dwVal = script.GetNumber();
+			script.GetNumber();
+			while (*script.token != '}') {
+				script.GetNumber();
 			}
 		}
 		else
@@ -2850,13 +2841,10 @@ BOOL CProject::LoadExpTable( LPCTSTR lpszFileName )
 		else
 		if( script.Token == _T( "expSkill" ) )
 		{
-			ZeroMemory( m_aExpSkill, sizeof( m_aExpSkill ) );
 			script.GetToken(); // { 
-			dwVal = script.GetNumber();
-			while( *script.token != '}' )
-			{
-				m_aExpSkill[ i++ ] = dwVal;
-				dwVal = script.GetNumber();
+			script.GetNumber();
+			while (*script.token != '}') {
+				script.GetNumber();
 			}
 		}
 		else
@@ -3013,14 +3001,6 @@ CUser * CProject::GetUser(OBJID objid) {
 }
 #endif	
 
-// ������Ƽ �޸𸮸� �б��������� �����Ѵ�.
-void CProject::ProtectPropMover()
-{
-// �鿣�� �ý����� ���ؼ� ���Ƶд�.
-//	DWORD dwOld;
-//	::VirtualProtect( m_pPropMover, sizeof(MoverProp) * MAX_PROPMOVER, PAGE_READONLY, &dwOld );
-}
-
 void CProject::AddMonsterProp( MONSTER_PROP MonsterProp )
 {
 	strcpy( m_aMonsterProp[ m_nMonsterPropSize ].szMonsterName, MonsterProp.szMonsterName );
@@ -3097,7 +3077,7 @@ BOOL CProject::LoadDropEvent( LPCTSTR lpszFileName )
 
 			for( int i = 0; i < m_nMoverPropSize; i++ )
 			{
-				MoverProp* pProp	= m_pPropMover + i;
+				MoverProp* pProp	= &m_pPropMover[i];
 				if( pProp->dwID && pProp->dwLevel >= dwMinLevel && pProp->dwLevel <= dwMaxLevel	)
 					pProp->m_DropItemGenerator.Add( di );
 			}
@@ -4252,7 +4232,7 @@ void CProject::OutputDropItem( void )
 		}
 		CString s;
 		MoverProp* pMoverProp	= prj.GetMoverProp( i );
-		if( pMoverProp && pMoverProp->dwID > 0 && pMoverProp->dwID < MAX_PROPMOVER && pMoverProp->dwBelligerence != BELLI_PEACEFUL && pMoverProp->dwBelligerence != BELLI_ALLIANCE )
+		if( pMoverProp && pMoverProp->dwID > 0 && pMoverProp->dwBelligerence != BELLI_PEACEFUL && pMoverProp->dwBelligerence != BELLI_ALLIANCE )
 		{
 			TRACE( "%d\n", i );
 			s.Format( "\n%s\t%d", pMoverProp->szName, pMoverProp->m_DropItemGenerator.m_dwMax );

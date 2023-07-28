@@ -63,11 +63,10 @@ MONSTER_PROP, *PMONSTER_PROP;
 
 class CScript;
 
-class CProject
+class CProject final
 {
 public:
 	CProject();
-	virtual	~CProject();
 
 private:
 	std::map<std::string, DWORD>	m_mapII;
@@ -77,7 +76,7 @@ public:
 	CFixedArray<ItemProp>	m_aPropSkill;
 	CFixedArray<ItemProp>	m_aPropItem  ;
 	int						m_nMoverPropSize;
-	MoverProp*				m_pPropMover;	// m_aPropMover배열에 메모리 침범이 있어서 수정함.04.10.14
+	std::unique_ptr<MoverProp[]> m_pPropMover;	// m_aPropMover배열에 메모리 침범이 있어서 수정함.04.10.14
 	CFixedArray< tagColorText >	m_colorText;
 
 	CEventLua	m_EventLua;
@@ -162,7 +161,7 @@ public:
 			return NULL;
 		}
 		if( m_pPropMover[nIndex].dwID )
-			return m_pPropMover + nIndex;
+			return &m_pPropMover[nIndex];
 		return NULL;
 	}
 
