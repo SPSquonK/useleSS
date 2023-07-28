@@ -1204,7 +1204,7 @@ BOOL CMover::DoEquip( CItemElem* pItemElem, BOOL bEquip, int nPart )
 		if( (pItemElem->m_dwObjIndex - m_Inventory.GetSize() ) != PARTS_LWEAPON  )	// equiped item
 #endif	//__BLADELWEAPON0608	//	9th 블레이드 양손에 무기를 착용 시 추가 옵션은 오른손에 들고 있는 무기의 것만 적용이 되도록 수정
 			SetDestParamEquip( pItemProp, pItemElem );		// 장착한 장비의 DestParam설정
-		if( ( pItemProp->dwFlag & IP_FLAG_EQUIP_BIND ) && !pItemElem->IsFlag( CItemElem::binds ) )
+		if( pItemProp->dwFlag[IP_FLAG::EQUIP_BIND] && !pItemElem->IsFlag(CItemElem::binds))
 		{
 			pItemElem->SetFlag( CItemElem::binds );
 			UpdateItem(*pItemElem, UI::Flag::Sync);

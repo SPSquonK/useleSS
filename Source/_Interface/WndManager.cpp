@@ -1239,7 +1239,7 @@ void CWndMgr::ObjectExecutor( LPSHORTCUT pShortcut )
 
 			if( bAble )	// ¼º°øÆÇÁ¤ ³µÀ»¶§¸¸ º¸³¿.
 			{
-				if( pItemBase->GetProp() && (pItemBase->GetProp()->dwFlag & IP_FLAG_EQUIP_BIND ) && !pItemBase->IsFlag( CItemElem::binds ) )
+				if( pItemBase->GetProp() && (pItemBase->GetProp()->dwFlag[IP_FLAG::EQUIP_BIND]) && !pItemBase->IsFlag(CItemElem::binds))
 				{
 					SAFE_DELETE( g_WndMng.m_pWndEquipBindConfirm )
 						g_WndMng.m_pWndEquipBindConfirm = new CWndEquipBindConfirm( CWndEquipBindConfirm::EQUIP_DOUBLE_CLICK );

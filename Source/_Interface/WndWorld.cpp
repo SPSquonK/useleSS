@@ -6436,7 +6436,7 @@ BOOL CWndWorld::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 				}
 
 				CItemElem* pItemElem = (CItemElem*)pShortcut->m_dwData;
-				if( pItemElem->IsUndestructable() == TRUE )
+				if( pItemElem->IsUndestructable() )
 				{
 					g_WndMng.PutString(TID_GAME_ERROR_UNDESTRUCTABLE_ITEM);
 					return FALSE;

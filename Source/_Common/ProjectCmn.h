@@ -9,6 +9,7 @@
 #include "FlyFFTypes.h"
 #include "defineJob.h"
 #include <variant>
+#include <bitset>
 
 #define	MAX_OBJARRAY			8
 #define	MAX_INVENTORY			42			// 60 //42
@@ -130,13 +131,11 @@ enum class _FILEWITHTEXT
 using enum _FILEWITHTEXT;
 
 // Item Property Type
-enum IP_TYPE 
-{
-	IP_FLAG_NONE	= 0x00,				// 플래그 없음 
-	IP_FLAG_BINDS	= 0x01,				// 1 - 귀속 아이템 
-	IP_FLAG_UNDESTRUCTABLE	= 0x02	//	2 - 삭제 불가 아이템
-	,IP_FLAG_EQUIP_BIND	= 0x04
-//	0x04
+struct IP_FLAG {
+	static constexpr size_t BINDS = 0;				// 1 - 귀속 아이템 
+	static constexpr size_t UNDESTRUCTABLE = 1;	//	2 - 삭제 불가 아이템
+	static constexpr size_t EQUIP_BIND = 2;
+	static constexpr size_t MAX = 3;
 };
 
 struct ItemProp
@@ -162,7 +161,7 @@ struct ItemProp
 	int		nAbrasion;			// 마모율
 	int		nMaxRepair;			// 수리횟수
 	DWORD	dwHanded;			// 잡는형식	
-	DWORD	dwFlag;				// 다목적 플래그	
+	std::bitset<IP_FLAG::MAX> dwFlag;				// 다목적 플래그	
 	DWORD	dwParts;			// 장착위치	
 	DWORD	dwPartsub;			// 장착위치	
 	DWORD	bPartsFile;			// 파츠파일 사용여부 

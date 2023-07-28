@@ -250,7 +250,7 @@ BOOL CProject::LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apOb
 		prop.nAbrasion			= scanner.GetNumber();
 		prop.nMaxRepair			= scanner.GetNumber();
 		prop.dwHanded			= scanner.GetNumber();      
-		prop.dwFlag				= scanner.GetNumber();      
+		prop.dwFlag				= scanner.GetBitset<decltype(prop.dwFlag)>();
 		prop.dwParts			= scanner.GetNumber();      
 		prop.dwPartsub			= scanner.GetNumber();      
 		prop.bPartsFile			= scanner.GetNumber();      

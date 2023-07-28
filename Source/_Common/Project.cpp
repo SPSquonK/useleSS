@@ -3656,7 +3656,7 @@ void CProject::OnAfterLoadPropItem()
 			{
 			case IK3_EVENTMAIN:
 			case IK3_BINDS:
-				pItemProp.dwFlag |= IP_FLAG_BINDS;
+				pItemProp.dwFlag.set(IP_FLAG::BINDS);
 				break;
 			}
 		}

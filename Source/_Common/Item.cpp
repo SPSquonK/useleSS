@@ -304,7 +304,7 @@ BOOL CItemElem::IsBinds( void )
 	if( m_dwKeepTime && pProperty->dwItemKind2 != IK2_WARP )
 		return TRUE;
 
-	if( (pProperty->dwFlag & IP_FLAG_BINDS) == IP_FLAG_BINDS )
+	if( (pProperty->dwFlag[IP_FLAG::BINDS]))
 		return TRUE;
 
 	if( IsFlag( CItemElem::binds ) )
@@ -319,12 +319,9 @@ BOOL CItemElem::IsBinds( void )
 	return FALSE;
 }
 
-BOOL CItemElem::IsUndestructable( void )
-{
-	ItemProp* pProperty = GetProp();
-	if( (pProperty->dwFlag & IP_FLAG_UNDESTRUCTABLE ) == IP_FLAG_UNDESTRUCTABLE )
-		return TRUE;
-	return FALSE;
+bool CItemElem::IsUndestructable() const {
+	const ItemProp * pProperty = GetProp();
+	return pProperty && pProperty->dwFlag[IP_FLAG::UNDESTRUCTABLE];
 }
 
 BOOL CItemElem::IsLogable( void )

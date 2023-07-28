@@ -1884,7 +1884,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 				}
 				else
 				{
-					if(pFocusItem->GetProp() && (pFocusItem->GetProp()->dwFlag & IP_FLAG_EQUIP_BIND ) && !pFocusItem->IsFlag( CItemElem::binds ) )
+					if(pFocusItem->GetProp() && (pFocusItem->GetProp()->dwFlag[IP_FLAG::EQUIP_BIND] ) && !pFocusItem->IsFlag( CItemElem::binds ) )
 					{
 						SAFE_DELETE(g_WndMng.m_pWndEquipBindConfirm)
 						g_WndMng.m_pWndEquipBindConfirm = new CWndEquipBindConfirm(CWndEquipBindConfirm::EQUIP_DOUBLE_CLICK);
@@ -2096,7 +2096,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 						return FALSE;
 					if( g_pPlayer->IsUsing( pItemElem ) )
 						return FALSE;
-					if( pItemElem->IsUndestructable() == TRUE )
+					if( pItemElem->IsUndestructable() )
 					{
 						g_WndMng.PutString(TID_GAME_ERROR_UNDESTRUCTABLE_ITEM);
 						return FALSE;
@@ -2132,7 +2132,7 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 				if(rect.PtInRect( point ))
 				{
-					if( pItemElem->GetProp() && ( pItemElem->GetProp()->dwFlag & IP_FLAG_EQUIP_BIND ) && !pItemElem->IsFlag( CItemElem::binds ) )
+					if( pItemElem->GetProp() && ( pItemElem->GetProp()->dwFlag[IP_FLAG::EQUIP_BIND] ) && !pItemElem->IsFlag( CItemElem::binds ) )
 					{
 						SAFE_DELETE(g_WndMng.m_pWndEquipBindConfirm)
 						g_WndMng.m_pWndEquipBindConfirm = new CWndEquipBindConfirm(CWndEquipBindConfirm::EQUIP_DRAG_AND_DROP);

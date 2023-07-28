@@ -368,7 +368,7 @@ namespace WndMgr {
 		const DWORD dwColorBuf = PutItemName(pItemElem, pItemProp, strEdit);
 		PutItemAbilityPiercing(pItemElem, strEdit, dwColorBuf);
 		PutPetKind(pItemElem, strEdit);		//gmpbigsun : 아이템 명 다음줄에 펫 종류 ( 리어, 픽업, 버프 ) 삽입 
-		if (pItemProp.dwFlag & IP_FLAG_EQUIP_BIND) {
+		if (pItemProp.dwFlag[IP_FLAG::EQUIP_BIND]) {
 			strEdit.AddString("\n");
 
 			const DWORD bindTextId = pItemElem.IsFlag(CItemElem::binds) ? TID_TOOLTIP_EQUIPBIND_AFTER : TID_TOOLTIP_EQUIPBIND_BEFORE;
@@ -533,7 +533,7 @@ namespace WndMgr {
 
 		if (pItemElem.IsFlag(CItemElem::binds)
 			&& (ItemProps::IsOrichalcum(pItemElem) || ItemProps::IsMoonstone(pItemElem))
-			&& itemProp.dwFlag != IP_FLAG_EQUIP_BIND
+			&& !itemProp.dwFlag[IP_FLAG::EQUIP_BIND]
 			)
 			strTemp.Format("%s ", prj.GetText(TID_GAME_TOOLTIP_ITEM_BINDS));
 

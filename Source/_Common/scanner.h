@@ -2,6 +2,7 @@
 #define __SCANNER_H
 
 #include "data.h"
+#include <bitset>
 #include <concepts>
 #include <type_traits>
 
@@ -86,6 +87,34 @@ public:
 	SERIALNUMBER	GetSerialNumber( BOOL bComma = FALSE );
 	EXPINTEGER		GetExpInteger(  BOOL bComma = FALSE )	{ return GetInt64( bComma ); }
 
+
+	/*
+	Return the bitset corresponding to the next read value.
+
+	Triggers an Error if the value can not fit in the bitset.
+
+	Example of usage: myBitset = scanner.GetBitset<decltype(myBitset)>();
+
+	The type of the bitset is passed instead of the size so when the bitset type changes,
+	the GetBitset instruction is automatically updated.
+	*/
+	template<typename BitsetType>
+	BitsetType GetBitset(BOOL bComma = FALSE) {
+		static_assert(std::is_same_v<BitsetType, std::bitset<BitsetType().size()>>);
+
+		const int number = GetNumber(bComma);
+		if (number == -1 || number == 0) return number;
+
+		static constexpr auto maximumSupportedNumber = BitsetType(std::numeric_limits<unsigned long long>::max()).to_ullong();
+
+		if (static_cast<unsigned int>(number) >= maximumSupportedNumber) {
+			Error("Read bitset with value %d but the maximum is %lld", number, maximumSupportedNumber);
+		}
+
+		return number;
+	
+	}
+
 	template<std::integral T = int>
 	std::vector<T> GetNumbers(const char terminator) {
 		return GetNumbers<std::vector<T>>(terminator);
@@ -107,7 +136,6 @@ public:
 		return retval;
 	}
 };
-
 
 /////////////////////////////////////////////////////////////////////////////
 
