@@ -1349,32 +1349,18 @@
 #define	QPS_GUILDCOMBAT_RANKING	(BYTE)0x04
 
 // port num
-#define	PN_PATCHSRVR	1100
-#define	PN_WORLDSRVR	39000
-#define	PN_CERTIFIER	23000
-#define	PN_CORESRVR	    34000
-#define	PN_CACHESRVR	5400
-#define	PN_DBSRVR_0		7000	// l
-//#define	PN_DBSRVR_1		7100	// w
-#define	PN_DBSRVR_1		24000	// w
-#define PN_DBSRVR_2		7200	// core
-#define	PN_LOGINSRVR	28000
-#define	PN_PATCH_DISTRIBUTOR_0	9000
-#define	PN_PATCH_DISTRIBUTOR_1	9100
+#define	PN_WORLDSRVR	    39000 /* world <- cache */
+#define	PN_CERTIFIER	    23000 /* certifier <- neuz */
+#define	PN_CORESRVR	      34000 /* core <- world ; +1 core <- cache ; +2 core <- login */
+#define	PN_CACHESRVR	     5400 /* cache <- world */
+#define	PN_DBSRVR_0		     7000	/* db <- login */
+#define	PN_DBSRVR_1		    24000	/* db <- world */
+#define PN_DBSRVR_2		     7200	/* db <- core */
+#define	PN_LOGINSRVR	    28000 /* login <- neuz */
+#define	PN_ACCOUNTSRVR_0	12000 /* account <- certifier */
+#define	PN_ACCOUNTSRVR_1	12001 /* account <- db */
+#define	PN_ADBILL         29000 /* account <- shop */
 
-#define	PN_MONITOR_0	11000
-#define	PN_MONITOR_1	11001
-#define	PN_MONITOR_2	11002
-
-#define	PN_ACCOUNTSRVR_0	12000
-#define	PN_ACCOUNTSRVR_1	12001
-#define	PN_ACCOUNTSRVR_2	12002
-
-#define	PN_ACCUMULATOR		13000
-
-#define	PN_ADBILL		29000
-
-#define PN_COLLECTION	26000
 
 
 // PACKETTYPE_ADD_ACCOUNT의 리턴 코드
