@@ -83,11 +83,11 @@ BOOL CProject::LoadPropMover( LPCTSTR lpszFileName )
 		pProperty->dwInt				= scanner.GetNumber();
 		pProperty->dwHR					= scanner.GetNumber();
 		pProperty->dwER					= scanner.GetNumber();
-		pProperty->dwRace				= scanner.GetNumber();
+		/* dwRace */       scanner.GetNumber();
 		pProperty->dwBelligerence		= scanner.GetNumber();
-		pProperty->dwGender				= scanner.GetNumber();
+		/* dwGender */     scanner.GetNumber();
 		pProperty->dwLevel				= scanner.GetNumber();
-		pProperty->dwFlightLevel		= scanner.GetNumber();
+		/* dwFlightLevel*/ scanner.GetNumber();
 		pProperty->dwSize				= scanner.GetNumber();
 		pProperty->dwClass				= scanner.GetNumber();
 		pProperty->bIfParts				= scanner.GetNumber();
@@ -97,7 +97,7 @@ BOOL CProject::LoadPropMover( LPCTSTR lpszFileName )
 
 		pProperty->nChaotic				= scanner.GetNumber();
 		pProperty->dwUseable			= scanner.GetNumber();
-		pProperty->dwActionRadius		= scanner.GetNumber();
+		/* dwActionRadius */ scanner.GetNumber();
 		pProperty->dwAtkMin				= scanner.GetNumber();
 		pProperty->dwAtkMax				= scanner.GetNumber();
 		pProperty->dwAtk1				= scanner.GetNumber();
@@ -107,33 +107,33 @@ BOOL CProject::LoadPropMover( LPCTSTR lpszFileName )
 		pProperty->fFrame	= scanner.GetFloat();	// -1이면 가중치 영향 없음. 1.0 기본 값
 		if( abs( -1.0F  - pProperty->fFrame ) < 0.000001F )
 			pProperty->fFrame	= 1.0F;
-		pProperty->dwOrthograde	= scanner.GetNumber();
-		pProperty->dwThrustRate			= scanner.GetNumber();
+		/* dwOrthograde */ scanner.GetNumber();
+		/* dwThrustRate */ scanner.GetNumber();
 
-		pProperty->dwChestRate			= scanner.GetNumber();
-		pProperty->dwHeadRate			= scanner.GetNumber();
-		pProperty->dwArmRate			= scanner.GetNumber();
-		pProperty->dwLegRate			= scanner.GetNumber();
+		/* dwChestRate */ scanner.GetNumber();
+		/* dwHeadRate  */ scanner.GetNumber();
+		/* dwArmRate   */ scanner.GetNumber();
+		/* dwLegRate   */ scanner.GetNumber();
 
 		pProperty->dwAttackSpeed		= scanner.GetNumber();
 		pProperty->dwReAttackDelay		= scanner.GetNumber();
 		pProperty->dwAddHp				= scanner.GetNumber();
 		pProperty->dwAddMp				= scanner.GetNumber();
 		pProperty->dwNaturalArmor		= scanner.GetNumber();
-		pProperty->nAbrasion			= scanner.GetNumber();
-		pProperty->nHardness			= scanner.GetNumber();
-		pProperty->dwAdjAtkDelay		= scanner.GetNumber();
+		/* nAbrasion */ scanner.GetNumber();
+		/* nHardness */ scanner.GetNumber();
+		/* dwAdjAtkDelay */ scanner.GetNumber();
 		
 		pProperty->eElementType			= static_cast<SAI79::ePropType>(scanner.GetNumber());	// 정수타입과 enum	타입이 틀려서 타입 변환을 허용함.
 		pProperty->wElementAtk			= static_cast<short>(scanner.GetNumber());				// 정수타입과 short	타입이 틀려서 타입 변환을 허용함.
 
 		pProperty->dwHideLevel			= scanner.GetNumber();
 		pProperty->fSpeed				= scanner.GetFloat();
-		pProperty->dwShelter			= scanner.GetNumber();
+		/* dwShelter */ scanner.GetNumber();
 		pProperty->dwFlying				= scanner.GetNumber();
-		pProperty->dwJumpIng			= scanner.GetNumber();
-		pProperty->dwAirJump			= scanner.GetNumber();
-		pProperty->bTaming				= scanner.GetNumber();
+		/* dwJumpIng */ scanner.GetNumber();
+		/* dwAirJump */ scanner.GetNumber();
+		/* bTaming   */ scanner.GetNumber();
 		pProperty->dwResisMgic			= scanner.GetNumber();
 
 		pProperty->nResistElecricity	= (int)(scanner.GetFloat() * 100.0f);
@@ -145,34 +145,34 @@ BOOL CProject::LoadPropMover( LPCTSTR lpszFileName )
 		pProperty->dwCash				= scanner.GetNumber();
 		pProperty->dwSourceMaterial		= scanner.GetNumber();
 		pProperty->dwMaterialAmount		= scanner.GetNumber();
-		pProperty->dwCohesion			= scanner.GetNumber();
+		/* dwCohesion */ scanner.GetNumber();
 		pProperty->dwHoldingTime		= scanner.GetNumber();
 		pProperty->dwCorrectionValue	= scanner.GetNumber();
 		pProperty->nExpValue			= scanner.GetExpInteger();
 		pProperty->nFxpValue			= scanner.GetNumber();
-		pProperty->nBodyState			= scanner.GetNumber();
-		pProperty->dwAddAbility			= scanner.GetNumber();
+		/* nBodyState   */ scanner.GetNumber();
+		/* dwAddAbility */ scanner.GetNumber();
 		pProperty->bKillable			= scanner.GetNumber();
 		
-		pProperty->dwVirtItem[0]		= scanner.GetNumber();
-		pProperty->dwVirtItem[1]		= scanner.GetNumber();
-		pProperty->dwVirtItem[2]		= scanner.GetNumber();
-		pProperty->bVirtType[0]			= scanner.GetNumber();
-		pProperty->bVirtType[1]			= scanner.GetNumber();
-		pProperty->bVirtType[2]			= scanner.GetNumber();
+		/* dwVirtItem[0] */ scanner.GetNumber();
+		/* dwVirtItem[1] */ scanner.GetNumber();
+		/* dwVirtItem[2] */ scanner.GetNumber();
+		/* bVirtType[0]  */ scanner.GetNumber();
+		/* bVirtType[1]  */ scanner.GetNumber();
+		/* bVirtType[2]  */ scanner.GetNumber();
 
-		pProperty->dwSndAtk1			= scanner.GetNumber();
-		pProperty->dwSndAtk2 			= scanner.GetNumber();
+		/* dwSndAtk1 */ scanner.GetNumber();
+		/* dwSndAtk2 */ scanner.GetNumber();
 
-		pProperty->dwSndDie1 			= scanner.GetNumber();
-		pProperty->dwSndDie2 			= scanner.GetNumber();
+		/* dwSndDie1 */ scanner.GetNumber();
+		/* dwSndDie2 */ scanner.GetNumber();
 
 		pProperty->dwSndDmg1 			= scanner.GetNumber();
 		pProperty->dwSndDmg2 			= scanner.GetNumber();
-		pProperty->dwSndDmg3 			= scanner.GetNumber();
+		/* dwSndDmg3 */ scanner.GetNumber();
 
 		pProperty->dwSndIdle1 			= scanner.GetNumber();
-		pProperty->dwSndIdle2 			= scanner.GetNumber();
+		/* dwSndIdle2 */ scanner.GetNumber();
 
 
 		scanner.GetToken();
@@ -247,7 +247,7 @@ BOOL CProject::LoadPropItem( LPCTSTR lpszFileName, CFixedArray< ItemProp >* apOb
 		prop.dwItemSex			= scanner.GetNumber();      
 		prop.dwCost				= scanner.GetNumber();      
 		prop.dwEndurance		= scanner.GetNumber(); 
-		prop.nAbrasion			= scanner.GetNumber();
+		/* nAbrasion */ scanner.GetNumber();
 		prop.nMaxRepair			= scanner.GetNumber();
 		prop.dwHanded			= scanner.GetNumber();      
 		prop.dwFlag				= scanner.GetBitset<decltype(prop.dwFlag)>();

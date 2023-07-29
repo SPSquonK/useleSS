@@ -158,7 +158,6 @@ struct ItemProp
 	DWORD	dwCost;				// 가격	 
 	DWORD	dwEndurance;		// 내구력	
 	int		nLog;				// 로그
-	int		nAbrasion;			// 마모율
 	int		nMaxRepair;			// 수리횟수
 	DWORD	dwHanded;			// 잡는형식	
 	std::bitset<IP_FLAG::MAX> dwFlag;				// 다목적 플래그	
@@ -408,17 +407,13 @@ struct MoverProp : CtrlProp
 	DWORD	dwInt;	// 지능,
 	DWORD	dwHR;
 	DWORD   dwER;
-	DWORD	dwRace;		// 종족,
 	DWORD	dwBelligerence;		// 호전성,
-	DWORD	dwGender;	// 성별,
 	DWORD	dwLevel;	// 레벨,
-	DWORD	dwFlightLevel;	// 비행레벨
 	DWORD	dwSize;		// 크기,
 	DWORD   dwClass;
 	BOOL	bIfParts;	// 파츠냐?
 	int		nChaotic;	// 나쁜놈 마이너스/ 좋은넘 플러스
 	DWORD	dwUseable;	// 방어 캐릭수,
-	DWORD	dwActionRadius;		// 전투행동번경,
 	DWORD	dwAtkMin;	// 최소타격치,
 	DWORD	dwAtkMax;	// 최대타격치,
 	DWORD	dwAtk1;
@@ -426,37 +421,22 @@ struct MoverProp : CtrlProp
 	DWORD	dwAtk3;
 	DWORD	dwAtk4;		// dwHorizontalRate가 이걸로 바뀜.
 	FLOAT	fFrame;	// 이동 시 프레임 가중치
-	DWORD	dwOrthograde;
-	DWORD	dwThrustRate;	// 찌르기비율,
-
-	DWORD	dwChestRate;
-	DWORD	dwHeadRate;  
-	DWORD	dwArmRate;
-	DWORD	dwLegRate;
 
 	DWORD	dwAttackSpeed;	// 공격속도,
 	DWORD	dwReAttackDelay;
 	DWORD	dwAddHp;		// ,
 	DWORD	dwAddMp;		// ,
 	DWORD	dwNaturalArmor;	// 자연방어력 
-	int		nAbrasion;	// 마모도
-	int		nHardness;	// 경도
-	DWORD	dwAdjAtkDelay;	// 추가공격속도저하,
 
 	SAI79::ePropType	eElementType;
 	short				wElementAtk;		// 속성 데미지( 위 속성 타입으로 공격력을 설정한다. )
 
 	DWORD	dwHideLevel;	// 레벨 안보이는넘이냐..
 	FLOAT	fSpeed;	// 이동속도,
-	DWORD	dwShelter;	// 거주지역,
 	DWORD	dwFlying;	// 비행유무,
-	DWORD	dwJumpIng;	// 높이뛰기 
-	DWORD	dwAirJump;	// 멀리뛰기
-	DWORD	bTaming;	// 조련유무 
 	DWORD	dwResisMgic;	//마법저항 
 
 	int		nResistElecricity;
-	int		nResistDark;
 	int		nResistFire;
 	int		nResistWind;
 	int		nResistWater;
@@ -465,27 +445,15 @@ struct MoverProp : CtrlProp
 	DWORD	dwCash;		// 제공금액
 	DWORD	dwSourceMaterial;	// 제공재료
 	DWORD	dwMaterialAmount;	// 재료양
-	DWORD	dwCohesion;	// 재료응집도
 	DWORD	dwHoldingTime;	// 시체유지시간
 	DWORD	dwCorrectionValue;	// 아이템생성보정값
 	EXPINTEGER	nExpValue;
 	int		nFxpValue;		// 비행경험치.
-	DWORD	nBodyState;		// 몸상태,
-	DWORD	dwAddAbility;	// 추가능력,
 	DWORD	bKillable;	// 죽음유무,
 
-	DWORD	dwVirtItem[3];
-	DWORD	bVirtType[3]; 
-
-	DWORD   dwSndAtk1  ;
-	DWORD   dwSndAtk2  ;
-	DWORD   dwSndDie1  ;
-	DWORD   dwSndDie2  ;
 	DWORD   dwSndDmg1  ;
 	DWORD   dwSndDmg2  ;
-	DWORD   dwSndDmg3  ;
 	DWORD   dwSndIdle1 ;
-	DWORD   dwSndIdle2 ;
 
 	short   m_nEvasionHP;
 	short	m_nEvasionSec;
@@ -539,18 +507,6 @@ struct MoverProp : CtrlProp
 #endif
 
 	
-	short	m_nAttackItemNear;
-	short	m_nAttackItemFar;
-	short	m_nAttackItem1;
-	short	m_nAttackItem2;
-	short	m_nAttackItem3;
-	short	m_nAttackItem4;
-	short	m_nAttackItemSec;
-	short	m_nMagicReflection;
-	short	m_nImmortality;
-	BOOL 	m_bBlow;
-	short	m_nChangeTargetRand;
-
 	short   m_nAttackFirstRange;
 	CDropItemGenerator	m_DropItemGenerator;
 	CQuestItemGenerator		m_QuestItemGenerator;
@@ -559,37 +515,23 @@ struct MoverProp : CtrlProp
 	
 	MoverProp()
 	{
-		dwStr	= dwSta	= dwDex	= dwInt	= dwHR	= dwER	= dwRace	= dwBelligerence	=dwGender
-		= dwLevel	= dwFlightLevel	= dwSize	= dwClass	= bIfParts	= nChaotic
+		dwStr	= dwSta	= dwDex	= dwInt	= dwHR	= dwER	= dwBelligerence
+		= dwLevel	= dwSize	= dwClass	= bIfParts	= nChaotic
 		= dwUseable
-		= dwActionRadius	= dwAtkMin	= dwAtkMax	= dwAtk1	= dwAtk2	= dwAtk3	= dwAtk4	= 0;
+			= dwAtkMin	= dwAtkMax	= dwAtk1	= dwAtk2	= dwAtk3	= dwAtk4	= 0;
 			fFrame	= 1.0F;
-			dwOrthograde	= 0;
-		dwThrustRate		= 0;
-		dwChestRate			= 0;
-		dwHeadRate			= 0;
-		dwArmRate			= 0;
-		dwLegRate			= 0;
 		dwAttackSpeed		= 0;
 		dwReAttackDelay		= 0;
 		dwAddHp				= 0;
 		dwAddMp				= 0;
 		dwNaturalArmor		= 0;
-		nAbrasion			= 0;
-		nHardness			= 0;
-		dwAdjAtkDelay		= 0;
 		dwHideLevel			= 0;
 		eElementType		= SAI79::NO_PROP;
 		wElementAtk			= 0;
 		fSpeed				= 0.0F;
-		dwShelter			= 0;
 		dwFlying			= 0;
-		dwJumpIng			= 0;
-		dwAirJump			= 0;
-		bTaming				= 0;
 		dwResisMgic			= 0;
 		nResistElecricity	= 0;
-		nResistDark			= 0;
 		nResistFire			= 0;
 		nResistWind			= 0;
 		nResistWater		= 0;
@@ -597,27 +539,15 @@ struct MoverProp : CtrlProp
 		dwCash				= 0;
 		dwSourceMaterial	= 0;
 		dwMaterialAmount	= 0;
-		dwCohesion			= 0;
 		dwHoldingTime		= 0;
 		dwCorrectionValue	= 0;
 		nExpValue			= 0;
 		nFxpValue			= 0;
-		nBodyState			= 0;
-		dwAddAbility		= 0;
 		bKillable			= 0;
 		
-		memset( dwVirtItem, 0, sizeof(dwVirtItem) );
-		memset( bVirtType, 0, sizeof(bVirtType) );
-
-		dwSndAtk1			= 0;
-		dwSndAtk2			= 0;
-		dwSndDie1			= 0;
-		dwSndDie2			= 0;
 		dwSndDmg1			= 0;
 		dwSndDmg2			= 0;
-		dwSndDmg3			= 0;
 		dwSndIdle1			= 0;
-		dwSndIdle2			= 0;
 		m_nEvasionHP		= 0;
 		m_nEvasionSec		= 0;
 		m_nRunawayHP		= 0;
@@ -668,17 +598,6 @@ struct MoverProp : CtrlProp
 		m_fPenya_Rate	= 0.0F;
 		m_bRate	=
 #endif
-		m_nAttackItemNear	=
-		m_nAttackItemFar	=
-		m_nAttackItem1	=
-		m_nAttackItem2	=
-		m_nAttackItem3	=
-		m_nAttackItem4	=
-		m_nAttackItemSec	=
-		m_nMagicReflection	=
-		m_nImmortality	=
-		m_bBlow	=
-		m_nChangeTargetRand	=
 		m_nAttackFirstRange	= 0;
 	}
 };

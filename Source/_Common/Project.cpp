@@ -2227,7 +2227,6 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 
 		int nCallNum = 0;
 
-		pProp->m_nChangeTargetRand = 10;
 		pProp->m_dwAttackMoveDelay = 0;
 		pProp->m_bPartyAttack      = 0;
 		pProp->m_dwRunawayDelay    = SEC( 1 );
@@ -2304,70 +2303,23 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 				}
 			}
 			else
-			if(script.Token == "m_nAttackItemNear")
+			if(
+				script.Token == "m_nAttackItemNear"
+				|| script.Token == "m_nAttackItemFar"
+				|| script.Token == "m_nAttackItem1"
+				|| script.Token == "m_nAttackItem2"
+				|| script.Token == "m_nAttackItem3"
+				|| script.Token == "m_nAttackItem4"
+				|| script.Token == "m_nAttackItemSec"
+				|| script.Token == "m_nMagicReflection"
+				|| script.Token == "m_nImmortality"
+				|| script.Token == "m_bBlow"
+				|| script.Token == "m_nChangeTargetRand"
+				
+				)
 			{
 				script.GetToken(); // skip =
-				pProp->m_nAttackItemNear  = script.GetNumber();
-			}
-			else
-			if(script.Token == "m_nAttackItemFar")
-			{
-				script.GetToken(); // skip =
-				pProp->m_nAttackItemFar  = script.GetNumber();
-			}
-			else
-			if(script.Token == "m_nAttackItem1")
-			{
-				script.GetToken(); // skip =
-				pProp->m_nAttackItem1  = script.GetNumber();
-			}
-			else
-			if(script.Token == "m_nAttackItem2")
-			{
-				script.GetToken(); // skip =
-				pProp->m_nAttackItem2  = script.GetNumber();
-			}
-			else
-			if(script.Token == "m_nAttackItem3")
-			{
-				script.GetToken(); // skip =
-				pProp->m_nAttackItem3  = script.GetNumber();
-			}
-			else
-			if(script.Token == "m_nAttackItem4")
-			{
-				script.GetToken(); // skip =
-				pProp->m_nAttackItem4  = script.GetNumber();
-			}
-			else
-			if(script.Token == "m_nAttackItemSec")
-			{
-				script.GetToken(); // skip =
-				pProp->m_nAttackItemSec = script.GetNumber();
-			}
-			else
-			if(script.Token == "m_nMagicReflection")
-			{
-				script.GetToken(); // skip =
-				pProp->m_nMagicReflection = script.GetNumber();
-			}
-			else
-			if(script.Token == "m_nImmortality")
-			{
-				script.GetToken(); // skip =
-				pProp->m_nImmortality = script.GetNumber();
-			}
-			else
-			if(script.Token == "m_bBlow")
-			{
-				script.GetToken(); // skip =
-				pProp->m_bBlow = script.GetNumber();
-			}
-			else
-			if(script.Token == "m_nChangeTargetRand")
-			{
-				script.GetToken(); // skip =
-				pProp->m_nChangeTargetRand = script.GetNumber();
+				script.GetNumber();
 			}
 			else
 			if(script.Token == "m_dwAttackMoveDelay")
