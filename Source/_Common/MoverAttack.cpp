@@ -132,7 +132,7 @@ float CMover::GetAttackSpeed()
 
 	// A = int( 캐릭터의 공속 + ( 무기의 공속 * ( 4 * 덱스 + ( 레벨 / 8 ) ) ) - 3 )
 	// 공격속도 = ( ( 50 / 200 - A ) / 2 ) + 가중치 
-	int A = int( pProperty->fAttackSpeed + ( fItem * ( 4.0f * GetDex() + GetLevel() / 8.0f ) ) - 3.0f );
+	int A = int( pProperty->AttackSpeed + ( fItem * ( 4.0f * GetDex() + GetLevel() / 8.0f ) ) - 3.0f );
 //	TRACE( "A =%d\n", A );
 	if( 187.5f <= A )
 		A	= (int)( 187.5f );
@@ -291,38 +291,13 @@ int CMover::GetPlusWeaponATK( DWORD dwWeaponType ) const
 
 
 // 직업에 따른 factor를 구한다.
-float CMover::GetJobPropFactor( JOB_PROP_TYPE type ) const
-{
-	if (!IsPlayer()) return 1.0f;
+const JobProp JobProp::NullObject = JobProp();
 
-	const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
-	ASSERT( pProperty );
+const JobProp & CMover::GetJobProp() const {
+	if (!IsPlayer()) return JobProp::NullObject;
 
-	switch( type )
-	{
-	case JOB_PROP_SWD:
-		return pProperty->fMeleeSWD;
-	case JOB_PROP_AXE:	
-		return pProperty->fMeleeAXE;
-	case JOB_PROP_STAFF:
-		return pProperty->fMeleeSTAFF;
-	case JOB_PROP_STICK:
-		return pProperty->fMeleeSTICK;
-	case JOB_PROP_KNUCKLE:
-		return pProperty->fMeleeKNUCKLE;
-	case JOB_PROP_WAND:
-		return pProperty->fMagicWAND;
-	case JOB_PROP_YOYO:
-		return pProperty->fMeleeYOYO;
-	case JOB_PROP_BLOCKING:
-		return pProperty->fBlocking;
-	case JOB_PROP_CRITICAL:
-		return pProperty->fCritical;	
-	// TODO 나머지 
-	default:
-		ASSERT( 0 );
-		return 1.0f;
-	}
+	const JobProp * pProperty = prj.jobs.GetJobProp(GetJob());
+	return pProperty ? *pProperty : JobProp::NullObject;
 }
 
 // 무기의 공격력를 구한다.
@@ -332,29 +307,25 @@ int CMover::GetWeaponATK( DWORD dwWeaponType ) const
 	switch( dwWeaponType )
 	{
 	case WT_MELEE_SWD:
-		nATK = (int)( float(( GetStr() - 12 ) * GetJobPropFactor(JOB_PROP_SWD)) + (float(GetLevel() * 1.1f)) );
+		nATK = (int)( float(( GetStr() - 12 ) * GetJobProp().MeleeSWD) + (float(GetLevel() * 1.1f)) );
 		break;
 	case WT_MELEE_AXE:
-		nATK = (int)( float(( GetStr() - 12 ) * GetJobPropFactor(JOB_PROP_AXE)) + (float(GetLevel() * 1.2f)) );
+		nATK = (int)( float(( GetStr() - 12 ) * GetJobProp().MeleeAXE) + (float(GetLevel() * 1.2f)) );
 		break;
 	case WT_MELEE_STAFF:
-		nATK = (int)( float(( GetStr() - 10 ) * GetJobPropFactor(JOB_PROP_STAFF)) + (float(GetLevel() * 1.1f)) );
+		nATK = (int)( float(( GetStr() - 10 ) * GetJobProp().MeleeSTAFF) + (float(GetLevel() * 1.1f)) );
 		break;
 	case WT_MELEE_STICK:
-		nATK = (int)( float(( GetStr() - 10 ) * GetJobPropFactor(JOB_PROP_STICK)) + (float(GetLevel() * 1.3f)) );
+		nATK = (int)( float(( GetStr() - 10 ) * GetJobProp().MeleeSTICK) + (float(GetLevel() * 1.3f)) );
 		break;
 	case WT_MELEE_KNUCKLE:
-		nATK = (int)( float( (GetStr() - 10 ) * GetJobPropFactor(JOB_PROP_KNUCKLE)) + (float(GetLevel() * 1.2f)) );
+		nATK = (int)( float( (GetStr() - 10 ) * GetJobProp().MeleeKNUCKLE) + (float(GetLevel() * 1.2f)) );
 		break;
 	case WT_MAGIC_WAND:
-		nATK = (int)( ( GetInt() - 10 ) * GetJobPropFactor(JOB_PROP_WAND) + GetLevel() * 1.2f );
+		nATK = (int)( ( GetInt() - 10 ) * GetJobProp().MagicWAND + GetLevel() * 1.2f );
 		break;
 	case WT_MELEE_YOYO:
-//#ifdef __VER7
-//		nATK = float(( GetDex() - 12 ) * GetJobPropFactor(JOB_PROP_YOYO)) + (float(GetLevel() * 1.1f));
-//#else
-		nATK = (int)( float(( GetStr() - 12 ) * GetJobPropFactor(JOB_PROP_YOYO)) + (float(GetLevel() * 1.1f)) );
-//#endif
+		nATK = (int)( float(( GetStr() - 12 ) * GetJobProp().MeleeYOYO) + (float(GetLevel() * 1.1f)) );
 		break;
 	case WT_RANGE_BOW:
 		nATK = (int)( (((GetDex()-14)*4.0f + (GetLevel()*1.3f) + (GetStr()*0.2f)) * 0.7f) );
@@ -518,10 +489,8 @@ int CMover::CalcDefenseCore( CMover* pAttacker, DWORD dwAtkFlags, BOOL bRandom )
 
 	if( bGeneric )		
 	{
-		float fFactor = 1.0f;
-		if (IsPlayer()) {
-			fFactor = prj.jobs.GetJobProp(GetJob())->fFactorDef;
-		}
+		float fFactor = GetJobProp().FactorDef;
+
 		int nDefense = (int)( ((((GetLevel()*2) + (GetSta()/2)) / 2.8f ) - 4) + ((GetSta()-14) * fFactor) );
 		nDefense += (GetDefenseByItem( bRandom ) / 4);	// 아이템에 의한 디펜스   
 		nDefense += GetParam( DST_ADJDEF, 0 );	// 디펜스 수정치가 있다면 그것을 더함.
@@ -544,7 +513,7 @@ int CMover::GetCriticalProb( void )
 {
 	int nProb;
 	nProb = (GetDex() / 10);
-	nProb	= (int)( nProb *  GetJobPropFactor( JOB_PROP_CRITICAL ) );
+	nProb	= (int)( nProb *  GetJobProp().Critical );
 	nProb = GetParam( DST_CHR_CHANCECRITICAL, nProb );	// 크리티컬 확률을 높여주는 스킬관련 
 #ifdef __JEFF_11
 	if( nProb < 0 )
@@ -650,7 +619,7 @@ float CMover::GetBlockFactor( CMover* pAttacker, ATTACK_INFO* pInfo )
 		else
 			fAdd += GetParam( DST_BLOCK_MELEE, 0 );		// 원거리가 아닐땐 근거리 블럭율보정치를 가져다 씀
 		
-		int nBR = (int)( ( GetDex() / 8.0f ) * GetJobPropFactor( JOB_PROP_BLOCKING ) + fAdd );
+		int nBR = (int)( ( GetDex() / 8.0f ) * GetJobProp().Blocking + fAdd );
 		if( nBR < 0 )
 			nBR = 0; 
 

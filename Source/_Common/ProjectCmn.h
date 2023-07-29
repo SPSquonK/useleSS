@@ -319,41 +319,26 @@ namespace ItemProps {
 
 }
 
-
-// 직업에 따른 factor ENUM
-enum JOB_PROP_TYPE
-{
-	JOB_PROP_SWD,
-	JOB_PROP_AXE,	
-	JOB_PROP_STAFF,
-	JOB_PROP_STICK,
-	JOB_PROP_KNUCKLE,
-	JOB_PROP_WAND,
-	JOB_PROP_BLOCKING,
-	JOB_PROP_YOYO,
-	JOB_PROP_CRITICAL,
-};
-
 // 직업에 따른 프로퍼티 ( propJob.inc에서 읽어들임 )
-struct JobProp
-{
-	float	fAttackSpeed;			//공속 
-	float	fFactorMaxHP;			//최대 HP 계산에 사용되는 factor
-	float	fFactorMaxMP;			//최대 MP 계산에 사용되는 factor
-	float	fFactorMaxFP;			//최대 FP 계산에 사용되는 factor
-	float   fFactorDef;				//물리 방어력 계산에 사용되는 factor
-	float	fFactorHPRecovery;		//HP회복 factor
-	float	fFactorMPRecovery;		//MP회복 factor
-	float	fFactorFPRecovery;		//FP회복 factor
-	float	fMeleeSWD;				//WT_MELEE_SWD의 ATK factor
-	float	fMeleeAXE;				//WT_MELEE_AXE의 ATK factor
-	float   fMeleeSTAFF; 			//WT_MELEE_STAFF의 ATK factor
-	float   fMeleeSTICK;			//WT_MELEE_STICK의 ATK factor
-	float   fMeleeKNUCKLE;			//WT_MELEE_KNUCKLE의 ATK factor
-	float   fMagicWAND;				//WT_MAGIC_WAND의 ATK factor 
-	float   fBlocking;				//블록킹 factor
-	float	fMeleeYOYO;				//요요의 ATK factor 
-	float   fCritical;				//크리티컬 처리
+struct JobProp {
+	static const JobProp NullObject;
+	float AttackSpeed = 1.0f;			//공속 
+	float FactorMaxHP = 1.0f;			//최대 HP 계산에 사용되는 factor
+	float FactorMaxMP = 1.0f;			//최대 MP 계산에 사용되는 factor
+	float FactorMaxFP = 1.0f;			//최대 FP 계산에 사용되는 factor
+	float FactorDef = 1.0f;				//물리 방어력 계산에 사용되는 factor
+	float FactorHPRecovery = 1.0f;		//HP회복 factor
+	float FactorMPRecovery = 1.0f;		//MP회복 factor
+	float FactorFPRecovery = 1.0f;		//FP회복 factor
+	float MeleeSWD = 1.0f;				//WT_MELEE_SWD의 ATK factor
+	float MeleeAXE = 1.0f;				//WT_MELEE_AXE의 ATK factor
+	float MeleeSTAFF = 1.0f; 			//WT_MELEE_STAFF의 ATK factor
+	float MeleeSTICK = 1.0f;			//WT_MELEE_STICK의 ATK factor
+	float MeleeKNUCKLE = 1.0f;			//WT_MELEE_KNUCKLE의 ATK factor
+	float MagicWAND = 1.0f;				//WT_MAGIC_WAND의 ATK factor 
+	float Blocking = 1.0f;				//블록킹 factor
+	float MeleeYOYO = 1.0f;				//요요의 ATK factor 
+	float Critical = 1.0f;				//크리티컬 처리
 };
 
 struct JobSkills : std::array<std::vector<const ItemProp *>, MAX_JOB> {

@@ -1819,14 +1819,14 @@ int CMover::GetMaxOriginHitPoint( BOOL bOriginal )
 
 		const JobProp * pProperty = prj.jobs.GetJobProp( GetJob() ); 
 
-		float a = (pProperty->fFactorMaxHP*m_nLevel)/2.0f;
+		float a = (pProperty->FactorMaxHP*m_nLevel)/2.0f;
 		float b = a * ((m_nLevel+1.0f)/4.0f) * (1.0f + nSta/50.0f) + (nSta*10.0f) ;
 		float maxHP = b + 80.f; 
 		return (int)maxHP;
 	}
 	else
 	{
-		MoverProp *pMoverProp = GetProp();
+		const MoverProp *pMoverProp = GetProp();
 		return int( pMoverProp->dwAddHp * prj.m_fMonsterHitpointRate * pMoverProp->m_fHitPoint_Rate ); 
 	}
 
@@ -1846,7 +1846,7 @@ int CMover::GetMaxOriginManaPoint( BOOL bOriginal )
 		// INT((((BaseLv*2) + (INT*8))*Job���) + 22)+(INT*Job���)) +  �� 
 		// �� : �����ۿ����� �߰� ��� (%����) TDDO
 		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
-		float factor = pProperty->fFactorMaxMP;
+		float factor = pProperty->FactorMaxMP;
 		
 		int nMaxMP = (int)( ((((m_nLevel*2.0f) + ( nInt*8.0f))*factor) + 22.0f)+( nInt*factor) );
 		return nMaxMP;
@@ -1874,7 +1874,7 @@ int CMover::GetMaxOriginFatiguePoint( BOOL bOriginal )
 	{
 		// (((BaseLv*2) + (STA*6))*Job���) +(STA*Job���) + �� + ��
 		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
-		float factor = pProperty->fFactorMaxFP;
+		float factor = pProperty->FactorMaxFP;
 
 		int nMaxFP = (int)( (((m_nLevel*2.0f) + (nSta*6.0f))*factor) +(nSta*factor) );
 		return nMaxFP;
@@ -1918,12 +1918,7 @@ int CMover::GetFatiguePointPercent( int nPercent )
   */
 int CMover::GetHPRecovery()
 {
-	float fFactor = 1.0f;
-	if( IsPlayer() )
-	{
-		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
-		fFactor = pProperty->fFactorHPRecovery;
-	}
+	const float fFactor = GetJobProp().FactorHPRecovery;
 
 	//(����/3)+ (MaxHP/ (500* ����))+(STA*Job���)
 	int nValue = (int)( (GetLevel() / 3.0f) + (GetMaxHitPoint() / (500.f * GetLevel())) + (GetSta() * fFactor) );
@@ -1933,12 +1928,7 @@ int CMover::GetHPRecovery()
 // MP ȸ�� �� ���
 int CMover::GetMPRecovery()
 {
-	float fFactor = 1.0f;
-	if( IsPlayer() )
-	{
-		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
-		fFactor = pProperty->fFactorMPRecovery;
-	}
+	const float fFactor = GetJobProp().FactorMPRecovery;
 
 	// ((����*1.5)+(MaxMP/(500*����))+(INT*Job���))*0.2
 	int nValue = (int)( ((GetLevel() * 1.5f) + (GetMaxManaPoint() / (500.f * GetLevel())) + (GetInt() * fFactor)) * 0.2f );
@@ -1948,12 +1938,8 @@ int CMover::GetMPRecovery()
 // FP ȸ�� �� ��� 
 int CMover::GetFPRecovery()
 {
-	float fFactor = 1.0f;
-	if( IsPlayer() )
-	{
-		const JobProp* pProperty = prj.jobs.GetJobProp( GetJob() ); 
-		fFactor = pProperty->fFactorFPRecovery;
-	}
+	const float fFactor = GetJobProp().FactorFPRecovery;
+
 	// ((����*2)+(MaxFP/(500*����))+(STA*Job���))*0.2
 	int nValue = (int)( ((GetLevel() * 2.0f) + (GetMaxFatiguePoint() / (500.f * GetLevel())) + (GetSta() * fFactor)) * 0.2f );
 	nValue	= (int)( nValue - ( nValue * 0.1f ) ); // ȸ���� 10% ����

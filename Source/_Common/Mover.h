@@ -1249,7 +1249,7 @@ public:
 #ifdef __ADD_RESTATE_LOW
 	void			ReStateOneLow( int nKind );
 #endif // __ADD_RESTATE_LOW
-	[[nodiscard]] float GetJobPropFactor(JOB_PROP_TYPE type) const;
+	[[nodiscard]] const JobProp & GetJobProp() const;
 	int				CalcDefense( ATTACK_INFO* pInfo, BOOL bRandom = TRUE );
 	int				CalcDefenseCore( CMover* pAttacker, DWORD dwAtkFlags, BOOL bRandom = TRUE );	
 	int				CalcDefensePlayer( CMover* pAttacker, DWORD dwAtkFlags );

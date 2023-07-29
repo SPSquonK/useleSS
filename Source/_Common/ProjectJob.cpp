@@ -76,23 +76,23 @@ bool Project::Jobs::LoadPropJob(LPCTSTR lpszFileName) {
 		if (scanner.tok == FINISHED) break;
 
 		JobProp & pProperty = prop[nJob];
-		pProperty.fAttackSpeed = scanner.GetFloat();
-		pProperty.fFactorMaxHP = scanner.GetFloat();
-		pProperty.fFactorMaxMP = scanner.GetFloat();
-		pProperty.fFactorMaxFP = scanner.GetFloat();
-		pProperty.fFactorDef = scanner.GetFloat();
-		pProperty.fFactorHPRecovery = scanner.GetFloat();
-		pProperty.fFactorMPRecovery = scanner.GetFloat();
-		pProperty.fFactorFPRecovery = scanner.GetFloat();
-		pProperty.fMeleeSWD = scanner.GetFloat();
-		pProperty.fMeleeAXE = scanner.GetFloat();
-		pProperty.fMeleeSTAFF = scanner.GetFloat();
-		pProperty.fMeleeSTICK = scanner.GetFloat();
-		pProperty.fMeleeKNUCKLE = scanner.GetFloat();
-		pProperty.fMagicWAND = scanner.GetFloat();
-		pProperty.fBlocking = scanner.GetFloat();
-		pProperty.fMeleeYOYO = scanner.GetFloat();
-		pProperty.fCritical = scanner.GetFloat();
+		pProperty.AttackSpeed = scanner.GetFloat();
+		pProperty.FactorMaxHP = scanner.GetFloat();
+		pProperty.FactorMaxMP = scanner.GetFloat();
+		pProperty.FactorMaxFP = scanner.GetFloat();
+		pProperty.FactorDef = scanner.GetFloat();
+		pProperty.FactorHPRecovery = scanner.GetFloat();
+		pProperty.FactorMPRecovery = scanner.GetFloat();
+		pProperty.FactorFPRecovery = scanner.GetFloat();
+		pProperty.MeleeSWD = scanner.GetFloat();
+		pProperty.MeleeAXE = scanner.GetFloat();
+		pProperty.MeleeSTAFF = scanner.GetFloat();
+		pProperty.MeleeSTICK = scanner.GetFloat();
+		pProperty.MeleeKNUCKLE = scanner.GetFloat();
+		pProperty.MagicWAND = scanner.GetFloat();
+		pProperty.Blocking = scanner.GetFloat();
+		pProperty.MeleeYOYO = scanner.GetFloat();
+		pProperty.Critical = scanner.GetFloat();
 	}
 
 	return true;

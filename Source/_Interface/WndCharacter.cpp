@@ -503,25 +503,25 @@ std::pair<int, int> CWndCharInfo::GetVirtualATK() const {
 	int nATK = 0;
 	switch (pItemProp->dwWeaponType) {
 		case WT_MELEE_SWD:
-			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_SWD)) + (float(g_pPlayer->GetLevel() * 1.1f)));
+			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 12) * g_pPlayer->GetJobProp().MeleeSWD) + (float(g_pPlayer->GetLevel() * 1.1f)));
 			break;
 		case WT_MELEE_AXE:
-			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_AXE)) + (float(g_pPlayer->GetLevel() * 1.2f)));
+			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 12) * g_pPlayer->GetJobProp().MeleeAXE) + (float(g_pPlayer->GetLevel() * 1.2f)));
 			break;
 		case WT_MELEE_STAFF:
-			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_STAFF)) + (float(g_pPlayer->GetLevel() * 1.1f)));
+			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 10) * g_pPlayer->GetJobProp().MeleeSTAFF) + (float(g_pPlayer->GetLevel() * 1.1f)));
 			break;
 		case WT_MELEE_STICK:
-			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_STICK)) + (float(g_pPlayer->GetLevel() * 1.3f)));
+			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 10) * g_pPlayer->GetJobProp().MeleeSTICK) + (float(g_pPlayer->GetLevel() * 1.3f)));
 			break;
 		case WT_MELEE_KNUCKLE:
-			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_KNUCKLE)) + (float(g_pPlayer->GetLevel() * 1.2f)));
+			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 10) * g_pPlayer->GetJobProp().MeleeKNUCKLE) + (float(g_pPlayer->GetLevel() * 1.2f)));
 			break;
 		case WT_MAGIC_WAND:
-			nATK = (int)((g_pPlayer->GetInt() + m_int.count - 10) * g_pPlayer->GetJobPropFactor(JOB_PROP_WAND) + g_pPlayer->GetLevel() * 1.2f);
+			nATK = (int)((g_pPlayer->GetInt() + m_int.count - 10) * g_pPlayer->GetJobProp().MagicWAND + g_pPlayer->GetLevel() * 1.2f);
 			break;
 		case WT_MELEE_YOYO:
-			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 12) * g_pPlayer->GetJobPropFactor(JOB_PROP_YOYO)) + (float(g_pPlayer->GetLevel() * 1.1f)));
+			nATK = (int)(float((g_pPlayer->GetStr() + m_str.count - 12) * g_pPlayer->GetJobProp().MeleeYOYO) + (float(g_pPlayer->GetLevel() * 1.1f)));
 			break;
 		case WT_RANGE_BOW:
 			nATK = (int)((((g_pPlayer->GetDex() + m_dex.count - 14) * 4.0f + (g_pPlayer->GetLevel() * 1.3f) + ((g_pPlayer->GetStr() + m_str.count) * 0.2f)) * 0.7f));
@@ -562,10 +562,8 @@ int CWndCharInfo::GetVirtualDEF() {
 	memset(&info, 0x00, sizeof(info));
 	info.dwAtkFlags = AF_GENERIC;
 
-	float fFactor = 1.0f;
-	if (g_pPlayer) {
-		fFactor = prj.jobs.GetJobProp(g_pPlayer->GetJob())->fFactorDef;
-	}
+	float fFactor = g_pPlayer ? g_pPlayer->GetJobProp().FactorDef : 1.0f;
+
 	nDefense = (int)(((((g_pPlayer->GetLevel() * 2) + ((g_pPlayer->GetSta() + m_sta.count) / 2)) / 2.8f) - 4) + ((g_pPlayer->GetSta() + m_sta.count - 14) * fFactor));
 	nDefense = nDefense + (g_pPlayer->GetDefenseByItem(FALSE) / 4);
 	nDefense = nDefense + (g_pPlayer->GetParam(DST_ADJDEF, 0));
@@ -582,7 +580,7 @@ int CWndCharInfo::GetVirtualDEF() {
 int CWndCharInfo::GetVirtualCritical() {
 	int nCritical;
 	nCritical = ((g_pPlayer->GetDex() + m_dex.count) / 10);
-	nCritical = (int)(nCritical * g_pPlayer->GetJobPropFactor(JOB_PROP_CRITICAL));
+	nCritical = (int)(nCritical * g_pPlayer->GetJobProp().Critical);
 	nCritical = g_pPlayer->GetParam(DST_CHR_CHANCECRITICAL, nCritical);	// ũ��Ƽ�� Ȯ���� �����ִ� ��ų���� 
 #ifdef __JEFF_11
 	if (nCritical < 0)
@@ -605,7 +603,7 @@ float CWndCharInfo::GetVirtualATKSpeed() {
 
 	// A = int( ĳ������ ���� + ( ������ ���� * ( 4 * ���� + ( ���� / 8 ) ) ) - 3 )
 	// ���ݼӵ� = ( ( 50 / 200 - A ) / 2 ) + ����ġ 
-	int A = int(pProperty->fAttackSpeed + (fItem * (4.0f * (g_pPlayer->GetDex() + m_dex.count) + g_pPlayer->GetLevel() / 8.0f)) - 3.0f);
+	int A = int(pProperty->AttackSpeed + (fItem * (4.0f * (g_pPlayer->GetDex() + m_dex.count) + g_pPlayer->GetLevel() / 8.0f)) - 3.0f);
 
 	if (187.5f <= A)
 		A = (int)(187.5f);
