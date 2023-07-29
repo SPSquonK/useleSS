@@ -2228,7 +2228,6 @@ BOOL CProject::LoadPropMoverEx( LPCTSTR szFileName )
 		int nCallNum = 0;
 
 		pProp->m_dwAttackMoveDelay = 0;
-		pProp->m_bPartyAttack      = 0;
 		pProp->m_dwRunawayDelay    = SEC( 1 );
 		pProp->m_nAttackFirstRange = 10;
 

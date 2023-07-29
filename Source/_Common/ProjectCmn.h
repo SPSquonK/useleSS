@@ -401,113 +401,110 @@ struct MonsterTransform {
 
 struct MoverProp : CtrlProp
 {
-	DWORD	dwStr;	// 힘,                  
-	DWORD	dwSta;	// 체력,
-	DWORD	dwDex;	// 민첩,
-	DWORD	dwInt;	// 지능,
-	DWORD	dwHR;
-	DWORD   dwER;
-	DWORD	dwBelligerence;		// 호전성,
-	DWORD	dwLevel;	// 레벨,
-	DWORD	dwSize;		// 크기,
-	DWORD   dwClass;
-	BOOL	bIfParts;	// 파츠냐?
-	int		nChaotic;	// 나쁜놈 마이너스/ 좋은넘 플러스
-	DWORD	dwUseable;	// 방어 캐릭수,
-	DWORD	dwAtkMin;	// 최소타격치,
-	DWORD	dwAtkMax;	// 최대타격치,
-	DWORD	dwAtk1;
-	DWORD	dwAtk2;
-	DWORD	dwAtk3;
-	DWORD	dwAtk4;		// dwHorizontalRate가 이걸로 바뀜.
-	FLOAT	fFrame;	// 이동 시 프레임 가중치
+	DWORD dwStr = 0;	// 힘,                  
+	DWORD dwSta = 0;	// 체력,
+	DWORD dwDex = 0;	// 민첩,
+	DWORD dwInt = 0;	// 지능,
+	DWORD dwHR  = 0;
+	DWORD dwER  = 0;
+	DWORD	dwBelligerence = 0;		// 호전성,
+	DWORD	dwLevel   = 0;	// 레벨,
+	DWORD	dwSize    = 0;		// 크기,
+	DWORD dwClass   = 0;
+	BOOL	bIfParts  = FALSE;	// 파츠냐?
+	int		nChaotic  = 0;	// 나쁜놈 마이너스/ 좋은넘 플러스
+	DWORD	dwUseable = 0;	// 방어 캐릭수,
+	DWORD	dwAtkMin  = 0;	// 최소타격치,
+	DWORD	dwAtkMax  = 0;	// 최대타격치,
+	DWORD	dwAtk1    = 0;
+	DWORD	dwAtk2    = 0;
+	DWORD	dwAtk3    = 0;
+	DWORD	dwAtk4    = 0;		// dwHorizontalRate가 이걸로 바뀜.
+	FLOAT	fFrame    = 1.0f;	// 이동 시 프레임 가중치
 
-	DWORD	dwAttackSpeed;	// 공격속도,
-	DWORD	dwReAttackDelay;
-	DWORD	dwAddHp;		// ,
-	DWORD	dwAddMp;		// ,
-	DWORD	dwNaturalArmor;	// 자연방어력 
+	DWORD	dwAttackSpeed   = 0;	// 공격속도,
+	DWORD	dwReAttackDelay = 0;
+	DWORD	dwAddHp         = 0;		// ,
+	DWORD	dwAddMp         = 0;		// ,
+	DWORD	dwNaturalArmor  = 0;	// 자연방어력 
 
-	SAI79::ePropType	eElementType;
-	short				wElementAtk;		// 속성 데미지( 위 속성 타입으로 공격력을 설정한다. )
+	SAI79::ePropType eElementType = SAI79::NO_PROP;
+	short wElementAtk             = 0;		// 속성 데미지( 위 속성 타입으로 공격력을 설정한다. )
 
-	DWORD	dwHideLevel;	// 레벨 안보이는넘이냐..
-	FLOAT	fSpeed;	// 이동속도,
-	DWORD	dwFlying;	// 비행유무,
-	DWORD	dwResisMgic;	//마법저항 
+	DWORD	dwHideLevel = 0;	// 레벨 안보이는넘이냐..
+	FLOAT	fSpeed = 0.0f;	// 이동속도,
+	DWORD	dwFlying    = 0;	// 비행유무,
+	DWORD	dwResisMgic = 0;	//마법저항 
 
-	int		nResistElecricity;
-	int		nResistFire;
-	int		nResistWind;
-	int		nResistWater;
-	int		nResistEarth;
+	int		nResistElecricity = 0;
+	int		nResistFire       = 0;
+	int		nResistWind       = 0;
+	int		nResistWater      = 0;
+	int		nResistEarth      = 0;
 	
-	DWORD	dwCash;		// 제공금액
-	DWORD	dwSourceMaterial;	// 제공재료
-	DWORD	dwMaterialAmount;	// 재료양
-	DWORD	dwHoldingTime;	// 시체유지시간
-	DWORD	dwCorrectionValue;	// 아이템생성보정값
-	EXPINTEGER	nExpValue;
-	int		nFxpValue;		// 비행경험치.
-	DWORD	bKillable;	// 죽음유무,
+	DWORD	dwSourceMaterial  = 0;	// 제공재료
+	DWORD	dwMaterialAmount  = 0;	// 재료양
+	DWORD	dwHoldingTime     = 0;	// 시체유지시간
+	DWORD	dwCorrectionValue = 0;	// 아이템생성보정값
+	EXPINTEGER	nExpValue = 0;
+	int		nFxpValue = 0;		// 비행경험치.
+	DWORD	bKillable = 0;	// 죽음유무,
 
-	DWORD   dwSndDmg1  ;
-	DWORD   dwSndDmg2  ;
-	DWORD   dwSndIdle1 ;
+	DWORD   dwSndDmg1  = 0;
+	DWORD   dwSndDmg2  = 0;
+	DWORD   dwSndIdle1 = 0;
 
-	short   m_nEvasionHP;
-	short	m_nEvasionSec;
-	short   m_nRunawayHP          ; // HP가 10 이하면 도주 
-	short   m_nCallHelperMax       ; // 총 갯수 
-	short   m_nCallHP              ; // 도움요청하기 위한 HP
-	short   m_nCallHelperIdx  [ 5 ]; // 도움요청하기 Id
-	short   m_nCallHelperNum  [ 5 ]; // 도움요청하기 Id
-	short   m_bCallHelperParty[ 5 ]; // 도움요청하기 Id
+	short m_nEvasionHP     = 0;
+	short m_nEvasionSec    = 0;
+	short m_nRunawayHP     = 0; // HP가 10 이하면 도주 
+	short m_nCallHelperMax = 0; // 총 갯수 
+	short m_nCallHP        = 0; // 도움요청하기 위한 HP
+	short m_nCallHelperIdx  [ 5 ]; // 도움요청하기 Id
+	short m_nCallHelperNum  [ 5 ]; // 도움요청하기 Id
+	short m_bCallHelperParty[ 5 ]; // 도움요청하기 Id
 
-	short   m_dwAttackMoveDelay;
-	short   m_dwRunawayDelay;
-	short   m_bPartyAttack;
-	short   m_nHelperNum;
+	short m_dwAttackMoveDelay = 0;
+	short m_dwRunawayDelay    = 0;
 
 #if !defined(__CORESERVER) 
-	int		m_nScanJob;		// 타겟을 검색할때 특정 직업으로 검색하는가. 0 이면 ALL
+	int		m_nScanJob = 0;		// 타겟을 검색할때 특정 직업으로 검색하는가. 0 이면 ALL
 	// 공격조건들은 비스트에서 선공으로 지정되어 있을때 얘기다.
-	int		m_nHPCond;		// 타겟이 hp% 이하일때 공격을 함.
-	int		m_nLvCond;		// 타겟과 레벨비교하여 낮으면 공격을 함.
-	int		m_nRecvCondMe;	// 회복 조건.  내hp가 몇%이하로 떨어졌을때?
-	int		m_nRecvCondHow;	// 회복할때 회복할 양 %단위
-	int		m_nRecvCondMP;	// 회복할때 MP소모량 %단위
-	BYTE	m_bMeleeAttack;	// 근접 공격 AI가 있는가?
-	BYTE	m_bRecvCondWho;	// 누구를 치료할꺼냐. 0:지정안됨 1:다른놈 2:나 3:모두.
-	BYTE	m_bRecvCond;	// 치료하냐? 0:치료안함 1:전투중에만 치료함 2:전투/비전투 모두 치료
-	BYTE	m_bHelpWho;		// 도움요청시 - 0:부르지않음 1:아무나  2:같은종족만.
+	int		m_nHPCond         = 0;		// 타겟이 hp% 이하일때 공격을 함.
+	int		m_nLvCond         = 0;		// 타겟과 레벨비교하여 낮으면 공격을 함.
+	int		m_nRecvCondMe     = 0;	// 회복 조건.  내hp가 몇%이하로 떨어졌을때?
+	int		m_nRecvCondHow    = 0;	// 회복할때 회복할 양 %단위
+	int		m_nRecvCondMP     = 0;	// 회복할때 MP소모량 %단위
+	BYTE	m_bMeleeAttack    = 0;	// 근접 공격 AI가 있는가?
+	BYTE	m_bRecvCondWho    = 0;	// 누구를 치료할꺼냐. 0:지정안됨 1:다른놈 2:나 3:모두.
+	BYTE	m_bRecvCond       = 0;	// 치료하냐? 0:치료안함 1:전투중에만 치료함 2:전투/비전투 모두 치료
+	BYTE	m_bHelpWho        = 0;		// 도움요청시 - 0:부르지않음 1:아무나  2:같은종족만.
 	BYTE	m_bRangeAttack[ MAX_JOB ];		// 각 직업별 원거리 공격 거리.
-	int		m_nSummProb;	// 소환 확률 : 0이면 소환능력 없음.
-	int		m_nSummNum;		// 한번에 몇마리나 소환하냐.
-	int		m_nSummID;		// 어떤 몬스터?
-	int		m_nHelpRangeMul;	// 도움요청 거리. 시야의 배수
-	DWORD	m_tmUnitHelp;			// 헬프 타이머.
-	int		m_nBerserkHP;		// 버서커가 되기 위한 HP%
-	float	m_fBerserkDmgMul;	// 버서커가 되었을때 데미지 배수.
-	int		m_nLoot;			// 루팅몹인가.
-	int		m_nLootProb;		// 루팅 확률
-	QuestId   m_dwScanQuestId; 
-	DWORD   m_dwScanItemIdx; 
-	int		m_nScanChao;		// 카오, 비카오 검색
+	int		m_nSummProb       = 0;	// 소환 확률 : 0이면 소환능력 없음.
+	int		m_nSummNum        = 0;		// 한번에 몇마리나 소환하냐.
+	int		m_nSummID         = 0;		// 어떤 몬스터?
+	int		m_nHelpRangeMul   = 0;	// 도움요청 거리. 시야의 배수
+	DWORD	m_tmUnitHelp      = 0;			// 헬프 타이머.
+	int		m_nBerserkHP      = 0;		// 버서커가 되기 위한 HP%
+	float	m_fBerserkDmgMul  = 0.0f;	// 버서커가 되었을때 데미지 배수.
+	int		m_nLoot           = 0;			// 루팅몹인가.
+	int		m_nLootProb       = 0;		// 루팅 확률
+	QuestId   m_dwScanQuestId = QuestIdNone;
+	DWORD   m_dwScanItemIdx = 0; 
+	int		m_nScanChao       = 0;		// 카오, 비카오 검색
 #endif // !__CORESERVER
 	
 #ifndef __CORESERVER
-	float	m_fHitPoint_Rate;		// 몬스터 최대 HP률 // dwAddHp * m_nHitPoint_Rate
-	float	m_fAttackPower_Rate;	// 몬스터 최대 공격률 // dwAtkMin * m_nAttackPower_Rate
-	float	m_fDefence_Rate;		// 몬스터 최대 방어률 // dwAddHp * m_nDefence_Rate
-	float	m_fExp_Rate;			// 몬스터 최대 경험치률 // dwAddHp * m_nExp_Rate
-	float	m_fItemDrop_Rate;		// 몬스터 최대 아이템 드롭률 // dwAddHp * m_nItemDrop_Rate
-	float	m_fPenya_Rate;			// 몬스터 최대 페냐률 // dwAddHp * m_nPenya_Rate
-	BOOL	m_bRate;
+	float	m_fHitPoint_Rate    = 0.0f;		// 몬스터 최대 HP률 // dwAddHp * m_nHitPoint_Rate
+	float	m_fAttackPower_Rate = 0.0f;	// 몬스터 최대 공격률 // dwAtkMin * m_nAttackPower_Rate
+	float	m_fDefence_Rate     = 0.0f;		// 몬스터 최대 방어률 // dwAddHp * m_nDefence_Rate
+	float	m_fExp_Rate         = 0.0f;			// 몬스터 최대 경험치률 // dwAddHp * m_nExp_Rate
+	float	m_fItemDrop_Rate    = 0.0f;		// 몬스터 최대 아이템 드롭률 // dwAddHp * m_nItemDrop_Rate
+	float	m_fPenya_Rate       = 0.0f;			// 몬스터 최대 페냐률 // dwAddHp * m_nPenya_Rate
+	BOOL	m_bRate = FALSE;
 #endif
 
 	
-	short   m_nAttackFirstRange;
+	short   m_nAttackFirstRange = 0;
 	CDropItemGenerator	m_DropItemGenerator;
 	CQuestItemGenerator		m_QuestItemGenerator;
 	CDropKindGenerator	m_DropKindGenerator;
@@ -515,90 +512,13 @@ struct MoverProp : CtrlProp
 	
 	MoverProp()
 	{
-		dwStr	= dwSta	= dwDex	= dwInt	= dwHR	= dwER	= dwBelligerence
-		= dwLevel	= dwSize	= dwClass	= bIfParts	= nChaotic
-		= dwUseable
-			= dwAtkMin	= dwAtkMax	= dwAtk1	= dwAtk2	= dwAtk3	= dwAtk4	= 0;
-			fFrame	= 1.0F;
-		dwAttackSpeed		= 0;
-		dwReAttackDelay		= 0;
-		dwAddHp				= 0;
-		dwAddMp				= 0;
-		dwNaturalArmor		= 0;
-		dwHideLevel			= 0;
-		eElementType		= SAI79::NO_PROP;
-		wElementAtk			= 0;
-		fSpeed				= 0.0F;
-		dwFlying			= 0;
-		dwResisMgic			= 0;
-		nResistElecricity	= 0;
-		nResistFire			= 0;
-		nResistWind			= 0;
-		nResistWater		= 0;
-		nResistEarth		= 0;
-		dwCash				= 0;
-		dwSourceMaterial	= 0;
-		dwMaterialAmount	= 0;
-		dwHoldingTime		= 0;
-		dwCorrectionValue	= 0;
-		nExpValue			= 0;
-		nFxpValue			= 0;
-		bKillable			= 0;
-		
-		dwSndDmg1			= 0;
-		dwSndDmg2			= 0;
-		dwSndIdle1			= 0;
-		m_nEvasionHP		= 0;
-		m_nEvasionSec		= 0;
-		m_nRunawayHP		= 0;
-		m_nCallHelperMax	= 0;
-		m_nCallHP			= 0;
-		
 		memset( m_nCallHelperIdx, 0, sizeof(m_nCallHelperIdx) );
 		memset( m_nCallHelperNum, 0, sizeof(m_nCallHelperNum) );
 		memset( m_bCallHelperParty, 0, sizeof(m_bCallHelperParty) );
-		
-		m_dwAttackMoveDelay	= 0;
-		m_dwRunawayDelay	= 0;
-		m_bPartyAttack		= 0;
-		m_nHelperNum		= 0;
 
 #if !defined(__CORESERVER) 
-		m_nScanJob			= 0;
-		m_nHPCond			= 0;
-		m_nLvCond			= 0;
-		m_nRecvCondMe		= 0;
-		m_nRecvCondHow		= 0;
-		m_nRecvCondMP		= 0;
-		m_bMeleeAttack		= 0;
-		m_bRecvCondWho		= 0;
-		m_bRecvCond			= 0;
-		m_bHelpWho			= 0;
 		memset( m_bRangeAttack, 0, sizeof(m_bRangeAttack) );
-		m_nSummProb			= 0;
-		m_nSummNum			= 0;
-		m_nSummID			= 0;
-		m_nHelpRangeMul		= 0;
-		m_tmUnitHelp		= 0;
-		m_nBerserkHP		= 0;
-		m_fBerserkDmgMul	= 0;
-		m_nLoot				= 0;
-		m_nLootProb			= 0;
-		m_dwScanQuestId		= QuestIdNone;
-		m_dwScanItemIdx		= 0;
-		m_nScanChao			= 0;
 #endif // !__CORESERVER
-
-#ifndef __CORESERVER
-		m_fHitPoint_Rate	=
-		m_fAttackPower_Rate	= 
-		m_fDefence_Rate	=
-		m_fExp_Rate	= 
-		m_fItemDrop_Rate	= 
-		m_fPenya_Rate	= 0.0F;
-		m_bRate	=
-#endif
-		m_nAttackFirstRange	= 0;
 	}
 };
 

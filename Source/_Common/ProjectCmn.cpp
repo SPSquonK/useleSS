@@ -142,7 +142,7 @@ BOOL CProject::LoadPropMover( LPCTSTR lpszFileName )
 		pProperty->nResistWater			= (int)(scanner.GetFloat() * 100.0f);
 		pProperty->nResistEarth			= (int)(scanner.GetFloat() * 100.0f);
 
-		pProperty->dwCash				= scanner.GetNumber();
+		/* dwCash */ scanner.GetNumber();
 		pProperty->dwSourceMaterial		= scanner.GetNumber();
 		pProperty->dwMaterialAmount		= scanner.GetNumber();
 		/* dwCohesion */ scanner.GetNumber();
