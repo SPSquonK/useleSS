@@ -58,54 +58,36 @@ struct AddSkillProp
 {
 	static constexpr int NB_PROPS = 2;
 
-	DWORD	dwID;				// 변수명	
-	DWORD	dwName;				// 명칭
-	DWORD	dwSkillLvl;			// 스킬레벨
-	DWORD	dwAbilityMin;		// 최소능력
-	DWORD	dwAbilityMax;		// 최대능력
-	DWORD	dwAttackSpeed;		// 공격속도
-	DWORD	dwDmgShift;			// 타격시 반동
-	DWORD	nProbability;		// 발동 확률
-	DWORD	dwTaunt;			// 타운트
-	DWORD	dwDestParam[2];		// 적용대상1
-	DWORD	nAdjParamVal[2];	// 적용값1;
-	DWORD	dwChgParamVal[2];	//적용변화값1
-	int		nDestData1[3];		// 적용데이타3개, DestParam[0]에 해당.
-	DWORD	dwActiveSkill;		// 발동 마법
-	DWORD	dwActiveSkillRate;	// 발동 마법 확률.
-	DWORD	dwActiveSkillRatePVP;	// 대인 발동 마법 확률.
-	int		nReqMp;				//필요MP
-	int		nReqFp;				//필요FP
-	DWORD	dwCooldown;		// 쿨다운
-	DWORD	dwCastingTime;		//기술 준비시간
-	DWORD	dwSkillRange;		// 기술 시전거리	
-	DWORD	dwCircleTime;		//유지시간
-	DWORD   dwPainTime;         // 지속 피해시간
-	DWORD	dwSkillTime;		//지속시간
-	int		nSkillCount;		// 발사체 발사 개수. 개당공격력 = 총공격력 / nSkillCount;
-	DWORD   dwSkillExp;         //스킬 경험치
-	DWORD	dwExp;				//현재경험치
-	DWORD	dwComboSkillTime;	//콤보스킬타임
-	DWORD	dwAbilityMinPVP;	// 최소능력(대인)
-	DWORD	dwAbilityMaxPVP;	// 최대능력(대인)
-	DWORD	nProbabilityPVP;	// 발동 확률(대인)
-
-	AddSkillProp()
-	{
-		dwID = dwName = 0;
-		nProbability = 0;
-		dwSkillLvl = dwAbilityMin = dwAbilityMax = dwAttackSpeed = dwDmgShift = dwTaunt = 0;
-		dwDestParam[0] = dwDestParam[1] = nAdjParamVal[0] = nAdjParamVal[1] = dwChgParamVal[0] = dwChgParamVal[1] = 0;
-		nReqMp = nReqFp = 0;
-		dwActiveSkillRate	= 0;
-		dwCastingTime	= 0;
-		dwAbilityMinPVP		= 0;
-		dwAbilityMaxPVP		= 0;
-		dwCooldown	= 0;
-		nProbabilityPVP	= 0;
-		dwActiveSkillRatePVP	= 0;
-		dwCircleTime = dwSkillTime = dwExp = dwComboSkillTime = 0;
-	}
+	DWORD	dwID          = 0; // 변수명	
+	DWORD	dwName        = 0; // 명칭
+	DWORD	dwSkillLvl    = 0; // 스킬레벨
+	DWORD	dwAbilityMin  = 0; // 최소능력
+	DWORD	dwAbilityMax  = 0; // 최대능력
+	DWORD	dwAttackSpeed = 0; // 공격속도
+	DWORD	dwDmgShift    = 0; // 타격시 반동
+	DWORD	nProbability  = 0; // 발동 확률
+	DWORD	dwDestParam[2]   = { 0, 0 };		// 적용대상1
+	DWORD	nAdjParamVal[2]  = { 0, 0 };	// 적용값1;
+	DWORD	dwChgParamVal[2] = { 0, 0 };	//적용변화값1
+	int		nDestData1[3] = { 0, 0, 0 };		// 적용데이타3개, DestParam[0]에 해당.
+	DWORD	dwActiveSkill        = 0;		// 발동 마법
+	DWORD	dwActiveSkillRate    = 0;	// 발동 마법 확률.
+	DWORD	dwActiveSkillRatePVP = 0;	// 대인 발동 마법 확률.
+	int		nReqMp               = 0;				//필요MP
+	int		nReqFp               = 0;				//필요FP
+	DWORD	dwCooldown           = 0;		// 쿨다운
+	DWORD	dwCastingTime        = 0;		//기술 준비시간
+	DWORD	dwSkillRange         = 0;		// 기술 시전거리	
+	DWORD	dwCircleTime         = 0;		//유지시간
+	DWORD   dwPainTime         = 0;         // 지속 피해시간
+	DWORD	dwSkillTime          = 0;		//지속시간
+	int		nSkillCount          = 0;		// 발사체 발사 개수. 개당공격력 = 총공격력 / nSkillCount;
+	DWORD   dwSkillExp         = 0;         //스킬 경험치
+	DWORD	dwExp                = 0;				//현재경험치
+	DWORD	dwComboSkillTime     = 0;	//콤보스킬타임
+	DWORD	dwAbilityMinPVP      = 0;	// 최소능력(대인)
+	DWORD	dwAbilityMaxPVP      = 0;	// 최대능력(대인)
+	DWORD	nProbabilityPVP      = 0;	// 발동 확률(대인)
 };
 
 enum class _FILEWITHTEXT

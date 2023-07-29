@@ -2136,7 +2136,7 @@ BOOL CProject::LoadPropAddSkill( LPCTSTR lpszFileName )
 		propAddSkill.dwDmgShift = script.GetNumber( TRUE );
 		propAddSkill.nProbability = script.GetNumber( TRUE );
 		propAddSkill.nProbabilityPVP	= script.GetNumber( TRUE );
-		propAddSkill.dwTaunt = script.GetNumber( TRUE );
+		/* dwTaunt */ script.GetNumber(TRUE);
 		propAddSkill.dwDestParam[0] = script.GetNumber(TRUE);
 		propAddSkill.dwDestParam[1] = script.GetNumber(TRUE);
 		propAddSkill.nAdjParamVal[0] = script.GetNumber(TRUE);
