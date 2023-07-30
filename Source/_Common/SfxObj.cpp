@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #include "Sfx.h"
 
-#ifdef __CLIENT
 #include "dpclient.h"
-#endif	// __CLIENT
-
 #include "defineObj.h"
 
 
@@ -20,39 +17,25 @@ CSfx::CSfx()
 	m_vPosDest = D3DXVECTOR3( 0, 0, 0 );
 	m_nFrame = 0;
 	m_nSec = -1;
-#ifdef __CLIENT
 	m_idSfxHit	= 0;
 	m_nMagicPower = 0;
 	m_dwSkill = NULL_ID;
-//	m_dwSkillLevel = 0;
-#endif	// __CLIENT
 	m_pSfxObj = NULL;
 }
-CSfx::CSfx( int nIndex, const OBJID idSrc, const D3DXVECTOR3& vPosSrc, const OBJID idDest, const D3DXVECTOR3& vPosDest )
-{
-//	SetSfx( nIndex, idSrc, vPosSrc, idDest, vPosDest );
-#ifdef __CLIENT
-	m_idSfxHit	= 0;
-	m_nMagicPower = 0;
-#endif	// __CLIENT
-	m_pSfxObj = NULL;
-}
+
+
+
 CSfx::~CSfx()
 {
-#ifdef __CLIENT
 	if( m_idSfxHit )
 	{
 		if( m_idSrc == NULL_ID )	// 이런상황이 생겨선 안된다.
 		{
-			LPCTSTR szErr = Error( "CSfx::~CSfx : %d %d %d", m_dwIndex, m_idSfxHit, m_idSrc );
-			//ADDERRORMSG( szErr );
+			Error( "CSfx::~CSfx : %d %d %d", m_dwIndex, m_idSfxHit, m_idSrc );
 		} 
-	#ifdef __CLIENT
 		else
 			g_DPlay.SendSfxClear( m_idSfxHit, m_idSrc );	// m_idSfxHit가 있는 거였으면 서버에 요놈 지우라고 보내자 
-	#endif//__CLIENT
 	}
-#endif // __CLIENT
 }
 
 BOOL CSfx::SetIndex( DWORD dwIndex, BOOL bInitProp )
@@ -64,10 +47,8 @@ BOOL CSfx::SetIndex( DWORD dwIndex, BOOL bInitProp )
 
 	if( dwIndex >= 0 ) 
 	{
-#ifndef __WORLDSERVER
 		bResult = SetTypeIndex( OT_SFX, dwIndex, bInitProp );
 		m_pSfxObj = (CSfxModel*)m_pModel;
-#endif	// __WORLDSERVER
 	}
 	UpdateLocalMatrix();
 	return bResult;
@@ -86,10 +67,8 @@ int	CSfx::SetSfx( int nIndex,
 	
 	if( nIndex >= 0 ) 
 	{
-#ifndef __WORLDSERVER
 		SetTypeIndex( OT_SFX, nIndex,TRUE);
 		m_pSfxObj = (CSfxModel*)m_pModel;
-#endif	// __WORLDSERVER
 		return 1;
 	}
 	UpdateLocalMatrix();
@@ -111,10 +90,8 @@ void CSfx::DamageToTarget( int nMaxDmgCnt )
 	if( IsInvalidObj(pObjSrc) )		return;		// 지금은 걍 리턴하지만 이렇게 실패한경우는 m_idSfxHit을 Clear해주는작업이 필요하다.
 	if(	IsInvalidObj(pObjDest) )	return;
 
-	if( pObjDest->GetType() == OT_MOVER )
+	if( CMover * pMover = pObjDest->ToMover() )
 	{
-		CMover* pMover = (CMover*) pObjDest;
-
 		const auto pos = pMover->GetPos();
 		PLAYSND( pMover->GetProp()->dwSndDmg2, &pos );	// 마법류 맞을때 타격음.	
 
@@ -148,7 +125,6 @@ void CSfx::Process()
 		}
 	}
 
-#ifdef __CLIENT
 	if(m_pSfxObj->m_pSfxBase)
 	{
 		for (auto & pSfxPart : m_pSfxObj->m_pSfxBase->m_aParts) {
@@ -160,7 +136,6 @@ void CSfx::Process()
 			}
 		}
 	}
-#endif //__CLIENT
 
 	if( m_idDest != NULL_ID )		// Dest가 지정되어 있을때.
 	{
@@ -169,7 +144,7 @@ void CSfx::Process()
 			m_vPosDest = pObjDest->GetPos();	// 당시 좌표를 계속 받아둠.  Invalid상태가 되면 마지막 좌표로 세팅된다.
 		
 		SetPos( m_vPosDest );	// 타겟에 오브젝트 발동.
-#ifdef __CLIENT
+
 		if( m_dwIndex == XI_SKILL_PSY_HERO_STONE02 )
 		{
 			if( IsValidObj( pObjDest ) )		// 유효한넘인가?
@@ -207,13 +182,12 @@ void CSfx::Process()
 				}
 			}
 		}
-#endif	// __CLIENT
 	} else
 	{
 		// Dest가 지정되어 있지 않을때. Src로...
 		if( m_idSrc != NULL_ID )
 		{
-			CMover* pObjSrc = (CMover*)prj.GetCtrl( m_idSrc );
+			CCtrl * pObjSrc = prj.GetCtrl( m_idSrc );
 			if( IsValidObj( pObjSrc ) )			// 소스아이디가 지정되어 있으면
 				SetPos( pObjSrc->GetPos() );	// 소스측에 이펙 발동.
 			else
@@ -221,7 +195,7 @@ void CSfx::Process()
 		}
 	}
 }
-#ifndef __WORLDSERVER
+
 // y축으로만 회전도는 버전.
 void CSfx::Render( )
 {
@@ -243,5 +217,4 @@ void CSfx::Render( )
 	m_pSfxObj->Render( NULL );
 	
 }
-#endif // not worldserver
 

@@ -35,7 +35,6 @@ public:
 	int		m_nMagicPower;	// 충전 단계
 
 	CSfx();
-	CSfx( int nIndex, const OBJID idSrc, const D3DXVECTOR3& vPosSrc, const OBJID idDest, const D3DXVECTOR3& vPosDest );
 	virtual ~CSfx();
 
 	void	SetSkill( DWORD dwSkill )

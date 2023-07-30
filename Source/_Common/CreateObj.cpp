@@ -623,29 +623,35 @@ CObj* CreateObj( DWORD dwObjType, DWORD dwObjIndex, BOOL bInitProp )
 			#ifdef __CLIENT
 				pObj = new CSfx; 
 			#else
-				return NULL;
+				return nullptr;
 			#endif
 			break;  
 		case OT_ITEM : pObj = new CItem;		break;
 		case OT_MOVER: pObj = new CMover;		break;
 		case OT_SHIP:	
-			switch( dwObjIndex )
-			{
-			case 4:		pObj = new CShipLoop;	break;
-			default:	pObj = new CShip;		break;
+			if (dwObjIndex == 4) {
+				pObj = new CShipLoop;
+			} else {
+				pObj = new CShip;
 			}
 			break;
 	}
+
+	if (!pObj) [[unlikely]] {
+		Error(__FUNCTION__ "(): Unknwon object type: %lu", dwObjType);
+		return nullptr;
+	}
+
 	pObj->m_dwType = dwObjType;
 
-	if( pObj && pObj->GetType() == OT_SFX )
+	if( pObj->GetType() == OT_SFX )
 	{
 		#ifdef __CLIENT
 			((CSfx*)pObj)->SetSfx( dwObjIndex, D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID, D3DXVECTOR3( 0.0f, 0.0f, 0.0f ), NULL_ID ); 
 		#endif
 		return pObj;
 	}
-	else if( pObj->SetIndex( dwObjIndex, bInitProp ) == TRUE )
+	else if( pObj->SetIndex( dwObjIndex, bInitProp ) )
 	{
 		pObj->SetMotion( MTI_STAND );
 		// 스피드를 설정하려면 현재로선 이수밖에....좆치안타.
@@ -653,7 +659,7 @@ CObj* CreateObj( DWORD dwObjType, DWORD dwObjIndex, BOOL bInitProp )
 		{
 			CMover *pMover = (CMover *)pObj;
 			pMover->m_pActMover->m_fSpeed = pMover->GetProp()->fSpeed;
-			MoverProp* pProp	= pMover->GetProp();
+			const MoverProp* pProp	= pMover->GetProp();
 			if( pProp->dwAI == AII_MONSTER )
 			{
 				pMover->m_pActMover->m_fSpeed	/= 2.0F;
@@ -662,11 +668,11 @@ CObj* CreateObj( DWORD dwObjType, DWORD dwObjIndex, BOOL bInitProp )
 			}
 		}
 		return pObj;
+	} else {
+		Error("CreateObj : type=%d, index=%d, bInitProp=%d", dwObjType, dwObjIndex, bInitProp);
+		SAFE_DELETE(pObj);
+		return nullptr;
 	}
-
-	Error( "CreateObj : type=%d, index=%d, bInitProp=%d", dwObjType, dwObjIndex, bInitProp );
-	SAFE_DELETE( pObj );
-	return NULL;
 }
 
 
