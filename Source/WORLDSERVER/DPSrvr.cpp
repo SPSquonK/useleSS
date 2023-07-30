@@ -3223,8 +3223,6 @@ void CDPSrvr::OnSfxHit( CAr & ar, DPID dpidCache, DPID dpidUser )
 	const CSfxHitArray::SfxHit * pSfxHit = pAttacker->m_sfxHitArray.GetSfxHit( idSfxHit );
 	if (!pSfxHit) return;
 
-	CMover* pTarget	= prj.GetMover( pSfxHit->objid );
-
 	pAttacker->RemoveSFX( pSfxHit->objid, dwSkill );
 	pAttacker->m_sfxHitArray.RemoveSfxHit( idSfxHit, TRUE );	// 무조건 제거
 }
