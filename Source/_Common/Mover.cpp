@@ -6456,14 +6456,11 @@ BOOL CMover::IsItemRedyTime( ItemProp* pItemProp, OBJID dwObjid, BOOL bItemFind 
 #ifdef __CLIENT
 CSfx* CMover::CreateSfxArrow( DWORD dwSfxObjArrow, DWORD dwSfxObjHit, D3DXVECTOR3 vPosDest, int idTarget  )
 {
-	CSfx* pSfx = NULL;
-
 	// 화살은 왼손에 연결...
-	D3DXVECTOR3 vPos;
 	CModelObject *pModel = (CModelObject *)m_pModel;
-	pModel->GetHandPos( &vPos, PARTS_LWEAPON, GetMatrixWorld() );		// 주먹 월드좌표 구함	
+	D3DXVECTOR3 vPos = pModel->GetHandPos( PARTS_LWEAPON, GetMatrixWorld() );		// 주먹 월드좌표 구함	
 	
-	pSfx = CreateSfx( dwSfxObjArrow, vPos, GetId(), vPosDest , idTarget );
+	CSfx * pSfx = CreateSfx( dwSfxObjArrow, vPos, GetId(), vPosDest , idTarget );
 	
 	if( dwSfxObjHit != NULL_ID )
 	{

@@ -83,7 +83,7 @@ public:
 	BOOL ProcessDeleteRespawn();
 	void RefreshSpawn(BOOL bActiveAttack);
 #else
-	void			CreateYoyoSkill( CSfx* pSfx, CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp );
+	void			CreateYoyoSkill(CCtrl * pTarget, const ItemProp * pSkillProp);
 #endif	//__WORLDSERVER
 
 private:

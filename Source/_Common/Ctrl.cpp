@@ -771,28 +771,26 @@ BOOL CCtrl::ApplySkillHardCoding( CCtrl *pSrc, ItemProp *pSkillProp, AddSkillPro
 }
 
 #ifdef __CLIENT
-void CCtrl::CreateYoyoSkill( CSfx* pSfx, CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pAddSkillProp )
+void CCtrl::CreateYoyoSkill( CCtrl *pTarget, const ItemProp *pSkillProp )
 {
 	const ItemProp* pItemProp = ((CMover *)this)->GetActiveHandItemProp();
+	if (!pItemProp) return;
+
+	const D3DXVECTOR3 vPosDest  = pTarget->GetPos() + D3DXVECTOR3( 0.0f, 1.0f, 0.0f ); // 목표 지점을 임의로 올려준다. 땜빵 
+		
+	CModelObject *pModel = (CModelObject *)m_pModel;
 	
-	if(pItemProp)
-	{
-		D3DXVECTOR3 vPos;
-		D3DXVECTOR3 vLocal;
-		D3DXVECTOR3 vPosSrc   = GetPos() + D3DXVECTOR3( 0.0f, 1.0f, 0.0f ); // 발사 지점을 임의로 올려준다. 땜빵 
-		D3DXVECTOR3 vPosDest  = pTarget->GetPos() + D3DXVECTOR3( 0.0f, 1.0f, 0.0f ); // 목표 지점을 임의로 올려준다. 땜빵 
+	CSfx * pSfx;
+
+	D3DXVECTOR3 vPos;
 		
-		CModelObject *pModel = (CModelObject *)m_pModel;
-		
-		int nSkill = pSkillProp->dwID;
-		
-		switch( nSkill )
+		switch(pSkillProp->dwID)
 		{
 		case SI_ACR_SUP_SLOWSTEP:
 		case SI_JST_YOYO_HITOFPENYA:
 		case SI_JST_YOYO_VATALSTAB:
 			{
-				pModel->GetHandPos( &vPos, PARTS_RWEAPON, GetMatrixWorld() );
+				vPos = pModel->GetHandPos( PARTS_RWEAPON, GetMatrixWorld() );
 				pSfx = CreateSfxYoYo( pItemProp->dwSfxObj2, vPos, GetId(), vPosDest );	
 				((CSfxItemYoyoAtk*)pSfx)->MakePath(PARTS_RWEAPON);
 			}
@@ -800,17 +798,17 @@ void CCtrl::CreateYoyoSkill( CSfx* pSfx, CCtrl *pTarget, ItemProp *pSkillProp, A
 		case SI_ACR_YOYO_DEADLYSWING:
 		case SI_ACR_YOYO_CROSSLINE:
 			{
-				pModel->GetHandPos( &vPos, PARTS_RWEAPON, GetMatrixWorld() );
+				vPos = pModel->GetHandPos( PARTS_RWEAPON, GetMatrixWorld() );
 				pSfx = CreateSfxYoYo( pItemProp->dwSfxObj2, vPos, GetId(), vPosDest );	
 				((CSfxItemYoyoAtk*)pSfx)->MakePath(PARTS_RWEAPON);
 
-				pModel->GetHandPos( &vPos, PARTS_LWEAPON, GetMatrixWorld() );
+				vPos = pModel->GetHandPos( PARTS_LWEAPON, GetMatrixWorld() );
 				pSfx = CreateSfxYoYo( pItemProp->dwSfxObj2, vPos, GetId(), vPosDest );	
 				((CSfxItemYoyoAtk*)pSfx)->MakePath(PARTS_LWEAPON);
 			}
 			break;							
 		}
-	}
+	
 
 }
 #endif //__CLIENT
@@ -822,7 +820,7 @@ void CCtrl::CreateSkillSfx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 {
 #ifdef __CLIENT
 		
-	{
+	
 		// 발사체 형태가 아니다.
 		CSfx *pSfx = NULL;
 		if( (int)pAddSkillProp->dwSkillTime > 0 )	// 지속시간이 있는 스킬은
@@ -860,7 +858,7 @@ void CCtrl::CreateSkillSfx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 				if( pSkillProp->dwLinkKind == IK3_YOYO )  //요요는 아이템프로퍼티참조하여 이펙트 생성(예외처리)
 				{
 				#ifdef __CLIENT
-					CreateYoyoSkill( pSfx, pTarget, pSkillProp, pAddSkillProp );
+					CreateYoyoSkill( pTarget, pSkillProp );
 				#endif
 				}
 			} else
@@ -915,7 +913,7 @@ void CCtrl::CreateSkillSfx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 			if( pSkillProp->dwLinkKind == IK3_YOYO )  //요요는 아이템프로퍼티참조하여 이펙트 생성(예외처리)
 			{
 			#ifdef __CLIENT
-				CreateYoyoSkill( pSfx, pTarget, pSkillProp, pAddSkillProp );
+				CreateYoyoSkill( pTarget, pSkillProp );
 			#endif
 			}
 			else
@@ -934,7 +932,7 @@ void CCtrl::CreateSkillSfx( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *
 			FLOAT fRange = 1.5f;
 			pSfx->SetScale(  D3DXVECTOR3(fRange, fRange, fRange) );
 		}
-	}
+	
 	
 #endif // Client
 } // CreateSkillSfx
@@ -1282,10 +1280,7 @@ int		CCtrl::ShootSkill( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pAdd
 		)	// 발사체 sfx 생성.
 		return 0;
 
-	DWORD dwShootObj;
-	{
-		dwShootObj = pSkillProp->dwSfxObj2;
-	}
+	DWORD dwShootObj = pSkillProp->dwSfxObj2;
 
 	if( dwShootObj != NULL_ID )
 	{
@@ -1298,7 +1293,9 @@ int		CCtrl::ShootSkill( CCtrl *pTarget, ItemProp *pSkillProp, AddSkillProp *pAdd
 			{
 				// 화살은 왼손에 연결...
 				CModelObject *pModel = (CModelObject *)m_pModel;
-				pModel->GetHandPos( &vPos, PARTS_LWEAPON, GetMatrixWorld() );		// 주먹 월드좌표 구함		
+				if (pModel->m_pBone) {
+					vPos = pModel->GetHandPos(PARTS_LWEAPON, GetMatrixWorld());		// 주먹 월드좌표 구함		
+				}
 				vPos.y -=	1.0f;
 			}
 		}

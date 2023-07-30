@@ -1124,9 +1124,8 @@ void CSfxItemYoyoAtk::Process()
 		// 되돌아 오는 단계
 		if( m_nStep == 2 )
 		{
-			D3DXVECTOR3 v3SrcPos;
 			CModelObject *pModel = (CModelObject *)pObjSrc->m_pModel;
-			pModel->GetHandPos( &v3SrcPos, m_nType, pObjSrc->GetMatrixWorld() );
+			const D3DXVECTOR3 v3SrcPos = pModel->GetHandPos( m_nType, pObjSrc->GetMatrixWorld() );
 			
 			D3DXVECTOR3 vPos   = GetPos();
 			D3DXVECTOR3 vDelta = v3SrcPos - vPos;
@@ -3404,14 +3403,11 @@ void CSfxPartsLink::Process()
 	}
 	
 	D3DXVECTOR3 vPos;
-
 	CModelObject *pModel = (CModelObject *)pMover->m_pModel;
-	if( m_nPartsLink == 0 )		// 오른손
-	{
-		pModel->GetHandPos( &vPos, PARTS_RWEAPON, pMover->GetMatrixWorld() );		// 오른손 주먹 월드좌표 구함.
-	} else
-	{
-		pModel->GetHandPos( &vPos, PARTS_LWEAPON, pMover->GetMatrixWorld() );
+	if( m_nPartsLink == 0 ) {		// 오른손
+		vPos = pModel->GetHandPos( PARTS_RWEAPON, pMover->GetMatrixWorld() );		// 오른손 주먹 월드좌표 구함.
+	} else {
+		vPos = pModel->GetHandPos( PARTS_LWEAPON, pMover->GetMatrixWorld() );
 	}
 	
 	SetPos( vPos );
@@ -3480,14 +3476,11 @@ void CSfxAllowPartsLink::Process()
 	}
 	
 	D3DXVECTOR3 vPos;
-	
 	CModelObject *pModel = (CModelObject *)pMover->m_pModel;
-	if( m_nPartsLink == 0 )		// 오른손
-	{
-		pModel->GetHandPos( &vPos, PARTS_RWEAPON, pMover->GetMatrixWorld() );		// 오른손 주먹 월드좌표 구함.
-	} else
-	{
-		pModel->GetHandPos( &vPos, PARTS_LWEAPON, pMover->GetMatrixWorld() );
+	if( m_nPartsLink == 0 ) {		// 오른손
+		vPos = pModel->GetHandPos( PARTS_RWEAPON, pMover->GetMatrixWorld() );		// 오른손 주먹 월드좌표 구함.
+	} else {
+		vPos = pModel->GetHandPos( PARTS_LWEAPON, pMover->GetMatrixWorld() );
 	}
 	
 	SetPos( vPos );

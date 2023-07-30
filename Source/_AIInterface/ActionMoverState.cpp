@@ -1017,21 +1017,20 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 				if( dwSfxObj == NULL_ID )	
 					break;
 				
-				D3DXVECTOR3 vPos;
 				D3DXVECTOR3 vPosDest  = pHitObj->GetPos() + D3DXVECTOR3( 0.0f, 1.0f, 0.0f ); // 목표 지점을 임의로 올려준다. 땜빵 
 				
 				CSfx* pSfx = NULL;
 				
 				if( pMover->m_dwMotion == MTI_ATK1 )
 				{
-					pModel->GetHandPos( &vPos, PARTS_RWEAPON, pMover->GetMatrixWorld() );
+					D3DXVECTOR3 vPos = pModel->GetHandPos( PARTS_RWEAPON, pMover->GetMatrixWorld() );
 					pSfx = CreateSfxYoYo( dwSfxObj, vPos, pMover->GetId(), vPosDest );	
 					((CSfxItemYoyoAtk*)pSfx)->MakePath(PARTS_RWEAPON);					
 				}
 				else
 				if( pMover->m_dwMotion == MTI_ATK2 )
 				{
-					pModel->GetHandPos( &vPos, PARTS_LWEAPON, pMover->GetMatrixWorld() );
+					D3DXVECTOR3 vPos = pModel->GetHandPos( PARTS_LWEAPON, pMover->GetMatrixWorld() );
 					pSfx = CreateSfxYoYo( dwSfxObj, vPos, pMover->GetId(), vPosDest );	
 					((CSfxItemYoyoAtk*)pSfx)->MakePath(PARTS_LWEAPON);
 				}

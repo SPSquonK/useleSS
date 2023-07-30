@@ -2156,42 +2156,29 @@ void	CModelObject::GetForcePos( D3DXVECTOR3 *vOut, int nIdx, int nParts, const D
 }
 
 
-// 주먹 중앙의 위치를 계산할때.
-void	CModelObject::GetHandPos( D3DXVECTOR3 *vOut, int nParts, const D3DXMATRIX &mWorld )
-{
-	const D3DXMATRIX *pmLocal;
-	D3DXMATRIX	m1;
-	D3DXVECTOR3		v1;
+// Calcualtes the position of the center of the fist.
+D3DXVECTOR3 CModelObject::GetHandPos(int nParts, const D3DXMATRIX & mWorld) {
+	if (!m_pBone) return D3DXVECTOR3(0.f, 0.f, 0.f);
 
-	int nParentIdx = 0;
-	if( m_pBone == NULL )	return;
-	if( nParts == PARTS_RWEAPON )
-	{
-		nParentIdx = GetRHandIdx();
-		pmLocal = &m_pBone->m_mLocalRH;
-	}
-	else if( nParts == PARTS_LWEAPON  )
-	{
-		nParentIdx = GetLHandIdx();
-		pmLocal = &m_pBone->m_mLocalLH;
-	}
-	else
-	{
-		D3DXMatrixIdentity( &m1 );
-		pmLocal = &m1;						// 일단 에러는 안나게 이렇게 한다.
+	D3DXMATRIX	m1;
+
+	// The final matrix is obtaine dby multiplying the matrix of the animated
+	// bone wiht the LocalR/LH
+	if (nParts == PARTS_RWEAPON) {
+		m1 = m_pBone->m_mLocalRH * m_mUpdateBone[GetRHandIdx()];
+	} else if (nParts == PARTS_LWEAPON) {
+		m1 = m_pBone->m_mLocalLH * m_mUpdateBone[GetLHandIdx()];
+	} else {
+		m1 = m_mUpdateBone[0];
 	}
 	
-	
-//	if( m_pMotion )
-//		m_pMotion->AnimateBone( m_mUpdateBone, m_pMotionOld, m_fFrameCurrent, GetNextFrame(), m_nFrameOld, m_bMotionBlending, m_fBlendWeight );		// 일단 뼈대가 있다면 뼈대 애니메이션 시킴
-	
-	// 애니메이션끝난 본의 매트릭스와 LocalR/LH를 곱해서 최종 매트릭스 구함.
-	D3DXMatrixMultiply( &m1, pmLocal, &m_mUpdateBone[ nParentIdx ] );
-	v1.x = m1._41;		v1.y = m1._42;		v1.z = m1._43;		// 좌표만 필요함.
+	// Only coordinates are required.
+	D3DXVECTOR3 v1;
+	v1.x = m1._41;		v1.y = m1._42;		v1.z = m1._43;		
 	
 	D3DXVec3TransformCoord( &v1, &v1, &mWorld );
-	*vOut = v1;
-	
+
+	return v1;
 }
 
 #ifdef __BS_EFFECT_LUA
