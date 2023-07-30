@@ -42,13 +42,6 @@ static int g_nEffect = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 일반 효과들 
 
-// 일반 공격으로 데미지 입을 때 효과 
-CSfxGenNormalDmg01::CSfxGenNormalDmg01()
-{
-}
-CSfxGenNormalDmg01::~CSfxGenNormalDmg01()
-{
-}
 void CSfxGenNormalDmg01::Process()
 {
 	m_nFrame++; // 한 프레임 진행시키고
@@ -66,12 +59,6 @@ void CSfxGenNormalDmg01::Render( )
 	m_pSfxObj->Render( );
 }
 // 일반 공격으로 데미지 입을 때 효과 
-CSfxGenSuperDmg01::CSfxGenSuperDmg01()
-{
-}
-CSfxGenSuperDmg01::~CSfxGenSuperDmg01()
-{
-}
 void CSfxGenSuperDmg01::Process()
 {
 	m_nFrame++;
@@ -89,12 +76,6 @@ void CSfxGenSuperDmg01::Render( )
 }
 
 // 스킬로 데미지 입을 때 효과 
-CSfxGenSkillDmg01::CSfxGenSkillDmg01()
-{
-}
-CSfxGenSkillDmg01::~CSfxGenSkillDmg01()
-{
-}
 void CSfxGenSkillDmg01::Process()
 {
 	m_nFrame++;
@@ -111,12 +92,6 @@ void CSfxGenSkillDmg01::Render( )
 }
 
 // 몬스터가 데미지 입을 때 효과 
-CSfxGenMonsterDmg01::CSfxGenMonsterDmg01()
-{
-}
-CSfxGenMonsterDmg01::~CSfxGenMonsterDmg01()
-{
-}
 void CSfxGenMonsterDmg01::Process()
 {
 	m_nFrame++; // 한프레임 진행시키고
@@ -136,12 +111,6 @@ void CSfxGenMonsterDmg01::Render( )
 }
 
 // 부활 효과 
-CSfxGenRestoration01::CSfxGenRestoration01()
-{
-}
-CSfxGenRestoration01::~CSfxGenRestoration01()
-{
-}
 void CSfxGenRestoration01::Process()
 {
 	m_nFrame++;
@@ -162,12 +131,6 @@ void CSfxGenRestoration01::Render( )
 }
 
 // 치료 효과 
-CSfxGenCure::CSfxGenCure()
-{
-}
-CSfxGenCure::~CSfxGenCure()
-{
-}
 void CSfxGenCure::Process()
 {
 	m_nFrame++;
@@ -187,13 +150,6 @@ void CSfxGenCure::Render( )
 }
 
 // 효력 증대 효과 
-CSfxGenIncrease01::CSfxGenIncrease01()
-{
-}
-CSfxGenIncrease01::~CSfxGenIncrease01()
-{
-
-}
 void CSfxGenIncrease01::Process()
 {
 	m_nFrame++;
@@ -213,12 +169,6 @@ void CSfxGenIncrease01::Render( )
 }
 
 // 레벨 업 효과 
-CSfxGenLevelUp::CSfxGenLevelUp()
-{
-}
-CSfxGenLevelUp::~CSfxGenLevelUp()
-{
-}
 void CSfxGenLevelUp::Process()
 {
 	m_nFrame++;
@@ -241,12 +191,6 @@ void CSfxGenLevelUp::Render( )
 }
 
 // 극단스킬 이펙트 : 스트레칭 01
-CSfxTroStretching01::CSfxTroStretching01()
-{
-}
-CSfxTroStretching01::~CSfxTroStretching01()
-{
-}
 void CSfxTroStretching01::Process()
 {
 	m_nFrame++;
@@ -280,12 +224,6 @@ void CSfxTroStretching01::Render( )
 }
 
 // 극단스킬 이펙트 : 스트레칭 02
-CSfxTroStretching02::CSfxTroStretching02()
-{
-}
-CSfxTroStretching02::~CSfxTroStretching02()
-{
-}
 void CSfxTroStretching02::Process()
 {
 	m_nFrame++;
@@ -332,12 +270,6 @@ void CSfxTroStretching02::Render( )
 }
 
 // 극단스킬 이펙트 : 블릿츠~
-CSfxTroBlitz::CSfxTroBlitz()
-{
-}
-CSfxTroBlitz::~CSfxTroBlitz()
-{
-}
 void CSfxTroBlitz::Process()
 {
 	m_nFrame++;
@@ -375,12 +307,6 @@ void CSfxTroBlitz::Render( )
 }
 
 // 로그인 효과 
-CSfxGenLogin::CSfxGenLogin()
-{
-}
-CSfxGenLogin::~CSfxGenLogin()
-{
-}
 void CSfxGenLogin::Process()
 {
 	m_nFrame++;
@@ -400,12 +326,6 @@ void CSfxGenLogin::Render( )
 }
 
 // 워프 효과 
-CSfxGenWarp::CSfxGenWarp()
-{
-}
-CSfxGenWarp::~CSfxGenWarp()
-{
-}
 void CSfxGenWarp::Process()
 {
 	m_nFrame++;
@@ -425,12 +345,6 @@ void CSfxGenWarp::Render( )
 }
 
 // 플레이어 죽을 때 효과 
-CSfxGenPcDie::CSfxGenPcDie()
-{
-}
-CSfxGenPcDie::~CSfxGenPcDie()
-{
-}
 void CSfxGenPcDie::Process()
 {
 	m_nFrame++;
@@ -450,12 +364,6 @@ void CSfxGenPcDie::Render( )
 }
 
 // 몬스터 스폰 할 때 효과 
-CSfxGenMonsterSpawn::CSfxGenMonsterSpawn()
-{
-}
-CSfxGenMonsterSpawn::~CSfxGenMonsterSpawn()
-{
-}
 void CSfxGenMonsterSpawn::Process()
 {
 	m_nFrame++;
@@ -475,12 +383,6 @@ void CSfxGenMonsterSpawn::Render( )
 }
 
 // 일반 공격으로 데미지 입을 때 효과 
-CSfxGenMoveMark::CSfxGenMoveMark()
-{
-}
-CSfxGenMoveMark::~CSfxGenMoveMark()
-{
-}
 void CSfxGenMoveMark::Process()
 {
 	m_nFrame++;
@@ -501,12 +403,6 @@ void CSfxGenMoveMark::Render( )
 }
 
 // 일반 공격으로 데미지 입을 때 효과 
-CSfxGenWaterCircle::CSfxGenWaterCircle()
-{
-}
-CSfxGenWaterCircle::~CSfxGenWaterCircle()
-{
-}
 void CSfxGenWaterCircle::Process()
 {
 	m_nFrame++;
@@ -522,12 +418,6 @@ void CSfxGenWaterCircle::Render( )
 	m_pSfxObj->Render( );
 }
 
-CSfxGenRainCircle::CSfxGenRainCircle()
-{
-}
-CSfxGenRainCircle::~CSfxGenRainCircle()
-{
-}
 void CSfxGenRainCircle::Process()
 {
 	m_nFrame++;
@@ -546,12 +436,6 @@ void CSfxGenRainCircle::Render( )
 
 
 // 일반 공격으로 데미지 입을 때 효과 
-CSfxGenWaterCrown::CSfxGenWaterCrown()
-{
-}
-CSfxGenWaterCrown::~CSfxGenWaterCrown()
-{
-}
 void CSfxGenWaterCrown::Process()
 {
 	m_nFrame++;
@@ -581,9 +465,6 @@ CSfxItemWandAtkAir::CSfxItemWandAtkAir()
 {
 	m_SfxObj2.SetSfx( "sfx_HitWand01" ); // 맞는 순간의 SFX를 따로 로딩한다.
 	m_bHit = FALSE; // 아직 안맞았다.
-}
-CSfxItemWandAtkAir::~CSfxItemWandAtkAir()
-{
 }
 
 int CSfxItemWandAtkAir::SetSfx( int nIndex, 
@@ -718,9 +599,7 @@ CSfxMagicMiAtk1::CSfxMagicMiAtk1()
 	m_fCenter = 0;
 	m_fRadiusXZ = 0.2f;		// 디폴트 20센치.
 }
-CSfxMagicMiAtk1::~CSfxMagicMiAtk1()
-{
-}
+
 
 
 void CSfxMagicMiAtk1::Process()
@@ -838,10 +717,6 @@ CSfxItemWandAtk1::CSfxItemWandAtk1()
 	m_fCenter = 0;
 	m_fRadiusXZ = 0.2f;		// 디폴트 20센치.
 }
-CSfxItemWandAtk1::~CSfxItemWandAtk1()
-{
-}
-
 
 void CSfxItemWandAtk1::Process()
 {
@@ -949,10 +824,6 @@ void CSfxItemWandAtk1::Render( )
 }
 
 
-CSfxItemRangeAtk1::CSfxItemRangeAtk1() : CSfxShoot()
-{
-	m_pTail			= NULL;
-}
 CSfxItemRangeAtk1::~CSfxItemRangeAtk1()
 {
 	if( m_pTail )
@@ -1487,9 +1358,6 @@ CSfxItemRangeAtk1_Allow::CSfxItemRangeAtk1_Allow() : CSfxShoot()
 	m_fSpeed = xRandomF( 0.7f ) + 0.2f;
 }
 
-CSfxItemRangeAtk1_Allow::~CSfxItemRangeAtk1_Allow()
-{
-}
 
 void CSfxItemRangeAtk1_Allow::Process()
 {
@@ -1536,9 +1404,6 @@ CSfxItemRangeAtk1_AllowRain::CSfxItemRangeAtk1_AllowRain() : CSfxShoot()
 	m_nCount = 0;
 }
 
-CSfxItemRangeAtk1_AllowRain::~CSfxItemRangeAtk1_AllowRain()
-{
-}
 
 void CSfxItemRangeAtk1_AllowRain::Process()
 {
@@ -1580,10 +1445,6 @@ CSfxItemRangeAtk1_Stone::CSfxItemRangeAtk1_Stone() : CSfxShoot()
 {
 	m_nFrame = 0;
 	m_fSpeed = xRandomF( 0.7f ) + 0.7f;
-}
-
-CSfxItemRangeAtk1_Stone::~CSfxItemRangeAtk1_Stone()
-{
 }
 
 void CSfxItemRangeAtk1_Stone::Process()
@@ -1635,10 +1496,6 @@ CSfxItemRangeAtk1_StoneRain::CSfxItemRangeAtk1_StoneRain() : CSfxShoot()
 	m_nCount = 0;
 }
 
-CSfxItemRangeAtk1_StoneRain::~CSfxItemRangeAtk1_StoneRain()
-{
-}
-
 void CSfxItemRangeAtk1_StoneRain::Process()
 {
 	D3DXVECTOR3 vPos = GetPos();
@@ -1681,9 +1538,6 @@ CSfxAtkStraight::CSfxAtkStraight()
 {
 	m_dwExplosion = NULL_ID;
 }
-CSfxAtkStraight::~CSfxAtkStraight()
-{
-}
 
 // 발사체의 이동증가량을 선계산함. 
 void CSfxAtkStraight::ShootSfx( float fAngXZ, float fAngH, float fSpeed, DWORD dwExplosion )
@@ -1721,7 +1575,6 @@ void CSfxAtkStraight::Process()
 	m_pSfxObj->m_vPos += m_vDelta;		// 좌표 이동.
 	SetPos( m_pSfxObj->m_vPos );		// this도 좌표 같이 이동.
 	
-	#ifdef __CLIENT
 		//D3DXVECTOR3 vDir = v3 - v1;
 		//D3DXVec3Normalize( &vDir, &vDir );
 		D3DXVECTOR3 vTemp = D3DXVECTOR3( 0.0f, 0.0f, 0.0f );
@@ -1741,7 +1594,6 @@ void CSfxAtkStraight::Process()
 			//extern CPartsFireDragon	g_FireDragon;
 			//g_FireDragon.Create( m_pSfxObj->m_vPos, XI_NAT_FIRE01_ADV, vScal, vTemp );
 		}
-	#endif
 
 	if( IsRangeObj( m_vPosDest, 0 ) )							// 목표좌표에 다다르면
 	{
@@ -1781,9 +1633,7 @@ CSfxItemWandAtk2::CSfxItemWandAtk2()
 	m_SfxObj2.SetSfx("sfx_HitWand01"); // 맞는 순간의 SFX를 따로 로딩한다.
 	m_bHit=FALSE;
 }
-CSfxItemWandAtk2::~CSfxItemWandAtk2()
-{
-}
+
 void CSfxItemWandAtk2::Process()
 {
 	if(m_nFrame==0) {
@@ -1845,9 +1695,7 @@ CSfxItemWandAtk3::CSfxItemWandAtk3()
 	m_SfxObj2.SetSfx("sfx_HitWand01"); // 맞는 순간의 SFX를 따로 로딩한다.
 	m_bHit=FALSE;
 }
-CSfxItemWandAtk3::~CSfxItemWandAtk3()
-{
-}
+
 void CSfxItemWandAtk3::Process()
 {
 	if(m_nFrame==0) {
@@ -1908,9 +1756,6 @@ CSfxItemWandAtk4::CSfxItemWandAtk4()
 {
 	m_SfxObj2.SetSfx("sfx_HitWand01"); // 맞는 순간의 SFX를 따로 로딩한다.
 	m_bHit=FALSE;
-}
-CSfxItemWandAtk4::~CSfxItemWandAtk4()
-{
 }
 void CSfxItemWandAtk4::Process()
 {
@@ -1979,12 +1824,6 @@ void CSfxItemWandAtk4::Render( )
 // 스킬 효과들
 
 // 방랑자 기본 스킬 1
-CSfxSkillVagOverCutter::CSfxSkillVagOverCutter()
-{
-}
-CSfxSkillVagOverCutter::~CSfxSkillVagOverCutter()
-{
-}
 void CSfxSkillVagOverCutter::Process()
 {
 	m_nFrame++;
@@ -2008,12 +1847,6 @@ void CSfxSkillVagOverCutter::Render( )
 	m_pSfxObj->Render( );
 }
 // 방랑자 기본 스킬 2
-CSfxSkillVagCleanHit::CSfxSkillVagCleanHit()
-{
-}
-CSfxSkillVagCleanHit::~CSfxSkillVagCleanHit()
-{
-}
 void CSfxSkillVagCleanHit::Process()
 {
 	CMover* pObjSrc = (CMover*)prj.GetCtrl( m_idSrc );
@@ -2038,12 +1871,6 @@ void CSfxSkillVagCleanHit::Render( )
 
 
 // 고정좌표 기준 sfx
-CSfxFixed::CSfxFixed()
-{
-}
-CSfxFixed::~CSfxFixed()
-{
-}
 void CSfxFixed::Process()
 {
 	CMover* pObjSrc = (CMover*)prj.GetCtrl( m_idSrc );
@@ -2080,12 +1907,6 @@ void CSfxFixed::Render( )
 }
 
 // 방랑자 기본 스킬 3
-CSfxSkillVagBrandish::CSfxSkillVagBrandish()
-{
-}
-CSfxSkillVagBrandish::~CSfxSkillVagBrandish()
-{
-}
 void CSfxSkillVagBrandish::Process()
 {
 	m_nFrame++;
@@ -2109,12 +1930,6 @@ void CSfxSkillVagBrandish::Render( )
 }
 
 // 머셔너리 기본 스킬 1
-CSfxSkillMerKeenWheel::CSfxSkillMerKeenWheel()
-{
-}
-CSfxSkillMerKeenWheel::~CSfxSkillMerKeenWheel()
-{
-}
 void CSfxSkillMerKeenWheel::Process()
 {
 	m_nFrame++;
@@ -2134,9 +1949,6 @@ void CSfxSkillMerKeenWheel::Render( )
 CSfxSkillMerSplmash::CSfxSkillMerSplmash()
 {
 	m_SfxObj2.SetSfx(XI_SKILL_MER_ONE_SPLMASH02);
-}
-CSfxSkillMerSplmash::~CSfxSkillMerSplmash()
-{
 }
 void CSfxSkillMerSplmash::Process()
 {
@@ -2172,12 +1984,6 @@ void CSfxSkillMerSplmash::Render( )
 	}
 }
 // 머셔너리 기본 스킬 3
-CSfxSkillMerBlindSide::CSfxSkillMerBlindSide()
-{
-}
-CSfxSkillMerBlindSide::~CSfxSkillMerBlindSide()
-{
-}
 void CSfxSkillMerBlindSide::Process()
 {
 	m_nFrame++;
@@ -2195,12 +2001,6 @@ void CSfxSkillMerBlindSide::Render( )
 }
 
 // 어시 너클스킬
-CSfxSkillAssBurstcrack::CSfxSkillAssBurstcrack()
-{
-}
-CSfxSkillAssBurstcrack::~CSfxSkillAssBurstcrack()
-{
-}
 void CSfxSkillAssBurstcrack::Process()
 {
 	m_nFrame++;
@@ -2225,12 +2025,6 @@ void CSfxSkillAssBurstcrack::Render( )
 	m_pSfxObj->Render( );
 }
 
-CSfxSkillAssTampinghole::CSfxSkillAssTampinghole()
-{
-}
-CSfxSkillAssTampinghole::~CSfxSkillAssTampinghole()
-{
-}
 void CSfxSkillAssTampinghole::Process()
 {
 	m_nFrame++;
@@ -2265,13 +2059,6 @@ void CSfxSkillAssTampinghole::Render( )
 	m_pSfxObj->Render( );
 }
 
-CSfxNpcDirSteam::CSfxNpcDirSteam()
-{
-	m_fInit = TRUE;
-}
-CSfxNpcDirSteam::~CSfxNpcDirSteam()
-{
-}
 void CSfxNpcDirSteam::Process()
 {
 	m_nFrame++;
@@ -2358,12 +2145,6 @@ void CSfxNpcDirSteam::Render( )
 
 
 // 매지션 불 주문 외기
-CSfxSkillMagFireCasting::CSfxSkillMagFireCasting()
-{
-}
-CSfxSkillMagFireCasting::~CSfxSkillMagFireCasting()
-{
-}
 void CSfxSkillMagFireCasting::Process()
 {
 	m_nFrame++;
@@ -2384,12 +2165,6 @@ void CSfxSkillMagFireCasting::Render( )
 	}
 }
 // 매지션 바람 주문 외기
-CSfxSkillMagWindCasting::CSfxSkillMagWindCasting()
-{
-}
-CSfxSkillMagWindCasting::~CSfxSkillMagWindCasting()
-{
-}
 void CSfxSkillMagWindCasting::Process()
 {
 	m_nFrame++;
@@ -2412,9 +2187,6 @@ CSfxSkillMagStrongWind::CSfxSkillMagStrongWind()
 	m_SfxObj2.SetSfx(XI_SKILL_MAG_WIND_STRONGWIND01_01);		// 맞았을때 효과.
 	m_bHit = FALSE;
 	m_fAngle = 0;
-}
-CSfxSkillMagStrongWind::~CSfxSkillMagStrongWind()
-{
 }
 				  
 void CSfxSkillMagStrongWind::Process()
@@ -2503,9 +2275,7 @@ CSfxSkillMagSwordWind::CSfxSkillMagSwordWind()
 	m_SfxObj2.SetSfx(XI_SKILL_MAG_WIND_SWORDWIND01_01);
 	m_bHit=FALSE;
 }
-CSfxSkillMagSwordWind::~CSfxSkillMagSwordWind()
-{
-}
+
 void CSfxSkillMagSwordWind::Process()
 {
 	if(m_nFrame==0) 
@@ -2573,9 +2343,6 @@ CSfxSkillMagFireBoomerang::CSfxSkillMagFireBoomerang()
 {
 	m_SfxObj2.SetSfx( XI_SKILL_MAG_FIRE_BOOMERANG01_01 );
 	m_bHit=FALSE;
-}
-CSfxSkillMagFireBoomerang::~CSfxSkillMagFireBoomerang()
-{
 }
 void CSfxSkillMagFireBoomerang::Process()
 {
@@ -2653,12 +2420,6 @@ void CSfxSkillMagFireBoomerang::Render( )
 	}
 }
 // 매지션 기본 스킬 4
-CSfxSkillMagFireBomb::CSfxSkillMagFireBomb()
-{
-}
-CSfxSkillMagFireBomb::~CSfxSkillMagFireBomb()
-{
-}
 void CSfxSkillMagFireBomb::Process()
 {
 	m_nFrame++;
@@ -2680,9 +2441,6 @@ CSfxSkillMagHotAir::CSfxSkillMagHotAir()
 	m_SfxObj2.SetSfx(XI_SKILL_MAG_FIRE_HOTAIR01_01);		// 타겟측에서 펑 터지며 회전하는 효과
 	m_nDmgCnt = 0;
 }
-CSfxSkillMagHotAir::~CSfxSkillMagHotAir()
-{
-}
 void CSfxSkillMagHotAir::Process()
 {
 	CMover* pObjSrc = prj.GetMover( m_idSrc );
@@ -2702,7 +2460,6 @@ void CSfxSkillMagHotAir::Process()
 		Delete();
 		return;
 	}
-#ifdef __CLIENT
 	else
 	{
 		DWORD dwTmpID =  pObjDest->GetRemoveSfxObj(XI_SKILL_MAG_FIRE_HOTAIR01 );
@@ -2712,7 +2469,6 @@ void CSfxSkillMagHotAir::Process()
 			return;
 		}
 	}
-#endif	// __CLIENT
 
 	m_SfxObj2.m_vPos = pObjDest->GetPos();
 
@@ -3080,9 +2836,6 @@ CSfxSkillMagIceMissile::CSfxSkillMagIceMissile()
 	m_SfxObj2.SetSfx( XI_SKILL_MAG_WATER_ICEMISSILE01_01 );
 	m_bHit=FALSE;
 }
-CSfxSkillMagIceMissile::~CSfxSkillMagIceMissile()
-{
-}
 void CSfxSkillMagIceMissile::Process()
 {
 	if(m_nFrame==0) 
@@ -3165,9 +2918,6 @@ CSfxSkillMagLightningBall::CSfxSkillMagLightningBall()
 	m_SfxObj2.SetSfx( XI_SKILL_MAG_ELECTRICITY_LIGHTINGBALL01_01  );
 	m_bHit=FALSE;
 }
-CSfxSkillMagLightningBall::~CSfxSkillMagLightningBall()
-{
-}
 void CSfxSkillMagLightningBall::Process()
 {
 	if(m_nFrame==0) 
@@ -3248,9 +2998,6 @@ CSfxSkillMagSpikeStone::CSfxSkillMagSpikeStone()
 {
 	m_SfxObj2.SetSfx( XI_SKILL_MAG_EARTH_SPIKESTONE01_01 );
 	m_bHit=FALSE;
-}
-CSfxSkillMagSpikeStone::~CSfxSkillMagSpikeStone()
-{
 }
 void CSfxSkillMagSpikeStone::Process()
 {
@@ -3399,14 +3146,6 @@ CSfxShoot::CSfxShoot()
 	m_fHitScale = 1.0f;
 	m_dwSfxHit = NULL_ID;
 }
-CSfxShoot::~CSfxShoot()
-{
-	m_bHit = FALSE;
-	m_dwSndHit = NULL_ID;
-	m_bDir = FALSE;
-	m_fHitScale = 1.0f;
-	m_dwSfxHit = NULL_ID;
-}
 
 // 맞았을때 이펙트 등록
 void CSfxShoot::SetHitSfx( LPCTSTR szFileName, OBJID idSrc, OBJID idDst, FLOAT fScale ) 
@@ -3490,7 +3229,7 @@ void CSfxShoot::Process()
 	}
 	m_nFrame ++;
 }
-void CSfxShoot::Render( )
+void CSfxShoot::Render()
 {
 	m_pSfxObj->m_vScale = GetScale();
 	m_pSfxObj->Render2( );
@@ -3499,15 +3238,6 @@ void CSfxShoot::Render( )
 
 // 땅바닥에 붙어서 날아가는 이펙트.
 CSfxShootWave::CSfxShootWave()
-{
-	m_bHit = FALSE;
-	m_dwSndHit = NULL_ID;
-	m_bDir = FALSE;
-	m_fHitScale = 1.0f;
-	memset( m_vTail, 0, sizeof(m_vTail) );
-	memset( m_nTailFrame, 0, sizeof(m_nTailFrame) );
-}
-CSfxShootWave::~CSfxShootWave()
 {
 	m_bHit = FALSE;
 	m_dwSndHit = NULL_ID;
@@ -3952,12 +3682,6 @@ void	CSfxPartsLinkShoulder::Render( )
 		CSfx::Render();
 }
 
-CSfxCursor::CSfxCursor()
-{
-}
-CSfxCursor::~CSfxCursor()
-{
-}
 void CSfxCursor::Process()
 {
 	SetPos( g_Neuz.m_vCursorPos );		// 마우스 좌표
@@ -3974,14 +3698,6 @@ void CSfxCursor::Process()
 		Delete();
 }
 
-
-CSfxLinkMover::CSfxLinkMover( )
-{
-}
-
-CSfxLinkMover::~CSfxLinkMover( )
-{
-}
 
 void CSfxLinkMover::Process( )
 {
