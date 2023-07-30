@@ -395,25 +395,23 @@ BOOL CModelObject::Destroy( int nIdx )
 	return FALSE;
 }
 
-// 검광클래스 생성
-void	CModelObject::CreateForce( int nParts )
-{
 #ifdef __CLIENT
-	if( nParts == PARTS_RWEAPON )
-	{
-		if( m_pForce )	return;		// 이미 할당되어 있으면 다시 할당하지 않음.
-		m_pForce = new CSwordForce;
-	} else
-	if( nParts == PARTS_LWEAPON )
-	{
-		if( m_pForce2 )	return;		// 이미 할당되어 있으면 다시 할당하지 않음.
-		m_pForce2 = new CSwordForce;
-	} else
-	{
+// 검광클래스 생성
+CSwordForce * CModelObject::CreateForce(int nParts) {
+	// 이미 할당되어 있으면 다시 할당하지 않음.
+	if (nParts == PARTS_RWEAPON) {
+		if (!m_pForce) m_pForce = new CSwordForce;
+		return m_pForce;
+	} else if (nParts == PARTS_LWEAPON) {
+
+		if (!m_pForce2) m_pForce2 = new CSwordForce;
+		return m_pForce2;
+	} else {
 		ASSERT(0);
+		return nullptr;
 	}
-#endif
 }
+#endif
 
 
 void	CModelObject::TakeOffParts( int nParts )
@@ -423,9 +421,8 @@ void	CModelObject::TakeOffParts( int nParts )
 
 
 	// 파츠를 제거했는데, 아래 부분을 안해주면 old 파츠에서 매모리 릭 발생 - vampyre
-	O3D_ELEMENT	*pElem;
 	int nIdx = GetPartsIdx(nParts);
-	pElem = GetParts(nParts);
+	O3D_ELEMENT * pElem = GetParts(nParts);
 	if( pElem && pElem->m_ppd3d_VB )
 	{
 		pElem->m_pObject3D->SetLOD(0);
@@ -451,9 +448,6 @@ void	CModelObject::TakeOffParts( int nParts )
 			SAFE_DELETE(m_pPartsEffect2);
 			SAFE_DELETE(m_pPartsEffect1_Detail);
 			SAFE_DELETE(m_pPartsEffect2_Detail);
-			//m_pPartsEffect = m_pPartsEffect2 = NULL;
-			// m_pPartsEffect1_Detail = NULL;
-			// m_pPartsEffect2_Detail = NULL;
 		}
 
 		Init( nIdx );
@@ -938,11 +932,6 @@ int		CModelObject::Render( const D3DXMATRIX *mWorld )
 	int		i;
 	int		nNextFrame;
 	D3DXMATRIX	m1;
-
-#ifndef __CLIENT						// 게임클라이언트가 아닐때...
-	if( IsEmptyElement() == TRUE )		// 모델이 로드가 안되어 있으면 걍 리턴
-		return 1;
-#endif
 
 #ifdef	_DEBUG
 	if( m_mUpdateBone && g_pSkiningVS == NULL )
@@ -1621,12 +1610,7 @@ void	CModelObject::MakeSWDForce( int nParts, DWORD dwItemKind3, BOOL bSlow, DWOR
 	int nLoop = m_nLoop;
 	m_nLoop = ANILOOP_1PLAY;
 	
-	CreateForce( nParts );	// 검광 오브젝트 생성
-	CSwordForce *pForce;
-	if( nParts == PARTS_RWEAPON )
-		pForce = m_pForce;
-	else
-		pForce = m_pForce2;
+	CSwordForce * pForce = CreateForce( nParts );	// 검광 오브젝트 생성
 
 	pForce->Clear();
 	pForce->m_dwColor = dwColor;

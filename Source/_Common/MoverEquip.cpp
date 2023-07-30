@@ -337,25 +337,25 @@ void CMover::UpdateParts( int nSex, const MoverSub::SkinMeshs skin, EQUIP_INFO *
 					switch( pItemProp->dwItemKind3 )
 					{
 					case IK3_KNUCKLEHAMMER:
-						((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRArmIdx() );
+						pModel->SetParent( PARTS_RWEAPON, pModel->GetRArmIdx() );
 						break;
 
 					case IK3_BOW:
-						((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetLHandIdx() );
+						pModel->SetParent( PARTS_RWEAPON, pModel->GetLHandIdx() );
 						break;
 					case IK3_YOYO:
-						((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRHandIdx() );
+						pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );
 						pModel->LoadElement( szPartsName, PARTS_LWEAPON );
-						((CModelObject*)pModel)->SetParent( PARTS_LWEAPON, ((CModelObject*)pModel)->GetLHandIdx() );
+						pModel->SetParent( PARTS_LWEAPON, pModel->GetLHandIdx() );
 						break;
 
 					default:
-						((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRHandIdx() );
+						pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );
 					}
 //					if( pItemProp->dwItemKind3 == IK3_KNUCKLEHAMMER )
-//						((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRArmIdx() );
+//						pModel->SetParent( PARTS_RWEAPON, pModel->GetRArmIdx() );
 //					else
-//						((CModelObject*)pModel)->SetParent( PARTS_RWEAPON, ((CModelObject*)pModel)->GetRHandIdx() );
+//						pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );
 				}
 				else 
 					pModel->TakeOffParts( i );
@@ -364,7 +364,7 @@ void CMover::UpdateParts( int nSex, const MoverSub::SkinMeshs skin, EQUIP_INFO *
 				// 변신 캐릭터는 장착 무기를 볼 수 없게 하자(파츠 장착만 못함. 수치 계산은 적용됨)
 				if( pItemProp && ( pMover == NULL || ( pMover && pMover->IsDisguise() == FALSE ) ) )
 				{
-					((CModelObject*)pModel)->SetParent( PARTS_LWEAPON, ((CModelObject*)pModel)->GetLHandIdx() );
+					pModel->SetParent( PARTS_LWEAPON, pModel->GetLHandIdx() );
 				}
 				else 
 					pModel->TakeOffParts( i );
@@ -372,7 +372,7 @@ void CMover::UpdateParts( int nSex, const MoverSub::SkinMeshs skin, EQUIP_INFO *
 			case PARTS_SHIELD: 
 				// 변신 캐릭터는 장착 무기를 볼 수 없게 하자(파츠 장착만 못함. 수치 계산은 적용됨)
 				if( pItemProp && ( pMover == NULL || ( pMover && pMover->IsDisguise() == FALSE ) ) )
-					((CModelObject*)pModel)->SetParent( PARTS_SHIELD, ((CModelObject*)pModel)->GetLArmIdx() );
+					pModel->SetParent( PARTS_SHIELD, pModel->GetLArmIdx() );
 				else 
 					pModel->TakeOffParts( i );
 				break;

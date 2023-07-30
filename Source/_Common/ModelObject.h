@@ -148,7 +148,6 @@ public:
 	CModelObject();
 	virtual ~CModelObject();
 
-	void				CreateForce( int nParts );		// 검광클래스 생성
 	int					GetRHandIdx( void ) { return m_pBone->m_nRHandIdx; }
 	int					GetLHandIdx( void ) { return m_pBone->m_nLHandIdx; }
 	int					GetRArmIdx( void ) { return m_pBone->m_nRArmIdx; }
@@ -308,12 +307,7 @@ public:
 		if( m_mUpdateBone == NULL )	return NULL;
 		return &m_mUpdateBone[ nBoneIdx ];
 	}
-	BOOL	IsEmptyElement( void )
-	{
-		for( int i = 0; i < MAX_ELEMENT; i ++ )
-			if( m_Element[i].m_pObject3D )	return FALSE;
-		return TRUE;
-	}
+
 	D3DXVECTOR3 *GetPath( void ) { return ( m_pMotion ) ? m_pMotion->m_pPath : NULL; }
 
 	int		IsHaveCollObj( void ) { return m_bCollObj; }
@@ -346,6 +340,7 @@ public:
 #endif //__WORLDSERVER
 
 #ifdef __CLIENT
+	[[nodiscard]] CSwordForce * CreateForce( int nParts );		// 검광클래스 생성
 	void	MakeSWDForce( int nParts, DWORD dwItemKind3, BOOL bSlow = FALSE, DWORD dwColor = D3DCOLOR_ARGB(255,120,120,230), float fSpeed = 1.0f );		// m_pMotion의 검광을 생성
 #endif
 	void	FrameMove( D3DXVECTOR3 *pvSndPos = NULL, float fSpeed = 1.0f );
