@@ -2155,8 +2155,7 @@ void	CSwordForce::MakeSpline( void )
 		{
 			if( m_nMaxSpline >= MAX_SF_SPLINE )
 			{
-				LPCTSTR szErr = Error( "SWDForceAdd Spline : 범위 초과 %d", m_nMaxSpline );
-				//ADDERRORMSG( szErr );
+				Error( "SWDForceAdd Spline : 범위 초과 %d", m_nMaxSpline );
 				break;
 			}
 			pKey = m_aList;

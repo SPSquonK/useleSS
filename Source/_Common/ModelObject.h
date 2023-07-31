@@ -12,8 +12,6 @@
 #endif //__ATTACH_MODEL
 
 #define		MAX_SF_SLERP		3		// 키와키 사이를 몇단계로 보간할 것인가
-#define		MAX_SF_SWDFORCE		512
-#define		MAX_SF_SPLINE		4096
 
 struct FVF_SWDFORCE
 {
@@ -26,13 +24,16 @@ class CModelObject;
 
 class CSwordForce final {
 private:
+	static constexpr int MAX_SF_SWDFORCE = 512;
+	static constexpr int MAX_SF_SPLINE = 4096;
+
 	int		m_nMaxVertex = 0;
 	int		m_nMaxSpline = 0;
 	int		m_nMaxDraw   = 0;
 	FVF_SWDFORCE	m_aList[ MAX_SF_SWDFORCE ];
 	FVF_SWDFORCE	m_aList2[ MAX_SF_SWDFORCE ];
 	FVF_SWDFORCE	m_aSpline[ MAX_SF_SPLINE ];
-	DWORD	m_dwColor = D3DCOLOR_ARGB(255, 120, 120, 230);;
+	DWORD	m_dwColor = D3DCOLOR_ARGB(255, 120, 120, 230);
 
 private:
 	void Process();
