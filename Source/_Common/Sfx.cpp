@@ -2632,10 +2632,10 @@ void CSfxCollect::Process()
 		return;
 	}
 	
-	D3DXVECTOR3 vPos;
-	((CModelObject *)pMover->m_pModel)->GetForcePos( &vPos, 0, PARTS_RWEAPON, pMover->GetMatrixWorld() );
-	
-	SetPos( vPos );
+	const auto vPos = ((CModelObject *)pMover->m_pModel)->GetForcePos(PARTS_RWEAPON, pMover->GetMatrixWorld());
+	if (vPos) {
+		SetPos(*vPos);
+	}
 
 	if( m_pSfxObj->Process() )
 		m_pSfxObj->m_nCurFrame = 0;

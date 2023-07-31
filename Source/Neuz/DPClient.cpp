@@ -719,7 +719,7 @@ void CDPClient::OnSnapshot( CAr & ar )
 
 		const u_long endedAt = ar.GetOffset();
 
-		if (ar.GoToOffset(startedAt + packetSize) == CAr::GoToOffsetAnswer::TooFar) {
+		if (ar.GoToOffset(startedAt + packetSize) != CAr::GoToOffsetAnswer::SamePlace) {
 			if (!glitchedSnapshotsId.contains(hdr)) {
 				Error("Snapshot %x went too far", hdr);
 				glitchedSnapshotsId.emplace(hdr);

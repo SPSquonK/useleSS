@@ -2068,93 +2068,28 @@ void	CModelObject::SetMotionBlending( BOOL bFlag )
 }
 
 
-void	CModelObject::GetForcePos( D3DXVECTOR3 *vOut, int nIdx, int nParts, const D3DXMATRIX &mWorld )
-{
-	D3DXMATRIX *pmLocal;
-	O3D_ELEMENT		*pElem = GetParts( nParts );		// 오른손 무기의 포인터
+std::optional<D3DXVECTOR3> CModelObject::GetForcePos(int nParts, const D3DXMATRIX & mWorld) {
+	O3D_ELEMENT * pElem = GetParts(nParts);		// 오른손 무기의 포인터
+
+	if (!pElem) return std::nullopt;
+	if (pElem->m_pObject3D == NULL)		return std::nullopt;
+	if (pElem->m_pObject3D->m_vForce1.x == 0)	return std::nullopt;
+	if (pElem->m_pObject3D->m_vForce2.x == 0)	return std::nullopt;
+
 	D3DXMATRIX	m1;
+	if (pElem->m_nParentIdx == GetRHandIdx()) {
+		m1 = pElem->m_mLocalRH * m_mUpdateBone[pElem->m_nParentIdx];
+	} else if (pElem->m_nParentIdx == GetLHandIdx()) {
+		m1 = pElem->m_mLocalLH * m_mUpdateBone[pElem->m_nParentIdx];
+	} else {
+		m1 = m_mUpdateBone[pElem->m_nParentIdx];						// 일단 에러는 안나게 이렇게 한다.
+	}
+
 	D3DXVECTOR3		v1;
-
-	if( !pElem )
-		return;
-	
-	if( pElem->m_pObject3D == NULL )		return;
-	
-	if( pElem->m_pObject3D->m_vForce1.x == 0 )	return;
-	if( pElem->m_pObject3D->m_vForce2.x == 0 )	return;
-	
-	if( pElem->m_nParentIdx == GetRHandIdx() )
-		pmLocal = &pElem->m_mLocalRH;
-	else if( pElem->m_nParentIdx == GetLHandIdx() )
-		pmLocal = &pElem->m_mLocalLH;
-	else
-	{
-		D3DXMatrixIdentity( &m1 );
-		pmLocal = &m1;						// 일단 에러는 안나게 이렇게 한다.
-	}
-		
-	
-//	if( m_pMotion )
-//		m_pMotion->AnimateBone( m_mUpdateBone, m_pMotionOld, m_fFrameCurrent, GetNextFrame(), m_nFrameOld, m_bMotionBlending, m_fBlendWeight );		// 일단 뼈대가 있다면 뼈대 애니메이션 시킴
-	
-	D3DXMatrixMultiply( &m1, pmLocal, &m_mUpdateBone[ pElem->m_nParentIdx ] );
-	if( nIdx == 0 )
-		D3DXVec3TransformCoord( &v1, &(pElem->m_pObject3D->m_vForce1), &m1 );
-	else
-		D3DXVec3TransformCoord( &v1, &(pElem->m_pObject3D->m_vForce2), &m1 );
-	
-	D3DXVec3TransformCoord( &v1, &v1, &mWorld );
-	*vOut = v1;
-	
+	D3DXVec3TransformCoord(&v1, &(pElem->m_pObject3D->m_vForce1), &m1);
+	D3DXVec3TransformCoord(&v1, &v1, &mWorld);
+	return v1;
 }
-
-
-void	CModelObject::GetForcePos( D3DXVECTOR3 *vOut, int nIdx, int nParts, const D3DXMATRIX &mWorld, float fScale)
-{
-	D3DXMATRIX mLocal;
-	O3D_ELEMENT		*pElem = GetParts( nParts );		// 오른손 무기의 포인터
-	D3DXMATRIX	m1;
-	D3DXVECTOR3		v1;
-
-	if( !pElem )
-		return;
-	
-	if( pElem->m_pObject3D == NULL )		return;
-	
-	if( pElem->m_pObject3D->m_vForce1.x == 0 )	return;
-	if( pElem->m_pObject3D->m_vForce2.x == 0 )	return;
-	
-	if( pElem->m_nParentIdx == GetRHandIdx() )
-	{
-		mLocal = pElem->m_mLocalRH;
-		D3DXMatrixScaling(&mLocal, fScale, fScale, fScale);
-	}
-	else if( pElem->m_nParentIdx == GetLHandIdx() )
-	{
-		mLocal = pElem->m_mLocalLH;
-		D3DXMatrixScaling(&mLocal, fScale, fScale, fScale);
-	}
-	else
-	{
-		D3DXMatrixIdentity( &m1 );
-		mLocal = m1;						// 일단 에러는 안나게 이렇게 한다.
-	}
-		
-	
-//	if( m_pMotion )
-//		m_pMotion->AnimateBone( m_mUpdateBone, m_pMotionOld, m_fFrameCurrent, GetNextFrame(), m_nFrameOld, m_bMotionBlending, m_fBlendWeight );		// 일단 뼈대가 있다면 뼈대 애니메이션 시킴
-	
-	D3DXMatrixMultiply( &m1, &mLocal, &m_mUpdateBone[ pElem->m_nParentIdx ] );
-	if( nIdx == 0 )
-		D3DXVec3TransformCoord( &v1, &(pElem->m_pObject3D->m_vForce1), &m1 );
-	else
-		D3DXVec3TransformCoord( &v1, &(pElem->m_pObject3D->m_vForce2), &m1 );
-	
-	D3DXVec3TransformCoord( &v1, &v1, &mWorld );
-	*vOut = v1;
-	
-}
-
 
 // Calcualtes the position of the center of the fist.
 D3DXVECTOR3 CModelObject::GetHandPos(int nParts, const D3DXMATRIX & mWorld) {

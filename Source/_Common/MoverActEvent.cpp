@@ -2028,9 +2028,10 @@ int		CMover::OnActCollecting()
 		ItemProp *pHandProp = GetActiveHandItemProp();
 		if( pHandProp->dwSfxObj2 != NULL_ID )
 		{
-			D3DXVECTOR3 vSrc, vLocal = D3DXVECTOR3(0, 0.5f, 0);
-			((CModelObject *)m_pModel)->GetForcePos( &vLocal, 0, PARTS_RWEAPON, GetMatrixWorld() );
-			vSrc = vLocal;
+			D3DXVECTOR3 vSrc = ((CModelObject *)m_pModel)
+				->GetForcePos(PARTS_RWEAPON, GetMatrixWorld())
+				.value_or(D3DXVECTOR3(0, 0.5f, 0));
+
 			CSfx *pSfx = CreateSfx( pHandProp->dwSfxObj2, vSrc, GetId(), D3DXVECTOR3(0,0,0), NULL_ID, -1 );
 			if( pSfx )
 			{

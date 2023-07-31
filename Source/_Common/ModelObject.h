@@ -199,8 +199,8 @@ public:
 		return NULL; 
 	}		
 	void	SetExtTexture( LPDIRECT3DTEXTURE9 pTexture ) { m_pCloakTexture = pTexture; }
-	void	GetForcePos( D3DXVECTOR3 *vOut, int nIdx, int nParts, const D3DXMATRIX &mWorld );
-	void	GetForcePos( D3DXVECTOR3 *vOut, int nIdx, int nParts, const D3DXMATRIX &mWorld, float fScale);
+	[[nodiscard]] std::optional<D3DXVECTOR3> GetForcePos(int nParts, const D3DXMATRIX & mWorld);
+
 	[[nodiscard]] D3DXVECTOR3	GetHandPos(int nParts, const D3DXMATRIX & mWorld);
 		
 	int		MovePart( int nDstPart, int nSrcPart );
