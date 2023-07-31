@@ -7903,39 +7903,32 @@ void	CDPSrvr::OnMoveItemOnPocket( CAr & ar, CUser * pUser )
 	
 }
 
-void	CDPSrvr::OnAvailPocket( CAr & ar, CUser * pUser )
-{
-		int nPocket, nItem;
-		ar >> nPocket >> nItem;
-		if( nPocket <= 0 && nPocket >= MAX_POCKET )
-			return;
-		CItemElem* pItemElem	= pUser->m_Inventory.GetAtId( nItem );
-		if( IsUsableItem( pItemElem ) )
-		{
-			ItemProp* pItemProp		= pItemElem->GetProp();
-			if( pItemProp->dwItemKind3 == IK3_POCKET )
-			{
-				if( !pUser->m_Pocket.IsAvailable( nPocket ) )
-				{
-					pUser->m_Pocket.SetAttribute( CPocketController::avail, nPocket, pItemProp->dwSkillTime );
-					// log
-					LogItemInfo	log;
-					log.Action	= "u";
-					log.SendName	= pUser->GetName();
-					log.RecvName	= "OnAvailPocket";
-					log.WorldId		= pUser->GetWorld()->GetID();
-					log.Gold	= pUser->GetGold();
-					log.Gold2	= pUser->GetGold();
-					log.Gold_1	= nPocket;
-					OnLogItem( log, pItemElem, 1 );
-					pUser->UpdateItem(*pItemElem, UI::Num::ConsumeOne);
-#ifdef __INTERNALSERVER
-					pUser->AddPocketView();
-#endif	// __INTERNALSERVER
-				}
-			}
-		}
-	
+void	CDPSrvr::OnAvailPocket(CAr & ar, CUser * pUser) {
+	const auto [nPocket, nItem] = ar.Extract<int, int>();
+
+	if (nPocket <= 0 || nPocket >= MAX_POCKET) return;
+	if (pUser->m_Pocket.IsAvailable(nPocket)) return;
+
+	CItemElem * pItemElem = pUser->m_Inventory.GetAtId(nItem);
+	if (!IsUsableItem(pItemElem)) return;
+
+	const ItemProp * pItemProp = pItemElem->GetProp();
+	if (pItemProp->dwItemKind3 != IK3_POCKET) return;
+
+	// Avail pocket
+	pUser->m_Pocket.SetAttribute(CPocketController::avail, nPocket, pItemProp->dwSkillTime);
+
+	LogItemInfo	log;
+	log.Action	= "u";
+	log.SendName	= pUser->GetName();
+	log.RecvName	= "OnAvailPocket";
+	log.WorldId		= pUser->GetWorld()->GetID();
+	log.Gold	= pUser->GetGold();
+	log.Gold2	= pUser->GetGold();
+	log.Gold_1	= nPocket;
+	OnLogItem( log, pItemElem, 1 );
+
+	pUser->UpdateItem(*pItemElem, UI::Num::ConsumeOne);
 }
 
 void	CDPSrvr::OnBlessednessCancel( CAr & ar, CUser * pUser )
