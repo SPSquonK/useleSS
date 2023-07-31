@@ -1538,41 +1538,8 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 	#endif
 #endif		
 
-	if( m_pForce )
-	{
-		if( /*!m_bEndFrame &&*/ m_pForce->m_nMaxSpline && !m_nPause )
-		{
-			m_pForce->m_nMaxDraw += (int)((MAX_SF_SLERP*2+2) /** fSpeed*/);
-			if( m_pForce->m_nMaxDraw > m_pForce->m_nMaxSpline )
-			{
-				if( m_nLoop & ANILOOP_LOOP )	// 루핑되는 애니일경우는 첨부터 다시 그린다.
-					m_pForce->m_nMaxDraw = 0;
-				else
-					m_pForce->m_nMaxDraw = m_pForce->m_nMaxSpline;
-			}
-				
-		}
-
-		m_pForce->Process();
-	}
-
-	if( m_pForce2 )
-	{
-		if( m_pForce2->m_nMaxSpline && !m_nPause )
-		{
-			m_pForce2->m_nMaxDraw += (int)((MAX_SF_SLERP*2+2) /** fSpeed*/);
-			if( m_pForce2->m_nMaxDraw > m_pForce2->m_nMaxSpline )
-			{
-				if( m_nLoop & ANILOOP_LOOP )	// 루핑되는 애니일경우는 첨부터 다시 그린다.
-					m_pForce2->m_nMaxDraw = 0;
-				else
-					m_pForce2->m_nMaxDraw = m_pForce2->m_nMaxSpline;
-			}
-			
-		}
-		
-		m_pForce2->Process();
-	}
+	if (m_pForce ) MoveFrameSwordForce(*m_pForce );
+	if (m_pForce2) MoveFrameSwordForce(*m_pForce2);
 	
 	if( m_bMotionBlending )
 	{
@@ -1584,6 +1551,23 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 #ifdef __ATTACH_MODEL
 	FrameMoveAttachModel();
 #endif //__ATTACH_MODEL
+}
+
+void CModelObject::MoveFrameSwordForce(CSwordForce & pForce) {
+	if (pForce.m_nMaxSpline && !m_nPause) {
+		pForce.m_nMaxDraw += MAX_SF_SLERP * 2 + 2;
+
+		if (pForce.m_nMaxDraw > pForce.m_nMaxSpline) {
+			if (m_nLoop & ANILOOP_LOOP) {
+				pForce.m_nMaxDraw = 0;
+			} else {
+				pForce.m_nMaxDraw = pForce.m_nMaxSpline;
+			}
+		}
+
+	}
+
+	pForce.Process();
 }
 
 #ifdef __CLIENT

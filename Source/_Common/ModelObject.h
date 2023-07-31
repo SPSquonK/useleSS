@@ -390,6 +390,12 @@ public:
 	HRESULT RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
+
+private:
+	void MoveFrameSwordForce(CSwordForce & pForce);
+
+
+
 };
 
 extern BOOL		g_bUsableVS;			// 하드웨어 버텍스 쉐이더(1.1)를 쓸수 있는가.
