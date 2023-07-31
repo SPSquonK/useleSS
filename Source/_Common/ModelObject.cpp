@@ -901,32 +901,26 @@ void	CModelObject::ChangeTexture( int nParts, LPCTSTR szSrc, LPCTSTR szDest )
 #ifndef __WORLDSERVER
 //---------------------------------------------------------------------------------------------
 //
-// Render()를 부를때 내부에서 SetTransform()을 해주고 외부에선 매트릭스만 넘기는것을 원칙으로 하자.
-// 넘겨주는 매트릭스는 오브젝트의 원점을 넘겨준다.
-// 가령 인간의 경우는 센터부분이다.
+// When calling Render(), we call SetTransform() for the object to render and then only pass
+// the result matrix. The matrix passed is the origin of the object.
+// In the case of humans, for example, this is the center part.
 //
 FLOAT   g_fDiffuse[4];
 FLOAT   g_fAmbient[4];
 /*
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-만약에 Render했는데 화면에 안나온다!!! 그러면!
+Before rendering, you need to call this:
+
 static D3DXVECTOR4 vConst( 1.0f, 1.0f, 1.0f, 100.0f );
 m_pd3dDevice->SetVertexShaderConstantF( 95, (float*)&vConst, 1 );
 SetTransformView( matView );
 SetTransformProj( matProj );
 SetDiffuse( 1.0, 1.0, 1.0 );
 SetAmbient( 1.0, 1.0, 1.0 );
-
-이걸 렌더 하기전에 불러줬는지 확인해라!!!!!!!!!!!!!!!!!!!!! 크아아악!
-좆도 고생했네!
-
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
  */
 int		CModelObject::Render( const D3DXMATRIX *mWorld )
 {
-#ifdef	__WORLDSERVER
-	return 1;
-#else
 	CObject3D	*pObject3D;
 	O3D_ELEMENT	*pElem;
 	int		i;
@@ -1062,7 +1056,6 @@ int		CModelObject::Render( const D3DXMATRIX *mWorld )
 			SetDiffuse( 0, 0, 0 );
 #endif //__YENV
 			
-#ifdef __CLIENT
 			if( s_bLight )
 			{
 				float fblack = (CWorld::m_light.Diffuse.r*g_fHairLight) + (CWorld::m_light.Diffuse.g*g_fHairLight) + (CWorld::m_light.Diffuse.b*g_fHairLight);
@@ -1078,7 +1071,6 @@ int		CModelObject::Render( const D3DXMATRIX *mWorld )
 				);
 			}
 			else
-#endif // CLIENT
 				SetAmbient( pObject3D->m_fAmbient[0], pObject3D->m_fAmbient[1], pObject3D->m_fAmbient[2] );
 			
 #ifdef __YENV
@@ -1151,7 +1143,6 @@ int		CModelObject::Render( const D3DXMATRIX *mWorld )
 	SetDiffuse( vec4Diffuse.x, vec4Diffuse.y, vec4Diffuse.z );
 
 	return 1;
-#endif // !__WORLDSERVER
 }
 
 void	CModelObject::RenderEffect( const D3DXMATRIX *mWorld, DWORD dwItemKind3, int nLevelL, int nLeveR )
