@@ -355,9 +355,9 @@ BOOL CModelObject::TestIntersectionOBB_Line( const Segment3& segment, const CObj
 		const D3DXMATRIX& mWorld = pObj->GetMatrixWorld();
 
 		D3DXVECTOR3 vTemp;
-		D3DXVECTOR3 vStart, vEnd;
-		vStart = segment.Origin - segment.Extent * segment.Direction;
-		vEnd   = segment.Origin + segment.Extent * segment.Direction;
+
+		D3DXVECTOR3 vStart = segment.Origin - segment.Extent * segment.Direction;
+		D3DXVECTOR3 vEnd   = segment.Origin + segment.Extent * segment.Direction;
 		return ::IsTouchOBB_Line( m_vMin, m_vMax, mWorld, vStart, vEnd, &vTemp );
 	#endif
 }
@@ -400,11 +400,10 @@ BOOL CModelObject::Destroy( int nIdx )
 CSwordForce * CModelObject::CreateForce(int nParts) {
 	// 이미 할당되어 있으면 다시 할당하지 않음.
 	if (nParts == PARTS_RWEAPON) {
-		if (!m_pForce) m_pForce = new CSwordForce;
+		if (!m_pForce) m_pForce = new CSwordForce();
 		return m_pForce;
 	} else if (nParts == PARTS_LWEAPON) {
-
-		if (!m_pForce2) m_pForce2 = new CSwordForce;
+		if (!m_pForce2) m_pForce2 = new CSwordForce();
 		return m_pForce2;
 	} else {
 		ASSERT(0);
@@ -1160,8 +1159,8 @@ void	CModelObject::RenderEffect( const D3DXMATRIX *mWorld, DWORD dwItemKind3, in
 	if( m_nNoEffect == 0 )
 	{
 		// 검광 렌더.
-		if( m_pForce && m_pForce->m_nMaxSpline > 0 )	m_pForce->Draw( mWorld );
-		if( m_pForce2 && m_pForce2->m_nMaxSpline > 0 )	m_pForce2->Draw( mWorld );
+		if (m_pForce  && !m_pForce ->IsEmpty()) m_pForce ->Draw(mWorld);
+		if (m_pForce2 && !m_pForce2->IsEmpty()) m_pForce2->Draw(mWorld);
 		
 #ifdef __CLIENT
 		if( g_pPlayer )
@@ -1529,8 +1528,8 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 	#endif
 #endif		
 
-	if (m_pForce ) MoveFrameSwordForce(*m_pForce );
-	if (m_pForce2) MoveFrameSwordForce(*m_pForce2);
+	if (m_pForce ) m_pForce ->MoveFrameSwordForce(*this);
+	if (m_pForce2) m_pForce2->MoveFrameSwordForce(*this);
 	
 	if( m_bMotionBlending )
 	{
@@ -1544,39 +1543,17 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 #endif //__ATTACH_MODEL
 }
 
-void CModelObject::MoveFrameSwordForce(CSwordForce & pForce) {
-	if (pForce.m_nMaxSpline && !m_nPause) {
-		pForce.m_nMaxDraw += MAX_SF_SLERP * 2 + 2;
-
-		if (pForce.m_nMaxDraw > pForce.m_nMaxSpline) {
-			if (m_nLoop & ANILOOP_LOOP) {
-				pForce.m_nMaxDraw = 0;
-			} else {
-				pForce.m_nMaxDraw = pForce.m_nMaxSpline;
-			}
-		}
-
-	}
-
-	pForce.Process();
-}
-
 #ifdef __CLIENT
 //
 //	검광을 생성
 //	m_pMotion의 첫프레임~마지막프레임까지의 검광을 생성한다.
 void	CModelObject::MakeSWDForce( int nParts, DWORD dwItemKind3, BOOL bSlow, DWORD dwColor, float fSpeed )
 {
-	D3DXVECTOR3		v1, v2;
-	O3D_ELEMENT		*pElem = GetParts( nParts );		// 오른손 무기의 포인터
-	D3DXMATRIX	m1;
-	if( !pElem ) 
-		return;
-
-	if( pElem->m_pObject3D == NULL )		return;
-	
-	if( pElem->m_pObject3D->m_vForce1.x == 0 )	return;
-	if( pElem->m_pObject3D->m_vForce2.x == 0 )	return;
+	const O3D_ELEMENT * pElem = GetParts( nParts );		// 오른손 무기의 포인터
+	if ( !pElem ) return;
+	if ( pElem->m_pObject3D == NULL )		return;
+	if ( pElem->m_pObject3D->m_vForce1.x == 0 )	return;
+	if ( pElem->m_pObject3D->m_vForce2.x == 0 )	return;
 
 	// FrameCurrent를 0으로
 	m_fFrameCurrent = 0.0f;
@@ -1586,11 +1563,9 @@ void	CModelObject::MakeSWDForce( int nParts, DWORD dwItemKind3, BOOL bSlow, DWOR
 	m_nLoop = ANILOOP_1PLAY;
 	
 	CSwordForce * pForce = CreateForce( nParts );	// 검광 오브젝트 생성
+	pForce->Initialize(dwColor);
 
-	pForce->Clear();
-	pForce->m_dwColor = dwColor;
-
-	D3DXMATRIX *pmLocal;
+	const D3DXMATRIX * pmLocal;
 	if( pElem->m_nParentIdx == GetRHandIdx() )
 		pmLocal = &pElem->m_mLocalRH;
 	else if( pElem->m_nParentIdx == GetLHandIdx() )
@@ -1601,13 +1576,13 @@ void	CModelObject::MakeSWDForce( int nParts, DWORD dwItemKind3, BOOL bSlow, DWOR
 		pmLocal = &pElem->m_mLocalKnuckle;
 	
 
-	while(1)
-	{
+	D3DXVECTOR3 v1, v2;
+	do {
 		if( m_pMotion )
 			m_pMotion->AnimateBone( m_mUpdateBone, m_pMotionOld, m_fFrameCurrent, GetNextFrame(), m_nFrameOld, m_bMotionBlending, m_fBlendWeight );		// 일단 뼈대가 있다면 뼈대 애니메이션 시킴
 
 		// 무기 WorldTM = 무기LocalTM X 무기부모WorldTM  
-		D3DXMatrixMultiply( &m1, pmLocal, &m_mUpdateBone[ pElem->m_nParentIdx ] );
+		const D3DXMATRIX m1 = *pmLocal * m_mUpdateBone[pElem->m_nParentIdx];
 		
 		// 칼끝 버텍스의 월드 좌표 계산
 		D3DXVec3TransformCoord( &v1, &(pElem->m_pObject3D->m_vForce1), &m1 );
@@ -1617,9 +1592,7 @@ void	CModelObject::MakeSWDForce( int nParts, DWORD dwItemKind3, BOOL bSlow, DWOR
 		CModel::FrameMove( NULL, fSpeed );
 		if( bSlow && IsAttrHit( m_fFrameCurrent ) )
 			m_bSlow = TRUE;
-		if( m_bEndFrame )
-			break;
-	}
+	} while (!m_bEndFrame);
 
 	pForce->MakeSpline();		// 스플라인 생성
 	
@@ -2148,24 +2121,16 @@ D3DXVECTOR3		SplineSlerp( D3DXVECTOR3 *v1, D3DXVECTOR3 *v2, D3DXVECTOR3 *v3, D3D
 	return vResult;
 }
 
-void	CSwordForce::Add( D3DXVECTOR3 v1, D3DXVECTOR3 v2 )
-{
-	if( m_nMaxVertex >= MAX_SF_SWDFORCE )
-	{
-		LPCTSTR szErr = Error( "SWDForceAdd : 범위 초과 %d", m_nMaxVertex );
-		//ADDERRORMSG( szErr );
+void CSwordForce::Add(const D3DXVECTOR3 & v1, const D3DXVECTOR3 & v2) {
+	if (m_nMaxVertex >= MAX_SF_SWDFORCE) {
+		Error(__FUNCTION__"(): out of range %d", m_nMaxVertex);
 		return;
 	}
-	FVF_SWDFORCE*	pList = &m_aList[ m_nMaxVertex ];
 
-	pList->position = v1;
-	pList->color = 0xffffffff;
+	m_aList [m_nMaxVertex] = FVF_SWDFORCE{ v1, 0xffffffff };
+	m_aList2[m_nMaxVertex] = FVF_SWDFORCE{ v2, 0xffffffff };
 
-	pList = &m_aList2[ m_nMaxVertex ];
-	pList->position = v2;
-	pList->color = 0xffffffff;
-
-	m_nMaxVertex ++;
+	m_nMaxVertex++;
 }
 
 // 등록된 키리스트를 스플라인 보간된 리스트로 바꾼다.
@@ -2208,30 +2173,39 @@ void	CSwordForce::MakeSpline( void )
 	}
 }
 
+void CSwordForce::MoveFrameSwordForce(CModelObject & pModelObject) {
+	if (m_nMaxSpline == 0) return;
+
+	if (!pModelObject.m_nPause) {
+		m_nMaxDraw += MAX_SF_SLERP * 2 + 2;
+
+		if (m_nMaxDraw > m_nMaxSpline) {
+			if (pModelObject.m_nLoop & ANILOOP_LOOP) {
+				m_nMaxDraw = 0;
+			} else {
+				m_nMaxDraw = m_nMaxSpline;
+			}
+		}
+	}
+
+	Process();
+}
+
 void	CSwordForce::Process( void )
 {
 	FVF_SWDFORCE *pList = m_aSpline;
-	int		i;
-	int		nRed1 =  0;
-	int		nGreen1 =  0;
-	int		nBlue1 =   0;
+
 	int		nRed2 = (m_dwColor >> 16) & 0xff;
 	int		nGreen2 = (m_dwColor >> 8) & 0xff;
 	int		nBlue2 = m_dwColor & 0xff;
 
-	if( m_nMaxSpline == 0 )		return;
-
-	for( i = m_nMaxDraw - 1; i >= 0; i -- )
+	for( int i = m_nMaxDraw - 1; i >= 0; i -- )
 	{
 		if( i % 2 )
-			pList[i].color = D3DCOLOR_ARGB( 255, nRed1, nGreen1, nBlue1 ); 
+			pList[i].color = D3DCOLOR_ARGB( 255, 0, 0, 0 ); 
 		else
 			pList[i].color = D3DCOLOR_ARGB( 255, nRed2, nGreen2, nBlue2 ); 
 		
-		nRed1   -= 3; if( nRed1   < 0 )	nRed1   = 0;
-		nGreen1 -= 3; if( nGreen1 < 0 ) nGreen1 = 0;
-		nBlue1  -= 3; if( nBlue1  < 0 )	nBlue1  = 0;
-
 		nRed2   -= 3; if( nRed2   < 0 )	nRed2   = 0;
 		nGreen2 -= 3; if( nGreen2 < 0 ) nGreen2 = 0;
 		nBlue2  -= 3; if( nBlue2  < 0 )	nBlue2  = 0;
@@ -2240,16 +2214,14 @@ void	CSwordForce::Process( void )
 }
 
 #ifdef __CLIENT
-//
-//
-//
+
 void	CSwordForce::Draw( const D3DXMATRIX *mWorld )
 {
 	pd3dDevice->SetTransform( D3DTS_WORLD, mWorld );
 	pd3dDevice->SetVertexShader( NULL );
 	pd3dDevice->SetFVF( D3DFVF_SWDFORCE );
-
-    pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
+	
+	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_DIFFUSE );
 
@@ -2258,36 +2230,33 @@ void	CSwordForce::Draw( const D3DXMATRIX *mWorld )
 	pd3dDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE   );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
 	pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
-    pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
-
+	pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
 
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
 
 	{
-		int		nShare, nRest;
-		int		i;
 		FVF_SWDFORCE *p = m_aSpline;
 		int		nMaxDraw = m_nMaxDraw;
 
 		nMaxDraw -= 2;
-		nShare = nMaxDraw / 64;
-		nRest  = nMaxDraw % 64;
-		for( i = 0; i < nShare; i ++ )			// 프리미티브 갯수에 제한이 있어서 이렇게 했다.
-		{
-			pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLESTRIP, 64, p, sizeof(FVF_SWDFORCE) );
+		const int nShare = nMaxDraw / 64;
+		const int nRest  = nMaxDraw % 64;
+
+		// There is a limit to the number of primitives
+		for (int i = 0; i < nShare; i++) {
+			pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 64, p, sizeof(FVF_SWDFORCE));
 			p += 64;
 		}
 
-		if( nRest > 0 )
-			pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLESTRIP, nRest, p, sizeof(FVF_SWDFORCE) );
-
+		if (nRest > 0) {
+			pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, nRest, p, sizeof(FVF_SWDFORCE));
+		}
 	}
 
 	pd3dDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE );
 	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE,   FALSE );
-    pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
-    pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
-
+	pd3dDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
+	pd3dDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
 }
 #endif
 

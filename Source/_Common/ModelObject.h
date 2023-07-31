@@ -22,47 +22,31 @@ struct FVF_SWDFORCE
 };
 #define	D3DFVF_SWDFORCE			(D3DFVF_XYZ | D3DFVF_DIFFUSE)
 
-class CSwordForce
-{
-public:
-	int		m_nMaxVertex;
-	int		m_nMaxSpline;
-	int		m_nMaxDraw;			// 스플라인 리스트중에 그릴 리스트
-	DWORD	m_dwColor;			// 검광색.
+class CModelObject;
+
+class CSwordForce final {
+private:
+	int		m_nMaxVertex = 0;
+	int		m_nMaxSpline = 0;
+	int		m_nMaxDraw   = 0;
 	FVF_SWDFORCE	m_aList[ MAX_SF_SWDFORCE ];
 	FVF_SWDFORCE	m_aList2[ MAX_SF_SWDFORCE ];
 	FVF_SWDFORCE	m_aSpline[ MAX_SF_SPLINE ];
+	DWORD	m_dwColor = D3DCOLOR_ARGB(255, 120, 120, 230);;
 
-	CSwordForce() { Init(); }
-	~CSwordForce() { Destroy(); }
+private:
+	void Process();
 
-	void	Init( void )
-	{
-		m_nMaxVertex = 0;
-		m_nMaxSpline = 0;
-		m_nMaxDraw = 0;
-		m_dwColor = D3DCOLOR_ARGB( 255, 120, 120, 230 );
-		memset( m_aList, 0, sizeof(FVF_SWDFORCE) * MAX_SF_SWDFORCE );
-		memset( m_aSpline, 0, sizeof(FVF_SWDFORCE) * MAX_SF_SPLINE );
-	}
-	void	Destroy( void )
-	{
-		Init();
-	}
+public:
+	[[nodiscard]] bool IsEmpty() const noexcept { return m_nMaxSpline == 0; }
+	void Clear() { m_nMaxVertex = m_nMaxSpline = m_nMaxDraw = 0; }
+	void Initialize(DWORD dwColor) { Clear(); m_dwColor = dwColor; }
 
-	void	Clear( void )
-	{
-		m_nMaxVertex = 0;
-		m_nMaxSpline = 0;
-		m_nMaxDraw = 0;
-	}
-	BOOL	IsEmpty( void ) { (m_nMaxSpline == 0) ? TRUE : FALSE; }
+	void Add(const D3DXVECTOR3 & v1, const D3DXVECTOR3 & v2);
+	void Draw(const D3DXMATRIX * mWorld);
+	void MakeSpline();
 
-	void	Add( D3DXVECTOR3 v1, D3DXVECTOR3 v2 );
-	void	Process( void );
-	void	Draw( const D3DXMATRIX *mWorld );
-	void	MakeSpline( void );
-
+	void MoveFrameSwordForce(CModelObject & pModelObject);
 };
 
 //
@@ -390,12 +374,6 @@ public:
 	HRESULT RestoreDeviceObjects();
 	HRESULT InvalidateDeviceObjects();
 	HRESULT DeleteDeviceObjects();
-
-private:
-	void MoveFrameSwordForce(CSwordForce & pForce);
-
-
-
 };
 
 extern BOOL		g_bUsableVS;			// 하드웨어 버텍스 쉐이더(1.1)를 쓸수 있는가.
