@@ -481,7 +481,6 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_SETFXP:	OnSetFxp( objid, ar );	break;
 			case SNAPSHOTTYPE_SETLEVEL:	OnSetLevel( objid, ar );	break;
 			case SNAPSHOTTYPE_SETFLIGHTLEVEL:	OnSetFlightLevel( objid, ar );	break;
-			case SNAPSHOTTYPE_SETSKILLLEVEL:	OnSetSkillLevel( objid, ar );	break;
 			case SNAPSHOTTYPE_DESTPOS:	OnSetDestPos( objid, ar );	break;
 			case SNAPSHOTTYPE_DESTANGLE:	OnSetDestAngle( objid, ar );	break;
 			case SNAPSHOTTYPE_SETMOVEPATTERN:	OnSetMovePattern( objid, ar );	break;
@@ -2818,12 +2817,6 @@ void CDPClient::OnSetFxp( OBJID objid, CAr & ar )
 	{
 		pMover->SetFxp( (int)wFxp, (int)wFlightLv );
 	}
-}
-
-void CDPClient::OnSetSkillLevel( OBJID objid, CAr & ar )
-{
-	DWORD dwSkill, dwLevel;
-	ar >> dwSkill >> dwLevel;
 }
 
 void CDPClient::OnRevival( OBJID objid )

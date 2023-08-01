@@ -468,8 +468,6 @@ private:
 	void	OnSetFlightLevel( OBJID objid, CAr & ar );
 	void	OnSetExperience( OBJID objid, CAr & ar );
 	void	OnSetFxp( OBJID objid, CAr & ar );
-	void	OnSetSkillLevel( OBJID objid, CAr & ar );
-	void	OnSetSkillExp( OBJID objid, CAr & ar );
 	void	OnText( CAr & ar );
 #ifndef __S_SERVER_UNIFY
 	void	OnDiagText( CAr & ar );

@@ -3658,14 +3658,6 @@ void CUserMng::AddSetFlightLevel( CMover* pMover, int nFlightLv )
 	);
 }
 
-
-void CUserMng::AddSetSkillLevel(CMover * pMover, DWORD dwSkill, DWORD dwLevel) {
-	BroadcastAroundExcluding<SNAPSHOTTYPE_SETSKILLLEVEL, DWORD, DWORD>(pMover,
-		dwSkill, dwLevel
-	);
-}
-
-
 #ifdef __IAOBJ0622
 void CUserMng::AddSetDestPos( CMover* pMover, CONST D3DXVECTOR3 & vPos, BYTE fForward, OBJID objidIAObj )
 #else	// __IAOBJ0622

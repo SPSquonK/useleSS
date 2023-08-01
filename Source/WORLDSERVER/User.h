@@ -755,7 +755,6 @@ public:
 	void			AddSetPosAngle( CCtrl* pCtrl, const D3DXVECTOR3 &vPos, FLOAT fAngle );
 	void			AddSetLevel( CMover* pMover, WORD wLevel );
 	void			AddSetFlightLevel( CMover* pMover, int nFlightLv );
-	void			AddSetSkillLevel( CMover* pMover, DWORD dwSkill, DWORD dwLevel );
 	void			AddSetScale( CMover* pMover, float fScalePercent );
 	void			AddWorldShout( const TCHAR* szName, const TCHAR* szShout, D3DXVECTOR3 vPos, CWorld* pWorld );
 	void			AddSetSkillState( CMover* pCenter, CMover *pTarget, WORD wType, WORD wID, DWORD dwLevel, DWORD dwTime  );
