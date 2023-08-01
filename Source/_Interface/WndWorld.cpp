@@ -9086,8 +9086,7 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 		const u_long guildId = i->second;
 
 			
-		if( nOldPoint != nPoint )
-			nRate++;
+		nRate++;
 
 
 		if (!g_pPlayer->GetGuild()) {
@@ -9149,11 +9148,8 @@ void GuildCombatPrecedence::Render(C2DRender * p2DRender, const CRect clientRect
 	{ 
 		const int nPoint			= j->first;
 		uiPlayer		= j->second;	
-
-			
-		if( nOldPoint != nPoint )
-			nRate++;
-
+		
+		nRate++;
 		nMaxIndex++;		
 			
 		if( nMaxIndex > nMaxRender )
