@@ -404,11 +404,9 @@ CSfx* CreateSfx(
 			}
 
 			// 월드에 오브젝트 추가.
-			if (!g_WorldMng.Get()->AddObj(pObj)) {
-				SAFE_DELETE(pObj);
-			}
-		} else
-		{
+			g_WorldMng.Get()->AddObj(pObj);
+
+		} else {
 			SAFE_DELETE( pObj );
 		}
 	}
