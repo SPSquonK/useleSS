@@ -3984,7 +3984,7 @@ void CUserMng::AddWorldCreateSfxObj( DWORD dwSfxObj, float x, float y, float z, 
 	arBlock << NULL_ID << SNAPSHOTTYPE_CREATESFXOBJ << dwSfxObj << x << y << z << bFlag ;
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 	CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
-	AddBlockNoLock( lpBlock, uBlockSize, pWorld );
+	AddBlock( lpBlock, uBlockSize, pWorld );
 }
 
 void	CUserMng::AddCreateSfxAllow( CMover *pMover, DWORD dwSfxObjArrow, DWORD dwSfxObjHit, D3DXVECTOR3 vPosDest, int idTarget )
@@ -4333,35 +4333,6 @@ void CUserMng::AddBlock( LPBYTE lpBlock, u_long uBlockSize, CWorld* pWorld )
 	}
 }
 
-void CUserMng::AddBlockNoLock( LPBYTE lpBlock, u_long uBlockSize )
-{
-	for(auto it = m_users.begin(); it != m_users.end(); ++it )
-	{
-		CUser* pUser = it->second;
-		if( pUser->IsValid() == FALSE )
-			continue;
-
-		if( pUser->GetWorld() )
-			pUser->AddBlock( lpBlock, uBlockSize );
-	}
-}
-
-void CUserMng::AddBlockNoLock( LPBYTE lpBlock, u_long uBlockSize, CWorld* pWorld )
-{
-	if( !pWorld )
-		return;
-
-	for( auto it = m_users.begin(); it != m_users.end(); ++it )
-	{
-		CUser* pUser = it->second;
-		if( pUser->IsValid() == FALSE )
-			continue;
-
-		if( pUser->GetWorld() == pWorld )
-			pUser->AddBlock( lpBlock, uBlockSize );
-	}
-}
-
 void CUserMng::AddBlock( CWorld* pWorld, const D3DXVECTOR3 & vPos, int nRange, LPBYTE lpBlock, u_long uBlockSize )
 {
 	if( !pWorld )
@@ -4553,7 +4524,7 @@ void CUserMng::AddGCWinGuild( void )
 	ar << g_GuildCombatMng.m_nGuildCombatIndex << g_GuildCombatMng.m_uWinGuildId << g_GuildCombatMng.m_nWinGuildCount;
 	
 	GETBLOCK( ar, lpBuf, uBufSize );
-	AddBlockNoLock( lpBuf, uBufSize );	// all
+	AddBlock( lpBuf, uBufSize );	// all
 }
 void CUserMng::AddGCBestPlayer( void )
 {
@@ -4562,7 +4533,7 @@ void CUserMng::AddGCBestPlayer( void )
 	ar << g_GuildCombatMng.m_uBestPlayer;
 	
 	GETBLOCK( ar, lpBuf, uBufSize );
-	AddBlockNoLock( lpBuf, uBufSize );	// all
+	AddBlock( lpBuf, uBufSize );	// all
 }
 
 void CUserMng::AddGuildCombatState( void )
@@ -4573,7 +4544,7 @@ void CUserMng::AddGuildCombatState( void )
 	ar << g_GuildCombatMng.m_nState << g_GuildCombatMng.m_nGCState;
 	
 	GETBLOCK( ar, lpBuf, uBufSize );
-	AddBlockNoLock( lpBuf, uBufSize );	// all
+	AddBlock( lpBuf, uBufSize );	// all
 }
 
 void CUserMng::AddGuildCombatNextTimeWorld( DWORD dwTime, DWORD dwState )

@@ -859,8 +859,6 @@ public:
 	void			AddGCLogWorld( void );
 	void			AddGCLogRealTimeWorld( CGuildCombat::__GCGETPOINT GCGetPoint );
 	void			AddGCIsRequest( u_long uidGuild, BOOL bRequest );
-	void			AddBlockNoLock( LPBYTE lpBlock, u_long uBlockSize );
-	void			AddBlockNoLock( LPBYTE lpBlock, u_long uBlockSize, CWorld* pWorld );
 	void			AddGuildMsg( u_long idGuild, LPCSTR lpsz );
 	void			AddGuildMsg( CGuild* pGuild, LPCSTR lpsz );
 
