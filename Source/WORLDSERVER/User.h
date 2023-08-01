@@ -775,7 +775,7 @@ public:
 
 	void			AddCreateSfxAllow( CMover *pMover, DWORD dwSfxObjArrow, DWORD dwSfxObjHit, D3DXVECTOR3 vPosDest, int idTarget );
 	void			AddCreateSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x = 0, float y = 0, float z = 0, BOOL bFlag = FALSE );
-	void			AddRemoveSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x = 0, float y = 0, float z = 0, BOOL bFlag = FALSE );
+	void			AddRemoveSfxObj( CCtrl * pCtrl, DWORD dwSfxObj );
 	void			AddNearSetChangeJob(CUser * pMover);
 	void			AddModifyMode( CUser* pUser );
 	void			AddStateMode( CUser* pUser, BYTE nFlag );

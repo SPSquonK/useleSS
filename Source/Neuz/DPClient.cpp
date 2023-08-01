@@ -3205,23 +3205,16 @@ void CDPClient::OnCreateSfxObj( OBJID objid, CAr & ar )
 	}
 }
 
-void CDPClient::OnRemoveSfxObj( OBJID objid, CAr & ar )
-{
+void CDPClient::OnRemoveSfxObj(OBJID objid, CAr & ar) {
 	DWORD dwSfxObj;
-	float	x, y, z;
-	BOOL	bFlag;				// 0이면 고정 1이면 따라다니기
-	ar >> dwSfxObj >> x >> y >> z;
-	ar >> bFlag;
+	ar >> dwSfxObj;
 
-//	D3DXVECTOR3 vWorld( x, y, z );		// 
-//	D3DXVECTOR3 vPos;
-
-	CMover* pObj	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pObj ) ) 
-	{
-		pObj->SetRemoveSfxObj( dwSfxObj );
+	CMover * pObj = prj.GetMover(objid);
+	if (IsValidObj(pObj)) {
+		pObj->SetRemoveSfxObj(dwSfxObj);
 	}
 }
+
 void CDPClient::OnCreateSfxAllow( OBJID objid, CAr & ar )
 {
 	TRACE( "ON RANGE ATTACK\n" );

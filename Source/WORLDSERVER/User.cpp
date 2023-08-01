@@ -3948,19 +3948,8 @@ void CUserMng::AddCreateSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x, float y, 
 	NEXT_VISIBILITYRANGE( pCtrl )
 }
 
-void CUserMng::AddRemoveSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x, float y, float z, BOOL bFlag )
-{
-	CAr ar;
-	ar << GETID( pCtrl ) << SNAPSHOTTYPE_REMOVESFXOBJ;
-
-	ar << dwSfxObj << x << y << z;
-	ar << bFlag;
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-	
-	FOR_VISIBILITYRANGE( pCtrl )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pCtrl )
+void CUserMng::AddRemoveSfxObj(CCtrl * pCtrl, DWORD dwSfxObj) {
+	BroadcastAround<SNAPSHOTTYPE_REMOVESFXOBJ, DWORD>(pCtrl, dwSfxObj);
 }
 
 
