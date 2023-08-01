@@ -504,7 +504,6 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_STATEMODE: 	OnStateMode( objid, ar );	break;
 			case SNAPSHOTTYPE_RETURNSAY:	OnReturnSay( objid, ar ); break;
 			case SNAPSHOTTYPE_CLEAR_USESKILL:	OnClearUseSkill( objid );	break;
-//			case SNAPSHOTTYPE_CRIME:	OnCrime( objid );	break;
 			case SNAPSHOTTYPE_SETFAME:	OnSetFame( objid, ar );	break;
 			case SNAPSHOTTYPE_SETFUEL:	OnSetFuel( objid, ar );	break;
 			case SNAPSHOTTYPE_RESURRECTION:		OnResurrection( objid );	break;
