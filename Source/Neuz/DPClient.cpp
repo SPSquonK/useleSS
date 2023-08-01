@@ -8981,12 +8981,6 @@ void CDPClient::OnUltimateWeapon( OBJID objid, CAr & ar )
 	case ULTIMATE_SETGEM:
 		OnUltimateSetGem( objid, ar );
 		break;
-	case ULTIMATE_REMOVEGEM:
-		OnUltimateRemoveGem( objid, ar );
-		break;
-	case ULTIMATE_ENCHANTWEAPON:
-		OnUltimateEnchantWeapon( objid, ar );
-		break;		
 	}
 }
 
@@ -9016,18 +9010,6 @@ void CDPClient::OnUltimateSetGem( OBJID objid, CAr & ar )
 	CWndSmeltJewel* pWndSmeltJewel = (CWndSmeltJewel*)g_WndMng.GetWndBase( APP_SMELT_JEWEL );
 	if(pWndSmeltJewel != NULL)
 		pWndSmeltJewel->ReceiveResult(nResult);	
-}
-
-void CDPClient::OnUltimateRemoveGem( OBJID objid, CAr & ar )
-{
-	int nResult;
-	ar >> nResult;
-}
-
-void CDPClient::OnUltimateEnchantWeapon( OBJID objid, CAr & ar )
-{
-	int nResult;
-	ar >> nResult;
 }
 
 #ifdef __TRADESYS

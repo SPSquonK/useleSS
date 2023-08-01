@@ -6921,7 +6921,6 @@ void CDPSrvr::OnUltimateRemoveGem( CAr & ar, CUser * pUser )
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
 			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);				
 	}
-	pUser->AddUltimateWeapon( ULTIMATE_REMOVEGEM, nResult );
 }
 
 void CDPSrvr::OnUltimateEnchantWeapon( CAr & ar, CUser * pUser )
@@ -6950,7 +6949,6 @@ void CDPSrvr::OnUltimateEnchantWeapon( CAr & ar, CUser * pUser )
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
 			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);				
 	}
-	pUser->AddUltimateWeapon( ULTIMATE_ENCHANTWEAPON, nResult );
 }
 
 #ifdef __TRADESYS

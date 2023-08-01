@@ -1478,8 +1478,6 @@ const BYTE ULTIMATE_MAKEITEM				= 0x01;		// 빛나는 오리칼쿰 생성
 const BYTE ULTIMATE_TRANSWEAPON				= 0x02;		// 무기 변환(일반->유니크, 유니크->얼터멋)
 const BYTE ULTIMATE_MAKEGEM					= 0x03;		// 보석 생성(아이템 쪼개기)
 const BYTE ULTIMATE_SETGEM					= 0x04;		// 보석 합성
-const BYTE ULTIMATE_REMOVEGEM				= 0x05;		// 보석 제거
-const BYTE ULTIMATE_ENCHANTWEAPON			= 0x06;		// 얼터멋 웨폰 제련
 
 const BYTE EXCHANGE_RESULT					= 0x01;		// 교환 스크립트 결과
 
