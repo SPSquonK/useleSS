@@ -288,18 +288,12 @@ BOOL CDPClient::Connect( LPSTR lpszAddr, USHORT uPort )
 	return ( m_fConn = FALSE );
 }
 
-BYTE g_hdr, g_Prev;
-
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 // Receiver
 void CDPClient::OnSnapshot( CAr & ar )
 {
-	std::set<WORD> glitchedSnapshotsId;
-
 	OBJID objidPlayer;
 	short cb;
-//	BYTE hdr, prev	= 0x00;
-	WORD	prev	= 0x0000;
 
 	ar >> objidPlayer >> cb;
 	while( cb-- )
@@ -311,7 +305,6 @@ void CDPClient::OnSnapshot( CAr & ar )
 		m_traficLog.Add( (BYTE)( hdr ) );
 #endif	// __TRAFIC_1218
 //		TRACE( "hdr = %04x, cb = %d\n", hdr, cb );
-		g_hdr = (BYTE)( hdr );
 
 		switch( hdr )
 		{
@@ -714,14 +707,11 @@ void CDPClient::OnSnapshot( CAr & ar )
 					break;
 				}
 		}
-		prev	= hdr;
-		g_Prev	= (BYTE)( prev );
 
-		const u_long endedAt = ar.GetOffset();
-
-		if (ar.GoToOffset(startedAt + packetSize) != CAr::GoToOffsetAnswer::SamePlace) {
+		if (ar.GoToOffset(startedAt + packetSize) == CAr::GoToOffsetAnswer::TooFar) {
+			static std::set<WORD> glitchedSnapshotsId;
 			if (!glitchedSnapshotsId.contains(hdr)) {
-				Error("Snapshot %x went too far", hdr);
+				Error("Snapshot 0x%04x went too far", hdr);
 				glitchedSnapshotsId.emplace(hdr);
 			}
 		}
