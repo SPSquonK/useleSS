@@ -3174,32 +3174,30 @@ void CDPClient::OnSetFuel( OBJID objid, CAr & ar )
 
 
 
-void CDPClient::OnCreateSfxObj( OBJID objid, CAr & ar )
-{
+void CDPClient::OnCreateSfxObj( OBJID objid, CAr & ar ) {
 	DWORD dwSfxObj;
-	float	x, y, z;
-	ar >> dwSfxObj >> x >> y >> z;
+	std::optional<D3DXVECTOR3> pPos;
 
-	D3DXVECTOR3 vWorld( x, y, z );		// 이 좌표가 지정되어 있다면 여기다 sfx를 생성.
-	D3DXVECTOR3 vPos;
-
-	CCtrl* pObj	= prj.GetCtrl( objid );
-	if( IsValidObj( (CObj*)pObj ) ) 
 	{
-		OBJID idObj = pObj->GetId();
-		if( x || y || z )		// 절대좌표가 있으면 그곳을 생성 위치로 한다.
-		{
-			idObj = NULL_ID;
-			vPos = vWorld;
+		float	x, y, z;
+		ar >> dwSfxObj >> x >> y >> z;
+
+		if (x || y || z) {
+			pPos = D3DXVECTOR3(x, y, z);
 		}
-		else
-			vPos = pObj->GetPos();	// 없으면 오브젝트 좌표로 한다.
-		CreateSfx( dwSfxObj, vPos, idObj, vPos, idObj );
 	}
-	else
-	{
-		if( x || y || z )		// 절대좌표가 있으면 그곳을 생성 위치로 한다.
-			CreateSfx( dwSfxObj, vWorld, NULL_ID, vWorld, NULL_ID );
+
+
+	// const auto [dwSfxObj, pPos] = ar.Extract<DWORD, std::optional<D3DXVECTOR3>>();
+
+	if (pPos) {
+		CreateSfx(dwSfxObj, *pPos, NULL_ID, *pPos, NULL_ID);
+	} else {
+		CCtrl * pObj = prj.GetCtrl(objid);
+		if (!IsValidObj(pObj)) return;
+
+		const D3DXVECTOR3 vPos = pObj->GetPos();
+		CreateSfx(dwSfxObj, vPos, objid, vPos, objid);
 	}
 }
 
