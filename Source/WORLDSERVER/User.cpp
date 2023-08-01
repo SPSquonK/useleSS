@@ -4996,31 +4996,10 @@ void CUser::AddNewChatting(CChatting * pChatting) {
 	}
 }
 
-/*
-void CUser::AddCreateAngel(BOOL isSuccess, char* createAngel)
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_ANGEL;
-	m_Snapshot.ar << ANGEL_WNDCREATE;
-	m_Snapshot.ar << isSuccess;
-	m_Snapshot.ar.WriteString( createAngel );
-}
-*/
-
-void CUser::AddAngelInfo( BOOL bComplete )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_ANGEL;
-	m_Snapshot.ar << ANGEL_INFO;
-	m_Snapshot.ar << m_nAngelExp;
-	m_Snapshot.ar << m_nAngelLevel;
-	m_Snapshot.ar << bComplete;
+void CUser::AddAngelInfo(bool bComplete) {
+	SendSnapshotThisId<SNAPSHOTTYPE_ANGEL, bool>(
+		bComplete, m_nAngelExp, m_nAngelLevel
+	);
 }
 
 void CUser::AddRemoveChatting( u_long uidPlayer )

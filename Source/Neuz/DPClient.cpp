@@ -8728,56 +8728,16 @@ void CDPClient::SendCreateAngel(const std::vector<ItemPos> & items) {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-void CDPClient::OnAngel( OBJID objid, CAr& ar )
-{
-	BYTE nState;
-	ar >> nState;
-	switch( nState )
-	{
-//	case ANGEL_WNDCREATE:
-//		OnCreateAngel( objid, ar );
-//		break;
-	case ANGEL_INFO:
-		OnAngelInfo( objid, ar );
-		break;
-	}
-}
-/*
-void CDPClient::OnCreateAngel( OBJID objid, CAr & ar )
-{
-	BOOL isSuccess;
-	char createAngel[12];
-	CWndSummonAngel* pSummonAngel;
+void CDPClient::OnAngel(OBJID objid, CAr & ar) {
+	CMover * pMover = prj.GetMover(objid);
+	if (!pMover) return;
 
-	ar >> isSuccess;
-	ar.ReadString( createAngel, 12 );
-	
-	if(isSuccess)
-	{
-		pSummonAngel = (CWndSummonAngel*)g_WndMng.GetWndBase( APP_SUMMON_ANGEL );
-		if(pSummonAngel != NULL)
-		{
-			pSummonAngel->CreateAngelIs(isSuccess, createAngel);
-		}
-	}
-}
-*/
-void CDPClient::OnAngelInfo( OBJID objid, CAr & ar )
-{
-	EXPINTEGER nAngelExp;
-	LONG nAngelLevel;
-	BOOL bComplete;
-	ar >> nAngelExp;
-	ar >> nAngelLevel;
-	ar >> bComplete;
-	CMover* pMover	= prj.GetMover( objid );
-	if( IsValidObj(pMover) )
-	{
-		pMover->m_nAngelExp = nAngelExp;
-		pMover->m_nAngelLevel = nAngelLevel;
-		
-		if( bComplete )
-			g_WndMng.PutString( prj.GetText( TID_GAME_COMPLETE_ANGEL ), NULL, prj.GetTextColor(TID_GAME_COMPLETE_ANGEL) );
+	bool bComplete; ar >> bComplete;
+
+	ar >> pMover->m_nAngelExp >> pMover->m_nAngelLevel;
+
+	if (bComplete) {
+		g_WndMng.PutString(TID_GAME_COMPLETE_ANGEL);
 	}
 }
 

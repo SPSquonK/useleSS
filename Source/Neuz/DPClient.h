@@ -392,7 +392,6 @@ public:
 
 	void SendCreateAngel(const std::vector<ItemPos> & items);
 	void OnAngel( OBJID objid, CAr& ar );
-	void OnCreateAngel( OBJID objid, CAr & ar );
 	void OnAngelInfo( OBJID objid, CAr & ar );
 
 private:

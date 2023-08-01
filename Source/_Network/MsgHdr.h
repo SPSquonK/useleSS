@@ -1462,9 +1462,6 @@ namespace Subsnapshot {
 	};
 }
 
-//const BYTE ANGEL_WNDCREATE			= 0x00;		// 엔젤창
-const BYTE ANGEL_INFO				= 0x01;		// 엔젤 정보 주기(경험치, 레벨)
-
 const BYTE TEXT_GENERAL				= 0x01;		// OnText
 const BYTE TEXT_DIAG				= 0x02;		// OnDiagText
 

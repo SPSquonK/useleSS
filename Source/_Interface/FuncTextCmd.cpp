@@ -2341,7 +2341,7 @@ BOOL TextCmd_AngelExp(CScanner & s, CUser * pUser) {
 		{
 			pUser->m_nAngelExp += nAddExp;
 			BOOL bAngelComplete = FALSE;
-			if( pUser->m_nAngelExp > nMaxAngelExp )
+			if( pUser->m_nAngelExp >= nMaxAngelExp )
 			{
 				pUser->m_nAngelExp = nMaxAngelExp;
 				bAngelComplete = TRUE;

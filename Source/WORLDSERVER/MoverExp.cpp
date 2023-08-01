@@ -449,7 +449,7 @@ bool CUser::AddExperience(EXPINTEGER nExp, bool applyMultipliers, bool reducePro
 
 
 			BOOL bAngelComplete = FALSE;
-			if (m_nAngelExp > nMaxAngelExp) {
+			if (m_nAngelExp >= nMaxAngelExp) {
 				m_nAngelExp = nMaxAngelExp;
 				bAngelComplete = TRUE;
 			}

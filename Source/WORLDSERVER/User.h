@@ -485,8 +485,7 @@ public:
 #endif // __S_SERVER_UNIFY
 
 	void			AddMonsterProp();
-//	void			AddCreateAngel(BOOL isSuccess, char* createAngel);
-	void			AddAngelInfo( BOOL bComplete = FALSE );
+	void			AddAngelInfo( bool bComplete = false );
 	
 #ifdef __EVE_MINIGAME
 	void			AddKawibawiboResult( int nResult, int nWinCount, DWORD dwItemId = 0, int nItemCount = 0, DWORD dwNextItemId = 0, int nNextItemCount = 0 );
