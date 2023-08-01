@@ -712,7 +712,7 @@ BYTE CUltimateWeapon::SmeltSafetyUltimate( CUser* pUser, CItemElem* pItemMain, C
 		// 실패
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
 		if( ( pUser->IsMode( TRANSPARENT_MODE ) ) == 0 )
-			g_UserMng.AddCreateSfxObj( ( CMover * )pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL);
 
 		aLogItem.RecvName = "ULTIMATE_ENC_FAIL_SMELTSAFETY";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
@@ -724,7 +724,7 @@ BYTE CUltimateWeapon::SmeltSafetyUltimate( CUser* pUser, CItemElem* pItemMain, C
 		// 성공
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );		
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0 )
-			g_UserMng.AddCreateSfxObj( ( CMover * )pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 		
 		pUser->UpdateItem(*pItemMain, UI::AbilityOption::Up);
 		if (pItemMain->GetAbilityOption() > 5) {

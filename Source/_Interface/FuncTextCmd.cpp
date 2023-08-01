@@ -467,7 +467,7 @@ BOOL TextCmd_RefineCollector(CScanner & s, CUser * pUser) {
 		pUser->AddDefinedText( TID_UPGRADE_SUCCEEFUL );
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0 )
-			g_UserMng.AddCreateSfxObj( pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			g_UserMng.AddCreateSfxObj( pUser, XI_INT_SUCCESS );
 		pUser->UpdateItem(*pTarget, UI::AbilityOption::Set(nAbilityOption));
 	}
 #endif	// __WORLDSERVER

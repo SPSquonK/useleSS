@@ -1174,7 +1174,7 @@ BOOL CAIMonster::SubAttackChance( const AIMSG & msg, CMover *pTarget )
 				int nHP = (int)(pMover->GetMaxHitPoint() * (pProp->m_nRecvCondHow / 100.0f));	
 				pMover->IncHitPoint( nHP );
 				
-				g_UserMng.AddCreateSfxObj( pMover, XI_GEN_CURE01, pMover->GetPos().x, pMover->GetPos().y, pMover->GetPos().z );	
+				g_UserMng.AddCreateSfxObj(pMover, XI_GEN_CURE01);
 				if( pProp->m_nRecvCondMP > 0 )		
 				{
 					// 마나를 소모.

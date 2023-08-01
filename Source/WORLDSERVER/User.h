@@ -774,7 +774,7 @@ public:
 										int nLoop, DWORD dwMotionOption, __int64 nTickCount, BOOL fTransferToMe = FALSE );
 
 	void			AddCreateSfxAllow( CMover *pMover, DWORD dwSfxObjArrow, DWORD dwSfxObjHit, D3DXVECTOR3 vPosDest, int idTarget );
-	void			AddCreateSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x = 0, float y = 0, float z = 0 );
+	void			AddCreateSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, std::optional<D3DXVECTOR3> pPos = std::nullopt );
 	void			AddRemoveSfxObj( CCtrl * pCtrl, DWORD dwSfxObj );
 	void			AddNearSetChangeJob(CUser * pMover);
 	void			AddModifyMode( CUser* pUser );
@@ -796,7 +796,7 @@ public:
 	void			AddPushPower( CMover *pMover, D3DXVECTOR3 vPos, FLOAT fAngle, FLOAT fPushAngle, FLOAT fPower );
 	void			AddRemoveSkillInfluence( CMover *pMover, WORD wType, WORD wID );
 	void			AddDoApplySkill( CCtrl *pCtrl, OBJID idTarget, DWORD dwSkill, DWORD dwLevel );
-	void			AddWorldCreateSfxObj( DWORD dwSfxObj, float x, float y, float z, DWORD dwWorldId );
+	void			AddWorldCreateSfxObj( DWORD dwSfxObj, std::optional<D3DXVECTOR3> pPos, DWORD dwWorldId );
 	void			AddMoverMoved( CMover* pMover, const D3DXVECTOR3 & v, const D3DXVECTOR3 &vd, float f,
 									DWORD dwState, DWORD dwStateFlag, DWORD dwMotion, int nMotionEx,
 									int nLoop, DWORD dwMotionOption, __int64 nTickCount );

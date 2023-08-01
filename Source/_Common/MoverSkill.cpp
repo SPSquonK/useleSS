@@ -64,7 +64,7 @@ void	CUser::SetMasterSkillPointUp()
 
 		g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_USE, 1, this, &skill);
 	}	
-	g_UserMng.AddCreateSfxObj(this, XI_SYS_EXCHAN01, GetPos().x, GetPos().y, GetPos().z);
+	g_UserMng.AddCreateSfxObj(this, XI_SYS_EXCHAN01);
 
 	AddDoUseSkillPoint();
 
@@ -1020,8 +1020,6 @@ BOOL CMover::DoUseItemVirtual( DWORD dwItemId, BOOL bEffectSkip )
 		if( IsItemRedyTime( pItemProp, pItemProp->dwID, FALSE ) == FALSE )
 			return FALSE;
 
-		D3DXVECTOR3 sPos = D3DXVECTOR3(0.0f,0.0f,0.0f);
-
 		if( dwItemId == II_SYS_SYS_SCR_RETURN )
 		{
 			// 돌아가기 
@@ -1054,7 +1052,7 @@ BOOL CMover::DoUseItemVirtual( DWORD dwItemId, BOOL bEffectSkip )
 		DWORD	dwSfxID = pItemProp->dwSfxObj3;
 		if( dwSfxID != NULL_ID && !bEffectSkip )		// 아이템 사용시에 생성될 이펙트
 		{
-			g_UserMng.AddCreateSfxObj( this, dwSfxID, sPos.x, sPos.y, sPos.z );	// 절대좌표로 하자.
+			g_UserMng.AddCreateSfxObj( this, dwSfxID );	// 절대좌표로 하자.
 		}	
 	}
 #endif //__WORLDSERVER

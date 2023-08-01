@@ -793,7 +793,7 @@ void CDPSrvr::OnRevival( CAr & ar, CUser * pUser )
 
 				ItemProp* pItemProp = pItemElem->GetProp();
 				if( pItemProp && pItemProp->dwSfxObj3 != -1 )
-					g_UserMng.AddCreateSfxObj((CMover *)pUser, pItemElem->GetProp()->dwSfxObj3 );
+					g_UserMng.AddCreateSfxObj( pUser, pItemElem->GetProp()->dwSfxObj3 );
 
 				// 상용화 아이템 사용 로그 삽입
 				g_dpDBClient.SendLogSMItemUse( "1", pUser, pItemElem, pItemProp );
@@ -2553,7 +2553,7 @@ void CDPSrvr::OnDoUseSkillPoint( CAr & ar, CUser & pUser ) {
 		currentSkill.dwLevel = wantedSkill.dwLevel;
 	}	
 
-	g_UserMng.AddCreateSfxObj(&pUser, XI_SYS_EXCHAN01, pUser.GetPos().x, pUser.GetPos().y, pUser.GetPos().z);
+	g_UserMng.AddCreateSfxObj(&pUser, XI_SYS_EXCHAN01);
 	pUser.AddDoUseSkillPoint();
 #ifdef __S_NEW_SKILL_2
 	g_dpDBClient.SaveSkill( pUser );
@@ -4001,8 +4001,8 @@ void CDPSrvr::OnDoUseItemTarget( CAr & ar, CUser * pUser )
 		if( b )
 		{
 			pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
-			if( pUser->IsMode( TRANSPARENT_MODE ) == 0 )
-				g_UserMng.AddCreateSfxObj( pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			if (pUser->IsMode(TRANSPARENT_MODE) == 0)
+				g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 
 			PutItemLog( pUser, "u", "OnDoUseItemTarget", pMaterial );
 
@@ -4150,8 +4150,8 @@ void CDPSrvr::OnRemoveAttribute( CAr & ar, CUser * pUser ) {
 	{
 		pUser->AddGold( -nPayPenya );
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
-		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+		if ((pUser->IsMode(TRANSPARENT_MODE)) == 0)
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 	
 		pUser->UpdateItem(*pItemElem, UI::Element::None());
 		pUser->AddRemoveAttribute( TRUE );
@@ -4266,7 +4266,7 @@ void CDPSrvr::OnRandomScroll( CAr & ar, CUser * pUser )
 
 			// 아이템 박기 성공~
 			pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );			
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);			
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 
 			DWORD dwStringNum = 0;
 			switch( nToolKind )
@@ -4414,7 +4414,7 @@ void CDPSrvr::OnCommercialElem( CAr & ar, CUser * pUser )
 
 		pUser->RemoveItem( (BYTE)dwItemId1, (short)1 );
 		
-		g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_SYS_EXPAN01, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+		g_UserMng.AddCreateSfxObj(pUser, XI_SYS_EXPAN01);
 		pUser->AddCommercialElem( pItemElem0->m_dwObjId, pItemElem0->m_nResistSMItemId );
 		
 	
@@ -6887,8 +6887,8 @@ void CDPSrvr::OnUltimateRemoveGem( CAr & ar, CUser * pUser )
 		//성공 메세지 출력
 		pUser->AddDefinedText( TID_GAME_REMOVEGEM_SUCCESS, "" );
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );		
-		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);		
+		if ((pUser->IsMode(TRANSPARENT_MODE)) == 0)
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 	}
 	else if(nResult == CUltimateWeapon::ULTIMATE_FAILED)
 	{
@@ -6896,7 +6896,7 @@ void CDPSrvr::OnUltimateRemoveGem( CAr & ar, CUser * pUser )
 		pUser->AddDefinedText( TID_GAME_REMOVEGEM_FAILED, "" );
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);				
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL);
 	}
 }
 
@@ -6916,15 +6916,15 @@ void CDPSrvr::OnUltimateEnchantWeapon( CAr & ar, CUser * pUser )
 		pUser->AddDefinedText( TID_UPGRADE_SUCCEEFUL, "" );
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );		
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);		
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 	}
 	else if(nResult == CUltimateWeapon::ULTIMATE_FAILED)
 	{
 		// 실패 메세지 출력
 		pUser->AddDefinedText( TID_UPGRADE_FAIL, "" );
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
-		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);				
+		if ((pUser->IsMode(TRANSPARENT_MODE)) == 0)
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL);
 	}
 }
 
@@ -7514,7 +7514,7 @@ void CDPSrvr::OnLegendSkillStart( CAr & ar, CUser & pUser )
 
 	g_dpDBClient.SendLogSkillPoint( LOG_SKILLPOINT_USE, 1, &pUser, &*lpSkill);
 
-	g_UserMng.AddCreateSfxObj(&pUser, XI_SYS_EXCHAN01, pUser.GetPos().x, pUser.GetPos().y, pUser.GetPos().z);
+	g_UserMng.AddCreateSfxObj(&pUser, XI_SYS_EXCHAN01);
 	pUser.AddDoUseSkillPoint();
 #ifdef __S_NEW_SKILL_2
 	g_dpDBClient.SaveSkill( pUser );
@@ -8603,8 +8603,8 @@ void CDPSrvr::OnPickupPetAwakeningCancel( CAr & ar, CUser * pUser )
 					"k", "PPAC" ) )
 	{
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
-		if( pUser->IsMode( TRANSPARENT_MODE ) == 0 )
-			g_UserMng.AddCreateSfxObj( pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+		if (pUser->IsMode(TRANSPARENT_MODE) == 0)
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 	}
 }
 

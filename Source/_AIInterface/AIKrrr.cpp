@@ -354,7 +354,7 @@ BOOL CAIKrrr::MoveProcessRage()
 				vPos.x += ( xRandomF( 20.0f ) + -10.0f );
 				vPos.z += ( xRandomF( 20.0f ) + -10.0f );
 				
-				g_UserMng.AddCreateSfxObj( pEventTarget, XI_SKILL_ELE_MULTI_METEOSHOWER02, vPos.x, vPos.y, vPos.z );
+				g_UserMng.AddCreateSfxObj( pEventTarget, XI_SKILL_ELE_MULTI_METEOSHOWER02, vPos );
 				pMover->GetWorld()->SendDamageAround( &(vPos), AF_GENERIC, pMover, OBJTYPE_PLAYER, II_WEA_MOB_MONSTER4_ATK2
 					, 2.0f );
 			}

@@ -1428,35 +1428,42 @@ bool CUser::DoUseItemWarp(const ItemProp & pItemProp, CItemElem & pItemElem) {
 void CUser::OnAfterUseItem(const ItemProp * pItemProp) {
 	if (!pItemProp) return;
 
-	D3DXVECTOR3 sPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	std::optional<D3DXVECTOR3> sPos;
 	const DWORD dwSfxID = pItemProp->dwSfxObj3;		// 아이템 사용시에 생성될 이펙트
 
 	if (pItemProp->dwItemKind3 == IK3_MAGICTRICK) // 이펙트 아이템류
 	{
-		float	fTheta = D3DXToRadian(GetAngle());
+		
 		switch (pItemProp->dwID) {
 			case II_GEN_MAG_TRI_FIRESHOWER:
 			case II_GEN_MAG_TRI_HWFIREWORKS:
 			case II_CHR_MAG_TRI_ROCKETBOMB:
 			case II_CHR_MAG_TRI_HEARTBOMB:
 			case II_CHR_MAG_TRI_TWISTERBOMB:
-				sPos.x = GetPos().x + sinf(fTheta) * 3.0f;			// 바라보는 방향 1미터 앞에다 발생시킴.
-				sPos.z = GetPos().z + -cosf(fTheta) * 3.0f;
-				sPos.y = GetPos().y + 1.5f;
-				sPos.y = GetWorld()->GetUnderHeight(D3DXVECTOR3(sPos.x, sPos.y, sPos.z));
+			{
+				const float fTheta = D3DXToRadian(GetAngle());
+
+				sPos = D3DXVECTOR3(
+					GetPos().x + sinf(fTheta) * 3.0f,	// 바라보는 방향 1미터 앞에다 발생시킴.
+					GetPos().y + 1.5f,
+					GetPos().z + -cosf(fTheta) * 3.0f
+				);
+
+				const float y = GetWorld()->GetUnderHeight(*sPos);
+				sPos->y = y;
 				break;
+			}
 			case II_GEN_MAG_TRI_NEWYEARBOMB:
 			case II_GEN_MAG_TRI_SULNALBOMB:
 			case II_GEN_MAG_TRI_GOODBYEBOMB:
-				sPos.x = GetPos().x;
-				sPos.z = GetPos().z;
-				sPos.y = GetPos().y + 3.0f;
+				sPos = GetPos();
+				sPos->y += 3.0f;
 				break;
 		}
 	}
 
 	if (dwSfxID != NULL_ID) {
-		g_UserMng.AddCreateSfxObj(this, dwSfxID, sPos.x, sPos.y, sPos.z);	// 절대좌표로 하자.
+		g_UserMng.AddCreateSfxObj(this, dwSfxID, sPos);	// 절대좌표로 하자.
 	}
 
 	SetHonorAdd(pItemProp->dwID, HI_USE_ITEM);

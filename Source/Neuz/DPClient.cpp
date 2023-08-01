@@ -3175,20 +3175,7 @@ void CDPClient::OnSetFuel( OBJID objid, CAr & ar )
 
 
 void CDPClient::OnCreateSfxObj( OBJID objid, CAr & ar ) {
-	DWORD dwSfxObj;
-	std::optional<D3DXVECTOR3> pPos;
-
-	{
-		float	x, y, z;
-		ar >> dwSfxObj >> x >> y >> z;
-
-		if (x || y || z) {
-			pPos = D3DXVECTOR3(x, y, z);
-		}
-	}
-
-
-	// const auto [dwSfxObj, pPos] = ar.Extract<DWORD, std::optional<D3DXVECTOR3>>();
+	const auto [dwSfxObj, pPos] = ar.Extract<DWORD, std::optional<D3DXVECTOR3>>();
 
 	if (pPos) {
 		CreateSfx(dwSfxObj, *pPos, NULL_ID, *pPos, NULL_ID);

@@ -307,7 +307,7 @@ void CCommonCtrl::Process()
 
 				g_dpDBClient.SendLogExpBox( pUser->m_idPlayer, GetId(), m_nExpBox, TRUE );
 
-				g_UserMng.AddCreateSfxObj(pUser, XI_SYS_EXCHAN01, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);						
+				g_UserMng.AddCreateSfxObj(pUser, XI_SYS_EXCHAN01);
 				  
 				pUser->AddDefinedText( TID_GAME_EXPBOX_EAT, "" );						
 				pUser->AddChatText( TID_GAME_EXPBOX_EAT, "");

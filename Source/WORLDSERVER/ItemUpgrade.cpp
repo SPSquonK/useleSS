@@ -194,7 +194,7 @@ void CItemUpgrade::OnPiercingSize( CUser* pUser, DWORD dwId1, DWORD dwId2, DWORD
 		aLogItem.RecvName = "PIERCING";
 
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
-		g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+		g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL);
 		pUser->AddDefinedText( TID_MMI_PIERCINGFAIL , "" );
 		
 		if( pItemElem2 == NULL )								// 상용화 아이템을 사용하지 않았다면 
@@ -203,7 +203,7 @@ void CItemUpgrade::OnPiercingSize( CUser* pUser, DWORD dwId1, DWORD dwId2, DWORD
 	else
 	{	// 성공			
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );			
-		g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);			
+		g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 		pUser->UpdateItem(*pItemElem0, UI::Piercing::Size::IncrementRegular);
 		pUser->AddDefinedText( TID_MMI_PIERCINGSUCCESS , "" );
 
@@ -319,7 +319,7 @@ void CItemUpgrade::OnPiercing( CUser* pUser, DWORD dwItemId, DWORD dwSocketCard 
 
 		// 아이템 박기 성공~
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
-		g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+		g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 		// 재료 아이템 삭제
 		pUser->RemoveItem( (BYTE)( dwSocketCard ), (short)1 );
 	}
@@ -539,7 +539,7 @@ BYTE	CItemUpgrade::SmeltSafetyGeneral( CUser* pUser, CItemElem* pItemMain, CItem
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
 		
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
-			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL);
 		
 		aLogItem.Action = "F";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
@@ -553,7 +553,7 @@ BYTE	CItemUpgrade::SmeltSafetyGeneral( CUser* pUser, CItemElem* pItemMain, CItem
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 		
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
-			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 		
 		pUser->UpdateItem(*pItemMain, UI::AbilityOption::Up);
 		aLogItem.Action = "H";
@@ -612,7 +612,7 @@ BYTE	CItemUpgrade::SmeltSafetyAccessory(CUser* pUser, CItemElem* pItemMain, CIte
 	{
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0 )
-			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL);
 
 		aLogItem.Action	= "L";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
@@ -624,7 +624,7 @@ BYTE	CItemUpgrade::SmeltSafetyAccessory(CUser* pUser, CItemElem* pItemMain, CIte
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 			
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0)
-			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 
 		pUser->UpdateItem(*pItemMain, UI::AbilityOption::Up);
 
@@ -702,7 +702,7 @@ BYTE	CItemUpgrade::SmeltSafetyPiercingSize(CUser* pUser, CItemElem* pItemMain, C
 		//pUser->AddDefinedText( TID_MMI_PIERCINGFAIL );
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0)
-			g_UserMng.AddCreateSfxObj( pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL);
 		
 		aLogItem.Action = "!";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
@@ -714,7 +714,7 @@ BYTE	CItemUpgrade::SmeltSafetyPiercingSize(CUser* pUser, CItemElem* pItemMain, C
 		//pUser->AddDefinedText( TID_MMI_PIERCINGSUCCESS );
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0)
-			g_UserMng.AddCreateSfxObj( pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 		pUser->UpdateItem(*pItemMain, UI::Piercing::Size::IncrementRegular);
 
 		aLogItem.Action = "#";
@@ -765,7 +765,7 @@ void	CItemUpgrade::RefineAccessory( CUser* pUser, CItemElem* pItemMain, CItemEle
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 			
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0)
-			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 
 		pUser->UpdateItem(*pItemMain, UI::AbilityOption::Up);
 
@@ -777,7 +777,7 @@ void	CItemUpgrade::RefineAccessory( CUser* pUser, CItemElem* pItemMain, CItemEle
 		pUser->AddDefinedText( TID_UPGRADE_FAIL );
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0 )
-			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL);
 
 		if( !bSmelprot )
 		{
@@ -828,7 +828,7 @@ void	CItemUpgrade::RefineCollector( CUser* pUser, CItemElem* pItemMain, CItemEle
 		pUser->AddDefinedText( TID_UPGRADE_SUCCEEFUL );
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0 )
-			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 		pUser->UpdateItem(*pItemMain, UI::AbilityOption::Up);
 		aLogItem.Action		= "H";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
@@ -838,7 +838,7 @@ void	CItemUpgrade::RefineCollector( CUser* pUser, CItemElem* pItemMain, CItemEle
 		pUser->AddDefinedText( TID_UPGRADE_FAIL );
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
 		if( pUser->IsMode( TRANSPARENT_MODE ) == 0 )
-			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL);
 		// log
 	}
 	aLogItem.Action	= "N";
@@ -927,7 +927,7 @@ BYTE	CItemUpgrade::SmeltSafetyAttribute(CUser* pUser, CItemElem* pItemMain, CIte
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
 
 		if( !pUser->IsMode( TRANSPARENT_MODE ) )
-			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL);
 
 		aLogItem.Action = "J";
 		g_DPSrvr.OnLogItem( aLogItem, pItemMain, pItemMain->m_nItemNum );
@@ -940,7 +940,7 @@ BYTE	CItemUpgrade::SmeltSafetyAttribute(CUser* pUser, CItemElem* pItemMain, CIte
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 
 		if( !pUser->IsMode( TRANSPARENT_MODE ) )
-			g_UserMng.AddCreateSfxObj( (CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z );
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 
 		pUser->UpdateItem(*pItemMain, UI::Element::Increase(*pItemMain, dwValue));
 		aLogItem.Action = "O";
@@ -1046,7 +1046,7 @@ void	CItemUpgrade::EnchantGeneral( CUser* pUser, CItemElem* pItemMain, CItemElem
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
 
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL);
 
 		// 실패하면 3이상이면 아이템 삭제
 		if( *pAbilityOption >= 3 )
@@ -1082,7 +1082,7 @@ void	CItemUpgrade::EnchantGeneral( CUser* pUser, CItemElem* pItemMain, CItemElem
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 
 		pUser->UpdateItem(*pItemMain, UI::AbilityOption::Up);
 		aLogItem.Action = "H";
@@ -1211,7 +1211,7 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 		pUser->AddPlaySound( SND_INF_UPGRADEFAIL );
 
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_FAIL, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_FAIL);
 
 		// 실패하면 nLevDown이상이면 아이템 삭제
 		if( *pAbilityOption >= 3 )
@@ -1247,7 +1247,7 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 
 		if((pUser->IsMode( TRANSPARENT_MODE ) ) == 0)
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 
 		pUser->UpdateItem(*pItemMain, UI::Element::Increase(*pItemMain, eItemType));
 		aLogItem.Action = "O";
@@ -1299,7 +1299,7 @@ void CItemUpgrade::ChangeAttribute( CUser* pUser, OBJID dwTargetItem, OBJID dwUs
 	{
 		pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );
 		if( ( pUser->IsMode( TRANSPARENT_MODE ) ) == 0 )
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);
+			g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 		
 		pUser->UpdateItem(*pTargetItemElem, UI::Element::Change(nAttribute));	// 속성 변경
 
@@ -1469,7 +1469,7 @@ BOOL CItemUpgrade::RunItemTransy( CUser* pUser, CItemElem* pItemElemTarget, DWOR
 
 	// 아이템 트랜지 성공
 	pUser->AddPlaySound( SND_INF_UPGRADESUCCESS );			
-	g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z);			
+	g_UserMng.AddCreateSfxObj(pUser, XI_INT_SUCCESS);
 
 	// 기존 아이템의 Elem 정보를 저장 하고 잇음...
 	CItemElem ItemElemSend;

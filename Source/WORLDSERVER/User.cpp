@@ -3933,18 +3933,8 @@ void CUserMng::AddMoverCorr2( CMover* pMover, const D3DXVECTOR3 & v, const D3DXV
 }
 
 // x, y, z ; 절대좌표에 오브젝트 생성.
-void CUserMng::AddCreateSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x, float y, float z )
-{
-	CAr ar;
-	ar << GETID( pCtrl ) << SNAPSHOTTYPE_CREATESFXOBJ;
-
-	ar << dwSfxObj << x << y << z;
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-	
-	FOR_VISIBILITYRANGE( pCtrl )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pCtrl )
+void CUserMng::AddCreateSfxObj(CCtrl * pCtrl, DWORD dwSfxObj, std::optional<D3DXVECTOR3> pPos) {
+	BroadcastAround<SNAPSHOTTYPE_CREATESFXOBJ, DWORD, std::optional<D3DXVECTOR3>>(pCtrl, dwSfxObj, pPos);
 }
 
 void CUserMng::AddRemoveSfxObj(CCtrl * pCtrl, DWORD dwSfxObj) {
@@ -3977,10 +3967,10 @@ void CUserMng::AddPKPropensity(CMover * pMover) {
 	);
 }
 
-void CUserMng::AddWorldCreateSfxObj( DWORD dwSfxObj, float x, float y, float z, DWORD dwWorldId )
+void CUserMng::AddWorldCreateSfxObj( DWORD dwSfxObj, std::optional<D3DXVECTOR3> pPos, DWORD dwWorldId )
 {
 	CAr arBlock;
-	arBlock << NULL_ID << SNAPSHOTTYPE_CREATESFXOBJ << dwSfxObj << x << y << z ;
+	arBlock << NULL_ID << SNAPSHOTTYPE_CREATESFXOBJ << dwSfxObj << pPos ;
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 	CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
 	AddBlock( lpBlock, uBlockSize, pWorld );
@@ -4677,10 +4667,10 @@ void CUserMng::ReplaceWorld( DWORD dwWorldId, DWORD dwReplaceWorldId, float fRep
 			if( pUser->GetWorld() == pWorld )
 			{
 				D3DXVECTOR3 v3Pos = pUser->GetPos();
-				AddCreateSfxObj( pUser, XI_GEN_WEARF, v3Pos.x, v3Pos.y, v3Pos.z );
+				AddCreateSfxObj( pUser, XI_GEN_WEARF, v3Pos );
 				pUser->Replace( dwReplaceWorldId, D3DXVECTOR3( fReplaceX, 0.0f, fReplaceZ ), REPLACE_NORMAL, nLayer );
 				pUser->m_vtInfo.SetOther( NULL );
-				AddCreateSfxObj( pUser, XI_GEN_WEARF, fReplaceX, v3Pos.y, fReplaceZ );				
+				AddCreateSfxObj( pUser, XI_GEN_WEARF, D3DXVECTOR3(fReplaceX, v3Pos.y, fReplaceZ) );
 			}
 		}
 	}
@@ -4704,12 +4694,12 @@ void CUserMng::ReplaceWorldArea( u_long idParty, DWORD dwWorldId, DWORD dwReplac
 				}
 
 				D3DXVECTOR3 vPos = pUser->GetPos();
-				AddCreateSfxObj(pUser, XI_GEN_WEARF, vPos.x, vPos.y, vPos.z);
+				AddCreateSfxObj(pUser, XI_GEN_WEARF, vPos);
 				float fNewArea = fArea * 2.0f;
 				fReplaceX += (-fArea) + xRandomF(fNewArea);
 				fReplaceZ += (-fArea) + xRandomF(fNewArea);
 				pUser->Replace(dwReplaceWorldId, D3DXVECTOR3(fReplaceX, 0.0f, fReplaceZ), REPLACE_NORMAL, nLayer);
-				AddCreateSfxObj(pUser, XI_GEN_WEARF, fReplaceX, vPos.y, fReplaceZ);
+				AddCreateSfxObj(pUser, XI_GEN_WEARF, D3DXVECTOR3(fReplaceX, vPos.y, fReplaceZ));
 			}
 		}
 	}

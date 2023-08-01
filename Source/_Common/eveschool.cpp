@@ -824,7 +824,7 @@ void CGuildCombat::GuildCombatResult(const Rankings & rankings)
 	{
 		if( g_eLocal.GetState( EVE_GUILDCOMBAT ) )
 		{
-			g_UserMng.AddWorldCreateSfxObj( XI_NAT_ROCKET02, 1291.0f, 85.0f, 1279.0f, WI_WORLD_GUILDWAR );
+			g_UserMng.AddWorldCreateSfxObj( XI_NAT_ROCKET02, D3DXVECTOR3( 1291.0f, 85.0f, 1279.0f ), WI_WORLD_GUILDWAR );
 			g_DPCoreClient.SendPlayMusic( WI_WORLD_GUILDWAR, BGM_IN_FITUP );
 		}
 			
