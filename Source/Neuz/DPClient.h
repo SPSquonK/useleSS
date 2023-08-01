@@ -718,7 +718,7 @@ private:
 	void	OnUpdatePlayerData( CAr & ar );
 	void	OnEscape( OBJID objid, CAr & ar );
 	void	OnSetActionPoint( OBJID objid, CAr & ar );
-	void	OnEndSkillQueue( OBJID objid );
+	void	OnEndSkillQueue();
 	void	OnSnoop( CAr & ar );
 	void	OnQueryEquip( OBJID objid, CAr & ar );
 	void	OnReturnScrollACK( CAr & ar );

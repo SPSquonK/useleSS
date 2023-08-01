@@ -521,7 +521,7 @@ void CDPClient::OnSnapshot( CAr & ar )
 			case SNAPSHOTTYPE_PUSHPOWER:		OnPushPower( objid, ar );	break;
 			case SNAPSHOTTYPE_DO_ESCAPE:		OnEscape( objid, ar );	break;
 			case SNAPSHOTTYPE_SETACTIONPOINT:	OnSetActionPoint( objid, ar );	break;
-			case SNAPSHOTTYPE_ENDSKILLQUEUE:	OnEndSkillQueue( objid );	break;
+			case SNAPSHOTTYPE_ENDSKILLQUEUE:	OnEndSkillQueue( );	break;
 			case SNAPSHOTTYPE_SETTARGET:	OnSetTarget( objid, ar );	break;
 			case SNAPSHOTTYPE_EXPBOXINFO:	OnSExpBoxInfo( objid, ar );	break;
 			case SNAPSHOTTYPE_EXPBOXCOLLTIME:	OnSExpBoxCoolTime( objid, ar );	break;
@@ -12342,10 +12342,8 @@ void CDPClient::SendQuerySetGuildName( LPCSTR pszGuild, BYTE nId )
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::OnEndSkillQueue( OBJID objid )
-{
-	CWndTaskBar* pTaskBar = g_WndMng.m_pWndTaskBar;
-	pTaskBar->OnCancelSkill();
+void CDPClient::OnEndSkillQueue() {
+	g_WndMng.m_pWndTaskBar->OnCancelSkill();
 }
 
 // 서버로부터 클라의 액션포인트 갱신.

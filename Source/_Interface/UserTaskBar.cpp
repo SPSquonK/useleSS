@@ -150,8 +150,8 @@ CAr & operator>>(CAr & ar, CTaskbar & self) {
 // 스킬바 사용이 완전히 끝났을때
 void CTaskbar::OnEndSkillQueue(CUser * pUser) {
 	pUser->m_nUsedSkillQueue = -1;
-	pUser->AddHdr(GETID(pUser), SNAPSHOTTYPE_ENDSKILLQUEUE);
-	((CMover *)pUser)->ClearCmd();
+	pUser->SendSnapshotNoTarget<SNAPSHOTTYPE_ENDSKILLQUEUE>();
+	pUser->ClearCmd();
 	TRACE("\nOnEndSkillQueue\n");
 }
 
