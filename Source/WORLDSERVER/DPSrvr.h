@@ -80,7 +80,6 @@ private:
 	void	OnSmeltSafety( CAr & ar, CUser * pUser );
 	void	OnRemoveAttribute( CAr & ar, CUser * pUser );
 	void	OnChangeAttribute(CAr & ar, CUser & pUser);
-	void	OnCreateSfxObj( CAr & ar, DPID dpidCache, DPID dpidUser);
 	void	OnPiercing(CAr & ar, CUser & pUser);
 	void	OnPiercingSize( CAr & ar, CUser * pUser );
 	void	OnPiercingRemove(CAr & ar, CUser & pUser);

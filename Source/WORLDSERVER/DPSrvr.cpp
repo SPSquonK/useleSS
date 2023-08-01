@@ -3888,29 +3888,6 @@ void CDPSrvr::OnPiercingRemove(CAr & ar, CUser & pUser) {
 	CItemUpgrade::OnPiercingRemove(pUser, weaponPos);
 }
 
-void CDPSrvr::OnCreateSfxObj( CAr & ar, DPID dpidCache, DPID dpidUser)
-{
-	DWORD dwSfxId;
-	u_long uIdPlayer;
-	BOOL bFlag;
-	ar >> dwSfxId >> uIdPlayer >> bFlag;
-
-	CUser* pUser	= g_UserMng.GetUser( dpidCache, dpidUser );
-	if( IsValidObj( pUser ) )
-	{
-		if( uIdPlayer == NULL_ID )
-		{
-			g_UserMng.AddCreateSfxObj((CMover *)pUser, dwSfxId, pUser->GetPos().x, pUser->GetPos().y, pUser->GetPos().z, bFlag);
-		}
-		else
-		{
-			CUser* pUsertmp	= (CUser*)prj.GetUserByID( uIdPlayer );
-			if( IsValidObj( pUsertmp ) )
-				g_UserMng.AddCreateSfxObj((CMover *)pUsertmp, dwSfxId, pUsertmp->GetPos().x, pUsertmp->GetPos().y, pUsertmp->GetPos().z, bFlag);
-		}		
-	}
-}
-
 void CDPSrvr::OnRemoveItemLevelDown( CAr & ar, CUser * pUser )
 {
 	DWORD dwId;

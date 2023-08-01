@@ -3178,9 +3178,7 @@ void CDPClient::OnCreateSfxObj( OBJID objid, CAr & ar )
 {
 	DWORD dwSfxObj;
 	float	x, y, z;
-	BOOL	bFlag;				// 0이면 고정 1이면 따라다니기
 	ar >> dwSfxObj >> x >> y >> z;
-	ar >> bFlag;
 
 	D3DXVECTOR3 vWorld( x, y, z );		// 이 좌표가 지정되어 있다면 여기다 sfx를 생성.
 	D3DXVECTOR3 vPos;

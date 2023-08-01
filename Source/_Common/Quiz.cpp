@@ -423,7 +423,7 @@ void CQuiz::Process()
 				strMessage.Format( prj.GetText( TID_GAME_QUIZ_CORRECT_ANSWER_4C ), it->nCorrect );
 
 			D3DXVECTOR3 vPos = m_sQuizData.aExamplePos[(*it).nCorrect - 1];
-			g_UserMng.AddWorldCreateSfxObj( XI_QUIZCORRECTANSWER, vPos.x, vPos.y, vPos.z, FALSE, WI_WORLD_QUIZ );
+			g_UserMng.AddWorldCreateSfxObj( XI_QUIZCORRECTANSWER, vPos.x, vPos.y, vPos.z, WI_WORLD_QUIZ );
 			
 			CWorld* pWorld = g_WorldMng.GetWorld( WI_WORLD_QUIZ );
 			if( pWorld )

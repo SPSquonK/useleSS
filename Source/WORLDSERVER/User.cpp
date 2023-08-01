@@ -3933,13 +3933,12 @@ void CUserMng::AddMoverCorr2( CMover* pMover, const D3DXVECTOR3 & v, const D3DXV
 }
 
 // x, y, z ; 절대좌표에 오브젝트 생성.
-void CUserMng::AddCreateSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x, float y, float z, BOOL bFlag )
+void CUserMng::AddCreateSfxObj( CCtrl* pCtrl, DWORD dwSfxObj, float x, float y, float z )
 {
 	CAr ar;
 	ar << GETID( pCtrl ) << SNAPSHOTTYPE_CREATESFXOBJ;
 
 	ar << dwSfxObj << x << y << z;
-	ar << bFlag;
 
 	GETBLOCK( ar, lpBuf, nBufSize );
 	
@@ -3978,10 +3977,10 @@ void CUserMng::AddPKPropensity(CMover * pMover) {
 	);
 }
 
-void CUserMng::AddWorldCreateSfxObj( DWORD dwSfxObj, float x, float y, float z, BOOL bFlag, DWORD dwWorldId )
+void CUserMng::AddWorldCreateSfxObj( DWORD dwSfxObj, float x, float y, float z, DWORD dwWorldId )
 {
 	CAr arBlock;
-	arBlock << NULL_ID << SNAPSHOTTYPE_CREATESFXOBJ << dwSfxObj << x << y << z << bFlag ;
+	arBlock << NULL_ID << SNAPSHOTTYPE_CREATESFXOBJ << dwSfxObj << x << y << z ;
 	GETBLOCK( arBlock, lpBlock, uBlockSize );
 	CWorld* pWorld	= g_WorldMng.GetWorld( dwWorldId );
 	AddBlock( lpBlock, uBlockSize, pWorld );
