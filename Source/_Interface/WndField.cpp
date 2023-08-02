@@ -4500,7 +4500,7 @@ BOOL CWndRevival::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 		case WIDC_REVIVAL_TO_LODESTAR:
 			{
-				g_DPlay.SendHdr( PACKETTYPE_REVIVAL_TO_LODESTAR );
+				g_DPlay.SendPacket<PACKETTYPE_REVIVAL_TO_LODESTAR>();
 
 				CWndBase* pWndBase = g_WndMng.GetWndBase( APP_RESURRECTION );
 				
@@ -4511,7 +4511,7 @@ BOOL CWndRevival::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 			}
 		case WIDC_REVIVAL_STAND:
 			{
-				g_DPlay.SendHdr( PACKETTYPE_REVIVAL );
+				g_DPlay.SendPacket<PACKETTYPE_REVIVAL>();
 
 				CWndBase* pWndBase = g_WndMng.GetWndBase( APP_RESURRECTION );
 				

@@ -4033,7 +4033,7 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			}
 			break;
 		case MMI_MARKING: // 장소 마킹 
-			g_DPlay.SendHdr( PACKETTYPE_SETLODELIGHT );
+			g_DPlay.SendPacket<PACKETTYPE_SETLODELIGHT>();
 			break;
 		case MMI_DIALOG: // dialog
 			if( GetTickCount() - m_dwDropTime < 3000 )
@@ -4723,10 +4723,10 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			break;
 #ifdef __JEFF_11_4
 		case MMI_ARENA_ENTER:
-				g_DPlay.SendHdr( PACKETTYPE_ARENA_ENTER );
+				g_DPlay.SendPacket<PACKETTYPE_ARENA_ENTER>();
 				break;
 		case MMI_ARENA_EXIT:
-				g_DPlay.SendHdr( PACKETTYPE_ARENA_EXIT );
+				g_DPlay.SendPacket<PACKETTYPE_ARENA_EXIT>();
 				break;
 #endif	// __JEFF_11_4
 #ifdef __SYS_ITEMTRANSY

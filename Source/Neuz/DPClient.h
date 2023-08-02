@@ -69,7 +69,6 @@ public:
 //	Operations
 	BOOL	Connect( LPSTR lpszAddr, USHORT uPort );
 //	Writes
-	void	SendHdr( DWORD dwHdr );
 	LONG	GetErrorCode() { return m_lError; }
 	LONG	GetNetError();
 	void	SendJoin( BYTE nSlot, CMover* pMover, CRTMessenger* pRTMessenger, u_long uIdofMulti );
@@ -100,12 +99,12 @@ public:
 	void	SendTrade( CMover* pTrader );
 	void	SendTradePut( BYTE i, BYTE ItemType, BYTE nId, short ItemNum = 1 );
 	void	SendTradePull( int i );
-	void	SendTradeOk( void );//	{	SendHdr( PACKETTYPE_TRADEOK );	}
+	void	SendTradeOk( void );
 	void	SendTradeCancel( int nMode = 0 );
 	void	SendMessageNote( u_long uidTo, LPCTSTR strMessage );
 	void	SendTradePutGold( DWORD dwGold );
 //raiders.2006.11.28
-//	void	SendTradeClearGold( void );//	{	SendHdr( PACKETTYPE_TRADECLEARGOLD );	}
+//	void	SendTradeClearGold( void );//	{	SendPacket<PACKETTYPE_TRADECLEARGOLD>();	}
 
 	void	SendPVendorOpen( const char* szVendor );
 	void	SendPVendorClose( OBJID objidVendor );

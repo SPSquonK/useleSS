@@ -1638,13 +1638,10 @@ void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
 #endif	// __JEFF_11_4
 				}
 
-				if( g_eLocal.GetState( EVE_SCHOOL ) )
-				{
-					SendHdr( PACKETTYPE_REVIVAL_TO_LODESTAR );
-				}
-				else if( pMover->m_nGuildCombatState == 1 )
-				{
-					SendHdr( PACKETTYPE_REVIVAL_TO_LODESTAR );
+				if (g_eLocal.GetState(EVE_SCHOOL)) {
+					SendPacket<PACKETTYPE_REVIVAL_TO_LODESTAR>();
+				} else if (pMover->m_nGuildCombatState == 1) {
+					SendPacket<PACKETTYPE_REVIVAL_TO_LODESTAR>();
 				}
 				else
 				{
@@ -2168,9 +2165,7 @@ void CDPClient::OnTradeClearGold( OBJID objid )
 }
 */
 
-void CDPClient::SendTradeOk() {
-	SendHdr(PACKETTYPE_TRADEOK);
-}
+void CDPClient::SendTradeOk() { SendPacket<PACKETTYPE_TRADEOK>(); }
 
 void CDPClient::SendChangeFace( DWORD dwFaceNum )
 {
@@ -8610,11 +8605,6 @@ void CDPClient::SendRemoveQuest(const QuestId dwQuest) {
 	SendPacket<PACKETTYPE_REMOVEQUEST, QuestId>(dwQuest);
 }
 
-void CDPClient::SendHdr( DWORD dwHdr )
-{
-	BEFORESENDSOLE( ar, dwHdr, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
 void CDPClient::SendScriptReplace( DWORD dwWorld, D3DXVECTOR3 vPos )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_SCRIPT_REPLACE, DPID_UNKNOWN );
@@ -11007,14 +10997,7 @@ void CDPClient::OnSetSkillState( CAr & ar )
 		pTarget->AddBuff( wType, wID, dwLevel, dwTime );
 }
 
-void CDPClient::SendCreateGuildCloak( void )
-{
-//	BEFORESENDSOLE( ar, PACKETTYPE_CREATE_GUILDCLOAK, DPID_UNKNOWN );
-//	ar << pMover->GetId();
-//	SEND( ar, this, DPID_SERVERPLAYER );
-	
-	SendHdr( PACKETTYPE_CREATE_GUILDCLOAK );
-}
+void CDPClient::SendCreateGuildCloak() { SendPacket<PACKETTYPE_CREATE_GUILDCLOAK>(); }
 
 
 void CDPClient::SendMotion( DWORD dwMotion )
@@ -11936,16 +11919,10 @@ void CDPClient::SendWantedGold( int nGold, LPCTSTR szMsg )
 }
 
 // 현상금 리스트 요청 패킷
-void CDPClient::SendWantedList()
-{
-	SendHdr( PACKETTYPE_NW_WANTED_LIST );
-}
+void CDPClient::SendWantedList() { SendPacket<PACKETTYPE_NW_WANTED_LIST>(); }
 
 // 현상범이름 요청 
-void CDPClient::SendWantedName()
-{
-	SendHdr( PACKETTYPE_NW_WANTED_NAME );
-}
+void CDPClient::SendWantedName() { SendPacket<PACKETTYPE_NW_WANTED_NAME>(); }
 
 // 현상범 자세한정보 요청 패킷 
 void CDPClient::SendWantedInfo(LPCTSTR szPlayer) {
@@ -11956,22 +11933,10 @@ void CDPClient::SendWantedInfo(LPCTSTR szPlayer) {
 
 // 접속 종료시도를 알린다. 
 // ( 이 패킷을 보내면, 서버에서 10초후에 접속을 끊는다. )
-void CDPClient::SendReqLeave()
-{
-	SendHdr( PACKETTYPE_REQ_LEAVE );
-}
+void CDPClient::SendReqLeave() { SendPacket<PACKETTYPE_REQ_LEAVE>(); }
 
-void CDPClient::SendResurrectionOK()
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_RESURRECTION_OK, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
-
-void CDPClient::SendResurrectionCancel()
-{
-	BEFORESENDSOLE( ar, PACKETTYPE_RESURRECTION_CANCEL, DPID_UNKNOWN );
-	SEND( ar, this, DPID_SERVERPLAYER );
-}
+void CDPClient::SendResurrectionOK()     { SendPacket<PACKETTYPE_RESURRECTION_OK>();     }
+void CDPClient::SendResurrectionCancel() { SendPacket<PACKETTYPE_RESURRECTION_CANCEL>(); }
 
 void CDPClient::SendChangePKPVPMode( DWORD dwMode, int nFlag )
 {
@@ -12184,7 +12149,7 @@ void	CDPClient::SendDoEscape( void )
 			return;
 		}
 
-		SendHdr( PACKETTYPE_DO_ESCAPE );	
+		SendPacket<PACKETTYPE_DO_ESCAPE>();
 	}
 }
 
@@ -12314,10 +12279,7 @@ void	CDPClient::OnSetTarget( OBJID, CAr & ar )
 		g_WorldMng()->SetObjFocus( pMover );
 }
 
-void CDPClient::SendEndSkillQueue( void )	
-{	
-	SendHdr( PACKETTYPE_ENDSKILLQUEUE );	
-}
+void CDPClient::SendEndSkillQueue() { SendPacket<PACKETTYPE_ENDSKILLQUEUE>(); }
 
 void CDPClient::SendCreateMonster( DWORD dwItemId, D3DXVECTOR3 vPos )
 {
@@ -12933,15 +12895,9 @@ void CDPClient::SendModifyStatus(int nStrCount, int nStaCount, int nDexCount, in
 	
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
-void CDPClient::SendQueryStartCollecting( void )
-{
-	SendHdr( PACKETTYPE_QUERY_START_COLLECTING );
-}
 
-void CDPClient::SendQueryStopCollecting( void )
-{
-	SendHdr( PACKETTYPE_QUERY_STOP_COLLECTING );
-}
+void CDPClient::SendQueryStartCollecting() { SendPacket<PACKETTYPE_QUERY_START_COLLECTING>(); }
+void CDPClient::SendQueryStopCollecting()  { SendPacket<PACKETTYPE_QUERY_STOP_COLLECTING >(); }
 
 void CDPClient::OnStartCollecting( OBJID objid )
 {
@@ -14421,10 +14377,7 @@ void CDPClient::SendDoUseItemInput( DWORD dwData, const char* szInput )
 }
 #endif	// __AZRIA_1023
 
-void CDPClient::SendClearPetName()
-{
-	SendHdr( PACKETTYPE_CLEAR_PET_NAME );
-}
+void CDPClient::SendClearPetName() { SendPacket<PACKETTYPE_CLEAR_PET_NAME>(); }
 
 void CDPClient::OnSetPetName( OBJID objid, CAr & ar )
 {
@@ -14887,10 +14840,7 @@ void CDPClient::OnQuizEventMessage( CAr & ar )
 	}
 }
 
-void CDPClient::SendQuizEventEntrance()
-{
-	SendHdr( PACKETTYPE_QUIZ_ENTRANCE );
-}
+void CDPClient::SendQuizEventEntrance() { SendPacket<PACKETTYPE_QUIZ_ENTRANCE>(); }
 
 void CDPClient::SendQuizEventTeleport( int nZone )
 {
