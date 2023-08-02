@@ -1433,119 +1433,106 @@ void CDPClient::OnDamage(OBJID objid, CAr & ar) {
 
 	pMover->IncHitPoint(-static_cast<int>(dwHit));
 
-		if( pMover->m_nHitPoint == 0 )		// hp seems to be asynchronous. When you die, you don't fly here. Originally.
-			pMover->m_nHitPoint = 1;		// So set it to 1 first.
+	if (pMover->m_nHitPoint == 0) {
+		// hp seems to be asynchronous. When you die, you don't fly here. Originally.
+		pMover->m_nHitPoint = 1;
+	}
 
-		if( pMover->m_pActMover->IsSit() )		// Sit and release if hit.
-			pMover->m_pActMover->ResetState( OBJSTA_MOVE_ALL );
-		
-		// Shows damage information only when the hit person is a player / the hit person is a player.
-		CObj* pObj = g_pPlayer->GetWorld()->GetObjFocus();
+	if (pMover->m_pActMover->IsSit()) {
+		// Sit and release if hit.
+		pMover->m_pActMover->ResetState(OBJSTA_MOVE_ALL);
+	}
 
-		if (pMover->IsActiveMover()) {
+	// Close shop
+	if (pMover->IsActiveMover()) {
+		if (CWndBase * pWndBase = g_WndMng.GetWndVendorBase()) {
+			pWndBase->Destroy();
 
-			if (CWndBase * pWndBase = g_WndMng.GetWndVendorBase()) {
+			if (CWndBase * pWndBase = g_WndMng.GetWndBase(APP_INVENTORY)) {
 				pWndBase->Destroy();
-
-				if (CWndBase * pWndBase = g_WndMng.GetWndBase(APP_INVENTORY)) {
-					pWndBase->Destroy();
-					pWndBase->m_GlobalShortcut.Empty();
-				}
+				pWndBase->m_GlobalShortcut.Empty();
 			}
 		}
-
-		CCtrl*	pAttacker = prj.GetCtrl( objidAttacker );
-		if( IsValidObj( pAttacker ) == FALSE )
-			goto g_PASS;
+	}
 		
-		// If all damage display is checked in options
-		if( g_Option.m_bDamageRender )
-		{
-			// Show only those within a 30 meter radius
-			if( g_pPlayer->IsRangeObj( pMover->GetPos(), 30 ) )
-				goto g_PASS;
-		}
-		else
-		{
-			if(g_pPlayer->IsAuthHigher( AUTH_GAMEMASTER ) && pObj )
-			{
-				if( pObj == (CObj*)pMover || pMover->IsActiveMover() || ( pAttacker->GetType() == OT_MOVER && ( (CMover *)pAttacker )->IsActiveMover() ) ) 
-				{
-					goto g_PASS;
-				}
-			}
-		}
+	// Shows damage information only when the hit person is a player / the hit person is a player.
+	CMover * pAttacker = prj.GetMover(objidAttacker);
 
-		if( pMover->IsActiveMover() || ( pAttacker->GetType() == OT_MOVER && ((CMover *)pAttacker)->IsActiveMover() ) ) 
-		{
-g_PASS:
-			// if it's casting, cancel it
-			if( g_pPlayer->IsStateMode( STATE_BASEMOTION_MODE ) && ( pMover == g_pPlayer || pAttacker == g_pPlayer ) )
-			{
-				SendStateModeCancel( STATE_BASEMOTION_MODE, STATEMODE_BASEMOTION_CANCEL );
-			}
+	const bool showDamage =
+		pMover == g_pPlayer
+		|| pAttacker == g_pPlayer
+		|| !IsValidObj(pAttacker)
+		|| (g_Option.m_bDamageRender && g_pPlayer->IsRangeObj(pMover->GetPos(), 30))
+		|| (!g_Option.m_bDamageRender && g_pPlayer->IsAuthHigher(AUTH_GAMEMASTER) &&
+			(g_pPlayer->GetWorld()->GetObjFocus() == pMover
+				|| g_pPlayer->GetWorld()->GetObjFocus() == pAttacker)
+			);
+
+	if (showDamage) {
+		// if it's casting, cancel it
+		if (g_pPlayer->IsStateMode(STATE_BASEMOTION_MODE) && (pMover == g_pPlayer || pAttacker == g_pPlayer)) {
+			SendStateModeCancel(STATE_BASEMOTION_MODE, STATEMODE_BASEMOTION_CANCEL);
+		}
 		
+		// Actually show the damage
+		if (dwAtkFlags & AF_BLOCKING) {
+			CreateDamageSfx(pMover, XI_HIT_HITBLOCK01, 2.0f);
+		}
 
-			if (dwAtkFlags & AF_BLOCKING) {
-				CreateDamageSfx(pMover, XI_HIT_HITBLOCK01, 2.0f);
-			}
-
-			if (dwAtkFlags & AF_PARRY) {
-				CreateDamageSfx(pMover, XI_HIT_PARRY01, 2.0f);
-			} else if ( dwAtkFlags & AF_RESIST ) {
-				if (dwHit == 0) {
-					CreateDamageSfx(pMover, XI_HIT_MISS01, 2.0f);
-				} else {
-					g_DamageNumMng.AddNumber(pMover->GetPos(), dwHit, (pMover->IsActiveMover() ? 0 : 1));
-				}
-			} else if( dwAtkFlags & AF_MISS ) {
+		if (dwAtkFlags & AF_PARRY) {
+			CreateDamageSfx(pMover, XI_HIT_PARRY01, 2.0f);
+		} else if ( dwAtkFlags & AF_RESIST ) {
+			if (dwHit == 0) {
 				CreateDamageSfx(pMover, XI_HIT_MISS01, 2.0f);
 			} else {
-
-				if (dwAtkFlags & AF_CRITICAL) {
-					CreateDamageSfx(pMover, XI_HIT_CRITICAL01, 3.0f);
-				}
-
 				g_DamageNumMng.AddNumber(pMover->GetPos(), dwHit, (pMover->IsActiveMover() ? 0 : 1));
 			}
-		}
+		} else if( dwAtkFlags & AF_MISS ) {
+			CreateDamageSfx(pMover, XI_HIT_MISS01, 2.0f);
+		} else {
 
-		if( IsValidObj( pAttacker ) )
+			if (dwAtkFlags & AF_CRITICAL) {
+				CreateDamageSfx(pMover, XI_HIT_CRITICAL01, 3.0f);
+			}
+
+			g_DamageNumMng.AddNumber(pMover->GetPos(), dwHit, (pMover->IsActiveMover() ? 0 : 1));
+		}
+	}
+
+	if( IsValidObj( pAttacker ) )
+	{
+		if( pAttacker->GetType() == OT_MOVER )
 		{
-			if( pAttacker->GetType() == OT_MOVER )
+			if( dwAtkFlags & AF_CRITICAL )
 			{
-				if( dwAtkFlags & AF_CRITICAL )
-				{
-					const ItemProp *pItemProp = ((CMover *)pAttacker)->GetActiveHandItemProp();
-					if (pItemProp && pItemProp->dwSndAttack2 != NULL_ID) {
-						const auto attackerPos = pAttacker->GetPos();
-						PLAYSND(pItemProp->dwSndAttack2, &attackerPos);
-					}
-				}
-				
-				if( dwAtkFlags & AF_FLYING )
-				{
-					if( (pMover->m_pActMover->GetState() != OBJSTA_STUN) )			//gmpbigsun: -_- It's a meaningless comparison. 0x01 Standby state is mostly on.
-					{
-						pMover->m_pActMover->SetState( OBJSTA_DMG_ALL, OBJSTA_DMG_FLY );
-						pMover->SetMotion( MTI_DMGFLY, ANILOOP_CONT );
-						if( pAttacker )
-						{
-							((CMover *)pAttacker)->m_pActMover->SendActMsg( OBJMSG_STOP );		// Let's stand after the attacker is blown away.
-							pMover->m_pActMover->DoDamageFly( pAttacker->GetAngle(), 145.0f, 0.18f );	// Send it flying in the direction the attacker sees it.
-						}
-					}
-				}
-			} else {
-				// If the attacker is invalid, notify the server of the move.
-				if( pMover->IsActiveMover() )
-				{
-					SendError( FE_INVALIDATTACKER, (int)objidAttacker );
-					SendCorrReq( objidAttacker );		// Calibrate the coordinates of the attacker.
+				const ItemProp *pItemProp = ((CMover *)pAttacker)->GetActiveHandItemProp();
+				if (pItemProp && pItemProp->dwSndAttack2 != NULL_ID) {
+					const auto attackerPos = pAttacker->GetPos();
+					PLAYSND(pItemProp->dwSndAttack2, &attackerPos);
 				}
 			}
+				
+			if( dwAtkFlags & AF_FLYING )
+			{
+				if( (pMover->m_pActMover->GetState() != OBJSTA_STUN) )			//gmpbigsun: -_- It's a meaningless comparison. 0x01 Standby state is mostly on.
+				{
+					pMover->m_pActMover->SetState( OBJSTA_DMG_ALL, OBJSTA_DMG_FLY );
+					pMover->SetMotion( MTI_DMGFLY, ANILOOP_CONT );
+					if( pAttacker )
+					{
+						pAttacker->m_pActMover->SendActMsg( OBJMSG_STOP );		// Let's stand after the attacker is blown away.
+						pMover->m_pActMover->DoDamageFly( pAttacker->GetAngle(), 145.0f, 0.18f );	// Send it flying in the direction the attacker sees it.
+					}
+				}
+			}
+		} else {
+			// If the attacker is invalid, notify the server of the move.
+			if (pMover->IsActiveMover()) {
+				SendError(FE_INVALIDATTACKER, (int)objidAttacker);
+				SendCorrReq(objidAttacker);		// Calibrate the coordinates of the attacker.
+			}
 		}
-
+	}
 }
 
 void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
