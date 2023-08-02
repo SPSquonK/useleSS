@@ -1409,6 +1409,16 @@ void CDPClient::OnShipActMsg( OBJID objid, CAr & ar )
 		
 }
 
+static void CreateDamageSfx(CMover * pTarget, DWORD dwSfx, float scale) {
+	D3DXVECTOR3 vPos = pTarget->GetPos();
+	vPos.y += 1.5f;
+
+	CSfx * pSfx = CreateSfx(dwSfx, vPos);
+	if (pSfx) {
+		pSfx->SetScale(D3DXVECTOR3(scale, scale, scale));
+	}
+}
+
 void CDPClient::OnDamage( OBJID objid, CAr & ar )
 {
 	OBJID objidAttacker;
@@ -1494,59 +1504,29 @@ g_PASS:
 			}
 		
 
-			if( dwAtkFlags & AF_BLOCKING )		// 블록일 때 
-			{
-				D3DXVECTOR3 vPos = pMover->GetPos();
-				vPos.y += 1.5f;
-				CSfx *pSfx = CreateSfx( XI_HIT_HITBLOCK01, vPos );
-				if( pSfx )
-					pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
+			if (dwAtkFlags & AF_BLOCKING) {
+				// 블록일 때 
+				CreateDamageSfx(pMover, XI_HIT_HITBLOCK01, 2.0f);
 			}
 
-			if( dwAtkFlags & AF_PARRY )
-			{
-				D3DXVECTOR3 vPos = pMover->GetPos();
-				vPos.y += 1.5f;
-				CSfx *pSfx = CreateSfx( XI_HIT_PARRY01, vPos );
-				if( pSfx )
-					pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
-			}
-			else
-			if( dwAtkFlags & AF_RESIST )
-			{
-				if( dwHit == 0 )
-				{
-					D3DXVECTOR3 vPos = pMover->GetPos();
-					vPos.y += 1.5f;
-					CSfx *pSfx = CreateSfx( XI_HIT_MISS01, vPos );
-					if( pSfx )
-						pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
+			if (dwAtkFlags & AF_PARRY) {
+				CreateDamageSfx(pMover, XI_HIT_PARRY01, 2.0f);
+			} else if ( dwAtkFlags & AF_RESIST ) {
+				if (dwHit == 0) {
+					CreateDamageSfx(pMover, XI_HIT_MISS01, 2.0f);
+				} else {
+					g_DamageNumMng.AddNumber(pMover->GetPos(), dwHit, (pMover->IsActiveMover() ? 0 : 1));
 				}
-				else
-					g_DamageNumMng.AddNumber( pMover->GetPos(), dwHit, ( pMover->IsActiveMover()? 0 : 1 ) );
-			}
-			else
-			if( dwAtkFlags & AF_MISS )		// 
-			{
-				D3DXVECTOR3 vPos = pMover->GetPos();
-				vPos.y += 1.5f;
-				CSfx *pSfx = CreateSfx( XI_HIT_MISS01, vPos );
-				if( pSfx )
-					pSfx->SetScale( D3DXVECTOR3( 2.0f, 2.0f, 2.0f ) );
-//				g_DamageNumMng.AddNumber( pMover->GetPos(), 0, 4 );
-			}
-			else
-			{
-				if( dwAtkFlags & AF_CRITICAL )		// 크리티컬일때
-				{
-					D3DXVECTOR3 vPos = pMover->GetPos();
-					vPos.y += 1.5f;
-					CSfx *pSfx = CreateSfx( XI_HIT_CRITICAL01, vPos );
-					if( pSfx )
-						pSfx->SetScale( D3DXVECTOR3( 3.0f, 3.0f, 3.0f ) );
+			} else if( dwAtkFlags & AF_MISS ) {
+				CreateDamageSfx(pMover, XI_HIT_MISS01, 2.0f);
+			} else {
+
+				if (dwAtkFlags & AF_CRITICAL) {
+					// 크리티컬일때
+					CreateDamageSfx(pMover, XI_HIT_CRITICAL01, 3.0f);
 				}
 
-				g_DamageNumMng.AddNumber( pMover->GetPos(), dwHit, ( pMover->IsActiveMover()? 0 : 1 ) );
+				g_DamageNumMng.AddNumber(pMover->GetPos(), dwHit, (pMover->IsActiveMover() ? 0 : 1));
 			}
 		}
 

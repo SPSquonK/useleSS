@@ -30,23 +30,22 @@ extern CDamageNumMng g_DamageNumMng;
 #define	AF_MAGIC			(DWORD)0x00000008
 #define AF_MELEESKILL		(DWORD)0x00000010
 #define AF_MAGICSKILL		(DWORD)0x00000020
-#define AF_CRITICAL1		(DWORD)0x00000040	// 2.3배 크리티컬
-#define AF_CRITICAL2		(DWORD)0x00000080	// 2.6배 크리티컬
-#define AF_CRITICAL			(DWORD)0x000000c0	// 위에 두개 합한거.
-#define AF_PUSH				(DWORD)0x00000100	// 맞으면 밀림.
-#define AF_PARRY			(DWORD)0x00000200	// 회피...
-#define AF_RESIST			(DWORD)0x00000400	// 회피...
-#define AF_STUN				(DWORD)0x00000800	// 스턴 - 기절
-#define AF_BLOCKING			(DWORD)0x00001000	// 블록킹 
-#define AF_FORCE			(DWORD)0x00002000	// 계산된 데미지를 줄 경우 사용 (예: 반사데미지, 사이킥 월) 
-#define AF_RANGE			(DWORD)0x00004000	// 장거리 공격 데미지 
-#define AF_MONSTER_SP_CLIENT (DWORD)0x00008000	// gmpbigsun: 몬스터 스페셜공격처리용 클라전용!! 서버는 AF_GENERIC으로 처리함 CMover::OnAttackSP()
-#define AF_FLYING			(DWORD)0x10000000	// 강공격으로 날아감.
+#define AF_CRITICAL1		(DWORD)0x00000040	// 2.3x crit
+#define AF_CRITICAL2		(DWORD)0x00000080	// 2.6x crit
+#define AF_CRITICAL			(DWORD)0x000000c0	// 2.3x crit + 2.6x crit
+#define AF_PUSH				(DWORD)0x00000100	// Push if hit
+#define AF_PARRY			(DWORD)0x00000200
+#define AF_RESIST			(DWORD)0x00000400
+#define AF_STUN				(DWORD)0x00000800
+#define AF_BLOCKING			(DWORD)0x00001000
+#define AF_FORCE			(DWORD)0x00002000	// True damage
+#define AF_RANGE			(DWORD)0x00004000	// Long range attack damage
+#define AF_MONSTER_SP_CLIENT (DWORD)0x00008000	// gmpbigsun: For monster special attack processing client only!! Server treats it as AF_GENERIC CMover::OnAttackSP()
+#define AF_FLYING			(DWORD)0x10000000	// Flyf with a heavy attack
 
-// 스킬류인가?
-inline BOOL IsSkillAttack( DWORD dwAtkFlags )
-{
-	return (dwAtkFlags & (AF_MELEESKILL|AF_MAGICSKILL) );
+
+inline bool IsSkillAttack(const DWORD dwAtkFlags) {
+	return dwAtkFlags & (AF_MELEESKILL | AF_MAGICSKILL);
 }
 
 
