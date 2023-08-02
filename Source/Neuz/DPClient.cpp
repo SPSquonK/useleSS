@@ -1419,52 +1419,35 @@ static void CreateDamageSfx(CMover * pTarget, DWORD dwSfx, float scale) {
 	}
 }
 
-void CDPClient::OnDamage( OBJID objid, CAr & ar )
-{
-	OBJID objidAttacker;
-	DWORD dwHit;
-	ar >> objidAttacker >> dwHit;
-	DWORD dwAtkFlags;
-	ar >> dwAtkFlags;
+void CDPClient::OnDamage(OBJID objid, CAr & ar) {
+	CMover * pMover = prj.GetMover(objid); // Target receiving damage.
+	if (!IsValidObj(pMover)) return;
 
-	CMover* pMover	= prj.GetMover( objid );	// 데미지 받는 대상.
-	
-	D3DXVECTOR3 vPos;
-	FLOAT		fAngle;
+	const auto [objidAttacker, dwHit, dwAtkFlags] = ar.Extract<OBJID, DWORD, DWORD>();
 
-	if( dwAtkFlags & AF_FLYING )
-	{
-		ar >> vPos;
-		ar >> fAngle;
-
-		if( IsValidObj(pMover) )
-		{
-			pMover->SetPos( vPos );
-			pMover->SetAngle( fAngle );
-		}
+	if (dwAtkFlags & AF_FLYING) {
+		const auto [vPos, fAngle] = ar.Extract<D3DXVECTOR3, FLOAT>();
+		pMover->SetPos(vPos);
+		pMover->SetAngle(fAngle);
 	}
 
-	if( IsValidObj( pMover ) )
-	{
-		pMover->IncHitPoint( (int)( (-1) * (int)( dwHit ) ) );
-//		pMover->SetHitPoint( -dwHit );
-		if( pMover->m_nHitPoint == 0 )		// hp가 비동기 난거같다.  죽었을땐 이리로 날아오지 않는다 원래.
-			pMover->m_nHitPoint = 1;		// 그래서 일단 1로 해줌.
-		if( pMover->m_pActMover->IsSit() )		// 앉아있다가 맞으면 앉기해제 한다.
+	pMover->IncHitPoint(-static_cast<int>(dwHit));
+
+		if( pMover->m_nHitPoint == 0 )		// hp seems to be asynchronous. When you die, you don't fly here. Originally.
+			pMover->m_nHitPoint = 1;		// So set it to 1 first.
+
+		if( pMover->m_pActMover->IsSit() )		// Sit and release if hit.
 			pMover->m_pActMover->ResetState( OBJSTA_MOVE_ALL );
 		
-		// 맞는놈이 플레이어거나 / 때리는놈이 플레이어일때만 데미지정보를 보여줌.
+		// Shows damage information only when the hit person is a player / the hit person is a player.
 		CObj* pObj = g_pPlayer->GetWorld()->GetObjFocus();
 
-		if( pMover->IsActiveMover() )
-		{
-			CWndBase* pWndBase	= g_WndMng.GetWndVendorBase();				
-			if( pWndBase )
-			{
+		if (pMover->IsActiveMover()) {
+
+			if (CWndBase * pWndBase = g_WndMng.GetWndVendorBase()) {
 				pWndBase->Destroy();
-				pWndBase	= g_WndMng.GetWndBase( APP_INVENTORY );
-				if( pWndBase )
-				{
+
+				if (CWndBase * pWndBase = g_WndMng.GetWndBase(APP_INVENTORY)) {
 					pWndBase->Destroy();
 					pWndBase->m_GlobalShortcut.Empty();
 				}
@@ -1474,12 +1457,11 @@ void CDPClient::OnDamage( OBJID objid, CAr & ar )
 		CCtrl*	pAttacker = prj.GetCtrl( objidAttacker );
 		if( IsValidObj( pAttacker ) == FALSE )
 			goto g_PASS;
-//			return;
 		
-		// 옵션에서 모든데미지 표시체크가 되었다면 
+		// If all damage display is checked in options
 		if( g_Option.m_bDamageRender )
 		{
-			// 반경 30미터안에 있는 넘들만 표시
+			// Show only those within a 30 meter radius
 			if( g_pPlayer->IsRangeObj( pMover->GetPos(), 30 ) )
 				goto g_PASS;
 		}
@@ -1497,7 +1479,7 @@ void CDPClient::OnDamage( OBJID objid, CAr & ar )
 		if( pMover->IsActiveMover() || ( pAttacker->GetType() == OT_MOVER && ((CMover *)pAttacker)->IsActiveMover() ) ) 
 		{
 g_PASS:
-			// 시전중이라면 캔슬시킴
+			// if it's casting, cancel it
 			if( g_pPlayer->IsStateMode( STATE_BASEMOTION_MODE ) && ( pMover == g_pPlayer || pAttacker == g_pPlayer ) )
 			{
 				SendStateModeCancel( STATE_BASEMOTION_MODE, STATEMODE_BASEMOTION_CANCEL );
@@ -1505,7 +1487,6 @@ g_PASS:
 		
 
 			if (dwAtkFlags & AF_BLOCKING) {
-				// 블록일 때 
 				CreateDamageSfx(pMover, XI_HIT_HITBLOCK01, 2.0f);
 			}
 
@@ -1522,7 +1503,6 @@ g_PASS:
 			} else {
 
 				if (dwAtkFlags & AF_CRITICAL) {
-					// 크리티컬일때
 					CreateDamageSfx(pMover, XI_HIT_CRITICAL01, 3.0f);
 				}
 
@@ -1545,28 +1525,27 @@ g_PASS:
 				
 				if( dwAtkFlags & AF_FLYING )
 				{
-					if( (pMover->m_pActMover->GetState() != OBJSTA_STUN) )			//gmpbigsun: -_-의미없는 비교다. 0x01 대기상태가 켜져있는것이 대부분이다.
+					if( (pMover->m_pActMover->GetState() != OBJSTA_STUN) )			//gmpbigsun: -_- It's a meaningless comparison. 0x01 Standby state is mostly on.
 					{
 						pMover->m_pActMover->SetState( OBJSTA_DMG_ALL, OBJSTA_DMG_FLY );
 						pMover->SetMotion( MTI_DMGFLY, ANILOOP_CONT );
 						if( pAttacker )
 						{
-							((CMover *)pAttacker)->m_pActMover->SendActMsg( OBJMSG_STOP );		// 어태커는 날려보낸 후엔 일단 서자.
-							pMover->m_pActMover->DoDamageFly( pAttacker->GetAngle(), 145.0f, 0.18f );	// 어태커가 보는쪽으로 날려보냄.
+							((CMover *)pAttacker)->m_pActMover->SendActMsg( OBJMSG_STOP );		// Let's stand after the attacker is blown away.
+							pMover->m_pActMover->DoDamageFly( pAttacker->GetAngle(), 145.0f, 0.18f );	// Send it flying in the direction the attacker sees it.
 						}
 					}
 				}
-			} else
-			// 어태커가 유효하지 않다고 나오는 경우 서버로 이사실을 알림.
-			{
+			} else {
+				// If the attacker is invalid, notify the server of the move.
 				if( pMover->IsActiveMover() )
 				{
 					SendError( FE_INVALIDATTACKER, (int)objidAttacker );
-					SendCorrReq( objidAttacker );		// 어태커의 좌표를 보정함.
+					SendCorrReq( objidAttacker );		// Calibrate the coordinates of the attacker.
 				}
 			}
 		}
-	} // IsValid( pMover )
+
 }
 
 void CDPClient::OnMoverDeath( OBJID objid, CAr & ar )
