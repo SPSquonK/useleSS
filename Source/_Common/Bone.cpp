@@ -210,43 +210,28 @@ CMotion * CMotionMng::LoadMotion(LPCTSTR szFileName) {
 
 CMotion :: CMotion()
 {
-	Init();
-}
-
-CMotion :: ~CMotion()
-{
-	Destroy();
-}
-
-void	CMotion :: Init( void )
-{
 	m_pMotion = NULL;
 	m_pPath = NULL;
 	m_pBoneFrame = NULL;
 	m_fPerSlerp = 0.5f;
 	m_nMaxEvent = 0;
 	m_pBoneInfo = NULL;
-	memset( m_vEvent, 0, sizeof(m_vEvent) );
+	memset(m_vEvent, 0, sizeof(m_vEvent));
 	m_pAttr = NULL;
 	m_pBoneInfo = NULL;
 }
 
-void	CMotion :: Destroy( void )
+CMotion :: ~CMotion()
 {
-	int		i;
-
-	SAFE_DELETE_ARRAY( m_pAttr );
-	SAFE_DELETE_ARRAY( m_pMotion );
-	SAFE_DELETE_ARRAY( m_pPath );
-	if( m_pBoneFrame )
-	{
-		for( i = 0; i < m_nMaxBone; i ++ )
+	SAFE_DELETE_ARRAY(m_pAttr);
+	SAFE_DELETE_ARRAY(m_pMotion);
+	SAFE_DELETE_ARRAY(m_pPath);
+	if (m_pBoneFrame) {
+		for (int i = 0; i < m_nMaxBone; i++)
 			m_pBoneFrame[i].m_pFrame = NULL;
 	}
-	SAFE_DELETE_ARRAY( m_pBoneFrame );
-	SAFE_DELETE_ARRAY( m_pBoneInfo );
-
-	Init();
+	SAFE_DELETE_ARRAY(m_pBoneFrame);
+	SAFE_DELETE_ARRAY(m_pBoneInfo);
 }
 
 //

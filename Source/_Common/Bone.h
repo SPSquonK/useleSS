@@ -100,7 +100,7 @@ struct	MOTION_ATTR
 	float	m_fFrame;		// 소숫점 단위의 정확한 프레임 번호 
 };
 
-class CMotion
+class CMotion final
 {
 private:
 	TM_ANIMATION	*m_pMotion;			// 뼈대순서대로 각각의 애니메이션이 들어있다.  애니가 없는 뼈대는 LocalTM만 있다.
@@ -121,8 +121,7 @@ public:
 	CMotion();
 	~CMotion();
 
-	void Init( void );
-	void Destroy( void );
+	//void Init( void );
 
 	MOTION_ATTR *GetMotionAttr( int nNumFrm ) { return m_pAttr + nNumFrm; }	
 	DWORD	GetAttr( int nNumFrm ) 
