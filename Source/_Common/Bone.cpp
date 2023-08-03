@@ -306,8 +306,6 @@ int		CMotion :: LoadMotion( LPCTSTR szFileName )
 
 	resFp.Close();
 
-//	m_vPivot = m_pMotion[0].m_vPos;			// Bip01의 POS값을 받음.  골반의 기준 좌표다.
-
 	return SUCCESS;
 }
 

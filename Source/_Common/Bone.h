@@ -112,7 +112,6 @@ public:
 	char	m_szName[64];				// 모션 파일명 - 나중에 이건 빠진다.
 	float	m_fPerSlerp;				//
 	int		m_nMaxBone;					// 이것은 어디까지나 확인용 변수일뿐이다.  실제 본의 갯수가 필요하다면 CBone에서 읽어야 한다.
-	D3DXVECTOR3	m_vPivot;				// 0,0,0(발)기준에서 골반(루트)의 좌표.  0번키의 좌표와 같다.
 	BONE_FRAME	*m_pBoneFrame;		// 뼈대갯수 만큼 할당. 로딩이 끝난후 사용하기 좋도록 포인터를 재배치한다.  프레임이 없는곳은 NULL
 	BONE		*m_pBoneInfo;		// 뼈대구성정보
 	int		m_nMaxEvent;
