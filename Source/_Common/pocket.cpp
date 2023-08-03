@@ -111,30 +111,8 @@ CItemElem*	CPocketController::GetAt( int nPocket, int nIndex )
 	return m_apPocket[nPocket]->GetAt( nIndex );
 }
 #endif	// __CLIENT
-/*
-BOOL	CPocketController::Add( CItemElem* pItemElem, vector<PocketController_Result>* apResult )
-{
-	BYTE anId[POCKET_SLOT_SIZE_1_2];
-	short	anNum[POCKET_SLOT_SIZE_1_2];
-	BYTE nCount	= 0;
-	
-	for( int i = 0; i < MAX_POCKET; i++ )
-	{
-		if( IsAvailable( i ) && m_apPocket[i]->Add( pItemElem, anId, anNum, &nCount ) )
-		{
-			for( int j = 0; j < nCount; j++ )
-			{
-				PocketController_Result	result( i, anId[j], anNum[j] ); 
-				apResult->push_back( result );
-			}
-			return TRUE;
-		}
-	}
-	return FALSE;
-}
-*/
 
-BOOL	CPocketController::Add( int nPocket, CItemElem*pItemElem, std::vector<PocketController_Result>* apResult )
+BOOL	CPocketController::Add( int nPocket, CItemElem*pItemElem )
 {
 	BYTE anId[POCKET_SLOT_SIZE_1_2];
 	short	anNum[POCKET_SLOT_SIZE_1_2];
@@ -142,14 +120,7 @@ BOOL	CPocketController::Add( int nPocket, CItemElem*pItemElem, std::vector<Pocke
 
 	if( IsAvailable( nPocket ) && m_apPocket[nPocket]->Add( pItemElem, anId, anNum, &nCount ) )
 	{
-		if( apResult )
-		{
-			for( int i = 0; i < nCount; i++ )
-			{
-				PocketController_Result	result( nPocket, anId[i], anNum[i] ); 
-				apResult->push_back( result );
-			}
-		}
+
 #ifdef __WORLDSERVER
 //		if( m_pMover->IsPlayer() )
 			( (CUser*)m_pMover )->AddPocketAddItem( nPocket, pItemElem );

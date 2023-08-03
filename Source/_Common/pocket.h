@@ -33,19 +33,6 @@ private:
 #define	POCKET_SLOT_SIZE_0	6
 #define	POCKET_SLOT_SIZE_1_2	24
 
-typedef	struct	_PocketController_Result
-{
-	int		nPocket;
-	int		nItem;
-	int		nNum;
-	_PocketController_Result( int p, int i, int n )
-	{
-		nPocket		= p;
-		nItem	= i;
-		nNum	= n;
-	}
-}	PocketController_Result;
-
 class CPocketController
 {
 public:
@@ -58,8 +45,8 @@ public:
 	void	Clear( void );
 // Operations
 	CItemElem*	GetAtId( int nPocket, int nItem, BOOL bExpiration = TRUE );	
-//	BOOL	Add( CItemElem* pItemElem, vector<PocketController_Result>* apResult );
-	BOOL	Add( int nPocket, CItemElem*pItemElem, std::vector<PocketController_Result>* apResult = NULL );
+
+	BOOL	Add( int nPocket, CItemElem*pItemElem );
 	BOOL	RemoveAtId( int nPocket, int nItem, int nNum );		// if nNum < 0, remove all.
 	int		RemoveItem( DWORD dwItemId, int nNum );
 	
