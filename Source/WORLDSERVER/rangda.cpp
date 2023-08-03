@@ -18,30 +18,12 @@ m_objid( NULL_ID )
 {
 }
 
-CRangda::CRangda( DWORD dwMonster, int nInterval, int nReplace, BOOL bActiveAttack )
-:
-m_dwMonster( dwMonster ),
-m_nInterval( nInterval ),
-m_nReplace( nReplace ),
-m_bActiveAttack( bActiveAttack ),
-m_nGenerateCountdown( 0 ),
-m_nReplaceCountdown( 0 ),
-m_bReplaceable( TRUE ),
-m_nOldPos( -1 ),
-m_objid( NULL_ID )
-{
-}
-
-CRangda::~CRangda()
-{
-}
-
 void CRangda::AddPos( const RANGDA_POS & vPos )
 {	// 좌표 추가
 	m_vvPos.push_back( vPos );
 }
 
-RANGDA_POS CRangda::GetRandomPos( void )
+CRangda::RANGDA_POS CRangda::GetRandomPos( void )
 {	// 추가된 좌표 중 하나를 임의로 반환
 	ASSERT( !m_vvPos.empty() );
 	
@@ -153,75 +135,61 @@ void CRangda::CreateMonster( void )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// 랜덤 이벤트 몬스터 제어 클래스
-CRangdaController::CRangdaController()
-{
-}
+// CRangdaController
 
-CRangdaController::~CRangdaController()
-{
-	for( auto i = m_vRangda.begin(); i != m_vRangda.end(); ++i )
-		safe_delete( *i );
-	m_vRangda.clear();
-}
-
-CRangdaController* CRangdaController::Instance( void )
-{
+CRangdaController * CRangdaController::Instance() {
 	static CRangdaController sRangdaController;
 	return &sRangdaController;
 }
 
-void CRangdaController::AddRangda( CRangda* pRangda )
-{
-	m_vRangda.push_back( pRangda );
+void CRangdaController::OnTimer() {
+	for (CRangda & pRangda : m_vRangda) {
+		pRangda.OnTimer();
+	}
 }
 
-void CRangdaController::OnTimer( void )
-{
-	for( VR::iterator i = m_vRangda.begin(); i != m_vRangda.end(); ++i )
-		( *i )->OnTimer();
-}
-
-BOOL CRangdaController::LoadScript( const char* szFile )
-{
+bool CRangdaController::LoadScript(const char * szFile) {
 	CScript s;
-	if( s.Load( szFile ) == FALSE )
-		return FALSE;
+	if (!s.Load(szFile)) return false;
 
-	DWORD dwMonster		= s.GetNumber();		// subject or FINISHED
-	while( s.tok != FINISHED )
-	{
-		CRangda* pRangda	= new CRangda( dwMonster );
-		AddRangda( pRangda );
+
+	while (true) {
+		const DWORD dwMonster = s.GetNumber();		// subject or FINISHED
+
+		if (s.tok == FINISHED) break;
+
+		CRangda & pRangda = m_vRangda.emplace_back(dwMonster);
+
 		s.GetToken();	// {
-		s.GetToken();	// subject or '}'
-		
-		while( *s.token != '}' )
-		{
-			if( s.Token == _T( "nInterval" ) )
-				pRangda->SetInterval( s.GetNumber() );
-			else if( s.Token == _T( "nReplace" ) )
-				pRangda->SetReplace( s.GetNumber() );
-			else if( s.Token == _T( "bActiveAttack" ) )
-				pRangda->SetActiveAttack( static_cast<BOOL>( s.GetNumber() ) );
-			else if( s.Token == _T( "vRangda" ) )
-			{
-				RANGDA_POS pos;
+		while (true) {
+			s.GetToken();	// subject or '}'
+			if (*s.token == '}') break;
+
+			if (s.Token == _T("nInterval"))
+				pRangda.SetInterval(s.GetNumber());
+			else if (s.Token == _T("nReplace"))
+				pRangda.SetReplace(s.GetNumber());
+			else if (s.Token == _T("bActiveAttack"))
+				pRangda.SetActiveAttack(static_cast<BOOL>(s.GetNumber()));
+			else if (s.Token == _T("vRangda")) {
 				s.GetToken();	// {
-				pos.dwWorldId	= s.GetNumber();
-				while( *s.token != '}' )
-				{
-					pos.vPos.x	= s.GetFloat();
-					pos.vPos.y	= s.GetFloat();
-					pos.vPos.z	= s.GetFloat();
-					pRangda->AddPos( pos );
-					pos.dwWorldId	= s.GetNumber();
+
+				while (true) {
+					CRangda::RANGDA_POS pos;
+					pos.dwWorldId = s.GetNumber();
+
+					if (*s.token == '}') break;
+
+					pos.vPos.x = s.GetFloat();
+					pos.vPos.y = s.GetFloat();
+					pos.vPos.z = s.GetFloat();
+
+					pRangda.AddPos(pos);
 				}
 			}
-			s.GetToken();
 		}
-		dwMonster	= s.GetNumber();
 	}
-	return TRUE;
+
+	return true;
 }
 

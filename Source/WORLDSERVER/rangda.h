@@ -1,21 +1,19 @@
-#ifndef __RANGDA_H__
-#define	__RANGDA_H__
+#pragma once
 
-// 랜덤 이벤트 몬스터가 나타나는 지점을 나타내는 구조체
-typedef	struct	_RANGDA_POS
-{
-	DWORD	dwWorldId;	// 나타날 수 있는 곳의 월드 식별자
-	D3DXVECTOR3 vPos;	// 나타날 수 있는 곳의 좌표
-}	RANGDA_POS,	*PRANGDA_POS;
 
-typedef	std::vector<RANGDA_POS>	VRP;
 // 단일 랜덤 이벤트 몬스터를 제어하는 클래스
-class CRangda
+class CRangda final
 {
 public:
+	// 랜덤 이벤트 몬스터가 나타나는 지점을 나타내는 구조체
+	struct RANGDA_POS final {
+		DWORD	dwWorldId;	// 나타날 수 있는 곳의 월드 식별자
+		D3DXVECTOR3 vPos;	// 나타날 수 있는 곳의 좌표
+	};
+
+
 	CRangda( DWORD dwMonster );
-	CRangda( DWORD dwMonster, int nInterval, int nReplace, BOOL bActiveAttack );
-	virtual	~CRangda();
+
 	void	AddPos( const RANGDA_POS & vPos );	// 좌표 추가
 	void	OnTimer();	// 틱 처리
 	void	SetInterval( int nInterval )	{	m_nInterval	= nInterval;	}	// 재생 간격 설정
@@ -37,7 +35,7 @@ private:
 	int		m_nInterval;	// 재생 간격
 	int		m_nReplace;		// 이동 간격
 	BOOL	m_bActiveAttack;	// 선공 여부
-	VRP	m_vvPos;	// 나타날 수 있는 좌표 집합
+	std::vector<RANGDA_POS>	m_vvPos;	// 나타날 수 있는 좌표 집합
 	int		m_nGenerateCountdown;	// 재생 대기 시간 틱당 1 감소
 	int		m_nReplaceCountdown;	// 이동 대기 시간, 틱당 1 감소
 	BOOL	m_bReplaceable;		// 이동 가능 플래그
@@ -45,19 +43,17 @@ private:
 	OBJID	m_objid;	// 실 객체 식별자
 };
 
-typedef	std::vector<CRangda*>	VR;
-// 모든 랜덤 이벤트 몬스터에 대한 제어 클래스
-class CRangdaController
-{
+
+class CRangdaController final {
 public:
-	virtual	~CRangdaController();
-	static	CRangdaController*	Instance( void );
-	void	AddRangda( CRangda* pRangda );	// 랜덤 이벤트 몬스터 추가
-	void	OnTimer( void );	// 틱
-	BOOL	LoadScript( const char* szFile );
+	static CRangdaController * Instance();
+
+	bool LoadScript(const char * szFile);
+	void OnTimer();
+	
 private:
-	CRangdaController();
+	CRangdaController() = default;
 private:
-	VR	m_vRangda;
+	std::vector<CRangda> m_vRangda;
 };
-#endif	// __RANGDA_H__
+
