@@ -3461,7 +3461,7 @@ void	CObject3D::SetShader( const D3DXMATRIX *mWorld )
 	if( m_bSendVS )	// 뼈대개수가 MAX_VS_BONE이하라서 한번에 다 전송한다.
 	{
 		int		nMaxBone = m_nMaxBone;
-		if( nMaxBone > MAX_VS_BONE )	
+		if( nMaxBone > CBones::MAX_VS_BONE )	
 			Error( "CModelObject::Render : 뼈대개수가 최대치를 초과했다. %d", nMaxBone );
 
 		for( i = 0; i < nMaxBone; i ++ )	// MAX_VS_BONE개 이하	

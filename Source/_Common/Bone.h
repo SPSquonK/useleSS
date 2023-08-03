@@ -3,8 +3,7 @@
 #include <d3dx9.h>
 #include "file.h"
 #include <functional>
-
-#define		MAX_VS_BONE		28		// The maximum number of skeleton registers available in VS.
+#include "sqktd/dynamic_array.hpp"
 
 struct BONE {
 	BONE *			m_pParent;    // Parent node
@@ -16,29 +15,31 @@ struct BONE {
 	D3DXMATRIX	m_mLocalTM;   // pretransformed local TM
 };
 
-#define MAX_MDL_EVENT		8	// #event xx
+
 
 //
 // 본셋트의 구조
 class CBones final
 {
 public:
-	int		m_nID;				// 본의 고유 ID(파일내에 있다)
-	char	m_szName[64];		// 본의 파일명 - 나중에 이건 빠진다.
-	int		m_nMaxBone;			// 뼈대 갯수
-	std::unique_ptr<BONE[]> m_pBones;			// 뼈대 리스트
-	int		m_bSendVS;			// 본개수가 MAX_VS_BONE보다 적은지...
+	static constexpr size_t MAX_VS_BONE   = 28; // The maximum number of skeleton registers available in VS.
+	static constexpr int    MAX_MDL_EVENT = 8;  // #event xx
 
-	D3DXMATRIX	m_mLocalRH;		// 오른손 무기의 RHand로부터의 상대TM
-	D3DXMATRIX	m_mLocalLH;		// 오른손 무기의 LHand로부터의 상대TM
-	D3DXMATRIX	m_mLocalShield;	// 방패의 LForeArm으로부터의 상대TM
-	D3DXMATRIX	m_mLocalKnuckle;	// 너클.
-	int		m_nRHandIdx;		// 오른손 인덱스
-	int		m_nLHandIdx;		// 왼손 인덱스
-	int		m_nRArmIdx;			// 오른손 팔뚝
-	int		m_nLArmIdx;			// 왼손 팔뚝 인덱스.
+	int		m_nID;                            // Unique ID of the bone (located in the file)
+	char	m_szName[64];                     // The name of the model's file - this will be removed later.
+	sqktd::dynamic_array<BONE> m_pBones;
+	int		m_bSendVS;                        // Whether the number of bones is less than MAX_VS_BONE...
+
+	D3DXMATRIX	m_mLocalRH;                 // Relative transformation matrice from RHand of weapon
+	D3DXMATRIX	m_mLocalLH;                 // Relative transformation matrice from LHand of weapon
+	D3DXMATRIX	m_mLocalShield;             // Relative transformation matrice from left forarm of shields
+	D3DXMATRIX	m_mLocalKnuckle;            // Relative transformation matrice from RHand of knuckles
+	int		m_nRHandIdx;                      // Index of the right hand
+	int		m_nLHandIdx;                      // Index of the left hand
+	int		m_nRArmIdx;                       // Index of the right forarm
+	int		m_nLArmIdx;                       // Index of the left forarm
 	D3DXVECTOR3	m_vEvent[MAX_MDL_EVENT];	
-	int		m_nEventParentIdx[MAX_MDL_EVENT];	// 이벤트좌표들 부모인덱스.
+	int		m_nEventParentIdx[MAX_MDL_EVENT];	// Parent indices of event coordinates.
 	
 public:
 	CBones();

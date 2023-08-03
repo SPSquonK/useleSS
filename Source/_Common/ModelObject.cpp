@@ -479,12 +479,10 @@ int		CModelObject::LoadBone( LPCTSTR szFileName )
 #endif
 
 	// 오브젝트의 계층구조가 애니메이션되면서 실시간으로 변환되는 매트릭스 배열
-	m_mUpdateBone = new D3DXMATRIX[ m_pBone->m_nMaxBone * 2 ];	// Inv랑 같이 쓰려고 * 2로 잡는다,.
-	m_pBaseBoneInv = m_mUpdateBone + m_pBone->m_nMaxBone;
+	m_mUpdateBone = new D3DXMATRIX[ m_pBone->m_pBones.size() * 2 ];	// Inv랑 같이 쓰려고 * 2로 잡는다,.
+	m_pBaseBoneInv = m_mUpdateBone + m_pBone->m_pBones.size();
 	
-	int		i;
-	for( i = 0; i < m_pBone->m_nMaxBone; i ++ )
-	{
+	for (const size_t i : m_pBone->m_pBones.keys()) {
 		m_mUpdateBone[i] = m_pBone->m_pBones[i].m_mTM;		// 기본셋은 미리 카피해둠.
 		m_pBaseBoneInv[i] = m_pBone->m_pBones[i].m_mInverseTM;	// Inv도 미리 받아둠.
 	}
@@ -943,13 +941,10 @@ int		CModelObject::Render( const D3DXMATRIX *mWorld )
 
 		if( m_pBone->m_bSendVS )	// 뼈대개수가 MAX_VS_BONE이하라서 한번에 다 전송한다.
 		{
-			int		nMaxBone = m_pBone->m_nMaxBone;
+			if(m_pBone->m_pBones.size() > CBones::MAX_VS_BONE )
+				Error( "CModelObject::Render : overflow bone count - %z", m_pBone->m_pBones.size());
 
-			if( nMaxBone > MAX_VS_BONE )	
-				Error( "CModelObject::Render : overflow bone count - %d", nMaxBone );
-
-			for( i = 0; i < nMaxBone; i ++ )	// MAX_VS_BONE개 이하	
-			{
+			for (const int i : m_pBone->m_pBones.keys<int>()) {
 				D3DXMATRIX mWorldTranspose = pmBonesInv[i] * pmBones[i];
 #ifdef	__YENV		
 				CString str;
@@ -2067,20 +2062,10 @@ D3DXVECTOR3 CModelObject::GetHandPos(int nParts, const D3DXMATRIX & mWorld) {
 #ifdef __BS_EFFECT_LUA
 std::optional<D3DXVECTOR3> CModelObject::GetPosBone(const char * const bonename) {
 	//gmpbigsun : 본이름으로 본좌표 추출 
-	for (int i = 0; i < m_pBone->m_nMaxBone; ++i) {
-		const BONE * pUnitBone = m_pBone->GetBone(i);
-		if (!pUnitBone) {
-			assert(0);
-			continue;
-		}
-
+	for (const auto [i, pUnitBone] : m_pBone->m_pBones.entries()) {
 		if (strcmp(bonename, pUnitBone->m_szName) == 0) {
-			D3DXMATRIX matTemp;
-			if (pUnitBone->m_pParent)
-				matTemp = pUnitBone->m_mLocalTM * m_mUpdateBone[pUnitBone->m_nParentIdx];
-			else
-				matTemp = pUnitBone->m_mLocalTM * m_mUpdateBone[i];
-
+			const size_t parent = pUnitBone->m_pParent ? pUnitBone->m_nParentIdx : i;
+			const D3DXMATRIX matTemp = pUnitBone->m_mLocalTM * m_mUpdateBone[parent];
 			return D3DXVECTOR3(matTemp._41, matTemp._42, matTemp._43);
 		}
 	}

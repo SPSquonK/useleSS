@@ -18,8 +18,6 @@ CBones :: CBones()
 {
 	m_nID = 0;
 	memset( m_szName, 0, sizeof(m_szName) );
-	m_nMaxBone = 0;
-	m_pBones = nullptr;
 	m_nRHandIdx = m_nLHandIdx = m_nRArmIdx = m_nLArmIdx = 0;
 
 	D3DXMatrixIdentity( &m_mLocalRH );
@@ -36,16 +34,12 @@ CBones :: CBones()
 //
 int		CBones :: LoadBone( LPCTSTR szFileName )
 {
-	int		nNumBone;
-	int		i;
-	int		nLen;
-	int		nVer;
-
 	CResFile resFp;
-	BOOL bRet = resFp.Open( MakePath( DIR_MODEL, szFileName ), "rb" );	
+	const BOOL bRet = resFp.Open( MakePath( DIR_MODEL, szFileName ), "rb" );	
 	if( bRet == FALSE )		
 		return	FAIL;
 
+	int nVer;
 	resFp.Read( &nVer, 4, 1 );		// version
 	if( nVer < VER_BONE )
 	{
@@ -67,13 +61,15 @@ int		CBones :: LoadBone( LPCTSTR szFileName )
 	// 파일명 카피
 	strcpy( m_szName, szFileName );
 
+	int		nNumBone;
 	resFp.Read( &nNumBone, 4, 1 );			// 본 개수 읽음
-	m_nMaxBone = nNumBone;
-	m_pBones = std::make_unique<BONE[]>(nNumBone);			// 본 개수 만큼 할당
+	const int m_nMaxBone = nNumBone;
+	m_pBones = sqktd::dynamic_array<BONE>(nNumBone);			// 본 개수 만큼 할당
 	memset( m_pBones.get(), 0, sizeof(BONE) * nNumBone);		// zero clear
 
-	for( i = 0; i < nNumBone; i ++ )
+	for( int i = 0; i < nNumBone; i ++ )
 	{
+		int nLen;
 		resFp.Read( &nLen, 4, 1 );		// 널 포함길이
 		resFp.Read( m_pBones[i].m_szName,		nLen, 1 );		// bone node 이름 저장
 		resFp.Read( &m_pBones[i].m_mTM,			sizeof(D3DXMATRIX), 1 );			// World(Object) TM
@@ -118,7 +114,7 @@ int		CBones :: LoadBone( LPCTSTR szFileName )
 	resFp.Close();
 
 	// 부모 포인터를 셋팅
-	for( i = 0; i < nNumBone; i ++ )
+	for( int i = 0; i < nNumBone; i ++ )
 	{
 		if( m_pBones[i].m_nParentIdx == -1 )			// 부모가 없으면 부모포인터는 널
 			m_pBones[i].m_pParent = NULL;

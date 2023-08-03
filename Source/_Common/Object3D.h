@@ -90,7 +90,7 @@ struct	MATERIAL_BLOCK
 	DWORD	m_dwEffect;
 	int		m_nAmount;		// 투명도
 	int		m_nMaxUseBone;
-	int		m_UseBone[MAX_VS_BONE];
+	int		m_UseBone[CBones::MAX_VS_BONE];
 };
 
 struct GMOBJECT;
@@ -104,7 +104,7 @@ struct GMOBJECT		// base object
 	int			m_nVertexSize;		// sizeof(FVF)
 	DWORD		m_dwFVF;			// FVF 포맷
 	int			m_nMaxUseBone;		
-	int			m_UseBone[ MAX_VS_BONE ];
+	int			m_UseBone[ CBones::MAX_VS_BONE ];
 	int			m_nID;
 	int			m_bOpacity;
 	int			m_bBump;
@@ -216,7 +216,7 @@ private:
 	MOTION_ATTR		*m_pAttr;			// 프레임크기만큼 할당.  각 프레임속성.
 	
 public:
-	D3DXVECTOR3	m_vEvent[MAX_MDL_EVENT];
+	D3DXVECTOR3	m_vEvent[CBones::MAX_MDL_EVENT];
 	int		m_bSendVS;
 	int		m_bLOD;						// LOD데이타가 있는가?
 	int		m_nID;						// 오브젝트의 고유 아이디
