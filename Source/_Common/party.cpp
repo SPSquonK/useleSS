@@ -484,11 +484,21 @@ void CParty::Replace( DWORD dwWorldId, LPCTSTR sKey ) const {
 }
 
 bool CParty::ReplaceChkLv(const int Lv) const {
-	return std::ranges::all_of(this | AllMembers,
-		[Lv](const CUser * const pMember) {
-			return pMember->GetLevel() <= Lv;
+	auto range = this | AllMembers;
+
+	for (const CUser * pUser : this | AllMembers) {
+		if (pUser->GetLevel() > Lv) {
+			return false;
 		}
-	);
+	}
+
+	return true;
+
+	//return std::ranges::all_of(range.begin(), range.end(), 
+	//	[Lv](const CUser * const pMember) {
+	//		return pMember->GetLevel() <= Lv;
+	//	}
+	//);
 }
 #endif //__WORLDSERVER
 
