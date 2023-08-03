@@ -293,8 +293,6 @@ public:
 		return &m_mUpdateBone[ nBoneIdx ];
 	}
 
-	D3DXVECTOR3 *GetPath( void ) { return ( m_pMotion ) ? m_pMotion->m_pPath : NULL; }
-
 	int		IsHaveCollObj( void ) { return m_bCollObj; }
 	HRESULT	CreateDeviceBuffer( O3D_ELEMENT *pElem );
 	int		LoadBone( LPCTSTR szFileName );

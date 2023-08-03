@@ -207,7 +207,6 @@ CMotion * CMotionMng::LoadMotion(LPCTSTR szFileName) {
 CMotion :: CMotion()
 {
 	m_pMotion = NULL;
-	m_pPath = NULL;
 	m_pBoneFrame = NULL;
 	m_fPerSlerp = 0.5f;
 	m_nMaxEvent = 0;
@@ -221,7 +220,6 @@ CMotion :: ~CMotion()
 {
 	SAFE_DELETE_ARRAY(m_pAttr);
 	SAFE_DELETE_ARRAY(m_pMotion);
-	SAFE_DELETE_ARRAY(m_pPath);
 	if (m_pBoneFrame) {
 		for (int i = 0; i < m_nMaxBone; i++)
 			m_pBoneFrame[i].m_pFrame = NULL;
@@ -287,13 +285,11 @@ int		CMotion :: LoadMotion( LPCTSTR szFileName )
 		return FAIL;
 	}
 
-	// path 
+	// Path: skip it as it is never used
 	int nTemp;
-	resFp.Read( &nTemp, 4, 1 );	// path정보가 있는가?
-	if( nTemp )
-	{
-		m_pPath = new D3DXVECTOR3[ nNumFrame ];
-		resFp.Read( m_pPath, sizeof(D3DXVECTOR3) * nNumFrame, 1 );		// nNumFrame만큼 한방에 읽어버리기.
+	resFp.Read( &nTemp, 4, 1 );
+	if (nTemp) {
+		resFp.Seek(sizeof(D3DXVECTOR3) * nNumFrame, SEEK_CUR);
 	}
 
 	//

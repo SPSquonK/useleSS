@@ -117,7 +117,6 @@ public:
 	BONE		*m_pBoneInfo;		// 뼈대구성정보
 	int		m_nMaxEvent;
 	D3DXVECTOR3	m_vEvent[4];
-	D3DXVECTOR3		*m_pPath;			// path
 	
 	CMotion();
 	~CMotion();
