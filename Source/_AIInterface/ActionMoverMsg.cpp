@@ -822,7 +822,7 @@ int		CActionMover::ProcessActMsg1( CMover* pMover,  OBJMSG dwMsg, int nParam1, i
 					const auto applyToParty = [pMover](CParty * party) {
 						if (!party) return;
 
-						for (CUser * pMember : AllMembers(*party)) {
+						for (CUser * pMember : party | AllMembers) {
 							pMember->AddSetDuel(pMover);
 						}
 					};

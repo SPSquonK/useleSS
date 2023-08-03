@@ -19,7 +19,7 @@ void CParty::SendSnapshotWithTarget(DWORD targetId, Ts ... ts) const {
 	int blockSize = 0;
 	BYTE * const buffer = ar.GetBuffer(&blockSize);
 
-	for (CUser * const user : AllMembers(*this)) {
+	for (CUser * const user : this | AllMembers) {
 		user->AddBlock(buffer, blockSize);
 	}
 }
@@ -40,7 +40,7 @@ void CGuild::SendSnapshotWithTarget(DWORD targetId, const Ts & ... ts) const {
 	int blockSize = 0;
 	BYTE * const buffer = ar.GetBuffer(&blockSize);
 
-	for (CUser * const user : AllMembers(*this)) {
+	for (CUser * const user : this | AllMembers) {
 		user->AddBlock(buffer, blockSize);
 	}
 }

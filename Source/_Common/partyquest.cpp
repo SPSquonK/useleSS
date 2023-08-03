@@ -235,7 +235,7 @@ void CPartyQuestProcessor::SendQuestLimitTime(GroupQuest::ProcessState nState, D
 	CParty * pParty = g_PartyMng.GetParty(idParty);
 	if (!pParty) return;
 
-	for (CUser * pUsertmp : AllMembers(*pParty)) {
+	for (CUser * pUsertmp : pParty | AllMembers) {
 		pUsertmp->AddQuestTextTime(1, nState, dwTime);
 	}
 }

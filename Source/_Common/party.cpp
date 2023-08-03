@@ -261,7 +261,7 @@ void CParty::DoUsePartySkill( u_long uPartyId, u_long uLeaderid, int nSkill )
 	const auto useStCall = [&]() {
 		g_DPCoreClient.SendRemovePartyPoint(uPartyId, pItemProp->dwExp);
 
-		for (CUser * pMember : AllMembers(*this)) {
+		for (CUser * pMember : this | AllMembers) {
 			pMember->AddPartySkillCall(pLeader->GetPos());		// 각 멤버들에게 단장이 좌표를 전송함.
 		}
 	};
@@ -282,7 +282,7 @@ void CParty::DoUsePartySkill( u_long uPartyId, u_long uLeaderid, int nSkill )
 		// 단장이 타겟으로 집중공격 표시
 		// TODO: why PartyGiftBox and ForturneTeller? It doesn't make any sense
 		const bool skipNearCheck = m_nModeTime[PARTY_GIFTBOX_MODE] || m_nModeTime[PARTY_FORTUNECIRCLE_MODE];
-		for (CUser * pMember : AllMembers(*this)) {
+		for (CUser * pMember : this | AllMembers) {
 			if (skipNearCheck || pLeader->IsNearPC(pMember)) {
 				// 각 멤버들에게 단장타겟으로 잡은 무버의 아이디를 보냄.
 				pMember->AddPartySkillBlitz(pLeader->m_idSetTarget);
@@ -295,7 +295,7 @@ void CParty::DoUsePartySkill( u_long uPartyId, u_long uLeaderid, int nSkill )
 
 		const bool skipNearCheck = m_nModeTime[PARTY_GIFTBOX_MODE] || m_nModeTime[PARTY_FORTUNECIRCLE_MODE];
 
-		for (CUser * pMember : AllMembers(*this)) {
+		for (CUser * pMember : this | AllMembers) {
 			if (skipNearCheck || pLeader->IsNearPC(pMember)) {
 				pMember->AddHdr(pMember->GetId(), SNAPSHOTTYPE_PARTYSKILL_RETREAT);
 			}
@@ -318,7 +318,7 @@ void CParty::DoUsePartySkill( u_long uPartyId, u_long uLeaderid, int nSkill )
 
 		g_DPCoreClient.SendRemovePartyPoint(uPartyId, pItemProp->dwExp);
 
-		for (CUser * pMember : AllMembers(*this)) {
+		for (CUser * pMember : this | AllMembers) {
 			if (skipNearCheck || pLeader->IsNearPC(pMember)) {
 				pMember->AddHdr(pLeader->m_idSetTarget, SNAPSHOTTYPE_PARTYSKILL_SPHERECIRCLE);
 				pMember->m_dwFlag |= MVRF_CRITICAL;
@@ -368,7 +368,7 @@ void CParty::DoDuelPartyStart( CParty *pDst )
 		return;
 	}
 
-	for (CUser * pMember : AllMembers(*this)) {
+	for (CUser * pMember : this | AllMembers) {
 
 		pMember->m_nDuel = 2;		// 2는 파티듀얼중.
 		pMember->m_idDuelParty = m_idDuelParty;
@@ -394,7 +394,7 @@ void CParty::DoDuelPartyStart( CParty *pDst )
 //
 void CParty::DoDuelResult( CParty *pDuelOther, BOOL bWin, int nAddFame, float fSubFameRatio )
 {
-	for (CUser * pMember : AllMembers(*this)) {
+	for (CUser * pMember : this | AllMembers) {
 		pMember->AddDuelPartyResult( pDuelOther, bWin );		// 각 멤버들에게 승/패 사실을 알림. / 상대파티원 리스트도 보냄.
 		pMember->ClearDuelParty();
 
@@ -436,7 +436,7 @@ void CParty::DoDuelPartyCancel( CParty* pDuelParty ) {
 	// pDuelParty may be nullptr and it is ok
 
 #ifdef __WORLDSERVER
-	for (CUser * pMember : AllMembers(*this)) {
+	for (CUser * pMember : this | AllMembers) {
 		pMember->AddDuelPartyCancel(pDuelParty);		// 각 멤버들에게 듀얼이 취소되었다고 알림.
 		
 		if (pMember->m_idDuelParty != m_idDuelParty)
@@ -452,7 +452,7 @@ void CParty::DoDuelPartyCancel( CParty* pDuelParty ) {
 
 #ifdef __WORLDSERVER
 void CParty::ReplaceLodestar(const CRect & rect) const {
-	for (CUser * pUser : AllMembers(*this)) {
+	for (CUser * pUser : this | AllMembers) {
 		CWorld * pWorld = pUser->GetWorld();
 		if (!pWorld) continue;
 
@@ -468,7 +468,7 @@ void CParty::ReplaceLodestar(const CRect & rect) const {
 }
 
 void CParty::Replace(DWORD dwWorldId, const D3DXVECTOR3 & vPos, BOOL) const {
-	for (CUser * pMember : AllMembers(*this)) {
+	for (CUser * pMember : this | AllMembers) {
 		pMember->Replace(dwWorldId, vPos, REPLACE_NORMAL, nTempLayer);
 		pMember->m_buffs.RemoveBuffs(RBF_COMMON, 0);
 	}
@@ -478,15 +478,13 @@ void CParty::Replace( DWORD dwWorldId, LPCTSTR sKey ) const {
 	const REGIONELEM * const pRgnElem = g_WorldMng.GetRevivalPos(dwWorldId, sKey);
 	if (!pRgnElem) return;
 
-	for (CUser * pMember : AllMembers(*this)) {
+	for (CUser * pMember : this | AllMembers) {
 		pMember->Replace(*pRgnElem, REPLACE_NORMAL, nRevivalLayer);
 	}
 }
 
 bool CParty::ReplaceChkLv(const int Lv) const {
-	auto range = AllMembers(*this);
-
-	return std::all_of(range.begin(), range.end(),
+	return std::ranges::all_of(this | AllMembers,
 		[Lv](const CUser * const pMember) {
 			return pMember->GetLevel() <= Lv;
 		}
@@ -859,7 +857,7 @@ void CPartyMng::PartyMapInfo() {
 
 			pParty->SetPos(j, pMover->GetPos());
 
-			for (CUser * const pSendMover : AllMembers(*pParty)) {
+			for (CUser * const pSendMover : pParty | AllMembers) {
 				if (pMover == pSendMover) continue;
 
 				const D3DXVECTOR3 vPosBuf = pSendMover->GetPos() - pMover->GetPos();

@@ -43,7 +43,7 @@ namespace {
 			ParterParty(CParty & party, const CMover & pDead)
 				: m_id(party.m_uPartyId), m_party(&party) {
 
-				for (CUser * const member : AllMembers(party)) {
+				for (CUser * const member : party | AllMembers) {
 					if (pDead.IsValidArea(member, EXP_RANGE)) {
 						m_players.emplace_back(member);
 					}

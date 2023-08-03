@@ -994,7 +994,7 @@ void CDPSrvr::OnCreateGuildCloak( CAr & ar, CUser * pUser )
 						
 	// 자신의 길드원들의 루프를 돌면서 길드망토를 사서 10000페냐가 소모되었다고 알려준다.
 	// 물론 루프에서 요청한 클라이언트에게도 메시지를 함께 보낸다.
-	for (CUser * pUsertmp : AllMembers(*pGuild)) {
+	for (CUser * pUsertmp : pGuild | AllMembers) {
 		pUsertmp->AddGetGoldGuildBank( 10000, 2, pUser->m_idPlayer, 1 );	// 2는 업데이트 해야할 클라이게
 	}
 	// 현 멀티셋 서버에는 위 루틴이 모두 10000페냐가 소모됨을 알렸으므로 DPCoreClient로 캐시서버에 요청하여 
@@ -2866,7 +2866,7 @@ void CDPSrvr::OnGetItemGuildBank( CAr & ar, CUser * pUser )
 				aLogItem.itemNumber = nGold;
 				OnLogItem( aLogItem );
 
-				for (CUser * pUsertmp : AllMembers(*pGuild)) {
+				for (CUser * pUsertmp : pGuild | AllMembers) {
 					if( IsValidObj( pUsertmp ) && pUsertmp != pUser )
 					{
 						pUsertmp->AddGetGoldGuildBank( nGold, 2, pUser->m_idPlayer, 0 );	// 2는 업데이트 해야할 클라이게
@@ -4566,7 +4566,7 @@ void CDPSrvr::OnSetNaviPoint( CAr & ar, CUser * pUser )
 		if( objidTarget == NULL_ID )
 		{
 			if(CParty * pParty = g_PartyMng.GetParty(pUser->m_idparty)) {
-				for (CUser * pUsertmp : AllMembers(*pParty)) {
+				for (CUser * pUsertmp : pParty | AllMembers) {
 					pUsertmp->AddSetNaviPoint(pos, pUser->GetId(), pUser->GetName(TRUE));
 				}
 			}

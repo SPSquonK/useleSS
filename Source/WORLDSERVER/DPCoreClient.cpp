@@ -565,7 +565,7 @@ void CDPCoreClient::OnAddPartyMember( CAr & ar )
 		{
 			CUser * pMember = nullptr;
 
-			for (CUser * const pUser : AllMembers(*pParty)) {
+			for (CUser * const pUser : pParty | AllMembers) {
 				pMember = pUser;
 				pMember->AddPartyMember(pParty, idMember, pszLeader, pszMember);
 			}
@@ -586,7 +586,7 @@ void CDPCoreClient::OnAddPartyMember( CAr & ar )
 			pParty	= g_PartyMng.GetParty( idParty );
 			if( pParty )
 			{
-				for (CUser * const pMember : AllMembers(*pParty)) {
+				for (CUser * const pMember : pParty | AllMembers) {
 					pMember->m_idparty	= idParty;
 					pMember->AddPartyMember( pParty, idMember, pszLeader, pszMember );
 				}
@@ -646,7 +646,7 @@ void CDPCoreClient::OnRemovePartyMember( CAr & ar )
 	else
 	{
 		// leave
-		for (CUser * const pMember : AllMembers(*pParty)) {
+		for (CUser * const pMember : pParty | AllMembers) {
 			pMember->AddPartyMember(pParty, idMember, pszLeader, pszMember);
 		}
 	}
@@ -729,7 +729,7 @@ void CDPCoreClient::OnRemovePlayerParty( CAr & ar )
 			}
 
 			if (fRemoveParty) {
-				for (CUser * pMember : AllMembers(*pParty)) {
+				for (CUser * pMember : pParty | AllMembers) {
 					pMember->m_idparty = 0;
 				}
 				g_PartyMng.DeleteParty(pParty->m_uPartyId);
@@ -773,7 +773,7 @@ void CDPCoreClient::OnSetPartyMode( CAr & ar )
 		}
 		pParty->m_nModeTime[nMode] = bOnOfff;
 		
-		for (CUser * const pUser : AllMembers(*pParty)) {
+		for (CUser * const pUser : pParty | AllMembers) {
 			pUser->AddSetPartyMode(nMode, bOnOfff, pParty->m_nPoint, dwSkillTime);
 		}
 	}
@@ -820,7 +820,7 @@ void CDPCoreClient::OnSetPartyExp( CAr & ar )
 		pParty->m_nPoint	= nPoint;
 		pParty->m_nLevel	= nLevel;
 
-		for (CUser * const pUser : AllMembers(*pParty)) {
+		for (CUser * const pUser : pParty | AllMembers) {
 			pUser->AddPartyExpLevel(pParty->GetExp(), pParty->GetLevel(), pParty->GetPoint());
 		}
 	}
@@ -847,7 +847,7 @@ void CDPCoreClient::OnRemovePartyPoint( CAr & ar )
 	{
 		pParty->m_nPoint = nPartyPoint;
 
-		for (CUser * const pUser : AllMembers(*pParty)) {
+		for (CUser * const pUser : pParty | AllMembers) {
 			pUser->AddPartyExpLevel(pParty->GetExp(), pParty->GetLevel(), pParty->GetPoint());
 		}
 	}
@@ -872,7 +872,7 @@ void CDPCoreClient::OnPartyChangeName( CAr & ar )
 	{
 		strcpy( pParty->m_sParty, sParty );
 
-		for (CUser * const pUser : AllMembers(*pParty)) {
+		for (CUser * const pUser : pParty | AllMembers) {
 			pUser->AddPartyChangeName(pParty->m_sParty);
 		}
 	}
@@ -894,7 +894,7 @@ void CDPCoreClient::OnPartyChangeTroup( CAr & ar )
 		pParty->m_nKindTroup = 1;
 		strcpy( pParty->m_sParty, sParty );
 
-		for (CUser * const pUser : AllMembers(*pParty)) {
+		for (CUser * const pUser : pParty | AllMembers) {
 			pUser->AddPartyChangeTroup(pParty->m_sParty);
 		}
 	}
@@ -994,7 +994,7 @@ static	\
 	pParty	= g_PartyMng.GetParty( idParty );
 	if( pParty )
 	{
-		for (CUser * const pMember : AllMembers(*pParty)) {
+		for (CUser * const pMember : pParty | AllMembers) {
 				pMember->AddPartyChat( lpName, lpString, objid );
 				if( pMember->m_idSnoop )
 				{

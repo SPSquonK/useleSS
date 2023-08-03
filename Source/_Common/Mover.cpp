@@ -6156,7 +6156,7 @@ void CMover::ProcessRecovery()
 
 				if( pParty2 )
 				{
-					for (CUser * user : AllMembers(*pParty2)) {
+					for (CUser * user : pParty2 | AllMembers) {
 						pParty->DoDuelPartyCancel(pParty2);
 					}
 				}
