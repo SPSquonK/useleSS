@@ -211,17 +211,9 @@ CMotion :: CMotion()
 	m_nMaxEvent = 0;
 	m_pBoneInfo = NULL;
 	memset(m_vEvent, 0, sizeof(m_vEvent));
-	m_pAttr = NULL;
-	m_pBoneInfo = NULL;
 }
 
-CMotion :: ~CMotion()
-{
-	SAFE_DELETE_ARRAY(m_pAttr);
-	if (m_pBoneFrame) {
-		for (int i = 0; i < m_nMaxBone; i++)
-			m_pBoneFrame[i].m_pFrame = NULL;
-	}
+CMotion :: ~CMotion() {
 	SAFE_DELETE_ARRAY(m_pBoneFrame);
 	SAFE_DELETE_ARRAY(m_pBoneInfo);
 }
@@ -231,22 +223,15 @@ CMotion :: ~CMotion()
 //
 int		CMotion :: LoadMotion( LPCTSTR szFileName )
 {
-	int		nNumBone;
-	int		nNumFrame;
-//	int		nNumSize;
-//	int		i, j;
-	int		nVer;
-
 	CResFile resFp;
 	BOOL bRet = resFp.Open( MakePath( DIR_MODEL, szFileName ), "rb" );
-	if( bRet == FALSE )	
-	{
-		LPCTSTR szStr = Error( "%s : 찾을 수 없음", szFileName );
-		//ADDERRORMSG( szStr );
+	if (bRet == FALSE) {
+		Error("%s : 찾을 수 없음", szFileName);
 		resFp.Close();
 		return FAIL;
 	}
 
+	int nVer;
 	resFp.Read( &nVer, 4, 1 );		// version
 	if( nVer != VER_MOTION )
 	{
@@ -271,21 +256,19 @@ int		CMotion :: LoadMotion( LPCTSTR szFileName )
 	resFp.Read( &m_fPerSlerp, sizeof(float), 1 );		// 
 	resFp.Seek( 32, SEEK_CUR );		// reserved
 
-	resFp.Read( &nNumBone, 4, 1 );			// 뼈대 갯수 읽음
-	resFp.Read( &nNumFrame, 4, 1 );		// 애니메이션 프레임 개수 읽음
-	m_nMaxFrame = nNumFrame;
-	m_nMaxBone = nNumBone;
+	
+	
+	int		nNumBone;  resFp.Read( &nNumBone, 4, 1 );			// 뼈대 갯수 읽음
+	int		nNumFrame; resFp.Read( &nNumFrame, 4, 1 );		// 애니메이션 프레임 개수 읽음
 
-	if( nNumFrame <= 0 )
-	{
-		Error( "CMotion::LoadMotion : %s read MaxFrame = %d", szFileName, nNumFrame );
+	if (nNumFrame <= 0) {
+		Error("CMotion::LoadMotion : %s read MaxFrame = %d", szFileName, nNumFrame);
 		resFp.Close();
 		return FAIL;
 	}
 
 	// Path: skip it as it is never used
-	int nTemp;
-	resFp.Read( &nTemp, 4, 1 );
+	int nTemp; resFp.Read( &nTemp, 4, 1 );
 	if (nTemp) {
 		resFp.Seek(sizeof(D3DXVECTOR3) * nNumFrame, SEEK_CUR);
 	}
@@ -295,7 +278,7 @@ int		CMotion :: LoadMotion( LPCTSTR szFileName )
 	ReadTM( &resFp, nNumBone, nNumFrame );
 	
 	// 프레임 속성 읽음.
-	resFp.Read( m_pAttr, sizeof(MOTION_ATTR) * nNumFrame, 1 );
+	resFp.Read( m_pAttr.get(), sizeof(MOTION_ATTR) * nNumFrame, 1);
 
 	resFp.Read( &m_nMaxEvent, 4, 1 );	// 이벤트 좌표 저장
 	if( m_nMaxEvent > 0 )
@@ -314,7 +297,6 @@ void	CMotion :: ReadTM( CResFile *file, int nNumBone, int nNumFrame )
 {
 
 	m_nMaxBone = nNumBone;		// LoadMotion()에서 불려졌다면 이부분은 필요없으나 ReadTM만 따로 불릴 일이 있으면 이게 필요하다.
-	m_nMaxFrame = nNumFrame;
 
 	//--- 뼈대구성정보 읽음.
 	m_pBoneInfo = new BONE[ nNumBone ];			// 본 개수 만큼 할당
@@ -347,8 +329,8 @@ void	CMotion :: ReadTM( CResFile *file, int nNumBone, int nNumFrame )
 	//--- 모션 읽음.
 	m_pMotion		= std::make_unique<TM_ANIMATION[]>(nNumSize);		// 메모리 풀
 	m_pBoneFrame	= new BONE_FRAME[ nNumBone ];
-	m_pAttr			= new MOTION_ATTR[ nNumFrame ];
-	memset( m_pAttr, 0, sizeof(MOTION_ATTR) * nNumFrame );	// nNumSize였는데 nNumFrame이 맞는거 같다.
+	m_pAttr = sqktd::dynamic_array<MOTION_ATTR>(nNumFrame);
+	memset( m_pAttr.get(), 0, sizeof(MOTION_ATTR) * nNumFrame);	// nNumSize였는데 nNumFrame이 맞는거 같다.
 	
 	TM_ANIMATION	*p = m_pMotion.get();
 

@@ -104,9 +104,8 @@ struct	MOTION_ATTR
 class CMotion final
 {
 private:
-	std::unique_ptr<TM_ANIMATION[]>	m_pMotion;			// 뼈대순서대로 각각의 애니메이션이 들어있다.  애니가 없는 뼈대는 LocalTM만 있다.
-	MOTION_ATTR		*m_pAttr;			// 프레임크기만큼 할당.  각 프레임속성.
-	int		m_nMaxFrame;				// 모션 프레임수
+	std::unique_ptr<TM_ANIMATION[]>	m_pMotion;  // 뼈대순서대로 각각의 애니메이션이 들어있다.  애니가 없는 뼈대는 LocalTM만 있다.
+	sqktd::dynamic_array<MOTION_ATTR> m_pAttr;  // 프레임크기만큼 할당.  각 프레임속성.
 public:
 	int		m_nID;						// 모션의 고유 ID(파일내에 있다)
 	char	m_szName[64];				// 모션 파일명 - 나중에 이건 빠진다.
@@ -121,7 +120,6 @@ public:
 	~CMotion();
 
 private:
-
 	template<DWORD MA_FLAG>
 	const MOTION_ATTR * GetMotionAttr(float fOldFrm, float fNumFrm) const {
 		const MOTION_ATTR * pAttr = &m_pAttr[static_cast<int>(fNumFrm)];
@@ -131,9 +129,7 @@ private:
 		return 0;
 	}
 
-
 public:
-
 	[[nodiscard]] bool IsAttrHit(float fOldFrm, float fNumFrm) const {
 		return GetMotionAttr<MA_HIT>(fOldFrm, fNumFrm);
 	}
@@ -147,7 +143,9 @@ public:
 		return GetMotionAttr<MA_QUAKE>(fOldFrm, fNumFrm);
 	}
 	
-	int		GetMaxFrame( void ) { return m_nMaxFrame; }
+	[[nodiscard]] int GetMaxFrame() const noexcept {
+		return static_cast<int>(m_pAttr.size());
+	}
 
 	int		LoadMotion( LPCTSTR strFileName );			// 파일에서 모션파일을 읽음
 	void	ReadTM( CResFile *file, int nNumBone, int nNumFrame );
