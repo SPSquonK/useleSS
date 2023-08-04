@@ -1464,20 +1464,12 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 #ifdef __CLIENT
 	if( m_pMotion )		// CModel::FrameMove에서 프레임이 증가되기전에 검사해봐야 한다.
 	{
-		const MOTION_ATTR* pAttr	= IsAttrSound();
-		if( pAttr && pAttr->m_nSndID > 0 && m_nPause == 0 )
-			PLAYSND( pAttr->m_nSndID, pvSndPos );
 
-		int i	= ( m_nFrameOld + 1 ) % GetMaxFrame();
-		int nFrame	= ( static_cast<int>( m_fFrameCurrent ) + 1 ) % GetMaxFrame();
-		while( i != nFrame )
-		{
-			// TODO: if IsAttrQuake does not change the state of the memory, we can remove this loop
-			BOOL bQuake	= IsAttrQuake( (float)( i ) );
-			i	= ( i + 1 ) % GetMaxFrame();
-		}
-	} else
-	{
+		const MOTION_ATTR * pAttr = IsAttrSound();
+		if (pAttr && pAttr->m_nSndID > 0 && m_nPause == 0)
+			PLAYSND(pAttr->m_nSndID, pvSndPos);
+
+	} else {
 		CObject3D *pObject = GetObject3D();
 		if( pObject->GetMaxFrame() )
 		{
