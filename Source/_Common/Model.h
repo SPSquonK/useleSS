@@ -159,7 +159,7 @@ public:
 
 	[[nodiscard]] virtual bool IsAttrHit() const { return false; }
 	[[nodiscard]] virtual std::optional<int> IsAttrSound() const { return std::nullopt; }
-	virtual DWORD	IsAttrQuake() { return 0; }
+	[[nodiscard]] virtual bool IsAttrQuake() const { return false; }
 
 	virtual void	SetAttr( float fNumFrm, DWORD dwAttr ) {}
 	virtual void	ResetAttr( int nNumFrm, DWORD dwAttr ) {}

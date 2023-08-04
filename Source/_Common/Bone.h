@@ -151,9 +151,8 @@ public:
 		return (pAttr && pAttr->m_nSndID > 0) ? std::optional(pAttr->m_nSndID) : std::nullopt;
 	}
 
-	[[nodiscard]] DWORD IsAttrQuake(float fOldFrm, float fNumFrm) const {
-		const MOTION_ATTR * pAttr = GetMotionAttr<MA_QUAKE>(fOldFrm, fNumFrm);
-		return pAttr ? pAttr->m_dwAttr : 0;
+	[[nodiscard]] bool IsAttrQuake(float fOldFrm, float fNumFrm) const {
+		return GetMotionAttr<MA_QUAKE>(fOldFrm, fNumFrm);
 	}
 
 	void	SetAttr( float fNumFrm, DWORD dwAttr ) 

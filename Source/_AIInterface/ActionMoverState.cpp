@@ -542,7 +542,7 @@ if(!pMover->IsPlayer())
 #ifdef __CLIENT
 		if( pMover->IsNPC() )
 		{
-			if( pModel->IsAttrQuake() )	// Á×À»¶§ Äô.
+			if( pModel->IsAttrQuake() )	// Quake when dying
 			{
 				if( pMover->GetProp()->dwClass == RANK_MATERIAL )
 					GetWorld()->m_pCamera->SetQuake( 60, 1.0f );
@@ -555,7 +555,6 @@ if(!pMover->IsPlayer())
 	case OBJSTA_DISAPPEAR:	// »ç¶óÁö´Â »óÅÂ
 #ifndef __CLIENT
 		if( m_nCount > FRAME_PER_SEC )	// 1ÃÊÈÄ »ç¶óÁü
-//		if( m_nCount++ > SEC1 )
 		{
 			pMover->Delete();
 		}

@@ -1481,19 +1481,16 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 			int nFrame	= ( static_cast<int>( m_fFrameCurrent ) + 1 ) % pObject->GetMaxFrame();
 			while( i != nFrame )
 			{
-				BOOL bAttr	= FALSE;
-
-				BOOL bQuake	= pObject->IsAttrQuake( (float)( i ) );
+				const bool bQuake = pObject->IsAttrQuake( (float)( i ) );
 				if( bQuake && m_nPause == 0 )
 				{
 					if(g_pPlayer && m_nPause == 0 )
 					{
 						g_pPlayer->GetWorld()->m_pCamera->SetQuake( 30, 1.0f );
-						bAttr	= TRUE;
+						break;
 					}
 				}
-				if( bAttr )
-					break;
+
 				i	= ( i + 1 ) % GetMaxFrame();
 			}
 		}

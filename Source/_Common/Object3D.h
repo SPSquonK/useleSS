@@ -337,9 +337,8 @@ public:
 		return pAttr && pAttr->m_nSndID > 0 ? std::optional(pAttr->m_nSndID) : std::nullopt;
 	}
 
-	[[nodiscard]] DWORD IsAttrQuake(float fNumFrm) const {
-		const MOTION_ATTR * pAttr = GetMotionAttr<MA_QUAKE>(fNumFrm);
-		return pAttr ? pAttr->m_dwAttr : 0;
+	[[nodiscard]] bool IsAttrQuake(float fNumFrm) const {
+		return GetMotionAttr<MA_QUAKE>(fNumFrm);
 	}
 	
 	HRESULT	CreateDeviceBuffer( GMOBJECT *pObject, LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB, D3DPOOL pool = D3DPOOL_MANAGED );
