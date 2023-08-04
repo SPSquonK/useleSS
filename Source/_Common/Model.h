@@ -5,6 +5,7 @@
 #include "bone.h"
 #include "xUtil3d.h"
 #include "Obj.h"
+#include <optional>
 
 #ifndef __MODELTYPE_NONE
 #define MODELTYPE_NONE               0
@@ -157,7 +158,7 @@ public:
 	virtual DWORD	GetAttr( int nNumFrm ) { return 0; }
 
 	[[nodiscard]] virtual bool IsAttrHit() const { return false; }
-	virtual const MOTION_ATTR *IsAttrSound() const { return nullptr; }
+	[[nodiscard]] virtual std::optional<int> IsAttrSound() const { return std::nullopt; }
 	virtual DWORD	IsAttrQuake() { return 0; }
 
 	virtual void	SetAttr( float fNumFrm, DWORD dwAttr ) {}

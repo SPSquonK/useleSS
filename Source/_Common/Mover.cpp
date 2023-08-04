@@ -2559,8 +2559,8 @@ void CMover::ProcessDustSFX()
 	if( ! ( IsMode( TRANSPARENT_MODE ) ) )		// 투명상태가 아닐때만 렌더.
 	{
 		CModelObject*	pModel = (CModelObject*)m_pModel;
-		const MOTION_ATTR* pAttr = pModel->IsAttrSound();
- 		if( IsPlayer() && pAttr && pAttr->m_nSndID > 0 )  // 효과음 속성이 있다면 플레이, pause상태면 사운드 출력 안함
+
+ 		if( IsPlayer() && pModel->IsAttrSound())
 		{
 			if( m_pActMover->IsActJump() )
 				CreateSfx( XI_NAT_DUST_JUMP, GetPos() );

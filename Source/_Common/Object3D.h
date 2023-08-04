@@ -332,9 +332,9 @@ public:
 		return GetMotionAttr<MA_HIT>(fNumFrm);
 	}
 
-	[[nodiscard]] const MOTION_ATTR * IsAttrSound(float fNumFrm) const {
+	[[nodiscard]] std::optional<int> IsAttrSound(float fNumFrm) const {
 		const MOTION_ATTR * pAttr = GetMotionAttr<MA_SOUND>(fNumFrm);
-		return pAttr;
+		return pAttr && pAttr->m_nSndID > 0 ? std::optional(pAttr->m_nSndID) : std::nullopt;
 	}
 
 	[[nodiscard]] DWORD IsAttrQuake(float fNumFrm) const {

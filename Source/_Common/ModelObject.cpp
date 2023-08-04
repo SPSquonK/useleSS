@@ -1465,17 +1465,17 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 	if( m_pMotion )		// CModel::FrameMove에서 프레임이 증가되기전에 검사해봐야 한다.
 	{
 
-		const MOTION_ATTR * pAttr = IsAttrSound();
-		if (pAttr && pAttr->m_nSndID > 0 && m_nPause == 0)
-			PLAYSND(pAttr->m_nSndID, pvSndPos);
+		const std::optional<int> pSndId = IsAttrSound();
+		if (pSndId && m_nPause == 0)
+			PLAYSND(*pSndId, pvSndPos);
 
 	} else {
 		CObject3D *pObject = GetObject3D();
 		if( pObject->GetMaxFrame() )
 		{
-			const MOTION_ATTR* pAttr	= pObject->IsAttrSound( m_fFrameCurrent );
-			if( pAttr && pAttr->m_nSndID > 0 && m_nPause == 0 )
-				PLAYSND( pAttr->m_nSndID, pvSndPos );
+			const std::optional<int> pSndId = pObject->IsAttrSound( m_fFrameCurrent );
+			if( pSndId && m_nPause == 0 )
+				PLAYSND( *pSndId, pvSndPos );
 
 			int i	= ( m_nFrameOld + 1 ) % pObject->GetMaxFrame();
 			int nFrame	= ( static_cast<int>( m_fFrameCurrent ) + 1 ) % pObject->GetMaxFrame();

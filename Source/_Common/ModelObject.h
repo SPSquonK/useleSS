@@ -253,15 +253,14 @@ public:
 		}
 	}
 
-	const MOTION_ATTR *IsAttrSound( void ) const
-	{ 
-		if ( m_pMotion == NULL ) [[unlikely]]
-		{
-			Error( "IsAttrSound : pMotion==NULL %f %f", m_fFrameOld, m_fFrameCurrent );
-			return nullptr;
+	[[nodiscard]] std::optional<int> IsAttrSound() const {
+		if (m_pMotion == NULL) [[unlikely]] {
+			Error("IsAttrSound : pMotion==NULL %f %f", m_fFrameOld, m_fFrameCurrent);
+			return std::nullopt;
 		}
+
 		return m_pMotion->IsAttrSound( m_fFrameOld, m_fFrameCurrent ); 
-	}	// 현재 프레임에 사운드속성이 있는가?
+	}
 
 
 	DWORD	IsAttrQuake( void ) { return m_pMotion->IsAttrQuake( m_fFrameOld, m_fFrameCurrent ); }
