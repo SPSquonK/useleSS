@@ -504,7 +504,6 @@ void CModelObject::LoadMotionId(DWORD dwMotion) {
 // 
 int		CModelObject::LoadMotion( LPCTSTR szFileName )
 {
-	int		i;
 	// 본이 아직 할당 되어 있지 않으면 애니를 읽을수 없다.
 	if( m_pBone == NULL )		
 	{
@@ -534,7 +533,7 @@ int		CModelObject::LoadMotion( LPCTSTR szFileName )
 	}
 
 	// 이미 스킨 오브젝트가 로딩되어 있는 상태면 m_mUpdateBone을 그 오브젝트에 등록시킴.
-	for( i = 0; i < MAX_ELEMENT; i ++ )
+	for(int i = 0; i < MAX_ELEMENT; i ++ )
 	{
 		if( m_Element[i].m_pObject3D )
 			m_Element[i].m_pObject3D->SetExternBone( m_mUpdateBone, m_pBaseBoneInv );	// 함수내부에서 스킨인넘만 등록시킨다.

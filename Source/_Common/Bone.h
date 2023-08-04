@@ -58,7 +58,7 @@ private:
 
 public:
 	// Bone file is read and loaded into memory.
-	const CBones * LoadBone(LPCTSTR szFileName);
+	[[nodiscard]] const CBones * LoadBone(LPCTSTR szFileName);
 };
 
 extern CBonesMng		g_BonesMng;
@@ -163,7 +163,7 @@ private:
 public:
 	// Load the motion into memory, or return the already existing motion if
 	// already loaded.
-	CMotion * LoadMotion(LPCTSTR strFileName);
+	[[nodiscard]] const CMotion * LoadMotion(LPCTSTR strFileName);
 };
 
 extern CMotionMng		g_MotionMng;

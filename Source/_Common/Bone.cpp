@@ -175,7 +175,7 @@ const CBones * CBonesMng::LoadBone(LPCTSTR szFileName) {
 ////////////////////////////////////////////////////////////////////////////////////
 CMotionMng		g_MotionMng;
 
-CMotion * CMotionMng::LoadMotion(LPCTSTR szFileName) {
+const CMotion * CMotionMng::LoadMotion(LPCTSTR szFileName) {
 	char sFile[MAX_PATH] = { 0, };
 	std::strcpy(sFile, szFileName);
 	strlwr(sFile);
