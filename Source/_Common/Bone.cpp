@@ -312,9 +312,6 @@ int		CMotion :: LoadMotion( LPCTSTR szFileName )
 //
 void	CMotion :: ReadTM( CResFile *file, int nNumBone, int nNumFrame )
 {
-	int		nNumSize;
-	int		nFrame;
-	int		i;
 
 	m_nMaxBone = nNumBone;		// LoadMotion()에서 불려졌다면 이부분은 필요없으나 ReadTM만 따로 불릴 일이 있으면 이게 필요하다.
 	m_nMaxFrame = nNumFrame;
@@ -323,10 +320,10 @@ void	CMotion :: ReadTM( CResFile *file, int nNumBone, int nNumFrame )
 	m_pBoneInfo = new BONE[ nNumBone ];			// 본 개수 만큼 할당
 	memset( m_pBoneInfo, 0, sizeof(BONE) * nNumBone );		// zero clear
 	
-	int		nLen;
-	for( i = 0; i < nNumBone; i ++ )
+	
+	for(int i = 0; i < nNumBone; i ++ )
 	{
-		file->Read( &nLen, 4, 1 );
+		int nLen; file->Read( &nLen, 4, 1 );
 		if( nLen > 32 )		
 			Error("CMotion::ReadTM - %s bonename is too long", m_szName );
 
@@ -337,7 +334,7 @@ void	CMotion :: ReadTM( CResFile *file, int nNumBone, int nNumFrame )
 	}
 	
 	// 부모 포인터를 셋팅
-	for( i = 0; i < nNumBone; i ++ )
+	for( int i = 0; i < nNumBone; i ++ )
 	{
 		if( m_pBoneInfo[i].m_nParentIdx == -1 )			// 부모가 없으면 부모포인터는 널
 			m_pBoneInfo[i].m_pParent = NULL;
@@ -345,7 +342,7 @@ void	CMotion :: ReadTM( CResFile *file, int nNumBone, int nNumFrame )
 			m_pBoneInfo[i].m_pParent = &m_pBoneInfo[ m_pBoneInfo[i].m_nParentIdx ];
 	}
 	
-
+	int		nNumSize;
 	file->Read( &nNumSize, 4, 1 );			// 프레임 사이즈 읽음 - 메모리 풀 사이즈
 	//--- 모션 읽음.
 	m_pMotion		= std::make_unique<TM_ANIMATION[]>(nNumSize);		// 메모리 풀
@@ -358,7 +355,7 @@ void	CMotion :: ReadTM( CResFile *file, int nNumBone, int nNumFrame )
 	// 뼈대 수 만큼 루프
 	for( int i = 0; i < nNumBone; i ++ )
 	{
-		file->Read( &nFrame, 4, 1 );
+		int nFrame; file->Read( &nFrame, 4, 1 );
 		if( nFrame == 1 )		// 1이면 현재 뼈대에 프레임 있음
 		{
 			m_pBoneFrame[i].m_pFrame = p;
