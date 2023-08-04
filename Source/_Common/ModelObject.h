@@ -269,7 +269,6 @@ public:
 	}
 
 
-	void	SetAttr( float fNumFrm, DWORD dwAttr ) { m_pMotion->SetAttr( fNumFrm, dwAttr ); }
 	void	UpdateMatrixBone( void )
 	{
 		if( m_pMotion )		// 현재 프레임의 모션에 대한 매트릭스를 갱신시킴.

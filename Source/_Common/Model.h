@@ -155,14 +155,10 @@ public:
 	virtual void	ClearNormal( void ) {}		// 모든 노말을 초기화시킨다.
 
 	// Animation - 일단여기 넣었는데 깝깝하다.....
-	virtual DWORD	GetAttr( int nNumFrm ) { return 0; }
-
 	[[nodiscard]] virtual bool IsAttrHit() const { return false; }
 	[[nodiscard]] virtual std::optional<int> IsAttrSound() const { return std::nullopt; }
 	[[nodiscard]] virtual bool IsAttrQuake() const { return false; }
 
-	virtual void	SetAttr( float fNumFrm, DWORD dwAttr ) {}
-	virtual void	ResetAttr( int nNumFrm, DWORD dwAttr ) {}
 	virtual	void	SetGroup( int nNum ) {}		// Set LOD Group
 	virtual int		IsHaveCollObj( void ) { return 0; }
 	

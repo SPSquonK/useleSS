@@ -120,14 +120,6 @@ public:
 	CMotion();
 	~CMotion();
 
-	//void Init( void );
-
-	
-	DWORD	GetAttr( int nNumFrm ) 
-	{ 
-		return m_pAttr[ nNumFrm ].m_dwAttr; 
-	}
-
 private:
 
 	template<DWORD MA_FLAG>
@@ -154,13 +146,6 @@ public:
 	[[nodiscard]] bool IsAttrQuake(float fOldFrm, float fNumFrm) const {
 		return GetMotionAttr<MA_QUAKE>(fOldFrm, fNumFrm);
 	}
-
-	void	SetAttr( float fNumFrm, DWORD dwAttr ) 
-	{
-		m_pAttr[ (int)fNumFrm ].m_dwAttr |= dwAttr;
-		m_pAttr[ (int)fNumFrm ].m_fFrame = fNumFrm;
-	}
-	void	ResetAttr( int nNumFrm, DWORD dwAttr ) { m_pAttr[ nNumFrm ].m_dwAttr &= (~dwAttr); }
 	
 	int		GetMaxFrame( void ) { return m_nMaxFrame; }
 
