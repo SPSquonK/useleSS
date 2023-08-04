@@ -152,7 +152,7 @@ public:
 	int		LoadMotion( LPCTSTR strFileName );			// 파일에서 모션파일을 읽음
 	void	ReadTM( CResFile *file, int nNumBone, int nNumFrame );
 
-	void	AnimateBone( D3DXMATRIX *pmUpdateBone, CMotion *pMotionOld, float fFrameCurrent, int nNextFrame, int nFrameOld, BOOL bMotionTrans, float fBlendWeight );
+	void	AnimateBone( D3DXMATRIX *pmUpdateBone, const CMotion *pMotionOld, float fFrameCurrent, int nNextFrame, int nFrameOld, BOOL bMotionTrans, float fBlendWeight ) const;
 	
 };
 

@@ -392,47 +392,44 @@ void	CMotion :: ReadTM( CResFile *file, int nNumBone, int nNumFrame )
 //
 // 뼈대의 애니메이션
 // 
-void	CMotion :: AnimateBone( D3DXMATRIX *pmUpdateBone, CMotion *pMotionOld, float fFrameCurrent, int nNextFrame, int nFrameOld, BOOL bMotionTrans, float fBlendWeight )
+void	CMotion :: AnimateBone( D3DXMATRIX *pmUpdateBone, const CMotion *pMotionOld, float fFrameCurrent, int nNextFrame, int nFrameOld, BOOL bMotionTrans, float fBlendWeight ) const
 {
-	int		i;
-	BONE	*pBone = m_pBoneInfo;		// 이 모델의 뼈대 시작 포인터.
-	TM_ANIMATION	*pFrame = NULL;					// 현재 프레임
-	TM_ANIMATION	*pNext = NULL;					// 다음 프레임
-	TM_ANIMATION	*pFrameOld = NULL;				// 이전모션의 프레임
-//	D3DXMATRIX	*pMatBone = m_mUpdateBone;
-	D3DXMATRIX	*pMatBones = pmUpdateBone;			// 업데이트 매트릭스 리스트 시작 포인터
-	int			nCurrFrame;
-	float		fSlp;
+
 	D3DXQUATERNION		qSlerp;
 	D3DXVECTOR3			vSlerp;
-	BONE_FRAME	*pBoneFrame = NULL;
-	BONE_FRAME	*pBoneFrameOld = NULL;		// 본의 계층구조
+
 	D3DXMATRIX	m1, m2;
 
 	if( pMotionOld == NULL )	// pMotionOld-> 할때 널참조 에러만 안나게함.
 		pMotionOld = this;
 
-	// 애니메이션 동작이 있는 경우
-	i = m_nMaxBone;
 	// 보간을 위한 Slerp 계산.
-	nCurrFrame = (int)fFrameCurrent;				// 소숫점 떼내고 정수부만..
-	fSlp = fFrameCurrent - (float)nCurrFrame;	// 소숫점 부분만 가져옴
+	const int nCurrFrame = (int)fFrameCurrent;				// 소숫점 떼내고 정수부만..
+	const float fSlp = fFrameCurrent - (float)nCurrFrame;	// 소숫점 부분만 가져옴
 	/////////////////////////////
 
-//	int	nNextFrame = GetNextFrame();
-	pBoneFrame	  = m_pBoneFrame;
-	pBoneFrameOld = pMotionOld->m_pBoneFrame;		// 이전동작의 뼈대 계층
+	// 애니메이션 동작이 있는 경우
+	int i = m_nMaxBone;
+
+	const BONE_FRAME * pBoneFrame	  = m_pBoneFrame;
+	const BONE_FRAME * pBoneFrameOld = pMotionOld->m_pBoneFrame;		// 본의 계층구조 // 이전동작의 뼈대 계층
+	const BONE * pBone = m_pBoneInfo;		// 이 모델의 뼈대 시작 포인터.
+	// pmUpdateBone
+
+	D3DXMATRIX * pMatBones = pmUpdateBone;			// 업데이트 매트릭스 리스트 시작 포인터
+
 	// 뼈대 갯수만큼 루프 돈다
 	while( i-- )
 	{
+		const TM_ANIMATION * pFrameOld = NULL;				// 이전모션의 프레임
 		if( pBoneFrameOld->m_pFrame )
 			pFrameOld = &pBoneFrameOld->m_pFrame[nFrameOld];		// 일단은 0으로 한다.  이전모션의 nCurrFrame도 기억하고 있어야 한다.
 		else
 			pFrameOld = NULL;		// 일단은 0으로 한다.  이전모션의 nCurrFrame도 기억하고 있어야 한다.
 		if( pBoneFrame->m_pFrame )		// 이 뼈대에 프레임이 있을때
 		{
-			pFrame = &pBoneFrame->m_pFrame[ nCurrFrame ];		// 현재 프레임 포인터 받음
-			pNext  = &pBoneFrame->m_pFrame[ nNextFrame ];		// 다음 프레임 포인터 받음
+			const TM_ANIMATION * pFrame = &pBoneFrame->m_pFrame[nCurrFrame];		// 현재 프레임 // 현재 프레임 포인터 받음
+			const TM_ANIMATION * pNext  = &pBoneFrame->m_pFrame[nNextFrame];		// 다음 프레임 // 다음 프레임 포인터 받음
 
 			D3DXQuaternionSlerp( &qSlerp, &pFrame->m_qRot, &pNext->m_qRot, fSlp );	// 보간된 쿼터니언 구함
 			D3DXVec3Lerp( &vSlerp, &pFrame->m_vPos, &pNext->m_vPos, fSlp );		// 보간된 Pos벡터 구함
@@ -448,7 +445,7 @@ void	CMotion :: AnimateBone( D3DXMATRIX *pmUpdateBone, CMotion *pMotionOld, floa
 				{
 					D3DXQUATERNION	qLocal;
 					D3DXVECTOR3		vLocal;
-					D3DXMATRIX		*pmLocalTM = &pBoneFrameOld->m_mLocalTM;
+					const D3DXMATRIX		*pmLocalTM = &pBoneFrameOld->m_mLocalTM;
 					D3DXQuaternionRotationMatrix( &qLocal, pmLocalTM );
 					vLocal.x = pmLocalTM->_41;
 					vLocal.y = pmLocalTM->_42;
@@ -481,7 +478,7 @@ void	CMotion :: AnimateBone( D3DXMATRIX *pmUpdateBone, CMotion *pMotionOld, floa
 				float	fBlendSlp = fBlendWeight;
 				D3DXQUATERNION	qLocal;
 				D3DXVECTOR3		vLocal;
-				D3DXMATRIX		*pmLocalTM = &pBoneFrame->m_mLocalTM;
+				const D3DXMATRIX		*pmLocalTM = &pBoneFrame->m_mLocalTM;
 				D3DXQuaternionRotationMatrix( &qLocal, pmLocalTM );
 				vLocal.x = pmLocalTM->_41;
 				vLocal.y = pmLocalTM->_42;
@@ -495,7 +492,7 @@ void	CMotion :: AnimateBone( D3DXMATRIX *pmUpdateBone, CMotion *pMotionOld, floa
 				{
 					D3DXQUATERNION	qLocal2;
 					D3DXVECTOR3		vLocal2;
-					D3DXMATRIX		*pmLocalTM2 = &pBoneFrameOld->m_mLocalTM;
+					const D3DXMATRIX		*pmLocalTM2 = &pBoneFrameOld->m_mLocalTM;
 					D3DXQuaternionRotationMatrix( &qLocal2, pmLocalTM2 );
 					vLocal2.x = pmLocalTM2->_41;
 					vLocal2.y = pmLocalTM2->_42;
@@ -513,8 +510,6 @@ void	CMotion :: AnimateBone( D3DXMATRIX *pmUpdateBone, CMotion *pMotionOld, floa
 
 			if( pBone->m_pParent )
 				m2 *= pMatBones[ pBone->m_nParentIdx ];
-//				else
-//					m2 = m2 * *pmWorld;
 		}
 
 		*pmUpdateBone = m2;		// 이 뼈대의 최종 월드 변환 매트릭스
