@@ -1464,7 +1464,7 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 #ifdef __CLIENT
 	if( m_pMotion )		// CModel::FrameMove에서 프레임이 증가되기전에 검사해봐야 한다.
 	{
-		MOTION_ATTR* pAttr	= IsAttrSound();
+		const MOTION_ATTR* pAttr	= IsAttrSound();
 		if( pAttr && pAttr->m_nSndID > 0 && m_nPause == 0 )
 			PLAYSND( pAttr->m_nSndID, pvSndPos );
 
@@ -1481,7 +1481,7 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 		CObject3D *pObject = GetObject3D();
 		if( pObject->GetMaxFrame() )
 		{
-			MOTION_ATTR* pAttr	= pObject->IsAttrSound( m_fFrameCurrent );
+			const MOTION_ATTR* pAttr	= pObject->IsAttrSound( m_fFrameCurrent );
 			if( pAttr && pAttr->m_nSndID > 0 && m_nPause == 0 )
 				PLAYSND( pAttr->m_nSndID, pvSndPos );
 
@@ -1490,14 +1490,7 @@ void	CModelObject::FrameMove( D3DXVECTOR3 *pvSndPos, float fSpeed )
 			while( i != nFrame )
 			{
 				BOOL bAttr	= FALSE;
-				/*
-				MOTION_ATTR* pAttr	= pObject->IsAttrSound( i );
-				if( pAttr && pAttr->m_nSndID > 0 && m_nPause == 0 )
-				{
-					PLAYSND( pAttr->m_nSndID, pvSndPos );
-					bAttr	= TRUE;
-				}
-				*/
+
 				BOOL bQuake	= pObject->IsAttrQuake( (float)( i ) );
 				if( bQuake && m_nPause == 0 )
 				{

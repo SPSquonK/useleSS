@@ -127,38 +127,42 @@ public:
 	{ 
 		return m_pAttr[ nNumFrm ].m_dwAttr; 
 	}
-//#if 0
-	DWORD	IsAttrHit( float fOldFrm, float fNumFrm ) 
-	{ 
-		MOTION_ATTR		*pAttr = &m_pAttr[ (int)fNumFrm ];
-		if( pAttr->m_dwAttr & MA_HIT )
-			if( fOldFrm < pAttr->m_fFrame && pAttr->m_fFrame <= fNumFrm )	// 이전 프레임이랑 현재 프레임 사이에 타점이 들어있었는가.
-				return pAttr->m_dwAttr;
-			return 0;
-	}
-	MOTION_ATTR *IsAttrSound( float fOldFrm, float fNumFrm )
-	{ 
-		MOTION_ATTR		*pAttr = &m_pAttr[ (int)fNumFrm ];
-		if( pAttr->m_dwAttr & MA_SOUND )
-			if( fOldFrm < pAttr->m_fFrame && pAttr->m_fFrame <= fNumFrm )	// 이전 프레임이랑 현재 프레임 사이에 타점이 들어있었는가.
+
+private:
+
+	template<DWORD MA_FLAG>
+	const MOTION_ATTR * GetMotionAttr(float fOldFrm, float fNumFrm) const {
+		const MOTION_ATTR * pAttr = &m_pAttr[static_cast<int>(fNumFrm)];
+		if (pAttr->m_dwAttr & MA_FLAG)
+			if (fOldFrm < pAttr->m_fFrame && pAttr->m_fFrame <= fNumFrm)	// 이전 프레임이랑 현재 프레임 사이에 타점이 들어있었는가.
 				return pAttr;
-			return NULL;
+		return 0;
 	}
-	DWORD	IsAttrQuake( float fOldFrm, float fNumFrm ) 
-	{ 
-		MOTION_ATTR		*pAttr = &m_pAttr[ (int)fNumFrm ];
-		if( pAttr->m_dwAttr & MA_QUAKE )
-			if( fOldFrm < pAttr->m_fFrame && pAttr->m_fFrame <= fNumFrm )	// 이전 프레임이랑 현재 프레임 사이에 타점이 들어있었는가.
-				return pAttr->m_dwAttr;
-			return 0;
+
+
+public:
+
+	[[nodiscard]] DWORD IsAttrHit(float fOldFrm, float fNumFrm) const {
+		const MOTION_ATTR * pAttr = GetMotionAttr<MA_HIT>(fOldFrm, fNumFrm);
+		return pAttr ? pAttr->m_dwAttr : 0;
 	}
+
+	[[nodiscard]] const MOTION_ATTR * IsAttrSound(float fOldFrm, float fNumFrm) const {
+		return GetMotionAttr<MA_SOUND>(fOldFrm, fNumFrm);
+	}
+
+	DWORD	IsAttrQuake(float fOldFrm, float fNumFrm) const {
+		const MOTION_ATTR * pAttr = GetMotionAttr<MA_QUAKE>(fOldFrm, fNumFrm);
+		return pAttr ? pAttr->m_dwAttr : 0;
+	}
+
 	void	SetAttr( float fNumFrm, DWORD dwAttr ) 
 	{
 		m_pAttr[ (int)fNumFrm ].m_dwAttr |= dwAttr;
 		m_pAttr[ (int)fNumFrm ].m_fFrame = fNumFrm;
 	}
 	void	ResetAttr( int nNumFrm, DWORD dwAttr ) { m_pAttr[ nNumFrm ].m_dwAttr &= (~dwAttr); }
-	TM_ANIMATION*	GetFrame( int nNumFrm ) { return &m_pMotion[nNumFrm]; }
+	
 	int		GetMaxFrame( void ) { return m_nMaxFrame; }
 
 	int		LoadMotion( LPCTSTR strFileName );			// 파일에서 모션파일을 읽음

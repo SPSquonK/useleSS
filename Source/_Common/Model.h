@@ -151,17 +151,14 @@ public:
 	int		GetNextFrame();
 
 	virtual int		LoadModel( LPCTSTR szFileName ) { return 1; }
-	virtual int		SaveModel( LPCTSTR szFileName ) { return 1; }
 	virtual void	ClearNormal( void ) {}		// 모든 노말을 초기화시킨다.
 
 	// Animation - 일단여기 넣었는데 깝깝하다.....
-	virtual BOOL	IsLoadAttr( void ) { return FALSE; }
-	
 	virtual DWORD	GetAttr( int nNumFrm ) { return 0; }
 	virtual DWORD	IsAttrHit( float fNumFrm ) { return 0; }
 	virtual DWORD	IsAttrHit( void ) { return 0; }
-	virtual MOTION_ATTR *IsAttrSound( float fNumFrm ) { return NULL; }
-	virtual MOTION_ATTR *IsAttrSound( void ) { return 0; }
+	virtual const MOTION_ATTR *IsAttrSound( float fNumFrm ) const { return nullptr; }
+	virtual const MOTION_ATTR *IsAttrSound( void ) const { return nullptr; }
 	virtual DWORD	IsAttrQuake( float fNumFrm ) { return 0; }
 	virtual DWORD	IsAttrQuake( void ) { return 0; }
 	virtual void	SetAttr( float fNumFrm, DWORD dwAttr ) {}

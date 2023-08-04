@@ -243,9 +243,6 @@ public:
 		
 		m_Element[0].m_pObject3D->SetTextureEx( nNumEx );		// 몬스터는 [0]하나만 쓴다고 가정하고 하자.
 	}
-
-	
-	BOOL	IsLoadAttr( void ) { if(m_pMotion) return TRUE; else return FALSE; }
 	
 	DWORD	IsAttrHit( void ) 
 	{ 
@@ -255,16 +252,15 @@ public:
 			return GetObject3D()->IsAttrHit( m_fFrameCurrent );
 	}	// 현재 프레임에 타격속성이 있는가?
 	DWORD	IsAttrHit( float fNumFrm ) { return m_pMotion->IsAttrHit( m_fFrameOld, fNumFrm ); }	// nNumFrm프레임에 타격속성이 있는가?
-	MOTION_ATTR *IsAttrSound( void ) 
+	const MOTION_ATTR *IsAttrSound( void ) const
 	{ 
 		if( m_pMotion == NULL )
 		{
-			LPCTSTR szErr = Error( "IsAttrSound : pMotion==NULL %d %d", m_fFrameOld, m_fFrameCurrent );
-			//ADDERRORMSG( szErr );
+			Error( "IsAttrSound : pMotion==NULL %f %f", m_fFrameOld, m_fFrameCurrent );
 		}
 		return m_pMotion->IsAttrSound( m_fFrameOld, m_fFrameCurrent ); 
 	}	// 현재 프레임에 사운드속성이 있는가?
-	MOTION_ATTR *IsAttrSound( float fNumFrm ) 
+	const MOTION_ATTR *IsAttrSound( float fNumFrm ) const
 	{ 
 		if( m_pMotion)	//gmpbigsun: m_pMotion이 NULL인경우 shit ..
 			return m_pMotion->IsAttrSound( m_fFrameOld, fNumFrm ); 	// nNumFrm프레임에 사운드속성이 있는가?	

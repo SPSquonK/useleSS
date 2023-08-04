@@ -324,10 +324,10 @@ public:
 				return pAttr->m_dwAttr;
 			return 0;
 	}
-	MOTION_ATTR *IsAttrSound( float fNumFrm )
+	const MOTION_ATTR *IsAttrSound( float fNumFrm ) const
 	{ 
 		if( m_pAttr == NULL )	return 0;
-		MOTION_ATTR		*pAttr = &m_pAttr[ (int)fNumFrm ];
+		const MOTION_ATTR		*pAttr = &m_pAttr[ (int)fNumFrm ];
 		if( pAttr->m_dwAttr & MA_SOUND )
 			if( pAttr->m_fFrame == fNumFrm )
 				return pAttr;
