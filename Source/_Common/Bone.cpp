@@ -206,7 +206,6 @@ CMotion * CMotionMng::LoadMotion(LPCTSTR szFileName) {
 
 CMotion :: CMotion()
 {
-	m_pMotion = NULL;
 	m_pBoneFrame = NULL;
 	m_fPerSlerp = 0.5f;
 	m_nMaxEvent = 0;
@@ -219,7 +218,6 @@ CMotion :: CMotion()
 CMotion :: ~CMotion()
 {
 	SAFE_DELETE_ARRAY(m_pAttr);
-	SAFE_DELETE_ARRAY(m_pMotion);
 	if (m_pBoneFrame) {
 		for (int i = 0; i < m_nMaxBone; i++)
 			m_pBoneFrame[i].m_pFrame = NULL;
@@ -350,15 +348,15 @@ void	CMotion :: ReadTM( CResFile *file, int nNumBone, int nNumFrame )
 
 	file->Read( &nNumSize, 4, 1 );			// 프레임 사이즈 읽음 - 메모리 풀 사이즈
 	//--- 모션 읽음.
-	m_pMotion		= new TM_ANIMATION[ nNumSize ];		// 메모리 풀
+	m_pMotion		= std::make_unique<TM_ANIMATION[]>(nNumSize);		// 메모리 풀
 	m_pBoneFrame	= new BONE_FRAME[ nNumBone ];
 	m_pAttr			= new MOTION_ATTR[ nNumFrame ];
 	memset( m_pAttr, 0, sizeof(MOTION_ATTR) * nNumFrame );	// nNumSize였는데 nNumFrame이 맞는거 같다.
-	TM_ANIMATION	*p = m_pMotion;
-	int		nCnt = 0;
 	
+	TM_ANIMATION	*p = m_pMotion.get();
+
 	// 뼈대 수 만큼 루프
-	for( i = 0; i < nNumBone; i ++ )
+	for( int i = 0; i < nNumBone; i ++ )
 	{
 		file->Read( &nFrame, 4, 1 );
 		if( nFrame == 1 )		// 1이면 현재 뼈대에 프레임 있음
@@ -366,19 +364,17 @@ void	CMotion :: ReadTM( CResFile *file, int nNumBone, int nNumFrame )
 			m_pBoneFrame[i].m_pFrame = p;
 			file->Read( m_pBoneFrame[i].m_pFrame, sizeof(TM_ANIMATION) * nNumFrame, 1 );		// 한방에 읽어버리기.
 			p += nNumFrame;
-			nCnt += nNumFrame;
-		} else			// 현재 뼈대에 프레임 없음
-		{
+		} else {
+			// 현재 뼈대에 프레임 없음
 			file->Read( &(m_pBoneFrame[i].m_mLocalTM), sizeof(D3DXMATRIX), 1 );			// 프레임이 없으면 LocalTM만 읽고
 			m_pBoneFrame[i].m_pFrame = NULL;
 			// m_mLocalTM에 넣었으므로 메모리 풀에는 넣을필요 없다.
 		}
 	}
 	
-	if( nCnt != nNumSize )
-	{
-		Error( "%s : frame size error", m_szName );
-	}	
+	if (m_pMotion.get() + nNumSize != p) {
+		Error("%s : frame size error", m_szName);
+	}
 }
 
 //

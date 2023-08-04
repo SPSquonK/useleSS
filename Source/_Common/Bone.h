@@ -104,7 +104,7 @@ struct	MOTION_ATTR
 class CMotion final
 {
 private:
-	TM_ANIMATION	*m_pMotion;			// 뼈대순서대로 각각의 애니메이션이 들어있다.  애니가 없는 뼈대는 LocalTM만 있다.
+	std::unique_ptr<TM_ANIMATION[]>	m_pMotion;			// 뼈대순서대로 각각의 애니메이션이 들어있다.  애니가 없는 뼈대는 LocalTM만 있다.
 	MOTION_ATTR		*m_pAttr;			// 프레임크기만큼 할당.  각 프레임속성.
 	int		m_nMaxFrame;				// 모션 프레임수
 public:
