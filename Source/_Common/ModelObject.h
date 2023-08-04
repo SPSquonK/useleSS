@@ -245,9 +245,6 @@ public:
 		m_Element[0].m_pObject3D->SetTextureEx( nNumEx );		// 몬스터는 [0]하나만 쓴다고 가정하고 하자.
 	}
 
-	// TODO: Why is IsAttr(Hit|Sound|Quake) behaviour inconsistent wrt
-	// their behaviour if there are no m_pMotion?
-	
 	[[nodiscard]] bool IsAttrHit() const override {
 		if (m_pMotion) {
 			return m_pMotion->IsAttrHit(m_fFrameOld, m_fFrameCurrent);
@@ -256,18 +253,13 @@ public:
 		}
 	}
 
-	[[nodiscard]] std::optional<int> IsAttrSound() const {
-		if (m_pMotion == NULL) [[unlikely]] {
-			Error("IsAttrSound : pMotion==NULL %f %f", m_fFrameOld, m_fFrameCurrent);
-		}
-
-		return m_pMotion->IsAttrSound( m_fFrameOld, m_fFrameCurrent ); 
+	[[nodiscard]] std::optional<int> IsAttrSound() const override {
+		return m_pMotion ? m_pMotion->IsAttrSound(m_fFrameOld, m_fFrameCurrent) : std::nullopt;
 	}
 
 	[[nodiscard]] bool IsAttrQuake() const override {
-		return m_pMotion->IsAttrQuake( m_fFrameOld, m_fFrameCurrent );
+		return m_pMotion && m_pMotion->IsAttrQuake(m_fFrameOld, m_fFrameCurrent);
 	}
-
 
 	void	UpdateMatrixBone( void )
 	{
