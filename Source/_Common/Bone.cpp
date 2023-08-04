@@ -367,14 +367,6 @@ void	CMotion :: ReadTM( CResFile *file, int nNumBone, int nNumFrame )
 			file->Read( m_pBoneFrame[i].m_pFrame, sizeof(TM_ANIMATION) * nNumFrame, 1 );		// 한방에 읽어버리기.
 			p += nNumFrame;
 			nCnt += nNumFrame;
-//			for( j = 0; j < nNumFrame; j ++ )
-//			{
-//				file->Read( &(p->m_mAniTM), sizeof(D3DXMATRIX), 1 );
-//				file->Read( &(p->m_qRot), sizeof(D3DXQUATERNION), 1 );
-//				file->Read( &(p->m_vPos), sizeof(D3DXVECTOR3), 1 );
-//				p ++;
-//				nCnt ++;
-//			}
 		} else			// 현재 뼈대에 프레임 없음
 		{
 			file->Read( &(m_pBoneFrame[i].m_mLocalTM), sizeof(D3DXMATRIX), 1 );			// 프레임이 없으면 LocalTM만 읽고
@@ -462,11 +454,6 @@ void	CMotion :: AnimateBone( D3DXMATRIX *pmUpdateBone, const CMotion *pMotionOld
 			// 쿼터니온 보간된 회전키값을 회전행렬로 만듦
 			D3DXMatrixRotationQuaternion( &m2, &qSlerp );
 			m2 *= m1;		// 이동행렬 X 회전행렬 = 애니행렬
-
-			if( pBone->m_pParent )
-				m2 *= pMatBones[ pBone->m_nParentIdx ];		// 부모가 없다면 루트인데 항등행렬과 곱할 필요 없어서 생략했다.
-//				else
-//					m2 = m2 * *pmWorld;  // 이부분이 생략됐다.  mCenter는 항등행렬.
 			
 			// WorldTM = LocalTM * ParentTM;
 			// 최종 변환된 월드매트릭스를 멤버에 넣어서 Render()에서 SetTransfrom함.
@@ -508,9 +495,12 @@ void	CMotion :: AnimateBone( D3DXMATRIX *pmUpdateBone, const CMotion *pMotionOld
 			} else
 				m2 = pBoneFrame->m_mLocalTM;
 
-			if( pBone->m_pParent )
-				m2 *= pMatBones[ pBone->m_nParentIdx ];
 		}
+		
+		if( pBone->m_pParent )
+			m2 *= pMatBones[ pBone->m_nParentIdx ];		// 부모가 없다면 루트인데 항등행렬과 곱할 필요 없어서 생략했다.
+
+
 
 		*pmUpdateBone = m2;		// 이 뼈대의 최종 월드 변환 매트릭스
 
