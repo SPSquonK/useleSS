@@ -315,34 +315,33 @@ public:
 		if( m_pAttr == NULL )	return 0;
 		return m_pAttr[ nNumFrm ].m_dwAttr; 
 	}
-	DWORD	IsAttrHit( float fNumFrm ) 
-	{ 
-		if( m_pAttr == NULL )	return 0;
-		MOTION_ATTR		*pAttr = &m_pAttr[ (int)fNumFrm ];
-		if( pAttr->m_dwAttr & MA_HIT )
-			if( pAttr->m_fFrame == fNumFrm )		// 속성은 8.0에 있는데 fNumFrm==8.5 로 들어왔을때 정확하게 비교하기 위해 필요.
-				return pAttr->m_dwAttr;
-			return 0;
-	}
-	const MOTION_ATTR *IsAttrSound( float fNumFrm ) const
-	{ 
-		if( m_pAttr == NULL )	return 0;
-		const MOTION_ATTR		*pAttr = &m_pAttr[ (int)fNumFrm ];
-		if( pAttr->m_dwAttr & MA_SOUND )
-			if( pAttr->m_fFrame == fNumFrm )
+
+private:
+	template<DWORD MA_FLAG>
+	const MOTION_ATTR * GetMotionAttr(float fNumFrm) const {
+		if (!m_pAttr) return nullptr;
+		const MOTION_ATTR * pAttr = &m_pAttr[static_cast<int>(fNumFrm)];
+		if (pAttr->m_dwAttr & MA_FLAG)
+			if (pAttr->m_fFrame == fNumFrm)		// 속성은 8.0에 있는데 fNumFrm==8.5 로 들어왔을때 정확하게 비교하기 위해 필요.
 				return pAttr;
-			return NULL;
+		return nullptr;
 	}
-	DWORD	IsAttrQuake( float fNumFrm ) 
-	{ 
-		if( m_pAttr == NULL )	return 0;
-		MOTION_ATTR		*pAttr = &m_pAttr[ (int)fNumFrm ];
-		if( pAttr->m_dwAttr & MA_QUAKE )
-			if( pAttr->m_fFrame == fNumFrm )		// 속성은 8.0에 있는데 fNumFrm==8.5 로 들어왔을때 정확하게 비교하기 위해 필요.
-				return pAttr->m_dwAttr;
-			return 0;
+
+public:
+	[[nodiscard]] DWORD IsAttrHit(float fNumFrm) const {
+		const MOTION_ATTR * pAttr = GetMotionAttr<MA_HIT>(fNumFrm);
+		return pAttr ? pAttr->m_dwAttr : 0;
 	}
-	
+
+	[[nodiscard]] const MOTION_ATTR * IsAttrSound(float fNumFrm) const {
+		const MOTION_ATTR * pAttr = GetMotionAttr<MA_SOUND>(fNumFrm);
+		return pAttr;
+	}
+
+	[[nodiscard]] DWORD IsAttrQuake(float fNumFrm) const {
+		const MOTION_ATTR * pAttr = GetMotionAttr<MA_QUAKE>(fNumFrm);
+		return pAttr ? pAttr->m_dwAttr : 0;
+	}
 	
 	HRESULT	CreateDeviceBuffer( GMOBJECT *pObject, LPDIRECT3DVERTEXBUFFER9 *ppd3d_VB, D3DPOOL pool = D3DPOOL_MANAGED );
 	HRESULT SendVertexBuffer( GMOBJECT *pObj, LPDIRECT3DVERTEXBUFFER9 pd3d_VB );

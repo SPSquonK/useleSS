@@ -151,7 +151,7 @@ public:
 		return GetMotionAttr<MA_SOUND>(fOldFrm, fNumFrm);
 	}
 
-	DWORD	IsAttrQuake(float fOldFrm, float fNumFrm) const {
+	[[nodiscard]] DWORD IsAttrQuake(float fOldFrm, float fNumFrm) const {
 		const MOTION_ATTR * pAttr = GetMotionAttr<MA_QUAKE>(fOldFrm, fNumFrm);
 		return pAttr ? pAttr->m_dwAttr : 0;
 	}
