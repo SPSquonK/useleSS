@@ -142,9 +142,8 @@ private:
 
 public:
 
-	[[nodiscard]] DWORD IsAttrHit(float fOldFrm, float fNumFrm) const {
-		const MOTION_ATTR * pAttr = GetMotionAttr<MA_HIT>(fOldFrm, fNumFrm);
-		return pAttr ? pAttr->m_dwAttr : 0;
+	[[nodiscard]] bool IsAttrHit(float fOldFrm, float fNumFrm) const {
+		return GetMotionAttr<MA_HIT>(fOldFrm, fNumFrm);
 	}
 
 	[[nodiscard]] const MOTION_ATTR * IsAttrSound(float fOldFrm, float fNumFrm) const {

@@ -617,7 +617,7 @@ void	CActionMover::ProcessStateMeleeSkill( DWORD dwState, int nParam )
 	} 
 	else
 	{
-		if( pModel->IsAttrHit() )	// 현재 프레임에 타격속성이 있는가?
+		if( pModel->IsAttrHit() )
 		{
 			if( nSkill == SI_BLD_DOUBLESW_SILENTSTRIKE )	// 싸이런 스트라이크는 예외다.
 			{
@@ -726,7 +726,7 @@ void	CActionMover::ProcessStateMagicSkill( DWORD dwState, int nParam )
 		}
 	}
 
-	if( pModel->IsAttrHit() )	// 현재 프레임에 타점이 있는가?
+	if( pModel->IsAttrHit() )
 	{
 		pMover->OnMagicSkill( 0, m_nMotionHitCount );	// 무버의 핸들러를 호출.
 		m_nMotionHitCount++;
@@ -1037,7 +1037,7 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 			}
 		#endif //__CLIENT
 
-			if( pModel->IsAttrHit() )	// 현재 프레임에 타격속성이 있는가?
+			if( pModel->IsAttrHit() )
 			{
 				pMover->m_dwFlag |= MVRF_HITCONT;
 				
@@ -1076,12 +1076,11 @@ void	CActionMover::ProcessStateAttackSP( DWORD dwState, int nParam )
 	{
 	case OBJSTA_SP_ATK1:
 	case OBJSTA_SP_ATK2:
-		if( pModel->IsEndFrame() )
-		{
-			ResetState( OBJSTA_ATK_ALL );
+		if (pModel->IsEndFrame()) {
+			ResetState(OBJSTA_ATK_ALL);
 		}
-		if( pModel->IsAttrHit() )			// 현재 프레임에 타격속성이 있는가? 
-		{
+
+		if (pModel->IsAttrHit()) {
 			pMover->OnAttackSP();		// 무버의 특수공격 핸들러를 호출.
 		}
 		break;
@@ -1100,11 +1099,11 @@ void	CActionMover::ProcessStateAttackMagic( DWORD dwState, int nParam )
 	switch( dwState )
 	{
 	case OBJSTA_ATK_MAGIC1:
-		if( pModel->IsEndFrame() )
-			ResetState( OBJSTA_ATK_ALL );
+		if (pModel->IsEndFrame()) {
+			ResetState(OBJSTA_ATK_ALL);
+		}
 
-		if( pModel->IsAttrHit() )			// 현재 프레임에 타격속성이 있는가? 
-		{
+		if (pModel->IsAttrHit()) {
 			pMover->OnAttackMagic();		// 무버의 완드공격 핸들러를 호출.
 		}
 		break;
@@ -1124,16 +1123,15 @@ void	CActionMover::ProcessStateAttackRange( DWORD dwState, int nParam )
 	{
 	case OBJSTA_ATK_RANGE1:
 		// 동작이 끝나면 상태 해제
-		if( pModel->IsEndFrame() )
-		{
-			ResetState( OBJSTA_ATK_ALL );
+		if (pModel->IsEndFrame()) {
+			ResetState(OBJSTA_ATK_ALL);
 		}
-		if( pModel->IsAttrHit() )			// 현재 프레임에 타격속성이 있는가? 
-		{
-			pMover->m_dwFlag |= MVRF_HITCONT;	
-			CMover* pHitObj	= prj.GetMover( m_idTarget );
 
-			if( IsValidObj( (CObj*)pHitObj ) && pHitObj->IsLive() )
+		if (pModel->IsAttrHit()) {
+			pMover->m_dwFlag |= MVRF_HITCONT;
+			CMover * pHitObj = prj.GetMover(m_idTarget);
+
+			if (IsValidObj(pHitObj) && pHitObj->IsLive())
 				pMover->OnAttackRange();
 		}
 		break;

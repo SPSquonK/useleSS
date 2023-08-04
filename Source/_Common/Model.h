@@ -155,8 +155,7 @@ public:
 
 	// Animation - 일단여기 넣었는데 깝깝하다.....
 	virtual DWORD	GetAttr( int nNumFrm ) { return 0; }
-	virtual DWORD	IsAttrHit( float fNumFrm ) { return 0; }
-	virtual DWORD	IsAttrHit( void ) { return 0; }
+	[[nodiscard]] virtual bool IsAttrHit() const { return 0; }
 	virtual const MOTION_ATTR *IsAttrSound( float fNumFrm ) const { return nullptr; }
 	virtual const MOTION_ATTR *IsAttrSound( void ) const { return nullptr; }
 	virtual DWORD	IsAttrQuake( float fNumFrm ) { return 0; }

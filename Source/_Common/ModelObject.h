@@ -172,6 +172,7 @@ public:
 		return -1; 
 	}
 	
+	[[nodiscard]] const CObject3D * GetObject3D() const { return m_Element[0].m_pObject3D; }
 	CObject3D	*GetObject3D( void ) { return m_Element[0].m_pObject3D; }		// 이것은 단일메쉬에만 쓴다.
 
 	CObject3D	*GetObject3D( int nNum ) 
@@ -244,19 +245,24 @@ public:
 		m_Element[0].m_pObject3D->SetTextureEx( nNumEx );		// 몬스터는 [0]하나만 쓴다고 가정하고 하자.
 	}
 	
-	DWORD	IsAttrHit( void ) 
-	{ 
-		if( m_pMotion )
-			return m_pMotion->IsAttrHit( m_fFrameOld, m_fFrameCurrent ); 
-		else
-			return GetObject3D()->IsAttrHit( m_fFrameCurrent );
-	}	// 현재 프레임에 타격속성이 있는가?
-	DWORD	IsAttrHit( float fNumFrm ) { return m_pMotion->IsAttrHit( m_fFrameOld, fNumFrm ); }	// nNumFrm프레임에 타격속성이 있는가?
+	[[nodiscard]] bool IsAttrHit() const override {
+		if (m_pMotion) {
+			return m_pMotion->IsAttrHit(m_fFrameOld, m_fFrameCurrent);
+		} else {
+			return GetObject3D()->IsAttrHit(m_fFrameCurrent);
+		}
+	}
+
+	[[nodiscard]] bool IsAttrHit(float fNumFrm) const {
+		return m_pMotion->IsAttrHit(m_fFrameOld, fNumFrm);
+	}
+
 	const MOTION_ATTR *IsAttrSound( void ) const
 	{ 
-		if( m_pMotion == NULL )
+		if ( m_pMotion == NULL ) [[unlikely]]
 		{
 			Error( "IsAttrSound : pMotion==NULL %f %f", m_fFrameOld, m_fFrameCurrent );
+			return nullptr;
 		}
 		return m_pMotion->IsAttrSound( m_fFrameOld, m_fFrameCurrent ); 
 	}	// 현재 프레임에 사운드속성이 있는가?
@@ -280,7 +286,6 @@ public:
 		if( m_mUpdateBone == NULL )	return;
 		D3DXVec3TransformCoord( pOut, &m_pBone->m_vEvent[nIdx], &m_mUpdateBone[ m_pBone->m_nEventParentIdx[nIdx] ] );
 		// 곱한 결과인 pOut은 로컬기준이므로 최종 m_mWorld와 곱해줘야 한다.
-		// vFinal = pOut * m_mWorld;
 	}
 	D3DXMATRIX *GetMatrixBone( int nBoneIdx )
 	{
