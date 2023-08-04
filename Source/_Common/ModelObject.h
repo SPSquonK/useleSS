@@ -253,10 +253,6 @@ public:
 		}
 	}
 
-	[[nodiscard]] bool IsAttrHit(float fNumFrm) const {
-		return m_pMotion->IsAttrHit(m_fFrameOld, fNumFrm);
-	}
-
 	const MOTION_ATTR *IsAttrSound( void ) const
 	{ 
 		if ( m_pMotion == NULL ) [[unlikely]]
@@ -266,14 +262,11 @@ public:
 		}
 		return m_pMotion->IsAttrSound( m_fFrameOld, m_fFrameCurrent ); 
 	}	// 현재 프레임에 사운드속성이 있는가?
-	const MOTION_ATTR *IsAttrSound( float fNumFrm ) const
-	{ 
-		if( m_pMotion)	//gmpbigsun: m_pMotion이 NULL인경우 shit ..
-			return m_pMotion->IsAttrSound( m_fFrameOld, fNumFrm ); 	// nNumFrm프레임에 사운드속성이 있는가?	
-		return NULL;
-	}
-	DWORD	IsAttrQuake( float fNumFrm ) { return m_pMotion->IsAttrQuake( m_fFrameOld, fNumFrm ); }
+
+
 	DWORD	IsAttrQuake( void ) { return m_pMotion->IsAttrQuake( m_fFrameOld, m_fFrameCurrent ); }
+
+
 	void	SetAttr( float fNumFrm, DWORD dwAttr ) { m_pMotion->SetAttr( fNumFrm, dwAttr ); }
 	void	UpdateMatrixBone( void )
 	{

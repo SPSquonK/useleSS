@@ -155,11 +155,11 @@ public:
 
 	// Animation - 일단여기 넣었는데 깝깝하다.....
 	virtual DWORD	GetAttr( int nNumFrm ) { return 0; }
-	[[nodiscard]] virtual bool IsAttrHit() const { return 0; }
-	virtual const MOTION_ATTR *IsAttrSound( float fNumFrm ) const { return nullptr; }
-	virtual const MOTION_ATTR *IsAttrSound( void ) const { return nullptr; }
-	virtual DWORD	IsAttrQuake( float fNumFrm ) { return 0; }
-	virtual DWORD	IsAttrQuake( void ) { return 0; }
+
+	[[nodiscard]] virtual bool IsAttrHit() const { return false; }
+	virtual const MOTION_ATTR *IsAttrSound() const { return nullptr; }
+	virtual DWORD	IsAttrQuake() { return 0; }
+
 	virtual void	SetAttr( float fNumFrm, DWORD dwAttr ) {}
 	virtual void	ResetAttr( int nNumFrm, DWORD dwAttr ) {}
 	virtual	void	SetGroup( int nNum ) {}		// Set LOD Group

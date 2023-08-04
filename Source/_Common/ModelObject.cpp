@@ -1570,7 +1570,7 @@ void	CModelObject::MakeSWDForce( int nParts, DWORD dwItemKind3, BOOL bSlow, DWOR
 		pForce->Add( v1, v2 );
 
 		CModel::FrameMove( NULL, fSpeed );
-		if( bSlow && IsAttrHit( m_fFrameCurrent ) )
+		if( bSlow && IsAttrHit() )
 			m_bSlow = TRUE;
 	} while (!m_bEndFrame);
 
