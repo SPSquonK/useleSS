@@ -122,7 +122,7 @@ public:
 
 	//void Init( void );
 
-	MOTION_ATTR *GetMotionAttr( int nNumFrm ) { return m_pAttr + nNumFrm; }	
+	
 	DWORD	GetAttr( int nNumFrm ) 
 	{ 
 		return m_pAttr[ nNumFrm ].m_dwAttr; 

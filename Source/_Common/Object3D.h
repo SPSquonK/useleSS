@@ -309,7 +309,7 @@ public:
 		if( m_bLOD == 0 ) nLevel = 0;	// LOD데이타가 없다면 항상 High레벨로만..
 		m_pGroup = &m_Group[nLevel]; 
 	}	// 0:high,  1:medium,   2:low
-	MOTION_ATTR *GetMotionAttr( int nNumFrm ) { return m_pAttr + nNumFrm; }	
+	
 	DWORD	GetAttr( int nNumFrm ) 
 	{ 
 		if( m_pAttr == NULL )	return 0;

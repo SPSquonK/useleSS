@@ -156,7 +156,7 @@ public:
 
 	// Animation - 일단여기 넣었는데 깝깝하다.....
 	virtual BOOL	IsLoadAttr( void ) { return FALSE; }
-	virtual MOTION_ATTR *GetMotionAttr( int nNumFrm ) { return NULL; }
+	
 	virtual DWORD	GetAttr( int nNumFrm ) { return 0; }
 	virtual DWORD	IsAttrHit( float fNumFrm ) { return 0; }
 	virtual DWORD	IsAttrHit( void ) { return 0; }

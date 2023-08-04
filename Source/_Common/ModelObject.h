@@ -246,7 +246,7 @@ public:
 
 	
 	BOOL	IsLoadAttr( void ) { if(m_pMotion) return TRUE; else return FALSE; }
-	MOTION_ATTR *GetMotionAttr( int nNumFrm ) { return m_pMotion->GetMotionAttr(nNumFrm); }	
+	
 	DWORD	IsAttrHit( void ) 
 	{ 
 		if( m_pMotion )
