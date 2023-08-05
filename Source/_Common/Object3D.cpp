@@ -1872,7 +1872,12 @@ D3DXVECTOR3 *GetLastPickTri( void )
 static D3DXVECTOR3	_vPool[6144];
 
 
-void	CObject3D::ComputeInterval(float fVV0,float fVV1,float fVV2,float fD0,float fD1,float fD2,float fD0D1,float fD0D2,float &fA,float &fB,float &fC,float &fX0,float &fX1)
+void	CObject3D::ComputeInterval(
+	float fVV0,float fVV1,float fVV2,
+	float fD0,float fD1,float fD2,
+	float fD0D1,float fD0D2,
+	float &fA,float &fB,float &fC,float &fX0,float &fX1
+)
 {
 	if(fD0D1 > 0.0f) 
 	{ 
@@ -1935,14 +1940,12 @@ BOOL	CObject3D::SimpleTriIntersect(D3DXMATRIX mWorld, GMOBJECT* pTargetObj, D3DX
 			D3DXVec3TransformCoord( &v2, &pVB[ *pIB++ ].position, &mTM );
 			D3DXVec3TransformCoord( &v3, &pVB[ *pIB++ ].position, &mTM );
 			
-			D3DXVECTOR3	vw1, vw2, vNormal;
-			float		fD;
 			// 첫번째 폴리곤의 노멀을 구한다
-			D3DXVec3Subtract(&vw1, &v2, &v1);
-			D3DXVec3Subtract(&vw2, &v3, &v1);
-			D3DXVec3Cross(&vNormal, &vw1, &vw2);
+			D3DXVECTOR3 vw1 = v2 - v1;
+			D3DXVECTOR3 vw2 = v3 - v1;
+			D3DXVECTOR3	vNormal; D3DXVec3Cross(&vNormal, &vw1, &vw2);
 			// 평면의 방정식 1: N1.X+d1=0 
-			fD = -D3DXVec3Dot(&vNormal, &v1);	// 평면의 방정식 D값 구함
+			const float fD = -D3DXVec3Dot(&vNormal, &v1);	// 평면의 방정식 D값 구함
 			
 			// 타겟오브젝트도 폴리곤 뽑자..
 			nMax2 = pTargetObj->m_nMaxFaceList;
@@ -1952,39 +1955,37 @@ BOOL	CObject3D::SimpleTriIntersect(D3DXMATRIX mWorld, GMOBJECT* pTargetObj, D3DX
 			{
 				// 주의! 오브젝트가 하나인 경우로 가정하고 했다..아니라면 다시 오브젝트수만큼 루프돌리고 매개변수 바꿔서 다시 짜야된다
 				// 로컬좌표계에서 월드좌표로 변환..
-				float fdu0, fdu1, fdu2, ftdu0, ftdu1, ftdu2, fdu01, fdu02, ftdu01, ftdu02; 
-				D3DXVECTOR3	vtw1, vtw2, vtNormal, vCross;
-				float		fD2;
+				D3DXVECTOR3	vtNormal, vCross;
 				// 축관련
-				float		fXLen, fYLen, fZLen, fCood1, fCood2, fCood3, ftCood1, ftCood2, ftCood3;
+				float		fCood1, fCood2, fCood3, ftCood1, ftCood2, ftCood3;
 
 				D3DXVec3TransformCoord( &tv1, &pVB2[ *pIB2++ ].position, &mTargetWorld );
 				D3DXVec3TransformCoord( &tv2, &pVB2[ *pIB2++ ].position, &mTargetWorld );
 				D3DXVec3TransformCoord( &tv3, &pVB2[ *pIB2++ ].position, &mTargetWorld );
 				
 				// 다른 폴리곤의 각 정점에 대해서 계산해서 어느쪽에 있는지 판단
-				fdu0 = D3DXVec3Dot(&vNormal, &tv1) + fD;
-				fdu1 = D3DXVec3Dot(&vNormal, &tv2) + fD;
-				fdu2 = D3DXVec3Dot(&vNormal, &tv3) + fD;
+				const float fdu0 = D3DXVec3Dot(&vNormal, &tv1) + fD;
+				const float fdu1 = D3DXVec3Dot(&vNormal, &tv2) + fD;
+				const float fdu2 = D3DXVec3Dot(&vNormal, &tv3) + fD;
 
-				fdu01 = fdu0*fdu1;
-				fdu02 = fdu0*fdu2;
+				const float fdu01 = fdu0*fdu1;
+				const float fdu02 = fdu0*fdu2;
 				if(fdu01  > 0.0f && fdu02 > 0.0f) 
 					continue;                    // 모두 부호가 같으면 같은쪽에 있는것이므로 교차없음
 				
-				D3DXVec3Subtract(&vtw1, &tv2, &tv1);
-				D3DXVec3Subtract(&vtw2, &tv3, &tv1);
+				const D3DXVECTOR3 vtw1 = tv2 - tv1;
+				const D3DXVECTOR3 vtw2 = tv3 - tv1;
 				D3DXVec3Cross(&vtNormal, &vtw1, &vtw2);
 				// 평면의 방정식 1: N1.X+d1=0 
-				fD2 = -D3DXVec3Dot(&vtNormal, &tv1);	// 평면의 방정식 D값 구함
+				const float fD2 = -D3DXVec3Dot(&vtNormal, &tv1);	// 평면의 방정식 D값 구함
 
 				// 다른 폴리곤의 각 정점에 대해서 계산해서 어느쪽에 있는지 판단
-				ftdu0 = D3DXVec3Dot(&vtNormal, &v1) + fD2;
-				ftdu1 = D3DXVec3Dot(&vtNormal, &v2) + fD2;
-				ftdu2 = D3DXVec3Dot(&vtNormal, &v3) + fD2;
+				const float ftdu0 = D3DXVec3Dot(&vtNormal, &v1) + fD2;
+				const float ftdu1 = D3DXVec3Dot(&vtNormal, &v2) + fD2;
+				const float ftdu2 = D3DXVec3Dot(&vtNormal, &v3) + fD2;
 
-				ftdu01 = ftdu0*ftdu1;
-				ftdu02 = ftdu0*ftdu2;
+				const float ftdu01 = ftdu0*ftdu1;
+				const float ftdu02 = ftdu0*ftdu2;
 				if(ftdu01  > 0.0f && ftdu02 > 0.0f) 
 					continue;                    // 모두 부호가 같으면 같은쪽에 있는것이므로 교차없음
 				
@@ -1992,9 +1993,9 @@ BOOL	CObject3D::SimpleTriIntersect(D3DXMATRIX mWorld, GMOBJECT* pTargetObj, D3DX
 				D3DXVec3Cross(&vCross,&vNormal,&vtNormal);
 
 				// 교차선의 성분중 가장 긴 축을 구함
-				fXLen = fabs(vCross.x);
-				fYLen = fabs(vCross.y);
-				fZLen = fabs(vCross.z);
+				const float fXLen = fabs(vCross.x);
+				const float fYLen = fabs(vCross.y);
+				const float fZLen = fabs(vCross.z);
 
 				// 그축에 두개의 삼각형을 투영함
 				if(fYLen > fXLen && fYLen > fZLen) // y
@@ -2026,7 +2027,7 @@ BOOL	CObject3D::SimpleTriIntersect(D3DXMATRIX mWorld, GMOBJECT* pTargetObj, D3DX
 				}
 
 				float a,b,c,x0,x1, d,e,f,y0,y1;
-				float xx,yy,xxyy,tmp;
+				float tmp;
 				float isect1[2], isect2[2];
 
 				// 폴리곤1의 간격 계산
@@ -2035,9 +2036,9 @@ BOOL	CObject3D::SimpleTriIntersect(D3DXMATRIX mWorld, GMOBJECT* pTargetObj, D3DX
 				// 폴리곤2의 간격 계산
 				ComputeInterval(ftCood1,ftCood2,ftCood3,ftdu0,ftdu1,ftdu2,ftdu01,ftdu02,d,e,f,y0,y1);
 
-				xx = x0 * x1;
-				yy = y0 * y1;
-				xxyy = xx * yy;
+				const float xx = x0 * x1;
+				const float yy = y0 * y1;
+				const float xxyy = xx * yy;
 
 				tmp = a * xxyy;
 				isect1[0] = tmp + b * x1 * yy;
@@ -2047,6 +2048,8 @@ BOOL	CObject3D::SimpleTriIntersect(D3DXMATRIX mWorld, GMOBJECT* pTargetObj, D3DX
 				isect2[0] = tmp + e * xx * y1;
 				isect2[1] = tmp + f * xx * y0;
 
+				// SqK: ??? No brackets? probably not intended
+				// but how was it not caught before? v21 does not fix it
 				if(isect1[0] > isect1[1])
 				 tmp = isect1[0];
 				 isect1[0] = isect1[1];
