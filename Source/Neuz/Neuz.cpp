@@ -450,11 +450,8 @@ HRESULT CNeuzApp::DeleteDeviceObjects()
  
 	SAFE_DELETE( g_pBipedMesh );		// g_Object3DMng가 파괴되기전에 부를것
 	g_Shadow.DeleteDeviceObjects();
- 
-	// 여기서 이것을 따로 불러준 이유는 게임종료시에 Release되지 않은 수를 판정할때 
-	// g_Object3DMng의 파괴자가 늦게 발동되어 누락되기 때문이다.  그래서 여기서 먼저 파괴시켜준다.  결과는 같다.
-	// Destroy를 다른데서 호출하지 말것!
-	 g_Object3DMng.DeleteDeviceObjects();
+
+	g_Object3DMng.Destroy();
 #ifdef __PROF
 	g_Prof.Show( m_fFPS );
 #endif
@@ -463,7 +460,6 @@ HRESULT CNeuzApp::DeleteDeviceObjects()
 	g_SfxTex.DeleteAll();
 	g_SfxMeshMng.DeleteAll();
 
-	g_Object3DMng.Destroy();	
 	CWndNeuz::FreeTileTexture();
 
 	m_TexCltGauge[0].DeleteDeviceObjects();
@@ -1003,7 +999,6 @@ HRESULT CNeuzApp::FrameMove()
 #endif //__FLYFF_INITPAGE_EXT
 	ProcessFadeMusic();
 	CalcUPS();
-	g_Object3DMng.Process();
 
 	g_ParticleMng.Process();
 	g_TailEffectMng.Process();

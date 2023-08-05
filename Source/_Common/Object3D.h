@@ -376,28 +376,23 @@ static 	BOOL IsAnimateFile( LPCTSTR szFileName );		// szFileName이 애니메이션이 
 	HRESULT DeleteDeviceObjects();
 };
 
-#define		MAX_OBJECT3D			2048
-#define		MAX_OBJECT3D_CACHE		32
+/* A collection of CObject3D. It enables the user to load the objects.
+The CObject3DMng remains the owner of the CObject3D: users must call the
+DeleteObject3D when they stop using a loaded CObject3D.
 
-class	CObject3DMng
-{
+The same CObject3D instance may be returned multiple times.
+*/
+class	CObject3DMng final {
 private:
-	std::map<std::string, CObject3D*>	m_mapObject3D;
-
-	void	Init( void );
+	std::map<std::string, std::unique_ptr<CObject3D>, std::less<>> m_mapObject3D;
 
 public:
-	void	Destroy( void );
-	HRESULT DeleteDeviceObjects();
-	HRESULT InvalidateDeviceObjects();
-		
-	CObject3DMng();
 	~CObject3DMng();
 
-	int			DeleteObject3D( CObject3D *pObject3D );
-	CObject3D	*LoadObject3D( LPCTSTR szFileName );
-	void	Process( void );
+	[[nodiscard]] CObject3D * LoadObject3D(LPCTSTR szFileName);
+	void DeleteObject3D(CObject3D * pObject3D);
 
+	void Destroy();
 };
 
 extern CObject3DMng		g_Object3DMng;

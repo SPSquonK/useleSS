@@ -221,103 +221,54 @@ void	DeleteShadowMask( void )
 ///////////////
 ///////////////
 ////////////////////////////////////////////////////////////////////////////////////
-CObject3DMng		g_Object3DMng;
+CObject3DMng g_Object3DMng;
 
-CObject3DMng :: CObject3DMng()
-{
-	Init();
-}
-
-CObject3DMng :: ~CObject3DMng()
-{
+CObject3DMng::~CObject3DMng() {
 	Destroy();
 }
 
-void	CObject3DMng :: Init( void )
-{
+void CObject3DMng::Destroy() {
+	for (const auto & pObject3D : m_mapObject3D | std::views::values) {
+		pObject3D->DeleteDeviceObjects();
+	}
+
 	m_mapObject3D.clear();
 }
 
-// 디바이스 자원과 메모리 모두를 날림.
-void	CObject3DMng :: Destroy( void )
-{
-	for( auto i = m_mapObject3D.begin(); i != m_mapObject3D.end(); ++i )
-	{
-		i->second->DeleteDeviceObjects();
-		SAFE_DELETE( i->second );
-	}
+CObject3D * CObject3DMng::LoadObject3D(LPCTSTR szFileName) {
+	char sFile[MAX_PATH] = { 0, };
+	strcpy(sFile, szFileName);
+	strlwr(sFile);
 
-	Init();
-}
-
-HRESULT CObject3DMng :: InvalidateDeviceObjects()
-{
-	DeleteDeviceObjects();
-	return  S_OK;
-}
-
-// 디바이스 자원만 날림.
-HRESULT CObject3DMng :: DeleteDeviceObjects()
-{
-	for( auto i = m_mapObject3D.begin(); i != m_mapObject3D.end(); ++i )
-		i->second->DeleteDeviceObjects();
-	return S_OK;
-}
-
-// pTexture를 사용하는 매터리얼을 찾아 삭제한다.
-// 공유되어 있는 텍스쳐라면 사용카운터를 보고 1인것만 삭제한다..
-int CObject3DMng::DeleteObject3D( CObject3D *pObject3D )
-{
-	if( !pObject3D )
-		return FALSE;
-	if( m_mapObject3D.size() == 0 )
-		return FALSE;
-	if( pObject3D->m_nUseCnt > 1 )
-		pObject3D->m_nUseCnt--;
-	else
-	{
-		m_mapObject3D.erase( pObject3D->m_szFileName );
-		SAFE_DELETE( pObject3D );
-		return TRUE;
-	}
-	return FALSE;
-}
-
-
-
-//
-//
-//
-CObject3D		*CObject3DMng :: LoadObject3D( LPCTSTR szFileName )
-{
-	char sFile[MAX_PATH]	= { 0,};
-	strcpy( sFile, szFileName );
-	strlwr( sFile );
-
-	auto i		= m_mapObject3D.find( sFile );
-	if( i != m_mapObject3D.end() )
-	{
+	const auto i = m_mapObject3D.find(sFile);
+	if (i != m_mapObject3D.end()) {
 		i->second->m_nUseCnt++;
-		return i->second;
+		return i->second.get();
 	}
-	CObject3D* pObject3D	= new CObject3D;
-	pObject3D->InitDeviceObjects( );
-	if( pObject3D->LoadObject( szFileName ) == FAIL )
-	{
-		SAFE_DELETE( pObject3D );
+
+	CObject3D * pObject3D = new CObject3D();
+	pObject3D->InitDeviceObjects();
+	if (pObject3D->LoadObject(szFileName) == FAIL) {
+		SAFE_DELETE(pObject3D);
 		return NULL;
 	}
-	pObject3D->m_nUseCnt	= 1;
-	bool bResult	= m_mapObject3D.emplace( sFile, pObject3D).second;
-
+	pObject3D->m_nUseCnt = 1;
+	m_mapObject3D.emplace(sFile, pObject3D).second;
 	return pObject3D;
 }
 
-// 주기적으로 검사해서 사용한지 오래된놈은 메모리에서 날림.
-// 서버에서는 사용하지 말자.
-void CObject3DMng :: Process( void )
-{
+void CObject3DMng::DeleteObject3D(CObject3D * pObject3D) {
+	if (!pObject3D) return;
+	if (m_mapObject3D.size() == 0) return;
+
+	if (pObject3D->m_nUseCnt > 1) {
+		pObject3D->m_nUseCnt--;
+	} else {
+		m_mapObject3D.erase(pObject3D->m_szFileName);
+	}
 }
+
+
 
 
 
