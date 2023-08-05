@@ -34,13 +34,6 @@ enum VBTYPE
 	VBT_BUMP,
 };
 
-
-struct	INDEX_BUFFER
-{
-	int		nIdx;				// 버텍스 리스트의 인덱스
-	D3DXVECTOR3		normal;
-};
-
 struct SKINVERTEX
 {
     D3DXVECTOR3 position;	// The 3D position for the vertex
@@ -84,16 +77,12 @@ struct	MATERIAL_BLOCK
 	int		m_nStartVertex;			// 버텍스 버퍼에서의 시작 인덱스
 	int		m_nPrimitiveCount;		// 프리미티브(삼각형)갯수
 	int		m_nTextureID;			// 텍스쳐 번호
-//	int		m_n2Side;				// 2 side render block
-//	int		m_nReflect;
-//	int		m_nOpacity;
 	DWORD	m_dwEffect;
 	int		m_nAmount;		// 투명도
 	int		m_nMaxUseBone;
 	int		m_UseBone[CBones::MAX_VS_BONE];
 };
 
-struct GMOBJECT;
 //
 // 버텍스와 면정보를 갖는 메쉬형태의 데이타 구조
 // Geometry Object
@@ -108,7 +97,6 @@ struct GMOBJECT		// base object
 	int			m_nID;
 	int			m_bOpacity;
 	int			m_bBump;
-	int			m_bRigid;
 	int			m_bLight;
 	int			m_nMaxVertexList;			// read
 	int			m_nMaxFaceList;				// read
@@ -121,7 +109,7 @@ struct GMOBJECT		// base object
 	D3DXMATRIX		m_mInverseTM;			// read 미리 변환된 인버스TM 
 
 	D3DXVECTOR3		*m_pVertexList;			// read 각 관절에 대해 Local좌표가 들어감
-//	INDEX_BUFFER	*m_pIndexBuffer;		// read 
+
 	int				*m_pPhysiqueVertex;		// read 피지크, 각 버텍스 피지x크들이 참조하는 본 ID
 	MATERIAL_BLOCK	*m_pMtrlBlk;			// read
 	LPDIRECT3DTEXTURE9	*m_pMtrlBlkTexture;		// 매터리얼 블럭내 텍스쳐포인터
@@ -135,7 +123,6 @@ struct GMOBJECT		// base object
 	TM_ANIMATION	*m_pFrame;				// 애니메이션이 있으면 프레임수만큼 있다
 
 	D3DXVECTOR3		m_vBBMin, m_vBBMax;			// read bound box min, max
-//	D3DXVECTOR3		m_vBBVList[8];				// read bound box vlist
 
 	struct TextureName { char strBitMapFileName[64]; };
 	int				m_bMaterial;				// MES파일에 매터리얼이 있었는지?.  저장을 위해서 백업 받아둠
@@ -153,10 +140,6 @@ struct GMOBJECT		// base object
 	// 스킨형 오브젝트일때는 VB는 NULL이다. 외부지정VB를 따로 써야 한다.
 	LPDIRECT3DVERTEXBUFFER9		m_pd3d_VB;		// Indexed용 VB
 	LPDIRECT3DINDEXBUFFER9		m_pd3d_IB;		// Indexed용 IB
-
-	// temporary - 일시적으로 write함.
-//	SKINVERTEX		*_pVB;					// 스키닝오브젝트에만 사용. d3d_VB와 같은 내용. 장차 사라질지도...
-	
 
 };
 
@@ -228,16 +211,14 @@ public:
 	D3DXVECTOR3		m_vBBMin, m_vBBMax;			// read bound box min, max
 	D3DXVECTOR3		m_vForce1, m_vForce2;		// 검광 시작점,끝점
 	D3DXVECTOR3		m_vForce3, m_vForce4;			// 추가지점 시작점,끝점
-	float	m_fScrlU, m_fScrlV;
+
 	int		m_nMaxFace;					// 오브젝트들의 폴리곤 갯수 총합
 	int		m_nNoTexture;				// 텍스쳐를 사용하지 않음.
 	int		m_nNoEffect;				// 상태셋팅을 건드리지 않음.
 	
 	// 만약 자체 키프레임 애니메이션이 있을경우 사용된다.
-//	double		m_dKPS;
 	float		m_fPerSlerp;
 	int			m_nMaxFrame;
-//	D3DXVECTOR3		m_vBBVList[8];				// read bound box vlist
 
 	int		m_nUseCnt;		// 몇번 공유되어 사용되었는가.	
 
@@ -351,8 +332,6 @@ static 	BOOL IsAnimateFile( LPCTSTR szFileName );		// szFileName이 애니메이션이 
 	D3DXVECTOR3 *IntersectRayTri( const D3DXVECTOR3 &vRayOrig, const D3DXVECTOR3 &vRayDir, const D3DXMATRIX &mWorld, D3DXVECTOR3* pvIntersect, FLOAT* pfDist, BOOL bColl = FALSE );
 	BOOL	SimpleTriIntersect(D3DXMATRIX mWorld, GMOBJECT* TargetObj, D3DXMATRIX mTargetWorld);
 	void	ComputeInterval(float fVV0,float fVV1,float fVV2,float fD0,float fD1,float fD2,float fD0D1,float fD0D2,float &fA,float &fB,float &fC,float &fX0,float &fX1);
-	void	Skining( GMOBJECT *pObj, const D3DXMATRIX *mBones );
-	HRESULT	SetVertexBuffer( GMOBJECT *pObj );
 	void	Animate( FLOAT fFrameCurrent, int nNextFrame );
 #ifndef __WORLDSERVER
 	void    SetState( MATERIAL_BLOCK* pBlock, int nEffect, DWORD dwBlendFactor );

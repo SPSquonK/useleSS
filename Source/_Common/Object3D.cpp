@@ -326,8 +326,6 @@ void	CObject3D :: Init( void )
 	m_nMaxEvent = 0;
 	memset( m_vEvent, 0, sizeof(m_vEvent) );
 
-	m_fScrlU = m_fScrlV = 0.0f;
-
 	m_nUseCnt = 0;	// 일단 초기화는 0
 	
 	m_fAmbient[0] = 1.0f;
@@ -775,8 +773,8 @@ int		CObject3D :: LoadObject( LPCTSTR szFileName )
 		resFp.Read( &m_vForce3, sizeof(D3DXVECTOR3), 1 );		// 검광3,4의 좌표인데 일단 이렇게 하자.
 		resFp.Read( &m_vForce4, sizeof(D3DXVECTOR3), 1 );
 	}
-	resFp.Read( &m_fScrlU, sizeof(float), 1 );
-	resFp.Read( &m_fScrlV, sizeof(float), 1 );
+	resFp.Seek( sizeof(float), SEEK_CUR ); /* m_fScrlU */
+	resFp.Seek( sizeof(float), SEEK_CUR ); /* m_fScrlV */
 	resFp.Seek( 16, SEEK_CUR );		// reserved
 
 	resFp.Read( &m_vBBMin, sizeof(D3DXVECTOR3), 1 );		// 대표 바운딩 박스
@@ -948,7 +946,6 @@ int		CObject3D :: LoadObject( LPCTSTR szFileName )
 		}
 	} // LOD_GROUP
 	// boudbox vMin, vMax값을 이용해 8개의 벡터로 풀어냄
-//	SetBB( m_vBBVList, m_vBBMin, m_vBBMax );
 
 	// 갱신용 매트릭스 리스트 생성. - 일반형오브젝트가 하나라도 잇으면 생성.
 	if( bNormalObj == TRUE )
@@ -1075,7 +1072,7 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 	
 	file->Read( &pObject->m_bOpacity,    4, 1 );
 	file->Read( &pObject->m_bBump, 4, 1 );
-	file->Read( &pObject->m_bRigid,		4, 1 );
+	file->Seek( 4, SEEK_CUR ); /* pObject->m_bRigid */
 	file->Seek( 28, SEEK_CUR );		// reserved
 	
 #ifdef __YENV_WITHOUT_BUMP
@@ -1274,15 +1271,6 @@ int		CObject3D::LoadGMObject( CResFile *file, GMOBJECT *pObject )
 					
 			#endif //__YENV
 				}
-//				if( (pObject->m_pMtrlBlk[i].m_nReflect & 0xfffffffe) == 0 )	// 마지막 1비트를 뺀 나머지에 아무값도 없으면 옛날버전일 가능성이있다.
-//				{
-//					// 이럴땐 컨버트.
-//					if( pObject->m_pMtrlBlk[i].m_n2Side )			pObject->m_pMtrlBlk[i].m_nReflect |= XE_2SIDE;
-//					if( pObject->m_pMtrlBlk[i].m_nOpacity )			pObject->m_pMtrlBlk[i].m_nReflect |= XE_OPACITY;
-//					// XE_REFLECT는 m_nReflect에 값이 들어있는 상태이므로 따로 넣어줄필요 없다.
-//				}
-
-
 			}
 		}
 #endif	// __WORLDSERVER
@@ -2398,61 +2386,6 @@ void	CObject3D::Animate( FLOAT fFrameCurrent, int nNextFrame )
 #endif // __WORLDSERVER
 }
 
-//
-// 스키닝.
-// 본의 애니메이션이 끝난후 뼈대와 로컬버텍스를 곱하여 최종 버텍스좌표를 계산한다.
-// mBones : 계산이 끝난 뼈대들의 매트릭스 
-//
-void	CObject3D::Skining( GMOBJECT *pObj, const D3DXMATRIX *mBones )
-{
-/*
-	D3DXVECTOR3	*vLocal, *vWorld;
-	int			*pPhysique;
-	int			nMax;
-
-	// 버텍스 갯수만큼 돈다.
-	// 스킨의 각 버텍스들은 자기가 소속된 BONE의 최종결과 매트릭스와 자기로컬 좌표를 곱해서
-	// 최종 좌표를 생성해낸다.
-	vLocal	  = pObj->m_pVertexList;
-	pPhysique = pObj->m_pPhysiqueVertex;
-	nMax	  = pObj->m_nMaxVertexList;
-	vWorld	  = pObj->_pVertexUpdate;
-	while( nMax-- )
-	{
-		D3DXVec3TransformCoord( vWorld, vLocal, &mBones[ *pPhysique ] );		// 일단은 영향받는 bone을 한개만 쓴다.
-		// 여기서 노말도 같이 돌려야 한다.
-		vLocal ++;
-		vWorld ++;
-		pPhysique ++;
-	}
-*/
-}
-
-// 본의 변환이 모두 끝난후 실행된다.
-// 피지크 버텍스들을 본에 맞춰 다시 계산해서 월드 좌표로 생성
-// 월드좌표로 생성된 버텍스들을 버텍스 버퍼에 카피
-HRESULT		CObject3D::SetVertexBuffer( GMOBJECT *pObj )
-{
-/*
-	CUSTOMVERTEX	*_pVB = pObj->_pVB;			// 스키닝을 위한 임시버퍼
-	WORD			*pIB;
-	D3DXVECTOR3		*pVList;
-	int				nMax = pObj->m_nMaxVB;		// 
-
-	// WorldPos값만 갱신되면 되므로 
-	// Skining()에서 계산된 WorldPos값만 카피시켜 준다.
-	pIB    = pObj->m_pIIB;
-	pVList = pObj->_pVertexUpdate;
-	while( nMax-- )
-	{
-		_pVB->position = pVList[ *pIB ];
-		_pVB ++;
-		pIB ++;
-	}
-*/
-	return S_OK;
-}
-
 // 스키닝으로 갱신된 버텍스버퍼를 d3d버텍스 버퍼로 전송.
 //
 HRESULT CObject3D::SendVertexBuffer( GMOBJECT *pObj, LPDIRECT3DVERTEXBUFFER9 pd3d_VB )
@@ -2701,26 +2634,6 @@ void CObject3D::ResetState( MATERIAL_BLOCK* pBlock,  int nEffect, DWORD dwBlendF
 		//m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
 	}
 	
-	if( 0 ) //pBlock->m_nOpacity )
-	{
-		if( m_nNoEffect )	return;
-		if( dwBlendFactor == 255 )
-		{
-			m_pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, FALSE );
-			m_pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, FALSE );
-			m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE );
-		}
-		else
-		{
-			m_pd3dDevice->SetRenderState( D3DRS_ALPHATESTENABLE, FALSE );
-			m_pd3dDevice->SetRenderState( D3DRS_ALPHAREF,        0xb0 );
-			m_pd3dDevice->SetRenderState( D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB( 255, 0, 0, 0) );
-			m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE );
-			
-			//m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TFACTOR );
-			//m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
-		}
-	} else
 	if( (pBlock->m_dwEffect & XE_REFLECT) || (nEffect & XE_REFLECT) )
 	{
 		if( m_nNoEffect )	return;
