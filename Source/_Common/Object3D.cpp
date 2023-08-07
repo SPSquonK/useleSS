@@ -149,69 +149,6 @@ void	DeleteVertexShader( )
 		SAFE_RELEASE( g_pShadowVertexDeclaration );
 }
 
-LPDIRECT3DVERTEXBUFFER9		g_pd3d_ShadowVB;
-
-HRESULT		CreateShadowMask( int nWidth, int nHeight )
-{
-	HRESULT	hr;
-
-	hr = pd3dDevice->CreateVertexBuffer( 4 * sizeof(SHADOWMASK_VERTEX),
-										 D3DUSAGE_WRITEONLY, D3DFVF_SHADOWMASKVERTEX,
-										 D3DPOOL_MANAGED, &g_pd3d_ShadowVB, NULL );
-	if( FAILED(hr) )
-		Error( "CreateShadowMask : 버텍스 버퍼 생성 실패" );
-
-	SHADOWMASK_VERTEX *pVertex;
-	hr = g_pd3d_ShadowVB->Lock(0, 4 * sizeof(SHADOWMASK_VERTEX), (void **)&pVertex, 0);
-	if( FAILED(hr) )
-		return hr;
-	memset( pVertex, 0x00, 4 * sizeof(SHADOWMASK_VERTEX) );
-	pVertex[0].x = 0.0f;	pVertex[0].y = 0.0f;
-	pVertex[1].x = (float)nWidth; pVertex[1].y = 0.0f;
-	pVertex[2].x = 0.0f; pVertex[2].y = (float)nHeight;
-	pVertex[3].x = (float)nWidth; pVertex[3].y = (float)nHeight;
-	
-	pVertex[0].color = pVertex[1].color = pVertex[2].color = pVertex[3].color = 0x44000000;
-	
-	g_pd3d_ShadowVB->Unlock();
-	
-	return S_OK;
-}
-
-void	RenderShadowMask( )
-{
-	pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-
-	pd3dDevice->SetRenderState(D3DRS_STENCILFUNC,   D3DCMP_LESSEQUAL);
-    pd3dDevice->SetRenderState(D3DRS_STENCILPASS,   D3DSTENCILOP_KEEP);
-    pd3dDevice->SetRenderState(D3DRS_STENCILREF,    1);
-	
-	pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-	pd3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-    pd3dDevice->SetRenderState(D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA);
-    pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	
-	
-	pd3dDevice->SetVertexShader( NULL );
-	pd3dDevice->SetVertexDeclaration( NULL );
-	pd3dDevice->SetFVF( D3DFVF_SHADOWMASKVERTEX );
-	pd3dDevice->SetStreamSource(0, g_pd3d_ShadowVB, 0, sizeof(SHADOWMASK_VERTEX));
-
-	pd3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
-
-	// reset
-	pd3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-    pd3dDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
-    pd3dDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-    pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-}
-
-void	DeleteShadowMask( void )
-{
-	SAFE_RELEASE( g_pd3d_ShadowVB );
-}
-
 #endif // !__WORLDSERVER
 ////////////////////////////////////////////////////////////////////////////////////
 ///////////////

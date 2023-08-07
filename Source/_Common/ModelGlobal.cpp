@@ -522,7 +522,7 @@ void CPartsFireDragon::Process( )
 										 D3DPOOL_MANAGED, &m_pParticleVB, NULL );
 
 	if( FAILED(hr) )
-		Error( "CreateShadowMask : 버텍스 버퍼 생성 실패" );
+		Error( "CPartsFireDragon : 버텍스 버퍼 생성 실패" );
 
 	FIREVERTEX *pVertex;
 	hr = m_pParticleVB->Lock(0, MAX_PARTS_FIRE_DRAGON * 6 * sizeof(FIREVERTEX), (void **)&pVertex, 0);

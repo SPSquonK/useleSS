@@ -10,12 +10,6 @@
 #define D3DFVF_SKINVERTEX (D3DFVF_XYZB3 | D3DFVF_LASTBETA_UBYTE4 | D3DFVF_NORMAL | D3DFVF_TEX1)
 #define D3DFVF_NORMALVERTEX_BUMP (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_NORMAL | D3DFVF_TEX1)
 #define D3DFVF_NORMALVERTEX (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1)
-#define D3DFVF_SHADOWMASKVERTEX (D3DFVF_XYZRHW | D3DFVF_DIFFUSE)
-struct SHADOWMASK_VERTEX
-{
-	float x, y, z, rhw;
-	DWORD color;
-};
 
 // Mesh Type
 enum GMTYPE
@@ -381,10 +375,6 @@ HRESULT		CreateShadowVS( LPCTSTR szFileName );
 HRESULT		CreateSkinningVS( LPCTSTR szFileName );
 void		DeleteVertexShader( );
 
-
-HRESULT		CreateShadowMask( int nWidth, int nHeight );
-void	RenderShadowMask( );
-void	DeleteShadowMask( void );
 
 void	SetTransformViewProj( const D3DXMATRIX &mViewProj );
 
