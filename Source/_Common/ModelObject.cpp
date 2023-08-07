@@ -349,17 +349,17 @@ BOOL CModelObject::TestIntersectionOBB_Line( const Segment3& segment, const CObj
 	{
 		return TRUE;
 	}
-	#ifdef __CPU_UTILDOWN_060502	//sun!!
+//	#ifdef __CPU_UTILDOWN_060502	//sun!!
 		return IntrSegment3Box3_Test( segment, pObj->m_OBB );
-	#else
-		const D3DXMATRIX& mWorld = pObj->GetMatrixWorld();
-
-		D3DXVECTOR3 vTemp;
-
-		D3DXVECTOR3 vStart = segment.Origin - segment.Extent * segment.Direction;
-		D3DXVECTOR3 vEnd   = segment.Origin + segment.Extent * segment.Direction;
-		return ::IsTouchOBB_Line( m_vMin, m_vMax, mWorld, vStart, vEnd, &vTemp );
-	#endif
+//	#else
+//		const D3DXMATRIX& mWorld = pObj->GetMatrixWorld();
+//
+//		D3DXVECTOR3 vTemp;
+//
+//		D3DXVECTOR3 vStart = segment.Origin - segment.Extent * segment.Direction;
+//		D3DXVECTOR3 vEnd   = segment.Origin + segment.Extent * segment.Direction;
+//		return ::IsTouchOBB_Line( m_vMin, m_vMax, mWorld, vStart, vEnd, &vTemp );
+//	#endif
 }
 
 //
