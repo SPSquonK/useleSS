@@ -15,7 +15,6 @@ public:
 	static constexpr size_t MAX_IP = 10240;
 
 	int		m_nMaxConn;
-	BOOL	m_bReloadPro;
 
 	class IPManager {
 	public:

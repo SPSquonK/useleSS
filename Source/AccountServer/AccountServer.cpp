@@ -299,7 +299,6 @@ AddTail( -1, 1, "TEST", "192.168.0.103" );
 			}
 			else if( s.Token == "NOT_RELOADPRO" )
 			{
-				g_dpSrvr.m_bReloadPro = FALSE;
 			}
 			else if( s.Token == "NOLOG" )
 			{

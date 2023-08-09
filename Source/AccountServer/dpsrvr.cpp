@@ -17,12 +17,11 @@ CDPSrvr_AccToCert::CDPSrvr_AccToCert()
 {
 	m_bCheckAddr	= true;
 	m_nMaxConn		=	MAX_CONN;
-	m_bReloadPro	= TRUE;
-
+	
 	ON_MSG(PACKETTYPE_ADD_ACCOUNT, &CDPSrvr_AccToCert::OnAddAccount);
 	ON_MSG(PACKETTYPE_REMOVE_ACCOUNT, &CDPSrvr_AccToCert::OnRemoveAccount);
 	ON_MSG(PACKETTYPE_PING, &CDPSrvr_AccToCert::OnPing);
-	ON_MSG( PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPSrvr_AccToCert::OnCloseExistingConnection );
+	ON_MSG(PACKETTYPE_CLOSE_EXISTING_CONNECTION, &CDPSrvr_AccToCert::OnCloseExistingConnection);
 }
 
 void CDPSrvr_AccToCert::SysMessageHandler( LPDPMSG_GENERIC lpMsg, DWORD dwMsgSize, DPID idFrom )
