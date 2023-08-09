@@ -242,10 +242,6 @@ void CDPDBSrvr::OnBuyingInfo( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize
 
 }
 
-void CDPDBSrvr::SendLogSMItem()
-{
-}
-
 #ifdef __SERVERLIST0911
 void CDPDBSrvr::OnServerEnable( CAr & ar, DPID dpid, LPBYTE lpBuf, u_long uBufSize )
 {

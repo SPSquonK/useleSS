@@ -24,8 +24,6 @@ public:
 	void	SendCloseExistingConnection( const char*lpszAccount, LONG lError );
 	void	SendFail( long lError, const char* lpszAccount, DPID dpid );
 	void	SendBuyingInfo( PBUYING_INFO2 pbi2 );
-	void	SendLogSMItem( );
-
 
 private:
 //	Handlers
