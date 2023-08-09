@@ -18,8 +18,6 @@ CDPSrvr_AccToCert::CDPSrvr_AccToCert()
 	m_bCheckAddr	= true;
 	m_nMaxConn		=	MAX_CONN;
 	m_bReloadPro	= TRUE;
-	memset( m_sAddrPmttd, 0, sizeof(m_sAddrPmttd) );
-	m_nSizeofAddrPmttd	= 0;
 
 	ON_MSG(PACKETTYPE_ADD_ACCOUNT, &CDPSrvr_AccToCert::OnAddAccount);
 	ON_MSG(PACKETTYPE_REMOVE_ACCOUNT, &CDPSrvr_AccToCert::OnRemoveAccount);
@@ -71,6 +69,16 @@ void CDPSrvr_AccToCert::OnRemoveConnection( DPID dpid )
 	g_AccountMng.RemoveConnection( dpid );
 }
 
+bool CDPSrvr_AccToCert::LoadIpManager(LPCTSTR addrPmttd, LPCSTR ipCut) {
+	bool res = false;
+	m_IPManager.access([&](IPManager & manager) {
+		m_IPManagerEmpty = false;
+		res = manager.Load(addrPmttd, ipCut);
+		m_IPManagerEmpty = manager.IsEmpty();
+	});
+	return res;
+}
+
 void CDPSrvr_AccToCert::DestroyPlayer( DPID dpid1, DPID dpid2 )
 {
 	BEFORESENDSOLE( ar, PACKETTYPE_DESTROY_PLAYER, dpid2 );
@@ -98,27 +106,22 @@ void CDPSrvr_AccToCert::OnAddAccount( CAr & ar, DPID dpid1, DPID dpid2 )
 	ar >> dwPCBangClass;
 
 #endif	// __GPAUTH_02
-	BYTE cbResult = ACCOUNT_CHECK_OK;		 
 
 	// 1. 외부 아이피 검사 
-	if( m_bCheckAddr )							
-	{
-		CMclAutoLock	Lock( m_csAddrPmttd );
-		int i = NULL;
-		for( i = 0; i < m_nSizeofAddrPmttd; i++ )
-		{
-			if( strstr( lpAddr, m_sAddrPmttd[i] ) )
-				break;		
+	BYTE cbResult;
+	
+	if (lpAddr[0] != '\0') {
+		if (m_IPManagerEmpty) {
+			cbResult = m_bCheckAddr ? ACCOUNT_EXTERNAL_ADDR : ACCOUNT_CHECK_OK;
+		} else {
+			m_IPManager.access([&](const IPManager & manager) {
+				cbResult = manager.GetStatus(lpAddr, !m_bCheckAddr);
+			});
 		}
-		if( i == m_nSizeofAddrPmttd )
-			cbResult = ACCOUNT_EXTERNAL_ADDR;	 
+	} else {
+		cbResult = ACCOUNT_IPCUT_ADDR;
+		Error("Not Addr : %s / %s", lpAddr, lpszAccount);
 	}
-
-	if( lpAddr[0] == '\0' || IsBanned(lpAddr) )
-		cbResult = ACCOUNT_IPCUT_ADDR;		
-
-	if( lpAddr[0] == '\0' )
-		Error( "Not Addr : %s", lpAddr );
 	
 	// 2. MAX, 중복검사  
 	if( cbResult == ACCOUNT_CHECK_OK )			
@@ -182,7 +185,6 @@ void CDPSrvr_AccToCert::OnRemoveAccount( CAr & ar, DPID dpid1, DPID dpid2 )
 	g_AccountMng.RemoveAccount( dpid1, dpid2 );
 }
 
-
 void CDPSrvr_AccToCert::OnPing( CAr & ar, DPID dpid1, DPID dpid2 )
 {
 	CMclAutoLock	Lock( g_AccountMng.m_AddRemoveLock );
@@ -190,129 +192,6 @@ void CDPSrvr_AccToCert::OnPing( CAr & ar, DPID dpid1, DPID dpid2 )
 	CAccount* pAccount	= g_AccountMng.GetAccount( dpid1, dpid2 );
 	if( NULL != pAccount )
 		pAccount->m_dwPing	= timeGetTime();
-}
-
-bool CDPSrvr_AccToCert::LoadAddrPmttd( LPCTSTR lpszFileName )
-{
-	CMclAutoLock	Lock( m_csAddrPmttd );
-
-	m_nSizeofAddrPmttd	= 0;
-
-	CScanner s;
-
-	if( s.Load( lpszFileName ) )
-	{
-		s.GetToken();
-		while( s.tok != FINISHED )
-		{
-			strcpy( m_sAddrPmttd[m_nSizeofAddrPmttd++], (LPCSTR)s.Token );
-			s.GetToken();
-		}
-		return true;
-	}
-	return false;
-}
-
-std::optional<std::uint32_t> CDPSrvr_AccToCert::IPStringToUInt32(const char * string) {
-	std::uint32_t result = 0;
-
-
-	size_t numberOfDots = 0;
-	size_t i = 0;
-
-	std::uint32_t accumulator = 0;
-
-	while (string[i] != '\0') {
-		if (string[i] >= '0' && string[i] <= '9') {
-			accumulator = accumulator * 10 + (string[i] - '0');
-		} else if (string[i] == '.') {
-			if (accumulator > 0xFF) return std::nullopt;
-			result = result * 0x100 + accumulator;
-			
-			accumulator = 0;
-			++numberOfDots;
-		} else {
-			return std::nullopt;
-		}
-
-		++i;
-	}
-
-	if (numberOfDots != 3) return std::nullopt;
-	if (accumulator > 0xFF) return std::nullopt;
-
-	return result + accumulator;
-}
-
-bool CDPSrvr_AccToCert::LoadIPCut( LPCSTR lpszFileName ) {
-	bool result = false;
-
-	m_IPCut.access([&](std::vector<IPRange> & ipRange) {
-		m_IPCutIsEmpty = false;
-		ipRange.clear();
-
-		CScanner s;
-		if (!s.Load(lpszFileName)) {
-			result = false;
-			m_IPCutIsEmpty = true;
-			return;
-		}
-		
-		result = true;
-
-		s.GetToken();
-		while (s.tok != FINISHED) {
-
-			std::optional<std::uint32_t> from = IPStringToUInt32(s.Token.GetString());
-			if (!from) {
-				result = false;
-				Error("AccountServer LoadIPCut : Invalid value read %s", s.Token.GetString());
-			}
-			s.GetToken();
-			s.GetToken();
-			std::optional<std::uint32_t> to = IPStringToUInt32(s.Token.GetString());
-			if (!to) {
-				result = false;
-				Error("AccountServer LoadIPCut: Invalid value read %s", s.Token.GetString());
-			}
-
-			if (from && to) {
-				ipRange.emplace_back(IPRange{ from.value(), to.value() });
-			}
-
-			s.GetToken();
-		}
-
-		m_IPCutIsEmpty = ipRange.empty();
-		});
-
-	return result;
-}
-
-bool CDPSrvr_AccToCert::IsBanned(LPCSTR lpszIP) {
-	const std::optional<std::uint32_t> myIp = IPStringToUInt32(lpszIP);
-	if (!myIp) {
-		Error("AccountServer IPCut: Invalid IP received for checking %s", lpszIP);
-		return false;
-	}
-
-	if (m_IPCutIsEmpty) return false;
-	// Note: It may be possible that without the if, m_IPCutIsEmpty field would
-	// become false when reaching m_IPCut. But the only scenario that it could
-	// appear is if a new file is loaded between the previous line and the
-	// resource access. This is very unlikely and anyway, people connecting
-	// within the milliseconds their IP is banned is bound to happend anyway.
-
-	bool result = false;
-
-	m_IPCut.access([&](const std::vector<IPRange> & ipRange) {
-		result = std::any_of(ipRange.begin(), ipRange.end(),
-			[ipAddress = *myIp](const IPRange & range) {
-				return ipAddress >= range.from && ipAddress <= range.to;
-			});	
-		});
-
-	return result;
 }
 
 void CDPSrvr_AccToCert::SendServersetList( DPID dpid )
@@ -380,3 +259,128 @@ void CDPSrvr_AccToCert::CloseExistingConnection( LPCTSTR lpszAccount, LONG lErro
 }
 
 CDPSrvr_AccToCert		g_dpSrvr;
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+BYTE CDPSrvr_AccToCert::IPManager::GetStatus(LPCTSTR ipAddress, bool onlyBan) const {
+	// Banned
+	const std::optional<std::uint32_t> myIp = IPStringToUInt32(ipAddress);
+	if (!myIp) {
+		Error("AccountServer IPCut: Invalid IP received for checking %s", ipAddress);
+		return ACCOUNT_IPCUT_ADDR;
+	}
+
+	const bool isBanned = std::any_of(banned.begin(), banned.end(),
+		[ipAddress = *myIp](const IPRange & range) {
+			return ipAddress >= range.from && ipAddress <= range.to;
+		}
+	);
+
+	if (isBanned) return ACCOUNT_IPCUT_ADDR;
+
+	// Permitted
+	if (onlyBan) return ACCOUNT_CHECK_OK;
+	
+	const bool notPrefixedWithPermitted = std::ranges::none_of(permitted,
+		[&](const CString & str) {
+			return std::strstr(ipAddress, str.GetString()) == 0;
+		}
+	);
+
+	return notPrefixedWithPermitted ? ACCOUNT_EXTERNAL_ADDR : ACCOUNT_CHECK_OK;
+}
+
+bool CDPSrvr_AccToCert::IPManager::IsEmpty() const noexcept {
+	return permitted.empty() && banned.empty();
+}
+
+
+bool CDPSrvr_AccToCert::IPManager::Load(LPCTSTR szAddrPmttdFilename, LPCSTR szIpCutFilename) {
+	// Always load both files
+	const bool pmttd = LoadAddrPmttd(szAddrPmttdFilename);
+	const bool ipCut = LoadIPCut(szIpCutFilename);
+	return pmttd || ipCut;
+}
+
+bool CDPSrvr_AccToCert::IPManager::LoadAddrPmttd(LPCTSTR szAddrPmttdFilename) {
+	permitted.clear();
+
+	CScanner s;
+	if (!s.Load(szAddrPmttdFilename)) return false;
+
+	while (true) {
+		s.GetToken();
+		if (s.tok == FINISHED) break;
+		permitted.emplace_back(s.Token);
+	}
+
+	return true;
+}
+
+std::optional<std::uint32_t> CDPSrvr_AccToCert::IPManager::IPStringToUInt32(const char * string) {
+	std::uint32_t result = 0;
+
+	size_t numberOfDots = 0;
+	size_t i = 0;
+
+	std::uint32_t accumulator = 0;
+
+	while (string[i] != '\0') {
+		if (string[i] >= '0' && string[i] <= '9') {
+			accumulator = accumulator * 10 + (string[i] - '0');
+		} else if (string[i] == '.') {
+			if (accumulator > 0xFF) return std::nullopt;
+			result = result * 0x100 + accumulator;
+			
+			accumulator = 0;
+			++numberOfDots;
+		} else {
+			return std::nullopt;
+		}
+
+		++i;
+	}
+
+	if (numberOfDots != 3) return std::nullopt;
+	if (accumulator > 0xFF) return std::nullopt;
+
+	return result + accumulator;
+}
+
+bool CDPSrvr_AccToCert::IPManager::LoadIPCut(LPCSTR szIpCutFilename) {
+	banned.clear();
+
+	CScanner s;
+	if (!s.Load(szIpCutFilename)) {
+		return false;
+	}
+
+	bool result = false;
+
+	s.GetToken();
+	while (s.tok != FINISHED) {
+
+		std::optional<std::uint32_t> from = IPStringToUInt32(s.Token.GetString());
+		if (!from) {
+			result = false;
+			Error("AccountServer LoadIPCut : Invalid value read %s", s.Token.GetString());
+		}
+		s.GetToken();
+		s.GetToken();
+		std::optional<std::uint32_t> to = IPStringToUInt32(s.Token.GetString());
+		if (!to) {
+			result = false;
+			Error("AccountServer LoadIPCut: Invalid value read %s", s.Token.GetString());
+		}
+
+		if (from && to) {
+			banned.emplace_back(IPRange{ from.value(), to.value() });
+		}
+
+		s.GetToken();
+	}
+
+	return result;
+}
+

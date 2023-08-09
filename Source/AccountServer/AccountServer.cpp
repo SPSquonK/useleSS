@@ -149,14 +149,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	g_DbManager.CreateDbWorkers();
 	
-	if( g_dpSrvr.LoadAddrPmttd( "pmttd.ini" ) == false )
-	{
-		TRACE("LoadAddrPmttd false\n");
-	}	
-	
-	if( g_dpSrvr.LoadIPCut( "IPCut.ini" ) == false )
-	{
-		TRACE( "LoadIPCut FALSE\n" );
+	if (!g_dpSrvr.LoadIpManager("pmttd.ini", "IPCut.ini")) {
+		TRACE("LoadAddrPmttd or LoadIPCut false\n");
 	}
 	
 	g_MyTrace.Initialize( hWnd, "SquireD", RGB( 0x00, 0x00, 0x00 ), RGB( 0xff, 0xff, 0xff ) );
@@ -485,8 +479,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					}
 				case IDM_OPT_INTERNAL_IP:
 					{
-						g_dpSrvr.LoadAddrPmttd( "pmttd.ini" );
-						g_dpSrvr.LoadIPCut( "IPCut.ini" );
+						g_dpSrvr.LoadIpManager("pmttd.ini", "IPCut.ini");
 						break;
 					}
 				default:
