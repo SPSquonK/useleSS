@@ -636,11 +636,9 @@ BOOL CItemElem::IsActiveTicket( DWORD dwItemId )
 	return FALSE;
 }
 #endif	// __WORLDSERVER
-BOOL	IsNeedTarget( ItemProp* pProp )
-{	// 아이템을 사용하기 위해 더블 클릭 했을 때
-	// 커서가 바뀌면서 인벤토리 내 다른 아이템 클릭이 필요한 아이템인가?
-	// 아이템 식별자 추가가 번거로와 속성 확인으로 변경
-	return( pProp->dwExeTarget == EXT_ITEM );
+
+[[nodiscard]] bool ItemProp::IsNeedTarget() const noexcept {
+	return dwExeTarget == EXT_ITEM;
 }
 
 bool CItemElem::IsEgg() const

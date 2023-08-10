@@ -140,7 +140,5 @@ inline const CItem * CObj::ToItem() const {
 bool IsUsableItem(const CItemElem * pItem);
 bool IsUsingItem(const CItemElem * pItem);
 
-extern	BOOL	IsNeedTarget( ItemProp* pProp );
-
 #endif // !defined(AFX_ITEM_H__80E88B36_BD6B_449B_BE76_34F2B5B77552__INCLUDED_)
 

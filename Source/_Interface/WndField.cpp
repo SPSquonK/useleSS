@@ -1272,9 +1272,9 @@ void CWndInventory::ProcessEnchant() {
 	}
 
 	// --- Need Target
-	if (IsNeedTarget(const_cast<ItemProp *>(pItemMaterialProp))) {
+	if (pItemMaterialProp->IsNeedTarget()) {
 		g_DPlay.SendDoUseItemTarget(m_pUpgradeMaterialItem->m_dwObjId, pItemElem->m_dwObjId);
-
+		
 		return;
 	}
 
@@ -1719,7 +1719,7 @@ BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 							|| pProp->dwItemKind3 == IK3_SOCKETCARD
 							|| pProp->dwItemKind3 == IK3_RANDOM_SCROLL
 							|| pProp->dwItemKind3 == IK3_PIERDICE 
-							|| IsNeedTarget( pProp )
+							|| pProp->IsNeedTarget()
 							|| pProp->dwItemKind3 == IK3_SOCKETCARD2
 							) 
 						)
@@ -5207,7 +5207,7 @@ std::expected<void, DWORD> CWndInventory::RunUpgradeDecide(CItemElem * pItem) {
 	}
 
 	// Other things
-	if (IsNeedTarget(const_cast<ItemProp *>(pItemProp))) {
+	if (pItemProp->IsNeedTarget()) {
 		return OK();
 	}
 

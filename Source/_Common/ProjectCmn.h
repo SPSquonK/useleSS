@@ -265,6 +265,8 @@ struct ItemProp
 #ifdef __CLIENT
 	[[nodiscard]] CTexture * GetTexture() const;
 #endif
+
+	[[nodiscard]] bool IsNeedTarget() const noexcept;
 };
 
 class CItemElem;
