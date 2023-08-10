@@ -5081,11 +5081,10 @@ void CWndChangeClass1::JobDisplayer::Render(
 	} else {
 		TCHAR jobName[64];
 		std::strcpy(jobName, prj.jobs.info[item].szName);
-		std::strcat(jobName, " ");
 		if (prj.jobs.info[item].dwJobType == JTYPE_MASTER) {
-			std::strcat(jobName, "[M]");
+			std::strcat(jobName, " [M]");
 		} else {
-			std::strcat(jobName, "[H]");
+			std::strcat(jobName, " [H]");
 		}
 		p2DRender->TextOut(rect.left, rect.top, jobName, color);
 	}
