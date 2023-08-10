@@ -30,6 +30,9 @@
 // Invalid use of Format
 #pragma warning(error: 4473 4474 4476 4477 6284)
 
+// Temporary: "Don't move constant message" that pops on "const auto [...] = ar.Extract<...>()"
+#pragma warning(disable: 26478)
+
 namespace std_ {
   // Overloaded helper for std::visit. Should be in std but for some reason
   // it is not there
