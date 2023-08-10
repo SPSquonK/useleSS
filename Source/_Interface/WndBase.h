@@ -193,9 +193,9 @@ static SHORTCUT       m_GlobalShortcut;
 	void SetTitle(CString strTitle) { m_strTitle = strTitle; }
 	DWORD GetStyle() { return m_dwStyle; }
 	CWndBase* GetParentWnd() { return m_pParentWnd; }
-	CRect GetClientRect( BOOL bParent = FALSE );
-	CRect GetWindowRect( BOOL bParent = FALSE );
-	CRect GetLayoutRect( BOOL bParent = FALSE );
+	[[nodiscard]] CRect GetClientRect( BOOL bParent = FALSE ) const;
+	[[nodiscard]] CRect GetWindowRect( BOOL bParent = FALSE ) const;
+	[[nodiscard]] CRect GetLayoutRect( BOOL bParent = FALSE ) const;
 	CRect GetWndRect() { return m_rectWindow; }
 	[[nodiscard]] bool IsWndRoot() const;
 	[[nodiscard]] static bool IsOpenModalWnd() { return m_pWndFocus && m_pWndFocus->IsWndStyle(WBS_MODAL); }

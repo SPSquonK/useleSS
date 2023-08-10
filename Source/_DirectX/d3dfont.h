@@ -222,7 +222,7 @@ public:
 	// add
 	DWORD m_dwMaxHeight;
 
-	DWORD GetMaxHeight() { return m_dwMaxHeight; }
+	[[nodiscard]] DWORD GetMaxHeight() const noexcept { return m_dwMaxHeight; }
 };
 
 class CD3DFontAPIVTN : public CD3DFontAPI

@@ -331,7 +331,7 @@ public:
 	virtual void OnChar( UINT nChar );
 	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
 
-	int GetFontHeight() { return m_pFont->GetMaxHeight() + m_nLineSpace; }
+	[[nodiscard]] int GetFontHeight() const { return m_pFont->GetMaxHeight() + m_nLineSpace; }
 
 	LONG GetOffset( CPoint point );
 	void UpdateScrollBar();
@@ -348,6 +348,9 @@ virtual void DrawCaret( C2DRender* p2DRender );
 
 	static void SetupDescription(CWndText * self, LPCTSTR filename);
 	[[nodiscard]] std::pair<DWORD, DWORD> GetSelectionRange() const;
+
+private:
+	[[nodiscard]] int GETRANGE() const;
 };
 
 struct EditStringIterator {
@@ -593,7 +596,7 @@ public:
 	~CWndListBox() override;
 
 	void Create( DWORD dwListBoxStyle, RECT& rect, CWndBase* pParentWnd, UINT nID );
-	int GetFontHeight() { return m_pFont->GetMaxHeight() + m_nLineSpace; }
+	[[nodiscard]] int GetFontHeight() const { return m_pFont->GetMaxHeight() + m_nLineSpace; }
 	int   GetCount() const;
 	DWORD GetItemData(int nIndex) const;
 	void* GetItemDataPtr(int nIndex) const;

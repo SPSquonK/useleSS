@@ -1494,21 +1494,21 @@ void CWndBase::SetWndRect( CRect rectWnd, BOOL bOnSize )
 	MakeVertexBuffer();
 }
 
-CRect CWndBase::GetClientRect(BOOL bParent)
+CRect CWndBase::GetClientRect(BOOL bParent) const
 {
 	CRect rect = m_rectClient;
 	if(bParent == FALSE)
 		rect.OffsetRect(-m_rectClient.TopLeft());
 	return rect;
 }
-CRect CWndBase::GetWindowRect(BOOL bParent)
+CRect CWndBase::GetWindowRect(BOOL bParent) const
 {
 	CRect rect = m_rectWindow;
 	if(bParent == FALSE)
 		rect.OffsetRect(-m_rectWindow.TopLeft());
 	return rect;
 }
-CRect CWndBase::GetLayoutRect(BOOL bParent)
+CRect CWndBase::GetLayoutRect(BOOL bParent) const
 {
 	CRect rect = m_rectLayout;
 	if(bParent == FALSE)

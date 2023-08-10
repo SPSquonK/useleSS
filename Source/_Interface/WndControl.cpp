@@ -21,8 +21,6 @@
 #define EDIT_HEIGHT 8
 #define VSCROLL_WIDTH 16
 
-#define GETRANGE ( ( GetClientRect().Height() + m_nLineSpace ) / GetFontHeight() )
-
 CWndStatic::CWndStatic() 
 { 
 	m_byWndType = WTYPE_STATIC; 
@@ -1993,6 +1991,11 @@ void CWndText::SetWndRect(CRect rectWnd, BOOL bOnSize )
 void CWndText::PaintFrame( C2DRender* p2DRender )
 {
 }
+
+int CWndText::GETRANGE() const {
+	return (GetClientRect().Height() + m_nLineSpace) / GetFontHeight();
+}
+
 void CWndText::OnDraw( C2DRender* p2DRender )
 {
 	CString string;
@@ -2007,9 +2010,9 @@ void CWndText::OnDraw( C2DRender* p2DRender )
 	p2DRender->SetFont( m_pFont );
 	
 	int nPos = IsWndStyle( WBS_VSCROLL ) ? m_wndScrollBar.GetScrollPos() : 0;
-	int nLines = IsWndStyle( WBS_VSCROLL ) ? m_wndScrollBar.GetScrollPage() : GETRANGE;// GetClientRect().Height() + m_nLineSpace ) / GetFontHeight();
+	int nLines = IsWndStyle( WBS_VSCROLL ) ? m_wndScrollBar.GetScrollPage() : GETRANGE();
 
-	int nPage = GETRANGE;//( GetClientRect().Height() + m_nLineSpace ) / GetFontHeight();
+	int nPage = GETRANGE();
 	int nRange = m_string.GetLineCount();
 
 	if(	IsWndStyle( WBS_VSCROLL ) ) 
@@ -2144,7 +2147,7 @@ void CWndText::UpdateScrollBar()
 	if(	IsWndStyle( WBS_VSCROLL ) )
 	{
 
-		int nPage = GETRANGE;//( GetClientRect().Height() + m_nLineSpace ) / GetFontHeight();
+		int nPage = GETRANGE();
 		int nRange = m_string.GetLineCount();// - nPage;
 
 		if(	IsWndStyle( WBS_VSCROLL ) )  
