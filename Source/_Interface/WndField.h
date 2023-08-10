@@ -203,7 +203,7 @@ public:
 
 private:
 	void ProcessEnchant();
-
+	[[nodiscard]] std::expected<void, DWORD> RunUpgradeDecide(CItemElem * pItem);
 };
 
 class CWndQueryEquip final : public CWndNeuz

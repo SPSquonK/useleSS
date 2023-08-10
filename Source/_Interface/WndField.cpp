@@ -5093,219 +5093,171 @@ void CWndChangeClass1::JobDisplayer::Render(
 
 
 
-void CWndInventory::RunUpgrade( CItemElem * pItem )
-{
-	if( m_bIsUpgradeMode )
-	{
-		m_bIsUpgradeMode = FALSE;
+void CWndInventory::RunUpgrade(CItemElem * pItem) {
+	if (!m_bIsUpgradeMode) return;
+	m_bIsUpgradeMode = FALSE;
 
-		if( pItem == NULL || m_pUpgradeMaterialItem == NULL )
-		{
-			g_WndMng.PutString(TID_UPGRADE_CANCLE);
-			BaseMouseCursor();
-			return;
-		}
-		
-		ItemProp* pItemProp = m_pUpgradeMaterialItem->GetProp();
-
-		if( !pItemProp )
-			return;
-
-		if( pItemProp->dwItemKind3 == IK3_SOCKETCARD || pItemProp->dwItemKind3 == IK3_SOCKETCARD2 )
-		{
-			if( !pItem->IsPierceAble( pItemProp->dwItemKind3 ) )
-			{
-				g_WndMng.PutString( prj.GetText( TID_PIERCING_POSSIBLE_ITEM ) );
-				BaseMouseCursor();
-				return;
-			}
-			
-			int nCount = 0;
-			for( int j = 0; j < pItem->GetPiercingSize(); j++ )
-			{
-				if(pItem->GetPiercingItem( j ) != 0 )
-					nCount++;
-			}
-
-			// ï¿½ï¿½ï¿½ï¿½ï¿? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß´ï¿½
-			if( nCount == pItem->GetPiercingSize() )
-			{
-				g_WndMng.PutString(TID_PIERCING_ERROR_NOPIERCING);
-				BaseMouseCursor();
-				return;
-			}
-		}
-		else
-		if( pItemProp->dwItemKind3 == IK3_ELECARD )
-		{
-			if( !CItemElem::IsEleRefineryAble( pItem->GetProp()) )
-			{
-				g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
-				BaseMouseCursor();
-				return;
-			}
-
-			if(pItem->m_bItemResist != SAI79::NO_PROP && pItem->m_bItemResist != pItemProp->eItemType )
-			{
-				g_WndMng.PutString(TID_UPGRADE_ERROR_TWOELEMENT);
-				BaseMouseCursor();
-				return;
-			}
-
-			DWORD dwWantedCard	= 0;
-			DWORD dwItemAO	= pItem->m_nResistAbilityOption;
-
-			switch (pItemProp->eItemType)
-			{
-			case SAI79::FIRE:
-				dwWantedCard	= II_GEN_MAT_ELE_FLAME;	break;
-			case SAI79::WATER:
-				dwWantedCard	= II_GEN_MAT_ELE_RIVER;	break;
-			case SAI79::ELECTRICITY:
-				dwWantedCard	= II_GEN_MAT_ELE_GENERATOR;	break;
-			case SAI79::EARTH:
-				dwWantedCard	= II_GEN_MAT_ELE_DESERT;	break;
-			case SAI79::WIND:
-				dwWantedCard	= II_GEN_MAT_ELE_CYCLON; break;
-			default:
-				dwWantedCard	= 0;	break;
-			}
-
-			if( pItemProp->dwID != dwWantedCard )
-			{
-				g_WndMng.PutString(TID_UPGRADE_ERROR_WRONGUPLEVEL);
-				BaseMouseCursor();
-				return;					
-			}
-		}
-		else
-		if( pItemProp->dwItemKind3 == IK3_ENCHANT )
-		{
-			if(m_pWndRemoveJewelConfirm != NULL)
-			{
-				if(m_pWndRemoveJewelConfirm->m_pUpgradeItem->m_dwObjId == pItem->m_dwObjId)
-				{
-					g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
-					BaseMouseCursor();
-					return;
-				}
-			}
-			
-			if(m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_ORICHALCUM02)
-			{
-				
-				if (CWndSmeltJewel * pWndSmeltJewel = g_WndMng.GetWndBase<CWndSmeltJewel>(APP_SMELT_JEWEL)) {
-					if(pWndSmeltJewel->m_pItemElem && pWndSmeltJewel->m_pItemElem->m_dwObjId == pItem->m_dwObjId)
-					{
-						g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
-						BaseMouseCursor();
-						return;
-					}
-				}
-			
-				if(pItem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE)
-				{
-					g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
-					BaseMouseCursor();
-					return;
-				}
-			}
-			else if( !CItemElem::IsDiceRefineryAble( pItem->GetProp()) )				
-			{
-				g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
-				BaseMouseCursor();
-				return;
-			}
-		}
-		else
-		if( pItemProp->dwItemKind3 == IK3_RANDOM_SCROLL )
-		{
-			if( !( pItem->GetProp()->dwItemKind1 == IK1_WEAPON || pItem->GetProp()->dwItemKind2 == IK2_ARMOR || pItem->GetProp()->dwItemKind2 == IK2_ARMORETC ) )
-			{
-				BaseMouseCursor();
-				g_WndMng.PutString(TID_GAME_RANDOMSCROLL_ERROR);
-				return;	
-			}
-		}
-		else if( IsNeedTarget( pItemProp ) )
-		{
-			m_pUpgradeItem	= pItem;
-			m_dwEnchantWaitTime		= g_tmCurrent + SEC(4);
-			return;
-		}
-		else
-		if( pItemProp->dwItemKind3 == IK3_PIERDICE )
-		{
-			if(m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_MOONSTONE || m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_MOONSTONE_1)
-			{
-				if(pItem->IsCollector( TRUE ) || pItem->GetProp()->dwItemKind2 == IK2_JEWELRY )
-				{
-					m_pUpgradeItem = pItem;
-					m_dwEnchantWaitTime = g_tmCurrent + SEC(4);
-					return;
-				}
-
-				g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
-				BaseMouseCursor();
-				return;			
-
-				BOOL checkJewel = FALSE;
-					
-				for(int i=0; i<5; i++)
-				{
-					if(pItem->GetUltimatePiercingItem( i ) != 0)
-						checkJewel = TRUE;
-				}
-				CWndSmeltJewel* pWndSmeltJewel = (CWndSmeltJewel*)g_WndMng.GetWndBase( APP_SMELT_JEWEL );
-				if(pWndSmeltJewel != NULL)
-				{
-					if(pWndSmeltJewel->m_pItemElem && pWndSmeltJewel->m_pItemElem->m_dwObjId == pItem->m_dwObjId)
-					{
-						g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
-						BaseMouseCursor();
-						return;
-					}
-				}
-				if(m_pWndRemoveJewelConfirm != NULL)
-				{
-					if(m_pWndRemoveJewelConfirm->m_pUpgradeItem->m_dwObjId == pItem->m_dwObjId)
-					{
-						g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
-						BaseMouseCursor();
-						return;
-					}
-				}
-				if( pItem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE )
-				{
-					g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
-					BaseMouseCursor();
-					return;
-				}
-				else
-				{
-					if(!checkJewel)
-					{
-						g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
-						BaseMouseCursor();
-						return;
-					}
-				}
-				
-				if(m_pWndRemoveJewelConfirm == NULL)
-				{
-					m_pWndRemoveJewelConfirm = new CWndRemoveJewelConfirm;
-					m_pWndRemoveJewelConfirm->Initialize(this);
-					m_pWndRemoveJewelConfirm->SetItem(pItem);
-
-					m_bRemoveJewel = TRUE;
-					return;
-				}
-			}
-		}
-		// ï¿½ï¿½Ã¾Æ®ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½î±? ï¿½ï¿½ï¿?
+	const auto result = RunUpgradeDecide(pItem);
+	if (result.has_value()) {
 		m_pUpgradeItem = pItem;
 		m_dwEnchantWaitTime = g_tmCurrent + SEC(4);
+	} else {
+		const DWORD errorMessage = result.error();
+		if (errorMessage != 0) g_WndMng.PutString(errorMessage);
+		BaseMouseCursor();
 	}
+}
+
+std::expected<void, DWORD> CWndInventory::RunUpgradeDecide(CItemElem * pItem) {
+	using OK = std::expected<void, DWORD>;
+
+	if (!pItem || !m_pUpgradeMaterialItem) return std::unexpected(TID_UPGRADE_CANCLE);
+
+	const ItemProp * pTargetProp = pItem->GetProp();
+	if (!pTargetProp) return std::unexpected(0);
+
+	const ItemProp * pItemProp = m_pUpgradeMaterialItem->GetProp();
+	if (!pItemProp) return std::unexpected(0);
+
+	// --- Piercing
+	if (sqktd::is_among(pItemProp->dwItemKind3, IK3_SOCKETCARD, IK3_SOCKETCARD2)) {
+		if (!pItem->IsPierceAble(pItemProp->dwItemKind3)) {
+			return std::unexpected(TID_PIERCING_POSSIBLE_ITEM);
+		}
+
+		bool hasFreeSlot = false;
+		for (int j = 0; j < pItem->GetPiercingSize(); j++) {
+			if (pItem->GetPiercingItem(j) == 0) {
+				hasFreeSlot = true;
+				break;
+			}
+		}
+
+		if (!hasFreeSlot) {
+			return std::unexpected(TID_PIERCING_ERROR_NOPIERCING);
+		}
+
+		return OK();
+	}
+
+	// --- Ele cards
+	if (pItemProp->dwItemKind3 == IK3_ELECARD) {
+		if (!CItemElem::IsEleRefineryAble(pTargetProp)) {
+			return std::unexpected(TID_GAME_NOTEQUALITEM);
+		}
+
+		if (pItem->m_bItemResist != SAI79::NO_PROP && pItem->m_bItemResist != pItemProp->eItemType) {
+			return std::unexpected(TID_UPGRADE_ERROR_TWOELEMENT);
+		}
+
+		DWORD dwWantedCard = 0;
+		switch (pItemProp->eItemType) {
+			case SAI79::FIRE:
+				dwWantedCard = II_GEN_MAT_ELE_FLAME;	break;
+			case SAI79::WATER:
+				dwWantedCard = II_GEN_MAT_ELE_RIVER;	break;
+			case SAI79::ELECTRICITY:
+				dwWantedCard = II_GEN_MAT_ELE_GENERATOR;	break;
+			case SAI79::EARTH:
+				dwWantedCard = II_GEN_MAT_ELE_DESERT;	break;
+			case SAI79::WIND:
+				dwWantedCard = II_GEN_MAT_ELE_CYCLON; break;
+			default:
+				dwWantedCard = 0;	break;
+		}
+
+		if (pItemProp->dwID != dwWantedCard) {
+			return std::unexpected(TID_UPGRADE_ERROR_WRONGUPLEVEL);
+		}
+
+		return OK();
+	}
+
+	// --- Upgrade
+	if (pItemProp->dwItemKind3 == IK3_ENCHANT) {
+		if (m_pWndRemoveJewelConfirm ) {
+			if (m_pWndRemoveJewelConfirm->m_pUpgradeItem->m_dwObjId == pItem->m_dwObjId) {
+				return std::unexpected(TID_GAME_NOTEQUALITEM);
+			}
+		}
+
+		if (m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_ORICHALCUM02) {
+			if (CWndSmeltJewel * pWndSmeltJewel = g_WndMng.GetWndBase<CWndSmeltJewel>(APP_SMELT_JEWEL)) {
+				if (pWndSmeltJewel->m_pItemElem && pWndSmeltJewel->m_pItemElem->m_dwObjId == pItem->m_dwObjId) {
+					return std::unexpected(TID_GAME_NOTEQUALITEM);
+				}
+			}
+
+			if (pTargetProp->dwReferStat1 != WEAPON_ULTIMATE) {
+				return std::unexpected(TID_GAME_NOTEQUALITEM);
+			}
+		} else if (!CItemElem::IsDiceRefineryAble(pTargetProp)) {
+			return std::unexpected(TID_GAME_NOTEQUALITEM);
+		}
+
+		return OK();
+	}
+
+	// --- Random scroll
+	if (pItemProp->dwItemKind3 == IK3_RANDOM_SCROLL) {
+		if (sqktd::is_among(pTargetProp->dwItemKind1, IK1_WEAPON, IK2_ARMOR, IK2_ARMORETC)) {
+			return OK();
+		} else {
+			return std::unexpected(TID_GAME_RANDOMSCROLL_ERROR);
+		}
+	}
+
+	// Other things
+	if (IsNeedTarget(const_cast<ItemProp *>(pItemProp))) {
+		return OK();
+	}
+
+	// Moonstone
+	if (ItemProps::IsMoonstone(*m_pUpgradeMaterialItem)) {
+		if (pItem->IsCollector(TRUE) || pItem->GetProp()->dwItemKind2 == IK2_JEWELRY) {
+			return OK();
+		}
+
+		if constexpr (true /* Remove jewel from inventory */) {
+			return std::unexpected(TID_GAME_NOTEQUALITEM);
+		} else {
+			bool hasJewel = false;
+			for (int i = 0; i < 5; i++) {
+				if (pItem->GetUltimatePiercingItem(i) != 0) {
+					hasJewel = true;
+					break;
+				}
+			}
+
+			if (!hasJewel) {
+				return std::unexpected(TID_GAME_NOTEQUALITEM);
+			}
+
+			if (CWndSmeltJewel * pWndSmeltJewel = g_WndMng.GetWndBase<CWndSmeltJewel>(APP_SMELT_JEWEL)) {
+				if (pWndSmeltJewel->m_pItemElem && pWndSmeltJewel->m_pItemElem->m_dwObjId == pItem->m_dwObjId) {
+					return std::unexpected(TID_GAME_NOTEQUALITEM);
+				}
+			}
+
+			if (m_pWndRemoveJewelConfirm) {
+				if (m_pWndRemoveJewelConfirm->m_pUpgradeItem->m_dwObjId == pItem->m_dwObjId) {
+					return std::unexpected(TID_GAME_NOTEQUALITEM);
+				}
+			}
+
+			if (m_pWndRemoveJewelConfirm == NULL) {
+				m_pWndRemoveJewelConfirm = new CWndRemoveJewelConfirm;
+				m_pWndRemoveJewelConfirm->Initialize(this);
+				m_pWndRemoveJewelConfirm->SetItem(pItem);
+
+				m_bRemoveJewel = TRUE;
+				return std::unexpected(0);
+			}
+		}
+	}
+	
+
+	return OK();
 }
 
 void CWndInventory::BaseMouseCursor()
