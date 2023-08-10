@@ -623,7 +623,7 @@ BOOL CDbManager::ConvItemStart( void )
 	{
 		++nStarted;
 		sprintf( lpString, "%d / %d", nStarted, dwMaxConv );
-		sprintf( lpString1, "%d %", int( float( (float)nStarted / (float)dwMaxConv ) * 100.0f ) );
+		sprintf( lpString1, "%d %%", int( float( (float)nStarted / (float)dwMaxConv ) * 100.0f ) );
 		UpdateConvItemDialog( "Inventory, Bank", lpString, lpString1, (int( float( (float)nStarted / (float)dwMaxConv ) * 100.0f )) );
 		
 		std::unique_ptr<CMover> pMover = std::unique_ptr<CMover>(new CMover);
@@ -661,7 +661,7 @@ BOOL CDbManager::ConvItemStart( void )
 		++nStarted;
 
 		sprintf( lpString, "%d / %d", nStarted, dwMaxConv );
-		sprintf( lpString1, "%d %", int( float( (float)nStarted / (float)dwMaxConv ) * 100.0f ) );
+		sprintf( lpString1, "%d %%", int( float( (float)nStarted / (float)dwMaxConv ) * 100.0f ) );
 		UpdateConvItemDialog( "GuildBank", lpString, lpString1, (int( float( (float)nStarted / (float)dwMaxConv ) * 100.0f )) );
 			
 		CItemContainer	GuildBank;	// 길드 창고
