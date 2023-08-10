@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <ranges>
+#include "sqktd/util.hpp"
 #include "defineObj.h"
 #include "DefineItem.h"
 #include "defineText.h"
@@ -1220,70 +1221,75 @@ BOOL CWndInventory::Process()
 {
 	if( m_pModel )
 		m_pModel->FrameMove();
+	
+	ProcessEnchant();
 
-	if( m_dwEnchantWaitTime < g_tmCurrent )
-	{
-		m_dwEnchantWaitTime = 0xffffffff;
-		
-		if( m_pSfxUpgrade )
-		{
-			m_pSfxUpgrade->Delete();
-			m_pSfxUpgrade = NULL;
-		}
-		
-		CItemElem* pItemElem = m_pUpgradeItem;
-		if( pItemElem && m_pUpgradeMaterialItem )
-		{
-			CItemElem* pItemMaterialElem = m_pUpgradeMaterialItem;
-			// ��Ŷ ����
-			
-			if( pItemMaterialElem->GetProp() )
-			{
-				// ��þƮ�� ���� �������̳�?
-				if( pItemMaterialElem->GetProp()->dwItemKind3 == IK3_ELECARD 
-					|| pItemMaterialElem->GetProp()->dwItemKind3 == IK3_ENCHANT
-					|| pItemMaterialElem->GetProp()->dwItemKind3 == IK3_PIERDICE
-					)
-				{
-					if(pItemMaterialElem->m_dwItemId == II_GEN_MAT_ORICHALCUM02)
-						g_DPlay.SendUltimateEnchantWeapon( pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId );
-					else if(pItemMaterialElem->m_dwItemId == II_GEN_MAT_MOONSTONE || pItemMaterialElem->m_dwItemId == II_GEN_MAT_MOONSTONE_1)
-					{
-						if( pItemElem->IsCollector( TRUE ) || pItemElem->GetProp()->dwItemKind2 == IK2_JEWELRY )
-							g_DPlay.SendEnchant( pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId );
-					}
-					else
-						g_DPlay.SendEnchant( pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId );
-				}
-				else
-				// �Ǿ�̿�? ���� �������̳�?
-				if( pItemMaterialElem->GetProp()->dwItemKind3 == IK3_SOCKETCARD
-					|| pItemMaterialElem->GetProp()->dwItemKind3 == IK3_SOCKETCARD2
-					)
-				{
-					g_DPlay.SendPacket<PACKETTYPE_PIERCING, DWORD, DWORD>(
-						pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId
-						);
-				}
-				else if( IsNeedTarget( pItemMaterialElem->GetProp() ) )
-				{
-					g_DPlay.SendDoUseItemTarget( m_pUpgradeMaterialItem->m_dwObjId, pItemElem->m_dwObjId );
-				}
-				else
-				if( pItemMaterialElem->GetProp()->dwItemKind3 == IK3_RANDOM_SCROLL )
-				{
-					SAFE_DELETE( g_WndMng.m_pWndRandomScrollConfirm );
-					g_WndMng.m_pWndRandomScrollConfirm = new CWndRandomScrollConfirm;
-					if( 0 < pItemElem->GetRandomOpt() )
-						g_WndMng.m_pWndRandomScrollConfirm->SetItem( pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId, TRUE );
-					else
-						g_WndMng.m_pWndRandomScrollConfirm->SetItem( pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId );
-					g_WndMng.m_pWndRandomScrollConfirm->Initialize();
-				}
-			}
-		}
-	}
 	return TRUE;
+}
+
+void CWndInventory::ProcessEnchant() {
+	if (m_dwEnchantWaitTime >= g_tmCurrent) return;
+
+	m_dwEnchantWaitTime = 0xffffffff;
+
+	if (m_pSfxUpgrade) {
+		m_pSfxUpgrade->Delete();
+		m_pSfxUpgrade = nullptr;
+	}
+
+	CItemElem * pItemElem = m_pUpgradeItem;
+	if (!pItemElem) return;
+
+	CItemElem * pItemMaterialElem = m_pUpgradeMaterialItem;
+	if (!m_pUpgradeMaterialItem) return;
+
+	const ItemProp * pItemMaterialProp = pItemMaterialElem->GetProp();
+	if (!pItemMaterialProp) return;
+
+	// --- Enchant
+	if (sqktd::is_among(pItemMaterialProp->dwItemKind3, IK3_ELECARD, IK3_ENCHANT, IK3_PIERDICE)) {
+		
+		if (pItemMaterialElem->m_dwItemId == II_GEN_MAT_ORICHALCUM02) {
+			g_DPlay.SendUltimateEnchantWeapon(pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId);
+		} else if (pItemMaterialElem->m_dwItemId == II_GEN_MAT_MOONSTONE || pItemMaterialElem->m_dwItemId == II_GEN_MAT_MOONSTONE_1) {
+			if (pItemElem->IsCollector(TRUE) || pItemElem->GetProp()->dwItemKind2 == IK2_JEWELRY) {
+				g_DPlay.SendEnchant(pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId);
+			}
+		} else {
+			g_DPlay.SendEnchant(pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId);
+		}
+
+		return;
+	}
+
+	// --- Socket card
+	if (sqktd::is_among(pItemMaterialProp->dwItemKind3, IK3_SOCKETCARD, IK3_SOCKETCARD2)) {
+		g_DPlay.SendPacket<PACKETTYPE_PIERCING, DWORD, DWORD>(
+			pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId
+		);
+
+		return;
+	}
+
+	// --- Need Target
+	if (IsNeedTarget(const_cast<ItemProp *>(pItemMaterialProp))) {
+		g_DPlay.SendDoUseItemTarget(m_pUpgradeMaterialItem->m_dwObjId, pItemElem->m_dwObjId);
+
+		return;
+	}
+
+	// --- Random scroll
+	if (pItemMaterialProp->dwItemKind3 == IK3_RANDOM_SCROLL) {
+		SAFE_DELETE(g_WndMng.m_pWndRandomScrollConfirm);
+		g_WndMng.m_pWndRandomScrollConfirm = new CWndRandomScrollConfirm;
+		if (pItemElem->GetRandomOpt() > 0)
+			g_WndMng.m_pWndRandomScrollConfirm->SetItem(pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId, TRUE);
+		else
+			g_WndMng.m_pWndRandomScrollConfirm->SetItem(pItemElem->m_dwObjId, m_pUpgradeMaterialItem->m_dwObjId);
+		g_WndMng.m_pWndRandomScrollConfirm->Initialize();
+
+		return;
+	}
 }
 
 BOOL CWndInventory::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )

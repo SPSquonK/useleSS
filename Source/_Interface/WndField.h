@@ -201,6 +201,9 @@ public:
 public:
 	void UpdateTooltip( void )	{	m_wndItemCtrl.UpdateTooltip();	}
 
+private:
+	void ProcessEnchant();
+
 };
 
 class CWndQueryEquip final : public CWndNeuz
