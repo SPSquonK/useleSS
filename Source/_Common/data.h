@@ -44,9 +44,28 @@ namespace SAI79
 	[[nodiscard]] std::optional<std::pair<ePropType, StoneType>> StoneIdToElement(DWORD stoneID);
 
 	// Returns the resistance of the element: GetElementWeakTo(Fire) = Wind
-	[[nodiscard]] ePropType GetElementWeakTo(SAI79::ePropType element);
+	[[nodiscard]] constexpr ePropType GetElementWeakTo(SAI79::ePropType element) {
+		switch (element) {
+			case ePropType::FIRE:        return ePropType::WIND;
+			case ePropType::WATER:       return ePropType::FIRE;
+			case ePropType::WIND:        return ePropType::EARTH;
+			case ePropType::ELECTRICITY: return ePropType::WATER;
+			case ePropType::EARTH:       return ePropType::ELECTRICITY;
+			default:                     return ePropType::NO_PROP;
+		}
+	}
+
 	// Returns the weakness of the element: GetElementStrongAgainst(Fire) = Water
-	[[nodiscard]] ePropType GetElementStrongAgainst(SAI79::ePropType element);
+	[[nodiscard]] constexpr ePropType GetElementStrongAgainst(SAI79::ePropType element) {
+		switch (element) {
+			case ePropType::FIRE:        return ePropType::WATER;
+			case ePropType::WATER:       return ePropType::ELECTRICITY;
+			case ePropType::WIND:        return ePropType::FIRE;
+			case ePropType::ELECTRICITY: return ePropType::EARTH;
+			case ePropType::EARTH:       return ePropType::WIND;
+			default:                     return ePropType::NO_PROP;
+		}
+	}
 
 	[[nodiscard]] DWORD GetResistDST(ePropType element);
 

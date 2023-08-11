@@ -41,28 +41,6 @@ std::optional<std::pair<SAI79::ePropType, SAI79::StoneType>> SAI79::StoneIdToEle
 	}
 }
 
-SAI79::ePropType SAI79::GetElementWeakTo(ePropType element) {
-	switch (element) {
-		case ePropType::FIRE:        return ePropType::WIND;
-		case ePropType::WATER:       return ePropType::FIRE;
-		case ePropType::WIND:        return ePropType::EARTH;
-		case ePropType::ELECTRICITY: return ePropType::WATER;
-		case ePropType::EARTH:       return ePropType::ELECTRICITY;
-		default:                     return ePropType::NO_PROP;
-	}
-}
-
-SAI79::ePropType SAI79::GetElementStrongAgainst(ePropType element) {
-	switch (element) {
-		case ePropType::FIRE:        return ePropType::WIND;
-		case ePropType::WATER:       return ePropType::FIRE;
-		case ePropType::WIND:        return ePropType::EARTH;
-		case ePropType::ELECTRICITY: return ePropType::WATER;
-		case ePropType::EARTH:       return ePropType::ELECTRICITY;
-		default:                     return ePropType::NO_PROP;
-	}
-}
-
 DWORD SAI79::GetResistDST(const ePropType element) {
 	switch (element) {
 		case SAI79::FIRE:
