@@ -440,7 +440,7 @@ namespace WndMgr {
 		void PutSetItemOpt(const CMover & pMover, DWORD itemId, CEditString & pEdit) const;
 		void PutBaseItemOpt(const CItemElem & pItemElem, const ItemProp & pItemProp, CEditString & pEdit) const;
 		void PutMedicine(const ItemProp & pItemProp, CEditString & pEdit) const;
-		void PutBaseResist(const ItemProp & pItemProp, CEditString & pEdit) const;
+		void PutBaseResist(const ItemProp & pItemProp, CEditString & pEdit, bool isIgnored = false) const;
 		void PutItemGold(const CItemElem & pItemElem, CEditString & pEdit, int fromApp) const;
 		void PutCoolTime(const CMover & pMover, const ItemProp & itemProp, CEditString & pEdit) const;
 		void PutKeepTime(CItemElem & pItemElem, const ItemProp & itemProp, CEditString & pEdit) const;

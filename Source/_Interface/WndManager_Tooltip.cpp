@@ -394,7 +394,8 @@ namespace WndMgr {
 				else if (pItemElem.m_nResistAbilityOption && (pItemProp.dwItemKind1 == IK1_WEAPON || pItemProp.dwItemKind1 == IK1_ARMOR))
 					PutItemResist(pItemElem, pItemProp, strEdit);
 
-				PutBaseResist(pItemProp, strEdit);	// 加己 历亲仿
+				const bool ignoreResist = pItemProp.dwItemKind1 == IK1_ARMOR && pItemElem.m_nResistAbilityOption != 0;
+				PutBaseResist(pItemProp, strEdit, ignoreResist);	// 加己 历亲仿
 
 				PutBaseItemOpt(pItemElem, pItemProp, strEdit);
 				PutRandomOpt(pItemElem, strEdit);
@@ -917,7 +918,7 @@ namespace WndMgr {
 		}
 	}
 
-	void CTooltipBuilder::PutBaseResist(const ItemProp & pItemProp, CEditString & pEdit) const {
+	void CTooltipBuilder::PutBaseResist(const ItemProp & pItemProp, CEditString & pEdit, bool isIgnored) const {
 		const ToolTipItemTextColor & colors = dwItemColor[g_Option.m_nToolTipText];
 
 		using BaseResist = std::tuple<DWORD, int, DWORD>;
@@ -935,7 +936,7 @@ namespace WndMgr {
 			if (baseResistAdj != 0) {
 				strTemp.Format(prj.GetText(tooltipId), baseResistAdj);
 				pEdit.AddString("\n");
-				pEdit.AddString(strTemp, color);
+				pEdit.AddString(strTemp, color, isIgnored ? ESSTY_STRIKETHROUGH : 0);
 			}
 		}
 	}
