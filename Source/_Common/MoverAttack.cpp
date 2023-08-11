@@ -1807,32 +1807,12 @@ int CMover::GetReqFp( int nReqFp )
 	return nReqFp - nReqFp * GetParam( DST_FP_DEC_RATE, 0 ) / 100;
 }
 
-float CMover::GetResist( SAI79::ePropType type )	
-{ 
-	if( SAI79::NO_PROP == type )
+float CMover::GetResist(SAI79::ePropType type) {
+	if (SAI79::NO_PROP == type)
 		return 0.0f;
 
-	int n;
-	switch( type )
-	{
-	case SAI79::FIRE:
-		n = DST_RESIST_FIRE;
-		break;
-	case SAI79::WATER:
-		n = DST_RESIST_WATER;
-		break;
-	case SAI79::ELECTRICITY:
-		n = DST_RESIST_ELECTRICITY;
-		break;
-	case SAI79::WIND:
-		n = DST_RESIST_WIND;
-		break;
-	case SAI79::EARTH:
-		n = DST_RESIST_EARTH;
-		break;
-	}
-
-	return GetResistSpell( n ) / 100.0f;
+	const int n = SAI79::GetResistDST(type);
+	return GetResistSpell(n) / 100.0f;
 }
 
 void CMover::OnAttackSFX( OBJID	idTarget, int nMagicPower, DWORD dwSkill, int nDmgCnt, float	fDmgAngle, float fDmgPower,  DWORD dwAtkFlags, BOOL bControl )

@@ -69,60 +69,6 @@ BYTE  nFeMaleHairColor[10][3] = {
 #define PARTSTEX_HAND( nSex )  ( nSex == SEX_MALE ? _T( "Part_maleHand.dds"      ) : _T( "Part_femaleHand.dds"      ) )
 #define PARTSTEX_FOOT( nSex )  ( nSex == SEX_MALE ? _T( "Part_maleFoot.dds"      ) : _T( "Part_femaleFoot.dds"      ) )
 
-int GetSelfDST( BYTE type )
-{
-	switch( type )
-	{
-		case SAI79::FIRE:
-			return DST_RESIST_FIRE;
-		case SAI79::WATER:
-			return DST_RESIST_WATER;
-		case SAI79::WIND:
-			return DST_RESIST_WIND; 
-		case SAI79::ELECTRICITY:
-			return DST_RESIST_ELECTRICITY;
-		case SAI79::EARTH:
-			return DST_RESIST_EARTH;
-	}
-	return DST_RESIST_FIRE;
-}
-
-int GetStrongDST( BYTE type )
-{
-	switch( type )
-	{
-		case SAI79::FIRE:
-			return DST_RESIST_WIND;
-		case SAI79::WATER:
-			return DST_RESIST_FIRE;
-		case SAI79::WIND:
-			return DST_RESIST_EARTH;
-		case SAI79::ELECTRICITY:
-			return DST_RESIST_WATER;
-		case SAI79::EARTH:
-			return DST_RESIST_ELECTRICITY;
-	}
-	return DST_RESIST_FIRE;
-}
-
-int GetWeakDST( BYTE type )
-{
-	switch( type )
-	{
-		case SAI79::FIRE:
-			return DST_RESIST_WATER;
-		case SAI79::WATER:
-			return DST_RESIST_ELECTRICITY;
-		case SAI79::WIND:
-			return DST_RESIST_FIRE;
-		case SAI79::ELECTRICITY:
-			return DST_RESIST_EARTH;
-		case SAI79::EARTH:
-			return DST_RESIST_WIND;
-	}
-	return DST_RESIST_FIRE;
-}
-
 // 머리카락 모양과 색 바꾸기  
 void CMover::SetHair( int nHair )
 {
@@ -1526,8 +1472,9 @@ void CMover::SetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemElem,
 	{
 		if( pItemElem->m_bItemResist != SAI79::NO_PROP )
 		{
-			int nStrong = GetStrongDST( pItemElem->m_bItemResist );
-			int nWeak   = GetWeakDST( pItemElem->m_bItemResist );
+			const SAI79::ePropType eProp = static_cast<SAI79::ePropType>(pItemElem->m_bItemResist);
+			int nStrong = SAI79::GetResistDST(SAI79::GetElementWeakTo(eProp));
+			int nWeak = SAI79::GetResistDST(SAI79::GetElementStrongAgainst(eProp));
 
 			SetDestParam( nWeak,  -pItemElem->m_nResistAbilityOption*2, NULL_CHGPARAM );
 			SetDestParam( nStrong, pItemElem->m_nResistAbilityOption*2, NULL_CHGPARAM );
@@ -1591,9 +1538,10 @@ void CMover::ResetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemEle
 	{
 		if( pItemElem->m_bItemResist != SAI79::NO_PROP )
 		{
-			int nSelf   = GetSelfDST( pItemElem->m_bItemResist );
-			int nStrong = GetStrongDST( pItemElem->m_bItemResist );
-			int nWeak   = GetWeakDST( pItemElem->m_bItemResist );
+			const SAI79::ePropType eProp = static_cast<SAI79::ePropType>(pItemElem->m_bItemResist);
+			int nSelf = SAI79::GetResistDST(eProp);
+			int nStrong = SAI79::GetResistDST(SAI79::GetElementWeakTo(eProp));
+			int nWeak = SAI79::GetResistDST(SAI79::GetElementStrongAgainst(eProp));
 
 			if( ::GetLanguage() == LANG_THA )			
 			{

@@ -1990,7 +1990,7 @@ LPCTSTR CMover::GetFameName( void )
 		case Project::ProJob::Mercenary: return prj.GetText(mercenaryTitles[i - 1]);
 		case Project::ProJob::Magician:  return prj.GetText(magicianTitles[i - 1]);
 		case Project::ProJob::Assist:    return prj.GetText(assistTitles[i - 1]);
-		default:                          return "";
+		default:                         return "";
 	}
 }
 
