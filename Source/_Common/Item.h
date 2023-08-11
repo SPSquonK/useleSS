@@ -38,7 +38,7 @@ inline CTexture * CItemElem::GetTexture() const {
 #endif
 }
 
-inline int CItemElem::GetAttrOption()		// ¾ÆÀÌÅÛÀÇ +¿É¼Ç°ª°ú ¼Ó¼º/¼Ó¼º·¹º§°ªÀ» ÇÕÃÄ¼­ ¸®ÅÏ.
+inline int CItemElem::GetAttrOption() const noexcept		// ¾ÆÀÌÅÛÀÇ +¿É¼Ç°ª°ú ¼Ó¼º/¼Ó¼º·¹º§°ªÀ» ÇÕÃÄ¼­ ¸®ÅÏ.
 {
 	int nAttr = (int)m_bItemResist;
 	int nOption = m_nResistAbilityOption;
@@ -47,16 +47,6 @@ inline int CItemElem::GetAttrOption()		// ¾ÆÀÌÅÛÀÇ +¿É¼Ç°ª°ú ¼Ó¼º/¼Ó¼º·¹º§°ªÀ» Ç
 	nRet |= (nAttr << 16);		// D16~D23 : ¼Ó¼º
 	nRet |= (nOption << 24);	// D24~D31 : ¼Ó¼º·¹º§
 	return nRet;
-}
-
-inline int CItemElem::GetItemResist( void ) const
-{
-	return m_bItemResist;
-}
-
-inline int CItemElem::GetResistAbilityOption( void ) const
-{
-	return m_nResistAbilityOption;
 }
 
 #include "SkillsOfMover.h"

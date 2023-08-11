@@ -161,10 +161,10 @@ public:
 
 
 #if defined(__CLIENT) || defined(__WORLDSERVER)
-	int			GetAttrOption();		// 아이템의 +옵션값과 속성/속성레벨값을 합쳐서 리턴.
-	[[nodiscard]] int GetAbilityOption() const noexcept { return m_nAbilityOption; }
-	int			GetItemResist(void) const;
-	int			GetResistAbilityOption(void) const;
+	[[nodiscard]] int GetAttrOption()          const noexcept;		// 아이템의 +옵션값과 속성/속성레벨값을 합쳐서 리턴.
+	[[nodiscard]] int GetAbilityOption()       const noexcept { return m_nAbilityOption; }
+	[[nodiscard]] int GetItemResist()          const noexcept { return m_bItemResist; }
+	[[nodiscard]] int GetResistAbilityOption() const noexcept { return m_nResistAbilityOption;}
 	int * GetAbilityOptionPtr() { return &m_nAbilityOption; }
 	const int * GetAbilityOptionPtr() const noexcept { return &m_nAbilityOption; }
 	void		SetAbilityOption(int nAbilityOption) { m_nAbilityOption = nAbilityOption; }
