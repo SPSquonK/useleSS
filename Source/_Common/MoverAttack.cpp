@@ -1064,22 +1064,19 @@ void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* 
 	if( atkType == SAI79::NO_PROP && defType == SAI79::NO_PROP )
 		return;
 
-	// 속성ENUM을 인덱스로 갖는 테이블 
-	static int table[SAI79::END_PROP][SAI79::END_PROP] = {
-		{0, 0, 0, 0, 0, 0}, // 속성없음 
-		{0, 1, 2, 0, 3, 0},	// 불   속성
-		{0, 3, 1, 2, 0, 0},	// 물   속성
-		{0, 0, 3, 1, 0, 2},	// 전기 속성
-		{0, 2, 0, 0, 1, 3},	// 바람 속성
-		{0, 0, 0, 3, 2, 1}	// 땅   속성			
-	};
+	enum class Relationship { NoRelation, Same, IncreasedDamaged, LoweredDamage };
 
-	int result = table[ atkType ][ defType ];
+	const Relationship result =
+		atkType == defType ? Relationship::Same
+		: SAI79::GetElementWeakTo(atkType) == defType ? Relationship::IncreasedDamaged
+		: SAI79::GetElementStrongAgainst(atkType) == defType ? Relationship::LoweredDamage
+		: Relationship::NoRelation;
+
 	int nFactor = 0, nLevel = 0;
 	switch( result )
 	{
-		case 0 : // 상성 없음
-		case 1 : // 같음
+		case Relationship::NoRelation:
+		case Relationship::Same:
 			{
 				if( atkLevel > 0 && defLevel == 0 )
 					nFactor += CItemUpgrade::GetInstance()->GetAttributeDamageFactor( atkLevel );
@@ -1090,11 +1087,11 @@ void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* 
 				break;
 			}
 
-		case 2 : // 방어자 우성
+		case Relationship::LoweredDamage: // 방어자 우성
 				nLevel = ( atkLevel - 5 ) - defLevel;
 				break;
 		
-		case 3 : // 공격자 우성
+		case Relationship::IncreasedDamaged: // 공격자 우성
 				nLevel = atkLevel - ( defLevel > 5 ? defLevel - 5 : 0 );
 				if( nLevel > 0 )
 					nFactor += CItemUpgrade::GetInstance()->GetAttributeAddAtkDmgFactor( nLevel ); // 속성관계 보정치
