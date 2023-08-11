@@ -865,7 +865,7 @@ BYTE	CItemUpgrade::SmeltSafetyAttribute(CUser* pUser, CItemElem* pItemMain, CIte
 	if (scrollProp->dwID != II_SYS_SYS_SCR_SMELPROT) return 0;
 
 	// 속성 당 하나의 속성 제련 카드를 사용하도록 수정
-	if( pItemMaterial->GetProp()->dwID != WhatEleCard( pItemMaterial->GetProp()->eItemType ) )
+	if( pItemMaterial->GetProp()->dwID != SAI79::GetEleCard( pItemMaterial->GetProp()->eItemType ) )
 		return 0;
 
 	// 최대 값을 넘는 경우 중단
@@ -1134,7 +1134,7 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 	}
 
 	// 속성 당 하나의 속성 제련 카드를 사용하도록 수정
-	DWORD dwReqCard	= WhatEleCard(eItemType);
+	const DWORD dwReqCard	= SAI79::GetEleCard(eItemType);
 
 	if( pItemMaterial->GetProp()->dwID != dwReqCard )
 	{
@@ -1364,26 +1364,6 @@ int CItemUpgrade::GetAttributeAddAtkDmgFactor( int nAbilityOption )
 		return it->second.nAddAtkDmgRate;
 
 	return 0;
-}
-
-DWORD CItemUpgrade::WhatEleCard( DWORD dwItemType )
-{	// 속성 제련 용 카드의 종류가 
-	// 속성 당 하나로 통합됨
-	switch( dwItemType )
-	{
-	case SAI79::FIRE:
-		return II_GEN_MAT_ELE_FLAME;
-	case SAI79::WATER:
-		return II_GEN_MAT_ELE_RIVER;
-	case SAI79::ELECTRICITY:
-		return II_GEN_MAT_ELE_GENERATOR;
-	case SAI79::EARTH:
-		return II_GEN_MAT_ELE_DESERT;
-	case SAI79::WIND:
-		return II_GEN_MAT_ELE_CYCLON;
-	default:
-		return 0;
-	}
 }
 
 #ifdef __SYS_ITEMTRANSY

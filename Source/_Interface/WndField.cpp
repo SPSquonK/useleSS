@@ -5149,21 +5149,7 @@ std::expected<void, DWORD> CWndInventory::RunUpgradeDecide(CItemElem * pItem) {
 			return std::unexpected(TID_UPGRADE_ERROR_TWOELEMENT);
 		}
 
-		DWORD dwWantedCard = 0;
-		switch (pItemProp->eItemType) {
-			case SAI79::FIRE:
-				dwWantedCard = II_GEN_MAT_ELE_FLAME;	break;
-			case SAI79::WATER:
-				dwWantedCard = II_GEN_MAT_ELE_RIVER;	break;
-			case SAI79::ELECTRICITY:
-				dwWantedCard = II_GEN_MAT_ELE_GENERATOR;	break;
-			case SAI79::EARTH:
-				dwWantedCard = II_GEN_MAT_ELE_DESERT;	break;
-			case SAI79::WIND:
-				dwWantedCard = II_GEN_MAT_ELE_CYCLON; break;
-			default:
-				dwWantedCard = 0;	break;
-		}
+		const DWORD dwWantedCard = SAI79::GetEleCard(pItemProp->eItemType);
 
 		if (pItemProp->dwID != dwWantedCard) {
 			return std::unexpected(TID_UPGRADE_ERROR_WRONGUPLEVEL);
@@ -11508,7 +11494,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 		}
 		else
 		{
-			if( m_eWndMode == WND_ELEMENT && CItemElem::IsElementalCard( pItemProp->dwID ) == TRUE )
+			if( m_eWndMode == WND_ELEMENT && SAI79::IsElementalCard( pItemProp->dwID ) )
 			{
 				if( m_pItemElem->GetItemResist() != SAI79::NO_PROP )
 				{
@@ -11682,33 +11668,9 @@ void CWndSmeltSafety::DrawListItem(C2DRender* p2DRender)
 				pItemProp = m_pSelectedElementalCardItemProp;
 				if( m_pItemElem )
 				{
-					switch( m_pItemElem->GetItemResist() )
-					{
-					case SAI79::FIRE:
-						{
-							pItemProp = prj.GetItemProp( II_GEN_MAT_ELE_FLAME );
-							break;
-						}
-					case SAI79::WATER:
-						{
-							pItemProp = prj.GetItemProp( II_GEN_MAT_ELE_RIVER );
-							break;
-						}
-					case SAI79::ELECTRICITY:
-						{
-							pItemProp = prj.GetItemProp( II_GEN_MAT_ELE_GENERATOR );
-							break;
-						}
-					case SAI79::WIND:
-						{
-							pItemProp = prj.GetItemProp( II_GEN_MAT_ELE_CYCLON );
-							break;
-						}
-					case SAI79::EARTH:
-						{
-							pItemProp = prj.GetItemProp( II_GEN_MAT_ELE_DESERT );
-							break;
-						}
+					const auto card = SAI79::GetEleCard(static_cast<SAI79::ePropType>(m_pItemElem->GetItemResist()));
+					if (card != 0) {
+						pItemProp = prj.GetItemProp(card);
 					}
 				}
 				break;
@@ -11847,43 +11809,17 @@ BOOL CWndSmeltSafety::IsAcceptableMaterial(ItemProp* pItemProp)
 		}
 	case WND_ELEMENT:
 		{
-			switch( m_pItemElem->GetItemResist() )
-			{
-			case SAI79::FIRE:
-				{
-					if( pItemProp->dwID == II_GEN_MAT_ELE_FLAME )
-						bAcceptableItem = TRUE;
-					break;
+			const auto itemResist = m_pItemElem->GetItemResist();
+
+			if (itemResist != SAI79::NO_PROP) {
+				const DWORD wantedCard = SAI79::GetEleCard(static_cast<SAI79::ePropType>(itemResist));
+				if (pItemProp->dwID == wantedCard) {
+					bAcceptableItem = TRUE;
 				}
-			case SAI79::WATER:
-				{
-					if( pItemProp->dwID == II_GEN_MAT_ELE_RIVER )
-						bAcceptableItem = TRUE;
-					break;
-				}
-			case SAI79::ELECTRICITY:
-				{
-					if( pItemProp->dwID == II_GEN_MAT_ELE_GENERATOR )
-						bAcceptableItem = TRUE;
-					break;
-				}
-			case SAI79::WIND:
-				{
-					if( pItemProp->dwID == II_GEN_MAT_ELE_CYCLON )
-						bAcceptableItem = TRUE;
-					break;
-				}
-			case SAI79::EARTH:
-				{
-					if( pItemProp->dwID == II_GEN_MAT_ELE_DESERT )
-						bAcceptableItem = TRUE;
-					break;
-				}
-			default:
-				{
+			} else {
 					if( m_nMaterialCount == m_nCurrentSmeltNumber )
 					{
-						if( CItemElem::IsElementalCard( pItemProp->dwID ) == TRUE )
+						if( SAI79::IsElementalCard( pItemProp->dwID ) )
 						{
 							m_pSelectedElementalCardItemProp = pItemProp;
 							bAcceptableItem = TRUE;
@@ -11894,9 +11830,8 @@ BOOL CWndSmeltSafety::IsAcceptableMaterial(ItemProp* pItemProp)
 						if( pItemProp == m_pSelectedElementalCardItemProp )
 							bAcceptableItem = TRUE;
 					}
-				}
+				
 			}
-			break;
 		}
 	}
 	return bAcceptableItem;

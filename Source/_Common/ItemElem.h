@@ -223,7 +223,6 @@ public:
 
 	static BOOL	IsDiceRefineryAble(const ItemProp * pProp);
 	static BOOL	IsEleRefineryAble(const ItemProp * pProp);
-	static BOOL	IsElementalCard(const DWORD dwItemID);
 
 	//	Operations
 	void		UseItem();

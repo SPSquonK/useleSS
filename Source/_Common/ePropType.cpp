@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "data.h"
+#include "sqktd/util.hpp"
 
 DWORD SAI79::GetAttackStone(ePropType element) {
 	switch (element) {
@@ -76,4 +77,27 @@ DWORD SAI79::GetResistDST(const ePropType element) {
 		case SAI79::EARTH:
 			return DST_RESIST_EARTH;
 	}
+}
+
+DWORD SAI79::GetEleCard(const ePropType element) {
+	// 속성 제련 용 카드의 종류가 
+	// 속성 당 하나로 통합됨
+	switch (element) {
+		case SAI79::FIRE:        return II_GEN_MAT_ELE_FLAME;
+		case SAI79::WATER:       return II_GEN_MAT_ELE_RIVER;
+		case SAI79::ELECTRICITY: return II_GEN_MAT_ELE_GENERATOR;
+		case SAI79::WIND:        return II_GEN_MAT_ELE_CYCLON;
+		case SAI79::EARTH:       return II_GEN_MAT_ELE_DESERT;
+		default:                 return 0;
+	}
+}
+
+bool SAI79::IsElementalCard(DWORD dwItemId) {
+	return sqktd::is_among(dwItemId,
+		II_GEN_MAT_ELE_FLAME,
+		II_GEN_MAT_ELE_RIVER,
+		II_GEN_MAT_ELE_GENERATOR,
+		II_GEN_MAT_ELE_CYCLON,
+		II_GEN_MAT_ELE_DESERT
+	);
 }

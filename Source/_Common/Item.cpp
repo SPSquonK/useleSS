@@ -287,17 +287,6 @@ BOOL CItemElem::IsEleRefineryAble( const ItemProp* pProp )
 	return FALSE;
 }
 
-BOOL CItemElem::IsElementalCard( const DWORD dwItemID )
-{
-	switch( dwItemID )
-	{
-	case II_GEN_MAT_ELE_FLAME: case II_GEN_MAT_ELE_RIVER: case II_GEN_MAT_ELE_GENERATOR: case II_GEN_MAT_ELE_DESERT: case II_GEN_MAT_ELE_CYCLON:
-		return TRUE;
-	default:
-		return FALSE;
-	}
-}
-
 BOOL CItemElem::IsBinds( void )
 {
 	ItemProp* pProperty = GetProp();

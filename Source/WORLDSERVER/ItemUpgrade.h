@@ -75,8 +75,6 @@ public:
 	void	EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemElem* pItemMaterial );
 	int		GetAttributeEnchantProb( int nAbilityOption );
 	
-	DWORD	WhatEleCard( DWORD dwItemType );	// °ð »èÁ¦
-
 	std::map<int, int>	m_mapGeneralEnchant;
 	std::map<int, __ATTRIBUTE_ENCHANT> m_mapAttributeEnchant;
 

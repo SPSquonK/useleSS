@@ -49,5 +49,8 @@ namespace SAI79
 	[[nodiscard]] ePropType GetElementStrongAgainst(SAI79::ePropType element);
 
 	[[nodiscard]] DWORD GetResistDST(ePropType element);
+
+	[[nodiscard]] DWORD GetEleCard(ePropType element);
+	[[nodiscard]] bool IsElementalCard(DWORD dwItemId);
 }
 

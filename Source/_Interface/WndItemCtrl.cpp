@@ -724,7 +724,7 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 				}
 				else if( g_pPlayer->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT ) == FALSE && 
 						 m_pFocusItem->GetResistAbilityOption() >= 3 && 
-						 CItemElem::IsElementalCard( pWndInventory->m_pUpgradeMaterialItem->m_dwItemId ) == TRUE && 
+						 SAI79::IsElementalCard( pWndInventory->m_pUpgradeMaterialItem->m_dwItemId ) && 
 						 CItemElem::IsEleRefineryAble( m_pFocusItem->GetProp() ) == TRUE )
 				{
 					if( g_WndMng.m_pWndSmeltSafetyConfirm )
