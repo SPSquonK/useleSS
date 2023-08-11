@@ -786,9 +786,7 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 
 		if( pEquipInfo )
 		{
-			pEquipInfo[dwParts].dwId	= NULL_ID;
-			pEquipInfo[dwParts].nOption		= 0;
-			pEquipInfo[dwParts].byFlag	= 0;
+			pEquipInfo[dwParts] = EQUIP_INFO();
 		}
 
 #ifndef __WORLDSERVER
@@ -866,10 +864,9 @@ BOOL CMover::DoEquip( int nSex, int nSkinSet,
 				{
 					if( pEquipInfo[PARTS_LWEAPON].dwId != NULL_ID )
 					{
-						memcpy( &pEquipInfo[PARTS_RWEAPON], &pEquipInfo[PARTS_LWEAPON], sizeof(EQUIP_INFO) );
-						pEquipInfo[PARTS_LWEAPON].dwId	= NULL_ID;
-						pEquipInfo[PARTS_LWEAPON].nOption	= 0;
-						pEquipInfo[PARTS_LWEAPON].byFlag	= 0;
+						pEquipInfo[PARTS_RWEAPON] = pEquipInfo[PARTS_LWEAPON];
+						pEquipInfo[PARTS_LWEAPON] = EQUIP_INFO();
+
 					#ifdef __CLIENT
 						pModel->MovePart( PARTS_RWEAPON, PARTS_LWEAPON );
 						pModel->SetParent( PARTS_RWEAPON, pModel->GetRHandIdx() );

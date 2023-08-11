@@ -4,6 +4,8 @@
 static_assert(false, "ItemElem.h should only be included in Client, World, DB or CoreServer");
 #endif
 
+struct EQUIP_INFO_Option;
+
 class CItemElem final {
 public:
 	enum { expired = 0x01, binds = 0x02, isusing = 0x04, };
@@ -161,7 +163,7 @@ public:
 
 
 #if defined(__CLIENT) || defined(__WORLDSERVER)
-	[[nodiscard]] int GetAttrOption()          const noexcept;		// 아이템의 +옵션값과 속성/속성레벨값을 합쳐서 리턴.
+	[[nodiscard]] EQUIP_INFO_Option GetAttrOption();		// 아이템의 +옵션값과 속성/속성레벨값을 합쳐서 리턴.
 	[[nodiscard]] int GetAbilityOption()       const noexcept { return m_nAbilityOption; }
 	[[nodiscard]] int GetItemResist()          const noexcept { return m_bItemResist; }
 	[[nodiscard]] int GetResistAbilityOption() const noexcept { return m_nResistAbilityOption;}
@@ -230,8 +232,21 @@ public:
 };
 
 /// Equipment information structure
+
+#pragma pack(push, 1)
+struct EQUIP_INFO_Option {
+	static constexpr bool Archivable = true;
+
+	std::uint8_t abilityOption    = 0;
+	SAI79::ePropType itemResist   = SAI79::ePropType::NO_PROP;
+	std::uint8_t itemResistOption = 0;
+};
+#pragma pack(pop)
+
 struct EQUIP_INFO {
-	DWORD	dwId;
-	int		nOption;
-	BYTE	byFlag;
+	static constexpr bool Archivable = true;
+
+	DWORD	dwId     = NULL_ID;
+	EQUIP_INFO_Option nOption = EQUIP_INFO_Option{};
+	BYTE	byFlag   = 0;
 };

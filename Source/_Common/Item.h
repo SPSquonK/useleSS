@@ -38,15 +38,17 @@ inline CTexture * CItemElem::GetTexture() const {
 #endif
 }
 
-inline int CItemElem::GetAttrOption() const noexcept		// 아이템의 +옵션값과 속성/속성레벨값을 합쳐서 리턴.
-{
-	int nAttr = (int)m_bItemResist;
-	int nOption = m_nResistAbilityOption;
-	int nRet = m_nAbilityOption;
-	
-	nRet |= (nAttr << 16);		// D16~D23 : 속성
-	nRet |= (nOption << 24);	// D24~D31 : 속성레벨
-	return nRet;
+inline EQUIP_INFO_Option CItemElem::GetAttrOption() {
+	// Returns the item option value and attribute/attribute level value.
+	constexpr auto ToUint8 = [](int value) -> std::uint8_t {
+		return static_cast<std::uint8_t>(std::clamp(value, 0, 255));
+		};
+
+	return EQUIP_INFO_Option{
+		.abilityOption = ToUint8(m_nAbilityOption),
+		.itemResist = static_cast<SAI79::ePropType>(m_bItemResist),
+		.itemResistOption = ToUint8(m_nResistAbilityOption)
+	};
 }
 
 #include "SkillsOfMover.h"

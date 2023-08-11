@@ -57,7 +57,7 @@ void CMover::SetRenderPartsEffect( int nParts )
 		}
 		
 		if( pItemProp->dwSfxElemental == -1 )
-		{			
+		{
 			int nAttrLevel = 0;
 			int	nAttr = 0;
 			int nLevel = 0;
@@ -68,9 +68,9 @@ void CMover::SetRenderPartsEffect( int nParts )
 				nLevel = pItemElem->GetAbilityOption();
 			} else
 			{
-				nAttr	   = (m_aEquipInfo[nParts].nOption & 0x00FF0000) >> 16;
-				nAttrLevel = (m_aEquipInfo[nParts].nOption & 0xFF000000) >> 24;
-				nLevel = m_aEquipInfo[nParts].nOption & 0xFF;
+				nAttr = m_aEquipInfo[nParts].nOption.itemResist;
+				nAttrLevel = m_aEquipInfo[nParts].nOption.itemResistOption;
+				nLevel = m_aEquipInfo[nParts].nOption.abilityOption;
 			}
 			
 			int nEffLevel = 0;
@@ -762,16 +762,6 @@ void CMover::Render( )
 // 이것이 호출될때는 바로 이전에 CMover::Render()가 호출되어야 한다.
 void CMover::RenderPartsEffect( )
 {
-#ifdef _DEBUG
-	if( g_pPlayer == this )
-	{
-		int a = 0;
-	} else
-	{
-		int a = 0;
-	}
-#endif
-
 	if( IsMode( TRANSPARENT_MODE ) )		// 투명상태가 아닐때만 렌더.
 		return;
 
@@ -781,9 +771,7 @@ void CMover::RenderPartsEffect( )
 	pd3dDevice->SetMaterial( g_TextureMng.GetShadowMaterial() );
 
 	D3DXVECTOR3 vPos = GetPos();
-	D3DXMATRIX  matWorld;
-	
-	matWorld = m_matWorld;
+	D3DXMATRIX  matWorld = m_matWorld;
 
 	D3DXVECTOR3 vPos2 = GetPos() - GetWorld()->m_pCamera->m_vPos;
 	int nLength = (int)( D3DXVec3Length( &vPos2 ) );
@@ -832,29 +820,17 @@ void CMover::RenderPartsEffect( )
 		{
 			int nLO = 0, nRO = 0;
 			
-			if( IsActiveMover() )
-			{
-				if( GetEquipItem( PARTS_LWEAPON ) )
-				{
-					nLO = GetEquipItem( PARTS_LWEAPON )->m_nResistAbilityOption;
+			if (IsActiveMover()) {
+				if (const CItemElem * pItemElem = GetEquipItem(PARTS_LWEAPON)) {
+					nLO = pItemElem->m_nResistAbilityOption;
 				}
 
-			}
-			else
-			{
-				nLO = (m_aEquipInfo[PARTS_LWEAPON].nOption & 0xFF000000) >> 24;
-			}
-			
-			if( IsActiveMover() )
-			{
-				if( GetEquipItem( PARTS_RWEAPON ) )
-				{
-					nRO = GetEquipItem( PARTS_RWEAPON )->m_nResistAbilityOption;
+				if (const CItemElem * pItemElem = GetEquipItem(PARTS_RWEAPON)) {
+					nRO = pItemElem->m_nResistAbilityOption;
 				}
-			}
-			else
-			{
-				nRO = (m_aEquipInfo[PARTS_RWEAPON].nOption & 0xFF000000) >> 24;
+			} else {
+				nLO = m_aEquipInfo[PARTS_LWEAPON].nOption.itemResistOption;
+				nRO = m_aEquipInfo[PARTS_RWEAPON].nOption.itemResistOption;
 			}
 
 			m_pModel->RenderEffect( &matWorld, pItemProp->dwItemKind3, nLO, nRO ); 
@@ -867,6 +843,7 @@ void CMover::RenderPartsEffect( )
 	D3DXMatrixIdentity( &matWorld );
 	g_Laser.Render( &matWorld, g_ModelGlobal.m_vCameraPos, g_ModelGlobal.m_vCameraForward );
 
+	// 1 dragon sa crash du fe^^
 	if( m_dwIndex == MI_DU_METEONYKER || m_dwIndex == MI_DU_METEONYKER2 || m_dwIndex == MI_DU_METEONYKER3 ||
 		m_dwIndex == MI_DU_METEONYKER4 )
 	{

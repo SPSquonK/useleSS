@@ -3563,9 +3563,7 @@ void CUserMng::AddDoEquip( CMover* pMover, int nPart, BYTE nId, const EQUIP_INFO
 
 	ar << GETID( pMover ) << SNAPSHOTTYPE_DOEQUIP;
 
-	ar  << nId << idGuild << fEquip;
-	ar.Write( (void*)&rEquipInfo, sizeof(EQUIP_INFO) );
-
+	ar  << nId << idGuild << fEquip << rEquipInfo;
 	ar << nPart;
 
 	GETBLOCK( ar, lpBuf, nBufSize );

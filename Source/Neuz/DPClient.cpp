@@ -1972,10 +1972,9 @@ void CDPClient::OnDoEquip( OBJID objid, CAr & ar )
 	BYTE nId, fEquip;
 	DWORD	idGuild;
 	int		nPart = 0;
-	
-	ar >> nId >> idGuild >> fEquip;
 	EQUIP_INFO equipInfo;
-	ar.Read( (void*)&equipInfo, sizeof(EQUIP_INFO) );
+	
+	ar >> nId >> idGuild >> fEquip >> equipInfo;
 
 	ar >> nPart;
 

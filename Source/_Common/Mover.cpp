@@ -3904,7 +3904,7 @@ BOOL CMover::SetMotion( DWORD dwMotion, int nLoop, DWORD dwOption )
 			else
 			{	
 				// 타 플레이어는 페이크아이템이므로 여기서에서 값을 빼온다.
-				nOption		= m_aEquipInfo[PARTS_RWEAPON].nOption & 0xFF;
+				nOption		= m_aEquipInfo[PARTS_RWEAPON].nOption.abilityOption;
 			}
 
 			if( nOption == 10 )
@@ -6487,7 +6487,7 @@ int CMover::GetSetItemParts(DWORD dwParts) const {
 #ifdef __CLIENT
 		if (IsActiveMover()) return 0;
 #endif
-		nAbilityOption	= (m_aEquipInfo[dwParts].nOption & 0xFF);
+		nAbilityOption	= m_aEquipInfo[dwParts].nOption.abilityOption;
 	}
 
 	return nAbilityOption;

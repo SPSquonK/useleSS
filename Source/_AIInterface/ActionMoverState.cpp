@@ -949,7 +949,7 @@ void	CActionMover::_ProcessStateAttack( DWORD dwState, int nParam )
 					}
 				} else {
 					// 타 플레이어는 페이크아이템이므로 여기서에서 값을 빼온다.
-					nOption = pMover->m_aEquipInfo[PARTS_RWEAPON].nOption & 0xFF;
+					nOption = pMover->m_aEquipInfo[PARTS_RWEAPON].nOption.abilityOption;
 				}
 
 				int nEffLevel = 0;
