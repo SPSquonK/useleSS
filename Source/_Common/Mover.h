@@ -1018,8 +1018,6 @@ public:
 	[[nodiscard]] int	GetWeaponATK(DWORD dwWeaponType) const;
 	[[nodiscard]] int GetPlusWeaponATK(DWORD dwWeaponType) const;
 	void			GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* pnDEFFactor, int nParts );
-	int				GetPropATKPlus( int nParts );
-	int				GetPropDEFPlus();
 	void			GetDamageRange( int& nMin, int& nMax );
 	BOOL			IsBlocking( CMover* pAttacker );
 	BOOL			CanFlyByAttack();

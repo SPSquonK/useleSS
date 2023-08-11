@@ -1014,34 +1014,6 @@ float CMover::GetATKMultiplier( CMover* pDefender, DWORD dwAtkFlags )
 	return fMultiplier;
 }
 
-// 속성의 공격 추가퍼센트를구한다.
-int CMover::GetPropATKPlus( int nParts )
-{
-	int nPlusATK = 0;
-	
-	switch( nParts )
-	{
-	case PARTS_RWEAPON:
-		if( m_nAttackResistRight != 255 )
-			nPlusATK = 20;
-		break;
-	case PARTS_LWEAPON:
-		if( m_nAttackResistLeft != 255 )
-			nPlusATK = 20;
-		break;
-	}
-	return nPlusATK;
-}
-
-// 속성의 방어 추가퍼센트를구한다.
-int CMover::GetPropDEFPlus()
-{
-	int nPlusDEF = 0;
-	if( m_nDefenseResist != 255 )
-		nPlusDEF = 20;
-	return nPlusDEF;
-}
-
 // GetHitPower함수에서 사용할 ATK, DEF의 증감 Factor를 구한다.
 void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* pnDEFFactor, int nParts )
 {
@@ -1049,10 +1021,9 @@ void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* 
 	*pnDEFFactor = 10000;	// 14차 부터는 n/10000 factor로 변경
 
 	SAI79::ePropType atkType, defType; 
-	int atkLevel, defLevel, nPlusATK, nPlusDEF;
+	int atkLevel, defLevel;
 	atkType = defType = SAI79::NO_PROP;
 	atkLevel = defLevel = 0;
-	nPlusATK = nPlusDEF = 0;
 
 	if( IsPlayer() )
 	{
@@ -1067,8 +1038,6 @@ void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* 
 			const ItemProp* pProp = GetActiveHandItemProp( nParts );
 			atkType = pProp->eItemType;
 		}	
-
-		nPlusATK = GetPropATKPlus( nParts );
 	}
 	else
 	{
@@ -1085,8 +1054,6 @@ void CMover::GetDamagePropertyFactor( CMover* pDefender, int* pnATKFactor, int* 
 			defType = (SAI79::ePropType)pItemElem->m_bItemResist;
 			defLevel = pItemElem->m_nResistAbilityOption;
 		}
-
-		nPlusDEF = GetPropDEFPlus();
 	}
 	else
 	{
