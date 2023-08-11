@@ -1473,11 +1473,11 @@ void CMover::SetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemElem,
 		if( pItemElem->m_bItemResist != SAI79::NO_PROP )
 		{
 			const SAI79::ePropType eProp = static_cast<SAI79::ePropType>(pItemElem->m_bItemResist);
-			int nStrong = SAI79::GetResistDST(SAI79::GetElementWeakTo(eProp));
-			int nWeak = SAI79::GetResistDST(SAI79::GetElementStrongAgainst(eProp));
+			int weakTo    = SAI79::GetResistDST(SAI79::GetElementWeakTo(eProp));
+			int resistsTo = SAI79::GetResistDST(SAI79::GetElementStrongAgainst(eProp));
 
-			SetDestParam( nWeak,  -pItemElem->m_nResistAbilityOption*2, NULL_CHGPARAM );
-			SetDestParam( nStrong, pItemElem->m_nResistAbilityOption*2, NULL_CHGPARAM );
+			SetDestParam(weakTo   , -pItemElem->m_nResistAbilityOption * 2, NULL_CHGPARAM);
+			SetDestParam(resistsTo,  pItemElem->m_nResistAbilityOption * 2, NULL_CHGPARAM);
 		}
 	}
 	else
@@ -1539,24 +1539,12 @@ void CMover::ResetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemEle
 		if( pItemElem->m_bItemResist != SAI79::NO_PROP )
 		{
 			const SAI79::ePropType eProp = static_cast<SAI79::ePropType>(pItemElem->m_bItemResist);
-			int nSelf = SAI79::GetResistDST(eProp);
-			int nStrong = SAI79::GetResistDST(SAI79::GetElementWeakTo(eProp));
-			int nWeak = SAI79::GetResistDST(SAI79::GetElementStrongAgainst(eProp));
+			const int nSelf = SAI79::GetResistDST(eProp);
+			const int weakTo    = SAI79::GetResistDST(SAI79::GetElementWeakTo(eProp));
+			const int resistsTo = SAI79::GetResistDST(SAI79::GetElementStrongAgainst(eProp));
 
-			if( ::GetLanguage() == LANG_THA )			
-			{
-				float fResult = ((float)pItemElem->m_nResistAbilityOption+1.2f) * (0.7f+(float)(pItemElem->m_nResistAbilityOption*0.01f));
-				int nResult = (int)( fResult * fResult );
-
-				ResetDestParam( nSelf,   nResult );
-				ResetDestParam( nWeak,  -nResult/2 );
-				ResetDestParam( nStrong, nResult/2 );
-			}
-			else
-			{
-				ResetDestParam( nWeak,  -pItemElem->m_nResistAbilityOption*2 );
-				ResetDestParam( nStrong, pItemElem->m_nResistAbilityOption*2 );
-			}
+			ResetDestParam(resistsTo, -pItemElem->m_nResistAbilityOption * 2);
+			ResetDestParam(weakTo   , pItemElem->m_nResistAbilityOption * 2);
 		}
 	} 
 	else
