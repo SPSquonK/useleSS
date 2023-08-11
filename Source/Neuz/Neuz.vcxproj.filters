@@ -1000,6 +1000,9 @@
     <ClCompile Include="..\_Common\NameValidation.cpp">
       <Filter>Source Files\_Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\ePropType.cpp">
+      <Filter>ItemProps</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">

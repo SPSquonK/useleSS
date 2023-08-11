@@ -547,7 +547,7 @@ int	CMover::GetHairCost( CMover* pMover, BYTE nR, BYTE nG, BYTE nB, BYTE nHair )
 }
 
 #ifdef __WORLDSERVER
-void CMover::SubSMMode()
+void CUser::SubSMMode()
 {
 	time_t tmCur = (time_t)( CTime::GetCurrentTime().GetTime() );
 	for( int i = 0 ; i < SM_MAX ; ++i )
@@ -578,24 +578,11 @@ void CMover::SubSMMode()
 					else
 						nAttackResist = m_nAttackResistRight;
 
-					switch( nAttackResist )
-					{
-					case SAI79::FIRE:
-						g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_FIREASTONE;
-						break;
-					case SAI79::WATER:
-						g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_WATEILSTONE;
-						break;
-					case SAI79::WIND:
-						g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_WINDYOSTONE;
-						break;
-					case SAI79::ELECTRICITY:
-						g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_LIGHTINESTONE;
-						break;
-					case SAI79::EARTH:
-						g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_EARTHYSTONE;
-						break;
+					const DWORD stone = SAI79::GetAttackStone(static_cast<SAI79::ePropType>(nAttackResist));
+					if (stone != 0) {
+						g_AddSMMode.dwSMItemID[i] = stone;
 					}
+
 					if( i == SM_RESIST_ATTACK_LEFT )
 					{
 						m_nAttackResistLeft = (BYTE)0xff;
@@ -610,24 +597,11 @@ void CMover::SubSMMode()
 				}
 				else if( i == SM_RESIST_DEFENSE )
 				{
-					switch( m_nDefenseResist )
-					{
-					case SAI79::FIRE:
-						g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_DEFIREASTONE;
-						break;
-					case SAI79::WATER:
-						g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_DEWATEILSTONE;
-						break;
-					case SAI79::WIND:
-						g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_DEWINDYOSTONE;
-						break;
-					case SAI79::ELECTRICITY:
-						g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_DELIGHTINESTONE;
-						break;
-					case SAI79::EARTH:
-						g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_DEEARTHYSTONE;
-						break;
+					const DWORD stone = SAI79::GetDefenseStone(static_cast<SAI79::ePropType>(m_nDefenseResist));
+					if (stone != 0) {
+						g_AddSMMode.dwSMItemID[i] = stone;
 					}
+
 					m_nDefenseResist = (BYTE)0xff;
 					pItemElemParts = m_Inventory.GetEquip( PARTS_UPPER_BODY );
 				}
@@ -635,7 +609,7 @@ void CMover::SubSMMode()
 				if( pItemElemParts && ( i == SM_RESIST_DEFENSE || i == SM_RESIST_ATTACK_LEFT || i == SM_RESIST_ATTACK_RIGHT ) )
 				{
 					pItemElemParts->m_nResistSMItemId = 0;
-					((CUser*)this)->AddCommercialElem( pItemElemParts->m_dwObjId, 0 );
+					AddCommercialElem( pItemElemParts->m_dwObjId, 0 );
 				}
 
 				ItemProp* aItemprop = prj.GetItemProp( g_AddSMMode.dwSMItemID[i] );
@@ -660,21 +634,21 @@ void CMover::SubSMMode()
 					else if( i == SM_PARTYSKILL30 || i == SM_PARTYSKILL15 || i == SM_PARTYSKILL1 )
 						g_DPCoreClient.SendUserPartySkill( m_idPlayer, PARTY_PARSKILL_MODE, 0, 0, 1 );
 					
-					g_dpDBClient.SendLogSMItemUse( "2", (CUser*)this, NULL, aItemprop );
+					g_dpDBClient.SendLogSMItemUse( "2", this, NULL, aItemprop );
 				}
 				else
 				{
 					WriteLog( "%s, %d\r\n\tNo SMItem dwSMItemID[%d] : %d / Name : %s", __FILE__, __LINE__, i, g_AddSMMode.dwSMItemID[i], m_szName );
 				}
 
-				((CUser*)this)->AddSMMode( i, 0 );
+				AddSMMode( i, 0 );
 
 			}
 		}
 	}
 }
 
-void CMover::ClearAllSMMode()
+void CUser::ClearAllSMMode()
 {
 	time_t tmCur = (time_t)( CTime::GetCurrentTime().GetTime() );
 	for( int i = 0 ; i < SM_MAX ; ++i )
@@ -691,24 +665,11 @@ void CMover::ClearAllSMMode()
 				else
 					nAttackResist = m_nAttackResistRight;
 
-				switch( nAttackResist )
-				{
-				case SAI79::FIRE:
-					g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_FIREASTONE;
-					break;
-				case SAI79::WATER:
-					g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_WATEILSTONE;
-					break;
-				case SAI79::WIND:
-					g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_WINDYOSTONE;
-					break;
-				case SAI79::ELECTRICITY:
-					g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_LIGHTINESTONE;
-					break;
-				case SAI79::EARTH:
-					g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_EARTHYSTONE;
-					break;
+				const DWORD stone = SAI79::GetAttackStone(static_cast<SAI79::ePropType>(nAttackResist));
+				if (stone != 0) {
+					g_AddSMMode.dwSMItemID[i] = stone;
 				}
+
 				if( i == SM_RESIST_ATTACK_LEFT )
 				{
 					m_nAttackResistLeft = (BYTE)0xff;
@@ -723,24 +684,11 @@ void CMover::ClearAllSMMode()
 			}
 			else if( i == SM_RESIST_DEFENSE )
 			{
-				switch( m_nDefenseResist )
-				{
-				case SAI79::FIRE:
-					g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_DEFIREASTONE;
-					break;
-				case SAI79::WATER:
-					g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_DEWATEILSTONE;
-					break;
-				case SAI79::WIND:
-					g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_DEWINDYOSTONE;
-					break;
-				case SAI79::ELECTRICITY:
-					g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_DELIGHTINESTONE;
-					break;
-				case SAI79::EARTH:
-					g_AddSMMode.dwSMItemID[i] = II_CHR_SYS_SCR_DEEARTHYSTONE;
-					break;
+				const DWORD stone = SAI79::GetDefenseStone(static_cast<SAI79::ePropType>(m_nDefenseResist));
+				if (stone != 0) {
+					g_AddSMMode.dwSMItemID[i] = stone;
 				}
+
 				m_nDefenseResist = (BYTE)0xff;
 				pItemElemParts = m_Inventory.GetEquip( PARTS_UPPER_BODY );
 			}
@@ -748,7 +696,7 @@ void CMover::ClearAllSMMode()
 			if( pItemElemParts && ( i == SM_RESIST_DEFENSE || i == SM_RESIST_ATTACK_LEFT || i == SM_RESIST_ATTACK_RIGHT ) )
 			{
 				pItemElemParts->m_nResistSMItemId = 0;
-				((CUser*)this)->AddCommercialElem( pItemElemParts->m_dwObjId, 0 );
+				AddCommercialElem( pItemElemParts->m_dwObjId, 0 );
 			}
 
 			ItemProp* aItemprop = prj.GetItemProp( g_AddSMMode.dwSMItemID[i] );
@@ -772,14 +720,14 @@ void CMover::ClearAllSMMode()
 				// 090917 mirchang - 파스킬풀 아이템 사용 기간 종료
 				else if( i == SM_PARTYSKILL30 || i == SM_PARTYSKILL15 || i == SM_PARTYSKILL1 )
 					g_DPCoreClient.SendUserPartySkill( m_idPlayer, PARTY_PARSKILL_MODE, 0, 0, 1 );
-				g_dpDBClient.SendLogSMItemUse( "2", (CUser*)this, NULL, aItemprop );
+				g_dpDBClient.SendLogSMItemUse( "2", this, NULL, aItemprop );
 			}
 			else
 			{
 				WriteLog( "%s, %d\r\n\tNo SMItem dwSMItemID[%d] : %d / Name : %s", __FILE__, __LINE__, i, g_AddSMMode.dwSMItemID[i], m_szName );
 			}
 
-			((CUser*)this)->AddSMMode( i, 0 );
+			AddSMMode( i, 0 );
 
 		}
 	}

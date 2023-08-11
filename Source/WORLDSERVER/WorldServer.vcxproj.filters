@@ -579,6 +579,9 @@
     <ClCompile Include="MiniGames.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Common\ePropType.cpp">
+      <Filter>ItemProps</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WantedListSnapshot.h">

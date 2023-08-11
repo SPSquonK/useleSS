@@ -5656,39 +5656,15 @@ void CUser::DoSMItemEquip( CItemElem* pItemElem, DWORD dwParts )
 	BYTE nResistAttackLeft = (BYTE)0xff;
 	BYTE nResistAttackRight = (BYTE)0xff;
 	BYTE nResistDefense = (BYTE)0xff;
-	BYTE nResist = 0;
-	switch( pItemElem->m_nResistSMItemId )
-	{
-	case II_CHR_SYS_SCR_FIREASTONE:
-		nResist = SAI79::FIRE;
-		break;
-	case II_CHR_SYS_SCR_WATEILSTONE:
-		nResist = SAI79::WATER;
-		break;
-	case II_CHR_SYS_SCR_WINDYOSTONE:
-		nResist = SAI79::WIND;
-		break;
-	case II_CHR_SYS_SCR_LIGHTINESTONE:
-		nResist = SAI79::ELECTRICITY;
-		break;
-	case II_CHR_SYS_SCR_EARTHYSTONE:
-		nResist = SAI79::EARTH;
-		break;
-	case II_CHR_SYS_SCR_DEFIREASTONE:
-		nResist = SAI79::FIRE;
-		break;
-	case II_CHR_SYS_SCR_DEWATEILSTONE:
-		nResist = SAI79::WATER;
-		break;
-	case II_CHR_SYS_SCR_DEWINDYOSTONE:
-		nResist = SAI79::WIND;
-		break;
-	case II_CHR_SYS_SCR_DELIGHTINESTONE:
-		nResist = SAI79::ELECTRICITY;
-		break;
-	case II_CHR_SYS_SCR_DEEARTHYSTONE:
-		nResist = SAI79::EARTH;
-		break;
+	
+
+	const auto asStoneElem = SAI79::StoneIdToElement(pItemElem->m_nResistSMItemId);
+
+	BYTE nResist;
+	if (asStoneElem) {
+		nResist = static_cast<BYTE>(asStoneElem->first);
+	} else {
+		nResist = 0;
 	}
 
 	if( dwParts == PARTS_LWEAPON )
@@ -5704,70 +5680,58 @@ void CUser::DoSMItemEquip( CItemElem* pItemElem, DWORD dwParts )
 		nResistDefense = nResist;
 	}
 
-	ItemProp* pItemProp = NULL;
-	pItemProp = prj.GetItemProp( pItemElem->m_nResistSMItemId );
+	ItemProp* pItemProp = prj.GetItemProp( pItemElem->m_nResistSMItemId );
 	if( pItemProp )
 	{
 		if( nResistAttackLeft != (BYTE)0xff )
 		{
 			m_nAttackResistLeft = nResistAttackLeft;
-			((CUser*)this)->AddResistSMMode( m_nAttackResistLeft, m_nAttackResistRight, m_nDefenseResist );
+			AddResistSMMode( m_nAttackResistLeft, m_nAttackResistRight, m_nDefenseResist );
 			SetSMMode( SM_RESIST_ATTACK_LEFT, pItemProp->dwCircleTime );
-			g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, pItemElem, pItemElem->GetProp() );
-			g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, NULL, pItemProp );
+			g_dpDBClient.SendLogSMItemUse( "1", this, pItemElem, pItemElem->GetProp() );
+			g_dpDBClient.SendLogSMItemUse( "1", this, NULL, pItemProp );
 		}
 		else
 		if( nResistAttackRight != (BYTE)0xff )
 		{
 			m_nAttackResistRight = nResistAttackRight;
-			((CUser*)this)->AddResistSMMode( m_nAttackResistLeft, m_nAttackResistRight, m_nDefenseResist );
+			AddResistSMMode( m_nAttackResistLeft, m_nAttackResistRight, m_nDefenseResist );
 			SetSMMode( SM_RESIST_ATTACK_RIGHT, pItemProp->dwCircleTime );
-			g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, pItemElem, pItemElem->GetProp() );
-			g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, NULL, pItemProp );
+			g_dpDBClient.SendLogSMItemUse( "1", this, pItemElem, pItemElem->GetProp() );
+			g_dpDBClient.SendLogSMItemUse( "1", this, NULL, pItemProp );
 		}
 		else
 		if( nResistDefense != (BYTE)0xff )
 		{
 			m_nDefenseResist = nResistDefense;
-			((CUser*)this)->AddResistSMMode( m_nAttackResistLeft, m_nAttackResistRight, m_nDefenseResist );
+			AddResistSMMode( m_nAttackResistLeft, m_nAttackResistRight, m_nDefenseResist );
 			SetSMMode( SM_RESIST_DEFENSE, pItemProp->dwCircleTime );
-			g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, pItemElem, pItemElem->GetProp() );
-			g_dpDBClient.SendLogSMItemUse( "1", (CUser*)this, NULL, pItemProp );
+			g_dpDBClient.SendLogSMItemUse( "1", this, pItemElem, pItemElem->GetProp() );
+			g_dpDBClient.SendLogSMItemUse( "1", this, NULL, pItemProp );
 		}
 	}
 }
 
-void CUser::DoSMItemUnEquip( CItemElem* pItemElem, DWORD dwParts )
-{
-	if( pItemElem->m_nResistSMItemId == II_CHR_SYS_SCR_FIREASTONE || pItemElem->m_nResistSMItemId == II_CHR_SYS_SCR_WATEILSTONE ||
-		pItemElem->m_nResistSMItemId == II_CHR_SYS_SCR_WINDYOSTONE || pItemElem->m_nResistSMItemId == II_CHR_SYS_SCR_LIGHTINESTONE ||
-		pItemElem->m_nResistSMItemId == II_CHR_SYS_SCR_EARTHYSTONE
-		)
-	{
-		if( dwParts == PARTS_LWEAPON )
-		{
-			SetSMMode( SM_RESIST_ATTACK_LEFT, 1 );
-			g_dpDBClient.SendLogSMItemUse( "2", (CUser*)this, pItemElem, pItemElem->GetProp() );
+void CUser::DoSMItemUnEquip(CItemElem * pItemElem, DWORD dwParts) {
+	const auto asStone = SAI79::StoneIdToElement(pItemElem->m_nResistSMItemId);
+	if (!asStone) return;
+
+	static_assert(std::is_same_v<bool, std::underlying_type_t<SAI79::StoneType>>);
+
+	if (asStone->second == SAI79::StoneType::Attack) {
+		if (dwParts == PARTS_LWEAPON) {
+			SetSMMode(SM_RESIST_ATTACK_LEFT, 1);
+		} else {
+			SetSMMode(SM_RESIST_ATTACK_RIGHT, 1);
 		}
-		else
-		{
-			SetSMMode( SM_RESIST_ATTACK_RIGHT, 1 );
-		}
-		pItemElem->m_nResistSMItemId = 0;
-		((CUser*)this)->AddCommercialElem( pItemElem->m_dwObjId, 0 );
-		g_dpDBClient.SendLogSMItemUse( "2", (CUser*)this, pItemElem, pItemElem->GetProp() );
+	} else {
+		assert(asStone->second == SAI79::StoneType::Defense);
+		SetSMMode(SM_RESIST_DEFENSE, 1);
 	}
-	else
-	if( pItemElem->m_nResistSMItemId == II_CHR_SYS_SCR_DEFIREASTONE || pItemElem->m_nResistSMItemId == II_CHR_SYS_SCR_DEWATEILSTONE ||
-		pItemElem->m_nResistSMItemId == II_CHR_SYS_SCR_DEWINDYOSTONE || pItemElem->m_nResistSMItemId == II_CHR_SYS_SCR_DELIGHTINESTONE ||
-		pItemElem->m_nResistSMItemId == II_CHR_SYS_SCR_DEEARTHYSTONE
-		)
-	{
-		SetSMMode( SM_RESIST_DEFENSE, 1 );
-		pItemElem->m_nResistSMItemId = 0;
-		((CUser*)this)->AddCommercialElem( pItemElem->m_dwObjId, 0 );
-		g_dpDBClient.SendLogSMItemUse( "2", (CUser*)this, pItemElem, pItemElem->GetProp() );
-	}
+
+	pItemElem->m_nResistSMItemId = 0;
+	AddCommercialElem(pItemElem->m_dwObjId, 0);
+	g_dpDBClient.SendLogSMItemUse("2", this, pItemElem, pItemElem->GetProp());
 }
 
 #ifdef __EVENT_1101

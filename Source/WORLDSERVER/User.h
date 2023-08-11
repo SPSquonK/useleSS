@@ -261,6 +261,9 @@ public:
 	bool DoUseItemSexChange(int nFace);
 	bool DoUseItemWarp(const ItemProp & pItemProp, CItemElem & pItemElem);
 	void OnAfterUseItem(const ItemProp * pItemProp);
+
+	void SubSMMode();
+	void ClearAllSMMode();
 #pragma endregion
 
 #ifdef __S_RECOMMEND_EVE

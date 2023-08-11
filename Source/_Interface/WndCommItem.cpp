@@ -828,47 +828,14 @@ bool CWndCommercialElem::IsSMItem(CItemElem * pItemElem) {
 		return FALSE;
 	}
 
-		BYTE nResist;
-		switch( pItemElem->m_dwItemId )
-		{
-		case II_CHR_SYS_SCR_FIREASTONE:
-			nResist = SAI79::FIRE;
-			break;
-		case II_CHR_SYS_SCR_WATEILSTONE:
-			nResist = SAI79::WATER;
-			break;
-		case II_CHR_SYS_SCR_WINDYOSTONE:
-			nResist = SAI79::WIND;
-			break;
-		case II_CHR_SYS_SCR_LIGHTINESTONE:
-			nResist = SAI79::ELECTRICITY;
-			break;
-		case II_CHR_SYS_SCR_EARTHYSTONE:
-			nResist = SAI79::EARTH;
-			break;
-		case II_CHR_SYS_SCR_DEFIREASTONE:
-			nResist = SAI79::FIRE;
-			break;
-		case II_CHR_SYS_SCR_DEWATEILSTONE:
-			nResist = SAI79::WATER;
-			break;
-		case II_CHR_SYS_SCR_DEWINDYOSTONE:
-			nResist = SAI79::WIND;
-			break;
-		case II_CHR_SYS_SCR_DELIGHTINESTONE:
-			nResist = SAI79::ELECTRICITY;
-			break;
-		case II_CHR_SYS_SCR_DEEARTHYSTONE:
-			nResist = SAI79::EARTH;
-			break;
-		}
+	static_assert(std::is_same_v<bool, std::underlying_type_t<SAI79::StoneType>>);
+
+	const auto asElementStone = SAI79::StoneIdToElement(pItemElem->m_dwItemId);
+
 		
 		// 속성 공격력 추가
-		if( pItemElem->m_dwItemId == II_CHR_SYS_SCR_FIREASTONE ||
-			pItemElem->m_dwItemId == II_CHR_SYS_SCR_WATEILSTONE ||
-			pItemElem->m_dwItemId == II_CHR_SYS_SCR_WINDYOSTONE ||
-			pItemElem->m_dwItemId == II_CHR_SYS_SCR_LIGHTINESTONE ||
-			pItemElem->m_dwItemId == II_CHR_SYS_SCR_EARTHYSTONE ) 
+		// 속성 방어력 추가
+		if(asElementStone)
 
 		{
 			if( m_slots[0]->m_bItemResist == SAI79::NO_PROP )
@@ -877,42 +844,24 @@ bool CWndCommercialElem::IsSMItem(CItemElem * pItemElem) {
 				return FALSE;
 			}
 			
-			if(m_slots[0].m_item->GetProp()->dwItemKind2 == IK2_ARMOR ||
-				m_slots[0].m_item->GetProp()->dwItemKind2 == IK2_ARMORETC )
-			{
-				g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
-				return FALSE;
+			if (asElementStone->second == SAI79::StoneType::Attack) {
+				if (m_slots[0].m_item->GetProp()->dwItemKind2 == IK2_ARMOR ||
+					m_slots[0].m_item->GetProp()->dwItemKind2 == IK2_ARMORETC) {
+					g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
+					return FALSE;
+				}
+			} else {
+				assert(asElementStone->second == SAI79::StoneType::Defense);
+
+				if (m_slots[0].m_item->GetProp()->dwItemKind2 == IK2_WEAPON_MAGIC ||
+					m_slots[0].m_item->GetProp()->dwItemKind2 == IK2_WEAPON_DIRECT) {
+					g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
+					return FALSE;
+				}
+
 			}
 
-			if(m_slots[0]->m_bItemResist != nResist ) {
-				CString str;
-				str.Format( prj.GetText(TID_GAME_NOTEQUALELEM), pItemElem->GetProp()->szName );
-				g_WndMng.PutString( str, NULL, prj.GetTextColor(TID_GAME_NOTEQUALELEM) );
-				return FALSE;
-			}
-		}
-		else // 속성 방어력 추가
-		if(	pItemElem->m_dwItemId == II_CHR_SYS_SCR_DEFIREASTONE ||
-			pItemElem->m_dwItemId == II_CHR_SYS_SCR_DEWATEILSTONE ||
-			pItemElem->m_dwItemId == II_CHR_SYS_SCR_DEWINDYOSTONE ||
-			pItemElem->m_dwItemId == II_CHR_SYS_SCR_DELIGHTINESTONE ||
-			pItemElem->m_dwItemId == II_CHR_SYS_SCR_DEEARTHYSTONE )
-		{
-			if( m_slots[0]->m_bItemResist == SAI79::NO_PROP )
-			{
-				g_WndMng.PutString(TID_GAME_NOTELEMENT);
-				return FALSE;
-			}
-			
-			if( m_slots[0].m_item->GetProp()->dwItemKind2 == IK2_WEAPON_MAGIC ||
-				m_slots[0].m_item->GetProp()->dwItemKind2 == IK2_WEAPON_DIRECT )
-			{
-				g_WndMng.PutString(TID_GAME_NOTEQUALITEM);
-				return FALSE;
-			}
-
-			if( m_slots[0]->m_bItemResist != nResist )
-			{
+			if(m_slots[0]->m_bItemResist != asElementStone->first ) {
 				CString str;
 				str.Format( prj.GetText(TID_GAME_NOTEQUALELEM), pItemElem->GetProp()->szName );
 				g_WndMng.PutString( str, NULL, prj.GetTextColor(TID_GAME_NOTEQUALELEM) );

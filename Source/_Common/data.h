@@ -1,6 +1,7 @@
 #pragma once
 
 #include "debug.h"
+#include <optional>
 
 static constexpr DWORD NULL_ID	= 0xffffffff;
 
@@ -35,5 +36,12 @@ namespace SAI79
 		EARTH,
 		END_PROP
 	};
+
+	enum class StoneType : bool { Attack, Defense };
+
+	[[nodiscard]] DWORD GetAttackStone(ePropType element);
+	[[nodiscard]] DWORD GetDefenseStone(ePropType element);
+	[[nodiscard]] std::optional<std::pair<ePropType, StoneType>> StoneIdToElement(DWORD stoneID);
+
 }
 

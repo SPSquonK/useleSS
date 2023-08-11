@@ -98,6 +98,7 @@
   <ItemGroup>
     <ClCompile Include="..\_Common\accessory.cpp">
     </ClCompile>
+    <ClCompile Include="..\_Common\ePropType.cpp" />
     <ClCompile Include="..\_Common\ItemContainer.cpp" />
     <ClCompile Include="..\_Common\ItemMorph.cpp" />
     <ClCompile Include="..\_Common\NameValidation.cpp" />

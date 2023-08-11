@@ -1327,8 +1327,6 @@ public:
 	int				CalcPropDamage( CMover* pDefender, DWORD dwAtkFlags );
 	int				CalcGenericDamage( CMover* pDefender, DWORD& dwAtkFlags );
 	int				GetMagicSkillPower( ATTACK_INFO* pInfo );
-	void			SubSMMode();
-	void			ClearAllSMMode();
 	BOOL			SetSMMode( int nType, DWORD dwTime );
 	void			Abrade( CMover* pAttacker, int nParts = PARTS_RWEAPON );
 	DWORD			GetRandomPartsAbraded();

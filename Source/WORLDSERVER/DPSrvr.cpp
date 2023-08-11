@@ -4334,14 +4334,9 @@ void CDPSrvr::OnCommercialElem( CAr & ar, CUser * pUser )
 
 		if( pItemElem1->GetProp()->dwItemKind2 == IK2_SYSTEM )
 		{
+			const auto asStoneElement = SAI79::StoneIdToElement(pItemElem1->m_dwItemId);
 			// 속성 공격력 추가
-			if( pItemElem1->m_dwItemId == II_CHR_SYS_SCR_FIREASTONE ||
-				pItemElem1->m_dwItemId == II_CHR_SYS_SCR_WATEILSTONE ||
-				pItemElem1->m_dwItemId == II_CHR_SYS_SCR_WINDYOSTONE ||
-				pItemElem1->m_dwItemId == II_CHR_SYS_SCR_LIGHTINESTONE ||
-				pItemElem1->m_dwItemId == II_CHR_SYS_SCR_EARTHYSTONE ) 
-				
-			{
+			if (asStoneElement && asStoneElement->second == SAI79::StoneType::Attack) {
 				if( pItemElem0->GetProp()->dwItemKind2 == IK2_ARMOR ||
 					pItemElem0->GetProp()->dwItemKind2 == IK2_ARMORETC )
 				{
@@ -4349,11 +4344,7 @@ void CDPSrvr::OnCommercialElem( CAr & ar, CUser * pUser )
 				}
 			}
 			else // 속성 방어력 추가
-			if(	pItemElem1->m_dwItemId == II_CHR_SYS_SCR_DEFIREASTONE ||
-				pItemElem1->m_dwItemId == II_CHR_SYS_SCR_DEWATEILSTONE ||
-				pItemElem1->m_dwItemId == II_CHR_SYS_SCR_DEWINDYOSTONE ||
-				pItemElem1->m_dwItemId == II_CHR_SYS_SCR_DELIGHTINESTONE ||
-				pItemElem1->m_dwItemId == II_CHR_SYS_SCR_DEEARTHYSTONE )
+			if (asStoneElement && asStoneElement->second == SAI79::StoneType::Defense)
 			{
 				if( pItemElem0->GetProp()->dwItemKind2 == IK2_WEAPON_MAGIC ||
 					pItemElem0->GetProp()->dwItemKind2 == IK2_WEAPON_DIRECT )

@@ -4453,44 +4453,16 @@ void CDPClient::OnSMMode( CAr & ar )
 		else
 			nfind = g_pPlayer->m_nAttackResistRight;
 		
-		switch( nfind )
-		{
-		case SAI79::FIRE:
-			g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_FIREASTONE;
-			break;
-		case SAI79::WATER:
-			g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_WATEILSTONE;
-			break;
-		case SAI79::WIND:
-			g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_WINDYOSTONE;
-			break;
-		case SAI79::ELECTRICITY:
-			g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_LIGHTINESTONE;
-			break;
-		case SAI79::EARTH:
-			g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_EARTHYSTONE;
-			break;
+		const DWORD stone = SAI79::GetAttackStone(static_cast<SAI79::ePropType>(nfind));
+		if (stone != 0) {
+			g_AddSMMode.dwSMItemID[nType] = stone;
 		}
 	}
 	else if( nType == SM_RESIST_DEFENSE )
 	{
-		switch( g_pPlayer->m_nDefenseResist )
-		{
-		case SAI79::FIRE:
-			g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_DEFIREASTONE;
-			break;
-		case SAI79::WATER:
-			g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_DEWATEILSTONE;
-			break;
-		case SAI79::WIND:
-			g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_DEWINDYOSTONE;
-			break;
-		case SAI79::ELECTRICITY:
-			g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_DELIGHTINESTONE;
-			break;
-		case SAI79::EARTH:
-			g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_DEEARTHYSTONE;
-			break;
+		const DWORD stone = SAI79::GetDefenseStone(static_cast<SAI79::ePropType>(g_pPlayer->m_nDefenseResist));
+		if (stone != 0) {
+			g_AddSMMode.dwSMItemID[nType] = stone;
 		}
 	}
 }
@@ -4533,44 +4505,16 @@ void CDPClient::OnSMModeAll( CAr & ar )
 			else
 				nfind = g_pPlayer->m_nAttackResistRight;
 
-			switch( nfind )
-			{
-			case SAI79::FIRE:
-				g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_FIREASTONE;
-				break;
-			case SAI79::WATER:
-				g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_WATEILSTONE;
-				break;
-			case SAI79::WIND:
-				g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_WINDYOSTONE;
-				break;
-			case SAI79::ELECTRICITY:
-				g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_LIGHTINESTONE;
-				break;
-			case SAI79::EARTH:
-				g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_EARTHYSTONE;
-				break;
+			const DWORD stone = SAI79::GetAttackStone(static_cast<SAI79::ePropType>(nfind));
+			if (stone != 0) {
+				g_AddSMMode.dwSMItemID[nType] = stone;
 			}
 		}
 		else if( nType == SM_RESIST_DEFENSE )
 		{
-			switch( g_pPlayer->m_nDefenseResist )
-			{
-			case SAI79::FIRE:
-				g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_DEFIREASTONE;
-				break;
-			case SAI79::WATER:
-				g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_DEWATEILSTONE;
-				break;
-			case SAI79::WIND:
-				g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_DEWINDYOSTONE;
-				break;
-			case SAI79::ELECTRICITY:
-				g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_DELIGHTINESTONE;
-				break;
-			case SAI79::EARTH:
-				g_AddSMMode.dwSMItemID[nType] = II_CHR_SYS_SCR_DEEARTHYSTONE;
-				break;
+			const DWORD stone = SAI79::GetDefenseStone(static_cast<SAI79::ePropType>(g_pPlayer->m_nDefenseResist));
+			if (stone != 0) {
+				g_AddSMMode.dwSMItemID[nType] = stone;
 			}
 		}
 	}
@@ -4600,61 +4544,20 @@ void CDPClient::OnResistSMMode( CAr & ar )
 	g_pPlayer->m_nAttackResistRight = nAttackResistRight;
 	g_pPlayer->m_nDefenseResist = nDefenseResist;
 
-	switch( g_pPlayer->m_nAttackResistLeft )
-	{
-	case SAI79::FIRE:
-		g_AddSMMode.dwSMItemID[SM_RESIST_ATTACK_LEFT] = II_CHR_SYS_SCR_FIREASTONE;
-		break;
-	case SAI79::WATER:
-		g_AddSMMode.dwSMItemID[SM_RESIST_ATTACK_LEFT] = II_CHR_SYS_SCR_WATEILSTONE;
-		break;
-	case SAI79::WIND:
-		g_AddSMMode.dwSMItemID[SM_RESIST_ATTACK_LEFT] = II_CHR_SYS_SCR_WINDYOSTONE;
-		break;
-	case SAI79::ELECTRICITY:
-		g_AddSMMode.dwSMItemID[SM_RESIST_ATTACK_LEFT] = II_CHR_SYS_SCR_LIGHTINESTONE;
-		break;
-	case SAI79::EARTH:
-		g_AddSMMode.dwSMItemID[SM_RESIST_ATTACK_LEFT] = II_CHR_SYS_SCR_EARTHYSTONE;
-		break;
+
+	const DWORD leftStone = SAI79::GetAttackStone(static_cast<SAI79::ePropType>(g_pPlayer->m_nAttackResistLeft));
+	if (leftStone != 0) {
+		g_AddSMMode.dwSMItemID[SM_RESIST_ATTACK_LEFT] = leftStone;
 	}
 
-	switch( g_pPlayer->m_nAttackResistRight )
-	{
-	case SAI79::FIRE:
-		g_AddSMMode.dwSMItemID[SM_RESIST_ATTACK_RIGHT] = II_CHR_SYS_SCR_FIREASTONE;
-		break;
-	case SAI79::WATER:
-		g_AddSMMode.dwSMItemID[SM_RESIST_ATTACK_RIGHT] = II_CHR_SYS_SCR_WATEILSTONE;
-		break;
-	case SAI79::WIND:
-		g_AddSMMode.dwSMItemID[SM_RESIST_ATTACK_RIGHT] = II_CHR_SYS_SCR_WINDYOSTONE;
-		break;
-	case SAI79::ELECTRICITY:
-		g_AddSMMode.dwSMItemID[SM_RESIST_ATTACK_RIGHT] = II_CHR_SYS_SCR_LIGHTINESTONE;
-		break;
-	case SAI79::EARTH:
-		g_AddSMMode.dwSMItemID[SM_RESIST_ATTACK_RIGHT] = II_CHR_SYS_SCR_EARTHYSTONE;
-		break;
+	const DWORD rightStone = SAI79::GetAttackStone(static_cast<SAI79::ePropType>(g_pPlayer->m_nAttackResistRight));
+	if (rightStone != 0) {
+		g_AddSMMode.dwSMItemID[SM_RESIST_ATTACK_RIGHT] = rightStone;
 	}
-	
-	switch( g_pPlayer->m_nDefenseResist )
-	{
-	case SAI79::FIRE:
-		g_AddSMMode.dwSMItemID[SM_RESIST_DEFENSE] = II_CHR_SYS_SCR_DEFIREASTONE;
-		break;
-	case SAI79::WATER:
-		g_AddSMMode.dwSMItemID[SM_RESIST_DEFENSE] = II_CHR_SYS_SCR_DEWATEILSTONE;
-		break;
-	case SAI79::WIND:
-		g_AddSMMode.dwSMItemID[SM_RESIST_DEFENSE] = II_CHR_SYS_SCR_DEWINDYOSTONE;
-		break;
-	case SAI79::ELECTRICITY:
-		g_AddSMMode.dwSMItemID[SM_RESIST_DEFENSE] = II_CHR_SYS_SCR_DELIGHTINESTONE;
-		break;
-	case SAI79::EARTH:
-		g_AddSMMode.dwSMItemID[SM_RESIST_DEFENSE] = II_CHR_SYS_SCR_DEEARTHYSTONE;
-		break;
+
+	const DWORD defStone = SAI79::GetDefenseStone(static_cast<SAI79::ePropType>(g_pPlayer->m_nDefenseResist));
+	if (defStone != 0) {
+		g_AddSMMode.dwSMItemID[SM_RESIST_DEFENSE] = defStone;
 	}
 }
 

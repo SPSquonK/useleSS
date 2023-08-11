@@ -94,6 +94,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\_Common\ePropType.cpp" />
     <ClCompile Include="..\_Common\groupquest.cpp" />
     <ClCompile Include="..\_Common\ItemContainer.cpp" />
     <ClCompile Include="..\_Common\ItemMorph.cpp" />
