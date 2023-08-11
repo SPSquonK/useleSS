@@ -1009,9 +1009,9 @@ public:
 	float			GetCastingAniSpeed();
 	int				GetCastingTime( int nCastingTime );
 	float			GetDamageMultiplier( ATTACK_INFO* pInfo );
-	int				PostCalcMagicSkill( int nATK, ATTACK_INFO* pInfo );
+	[[nodiscard]] int PostCalcMagicSkill(int nATK, ATTACK_INFO * pInfo) const;
 	int				PostCalcGeneric( int nATK, ATTACK_INFO* pInfo );
-	float			GetMagicSkillFactor( CMover* pDefender, SAI79::ePropType skillType );
+	[[nodiscard]] float GetMagicSkillFactor(SAI79::ePropType skillType) const;
 	float			GetATKMultiplier( CMover* pDefender, DWORD dwAtkFlags );
 	float			GetDEFMultiplier( ATTACK_INFO* pInfo );
 	float			GetBlockFactor( CMover* pAttacker, ATTACK_INFO* pInfo );

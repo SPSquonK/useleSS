@@ -924,64 +924,58 @@ int CMover::GetMagicSkillPower( ATTACK_INFO* pInfo )
 }
 
 
-float CMover::GetMagicSkillFactor( CMover* pDefender, SAI79::ePropType skillType )
-{
+float CMover::GetMagicSkillFactor(SAI79::ePropType skillType) const {
 	SAI79::ePropType itemType;
-	CItemElem* pWeapon	= GetWeaponItem();
-	if( pWeapon && pWeapon->m_bItemResist != SAI79::NO_PROP )
-		itemType = (SAI79::ePropType)pWeapon->m_bItemResist;	// 제련속성 
-	else
-	{
-		const ItemProp* pItemProp = GetActiveHandItemProp();
-		if( pItemProp ) 
-			itemType = pItemProp->eItemType;					// 아이템 속성
-		else
-			return 1.0f;
+
+	if (const CItemElem * pWeapon = GetWeaponItem(); pWeapon && pWeapon->m_bItemResist != SAI79::NO_PROP) {
+		itemType = (SAI79::ePropType)pWeapon->m_bItemResist;
+	} else if (const ItemProp * pItemProp = GetActiveHandItemProp()) {
+		itemType = pItemProp->eItemType;
+	} else {
+		return 1.0f;
 	}
 
-	if( skillType == itemType )
-	{
+	if constexpr (useless_params::ElementedWeaponStillBoostsUnelementedSkills) {
+		if (skillType == SAI79::NO_PROP) {
+			return 1.1f;
+		}
+	}
+
+	if (skillType == itemType) {
 		return 1.1f;
 	}
-	else if( ( skillType == 1 && itemType == 2 ) || 
-		     ( skillType == 2 && itemType == 3 ) ||
-			 ( skillType == 3 && itemType == 5 ) || 
-			 ( skillType == 5 && itemType == 4 ) ||
-			 ( skillType == 4 && itemType == 1 ) )		
-	{
-		return 0.9f;
+
+	if constexpr (!useless_params::ElementedWeaponStillBoostsUnelementedSkills) {
+		if (skillType == SAI79::NO_PROP) {
+			return 1.0f;
+		}
 	}
-	else
+
+	const auto skillElemWeakTo = SAI79::GetElementStrongAgainst(skillType);
+	if (skillType == itemType) {
+		return 0.9f;
+	} else {
 		return 1.0f;
+	}
 }
 
-int CMover::PostCalcMagicSkill( int nATK, ATTACK_INFO* pInfo )
-{
-	CMover*				pDefender = pInfo->pDefender;
-	int					nSkill = pInfo->GetSkill();
-	int					nDelta = pDefender->GetLevel() - GetLevel();
-	SAI79::ePropType	skillType = SAI79::NO_PROP;
-	ItemProp* pSkillProp = prj.GetSkillProp( nSkill );
-	if( !pSkillProp )
-		return 0;
-	else
-		skillType = pSkillProp->eItemType;
-	
-	float a, b;
-	if( IsNPC() || pDefender->IsNPC() )
-		b = 1.0f + (int)( nDelta / 0.05f );
-	else
-		b = 1.0f;
+int CMover::PostCalcMagicSkill(int nATK, ATTACK_INFO * pInfo) const {
+	const int nSkill = pInfo->GetSkill();
+	const ItemProp * pSkillProp = prj.GetSkillProp(nSkill);
+	if (!pSkillProp) return 0;
 
-	if( b <= 0.0f )							
-		b = 0.0f;
+	CMover * pDefender = pInfo->pDefender;
 
-	int nDEF = pDefender->CalcDefense( pInfo );
-	if( pInfo->dwAtkFlags & AF_MAGICSKILL )		// 예외처리:속성 매직스킬의 방어력을 구한다.
-		nATK = nATK - nATK * pDefender->GetParam( DST_RESIST_MAGIC_RATE, 0 ) / 100 ;
-	a = ( nATK-nDEF ) * (1.0f - pDefender->GetResist(skillType) );
+	const SAI79::ePropType skillType = pSkillProp->eItemType;
 
-	return	( (int)( (int)a*GetMagicSkillFactor( pDefender, skillType ) ) );
+	const int nDEF = pDefender->CalcDefense(pInfo);
+	if (pInfo->dwAtkFlags & AF_MAGICSKILL) {
+		// 예외처리:속성 매직스킬의 방어력을 구한다.
+		nATK = nATK - nATK * pDefender->GetParam(DST_RESIST_MAGIC_RATE, 0) / 100;
+	}
+	const float a = (nATK - nDEF) * (1.0f - pDefender->GetResist(skillType));
+
+	return	(int)((int)a * GetMagicSkillFactor(skillType));
 }
 
 // 순수공격력을 증폭한다.

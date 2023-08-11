@@ -54,5 +54,9 @@ namespace useless_params {
   // Cancels m_dwMax impact.
   static constexpr bool DropIgnoreMaxItemsPerMonster = true;
 
+  // Ringmasters/Psykeeper can add an element to their weapon for """style"""
+  static constexpr bool ElementedWeaponStillBoostsUnelementedSkills = true;
+
+
 }
 
