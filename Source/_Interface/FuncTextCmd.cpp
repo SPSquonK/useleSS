@@ -1273,9 +1273,9 @@ BOOL TextCmd_ResistItem(CScanner & scanner, CUser * pUser) {
 
 	if( g_WndMng.m_pWndUpgradeBase )
 	{
-		if( g_WndMng.m_pWndUpgradeBase->m_slots[0] )
+		if( g_WndMng.m_pWndUpgradeBase->m_slot )
 		{
-			DWORD dwObjId = g_WndMng.m_pWndUpgradeBase->m_slots[0]->m_dwObjId;
+			DWORD dwObjId = g_WndMng.m_pWndUpgradeBase->m_slot->m_dwObjId;
 			char szSkillLevel[MAX_PATH];
 			sprintf( szSkillLevel, "/ritem %d %d %d %d", dwObjId, bItemResist, nResistAbilityOption, nAbilityOption );
 			scanner.SetProg( szSkillLevel );		
@@ -3448,9 +3448,9 @@ BOOL TextCmd_RemoveAttribute( CScanner& scanner )
 	
 	if( g_WndMng.m_pWndUpgradeBase )
 	{
-		if( g_WndMng.m_pWndUpgradeBase->m_slots[0] )
+		if( g_WndMng.m_pWndUpgradeBase->m_slot )
 		{
-			DWORD dwObjId = g_WndMng.m_pWndUpgradeBase->m_slots[0]->m_dwObjId;
+			DWORD dwObjId = g_WndMng.m_pWndUpgradeBase->m_slot->m_dwObjId;
 			g_DPlay.SendRemoveAttribute( dwObjId );
 		}
 		else
