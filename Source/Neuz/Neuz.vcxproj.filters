@@ -1869,6 +1869,9 @@
     <ClInclude Include="..\_Common\RunFuncScript.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\ePropType.h">
+      <Filter>ItemProps</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\_Common\mss32.lib">

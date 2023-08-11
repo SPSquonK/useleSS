@@ -1130,6 +1130,9 @@
     <ClInclude Include="MiniGameArithmetic.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\ePropType.h">
+      <Filter>ItemProps</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WorldServer.rc">

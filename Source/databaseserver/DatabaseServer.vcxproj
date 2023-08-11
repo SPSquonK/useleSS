@@ -265,6 +265,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Common\CommonHeader.h" />
+    <ClInclude Include="..\_Common\ePropType.h" />
     <ClInclude Include="..\_Common\NameValidation.h" />
     <ClInclude Include="..\_Common\ProjectJob.h" />
     <ClInclude Include="..\_Common\SkillsOfMover.h" />

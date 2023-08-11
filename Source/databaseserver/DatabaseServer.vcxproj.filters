@@ -590,6 +590,9 @@
     <ClInclude Include="..\_Common\NameValidation.h">
       <Filter>Neuz Files\Common Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\_Common\ePropType.h">
+      <Filter>Neuz Files\Common Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="DatabaseServer.ico">

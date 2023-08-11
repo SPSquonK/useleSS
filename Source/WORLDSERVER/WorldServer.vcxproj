@@ -433,6 +433,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_Common\CommonHeader.h" />
+    <ClInclude Include="..\_Common\ePropType.h" />
     <ClInclude Include="..\_Common\groupquest.h" />
     <ClInclude Include="..\_Common\GroupUtils.h" />
     <ClInclude Include="..\_Common\ItemMorph.h" />

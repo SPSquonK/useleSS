@@ -663,6 +663,7 @@
   <ItemGroup>
     <ClInclude Include="..\_Common\accessory.h" />
     <ClInclude Include="..\_Common\CommonHeader.h" />
+    <ClInclude Include="..\_Common\ePropType.h" />
     <ClInclude Include="..\_Common\groupquest.h" />
     <ClInclude Include="..\_Common\ItemContainer.h" />
     <ClInclude Include="..\_Common\ItemElem.h" />
