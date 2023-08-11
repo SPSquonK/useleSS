@@ -343,7 +343,6 @@ public:
 	void			AddExpBoxInfo( OBJID objid, DWORD dwSet, DWORD dwTime, u_long idPlayer );
 	void			AddSetQuest( LPQUEST lpQuest );
 	void			AddReturnSay( int ReturnFlag, const CHAR* lpszPlayer );
-	void			AddDoEquip( BYTE nId, DWORD dwItemId, BYTE fEquip );
 	void			AddCancelQuest(QuestId dwQuestCancelID );
 	void			AddRemoveQuest(QuestId dwQuestCancelID );
 	void			AddRemoveAllQuest();

@@ -864,7 +864,7 @@ int APIENTRY EquipItem( NPCDIALOG_INFO* pInfo, DWORD dwID )
 		CItemElem* pItemElem	= pUser->m_Inventory.GetAtId( nId );
 		if( pItemElem && TRUE == pUser->DoEquip( pItemElem, TRUE ) )
 		{
-			g_UserMng.AddDoEquip( (CMover*)pUser, -1, pItemElem, TRUE );
+			g_UserMng.AddDoEquip( pUser, -1, pItemElem, TRUE );
 		}
 
 		LogItemInfo aLogItem;

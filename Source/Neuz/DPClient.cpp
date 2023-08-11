@@ -1969,21 +1969,16 @@ void CDPClient::OnReplace( CAr & ar )
 
 void CDPClient::OnDoEquip( OBJID objid, CAr & ar )
 {
-	BYTE nId, fEquip;
-	DWORD	idGuild;
-	int		nPart = 0;
-	EQUIP_INFO equipInfo;
-	
-	ar >> nId >> idGuild >> fEquip >> equipInfo;
-
-	ar >> nPart;
+	const auto [
+		nId, fEquip, equipInfo, nPart
+	] = ar.Extract<BYTE, BYTE, EQUIP_INFO, int>();
 
 	CMover* pPlayer	= prj.GetMover( objid );
-	if( IsValidObj( (CObj*)pPlayer ) )
-	{
+	if (!IsValidObj(pPlayer)) return;
+	
 #ifdef __QUIZ
-		if( g_pPlayer != pPlayer && g_pPlayer->GetWorld()->GetID() == WI_WORLD_QUIZ )
-			return;
+	if (g_pPlayer != pPlayer && g_pPlayer->GetWorld()->GetID() == WI_WORLD_QUIZ)
+		return;
 #endif //__QUIZ
 		if( pPlayer->IsActiveMover() )
 		{
@@ -2017,7 +2012,7 @@ void CDPClient::OnDoEquip( OBJID objid, CAr & ar )
 			pPlayer->DoFakeEquip( equipInfo, fEquip, nPart, NULL );
 		}
 		pPlayer->UpdateParts( !pPlayer->IsActiveMover() );
-	}
+	
 }
 
 void CDPClient::OnTrade( OBJID objid, CAr & ar )

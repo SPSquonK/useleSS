@@ -222,19 +222,6 @@ void CUser::Open( void )
 
 	AddLord();
 	AddCouple();
-		
-/*	// chipi_090617 - 불필요하다.
-	CItemElem *pShield = GetEquipItem( PARTS_SHIELD );
-	if( pShield )	// 방패를 차고 있냐
-	{
-		ItemProp *pHandItemProp = GetActiveHandItemProp();
-		if( pHandItemProp->dwHanded == HD_TWO )	// 손에든 무기가 양손무기냐.
-		{
-			DoEquip( pShield, 0 );	// 방패를 벗겨냄;
-			AddDoEquip( pShield->m_dwObjId, pShield->m_dwItemId, 0 );
-		}
-	}
-*/
 }
 
 // 유저의 주기적 처리 
@@ -948,17 +935,6 @@ void CUser::AddReturnSay( int ReturnFlag, const CHAR* lpszPlayer )
 	m_Snapshot.ar << SNAPSHOTTYPE_RETURNSAY;
 	m_Snapshot.ar << ReturnFlag;
 	m_Snapshot.ar.WriteString( lpszPlayer );
-	
-}
-
-void CUser::AddDoEquip( BYTE nId, DWORD dwItemId, BYTE fEquip )
-{
-	if( IsDelete() )	return;
-	
-	m_Snapshot.cb++;
-	m_Snapshot.ar << GetId();
-	m_Snapshot.ar << SNAPSHOTTYPE_DOEQUIP;
-	m_Snapshot.ar << nId << dwItemId << fEquip;
 	
 }
 
@@ -3556,21 +3532,10 @@ void CUserMng::AddUseSkill(CMover * pMover, DWORD dwSkill, DWORD dwLevel, OBJID 
 	);
 }
 
-void CUserMng::AddDoEquip( CMover* pMover, int nPart, BYTE nId, const EQUIP_INFO & rEquipInfo, BYTE fEquip )
-{
-	CAr ar;
-	DWORD	idGuild = 0;
-
-	ar << GETID( pMover ) << SNAPSHOTTYPE_DOEQUIP;
-
-	ar  << nId << idGuild << fEquip << rEquipInfo;
-	ar << nPart;
-
-	GETBLOCK( ar, lpBuf, nBufSize );
-
-	FOR_VISIBILITYRANGE( pMover )
-		USERPTR->AddBlock( lpBuf, nBufSize );
-	NEXT_VISIBILITYRANGE( pMover )
+void CUserMng::AddDoEquip(CMover * pMover, int nPart, BYTE nId, const EQUIP_INFO & rEquipInfo, BYTE fEquip) {
+	BroadcastAround<SNAPSHOTTYPE_DOEQUIP, BYTE, BYTE, EQUIP_INFO, int>(pMover,
+		nId, fEquip, rEquipInfo, nPart
+	);
 }
 
 void CUserMng::AddDoEquip( CMover* pMover, int nPart, CItemElem *pItemElem, BYTE fEquip )
