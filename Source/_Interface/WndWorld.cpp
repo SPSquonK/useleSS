@@ -2105,13 +2105,11 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 							}
 						}
 
-						if( pMover->GetProp() )
-						{
-							if( pMover->GetProp()->eElementType )
-							{
+						if (const MoverProp * pMoverProp = pMover->GetProp()) {
+							if (const auto attrIcon = GetAttrIconIndex(pMoverProp->eElementType)) {
 								point.y -= 25;
-								
-								m_texAttrIcon.Render( p2DRender, point, pMover->GetProp()->eElementType-1, 255, 1.5f, 1.5f );
+
+								m_texAttrIcon.Render(p2DRender, point, *attrIcon, 255, 1.5f, 1.5f);
 							}
 						}
 					}
@@ -2252,6 +2250,11 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 		p2DRender->SetFont( pOldFont );	
 	}
 */
+}
+
+std::optional<DWORD> CWndWorld::GetAttrIconIndex(const SAI79::ePropType nAttr) {
+	if (!SAI79::IsValid(nAttr) || nAttr == SAI79::NO_PROP) return 0;
+	return static_cast<DWORD>(nAttr) - 1;
 }
 
 void CWndWorld::RenderFocusObj( CObj* pObj, DWORD dwColor1, DWORD dwColor2 )
@@ -8149,7 +8152,7 @@ CTexture * CWndWorld::GetSMBuffTexture(const CMover & pMover, int SMBuffId) {
 			offset = 5;
 		}
 
-		if (value == 0 || value >= SAI79::END_PROP) return nullptr;
+		if (value == 0 || value >= SAI79::ePropTypeSize) return nullptr;
 		return m_dwSMResistItemTexture[value - 1 + offset];
 	} else {
 		return m_dwSMItemTexture[SMBuffId];

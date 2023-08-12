@@ -1469,7 +1469,7 @@ void CMover::SetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemElem,
 	{
 		if( pItemElem->m_bItemResist != SAI79::NO_PROP )
 		{
-			const SAI79::ePropType eProp = static_cast<SAI79::ePropType>(pItemElem->m_bItemResist);
+			const SAI79::ePropType eProp = pItemElem->m_bItemResist;
 			int weakTo    = SAI79::GetResistDST(SAI79::GetElementWeakTo(eProp));
 			int resistsTo = SAI79::GetResistDST(SAI79::GetElementStrongAgainst(eProp));
 
@@ -1535,7 +1535,7 @@ void CMover::ResetDestParamEquip( const ItemProp* pItemProp, CItemElem* pItemEle
 	{
 		if( pItemElem->m_bItemResist != SAI79::NO_PROP )
 		{
-			const SAI79::ePropType eProp = static_cast<SAI79::ePropType>(pItemElem->m_bItemResist);
+			const SAI79::ePropType eProp = pItemElem->m_bItemResist;
 			const int weakTo    = SAI79::GetResistDST(SAI79::GetElementWeakTo(eProp));
 			const int resistsTo = SAI79::GetResistDST(SAI79::GetElementStrongAgainst(eProp));
 

@@ -656,7 +656,7 @@ int CDbManager::GetOneItem( CItemElem* pItemElem, const char* pstrItem, int *pLo
 	pItemElem->m_byFlag		= (BYTE)GetIntPaFromStr( pstrItem, pLocation );
 	pItemElem->SetSerialNumber( GetSerialNumberPaFromStr( pstrItem, pLocation ) );
 	pItemElem->SetOption( GetIntPaFromStr( pstrItem, pLocation ) );
-	pItemElem->m_bItemResist	= (BYTE)GetIntPaFromStr( pstrItem, pLocation );
+	pItemElem->m_bItemResist	= SAI79::From(GetIntPaFromStr( pstrItem, pLocation )).value_or(SAI79::NO_PROP);
 	pItemElem->m_nResistAbilityOption	= GetIntPaFromStr( pstrItem, pLocation );
 	pItemElem->m_idGuild = (u_long)GetIntPaFromStr( pstrItem, pLocation );
 	pItemElem->m_nResistSMItemId = GetIntPaFromStr( pstrItem, pLocation );

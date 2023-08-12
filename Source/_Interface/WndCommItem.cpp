@@ -796,7 +796,7 @@ bool CWndCommercialElem::IsUpgradeItem(CItemElem * pItemElem) {
 		return FALSE;
 	}
 
-	if (pItemElem->m_bItemResist <= SAI79::NO_PROP || SAI79::END_PROP <= pItemElem->m_bItemResist) {
+	if (pItemElem->m_bItemResist == SAI79::NO_PROP) {
 		g_WndMng.PutString(TID_GAME_NOTELEMENT);
 		return FALSE;
 	}

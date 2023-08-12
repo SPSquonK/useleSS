@@ -3627,7 +3627,7 @@ void	CDPSrvr::OnLogItem( LogItemInfo & info, CItemElem* pItemElem, int nItemCoun
 		//info.ItemName = pItemElem->GetProp()->szName;
 		_stprintf( info.szItemName, "%d", pItemElem->GetProp()->dwID );
 		info.itemNumber = nItemCount;
-		info.nItemResist = pItemElem->m_bItemResist;
+		info.nItemResist = static_cast<int>(pItemElem->m_bItemResist);
 		info.nResistAbilityOption = pItemElem->m_nResistAbilityOption;
 		info.nAbilityOption = pItemElem->GetAbilityOption();
 		info.Negudo = pItemElem->m_nHitPoint;
@@ -4174,7 +4174,11 @@ void CDPSrvr::OnRemoveAttribute( CAr & ar, CUser * pUser ) {
 
 void CDPSrvr::OnChangeAttribute(CAr & ar, CUser & pUser) {
 	const auto [objTargetItem, objMaterialItem, nAttribute] = ar.Extract<OBJID, OBJID, int>();
-	CItemUpgrade::GetInstance()->ChangeAttribute(&pUser, objTargetItem, objMaterialItem, static_cast<SAI79::ePropType>(nAttribute));
+	
+	SAI79::ePropType eAttribute = SAI79::From(nAttribute).value_or(SAI79::NO_PROP);
+	if (eAttribute == SAI79::NO_PROP) return;
+
+	CItemUpgrade::GetInstance()->ChangeAttribute(&pUser, objTargetItem, objMaterialItem, eAttribute);
 }
 
 void CDPSrvr::OnRandomScroll( CAr & ar, CUser * pUser )
@@ -4398,7 +4402,7 @@ void CDPSrvr::OnCommercialElem( CAr & ar, CUser * pUser )
 		_stprintf( aLogItem.szItemName, "%d", pItemElem0->GetProp()->dwID );
 		aLogItem.itemNumber = pItemElem0->m_nItemNum;
 		aLogItem.nAbilityOption = pItemElem0->GetAbilityOption();
-		aLogItem.nItemResist = pItemElem0->m_bItemResist;
+		aLogItem.nItemResist = static_cast<int>(pItemElem0->m_bItemResist);
 		aLogItem.nResistAbilityOption = pItemElem0->m_nResistAbilityOption;
 		aLogItem.Negudo = int((float)pItemElem0->m_nHitPoint * 100 / (float)pItemElem0->GetProp()->dwEndurance );
 		OnLogItem( aLogItem );
@@ -4851,7 +4855,7 @@ void CDPSrvr::PutCreateItemLog( CUser* pUser, CItemElem* pItemElem, const char* 
 	logitem.itemNumber = pItemElem->m_nItemNum;
 	logitem.nAbilityOption = 0;
 	logitem.Gold_1 = 0;
-	logitem.nItemResist = pItemElem->m_bItemResist;
+	logitem.nItemResist = static_cast<int>(pItemElem->m_bItemResist);
 	logitem.nResistAbilityOption = pItemElem->m_nResistAbilityOption;
 	logitem.Negudo		= 100;
 	OnLogItem( logitem );

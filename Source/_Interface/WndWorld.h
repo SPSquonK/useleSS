@@ -333,6 +333,7 @@ public:
 
 	CTexturePack	m_texMsgIcon;
 	CTexturePack	m_texAttrIcon;
+	[[nodiscard]] static std::optional<DWORD> GetAttrIconIndex(SAI79::ePropType nAttr);
 	CTexturePack	m_texPlayerDataIcon;
 
 	CTexture			m_pTextureLogo[CUSTOM_LOGO_MAX];

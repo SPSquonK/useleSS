@@ -461,7 +461,7 @@ CItemElem * CItemContainer::GetItem(const ItemProp * itemProp, int nAbilityOptio
 #else
 			&& pElemtmp->GetAbilityOption() == nAbilityOption
 #endif
-			&& pElemtmp->m_bItemResist == nItemResist
+			&& pElemtmp->m_bItemResist == SAI79::From(nItemResist).value_or(SAI79::NO_PROP)
 			&& pElemtmp->m_nResistAbilityOption == nResistAbilityOption) {
 			return pElemtmp;
 		}

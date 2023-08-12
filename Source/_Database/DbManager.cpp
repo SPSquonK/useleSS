@@ -957,7 +957,7 @@ BOOL CDbManager::SendItemtoCharacter( int nSlot, CMover* pMover, CQuery *qry, CQ
 					aLogItem.itemNumber = SendItemContents.Item_Count;
 					aLogItem.ItemNo = iSerialNumber;
 					aLogItem.nAbilityOption = pItemElem->GetOption();
-					aLogItem.nItemResist = pItemElem->m_bItemResist;
+					aLogItem.nItemResist = static_cast<int>(pItemElem->m_bItemResist);
 					aLogItem.nResistAbilityOption = pItemElem->m_nResistAbilityOption;
 					aLogItem.Action = "U";
 					if( ItemLogQuery( qrylog, "LC", aLogItem, pMover->m_idPlayer, SendItemContents.nNo, SendItemContents.OneItem ) == FALSE )
@@ -1026,7 +1026,7 @@ BOOL CDbManager::GetSendItem( CQuery *pQry, __SendItemContents * pSendItemConten
 	}
 	else
 	{
-		pItemElem->m_bItemResist		= (BYTE)dwItemResist;
+		pItemElem->m_bItemResist		= SAI79::From(dwItemResist).value_or(SAI79::NO_PROP);
 	}
 	// mirchang_100514 TransformVisPet_Log
 

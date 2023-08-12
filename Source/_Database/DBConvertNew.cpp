@@ -426,7 +426,7 @@ bool CDbManager::RemoveItemInvenBank( CMover* pMover )
 					ItemProp* pGetItemProp		= prj.GetItemProp( pItemElem->m_dwItemId );	
 					if( pGetItemProp && pGetItemProp->dwID == pItemProp->dwID )
 					{
-						if( pItemElem->m_bItemResist || pItemElem->GetOption() || pItemElem->m_nResistAbilityOption )
+						if( pItemElem->m_bItemResist != SAI79::NO_PROP || pItemElem->GetOption() || pItemElem->m_nResistAbilityOption )
 						{
 							FILEOUT( "..\\RemoveItem.log", "IdPlayer = %07d, ItemName : %s %d/%d/%d", pMover->m_idPlayer, itemName.c_str(), pItemElem->GetOption(), pItemElem->m_bItemResist, pItemElem->m_nResistAbilityOption );
 						}
@@ -448,7 +448,7 @@ bool CDbManager::RemoveItemInvenBank( CMover* pMover )
 					const ItemProp* pGetItemProp		= prj.GetItemProp( pItemElem->m_dwItemId );	
 					if( pGetItemProp && pGetItemProp->dwID == pItemProp->dwID )
 					{
-						if( pItemElem->m_bItemResist || pItemElem->GetOption() || pItemElem->m_nResistAbilityOption )
+						if( pItemElem->m_bItemResist != SAI79::NO_PROP || pItemElem->GetOption() || pItemElem->m_nResistAbilityOption )
 						{
 							FILEOUT( "..\\RemoveItem.log", "IdPlayer = %07d, ItemName : %s %d/%d/%d", pMover->m_idPlayer, itemName.c_str(), pItemElem->GetOption(), pItemElem->m_bItemResist, pItemElem->m_nResistAbilityOption);
 						}
@@ -481,7 +481,7 @@ bool CDbManager::RemoveItemGuildBank( int nGuildId, CItemContainer*  GuildBank )
 					const ItemProp* pGetItemProp		= prj.GetItemProp( pItemElem->m_dwItemId );	
 					if( pGetItemProp && pGetItemProp->dwID == pItemProp->dwID )
 					{
-						if( pItemElem->m_bItemResist || pItemElem->GetOption() || pItemElem->m_nResistAbilityOption )
+						if( pItemElem->m_bItemResist != SAI79::NO_PROP || pItemElem->GetOption() || pItemElem->m_nResistAbilityOption )
 						{
 							FILEOUT( "..\\RemoveItem.log", "GuildId = %d, ItemName : %s %d/%d/%d", nGuildId, itemName.c_str(), pItemElem->GetOption(), pItemElem->m_bItemResist, pItemElem->m_nResistAbilityOption);
 						}

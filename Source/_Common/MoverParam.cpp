@@ -2594,7 +2594,7 @@ namespace UI {
 
 	Element Element::Increase(const CItemElem & itemElem, SAI79::ePropType target) {
 		return Element{
-			.kind = static_cast<BYTE>(target),
+			.kind = target,
 			.abilityOption = itemElem.m_nResistAbilityOption + 1
 		};
 	}
@@ -2608,14 +2608,14 @@ namespace UI {
 
 	Element Element::Change(SAI79::ePropType target) {
 		return Element{
-			.kind = static_cast<BYTE>(target),
+			.kind = target,
 			.abilityOption = DoNotChangeAO
 		};
 	}
 
 	Element Element::ActivatedQuest(const CItemElem & itemElem) {
 		return Element{
-			.kind = TRUE,
+			.kind = SAI79::ePropType::FIRE,
 			.abilityOption = itemElem.m_nResistAbilityOption
 		};
 	}

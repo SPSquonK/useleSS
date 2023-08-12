@@ -411,16 +411,14 @@ BOOL CBuffSkill::IsInvalid( CMover* pMover )
 			break;
 		case SI_MER_SUP_IMPOWERWEAPON:		// 
 			{
-				BOOL bRelease	= FALSE;
 				CItemElem* pRight	= pMover->GetWeaponItem();
 				CItemElem* pLeft	= pMover->GetLWeaponItem();
-				if( pRight && pLeft )
-					bRelease	= pRight->m_bItemResist == SAI79::NO_PROP
-												&& pLeft->m_bItemResist == SAI79::NO_PROP;
-				else if( pRight && !pLeft )
-					bRelease	= pRight->m_bItemResist == SAI79::NO_PROP;
-				else if( !pRight && !pLeft )
-					bRelease	= TRUE;
+
+				const bool bRelease = !(
+					(pRight && pRight->m_bItemResist != SAI79::NO_PROP)
+					|| (pLeft && pLeft->m_bItemResist != SAI79::NO_PROP)
+					);
+
 				if( bRelease )
 					return TRUE;
 				break;

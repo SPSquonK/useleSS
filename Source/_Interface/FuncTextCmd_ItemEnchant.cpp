@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "User.h"
+#include "sqktd/util.hpp"
 
 
 /*
@@ -64,29 +65,36 @@ namespace SqKItemEnchant {
       return true;
     }
 
+    static std::optional<SAI79::ePropType> ePropTypeFromString(const CString & elementName) {
+      using enum SAI79::ePropType;
+      if (elementName == "fire") {
+        return FIRE;
+      } else if (elementName == "water" || elementName == "ice") {
+        return WATER;
+      } else if (sqktd::is_among(elementName, "electric", "elec", "electricity", "thunder")) {
+        return ELECTRICITY;
+      } else if (elementName == "ground" || elementName == "earth") {
+        return EARTH;
+      } else if (elementName == "wind" || elementName == "air") {
+        return WIND;
+      } else if (elementName == "neutral" || elementName == "none" || elementName == "clean") {
+        return NO_PROP;
+      } else {
+        return std::nullopt;
+      }
+    }
+
     static bool ElementHandler(Parameters p) {
       if (p.args.size() == 0) return false;
       if (p.args.size() > 2) return false;
 
       CString elementName = p.args[0];
       elementName.MakeLower();
+      const auto optElement = ePropTypeFromString(elementName);
+      if (!optElement) return false;
 
-      SAI79::ePropType element;
-
-      if (elementName == "fire") {
-        element = SAI79::ePropType::FIRE;
-      } else if (elementName == "water") {
-        element = SAI79::ePropType::WATER;
-      } else if (elementName == "electric" || elementName == "elec" || elementName == "electricity") {
-        element = SAI79::ePropType::ELECTRICITY;
-      } else if (elementName == "ground" || elementName == "earth") {
-        element = SAI79::ePropType::EARTH;
-      } else if (elementName == "wind" || elementName == "air") {
-        element = SAI79::ePropType::WIND;
-      } else if (elementName == "neutral" || elementName == "none" || elementName == "clean") {
-        if (p.args.size() != 1) return false;
-        element = SAI79::ePropType::NO_PROP;
-      } else {
+      SAI79::ePropType element = *optElement;
+      if (element == SAI79::NO_PROP && p.args.size() != 1) {
         return false;
       }
 
@@ -96,7 +104,7 @@ namespace SqKItemEnchant {
         p.user.UpdateItem(p.item, UI::Element::Change(element));
       } else if (p.args.size() == 2) {
         const int level = std::stoi(p.args[1].GetString());
-        p.user.UpdateItem(p.item, UI::Element{ .kind = static_cast<BYTE>(element), .abilityOption = level });
+        p.user.UpdateItem(p.item, UI::Element{ .kind = element, .abilityOption = level });
       }
 
       return true;

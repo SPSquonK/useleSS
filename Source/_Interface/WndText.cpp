@@ -32,7 +32,7 @@ void CWndTextFromItem::OnInitialUpdate() {
 
 	const ItemProp * const pItemProp = m_pItemBase->GetProp();
 
-	if (pItemProp->dwQuestId == QuestIdNone || m_pItemBase->m_bItemResist == TRUE) {
+	if (pItemProp->dwQuestId == QuestIdNone || m_pItemBase->m_bItemResist != SAI79::NO_PROP) {
 		CWndButton * pWndAccept = GetDlgItem<CWndButton>(WIDC_ACCEPT);
 		pWndAccept->EnableWindow(FALSE);
 	}

@@ -11499,12 +11499,12 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 				if( m_pItemElem->GetItemResist() != SAI79::NO_PROP )
 				{
 					// �̹� �����ۿ� �Ӽ� ������ �Ǿ� �ֽ��ϴ�. �� �����ۿ� �� �Ӽ��� ���? �� �����ϴ�.
-					g_WndMng.PutString( prj.GetText( TID_GAME_SMELT_SAFETY_ERROR18 ), NULL, prj.GetTextColor( TID_GAME_SMELT_SAFETY_ERROR18 ) );
+					g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR18);
 				}
 				else if( pItemProp != m_pSelectedElementalCardItemProp )
 				{
 					// �̹� �ٸ� ������ �Ӽ� ī�尡 ��ϵǾ�? �ֽ��ϴ�.
-					g_WndMng.PutString( prj.GetText( TID_GAME_SMELT_SAFETY_ERROR19 ), NULL, prj.GetTextColor( TID_GAME_SMELT_SAFETY_ERROR19 ) );
+					g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR19);
 				}
 			}
 			else

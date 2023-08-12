@@ -4570,7 +4570,7 @@ void CDPClient::OnCommercialElem( CAr & ar )
 			pItemElem->m_bItemResist = SAI79::NO_PROP;
 			pItemElem->m_nResistAbilityOption = 0;
 			
-			g_WndMng.PutString( prj.GetText( TID_GAME_REMOVEELEMENT ), NULL, prj.GetTextColor( TID_GAME_REMOVEELEMENT ) );
+			g_WndMng.PutString(TID_GAME_REMOVEELEMENT);
 		}
 		else
 		{

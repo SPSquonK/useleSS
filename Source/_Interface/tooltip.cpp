@@ -477,13 +477,17 @@ void CToolTip::Paint(C2DRender* p2DRender)
 				CSize size = CWndBase::m_Theme.m_pFontText->GetTextExtent(strTemp);
 				
 				if (const MoverProp * pMoverProp = prj.GetMoverProp(m_vecMapMonsterID[i])) {
-					if (g_WndMng.m_pWndWorld && pMoverProp->eElementType) {
-						if (i == 0)
-							nMonElementYPos = PlusRect.top + 8 + (size.cy + 2) * (nLine - 1);
-						else
-							nMonElementYPos += (size.cy + 2) * nLine;
+					if (g_WndMng.m_pWndWorld) {
+						const auto attrIcon = CWndWorld::GetAttrIconIndex(pMoverProp->eElementType);
 
-						g_WndMng.m_pWndWorld->m_texAttrIcon.Render(p2DRender, CPoint(PlusRect.left + size.cx + 20, nMonElementYPos), pMoverProp->eElementType - 1, 255, 1.0f, 1.0f);
+						if (attrIcon) {
+							if (i == 0)
+								nMonElementYPos = PlusRect.top + 8 + (size.cy + 2) * (nLine - 1);
+							else
+								nMonElementYPos += (size.cy + 2) * nLine;
+
+							g_WndMng.m_pWndWorld->m_texAttrIcon.Render(p2DRender, CPoint(PlusRect.left + size.cx + 20, nMonElementYPos), *attrIcon, 255, 1.0f, 1.0f);
+						}
 					}
 				}
 

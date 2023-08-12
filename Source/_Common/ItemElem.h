@@ -43,7 +43,7 @@ public:
 	DWORD		m_idGuild;			// Guild for cloak
 
 
-	BYTE   	    m_bItemResist;			//  Attribute kind
+	SAI79::ePropType m_bItemResist;			//  Attribute kind
 	int			m_nResistAbilityOption;	// Attribute value
 	int			m_nResistSMItemId;
 
@@ -164,9 +164,9 @@ public:
 
 #if defined(__CLIENT) || defined(__WORLDSERVER)
 	[[nodiscard]] EQUIP_INFO_Option GetAttrOption() const noexcept;		// 아이템의 +옵션값과 속성/속성레벨값을 합쳐서 리턴.
-	[[nodiscard]] int GetAbilityOption()       const noexcept { return m_nAbilityOption; }
-	[[nodiscard]] int GetItemResist()          const noexcept { return m_bItemResist; }
-	[[nodiscard]] int GetResistAbilityOption() const noexcept { return m_nResistAbilityOption;}
+	[[nodiscard]] int GetAbilityOption()            const noexcept { return m_nAbilityOption; }
+	[[nodiscard]] SAI79::ePropType GetItemResist()  const noexcept { return m_bItemResist; }
+	[[nodiscard]] int GetResistAbilityOption()      const noexcept { return m_nResistAbilityOption;}
 	int * GetAbilityOptionPtr() { return &m_nAbilityOption; }
 	const int * GetAbilityOptionPtr() const noexcept { return &m_nAbilityOption; }
 	void		SetAbilityOption(int nAbilityOption) { m_nAbilityOption = nAbilityOption; }

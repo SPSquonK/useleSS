@@ -98,12 +98,13 @@ void CMover::SetRenderPartsEffect(int nParts) {
 
 		int effect;
 		switch (option.itemResist) {
-			case SAI79::FIRE:        effect = useDefault ? XE_ITEM_FIRE  : XE_ITEM_FIRE_AL;  break;
-			case SAI79::ELECTRICITY: effect = useDefault ? XE_ITEM_ELEC  : XE_ITEM_ELEC_AL;  break;
-			case SAI79::WATER:       effect = useDefault ? XE_ITEM_WATER : XE_ITEM_WATER_AL; break;
-			case SAI79::WIND:        effect = useDefault ? XE_ITEM_WIND  : XE_ITEM_WIND_AL;  break;
-			case SAI79::EARTH:       effect = useDefault ? XE_ITEM_EARTH : XE_ITEM_EARTH_AL; break;
-			default:                 effect = useDefault ? XE_ITEM_GEN   : XE_ITEM_GEN_AL;   break;
+			using enum SAI79::ePropType;
+			case FIRE:        effect = useDefault ? XE_ITEM_FIRE  : XE_ITEM_FIRE_AL;  break;
+			case ELECTRICITY: effect = useDefault ? XE_ITEM_ELEC  : XE_ITEM_ELEC_AL;  break;
+			case WATER:       effect = useDefault ? XE_ITEM_WATER : XE_ITEM_WATER_AL; break;
+			case WIND:        effect = useDefault ? XE_ITEM_WIND  : XE_ITEM_WIND_AL;  break;
+			case EARTH:       effect = useDefault ? XE_ITEM_EARTH : XE_ITEM_EARTH_AL; break;
+			default:          effect = useDefault ? XE_ITEM_GEN   : XE_ITEM_GEN_AL;   break;
 		}
 
 		effect |= nEffLevel;

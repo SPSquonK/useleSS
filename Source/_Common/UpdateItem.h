@@ -52,7 +52,7 @@ namespace UI {
   struct Element {
     static constexpr bool Archivable = true;
     static constexpr int DoNotChangeAO = INT_MIN;
-    BYTE kind;
+    SAI79::ePropType kind;
     int abilityOption;
 
     [[nodiscard]] static Element None();

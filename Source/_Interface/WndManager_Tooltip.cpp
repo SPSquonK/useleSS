@@ -596,14 +596,14 @@ namespace WndMgr {
 	) const {
 		const ToolTipItemTextColor & color = dwItemColor[g_Option.m_nToolTipText];
 
-		const auto [tooltipId, dwResistColor] = ([&color](BYTE itemResist) -> std::pair<DWORD, DWORD> {
+		const auto [tooltipId, dwResistColor] = ([&color](SAI79::ePropType itemResist) -> std::pair<DWORD, DWORD> {
 			switch (itemResist) {
-				case SAI79::FIRE:        return { TID_UPGRADE_FIRE       , color.dwResistFire        };
-				case SAI79::WATER:       return { TID_UPGRADE_WATER      , color.dwResistWater       };
-				case SAI79::EARTH:       return { TID_UPGRADE_EARTH      , color.dwResistEarth       };
-				case SAI79::ELECTRICITY: return { TID_UPGRADE_ELECTRICITY, color.dwResistElectricity };
-				case SAI79::WIND:        return { TID_UPGRADE_WIND       , color.dwResistWind        };
-				default:                 return { 0                      , color.dwResist            };
+				case SAI79::ePropType::FIRE:        return { TID_UPGRADE_FIRE       , color.dwResistFire        };
+				case SAI79::ePropType::WATER:       return { TID_UPGRADE_WATER      , color.dwResistWater       };
+				case SAI79::ePropType::EARTH:       return { TID_UPGRADE_EARTH      , color.dwResistEarth       };
+				case SAI79::ePropType::ELECTRICITY: return { TID_UPGRADE_ELECTRICITY, color.dwResistElectricity };
+				case SAI79::ePropType::WIND:        return { TID_UPGRADE_WIND       , color.dwResistWind        };
+				default:                            return { 0                      , color.dwResist            };
 			}
 		})(pItemElem.m_bItemResist);
 

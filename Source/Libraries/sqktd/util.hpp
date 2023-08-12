@@ -1,5 +1,7 @@
 #pragma once
 
+#include "concepts"
+
 namespace sqktd {
 	template<typename T>
 	bool is_among(T searched, std::convertible_to<T> auto ... among) {

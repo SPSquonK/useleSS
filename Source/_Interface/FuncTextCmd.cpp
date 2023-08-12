@@ -1208,21 +1208,21 @@ BOOL TextCmd_say(CScanner & scanner, CUser * pUser) {
 BOOL TextCmd_ResistItem(CScanner & scanner, CUser * pUser) {
 #ifdef __WORLDSERVER
 	DWORD dwObjId	= scanner.GetNumber();
-	BYTE bItemResist = scanner.GetNumber();
+	
+	auto optItemResist = SAI79::From(scanner.GetNumber());
+	if (!optItemResist) return FALSE;
+	SAI79::ePropType bItemResist = *optItemResist;
+
 	int nResistAbilityOption = scanner.GetNumber();
 	int nAbilityOption	= scanner.GetNumber();
 
-	if( bItemResist < 0 || 5 < bItemResist )
-	{
-		return FALSE;
-	}
 	if( nResistAbilityOption < 0 || CItemUpgrade::GetInstance()->GetMaxAttributeEnchantSize() < nResistAbilityOption 
 		|| nAbilityOption < 0 || CItemUpgrade::GetInstance()->GetMaxGeneralEnchantSize() < nAbilityOption )
 	{
 		return FALSE;
 	}
 
-	if( bItemResist == 0 )
+	if( bItemResist == SAI79::NO_PROP )
 	{
 		nResistAbilityOption = 0;
 	}

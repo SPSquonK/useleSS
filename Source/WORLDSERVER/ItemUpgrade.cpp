@@ -1262,6 +1262,8 @@ void	CItemUpgrade::EnchantAttribute( CUser* pUser, CItemElem* pItemMain, CItemEl
 
 void CItemUpgrade::ChangeAttribute( CUser* pUser, OBJID dwTargetItem, OBJID dwUseItem , SAI79::ePropType nAttribute )
 {
+	assert(SAI79::IsValid(nAttribute) && nAttribute != SAI79::NO_PROP);
+
 	CItemElem* pTargetItemElem	= pUser->m_Inventory.GetAtId( dwTargetItem );
 	CItemElem* pUseItemElem = pUser->m_Inventory.GetAtId( dwUseItem );		
 
@@ -1284,9 +1286,6 @@ void CItemUpgrade::ChangeAttribute( CUser* pUser, OBJID dwTargetItem, OBJID dwUs
 		return;
 
 	if( pUseItemElem->m_dwItemId != II_SYS_SYS_SCR_SOKCHANG )	// 속성변경 아이템이 아니네...
-		return;
-
-	if( nAttribute >= SAI79::END_PROP || nAttribute <= SAI79::NO_PROP )
 		return;
 
 	if( pTargetItemElem->m_bItemResist == nAttribute )	// 같은 속성인 경우 속성변경 불가!!
