@@ -3752,15 +3752,15 @@ BOOL CProject::LoadPropEnchant( LPCTSTR lpszFileName )
 	{
 		if( scanner.Token == _T( "NORMAL" ) )
 		{
-			m_nEnchantLimitLevel[0] = scanner.GetNumber();
+			m_nEnchantLimitLevel.normal = static_cast<std::uint8_t>(scanner.GetNumber());
 		}
 		else if( scanner.Token == _T( "AL" ) )
 		{
-			m_nEnchantLimitLevel[1] = scanner.GetNumber();
+			m_nEnchantLimitLevel.al = static_cast<std::uint8_t>(scanner.GetNumber());
 		}
 		else if( scanner.Token == _T( "NONE" ) )
 		{
-			m_nEnchantLimitLevel[2] = scanner.GetNumber();
+			m_nEnchantLimitLevel.none = static_cast<std::uint8_t>(scanner.GetNumber());
 		}
 		else if( scanner.Token == _T( "NORMAL_SCAL" ) )
 		{

@@ -751,7 +751,12 @@ public:
 	int							m_nMonsterPropSize;
 	char						m_chGMChat[10][256];
 	
-	int				m_nEnchantLimitLevel[3];
+	struct {
+		std::uint8_t normal;
+		std::uint8_t al;
+		std::uint8_t none;
+	} m_nEnchantLimitLevel;
+
 	float			m_fEnchantLevelScal[2][10];
 
 #ifdef __EVE_MINIGAME

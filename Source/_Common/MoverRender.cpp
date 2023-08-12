@@ -54,49 +54,32 @@ void CMover::SetRenderPartsEffect(int nParts) {
 
 	if (pItemProp->dwSfxElemental != NULL_ID) return;
 
-	int nAttrLevel = 0;
-	int	nAttr = 0;
-	int nLevel = 0;
-	if (pItemElem) {
-		nAttrLevel = pItemElem->m_nResistAbilityOption;
-		nAttr = pItemElem->m_bItemResist;
-		nLevel = pItemElem->GetAbilityOption();
-	} else {
-		nAttr = m_aEquipInfo[nParts].nOption.itemResist;
-		nAttrLevel = m_aEquipInfo[nParts].nOption.itemResistOption;
-		nLevel = m_aEquipInfo[nParts].nOption.abilityOption;
-	}
+	EQUIP_INFO_Option option = pItemElem ? pItemElem->GetAttrOption() : m_aEquipInfo[nParts].nOption;
 
-	int nEffLevel = 0;
-	if (nAttrLevel > 10)
-		nAttrLevel = 10;
-	if (nAttr && (nAttrLevel > 10 || nAttrLevel < 0))	// 속성은 있는데 속성레벨값이 이상할때.
-	{
-		LPCTSTR szErr = Error("m_nResistAbilityOption=%d %s", nAttrLevel, GetName());
-		//ADDERRORMSG( szErr );
-		nAttrLevel = 10;
-	}
+	option.itemResistOption = std::min<std::uint8_t>(option.itemResistOption, 10);
 
 	bool useDefault = true;
 
+	const int nLevel = static_cast<int>(option.abilityOption);
+
 #ifndef __CSC_ENCHANT_EFFECT_2
-	if (prj.m_nEnchantLimitLevel[2] >= nLevel)
+	if (prj.m_nEnchantLimitLevel.none >= nLevel)
 		return;
 #endif //__CSC_ENCHANT_EFFECT_2
 
-	nEffLevel = nLevel;
+	int nEffLevel = nLevel;
 
 	switch (pItemProp->dwReferStat1) {
 		case WEAPON_GENERAL:
 		case WEAPON_UNIQUE:
 		{
-			if (prj.m_nEnchantLimitLevel[0] > nAttrLevel)
+			if (prj.m_nEnchantLimitLevel.normal > option.itemResistOption)
 				return;
 		}
 		break;
 		case WEAPON_ULTIMATE:
 		{
-			if (prj.m_nEnchantLimitLevel[1] > nAttrLevel)
+			if (prj.m_nEnchantLimitLevel.al > option.itemResistOption)
 				return;
 
 			useDefault = false;
@@ -114,7 +97,7 @@ void CMover::SetRenderPartsEffect(int nParts) {
 		nEffLevel <<= 24;
 
 		int effect;
-		switch (nAttr) {
+		switch (option.itemResist) {
 			case SAI79::FIRE:        effect = useDefault ? XE_ITEM_FIRE  : XE_ITEM_FIRE_AL;  break;
 			case SAI79::ELECTRICITY: effect = useDefault ? XE_ITEM_ELEC  : XE_ITEM_ELEC_AL;  break;
 			case SAI79::WATER:       effect = useDefault ? XE_ITEM_WATER : XE_ITEM_WATER_AL; break;

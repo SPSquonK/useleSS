@@ -38,7 +38,7 @@ inline CTexture * CItemElem::GetTexture() const {
 #endif
 }
 
-inline EQUIP_INFO_Option CItemElem::GetAttrOption() {
+inline EQUIP_INFO_Option CItemElem::GetAttrOption() const noexcept {
 	// Returns the item option value and attribute/attribute level value.
 	constexpr auto ToUint8 = [](int value) -> std::uint8_t {
 		return static_cast<std::uint8_t>(std::clamp(value, 0, 255));
