@@ -15,133 +15,120 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 // CMover
 //////////////////////////////////////////////////////////////////////////////////////////////
-void CMover::SetRenderPartsEffect( int nParts )
-{
-	CModelObject* pModel = (CModelObject*)m_pModel;
-	CItemElem *pItemElem = NULL;
-	ItemProp *pItemProp = NULL;
+void CMover::SetRenderPartsEffect(int nParts) {
+	CModelObject * pModel = (CModelObject *)m_pModel;
 
-	if( IsActiveMover() )
-	{
-		pItemElem = GetEquipItem( nParts );	// 오른쪽 무기에
-		if( pItemElem )
+	const CItemElem * pItemElem = NULL;
+	const ItemProp * pItemProp = NULL;
+
+	if (IsActiveMover()) {
+		pItemElem = GetEquipItem(nParts);	// 오른쪽 무기에
+		if (pItemElem)
 			pItemProp = pItemElem->GetProp();
-	} 
-	else
-	{
-		DWORD dwItemID	= m_aEquipInfo[nParts].dwId;
-		if( dwItemID != NULL_ID )
-			pItemProp = prj.GetItemProp( dwItemID );
+	} else {
+		DWORD dwItemID = m_aEquipInfo[nParts].dwId;
+		if (dwItemID != NULL_ID)
+			pItemProp = prj.GetItemProp(dwItemID);
 	}
-	
-	if( pItemProp )
+
+	if (!pItemProp) return;
+
+	if (pItemProp->nReflect > 0) {
+		// 리플렉트가 걸려있으면
+
+		pModel->SetEffect(nParts, XE_REFLECT);	// 리플렉트 옵션으로 렌더.
+
+		if (nParts == PARTS_RWEAPON && pItemProp->dwItemKind3 == IK3_YOYO) {
+			pModel->SetEffect(PARTS_LWEAPON, XE_REFLECT);	// 리플렉트 옵션으로 렌더.
+		}
+	}
+
+	switch (pItemProp->dwSfxElemental) {
+		case ELEMENTAL_FIRE:	pModel->SetEffect(nParts, XE_ITEM_FIRE  | (5 << 24)); break; // 불 타는 옵션.
+		case ELEMENTAL_ELEC:	pModel->SetEffect(nParts, XE_ITEM_ELEC  | (0 << 24)); break; // 전기 옵션.
+		case ELEMENTAL_WATER:	pModel->SetEffect(nParts, XE_ITEM_WATER | (5 << 24)); break; // 물 옵션
+		case ELEMENTAL_WIND:	pModel->SetEffect(nParts, XE_ITEM_WIND  | (5 << 24)); break; // 바람 옵션
+		case ELEMENTAL_EARTH:	pModel->SetEffect(nParts, XE_ITEM_EARTH | (5 << 24)); break;// 땅 옵션
+		break;
+	}
+
+	if (pItemProp->dwSfxElemental != NULL_ID) return;
+
+	int nAttrLevel = 0;
+	int	nAttr = 0;
+	int nLevel = 0;
+	if (pItemElem) {
+		nAttrLevel = pItemElem->m_nResistAbilityOption;
+		nAttr = pItemElem->m_bItemResist;
+		nLevel = pItemElem->GetAbilityOption();
+	} else {
+		nAttr = m_aEquipInfo[nParts].nOption.itemResist;
+		nAttrLevel = m_aEquipInfo[nParts].nOption.itemResistOption;
+		nLevel = m_aEquipInfo[nParts].nOption.abilityOption;
+	}
+
+	int nEffLevel = 0;
+	if (nAttrLevel > 10)
+		nAttrLevel = 10;
+	if (nAttr && (nAttrLevel > 10 || nAttrLevel < 0))	// 속성은 있는데 속성레벨값이 이상할때.
 	{
-		if( pItemProp->nReflect > 0 )	// 리플렉트가 걸려있으면
-		{
-			pModel->SetEffect( nParts, XE_REFLECT );	// 리플렉트 옵션으로 렌더.
+		LPCTSTR szErr = Error("m_nResistAbilityOption=%d %s", nAttrLevel, GetName());
+		//ADDERRORMSG( szErr );
+		nAttrLevel = 10;
+	}
 
-			if( nParts == PARTS_RWEAPON && pItemProp->dwItemKind3 == IK3_YOYO )
-				pModel->SetEffect( PARTS_LWEAPON, XE_REFLECT );	// 리플렉트 옵션으로 렌더.
-		}
-		
-		BOOL bExec = FALSE;
-		
-		switch( pItemProp->dwSfxElemental )
-		{
-		case ELEMENTAL_FIRE:	pModel->SetEffect( nParts, XE_ITEM_FIRE | (5 << 24) );	bExec = TRUE; break; // 불 타는 옵션.
-		case ELEMENTAL_ELEC:	pModel->SetEffect( nParts, XE_ITEM_ELEC | (0 << 24) );	bExec = TRUE; break; // 전기 옵션.
-		case ELEMENTAL_WATER:	pModel->SetEffect( nParts, XE_ITEM_WATER | (5 << 24));	bExec = TRUE; break; // 물 옵션
-		case ELEMENTAL_WIND:	pModel->SetEffect( nParts, XE_ITEM_WIND  | (5 << 24));	bExec = TRUE; break; // 바람 옵션
-		case ELEMENTAL_EARTH:	pModel->SetEffect( nParts, XE_ITEM_EARTH | (5 << 24));	bExec = TRUE; break;// 땅 옵션
-			break;
-		}
-		
-		if( pItemProp->dwSfxElemental == -1 )
-		{
-			int nAttrLevel = 0;
-			int	nAttr = 0;
-			int nLevel = 0;
-			if( pItemElem )
-			{
-				nAttrLevel = pItemElem->m_nResistAbilityOption;
-				nAttr = pItemElem->m_bItemResist;
-				nLevel = pItemElem->GetAbilityOption();
-			} else
-			{
-				nAttr = m_aEquipInfo[nParts].nOption.itemResist;
-				nAttrLevel = m_aEquipInfo[nParts].nOption.itemResistOption;
-				nLevel = m_aEquipInfo[nParts].nOption.abilityOption;
-			}
-			
-			int nEffLevel = 0;
-			if( nAttrLevel > 10 )
-				nAttrLevel = 10;
-			if( nAttr && (nAttrLevel > 10 || nAttrLevel < 0) )	// 속성은 있는데 속성레벨값이 이상할때.
-			{
-				LPCTSTR szErr = Error( "m_nResistAbilityOption=%d %s", nAttrLevel, GetName() );
-				//ADDERRORMSG( szErr );
-				nAttrLevel = 10;
-			}
-
-			DWORD dwItemFire = XE_ITEM_FIRE;
-			DWORD dwItemElec = XE_ITEM_ELEC;
-			DWORD dwItemWater = XE_ITEM_WATER;
-			DWORD dwItemWind = XE_ITEM_WIND;
-			DWORD dwItemEarth = XE_ITEM_EARTH;
-			DWORD dwItemNone = XE_ITEM_GEN;
+	bool useDefault = true;
 
 #ifndef __CSC_ENCHANT_EFFECT_2
-			if( prj.m_nEnchantLimitLevel[2] >= nLevel )
-				return;
+	if (prj.m_nEnchantLimitLevel[2] >= nLevel)
+		return;
 #endif //__CSC_ENCHANT_EFFECT_2
-			{
-				nEffLevel = nLevel;
 
-				switch( pItemProp->dwReferStat1 )
-				{
-					case WEAPON_GENERAL:
-					case WEAPON_UNIQUE:
-						{
-							if( prj.m_nEnchantLimitLevel[0] > nAttrLevel )
-								return;
-						}
-						break;
-					case WEAPON_ULTIMATE:
-						{
-							if( prj.m_nEnchantLimitLevel[1] > nAttrLevel )
-								return;
-							
-							dwItemFire = XE_ITEM_FIRE_AL;
-							dwItemElec = XE_ITEM_ELEC_AL;
-							dwItemWater = XE_ITEM_WATER_AL;
-							dwItemWind = XE_ITEM_WIND_AL;
-							dwItemEarth = XE_ITEM_EARTH_AL;
-							dwItemNone = XE_ITEM_GEN_AL;
-						}
-						break;
-				}
-			}
-			if( nEffLevel >= 0 )
-#ifdef __CSC_ENCHANT_EFFECT_2
-#else //__CSC_ENCHANT_EFFECT_2
-			if( nEffLevel >= 1 )	// 속성제련레벨 1,2,3은 이펙트 없음.
-#endif //__CSC_ENCHANT_EFFECT_2
-			{
-				nEffLevel <<= 24;
-				
-				switch( nAttr )
-				{
-				case 0:						pModel->SetEffect( nParts, dwItemNone  | nEffLevel );	break;	
-				case SAI79::FIRE:			pModel->SetEffect( nParts, dwItemFire | nEffLevel );	break;	
-				case SAI79::ELECTRICITY:	pModel->SetEffect( nParts, dwItemElec | nEffLevel );	break;
-				case SAI79::WATER:			pModel->SetEffect( nParts, dwItemWater | nEffLevel );	break;
-				case SAI79::WIND:			pModel->SetEffect( nParts, dwItemWind | nEffLevel );	break;
-				case SAI79::EARTH:			pModel->SetEffect( nParts, dwItemEarth | nEffLevel );	break;
-				}
-			}
+	nEffLevel = nLevel;
+
+	switch (pItemProp->dwReferStat1) {
+		case WEAPON_GENERAL:
+		case WEAPON_UNIQUE:
+		{
+			if (prj.m_nEnchantLimitLevel[0] > nAttrLevel)
+				return;
 		}
+		break;
+		case WEAPON_ULTIMATE:
+		{
+			if (prj.m_nEnchantLimitLevel[1] > nAttrLevel)
+				return;
+
+			useDefault = false;
+
+		}
+		break;
+	}
+
+
+	if( nEffLevel >= 0 )
+#ifndef __CSC_ENCHANT_EFFECT_2
+	if( nEffLevel >= 1 )	// 속성제련레벨 1,2,3은 이펙트 없음.
+#endif //__CSC_ENCHANT_EFFECT_2
+	{
+		nEffLevel <<= 24;
+
+		int effect;
+		switch (nAttr) {
+			case SAI79::FIRE:        effect = useDefault ? XE_ITEM_FIRE  : XE_ITEM_FIRE_AL;  break;
+			case SAI79::ELECTRICITY: effect = useDefault ? XE_ITEM_ELEC  : XE_ITEM_ELEC_AL;  break;
+			case SAI79::WATER:       effect = useDefault ? XE_ITEM_WATER : XE_ITEM_WATER_AL; break;
+			case SAI79::WIND:        effect = useDefault ? XE_ITEM_WIND  : XE_ITEM_WIND_AL;  break;
+			case SAI79::EARTH:       effect = useDefault ? XE_ITEM_EARTH : XE_ITEM_EARTH_AL; break;
+			default:                 effect = useDefault ? XE_ITEM_GEN   : XE_ITEM_GEN_AL;   break;
+		}
+
+		effect |= nEffLevel;
+
+		pModel->SetEffect(nParts, effect);
 	}
 }
+
 void CMover::Render( )
 {
 	MoverProp *pMoverProp = GetProp();
