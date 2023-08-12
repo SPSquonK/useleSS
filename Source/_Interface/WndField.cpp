@@ -9886,17 +9886,17 @@ void CWndChangeAttribute::OnDraw(C2DRender* p2DRender)
 	if(m_pItemElem != NULL)
 	{
 		if(m_pTexture != NULL)
-			m_pTexture->Render( p2DRender, CPoint( GetWndCtrl( WIDC_STATIC1 )->rect.left, GetWndCtrl( WIDC_STATIC1 )->rect.top ) );
+			m_pTexture->Render( p2DRender, GetWndCtrl( WIDC_STATIC1 )->rect.TopLeft() );
 	}
 
 	// Draw Attribute & Draw Rect Round Lamp
 	for(int i=0; i<5; i++)
 	{
-		CRect rect = GetWndCtrl( m_nAttributeStaticID[i] )->rect;
-		g_WndMng.m_pWndWorld->m_texAttrIcon.Render( p2DRender, CPoint(rect.left, rect.top), i, 255, 1.5f, 1.5f );
+		const CRect rect = GetWndCtrl( m_nAttributeStaticID[i] )->rect;
+		g_WndMng.m_pWndWorld->m_texAttrIcon.Render( p2DRender, rect.TopLeft(), i, 255, 1.5f, 1.5f);
 		
 		if(i == m_nAttributeNum)
-			FillRect( p2DRender, GetWndCtrl( m_nAttributeStaticID[i] )->rect, 0xffbb00ff, 0x00bb00ff );
+			FillRect( p2DRender, rect, 0xffbb00ff, 0x00bb00ff );
 	}
 }
 

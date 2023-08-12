@@ -5,7 +5,7 @@
 
 namespace SAI79
 {
-	enum class ePropType {
+	enum class ePropType : std::uint8_t {
 		NO_PROP = 0,
 		FIRE,
 		WATER,
