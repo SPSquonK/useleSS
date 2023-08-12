@@ -323,7 +323,7 @@ public:
 	BOOL IsViewMap()			  { return m_bViewMap; }
 	BOOL GetBuffIconRect( DWORD dwID, const CPoint& point );
 	int  GetBuffTimeGap();
-	void RenderOptBuffTime( C2DRender *p2DRender, CPoint& point, CTimeSpan &ct, DWORD dwColor );
+	void RenderOptBuffTime( C2DRender *p2DRender, CPoint& point, const CTimeSpan &ct, DWORD dwColor );
 	void RenderWantedArrow();
 	void RenderMoverBuff( CMover* pMover, C2DRender *p2DRender );
 
@@ -424,6 +424,7 @@ public:
 	void RenderExpBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BUFFICON_INFO* pInfo, CPoint ptMouse, DWORD dwItemID );
 	void RenderBuffIcon( C2DRender *p2DRender, IBuff* pBuff, BOOL bPlayer, BUFFICON_INFO* pInfo, CPoint ptMouse );
 	void RenderSMBuff( C2DRender *p2DRender, BUFFICON_INFO* pInfo, CPoint ptMouse );
+	[[nodiscard]] CTexture * GetSMBuffTexture(const CMover & pMover, int SMBuffId);
 	void RenderCasting(C2DRender *p2DRender);
 	void	RenderEventIcon( C2DRender* p2DRender, BUFFICON_INFO* pInfo, CPoint ptMouse );
 

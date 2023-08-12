@@ -293,31 +293,17 @@ void CWndCommItemCtrl::DrawSM( C2DRender* p2DRender, CPoint* pPoint, int x, int 
 		++nScroll;
 		if(m_wndScrollBar.GetScrollPos() >= nScroll)
 			continue;
+
+		CTexture * pTexture = pWndWorld->GetSMBuffTexture(*g_pPlayer, i);
 		
 		const ItemProp * pItem = prj.GetItemProp(g_AddSMMode.dwSMItemID[i]);
-		
-		int nResistTexture = 1000;
-		if( i == SM_RESIST_ATTACK_LEFT )
-			nResistTexture = g_pPlayer->m_nAttackResistLeft - 1;
-		else if( i == SM_RESIST_ATTACK_RIGHT )
-			nResistTexture = g_pPlayer->m_nAttackResistRight - 1;
-		else if( i == SM_RESIST_DEFENSE )
-			nResistTexture = g_pPlayer->m_nDefenseResist + 5 - 1;
 
-		if( pItem != NULL && 
-			( pWndWorld->m_dwSMItemTexture[i] != NULL || 
-			( ( i == SM_RESIST_ATTACK_LEFT || i == SM_RESIST_ATTACK_RIGHT || i == SM_RESIST_DEFENSE ) && pWndWorld->m_dwSMResistItemTexture[nResistTexture] != NULL && SAI79::END_PROP > nResistTexture ) 
-			) )
-		{
-			if( i == SM_RESIST_ATTACK_LEFT || i == SM_RESIST_ATTACK_RIGHT || i == SM_RESIST_DEFENSE )
-				p2DRender->RenderTexture( CPoint( 2, pPoint->y ), pWndWorld->m_dwSMResistItemTexture[nResistTexture], 192 );
-			else
-				p2DRender->RenderTexture( CPoint( 2, pPoint->y ), pWndWorld->m_dwSMItemTexture[i], 192 );
-
-			m_dwDraw.emplace_back(g_AddSMMode.dwSMItemID[i]);
+		if (pItem && pTexture) {
+			p2DRender->RenderTexture(CPoint(2, pPoint->y), pTexture, 192);
 		}
+
+		m_dwDraw.emplace_back(g_AddSMMode.dwSMItemID[i]);
 			
-		DWORD dwColor = 0xff000000;
 		CString string;
 		string.Format( "#cff0000ff%s#nc", pItem ? pItem->szName : "???");
 		CEditString strEdit;
@@ -325,11 +311,11 @@ void CWndCommItemCtrl::DrawSM( C2DRender* p2DRender, CPoint* pPoint, int x, int 
 		p2DRender->TextOut_EditString( x + 40, pPoint->y + 3, strEdit, 0, 0, 2 );
 	
 		CTimeSpan ct( g_pPlayer->m_dwSMTime[i] );
-		if( pItem->dwID == II_SYS_SYS_SCR_BLESSING )
-			string.Format( prj.GetText( TID_GAME_COND_USE ) );
+		if( pItem && pItem->dwID == II_SYS_SYS_SCR_BLESSING )
+			string = prj.GetText( TID_GAME_COND_USE );
 		else
 			string.Format( prj.GetText( TID_TOOLTIP_DATE ), static_cast<int>(ct.GetDays()), ct.GetHours(), ct.GetMinutes(), ct.GetSeconds() );
-		p2DRender->TextOut( x + 40, pPoint->y + 18, string, dwColor );
+		p2DRender->TextOut( x + 40, pPoint->y + 18, string, 0xff000000 );
 		pPoint->y += m_nFontHeight;// + 3;
 	}
 }

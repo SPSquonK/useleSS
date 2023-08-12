@@ -32,6 +32,7 @@
 #include "defineskill.h"
 #include "playerdata.h"
 #include "honor.h"
+#include "sqktd/util.hpp"
 
 #ifdef __SYS_ITEMTRANSY
 #include "wndchangeface.h"
@@ -8048,34 +8049,26 @@ void CWndWorld::RenderSMBuff( C2DRender *p2DRender, BUFFICON_INFO* pInfo, CPoint
 		if( g_pPlayer->m_dwSMTime[i] <= 0 )
 			continue;
 		
-		int nResistTexture = 1000;
-		if( i == SM_RESIST_ATTACK_LEFT )
-			nResistTexture = g_pPlayer->m_nAttackResistLeft - 1;
-		else if( i == SM_RESIST_ATTACK_RIGHT )
-			nResistTexture = g_pPlayer->m_nAttackResistRight - 1;
-		else if( i == SM_RESIST_DEFENSE )
-			nResistTexture = g_pPlayer->m_nDefenseResist + 5 - 1;
-		
-		ItemProp* pItem = prj.GetItemProp( g_AddSMMode.dwSMItemID[i] );
-		
-		if( pItem != NULL &&
-			( m_dwSMItemTexture[i] != NULL || 
-			( ( i == SM_RESIST_ATTACK_LEFT || i== SM_RESIST_ATTACK_RIGHT || i == SM_RESIST_DEFENSE ) && m_dwSMResistItemTexture[nResistTexture] != NULL && SAI79::END_PROP > nResistTexture ) 
-			) )
-		{
-			CEditString strEdit;
-			CTimeSpan ct( g_pPlayer->m_dwSMTime[i] );
-			if( 0 == ct.GetDays() && 0 == ct.GetHours() && ct.GetMinutes() <= 30 || 
-				i == SM_STR_DOWN || i == SM_STA_DOWN || i == SM_INT_DOWN || i == SM_DEX_DOWN )
-			{
-				pInfo->pt.x += (32+5);
+		CTexture * pTexture = GetSMBuffTexture(*g_pPlayer, i);
+		if (!pTexture) continue;
+
+		const ItemProp * pItem = prj.GetItemProp(g_AddSMMode.dwSMItemID[i]);
+		if (!pItem) continue;
+
+		const CTimeSpan ct(g_pPlayer->m_dwSMTime[i]);
+		if (ct.GetTotalMinutes() > 30
+			&& !sqktd::is_among(i, SM_STR_DOWN, SM_STA_DOWN, SM_INT_DOWN, SM_DEX_DOWN)) {
+			continue;
+		}
+
+
+		CEditString strEdit;
+
+		pInfo->pt.x += (32+5);
 				
 				if( g_pPlayer->m_dwSMTime[i] < 60 && i != SM_REVIVAL )		// 20초 이하 남았으면 깜빡거림.
 				{
-					if( i == SM_RESIST_ATTACK_LEFT || i == SM_RESIST_ATTACK_RIGHT || i == SM_RESIST_DEFENSE )
-						p2DRender->RenderTexture( pInfo->pt, m_dwSMResistItemTexture[nResistTexture], m_nSMAlpha[i] );
-					else
-						p2DRender->RenderTexture( pInfo->pt, m_dwSMItemTexture[i], m_nSMAlpha[i] );
+					p2DRender->RenderTexture( pInfo->pt, pTexture, m_nSMAlpha[i] );
 					
 					if( m_bSMFlsh[i] == TRUE )
 					{
@@ -8100,10 +8093,7 @@ void CWndWorld::RenderSMBuff( C2DRender *p2DRender, BUFFICON_INFO* pInfo, CPoint
 				}
 				else
 				{
-					if( i == SM_RESIST_ATTACK_LEFT || i == SM_RESIST_ATTACK_RIGHT || i == SM_RESIST_DEFENSE )
-						p2DRender->RenderTexture( pInfo->pt, m_dwSMResistItemTexture[nResistTexture], 192 );
-					else
-						p2DRender->RenderTexture( pInfo->pt, m_dwSMItemTexture[i], 192 );
+					p2DRender->RenderTexture(pInfo->pt, pTexture, 192);
 				}
 				
 				SetRect( &rectHittest, pInfo->pt.x, pInfo->pt.y, pInfo->pt.x+32, pInfo->pt.y+32 );
@@ -8140,8 +8130,29 @@ void CWndWorld::RenderSMBuff( C2DRender *p2DRender, BUFFICON_INFO* pInfo, CPoint
 					pInfo->pt.x  = (m_rectWindow.Width() / 2) + 75;
 					pInfo->pt.y += GetBuffTimeGap();
 				}
-			}
+	}
+}
+
+CTexture * CWndWorld::GetSMBuffTexture(const CMover & pMover, int SMBuffId) {
+	if (sqktd::is_among(SMBuffId, SM_RESIST_ATTACK_LEFT, SM_RESIST_ATTACK_RIGHT, SM_RESIST_DEFENSE)) {
+		BYTE value;
+		size_t offset;
+		if (SMBuffId == SM_RESIST_ATTACK_LEFT) {
+			value = pMover.m_nAttackResistLeft;
+			offset = 0;
+		} else if (SMBuffId == SM_RESIST_ATTACK_RIGHT) {
+			value = pMover.m_nAttackResistRight;
+			offset = 0;
+		} else {
+			assert(SMBuffId == SM_RESIST_DEFENSE);
+			value = pMover.m_nDefenseResist;
+			offset = 5;
 		}
+
+		if (value == 0 || value >= SAI79::END_PROP) return nullptr;
+		return m_dwSMResistItemTexture[value - 1 + offset];
+	} else {
+		return m_dwSMItemTexture[SMBuffId];
 	}
 }
 
@@ -8575,7 +8586,7 @@ void CWndWorld::RenderWantedArrow()
 	}
 }
 
-void CWndWorld::RenderOptBuffTime(C2DRender *p2DRender, CPoint& point, CTimeSpan &ct, DWORD dwColor )
+void CWndWorld::RenderOptBuffTime(C2DRender *p2DRender, CPoint& point, const CTimeSpan &ct, DWORD dwColor )
 {
 	if(g_Option.m_bVisibleBuffTimeRender)
 	{
