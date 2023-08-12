@@ -941,7 +941,7 @@ int		CModelObject::Render( const D3DXMATRIX *mWorld )
 		if( m_pBone->m_bSendVS )	// 뼈대개수가 MAX_VS_BONE이하라서 한번에 다 전송한다.
 		{
 			if(m_pBone->m_pBones.size() > CBones::MAX_VS_BONE )
-				Error( "CModelObject::Render : overflow bone count - %z", m_pBone->m_pBones.size());
+				Error( "CModelObject::Render : overflow bone count - %zu", m_pBone->m_pBones.size());
 
 			for (const int i : m_pBone->m_pBones.keys<int>()) {
 				D3DXMATRIX mWorldTranspose = pmBonesInv[i] * pmBones[i];
