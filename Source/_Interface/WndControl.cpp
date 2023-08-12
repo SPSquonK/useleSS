@@ -1649,8 +1649,10 @@ BOOL CWndListBox::OnMouseWheel(UINT, const short zDelta, CPoint) {
 }
 
 void CWndScrollBar::MouseWheel(const short zDelta) {
-	if (GetScrollPage() >= GetMaxScrollPos())
+	if (m_nScrollMinPos == m_nScrollMaxPos) {
+		m_nScrollPos = m_nScrollMinPos;
 		return;
+	}
 
 	if (zDelta < 0) {
 		if (GetMaxScrollPos() - GetScrollPage() > GetScrollPos())
