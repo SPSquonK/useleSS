@@ -724,23 +724,13 @@ public:
 
 public:
 	CWndGuildCombatState(int nCombatType);
-	virtual ~CWndGuildCombatState(); 
 	
-	void		 InsertTitle( const char szTitle[] );
-	int          GetSelectIndex( const CPoint& point );	
-	void		 Init( time_t lTime );
 	void		 InsertGuild( const char szGuild[], const char szName[], int nNum );	
 	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual	void OnRButtonUp( UINT nFlags, CPoint point );
-	virtual void OnRButtonDown( UINT nFlags, CPoint point );
-	virtual void OnLButtonDblClk( UINT nFlags, CPoint point);	
+
 	virtual void	PaintFrame( C2DRender* p2DRender );
 	virtual BOOL Process ();
 	void		 SetGold( int nGold );
@@ -815,7 +805,6 @@ public:
 	CWndGuildWarState(); 
 	virtual ~CWndGuildWarState(); 
 	
-	void		 InsertTitle( const char szTitle[] );
 	int          GetSelectIndex( const CPoint& point );	
 	void		 Init( time_t lTime );
 	void		 InsertGuild( const char szGuild[], const char szName[], int nNum );	

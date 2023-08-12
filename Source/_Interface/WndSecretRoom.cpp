@@ -561,13 +561,6 @@ void CWndSecretRoomOfferState::OnInitialUpdate() {
 	MoveParentCenter();
 }
 
-void CWndSecretRoomOfferState::InsertTitle( const char szTitle[] )
-{
-	CString strTitle;
-	strTitle.Format( "%s - %s", GetTitle(), szTitle );
-	SetTitle( strTitle );
-}
-
 BOOL CWndSecretRoomOfferState::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_SECRETROOM_OFFERSTATE, pWndParent, 0, CPoint( 0, 0 ) );

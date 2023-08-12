@@ -5511,12 +5511,14 @@ void CGuildCombatInfoMessageBox::PaintFrame( C2DRender* p2DRender )
 		p2DRender->SetFont( CWndBase::m_Theme.m_pFontWndTitle );
 		p2DRender->TextOut( 10, y, m_strTitle, m_dwColor );
 
-		char szNameLevel[128] = {0,};
+		const char * szNameLevel;
 
-		if(m_nCombatType == 0)
-			sprintf( szNameLevel, "%s", prj.GetText(TID_GAME_GUILDCOMBAT_OFFERSTATE) );
-		else if(m_nCombatType == 1)
-			sprintf( szNameLevel, "%s", prj.GetText(TID_GAME_GUILDCOMBAT_1TO1_OFFERSTATE) );
+		if (m_nCombatType == 0)
+			szNameLevel = prj.GetText(TID_GAME_GUILDCOMBAT_OFFERSTATE);
+		else if (m_nCombatType == 1)
+			szNameLevel = prj.GetText(TID_GAME_GUILDCOMBAT_1TO1_OFFERSTATE);
+		else
+			szNameLevel = "???";
 
 		SetTitle( szNameLevel );
 		
@@ -5850,18 +5852,11 @@ bool CWndGuildCombatSelection::OnChooseDefender() {
 }
 
 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?
-CWndGuildCombatState::CWndGuildCombatState(int nCombatType)
-{ 
-	Init( 0 );
-
-	m_tEndTime    = 0;
+CWndGuildCombatState::CWndGuildCombatState(int nCombatType) {
+	m_tEndTime = 0;
 	m_tCurrentTime = 0;
 	m_nCombatType = nCombatType;
 }
-
-CWndGuildCombatState::~CWndGuildCombatState() 
-{ 
-} 
 
 void CWndGuildCombatState::PaintFrame( C2DRender* p2DRender )
 {
@@ -5875,12 +5870,13 @@ void CWndGuildCombatState::PaintFrame( C2DRender* p2DRender )
 		p2DRender->SetFont( CWndBase::m_Theme.m_pFontWndTitle );
 		p2DRender->TextOut( 10, y, m_strTitle, m_dwColor );
 
-		char szNameLevel[128] = {0,};
-
-		if(m_nCombatType == 0)
-			sprintf( szNameLevel, "%s", prj.GetText(TID_GAME_GUILDCOMBAT_OFFERSTATE) );
-		else if(m_nCombatType == 1)
-			sprintf( szNameLevel, "%s", prj.GetText(TID_GAME_GUILDCOMBAT_1TO1_OFFERSTATE) );
+		const char * szNameLevel;
+		if (m_nCombatType == 0)
+			szNameLevel = prj.GetText(TID_GAME_GUILDCOMBAT_OFFERSTATE);
+		else if (m_nCombatType == 1)
+			szNameLevel = prj.GetText(TID_GAME_GUILDCOMBAT_1TO1_OFFERSTATE);
+		else
+			szNameLevel = "???";
 
 		SetTitle( szNameLevel );
 		
@@ -5888,64 +5884,14 @@ void CWndGuildCombatState::PaintFrame( C2DRender* p2DRender )
 	}
 }
 
-void CWndGuildCombatState::Init( time_t lTime )
-{
-}
-
-void CWndGuildCombatState::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å±ï¿½ï¿? ï¿½Îºï¿½.
+void CWndGuildCombatState::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
-} 
-
-void CWndGuildCombatState::InsertTitle( const char szTitle[] )
-{
-	CString strTitle;
-	strTitle.Format( "%s - %s", GetTitle(), szTitle );
-	SetTitle( strTitle );
 }
 
 BOOL CWndGuildCombatState::Initialize( CWndBase* pWndParent )
 {
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_1TO1_OFFERSTATE, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-
-BOOL CWndGuildCombatState::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-
-void CWndGuildCombatState::OnSize( UINT nType, int cx, int cy )
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-
-void CWndGuildCombatState::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-// ï¿½ï¿½ï¿½Ãµï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Â´ï¿?.
-int CWndGuildCombatState::GetSelectIndex( const CPoint& point )
-{
-	return -1;
-}
-
-void CWndGuildCombatState::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndGuildCombatState::OnLButtonDblClk( UINT nFlags, CPoint point)
-{
-}
-
-void CWndGuildCombatState::OnRButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-
-void CWndGuildCombatState::OnRButtonUp( UINT nFlags, CPoint point ) 
-{ 
 } 
 
 BOOL CWndGuildCombatState::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
@@ -6027,7 +5973,7 @@ BOOL CWndGuildCombatState::Process()
 	
 	if( m_tEndTime && m_tCurrentTime > 0 )
 	{
-		m_ct = m_tCurrentTime;//long)(m_dwCurrentTime / 1000.0f) );
+		m_ct = m_tCurrentTime;
 	}
 	
 	return TRUE;
@@ -6396,13 +6342,6 @@ void CWndGuildWarState::OnInitialUpdate()
 	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å±ï¿½ï¿? ï¿½Îºï¿½.
 	MoveParentCenter();
 } 
-
-void CWndGuildWarState::InsertTitle( const char szTitle[] )
-{
-	CString strTitle;
-	strTitle.Format( "%s - %s", GetTitle(), szTitle );
-	SetTitle( strTitle );
-}
 
 BOOL CWndGuildWarState::Initialize( CWndBase* pWndParent )
 { 

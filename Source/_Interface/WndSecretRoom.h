@@ -50,7 +50,6 @@ public:
 	CWndSecretRoomOfferState();
 	virtual ~CWndSecretRoomOfferState(); 
 	
-	void		 InsertTitle( const char szTitle[] );
 	int          GetSelectIndex( const CPoint& point );	
 	void		 Init( time_t lTime );
 	void		 InsertGuild( const char szGuild[], const char szName[], int nNum );	
