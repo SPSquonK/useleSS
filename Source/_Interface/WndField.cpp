@@ -6555,81 +6555,62 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 	rc += CPoint( 0, 20 );
 	p2DRender->RenderFillRect( rc , D3DCOLOR_ARGB( 128, 0 , 0 , 0 ) );
 	
-	const int nBase = std::max(m_wndScrollBar.GetScrollPos(), 0);
-	
-	int nRanking = 0;
-	int nOldRanking = -1;
-	
-	__GUILDCOMBAT_RANK_INFO2 GCRankInfo;
-	__GUILDCOMBAT_RANK_INFO2 GCRankInfoMy;
-	int	nMyRanking = 0;
-	
-	BOOL	bMyRanking = FALSE;
 
 	constexpr DWORD dwColor = D3DCOLOR_XRGB(0, 0, 0);
 	p2DRender->TextOut( sx + 4,      10, prj.GetText(TID_GAME_RATE),  dwColor );
 	p2DRender->TextOut( sx + 40,     10, prj.GetText(TID_GAME_NAME),  dwColor );
 	p2DRender->TextOut( sx + 180,    10, prj.GetText(TID_GAME_JOB),  dwColor );
 	p2DRender->TextOut( sx + 275,    10, prj.GetText(TID_GAME_POINT),  dwColor );
-	
-	for( int k = 0; k < nBase; k++ )
-	{
-		GCRankInfo = m_listRank[k];
 
-		if( nOldRanking != GCRankInfo.nPoint )
-			nRanking++;
+	if (m_nMax == 0) return;
 
-		if( GCRankInfo.uidPlayer == g_pPlayer->m_idPlayer ) 
-		{
-			bMyRanking   = TRUE;
-			GCRankInfoMy = GCRankInfo;
-			nMyRanking   = nRanking;
-		}		
+	const int nBase = std::max(m_wndScrollBar.GetScrollPos(), 0);
 
-		nOldRanking = GCRankInfo.nPoint;					
-	}
+	const __GUILDCOMBAT_RANK_INFO2 * GCRankInfoMy = nullptr;
+	int	nMyRanking = 0;
 	
 	int sy = 35;
-	for( int i=nBase; i<nBase + MAX_GUILDCOMBAT_RANK_PER_PAGE; ++i )
-	{
-		if( i >= m_nMax )	
-			break;
-		
-		GCRankInfo = m_listRank[i];
 
-		if( nOldRanking != GCRankInfo.nPoint )
-			nRanking++;
+	int currentRanking = 1;
+	int lastSeenPoints = m_listRank[0].nPoint;
 
-		if( GCRankInfo.uidPlayer == g_pPlayer->m_idPlayer ) 
-		{
-			bMyRanking   = TRUE;
-			GCRankInfoMy = GCRankInfo;
-			nMyRanking   = nRanking;
+	for (int i = 0; i != m_nMax; ++i) {
+		const __GUILDCOMBAT_RANK_INFO2 & GCRankInfo = m_listRank[i];
+
+		if (lastSeenPoints != GCRankInfo.nPoint) {
+			currentRanking = i + 1;
 		}
-		
-		if( m_nSelect >= 0 && i == m_nSelect )
-		{
-			rc.SetRect( sx, sy - 4, sx+320, sy + 16 ); 	
-			p2DRender->RenderFillRect( rc , D3DCOLOR_ARGB( 64, 0, 0, 0 ) );
-		}
-		
-		DWORD dwColor;
-		if( i == 0 )
-			dwColor = D3DCOLOR_XRGB( 200, 0, 0 );
-		else
-			dwColor = D3DCOLOR_XRGB( 0, 0, 0 );		
 
-		std::optional<int> rank = nOldRanking != GCRankInfo.nPoint ? std::optional(nRanking) : std::nullopt;
-		PrintPlayer(p2DRender, GCRankInfo, CPoint(sx, sy), dwColor, rank);
-		
-		sy += 18;
-		
-		nOldRanking = GCRankInfo.nPoint;					
-	}	
+		// Display current item
+		if (i >= nBase && i < nBase + MAX_GUILDCOMBAT_RANK_PER_PAGE) {
+			// Selection
+			if (m_nSelect >= 0 && i == m_nSelect) {
+				rc.SetRect(sx, sy - 4, sx + 320, sy + 16);
+				p2DRender->RenderFillRect(rc, D3DCOLOR_ARGB(64, 0, 0, 0));
+			}
+
+			// Display
+			const DWORD dwColor = currentRanking == 1 ? D3DCOLOR_XRGB(200, 0, 0) : D3DCOLOR_XRGB(0, 0, 0);
+
+			std::optional<int> rank;
+			if (i == nBase || currentRanking == i + 1) {
+				rank = currentRanking;
+			}
+
+			PrintPlayer(p2DRender, GCRankInfo, CPoint(sx, sy), dwColor, rank);
+
+			sy += 18;
+		}
+
+		if (GCRankInfo.uidPlayer == g_pPlayer->m_idPlayer) {
+			GCRankInfoMy = &GCRankInfo;
+			nMyRanking = currentRanking;
+		}
+	}
 
 	// ���� ��ŷ ǥ��...
-	if (bMyRanking) {
-		PrintPlayer(p2DRender, GCRankInfoMy, CPoint(sx, 250), D3DCOLOR_XRGB(0, 0, 255), nMyRanking);
+	if (GCRankInfoMy) {
+		PrintPlayer(p2DRender, *GCRankInfoMy, CPoint(sx, 250), D3DCOLOR_XRGB(0, 0, 255), nMyRanking);
 	}
 } 
 
