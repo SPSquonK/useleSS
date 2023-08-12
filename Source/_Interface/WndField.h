@@ -613,14 +613,6 @@ private:
 	void OnModifiedJob();
 };
 
-
-struct GUILDLIST
-{
-	char	 szGuild[ MAX_NAME ];		// 이름.
-	char	 szName[ MAX_NAME ];		// 이름.
-	int		 nNum;
-};
-
 class CWndGuildCombatOffer final : public CWndNeuz
 {
 protected:
@@ -792,38 +784,6 @@ public:
 	virtual	void	OnInitialUpdate();
 	virtual void	PaintFrame( C2DRender* p2DRender );
 }; 
-
-class CWndGuildWarState final : public CWndNeuz 
-{ 
-private: 
-	CWndScrollBar		m_wndScrollBar;
-	int					m_nMax;
-	GUILDLIST			m_aList[MAX_WANTED_LIST];
-	int					m_nSelect;
-	
-public: 
-	CWndGuildWarState(); 
-	virtual ~CWndGuildWarState(); 
-	
-	int          GetSelectIndex( const CPoint& point );	
-	void		 Init( time_t lTime );
-	void		 InsertGuild( const char szGuild[], const char szName[], int nNum );	
-	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual	void OnRButtonUp( UINT nFlags, CPoint point );
-	virtual void OnRButtonDown( UINT nFlags, CPoint point );
-	virtual void OnMouseMove(UINT nFlags, CPoint point );
-	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
-	virtual void OnMouseWndSurface( CPoint point );
-	virtual void OnLButtonDblClk( UINT nFlags, CPoint point);	
-}; 
-
 
 struct GUILDNAME
 {
