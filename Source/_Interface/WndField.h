@@ -821,44 +821,36 @@ typedef struct __GUILDCOMBAT_RANK_INFO
 	int		nJob;
 } __GUILDCOMBAT_RANK_INFO;
 
-typedef struct __GUILDCOMBAT_RANK_INFO2
-{
-	CString strName;
-	CString strJob;
-	u_long	uidPlayer;
-	int		nPoint;	
-} __GUILDCOMBAT_RANK_INFO2;
-
-#define MAX_GUILDCOMBAT_RANK_PER_PAGE 11
-#define MAX_GUILDCOMBAT_RANK		  100
-
-
 // ±æµå ·©Å· ÅÇ- Á÷¾÷º°
 class CWndGuildCombatRank_Class final : public CWndNeuz 
 { 
 public: 
+	struct GUILDCOMBAT_RANK_INFO2 {
+		CString strName;
+		CString strJob;
+		u_long  uidPlayer;
+		int     nPoint;
+	};
+
+	static constexpr size_t MAX_GUILDCOMBAT_RANK_PER_PAGE = 11;
+	static constexpr size_t MAX_GUILDCOMBAT_RANK = 100;
+
 	CWndScrollBar		m_wndScrollBar;
-	int					m_nMax;
-	int					m_nSelect;
+	std::vector<GUILDCOMBAT_RANK_INFO2> m_listRank;
+	std::optional<size_t> m_nSelect;
 
-	int		m_nRate;
-
-	__GUILDCOMBAT_RANK_INFO2		m_listRank[MAX_GUILDCOMBAT_RANK];
-
-	CWndGuildCombatRank_Class(); 
 
 	void		 InsertRank( int nJob, u_long uidPlayer, int nPoint );
-	int          GetSelectIndex( const CPoint& point );	
 	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
 	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
 	virtual	void OnLButtonDown( UINT nFlags, CPoint point );
 
 private:
-	static void PrintPlayer(C2DRender * p2DRender, const __GUILDCOMBAT_RANK_INFO2 & info, CPoint point, DWORD dwColor, std::optional<int> rank);
+	[[nodiscard]] std::optional<size_t> GetSelectIndex(const CPoint & point) const;
+
+	static void PrintPlayer(C2DRender * p2DRender, const GUILDCOMBAT_RANK_INFO2 & info, CPoint point, DWORD dwColor, std::optional<size_t> rank);
 }; 
 
 // ±æµå ·©Å· - Á÷¾÷º°

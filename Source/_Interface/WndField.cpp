@@ -6538,12 +6538,6 @@ CWndGuildCombatRank_Class* CWndGuildCombatRank_Person::__GetJobKindWnd(const int
 /****************************************************
   WndId : APP_GUILDCOMBAT_RANKINGCLASS
 ****************************************************/
-CWndGuildCombatRank_Class::CWndGuildCombatRank_Class() 
-{ 
-	m_nRate = 0;
-	m_nMax = 0;
-	m_nSelect = -1;	
-} 
 
 void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender ) 
 { 
@@ -6562,29 +6556,30 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 	p2DRender->TextOut( sx + 180,    10, prj.GetText(TID_GAME_JOB),  dwColor );
 	p2DRender->TextOut( sx + 275,    10, prj.GetText(TID_GAME_POINT),  dwColor );
 
-	if (m_nMax == 0) return;
+	if (m_listRank.empty()) return;
 
-	const int nBase = std::max(m_wndScrollBar.GetScrollPos(), 0);
+	const size_t nBase = static_cast<size_t>(std::max(m_wndScrollBar.GetScrollPos(), 0));
 
-	const __GUILDCOMBAT_RANK_INFO2 * GCRankInfoMy = nullptr;
+	const GUILDCOMBAT_RANK_INFO2 * GCRankInfoMy = nullptr;
 	int	nMyRanking = 0;
 	
 	int sy = 35;
 
-	int currentRanking = 1;
+	size_t currentRanking = 1;
 	int lastSeenPoints = m_listRank[0].nPoint;
 
-	for (int i = 0; i != m_nMax; ++i) {
-		const __GUILDCOMBAT_RANK_INFO2 & GCRankInfo = m_listRank[i];
+	for (size_t i = 0; i != m_listRank.size(); ++i) {
+		const GUILDCOMBAT_RANK_INFO2 & GCRankInfo = m_listRank[i];
 
 		if (lastSeenPoints != GCRankInfo.nPoint) {
 			currentRanking = i + 1;
+			lastSeenPoints = GCRankInfo.nPoint;
 		}
 
 		// Display current item
 		if (i >= nBase && i < nBase + MAX_GUILDCOMBAT_RANK_PER_PAGE) {
 			// Selection
-			if (m_nSelect >= 0 && i == m_nSelect) {
+			if (m_nSelect && *m_nSelect == i) {
 				rc.SetRect(sx, sy - 4, sx + 320, sy + 16);
 				p2DRender->RenderFillRect(rc, D3DCOLOR_ARGB(64, 0, 0, 0));
 			}
@@ -6592,7 +6587,7 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 			// Display
 			const DWORD dwColor = currentRanking == 1 ? D3DCOLOR_XRGB(200, 0, 0) : D3DCOLOR_XRGB(0, 0, 0);
 
-			std::optional<int> rank;
+			std::optional<size_t> rank;
 			if (i == nBase || currentRanking == i + 1) {
 				rank = currentRanking;
 			}
@@ -6616,12 +6611,12 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 
 void CWndGuildCombatRank_Class::PrintPlayer(
 	C2DRender * p2DRender,
-	const __GUILDCOMBAT_RANK_INFO2 & info, CPoint point, DWORD dwColor, std::optional<int> rank
+	const GUILDCOMBAT_RANK_INFO2 & info, CPoint point, DWORD dwColor, std::optional<size_t> rank
 ) {
 	char buffer[8];
 
 	if (rank) {
-		std::sprintf(buffer, "%3d", *rank);
+		std::sprintf(buffer, "%3zu", *rank);
 		p2DRender->TextOut(point.x + 4, point.y, buffer, dwColor);
 	}
 
@@ -6633,48 +6628,27 @@ void CWndGuildCombatRank_Class::PrintPlayer(
 }
 
 // ���õ� �ε����� ��´�?.
-int CWndGuildCombatRank_Class::GetSelectIndex( const CPoint& point )
-{
-	int nBase = m_wndScrollBar.GetScrollPos();
-	int nIndex = (point.y - 32) / 18;
-	
-	if( 0 <= nIndex && nIndex < MAX_GUILDCOMBAT_RANK_PER_PAGE ) // 0 - 19���� 
-	{
-		int nSelect = nBase + nIndex;
-		if( 0 <= nSelect && nSelect < m_nMax )
-			return nSelect;
+std::optional<size_t> CWndGuildCombatRank_Class::GetSelectIndex(const CPoint & point) const {
+	const int nBase = m_wndScrollBar.GetScrollPos();
+	const int nIndex = nBase + (point.y - 32) / 18;
+
+	if (nIndex >= 0 && std::cmp_less(nIndex, MAX_GUILDCOMBAT_RANK_PER_PAGE)) {
+		const size_t zIndex = static_cast<size_t>(nIndex);
+		if (zIndex >= m_listRank.size()) return std::nullopt;
+		return zIndex;
+	} else {
+		return std::nullopt;
 	}
-	return -1;
 }
-BOOL CWndGuildCombatRank_Class::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt )
-{
-	if( zDelta < 0 )
-	{
-		if( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() > m_wndScrollBar.GetScrollPos() )
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetScrollPos()+1 );
-		else
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetMaxScrollPos() - m_wndScrollBar.GetScrollPage() );
-	}
-	else
-	{
-		if( m_wndScrollBar.GetMinScrollPos() < m_wndScrollBar.GetScrollPos() )
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetScrollPos()-1 );
-		else
-			m_wndScrollBar.SetScrollPos( m_wndScrollBar.GetMinScrollPos() );
-	}
-	
+
+BOOL CWndGuildCombatRank_Class::OnMouseWheel(UINT, short zDelta, CPoint) {
+	m_wndScrollBar.MouseWheel(zDelta);
 	return TRUE;
 }
 
-void CWndGuildCombatRank_Class::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-	if( m_nMax <= 0 )
-		return;
-	
-	int nSelect = GetSelectIndex( point );
-	if( nSelect != -1 )
-		m_nSelect = nSelect;
-} 
+void CWndGuildCombatRank_Class::OnLButtonDown(UINT, CPoint point) {
+	m_nSelect = GetSelectIndex(point);
+}
 
 void CWndGuildCombatRank_Class::OnInitialUpdate() 
 { 
@@ -6687,42 +6661,34 @@ void CWndGuildCombatRank_Class::OnInitialUpdate()
 	rect.left    = rect.right - 30;
 	rect.right  -= 30;
 
-	m_wndScrollBar.SetScrollFromSize(m_nMax, MAX_GUILDCOMBAT_RANK_PER_PAGE);
+	m_wndScrollBar.SetScrollFromSize(static_cast<int>(m_listRank.size()), MAX_GUILDCOMBAT_RANK_PER_PAGE);
 	m_wndScrollBar.AddWndStyle( WBS_DOCKING );
 	m_wndScrollBar.Create( WBS_VERT, rect, this, 1000 );
 	
 	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
-} 
-BOOL CWndGuildCombatRank_Class::Initialize( CWndBase* pWndParent )
-{ 
-	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RANKINGCLASS, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-BOOL CWndGuildCombatRank_Class::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-BOOL CWndGuildCombatRank_Class::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
+}
+
+BOOL CWndGuildCombatRank_Class::Initialize(CWndBase * pWndParent) {
+	return CWndNeuz::InitDialog(APP_GUILDCOMBAT_RANKINGCLASS, pWndParent, 0, CPoint(0, 0));
+}
+
 void CWndGuildCombatRank_Class::InsertRank( int nJob, u_long uidPlayer, int nPoint )
 {
-	if( m_nMax >= MAX_GUILDCOMBAT_RANK )
-	{
-		Error( "CWndGuildCombatRank_Class::InsertRank - range over" );
+	if (m_listRank.size() >= MAX_GUILDCOMBAT_RANK) {
+		Error("CWndGuildCombatRank_Class::InsertRank - range over");
 		return;
 	}
 
-	const char * name = CPlayerDataCenter::GetInstance()->GetPlayerString(uidPlayer);
-	m_listRank[m_nMax].strName    = name ? name : "???";
-	m_listRank[m_nMax].strJob     = prj.jobs.info[ nJob ].szName;	
-	m_listRank[m_nMax].uidPlayer  = uidPlayer;
-	m_listRank[m_nMax].nPoint     = nPoint;
-	
-	m_nMax++;	
+	auto & listRank = m_listRank.emplace_back();
 
-	m_wndScrollBar.SetScrollFromSize(m_nMax, MAX_GUILDCOMBAT_RANK_PER_PAGE);
+	const char * name = CPlayerDataCenter::GetInstance()->GetPlayerString(uidPlayer);
+	listRank.strName    = name ? name : "???";
+	listRank.strJob     = prj.jobs.info[ nJob ].szName;	
+	listRank.uidPlayer  = uidPlayer;
+	listRank.nPoint     = nPoint;
+
+	m_wndScrollBar.SetScrollFromSize(static_cast<int>(m_listRank.size()), MAX_GUILDCOMBAT_RANK_PER_PAGE);
 }
 
 
