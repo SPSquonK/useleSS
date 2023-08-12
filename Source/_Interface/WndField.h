@@ -785,42 +785,32 @@ public:
 	virtual void	PaintFrame( C2DRender* p2DRender );
 }; 
 
-// 길드 결과 로그 - 길드
-class CWndGuildCombatTabResultRate final : public CWndNeuz 
-{ 
-public: 
-	virtual	void OnInitialUpdate(); 
-}; 
-// 길드 결과 로그 - 개인
-class CWndGuildCombatTabResultLog final : public CWndNeuz 
-{ 
-public: 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual	void OnInitialUpdate(); 
-}; 
-
 // 길드 결과 로그창
 class CWndGuildCombatResult final : public CWndNeuz 
 { 
 public: 
-	void InsertLog( CString str );
-	void InsertPersonRate( CString str );
-	void InsertGuildRate( CString str );
-	CWndGuildCombatResult(); 
-	virtual ~CWndGuildCombatResult(); 
+	// 길드 결과 로그 - 길드
+	class CWndTabRate final : public CWndNeuz {
+	public:
+		virtual	void OnInitialUpdate();
+	};
+
+	// 길드 결과 로그 - 개인
+	class CWndTabLog final : public CWndNeuz {
+	public:
+		virtual BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult);
+		virtual	void OnInitialUpdate();
+	};
+
+	void InsertLog( LPCTSTR str );
+	void InsertPersonRate( LPCTSTR str );
+	void InsertGuildRate( LPCTSTR str );
 	
-	CWndGuildCombatTabResultRate   m_WndGuildCombatTabResultRate;
-	CWndGuildCombatTabResultLog    m_WndGuildCombatTabResultLog;
+	CWndTabRate   m_WndGuildCombatTabResultRate;
+	CWndTabLog    m_WndGuildCombatTabResultLog;
 	
 	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnMouseMove(UINT nFlags, CPoint point );
 }; 
 
 

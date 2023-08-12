@@ -6310,15 +6310,6 @@ BOOL CWndGuildWarJoinConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pL
   WndId : APP_GUILDCOMBAT_RESULT_POINT - ������ ����?
   CtrlId : WIDC_TABCTRL1 - TabCtrl
 ****************************************************/
-CWndGuildCombatResult::CWndGuildCombatResult() 
-{ 
-} 
-CWndGuildCombatResult::~CWndGuildCombatResult() 
-{ 
-} 
-void CWndGuildCombatResult::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 
 void CWndGuildCombatResult::OnInitialUpdate() 
 { 
@@ -6346,66 +6337,33 @@ void CWndGuildCombatResult::OnInitialUpdate()
 	pWndList1->ResetContent();
 	pWndList2->ResetContent();	
 	pWndText->ResetString();
-} 
-BOOL CWndGuildCombatResult::Initialize( CWndBase* pWndParent )
-{ 
-	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RESULT_POINT, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-BOOL CWndGuildCombatResult::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildCombatResult::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildCombatResult::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildCombatResult::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndGuildCombatResult::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-void CWndGuildCombatResult::OnMouseMove(UINT nFlags, CPoint point )
-{
 }
 
-void CWndGuildCombatResult::InsertGuildRate(CString str)
-{
-	CWndListBox* pWndList = (CWndListBox*)(m_WndGuildCombatTabResultRate.GetDlgItem( WIDC_LISTBOX1 ));
-	pWndList->AddString( str );	
+BOOL CWndGuildCombatResult::Initialize(CWndBase * pWndParent) {
+	return CWndNeuz::InitDialog(APP_GUILDCOMBAT_RESULT_POINT, pWndParent, 0, CPoint(0, 0));
 }
 
-void CWndGuildCombatResult::InsertPersonRate(CString str)
-{
-	CWndListBox* pWndList = (CWndListBox*)(m_WndGuildCombatTabResultRate.GetDlgItem( WIDC_LISTBOX2 ));
-	pWndList->AddString( str );		
+void CWndGuildCombatResult::InsertGuildRate(LPCTSTR str) {
+	CWndListBox * pWndList = m_WndGuildCombatTabResultRate.GetDlgItem<CWndListBox>(WIDC_LISTBOX1);
+	pWndList->AddString(str);
 }
 
-void CWndGuildCombatResult::InsertLog(CString str)
-{
-//	CWndListBox* pWndList = (CWndListBox*)(m_WndGuildCombatTabResultLog.GetDlgItem( WIDC_LISTBOX1 ));
-//	pWndList->AddString( str );	
-	
-	CWndText* pWndText = (CWndText*)(m_WndGuildCombatTabResultLog.GetDlgItem( WIDC_TEXT1 ));
-	pWndText->AddString( str );			
-//	pWndList->AddString( str );			
-	
+void CWndGuildCombatResult::InsertPersonRate(LPCTSTR str) {
+	CWndListBox * pWndList = m_WndGuildCombatTabResultRate.GetDlgItem<CWndListBox>(WIDC_LISTBOX2);
+	pWndList->AddString(str);
+}
+
+void CWndGuildCombatResult::InsertLog(LPCTSTR str) {
+	CWndText * pWndText = m_WndGuildCombatTabResultLog.GetDlgItem<CWndText>(WIDC_TEXT1);
+	pWndText->AddString(str);
 }
 
 
 /****************************************************
   WndId : APP_GUILDCOMBAT_TAB_RESULT
 ****************************************************/
-void CWndGuildCombatTabResultRate::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// ���⿡ �ڵ��ϼ���
-
-	// ������ �߾����� �ű��? �κ�.
+void CWndGuildCombatResult::CWndTabRate::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
 }
 
@@ -6413,21 +6371,18 @@ void CWndGuildCombatTabResultRate::OnInitialUpdate()
 /****************************************************
   WndId : APP_GUILDCOMBAT_TAB_RESULT_LOG
 ****************************************************/
-void CWndGuildCombatTabResultLog::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-
-	// ������ �߾����� �ű��? �κ�.
+void CWndGuildCombatResult::CWndTabLog::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
 	MoveParentCenter();
-} 
+}
 
-BOOL CWndGuildCombatTabResultLog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
+BOOL CWndGuildCombatResult::CWndTabLog::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 { 
 	if( nID == WIDC_BUTTON1 )
 	{
 		CTime time = CTime::GetCurrentTime();
+		
 		CString str;
-
 		str.Format( "GuildLog_%d%.2d%.2d.txt", time.GetYear(), time.GetMonth(), time.GetDay() );
 
 		CFileIO file;
