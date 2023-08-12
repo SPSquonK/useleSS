@@ -6541,21 +6541,13 @@ CWndGuildCombatRank_Class* CWndGuildCombatRank_Person::__GetJobKindWnd(const int
 CWndGuildCombatRank_Class::CWndGuildCombatRank_Class() 
 { 
 	m_nRate = 0;
-	m_nOldRate = -1;
 	m_nMax = 0;
 	m_nSelect = -1;	
 } 
-CWndGuildCombatRank_Class::~CWndGuildCombatRank_Class() 
-{ 
-} 
+
 void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender ) 
 { 
-	DWORD dwColor = D3DCOLOR_XRGB(0, 0, 0);
-	int	sx, sy;
-	char szNum[8], szCount[8];
-	
-	sx = 8;
-	sy = 35;	
+	constexpr int sx = 8;
 	
 	CRect rc( sx, 5, sx+330, 7 ); 	
 	p2DRender->RenderFillRect( rc , D3DCOLOR_ARGB( 128, 0 , 0 , 0 ) );
@@ -6563,12 +6555,7 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 	rc += CPoint( 0, 20 );
 	p2DRender->RenderFillRect( rc , D3DCOLOR_ARGB( 128, 0 , 0 , 0 ) );
 	
-	int nBase = m_wndScrollBar.GetScrollPos();
-	if( nBase < 0 )
-	{
-		nBase = 0;
-		TRACE("aa\n");
-	}
+	const int nBase = std::max(m_wndScrollBar.GetScrollPos(), 0);
 	
 	int nRanking = 0;
 	int nOldRanking = -1;
@@ -6577,11 +6564,9 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 	__GUILDCOMBAT_RANK_INFO2 GCRankInfoMy;
 	int	nMyRanking = 0;
 	
-	CString szName;
-	CString szJob;
-
 	BOOL	bMyRanking = FALSE;
-	
+
+	constexpr DWORD dwColor = D3DCOLOR_XRGB(0, 0, 0);
 	p2DRender->TextOut( sx + 4,      10, prj.GetText(TID_GAME_RATE),  dwColor );
 	p2DRender->TextOut( sx + 40,     10, prj.GetText(TID_GAME_NAME),  dwColor );
 	p2DRender->TextOut( sx + 180,    10, prj.GetText(TID_GAME_JOB),  dwColor );
@@ -6604,6 +6589,7 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 		nOldRanking = GCRankInfo.nPoint;					
 	}
 	
+	int sy = 35;
 	for( int i=nBase; i<nBase + MAX_GUILDCOMBAT_RANK_PER_PAGE; ++i )
 	{
 		if( i >= m_nMax )	
@@ -6620,9 +6606,6 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 			GCRankInfoMy = GCRankInfo;
 			nMyRanking   = nRanking;
 		}
-
-		sprintf( szNum, "%3d", nRanking );
-		sprintf( szCount, "%2d", GCRankInfo.nPoint );
 		
 		if( m_nSelect >= 0 && i == m_nSelect )
 		{
@@ -6630,38 +6613,14 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 			p2DRender->RenderFillRect( rc , D3DCOLOR_ARGB( 64, 0, 0, 0 ) );
 		}
 		
+		DWORD dwColor;
 		if( i == 0 )
 			dwColor = D3DCOLOR_XRGB( 200, 0, 0 );
 		else
 			dwColor = D3DCOLOR_XRGB( 0, 0, 0 );		
-		
-		if( nOldRanking != GCRankInfo.nPoint )
-		{
-			p2DRender->TextOut( sx + 4, sy, szNum,  dwColor );
-		}
-		else
-		{
-			p2DRender->TextOut( sx + 5, sy, "   ",  dwColor );
-		}
 
-
-		CString strName;
-		const char* lpName	= CPlayerDataCenter::GetInstance()->GetPlayerString( GCRankInfo.uidPlayer );
-		if( lpName )
-			strName	= lpName;
-
-		if( i == 0 )
-		{
-			p2DRender->TextOut( sx + 40,  sy, strName,  D3DCOLOR_XRGB( 200, 0, 0 ) );
-			p2DRender->TextOut( sx + 180, sy, GCRankInfo.strJob,  D3DCOLOR_XRGB( 200, 0, 0 ) );
-		}
-		else
-		{
-			p2DRender->TextOut( sx + 40,  sy, strName,  dwColor );
-			p2DRender->TextOut( sx + 180, sy, GCRankInfo.strJob,    dwColor );
-		}
-		
-		p2DRender->TextOut( sx + 275,  sy, szCount,    dwColor );
+		std::optional<int> rank = nOldRanking != GCRankInfo.nPoint ? std::optional(nRanking) : std::nullopt;
+		PrintPlayer(p2DRender, GCRankInfo, CPoint(sx, sy), dwColor, rank);
 		
 		sy += 18;
 		
@@ -6669,20 +6628,29 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 	}	
 
 	// ���� ��ŷ ǥ��...
-	if( bMyRanking )
-	{
-		sprintf( szNum, "%3d", nMyRanking );
-		sprintf( szCount, "%2d", GCRankInfoMy.nPoint );
-		
-		dwColor = D3DCOLOR_XRGB( 0 , 0 , 255 );		
-		
-		p2DRender->TextOut( sx + 4,    250, szNum,  dwColor );
-
-		p2DRender->TextOut( sx + 40,  250, GCRankInfoMy.strName,  dwColor );
-		p2DRender->TextOut( sx + 180, 250, GCRankInfoMy.strJob,   dwColor );		
-		p2DRender->TextOut( sx + 275, 250, szCount, dwColor );
+	if (bMyRanking) {
+		PrintPlayer(p2DRender, GCRankInfoMy, CPoint(sx, 250), D3DCOLOR_XRGB(0, 0, 255), nMyRanking);
 	}
 } 
+
+void CWndGuildCombatRank_Class::PrintPlayer(
+	C2DRender * p2DRender,
+	const __GUILDCOMBAT_RANK_INFO2 & info, CPoint point, DWORD dwColor, std::optional<int> rank
+) {
+	char buffer[8];
+
+	if (rank) {
+		std::sprintf(buffer, "%3d", *rank);
+		p2DRender->TextOut(point.x + 4, point.y, buffer, dwColor);
+	}
+
+	p2DRender->TextOut( point.x + 40,  point.y, info.strName,  dwColor );
+	p2DRender->TextOut( point.x + 180, point.y, info.strJob,   dwColor );
+
+	std::sprintf(buffer, "%2d", info.nPoint);
+	p2DRender->TextOut( point.x + 275, point.y, buffer, dwColor );
+}
+
 // ���õ� �ε����� ��´�?.
 int CWndGuildCombatRank_Class::GetSelectIndex( const CPoint& point )
 {
@@ -6765,7 +6733,8 @@ void CWndGuildCombatRank_Class::InsertRank( int nJob, u_long uidPlayer, int nPoi
 		return;
 	}
 
-	m_listRank[m_nMax].strName    = CPlayerDataCenter::GetInstance()->GetPlayerString( uidPlayer );
+	const char * name = CPlayerDataCenter::GetInstance()->GetPlayerString(uidPlayer);
+	m_listRank[m_nMax].strName    = name ? name : "???";
 	m_listRank[m_nMax].strJob     = prj.jobs.info[ nJob ].szName;	
 	m_listRank[m_nMax].uidPlayer  = uidPlayer;
 	m_listRank[m_nMax].nPoint     = nPoint;

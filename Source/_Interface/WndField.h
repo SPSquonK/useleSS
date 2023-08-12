@@ -842,12 +842,10 @@ public:
 	int					m_nSelect;
 
 	int		m_nRate;
-	int		m_nOldRate;
 
 	__GUILDCOMBAT_RANK_INFO2		m_listRank[MAX_GUILDCOMBAT_RANK];
 
 	CWndGuildCombatRank_Class(); 
-	virtual ~CWndGuildCombatRank_Class(); 
 
 	void		 InsertRank( int nJob, u_long uidPlayer, int nPoint );
 	int          GetSelectIndex( const CPoint& point );	
@@ -858,6 +856,9 @@ public:
 	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
 	virtual BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
 	virtual	void OnLButtonDown( UINT nFlags, CPoint point );
+
+private:
+	static void PrintPlayer(C2DRender * p2DRender, const __GUILDCOMBAT_RANK_INFO2 & info, CPoint point, DWORD dwColor, std::optional<int> rank);
 }; 
 
 // 길드 랭킹 - 직업별
