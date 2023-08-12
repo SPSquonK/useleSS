@@ -919,26 +919,24 @@ namespace WndMgr {
 	}
 
 	void CTooltipBuilder::PutBaseResist(const ItemProp & pItemProp, CEditString & pEdit, bool isIgnored) const {
-		if constexpr (false /* DST_RESIST_[ELEM_NAME] stats are active == false */) {
-			const ToolTipItemTextColor & colors = dwItemColor[g_Option.m_nToolTipText];
+		const ToolTipItemTextColor & colors = dwItemColor[g_Option.m_nToolTipText];
 
-			using BaseResist = std::tuple<DWORD, int, DWORD>;
+		using BaseResist = std::tuple<DWORD, int, DWORD>;
 
-			const std::array<BaseResist, 5> values{
-				BaseResist(TID_GAME_TOOLTIP_ELEC_RES , pItemProp.nItemResistElecricity, colors.dwResistElectricity),
-				BaseResist(TID_GAME_TOOLTIP_FIRE_RES , pItemProp.nItemResistFire      , colors.dwResistFire),
-				BaseResist(TID_GAME_TOOLTIP_WATER_RES, pItemProp.nItemResistWater     , colors.dwResistWater),
-				BaseResist(TID_GAME_TOOLTIP_WIND_RES , pItemProp.nItemResistWind      , colors.dwResistWind),
-				BaseResist(TID_GAME_TOOLTIP_EARTH_RES, pItemProp.nItemResistEarth     , colors.dwResistEarth)
-			};
+		const std::array<BaseResist, 5> values{
+			BaseResist(TID_GAME_TOOLTIP_ELEC_RES , pItemProp.nItemResistElecricity, colors.dwResistElectricity),
+			BaseResist(TID_GAME_TOOLTIP_FIRE_RES , pItemProp.nItemResistFire      , colors.dwResistFire),
+			BaseResist(TID_GAME_TOOLTIP_WATER_RES, pItemProp.nItemResistWater     , colors.dwResistWater),
+			BaseResist(TID_GAME_TOOLTIP_WIND_RES , pItemProp.nItemResistWind      , colors.dwResistWind),
+			BaseResist(TID_GAME_TOOLTIP_EARTH_RES, pItemProp.nItemResistEarth     , colors.dwResistEarth)
+		};
 
-			CString strTemp;
-			for (const auto & [tooltipId, baseResistAdj, color] : values) {
-				if (baseResistAdj != 0) {
-					strTemp.Format(prj.GetText(tooltipId), baseResistAdj);
-					pEdit.AddString("\n");
-					pEdit.AddString(strTemp, color, isIgnored ? ESSTY_STRIKETHROUGH : 0);
-				}
+		CString strTemp;
+		for (const auto & [tooltipId, baseResistAdj, color] : values) {
+			if (baseResistAdj != 0) {
+				strTemp.Format(prj.GetText(tooltipId), baseResistAdj);
+				pEdit.AddString("\n");
+				pEdit.AddString(strTemp, color, isIgnored ? ESSTY_STRIKETHROUGH : 0);
 			}
 		}
 	}
