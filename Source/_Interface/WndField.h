@@ -904,21 +904,14 @@ private:
 ********************************/
 #include "WndSummonAngel.h"
 
-class CWndMixJewelConfirm final : public CWndNeuz
-{
-public: 
-	CWndMixJewelConfirm(); 
-	virtual ~CWndMixJewelConfirm(); 
-	
-	virtual void OnDestroy();
-	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
-	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
+class CWndMixJewelConfirm final : public CWndNeuz {
+public:
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
+
+	void OnDestroy() override;
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnDraw(C2DRender * p2DRender) override;
+	void OnInitialUpdate() override;
 };
 
 #define ITEM_VALID			0

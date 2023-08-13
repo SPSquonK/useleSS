@@ -6949,72 +6949,41 @@ void CWndMixJewel::SetConfirmInit() {
 // CWndMixJewelConfirm Class
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CWndMixJewelConfirm::CWndMixJewelConfirm() 
-{ 
-}
- 
-CWndMixJewelConfirm::~CWndMixJewelConfirm() 
-{ 
-} 
-
-void CWndMixJewelConfirm::OnDestroy()
-{
-	CWndMixJewel* pWndMixJewel = (CWndMixJewel*)GetWndBase( APP_SMELT_MIXJEWEL );
-	if(pWndMixJewel != NULL)
+void CWndMixJewelConfirm::OnDestroy() {
+	if (CWndMixJewel * pWndMixJewel = GetWndBase<CWndMixJewel>(APP_SMELT_MIXJEWEL)) {
 		pWndMixJewel->SetConfirmInit();
+	}
 }
 
-void CWndMixJewelConfirm::OnDraw( C2DRender* p2DRender ) 
-{
-	int itemID = II_GEN_MAT_ORICHALCUM02;
-	ItemProp* pItemProp;
-	CTexture* pTexture;
+void CWndMixJewelConfirm::OnDraw(C2DRender * p2DRender) {
+	const ItemProp * pItemProp = prj.GetItemProp(II_GEN_MAT_ORICHALCUM02);
+	if (!pItemProp) return;
 
-	pItemProp = prj.GetItemProp( itemID );
-	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_PIC_SLOT );
-	if(pItemProp != NULL)
-	{
-		pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-		if(pTexture != NULL)
-			pTexture->Render( p2DRender, CPoint( wndCtrl->rect.left, wndCtrl->rect.top ) );
+	LPWNDCTRL wndCtrl = GetWndCtrl(WIDC_PIC_SLOT);
+	CTexture * pTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
+	if (pTexture) {
+		pTexture->Render(p2DRender, wndCtrl->rect.TopLeft());
 	}
-} 
+}
 
-void CWndMixJewelConfirm::OnInitialUpdate() 
-{ 
-	CWndNeuz::OnInitialUpdate(); 
-	// ���⿡ �ڵ��ϼ���
-	CWndText* pText = (CWndText*)GetDlgItem(WIDC_TEXT1);
-	pText->SetString(prj.GetText( TID_GAME_MIXJEWEL_SUCCESS ));
-	
+void CWndMixJewelConfirm::OnInitialUpdate() {
+	CWndNeuz::OnInitialUpdate();
+
+	CWndText * pText = GetDlgItem<CWndText>(WIDC_TEXT1);
+	pText->SetString(prj.GetText(TID_GAME_MIXJEWEL_SUCCESS));
+
 	MoveParentCenter();
-} 
-// ó�� �� �Լ��� �θ��� ������ ������.
-BOOL CWndMixJewelConfirm::Initialize( CWndBase* pWndParent )
-{ 
-	// Daisy���� ������ ���ҽ��� ������ ����.
-	return CWndNeuz::InitDialog( APP_SMELT_MIXJEWEL_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-BOOL CWndMixJewelConfirm::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndMixJewelConfirm::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndMixJewelConfirm::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndMixJewelConfirm::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndMixJewelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_OK )
+}
+
+BOOL CWndMixJewelConfirm::Initialize(CWndBase * pWndParent) {
+	return CWndNeuz::InitDialog(APP_SMELT_MIXJEWEL_CONFIRM, pWndParent, 0, CPoint(0, 0));
+}
+
+BOOL CWndMixJewelConfirm::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (nID == WIDC_OK)
 		Destroy();
 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
