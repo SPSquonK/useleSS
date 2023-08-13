@@ -6651,215 +6651,131 @@ void CWndGuildCombatRank_Class::InsertRank(GuildCombatRankInfo rankInfo)
 /****************************************************
   WndId : APP_FONTEDIT
 ****************************************************/
-CWndFontEdit::CWndFontEdit() 
-{ 
-	m_pTexture = NULL;
-	m_pWndText = NULL;
-	memset( m_ColorRect, 0, sizeof(CRect)*3 );	
-} 
-CWndFontEdit::~CWndFontEdit() 
-{ 
-} 
+
+CWndFontEdit::CWndFontEdit() {
+	m_managed.fill(ManagedColor{});
+}
+
 void CWndFontEdit::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 
 	m_pTexture = m_textureMng.AddTexture( MakePath( DIR_THEME, "yellowbuttten.tga" ), 0xffff00ff, TRUE );
 
-	m_ColorRect[0].left   = 38;
-	m_ColorRect[0].top    = 46;
-	m_ColorRect[0].right  = 156;
-	m_ColorRect[0].bottom = 63;
+	m_managed.fill(ManagedColor{});
+	m_managed[0].rect = CRect(CPoint(38, 46), CPoint(156,  63));
+	m_managed[1].rect = CRect(CPoint(38, 68), CPoint(156,  83));
+	m_managed[2].rect = CRect(CPoint(38, 89), CPoint(156, 103));
+
+	for (ManagedColor & managed : m_managed) {
+		managed.xColor = managed.rect.left;
+	}
+
+	m_bLButtonClick = false;
 	
-	m_ColorRect[1].left   = 38;
-	m_ColorRect[1].top    = 68;
-	m_ColorRect[1].right  = 156;
-	m_ColorRect[1].bottom = 83;
-	
-	m_ColorRect[2].left   = 38;
-	m_ColorRect[2].top    = 89;
-	m_ColorRect[2].right  = 156;
-	m_ColorRect[2].bottom = 103;
-
-	m_ColorScrollBar[0] = 0;
-	m_ColorScrollBar[1] = 0;
-	m_ColorScrollBar[2] = 0;
-
-	m_bLButtonClick = FALSE;
-
-	m_fColor[0] = m_fColor[1] = m_fColor[2] = 0.0f;
-
-	ReSetBar( m_fColor[0], m_fColor[1], m_fColor[2] );	
-	
-	// ������ �߾����� �ű��? �κ�.
 	MoveParentCenter();
-} 
-BOOL CWndFontEdit::Initialize( CWndBase* pWndParent )
-{ 
-	return CWndNeuz::InitDialog( APP_FONTEDIT, pWndParent, 0, CPoint( 0, 0 ) );
-} 
-BOOL CWndFontEdit::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
+}
+
+BOOL CWndFontEdit::Initialize(CWndBase * pWndParent) {
+	return CWndNeuz::InitDialog(APP_FONTEDIT, pWndParent, 0, CPoint(0, 0));
+}
+
 BOOL CWndFontEdit::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
 { 
 	if( m_pWndText == NULL )
 		return FALSE;
 
-	CWndButton* pWndCheck = NULL;
-
-	switch( nID )
-	{
+	switch (nID) {
 		case WIDC_CHECK1:
-			pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK1);
-
-			if( pWndCheck->GetCheck() )
-			{
+			if (GetDlgItem<CWndButton>(WIDC_CHECK1)->GetCheck()) {
 				m_pWndText->BlockSetStyle(ESSTY_BOLD);
-			}
-			else
-			{
+			} else {
 				m_pWndText->BlockClearStyle(ESSTY_BOLD);
 			}
 			break;
 		case WIDC_CHECK2:
-			pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK2);			
-
-			if( pWndCheck->GetCheck() )
-			{
+			if (GetDlgItem<CWndButton>(WIDC_CHECK2)->GetCheck()) {
 				m_pWndText->BlockSetStyle(ESSTY_UNDERLINE);
-			}
-			else
-			{
+			} else {
 				m_pWndText->BlockClearStyle(ESSTY_UNDERLINE);
 			}
 			break;
-		case WIDC_CHECK3:			
-			pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK3);	
-			
-			if( pWndCheck->GetCheck() )
-			{
+		case WIDC_CHECK3:
+			if (GetDlgItem<CWndButton>(WIDC_CHECK3)->GetCheck()) {
 				m_pWndText->BlockSetStyle(ESSTY_STRIKETHROUGH);
-			}
-			else
-			{
+			} else {
 				m_pWndText->BlockClearStyle(ESSTY_STRIKETHROUGH);
 			}
 			break;
-		case WIDC_CHECK4:			
-			pWndCheck = (CWndButton*)GetDlgItem(WIDC_CHECK4);	
-
-			if( pWndCheck->GetCheck() )
-			{
-				DWORD dwR, dwG, dwB, dwColor;
-				dwR = (DWORD)( m_fColor[0] * 255 );
-				dwG = (DWORD)( m_fColor[1] * 255 );
-				dwB = (DWORD)( m_fColor[2] * 255 );
-				
-				dwColor = D3DCOLOR_XRGB(dwR, dwG, dwB);
-				
-				CString str;
-				str.Format( "#c%x", dwColor );
-						
-				m_pWndText->BlockSetColor( dwColor );
+		case WIDC_CHECK4:
+			if (GetDlgItem<CWndButton>(WIDC_CHECK4)->GetCheck()) {
+				m_pWndText->BlockSetColor(GetSelectedColor());
+			} else {
+				m_pWndText->BlockSetColor(0xff000000);
 			}
-			else
-			{
-				m_pWndText->BlockSetColor( 0xff000000 );
-			}
-
 			break;
 	}
-	
+
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
 } 
 
-void CWndFontEdit::OnLButtonUp( UINT nFlags, CPoint point )
-{
-	m_bLButtonClick = FALSE;
+DWORD CWndFontEdit::GetSelectedColor() const {
+	const DWORD dwR = static_cast<DWORD>(m_managed[0].fColor * 255);
+	const DWORD dwG = static_cast<DWORD>(m_managed[1].fColor * 255);
+	const DWORD dwB = static_cast<DWORD>(m_managed[2].fColor * 255);
+
+	return D3DCOLOR_XRGB(dwR, dwG, dwB);
 }
-void CWndFontEdit::OnLButtonDown( UINT nFlags, CPoint point )
-{
-	m_bLButtonClick = TRUE;
+
+void CWndFontEdit::OnLButtonUp(UINT, CPoint) {
+	m_bLButtonClick = false;
 }
+
+void CWndFontEdit::OnLButtonDown(UINT, CPoint) {
+	m_bLButtonClick = true;
+}
+
 void CWndFontEdit::OnMouseWndSurface( CPoint point )
 {
-	if( g_pPlayer == NULL )
-		return;
+	if (!g_pPlayer) return;
 	
-	CRect rect = CRect( 17, 17, 186, 148 );
+	const CRect rect = CRect( 17, 17, 186, 148 );
 	
 	if( !rect.PtInRect( point ) )
-		m_bLButtonClick = FALSE;
+		m_bLButtonClick = false;
+
+	if (!m_bLButtonClick) return;
 	
-	for( int i=0; i<3; i++ )
-	{
-		CRect DrawRect = m_ColorRect[i];
-		
+	for (ManagedColor & manager : m_managed) {
+		CRect DrawRect = manager.rect;
 		DrawRect.top    -= 22;
 		DrawRect.bottom -= 22;
 		
-		if( DrawRect.PtInRect( point ) && m_bLButtonClick )
+		if( DrawRect.PtInRect( point ) )
 		{
-			point.x = (point.x > DrawRect.right) ? DrawRect.right : point.x;
-			
-			LONG Width = DrawRect.right - DrawRect.left;
-			LONG Pos   = point.x - DrawRect.left;
-			
-			FLOAT p = ((FLOAT)((FLOAT)Pos / (FLOAT)Width));
-			
-			D3DXVECTOR2 vec1= D3DXVECTOR2( 0.0f, 1.0f );
-			D3DXVECTOR2 vec2= D3DXVECTOR2( 1.0f, 1.0f );
-			D3DXVECTOR2 vec3;
-			
-			D3DXVec2Lerp( &vec3, &vec1, &vec2, p );
-			
-			m_fColor[i] = vec3.x;
-			
-			m_ColorScrollBar[i].x = point.x;
+			point.x = std::clamp(point.x, DrawRect.left, DrawRect.right);
+
+			const LONG Width = DrawRect.Width();
+			const LONG Pos   = point.x - DrawRect.left;
+			const FLOAT p = (FLOAT)Pos / (FLOAT)Width;
+			manager.fColor = p;
+			manager.xColor = point.x;
 		}
 	}
 }
 
-void CWndFontEdit::OnDraw( C2DRender* p2DRender )
-{	
-	for( int i=0; i<3; i++ )
-	{
-		CPoint pt = CPoint( m_ColorScrollBar[i].x - ( m_pTexture->m_size.cx / 2 ), m_ColorScrollBar[i].y );
-		
-		m_pTexture->Render( p2DRender, pt );
+void CWndFontEdit::OnDraw(C2DRender * p2DRender) {
+	for (const ManagedColor & manager : m_managed) {
+		const CPoint pt = CPoint(
+			manager.xColor - m_pTexture->m_size.cx / 2,
+			manager.rect.top - 20
+		);
+		m_pTexture->Render(p2DRender, pt);
 	}
-/*	
-	for( int j=0; j<3; j++ )
-	{
-		if( m_ColorScrollBar[j].x != m_OriginalColorScrollBar[j].x )
-			m_pTexture->Render( p2DRender, CPoint( m_OriginalColorScrollBar[j].x - ( m_pTexture->m_size.cx / 2 ), m_OriginalColorScrollBar[j].y ), 160 );
-	}
-*/
 
-	LPWNDCTRL lpFace = GetWndCtrl( WIDC_CUSTOM1 );
-
-	DWORD dwR, dwG, dwB;
-	dwR = (DWORD)( m_fColor[0] * 255 );
-	dwG = (DWORD)( m_fColor[1] * 255 );
-	dwB = (DWORD)( m_fColor[2] * 255 );
-
-	p2DRender->RenderFillRect( lpFace->rect, D3DCOLOR_XRGB( dwR, dwG, dwB ) );
-}	
-
-void CWndFontEdit::ReSetBar( FLOAT r, FLOAT g, FLOAT b )
-{
-	FLOAT fR = ((r-0.0f)/(1.0f - 0.0f)) * 100.0f;
-	FLOAT fG = ((g-0.0f)/(1.0f - 0.0f)) * 100.0f;
-	FLOAT fB = ((b-0.0f)/(1.0f - 0.0f)) * 100.0f;
-	
-	m_ColorScrollBar[0].x = (LONG)( (((m_ColorRect[0].right-m_ColorRect[0].left) * fR) / 100.0f) + m_ColorRect[0].left );
-	m_ColorScrollBar[0].y = m_ColorRect[0].top - 20;
-	m_ColorScrollBar[1].x = (LONG)( (((m_ColorRect[1].right-m_ColorRect[1].left) * fG) / 100.0f) + m_ColorRect[1].left );
-	m_ColorScrollBar[1].y = m_ColorRect[1].top - 20;
-	m_ColorScrollBar[2].x = (LONG)( (((m_ColorRect[2].right-m_ColorRect[2].left) * fB) / 100.0f) + m_ColorRect[2].left );
-	m_ColorScrollBar[2].y = m_ColorRect[2].top - 20;
+	LPWNDCTRL lpFace = GetWndCtrl(WIDC_CUSTOM1);
+	const DWORD color = GetSelectedColor();
+	p2DRender->RenderFillRect(lpFace->rect, color);
 }
 
 

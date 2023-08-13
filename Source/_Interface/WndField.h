@@ -871,29 +871,32 @@ private:
 
 class CWndFontEdit final : public CWndNeuz 
 { 
-	CTexture*        m_pTexture;
-	CPoint			 m_ColorScrollBar[3];
-	CPoint			 m_OriginalColorScrollBar[3];
+	CTexture * m_pTexture = nullptr;
+
+	struct ManagedColor {
+		LONG  xColor = 0;
+		CRect rect   = CRect(0, 0, 0, 0);
+		FLOAT fColor = 0.f;
+	};
+
+	std::array<ManagedColor, 3> m_managed;
 	
-	CRect			 m_ColorRect[3];
-	FLOAT			 m_fColor[3];
-	
-	BOOL			 m_bLButtonClick;
+	bool m_bLButtonClick = false;
 	
 public: 
-	CWndText* m_pWndText;
+	CWndText * m_pWndText = nullptr;
 	CWndFontEdit(); 
-	virtual ~CWndFontEdit(); 
 	
-	void	ReSetBar( FLOAT r, FLOAT g, FLOAT b );
 	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
 	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
 	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
 	virtual void OnMouseWndSurface( CPoint point );
+
+private:
+	[[nodiscard]] DWORD GetSelectedColor() const;
 }; 
 
 /*******************************
