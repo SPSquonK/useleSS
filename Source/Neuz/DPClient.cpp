@@ -5761,37 +5761,41 @@ void CDPClient::OnGCLogRealTime( CAr & ar )
 	g_WndMng.PutString( (LPCTSTR)szChat, NULL, 0xffffffff, CHATSTY_GENERAL );
 }
 
-void CDPClient::OnGCPlayerPoint( CAr & ar )
-{
+void CDPClient::OnGCPlayerPoint(CAr & ar) {
 	g_GuildCombatMng.m_vecGCPlayerPoint.clear();
-	u_long uSize;
-	ar >> uSize;
-
-	SAFE_DELETE( g_WndMng.m_pWndGuildCombatRanking );
-	g_WndMng.m_pWndGuildCombatRanking = new CWndGuildCombatRank_Person;	
-	g_WndMng.m_pWndGuildCombatRanking->Initialize();
-
-	std::vector<PDVer> vecPlayer;
-
-	for( int i = 0 ; i < (int)( uSize ) ; ++i )
-	{
+	u_long uSize; ar >> uSize;
+	for (u_long i = 0 ; i < uSize ; ++i) {
 		CGuildCombat::__GCPLAYERPOINT GCPlayerPoint;
-		ar >> GCPlayerPoint;
-		g_GuildCombatMng.m_vecGCPlayerPoint.push_back( GCPlayerPoint );
-
-		vecPlayer.emplace_back(CPlayerDataCenter::GetInstance()->ToPDVer(GCPlayerPoint.uidPlayer));
-
-		g_WndMng.m_pWndGuildCombatRanking->InsertRank( GCPlayerPoint.nJob, GCPlayerPoint.uidPlayer, GCPlayerPoint.nPoint );
+		ar >> g_GuildCombatMng.m_vecGCPlayerPoint.emplace_back();
 	}
-
-		CWndGuildCombatRank_Person* pWndRank	= (CWndGuildCombatRank_Person*)g_WndMng.GetWndBase( APP_GUILDCOMBAT_RANK_P );
-		if( pWndRank )
-			pWndRank->DivisionList();
-
-		SendQueryPlayerData( vecPlayer );
-
 	
+	// 1- Setup CWndGuildCombatRank_Person window
+	std::vector<GuildCombatRankInfo> rankList =
+		g_GuildCombatMng.m_vecGCPlayerPoint
+		| std::views::transform([](const CGuildCombat::__GCPLAYERPOINT & GCPlayerPoint) {
+				return GuildCombatRankInfo(GCPlayerPoint.nJob, GCPlayerPoint.uidPlayer, GCPlayerPoint.nPoint);
+			})
+		| std::ranges::to<std::vector>();
+
+	SAFE_DELETE(g_WndMng.m_pWndGuildCombatRanking);
+	g_WndMng.m_pWndGuildCombatRanking = new CWndGuildCombatRank_Person;
+	g_WndMng.m_pWndGuildCombatRanking->Initialize();
+	g_WndMng.m_pWndGuildCombatRanking->SetList(std::move(rankList));
+
+
+	// 2- Get player names
+	// SqK: isn't it too late? As CWndGuildCombatRank_Person can not be updated and it
+	// locally stores copies of names
+	std::vector<PDVer> vecPlayer =
+		g_GuildCombatMng.m_vecGCPlayerPoint
+		| std::views::transform([](const CGuildCombat::__GCPLAYERPOINT & GCPlayerPoint) {
+				return CPlayerDataCenter::GetInstance()->ToPDVer(GCPlayerPoint.uidPlayer);
+			})
+		| std::ranges::to<std::vector>();
+
+	SendQueryPlayerData(vecPlayer);
 }
+
 void CDPClient::OnGuildCombatState( CAr & ar )
 {
 	int		nState;

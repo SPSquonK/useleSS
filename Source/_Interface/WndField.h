@@ -850,26 +850,24 @@ private:
 }; 
 
 // 길드 랭킹 - 직업별
-class CWndGuildCombatRank_Person final : public CWndNeuz
-{ 
-public: 
-	std::multimap< int, GuildCombatRankInfo > m_mTotalRanking;
-		
+class CWndGuildCombatRank_Person final : public CWndNeuz {
+private:
 	CWndGuildCombatRank_Class    m_WndGuildCombatTabClass_Tot;
 	CWndGuildCombatRank_Class    m_WndGuildCombatTabClass_Mer;
 	CWndGuildCombatRank_Class    m_WndGuildCombatTabClass_Mag;
 	CWndGuildCombatRank_Class    m_WndGuildCombatTabClass_Acr;
 	CWndGuildCombatRank_Class    m_WndGuildCombatTabClass_Ass;
-	
-	CWndGuildCombatRank_Class*  __GetJobKindWnd( int nJob );
-	void						InsertRank( int nJob, u_long	uidPlayer, int nPoint );
-	void						DivisionList();
-	
-	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual	void OnInitialUpdate(); 
 
-}; 
+public:
+	void SetList(std::vector<GuildCombatRankInfo> ranking);
+
+	BOOL Initialize(CWndBase * pWndParent = nullptr);
+	BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+	void OnInitialUpdate() override;
+
+private:
+	[[nodiscard]] CWndGuildCombatRank_Class * __GetJobKindWnd(int nJob);
+};
 
 class CWndFontEdit final : public CWndNeuz 
 { 

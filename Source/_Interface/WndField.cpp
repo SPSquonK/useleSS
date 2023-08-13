@@ -6448,36 +6448,34 @@ BOOL CWndGuildCombatRank_Person::OnChildNotify(UINT message, UINT nID, LRESULT *
 	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
-void CWndGuildCombatRank_Person::InsertRank(int nJob, u_long uidPlayer, int nPoint) {
-	m_mTotalRanking.emplace(nPoint, GuildCombatRankInfo(nJob, uidPlayer, nPoint));
-}
-
-void CWndGuildCombatRank_Person::DivisionList()
+void CWndGuildCombatRank_Person::SetList(std::vector<GuildCombatRankInfo> ranking)
 {
-	if (m_mTotalRanking.empty()) return;
+	if (ranking.empty()) return;
 	
+	std::ranges::sort(
+		ranking,
+		[](const GuildCombatRankInfo & lhs, const GuildCombatRankInfo & rhs) {
+			if (lhs.nPoint > rhs.nPoint) return true;
+			if (lhs.nPoint < rhs.nPoint) return false;
+
+			return lhs.strName < rhs.strName;
+		}
+	);
+
 	// ï¿½ï¿½Ã¼ï¿½ï¿½Ï¿ï¿? ï¿½ï¿½ï¿?
 	CWndGuildCombatRank_Class * pRankTot = &m_WndGuildCombatTabClass_Tot;
 
-	
-
-
-	for( auto i = m_mTotalRanking.rbegin(); i != m_mTotalRanking.rend(); ++i )
-	{ 
-		const auto & GcRankInfo		= i->second;
-
+	for (const GuildCombatRankInfo & rankInfo : ranking) { 
 		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?
-		CWndGuildCombatRank_Class * pRank = __GetJobKindWnd( GcRankInfo.nJob );
 		
-		if( pRank == NULL )
-			continue;
-
-		pRank->InsertRank( GcRankInfo );
-		pRankTot->InsertRank( GcRankInfo );
+		if (CWndGuildCombatRank_Class * pRank = __GetJobKindWnd(rankInfo.nJob)) {
+			pRank->InsertRank(rankInfo);
+			pRankTot->InsertRank(rankInfo);
+		}
 	}
 }
 
-CWndGuildCombatRank_Class* CWndGuildCombatRank_Person::__GetJobKindWnd(const int nJob) {
+CWndGuildCombatRank_Class * CWndGuildCombatRank_Person::__GetJobKindWnd(const int nJob) {
 	switch (prj.jobs.GetProJob(nJob)) {
 		case Project::ProJob::Mercenary: return &m_WndGuildCombatTabClass_Mer;
 		case Project::ProJob::Acrobat:   return &m_WndGuildCombatTabClass_Acr;
