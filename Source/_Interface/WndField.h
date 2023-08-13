@@ -914,18 +914,6 @@ public:
 	void OnInitialUpdate() override;
 };
 
-#define ITEM_VALID			0
-#define ITEM_MAX_OVERFLOW	1
-#define ITEM_INVALID		2
-
-struct GENMATDIEINFO {
-	LPWNDCTRL wndCtrl;
-	BOOL isUse;
-	int staticNum;
-	CItemElem * pItemElem;
-};
-
-
 class CWndMixJewel final : public CWndNeuz
 { 
 public:
@@ -1460,6 +1448,34 @@ class CWndSmeltSafety final : public CWndNeuz
 {
 public:
 	enum WndMode { WND_NORMAL, WND_ACCESSARY, WND_PIERCING, WND_ELEMENT };
+
+	struct GENMATDIEINFO {
+		LPWNDCTRL wndCtrl;
+		BOOL isUse;
+		int staticNum;
+		CItemElem * pItemElem;
+
+		void OnInitialUpdate(LPWNDCTRL wndCtrl, int staticNum);
+		void OnDestruction();
+		void RemoveItem();
+
+		void AddListItem(CItemElem * pItemElem);
+		void SubtractListItem();
+
+		void Render(C2DRender * p2DRender, const ItemProp * pItemProp);
+	};
+
+	struct GenLine {
+		int resultStaticId;
+		GENMATDIEINFO material;
+		GENMATDIEINFO scroll1;
+		GENMATDIEINFO scroll2;
+		bool resultStatic;
+
+		void SendUpgradeRequestToServer(CItemElem * upgradedItem);
+		void OnDestruction(bool destroyScroll2);
+	};
+
 	enum { SMELT_MAX = 10 };
 	enum { ENCHANT_TIME = 2 };
 	enum { EXTENSION_PIXEL = 32, HALF_EXTENSION_PIXEL = EXTENSION_PIXEL / 2 };
@@ -1483,15 +1499,13 @@ private:
 	float m_fGaugeRate;
 	int m_nValidSmeltCounter;
 	int m_nCurrentSmeltNumber;
-	int m_nResultStaticID[SMELT_MAX];
-	GENMATDIEINFO m_Material[SMELT_MAX];
-	GENMATDIEINFO m_Scroll1[SMELT_MAX];
-	GENMATDIEINFO m_Scroll2[SMELT_MAX];
-	bool m_bResultStatic[SMELT_MAX];
+
+	GenLine m_genLines[SMELT_MAX];
+
 	LPDIRECT3DVERTEXBUFFER9 m_pVertexBufferGauge;
 	LPDIRECT3DVERTEXBUFFER9 m_pVertexBufferSuccessImage;
 	LPDIRECT3DVERTEXBUFFER9 m_pVertexBufferFailureImage;
-	ItemProp* m_pSelectedElementalCardItemProp;
+	const ItemProp* m_pSelectedElementalCardItemProp;
 
 public:
 	CWndSmeltSafety(WndMode eWndMode);
@@ -1515,24 +1529,26 @@ public:
 	void StopSmelting(void);
 	void DisableScroll2(void);
 	void ResetData(void);
-	void AddListItem(GENMATDIEINFO* pListItem, CItemElem* pItemElem);
-	void SubtractListItem(GENMATDIEINFO* pListItem);
 	void DrawListItem(C2DRender* p2DRender);
-	BOOL IsDropMaterialZone(CPoint point);
-	BOOL IsDropScroll1Zone(CPoint point);
-	BOOL IsDropScroll2Zone(CPoint point);
-	BOOL IsAcceptableMaterial(ItemProp* pItemProp);
-	BOOL IsAcceptableScroll1(ItemProp* pItemProp);
-	BOOL IsAcceptableScroll2(ItemProp* pItemProp);
-	int GetNowSmeltValue(void);
-	int GetDefaultMaxSmeltValue(void);
+	[[nodiscard]] bool IsDropMaterialZone(CPoint point) const;
+	[[nodiscard]] bool IsDropScroll1Zone(CPoint point) const;
+	[[nodiscard]] bool IsDropScroll2Zone(CPoint point) const;
+	[[nodiscard]] bool IsAcceptableMaterial(const ItemProp * pItemProp);
+	[[nodiscard]] bool IsAcceptableScroll1(const ItemProp * pItemProp) const;
+	[[nodiscard]] bool IsAcceptableScroll2(const ItemProp * pItemProp) const;
+	[[nodiscard]] int GetNowSmeltValue() const;
+	[[nodiscard]] int GetDefaultMaxSmeltValue() const;
 	void SetResultSwitch(bool bResultSwitch) { m_bResultSwitch = bResultSwitch; }
 	void SetCurrentSmeltNumber(int nCurrentSmeltNumber) { m_nCurrentSmeltNumber = nCurrentSmeltNumber; }
-	void SetResultStatic(bool bResultStatic, int nIndex) { m_bResultStatic[nIndex] = bResultStatic; }
+	void SetResultStatic(bool bResultStatic, int nIndex) { m_genLines[nIndex].resultStatic = bResultStatic; }
 	CItemElem* GetItemElement(void) const { return m_pItemElem; }
 	bool GetResultSwitch(void) const { return m_bResultSwitch; }
 	int GetCurrentSmeltNumber(void) const { return m_nCurrentSmeltNumber; }
-	int GetResultStaticID(int nIndex) const { return m_nResultStaticID[nIndex]; }
+	int GetResultStaticID(int nIndex) const { return m_genLines[nIndex].resultStaticId; }
+
+private:
+	[[nodiscard]] std::span<GenLine> GenLinesUntilCurrentSmelt() { return std::span(m_genLines, m_nCurrentSmeltNumber); }
+	[[nodiscard]] std::span<GenLine> GenLinesSinceCurrentSmelt() { return std::span(m_genLines + m_nCurrentSmeltNumber, m_genLines + SMELT_MAX); }
 };
 
 class CWndSmeltSafetyConfirm final : public CWndNeuz

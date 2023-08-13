@@ -9764,40 +9764,32 @@ m_pSelectedElementalCardItemProp( NULL )
 {
 }
 
-CWndSmeltSafety::~CWndSmeltSafety()
-{
-	for(int i = 0; i < SMELT_MAX; ++i)
-	{
-		if(m_Material[i].pItemElem != NULL)
-		{
-			if( !g_pPlayer->m_vtInfo.IsTrading( m_Material[i].pItemElem ) )
-				m_Material[i].pItemElem->SetExtra(0);
-		}
-
-		if(m_Scroll1[i].pItemElem != NULL)
-		{
-			if( !g_pPlayer->m_vtInfo.IsTrading( m_Scroll1[i].pItemElem ) )
-				m_Scroll1[i].pItemElem->SetExtra(0);
-		}
-
-		if( ( m_eWndMode == WND_NORMAL || m_eWndMode == WND_ELEMENT ) && m_Scroll2[i].pItemElem != NULL )
-		{
-			if( !g_pPlayer->m_vtInfo.IsTrading( m_Scroll2[i].pItemElem ) )
-				m_Scroll2[i].pItemElem->SetExtra(0);
-		}
+CWndSmeltSafety::~CWndSmeltSafety() {
+	for (GenLine & genLine : m_genLines) {
+		genLine.OnDestruction(m_eWndMode == WND_NORMAL || m_eWndMode == WND_ELEMENT);
 	}
 
-	if(m_pItemElem != NULL)
-	{
+	if (m_pItemElem != NULL) {
 		m_pItemElem->SetExtra(0);
 		m_pItemElem = NULL;
 	}
 
-	CWndInventory* pWndInventory = (CWndInventory*)GetWndBase( APP_INVENTORY );
-	if(pWndInventory != NULL)
-	{
+	if (CWndInventory * pWndInventory = GetWndBase<CWndInventory>(APP_INVENTORY)) {
 		pWndInventory->m_wndItemCtrl.SetDieFlag(FALSE);
 	}
+}
+
+void CWndSmeltSafety::GENMATDIEINFO::OnDestruction() {
+	if (!pItemElem) return;
+	if (g_pPlayer->m_vtInfo.IsTrading(pItemElem)) return;
+	pItemElem->SetExtra(0);
+	pItemElem = nullptr;
+}
+
+void CWndSmeltSafety::GenLine::OnDestruction(bool destroyScroll2) {
+	material.OnDestruction();
+	scroll1.OnDestruction();
+	if (destroyScroll2) scroll2.OnDestruction();
 }
 
 // ó�� �� �Լ��� �θ��� ������ ������.
@@ -9812,39 +9804,26 @@ void CWndSmeltSafety::OnInitialUpdate()
 	CWndNeuz::OnInitialUpdate();
 	// ���⿡ �ڵ��ϼ���
 
-	int StaticMaterialID[SMELT_MAX] = {WIDC_STATIC11, WIDC_STATIC12, WIDC_STATIC13, WIDC_STATIC14, WIDC_STATIC15, WIDC_STATIC16,
+	constexpr int StaticMaterialID[SMELT_MAX] = {WIDC_STATIC11, WIDC_STATIC12, WIDC_STATIC13, WIDC_STATIC14, WIDC_STATIC15, WIDC_STATIC16,
 								WIDC_STATIC17, WIDC_STATIC18, WIDC_STATIC19, WIDC_STATIC20};
-	int StaticScrollID1[SMELT_MAX] = {WIDC_STATIC41, WIDC_STATIC42, WIDC_STATIC43, WIDC_STATIC44, WIDC_STATIC45, WIDC_STATIC46,
+	constexpr int StaticScrollID1[SMELT_MAX] = {WIDC_STATIC41, WIDC_STATIC42, WIDC_STATIC43, WIDC_STATIC44, WIDC_STATIC45, WIDC_STATIC46,
 								WIDC_STATIC47, WIDC_STATIC48, WIDC_STATIC49, WIDC_STATIC50};
-	int StaticScrollID2[SMELT_MAX] = {WIDC_STATIC61, WIDC_STATIC62, WIDC_STATIC63, WIDC_STATIC64, WIDC_STATIC65, WIDC_STATIC66,
+	constexpr int StaticScrollID2[SMELT_MAX] = {WIDC_STATIC61, WIDC_STATIC62, WIDC_STATIC63, WIDC_STATIC64, WIDC_STATIC65, WIDC_STATIC66,
 								WIDC_STATIC67, WIDC_STATIC68, WIDC_STATIC69, WIDC_STATIC70};
+	constexpr int ResultStaticID[SMELT_MAX] = { WIDC_STATIC31, WIDC_STATIC32, WIDC_STATIC33, WIDC_STATIC34, WIDC_STATIC35, WIDC_STATIC36, WIDC_STATIC37, WIDC_STATIC38, WIDC_STATIC39, WIDC_STATIC40 };
 
-	for(int i = 0; i < SMELT_MAX; ++i)
-	{
-		m_Material[i].wndCtrl = GetWndCtrl( StaticMaterialID[i] );
-		m_Material[i].staticNum = StaticMaterialID[i];
-		m_Material[i].isUse = FALSE;
-		m_Material[i].pItemElem = NULL;
-		m_Scroll1[i].wndCtrl = GetWndCtrl( StaticScrollID1[i] );
-		m_Scroll1[i].staticNum = StaticScrollID1[i];
-		m_Scroll1[i].isUse = FALSE;
-		m_Scroll1[i].pItemElem = NULL;
-		m_Scroll2[i].wndCtrl = GetWndCtrl( StaticScrollID2[i] );
-		m_Scroll2[i].staticNum = StaticScrollID2[i];
-		m_Scroll2[i].isUse = FALSE;
-		m_Scroll2[i].pItemElem = NULL;
+
+	for (size_t i = 0; i != SMELT_MAX; ++i) {
+		GenLine & genLine = m_genLines[i];
+
+		genLine.material.OnInitialUpdate(GetWndCtrl(StaticMaterialID[i]), StaticMaterialID[i]);
+		genLine.scroll1.OnInitialUpdate(GetWndCtrl(StaticScrollID1[i]), StaticScrollID1[i]);
+		genLine.scroll2.OnInitialUpdate(GetWndCtrl(StaticScrollID2[i]), StaticScrollID2[i]);
+		genLine.resultStaticId = ResultStaticID[i];
+		genLine.resultStatic = false;
 	}
 
-	m_nResultStaticID[0] = WIDC_STATIC31;
-	m_nResultStaticID[1] = WIDC_STATIC32;
-	m_nResultStaticID[2] = WIDC_STATIC33;
-	m_nResultStaticID[3] = WIDC_STATIC34;
-	m_nResultStaticID[4] = WIDC_STATIC35;
-	m_nResultStaticID[5] = WIDC_STATIC36;
-	m_nResultStaticID[6] = WIDC_STATIC37;
-	m_nResultStaticID[7] = WIDC_STATIC38;
-	m_nResultStaticID[8] = WIDC_STATIC39;
-	m_nResultStaticID[9] = WIDC_STATIC40;
+	
 
 	CWndStatic* pWndStatic = (CWndStatic*)GetDlgItem(WIDC_TITLE_NOW_GRADE);
 	assert(pWndStatic != NULL);
@@ -9889,9 +9868,8 @@ void CWndSmeltSafety::OnInitialUpdate()
 	if( m_eWndMode == WND_NORMAL || m_eWndMode == WND_ELEMENT )
 	{
 		CRect rect;
-		for(int i = 0; i < SMELT_MAX; ++i)
-		{
-			CWndStatic* pWndStatic = (CWndStatic*)GetDlgItem(m_nResultStaticID[i]);
+		for (GenLine & genLine : m_genLines) {
+			CWndStatic* pWndStatic = GetDlgItem<CWndStatic>(genLine.resultStaticId);
 			assert(pWndStatic != NULL);
 			rect = pWndStatic->GetWndRect();
 			pWndStatic->Move(rect.left + EXTENSION_PIXEL, rect.top);
@@ -9953,9 +9931,8 @@ void CWndSmeltSafety::OnInitialUpdate()
 	}
 	else
 	{
-		for(int i = 0; i < SMELT_MAX; ++i)
-		{
-			CWndStatic* pWndStatic = (CWndStatic*)GetDlgItem(m_Scroll2[i].staticNum);
+		for (GenLine & genLine : m_genLines) {
+			CWndBase * pWndStatic = GetDlgItem(genLine.scroll2.staticNum);
 			assert(pWndStatic != NULL);
 			pWndStatic->SetVisible(FALSE);
 			pWndStatic->EnableWindow(FALSE);
@@ -9977,6 +9954,14 @@ void CWndSmeltSafety::OnInitialUpdate()
 
 	MoveParentCenter();
 }
+
+void CWndSmeltSafety::GENMATDIEINFO::OnInitialUpdate(LPWNDCTRL wndCtrl, int staticNum) {
+	this->wndCtrl = wndCtrl;
+	this->staticNum = staticNum;
+	this->isUse = FALSE;
+	this->pItemElem = nullptr;
+}
+
 
 BOOL CWndSmeltSafety::Process()
 {
@@ -10021,39 +10006,8 @@ BOOL CWndSmeltSafety::Process()
 			m_dwEnchantTimeEnd = 0xffffffff;
 
 			// Send to Server...
-			GENMATDIEINFO* pTargetMaterial = &m_Material[m_nCurrentSmeltNumber];
-			GENMATDIEINFO* pTargetScroll1 = &m_Scroll1[m_nCurrentSmeltNumber];
-			GENMATDIEINFO* pTargetScroll2 = &m_Scroll2[m_nCurrentSmeltNumber];
-			if(pTargetMaterial->isUse != FALSE && m_Scroll1[m_nCurrentSmeltNumber].isUse != FALSE)
-			{
-				g_DPlay.SendSmeltSafety(
-					m_pItemElem->m_dwObjId, 
-					pTargetMaterial->pItemElem->m_dwObjId, 
-					pTargetScroll1->pItemElem->m_dwObjId, 
-					pTargetScroll2->isUse != FALSE ? pTargetScroll2->pItemElem->m_dwObjId : NULL_ID);
-				
-				pTargetMaterial->isUse = FALSE;
-				if(pTargetMaterial->pItemElem != NULL)
-				{
-					pTargetMaterial->pItemElem->SetExtra(pTargetMaterial->pItemElem->GetExtra() - 1);
-					pTargetMaterial->pItemElem = NULL;
-				}
-				pTargetScroll1->isUse = FALSE;
-				if(pTargetScroll1->pItemElem != NULL)
-				{
-					pTargetScroll1->pItemElem->SetExtra(pTargetScroll1->pItemElem->GetExtra() - 1);
-					pTargetScroll1->pItemElem = NULL;
-				}
-				if(pTargetScroll2->isUse != FALSE)
-				{
-					pTargetScroll2->pItemElem->SetExtra(pTargetScroll2->pItemElem->GetExtra() - 1);
-					pTargetScroll2->isUse = FALSE;
-					if(pTargetScroll2->pItemElem != NULL)
-					{
-						pTargetScroll2->pItemElem = NULL;
-					}
-				}
-			}
+			m_genLines[m_nCurrentSmeltNumber].SendUpgradeRequestToServer(m_pItemElem);
+
 			m_dwEnchantTimeStart = g_tmCurrent;
 			m_dwEnchantTimeEnd = g_tmCurrent + SEC(ENCHANT_TIME);
 		}
@@ -10065,6 +10019,29 @@ BOOL CWndSmeltSafety::Process()
 	}
 
 	return TRUE;
+}
+
+void CWndSmeltSafety::GenLine::SendUpgradeRequestToServer(CItemElem * upgradedItem) {
+	if (material.isUse && scroll1.isUse) {
+		g_DPlay.SendSmeltSafety(
+			upgradedItem->m_dwObjId,
+			material.pItemElem->m_dwObjId,
+			scroll1.pItemElem->m_dwObjId,
+			scroll2.isUse ? scroll2.pItemElem->m_dwObjId : NULL_ID
+		);
+
+		material.RemoveItem();
+		scroll1.RemoveItem();
+		scroll2.RemoveItem();
+	}
+}
+
+void CWndSmeltSafety::GENMATDIEINFO::RemoveItem() {
+	isUse = FALSE;
+	if (pItemElem) {
+		pItemElem->SetExtra(pItemElem->GetExtra() - 1);
+		pItemElem = nullptr;
+	}
 }
 
 void CWndSmeltSafety::OnDraw(C2DRender* p2DRender)
@@ -10099,38 +10076,27 @@ void CWndSmeltSafety::OnDraw(C2DRender* p2DRender)
 		{
 			ClientToScreen( &pointMouse );
 			ClientToScreen( &rectSmeltItem );
-			CString strEmptyTooltip;
-			strEmptyTooltip.Format("%s", prj.GetText(TID_GAME_TOOLTIP_SMELT_SAFETY_ITEM));
+			CString strEmptyTooltip = prj.GetText(TID_GAME_TOOLTIP_SMELT_SAFETY_ITEM);
 			g_toolTip.PutToolTip(reinterpret_cast<DWORD>(this), strEmptyTooltip, rectSmeltItem, pointMouse);
 		}
 	}
 
 	DrawListItem(p2DRender);
 
-	for(int i = 0; i < m_nCurrentSmeltNumber; ++i)
-	{
-		const int nExtensionPixel( ( m_eWndMode == WND_NORMAL || m_eWndMode == WND_ELEMENT ) ? EXTENSION_PIXEL : 0 );
-		static CRect rectStaticTemp;
-		LPWNDCTRL lpStatic = GetWndCtrl(m_nResultStaticID[i]);
-		rectStaticTemp.TopLeft().y = lpStatic->rect.top;
-		rectStaticTemp.TopLeft().x = lpStatic->rect.left + nExtensionPixel;
-		rectStaticTemp.BottomRight().y = lpStatic->rect.bottom;
-		rectStaticTemp.BottomRight().x = lpStatic->rect.right + nExtensionPixel;
-		if(m_bResultStatic[i] != false)
-		{
-			m_Theme.RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferSuccessImage, m_pSuccessTexture);
-		}
-		else
-		{
-			m_Theme.RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferSuccessImage, m_pFailureTexture);
-		}
+	const int nExtensionPixel((m_eWndMode == WND_NORMAL || m_eWndMode == WND_ELEMENT) ? EXTENSION_PIXEL : 0);
+	for (GenLine & genLine : GenLinesUntilCurrentSmelt()) {
+		LPWNDCTRL lpStatic = GetWndCtrl(genLine.resultStaticId);
+
+		CRect rectStaticTemp = lpStatic->rect + CPoint(nExtensionPixel, 0);
+		CTexture * pTexture = genLine.resultStatic ? m_pSuccessTexture : m_pFailureTexture;
+		m_Theme.RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferSuccessImage, pTexture);
 	}
 
 	if(m_bStart != NULL && m_bResultSwitch != false)
 	{
 		const int nExtensionPixel( ( m_eWndMode == WND_NORMAL || m_eWndMode == WND_ELEMENT ) ? EXTENSION_PIXEL : 0 );
 		static CRect rectStaticTemp;
-		LPWNDCTRL lpStatic = GetWndCtrl(m_nResultStaticID[m_nCurrentSmeltNumber]);
+		LPWNDCTRL lpStatic = GetWndCtrl(m_genLines[m_nCurrentSmeltNumber].resultStaticId);
 		rectStaticTemp.TopLeft().y = lpStatic->rect.top;
 		rectStaticTemp.TopLeft().x = lpStatic->rect.left + nExtensionPixel;
 		rectStaticTemp.BottomRight().y = lpStatic->rect.bottom;
@@ -10377,12 +10343,12 @@ void CWndSmeltSafety::OnLButtonDblClk( UINT nFlags, CPoint point )
 			{
 				while(m_nMaterialCount > m_nCurrentSmeltNumber)
 				{
-					SubtractListItem(&m_Material[m_nMaterialCount - 1]);
+					m_genLines[m_nMaterialCount - 1].material.SubtractListItem();
 					--m_nMaterialCount;
 
 					while(m_nScroll1Count > m_nMaterialCount)
 					{
-						SubtractListItem(&m_Scroll1[m_nScroll1Count - 1]);
+						m_genLines[m_nScroll1Count - 1].scroll1.SubtractListItem();
 						--m_nScroll1Count;
 					}
 
@@ -10390,7 +10356,7 @@ void CWndSmeltSafety::OnLButtonDblClk( UINT nFlags, CPoint point )
 					{
 						while(m_nScroll2Count > m_nMaterialCount)
 						{
-							SubtractListItem(&m_Scroll2[m_nScroll2Count - 1]);
+							m_genLines[m_nScroll2Count - 1].scroll2.SubtractListItem();
 							--m_nScroll2Count;
 						}
 					}
@@ -10398,18 +10364,18 @@ void CWndSmeltSafety::OnLButtonDblClk( UINT nFlags, CPoint point )
 			}
 			else
 			{
-				SubtractListItem(&m_Material[m_nMaterialCount - 1]);
+				m_genLines[m_nMaterialCount - 1].material.SubtractListItem();
 				--m_nMaterialCount;
 
 				if(m_nScroll1Count > m_nMaterialCount)
 				{
-					SubtractListItem(&m_Scroll1[m_nScroll1Count - 1]);
+					m_genLines[m_nScroll1Count - 1].scroll1.SubtractListItem();
 					--m_nScroll1Count;
 				}
 
 				if( ( m_eWndMode == WND_NORMAL || m_eWndMode == WND_ELEMENT ) && m_nScroll2Count > m_nMaterialCount )
 				{
-					SubtractListItem(&m_Scroll2[m_nScroll2Count - 1]);
+					m_genLines[m_nScroll2Count - 1].scroll2.SubtractListItem();
 					--m_nScroll2Count;
 				}
 			}
@@ -10417,19 +10383,19 @@ void CWndSmeltSafety::OnLButtonDblClk( UINT nFlags, CPoint point )
 			if( m_nMaterialCount == m_nCurrentSmeltNumber )
 				m_pSelectedElementalCardItemProp = NULL;
 		}
-		else if(IsDropScroll1Zone(point) != FALSE && m_nScroll1Count > m_nCurrentSmeltNumber)
+		else if(IsDropScroll1Zone(point) && m_nScroll1Count > m_nCurrentSmeltNumber)
 		{
 			if(g_WndMng.m_pWndWorld->m_bShiftPushed != FALSE)
 			{
 				while(m_nScroll1Count > m_nCurrentSmeltNumber)
 				{
-					SubtractListItem(&m_Scroll1[m_nScroll1Count - 1]);
+					m_genLines[m_nScroll1Count - 1].scroll1.SubtractListItem();
 					--m_nScroll1Count;
 				}
 			}
 			else
 			{
-				SubtractListItem(&m_Scroll1[m_nScroll1Count - 1]);
+				m_genLines[m_nScroll1Count - 1].scroll1.SubtractListItem();
 				--m_nScroll1Count;
 			}
 			RefreshValidSmeltCounter();
@@ -10440,13 +10406,13 @@ void CWndSmeltSafety::OnLButtonDblClk( UINT nFlags, CPoint point )
 			{
 				while(m_nScroll2Count > m_nCurrentSmeltNumber)
 				{
-					SubtractListItem(&m_Scroll2[m_nScroll2Count - 1]);
+					m_genLines[m_nScroll2Count - 1].scroll2.SubtractListItem();
 					--m_nScroll2Count;
 				}
 			}
 			else
 			{
-				SubtractListItem(&m_Scroll2[m_nScroll2Count - 1]);
+				m_genLines[m_nScroll2Count - 1].scroll2.SubtractListItem();
 				--m_nScroll2Count;
 			}
 			RefreshValidSmeltCounter();
@@ -10531,7 +10497,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 				else
 				{
 					// ������ �� ���� �������Դϴ�.
-					g_WndMng.PutString(prj.GetText(TID_GAME_SMELT_SAFETY_ERROR01), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR01));
+					g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR01);
 				}
 				break;
 			}
@@ -10544,7 +10510,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 				else
 				{
 					// ������ �� ���� �������Դϴ�.
-					g_WndMng.PutString(prj.GetText(TID_GAME_SMELT_SAFETY_ERROR01), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR01));
+					g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR01);
 				}
 				break;
 			}
@@ -10557,7 +10523,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 				else
 				{
 					// �Ǿ��? �� �� ���� �������Դϴ�.
-					g_WndMng.PutString(prj.GetText(TID_GAME_SMELT_SAFETY_ERROR02), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR02));
+					g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR02);
 				}
 				break;
 			}
@@ -10568,7 +10534,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 				else
 				{
 					// ������ �� ���� �������Դϴ�.
-					g_WndMng.PutString( prj.GetText( TID_GAME_SMELT_SAFETY_ERROR01 ), NULL, prj.GetTextColor( TID_GAME_SMELT_SAFETY_ERROR01 ) );
+					g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR01);
 				}
 				break;
 			}
@@ -10594,7 +10560,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 	}
 	else
 	{
-		if(IsAcceptableMaterial(pItemProp) != FALSE)
+		if(IsAcceptableMaterial(pItemProp))
 		{
 			if(m_nMaterialCount < SMELT_MAX)
 			{
@@ -10602,7 +10568,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 				{
 					while(m_nMaterialCount < SMELT_MAX && pItemElem->GetExtra() < pItemElem->m_nItemNum)
 					{
-						AddListItem(&m_Material[m_nMaterialCount], pItemElem);
+						m_genLines[m_nMaterialCount].material.AddListItem(pItemElem);
 						++m_nMaterialCount;
 					}
 				}
@@ -10610,7 +10576,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 				{
 					if(pItemElem->GetExtra() < pItemElem->m_nItemNum)
 					{
-						AddListItem(&m_Material[m_nMaterialCount], pItemElem);
+						m_genLines[m_nMaterialCount].material.AddListItem(pItemElem);
 						++m_nMaterialCount;
 					}
 				}
@@ -10624,7 +10590,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 				{
 					while(m_nScroll1Count < m_nMaterialCount && pItemElem->GetExtra() < pItemElem->m_nItemNum)
 					{
-						AddListItem(&m_Scroll1[m_nScroll1Count], pItemElem);
+						m_genLines[m_nScroll1Count].scroll1.AddListItem(pItemElem);
 						++m_nScroll1Count;
 					}
 				}
@@ -10632,7 +10598,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 				{
 					if(pItemElem->GetExtra() < pItemElem->m_nItemNum)
 					{
-						AddListItem(&m_Scroll1[m_nScroll1Count], pItemElem);
+						m_genLines[m_nScroll1Count].scroll1.AddListItem(pItemElem);
 						++m_nScroll1Count;
 					}
 				}
@@ -10646,12 +10612,12 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 						if(m_pItemElem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE)
 						{
 							// ���� ����Į���� ����ؾ�? �մϴ�.
-							g_WndMng.PutString(prj.GetText(TID_GAME_SMELT_SAFETY_ERROR03), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR03));
+							g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR03);
 						}
 						else
 						{
 							// ���� ������ ����Į���� ����ؾ�? �մϴ�.
-							g_WndMng.PutString(prj.GetText(TID_GAME_SMELT_SAFETY_ERROR04), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR04));
+							g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR04);
 						}
 						break;
 					}
@@ -10659,13 +10625,13 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 				case WND_PIERCING:
 					{
 						// ���� �������� ����ؾ�? �մϴ�.
-						g_WndMng.PutString(prj.GetText(TID_GAME_SMELT_SAFETY_ERROR05), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR05));
+						g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR05);
 						break;
 					}
 				case WND_ELEMENT:
 					{
 						// ���� �Ӽ� ī�带 ����ؾ�? �մϴ�.
-						g_WndMng.PutString( prj.GetText( TID_GAME_SMELT_SAFETY_ERROR17 ), NULL, prj.GetTextColor( TID_GAME_SMELT_SAFETY_ERROR17 ) );
+						g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR17);
 						break;
 					}
 				}
@@ -10680,7 +10646,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 					m_nScroll2Count = (m_nCurrentSmeltNumber > m_nScroll2Count) ? m_nCurrentSmeltNumber : m_nScroll2Count;
 					while(m_nScroll2Count < m_nMaterialCount && pItemElem->GetExtra() < pItemElem->m_nItemNum)
 					{
-						AddListItem(&m_Scroll2[m_nScroll2Count], pItemElem);
+						m_genLines[m_nScroll2Count].scroll2.AddListItem(pItemElem);
 						++m_nScroll2Count;
 					}
 				}
@@ -10689,7 +10655,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 					m_nScroll2Count = (m_nCurrentSmeltNumber > m_nScroll2Count) ? m_nCurrentSmeltNumber : m_nScroll2Count;
 					if(pItemElem->GetExtra() < pItemElem->m_nItemNum)
 					{
-						AddListItem(&m_Scroll2[m_nScroll2Count], pItemElem);
+						m_genLines[m_nScroll2Count].scroll2.AddListItem(pItemElem);
 						++m_nScroll2Count;
 					}
 				}
@@ -10703,12 +10669,12 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 						if(m_pItemElem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE)
 						{
 							// ���� ����Į���� ����ؾ�? �մϴ�.
-							g_WndMng.PutString(prj.GetText(TID_GAME_SMELT_SAFETY_ERROR03), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR03));
+							g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR03);
 						}
 						else
 						{
 							// ���� ������ ����Į���� ����ؾ�? �մϴ�.
-							g_WndMng.PutString(prj.GetText(TID_GAME_SMELT_SAFETY_ERROR04), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR04));
+							g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR04);
 						}
 						break;
 					}
@@ -10716,13 +10682,13 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 				case WND_PIERCING:
 					{
 						// ���� �������� ����ؾ�? �մϴ�.
-						g_WndMng.PutString(prj.GetText(TID_GAME_SMELT_SAFETY_ERROR05), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR05));
+						g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR05);
 						break;
 					}
 				case WND_ELEMENT:
 					{
 						// ���� �Ӽ� ī�带 ����ؾ�? �մϴ�.
-						g_WndMng.PutString( prj.GetText( TID_GAME_SMELT_SAFETY_ERROR17 ), NULL, prj.GetTextColor( TID_GAME_SMELT_SAFETY_ERROR17 ) );
+						g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR17);
 						break;
 					}
 				}
@@ -10746,7 +10712,7 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 			else
 			{
 				// ���� �����ۿ� �´� ���? �η縶���� �ƴմϴ�.
-				g_WndMng.PutString(prj.GetText(TID_GAME_SMELT_SAFETY_ERROR06), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR06));
+				g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR06);
 			}
 		}
 		RefreshValidSmeltCounter();
@@ -10806,15 +10772,8 @@ void CWndSmeltSafety::DisableScroll2(void)
 		( m_eWndMode == WND_ELEMENT && m_pItemElem->GetResistAbilityOption() >= ELEMENTAL_NON_USING_SCROLL2_LEVEL ) )
 	{
 		m_nScroll2Count = 0;
-		for(int i = 0; i < SMELT_MAX; ++i)
-		{
-			GENMATDIEINFO* pTargetScroll2 = &m_Scroll2[i];
-			if(pTargetScroll2->pItemElem != NULL)
-			{
-				pTargetScroll2->isUse = FALSE;
-				pTargetScroll2->pItemElem->SetExtra(pTargetScroll2->pItemElem->GetExtra() - 1);
-				pTargetScroll2->pItemElem = NULL;
-			}
+		for (GenLine & genLine : m_genLines) {
+			genLine.scroll2.RemoveItem();
 		}
 	}
 }
@@ -10825,47 +10784,32 @@ void CWndSmeltSafety::ResetData(void)
 	m_nScroll1Count = 0;
 	m_nScroll2Count = 0;
 	m_nCurrentSmeltNumber = 0;
-	for(int i = 0; i < SMELT_MAX; ++i)
-	{
-		m_Material[i].isUse = FALSE;
-		if(m_Material[i].pItemElem != NULL)
-		{
-			m_Material[i].pItemElem->SetExtra(0);
-			m_Material[i].pItemElem = NULL;
-		}
-		m_Scroll1[i].isUse = FALSE;
-		if(m_Scroll1[i].pItemElem != NULL)
-		{
-			m_Scroll1[i].pItemElem->SetExtra(0);
-			m_Scroll1[i].pItemElem = NULL;
-		}
-		m_Scroll2[i].isUse = FALSE;
-		if(m_Scroll2[i].pItemElem != NULL)
-		{
-			m_Scroll2[i].pItemElem->SetExtra(0);
-			m_Scroll2[i].pItemElem = NULL;
-		}
 
-		CWndStatic* pWndStatic = (CWndStatic*)GetDlgItem(m_nResultStaticID[i]);
-		assert(pWndStatic != NULL);
+	for (GenLine & line : m_genLines) {
+		line.material.RemoveItem();
+		line.scroll1.RemoveItem();
+		line.scroll2.RemoveItem();
+
+		CWndBase * pWndStatic = GetDlgItem(line.resultStaticId);
+		assert(pWndStatic);
 		pWndStatic->SetTitle("");
 	}
 	m_pSelectedElementalCardItemProp = NULL;
 }
 
-void CWndSmeltSafety::AddListItem(GENMATDIEINFO* pListItem, CItemElem* pItemElem)
+void CWndSmeltSafety::GENMATDIEINFO::AddListItem(CItemElem* pItemElem)
 {
-	assert(pListItem->isUse == FALSE && pListItem->pItemElem == NULL);
-	pListItem->isUse = TRUE;
-	pListItem->pItemElem = pItemElem;
-	pListItem->pItemElem->SetExtra(pItemElem->GetExtra() + 1);
+	assert(this->isUse == FALSE && this->pItemElem == NULL);
+	this->isUse = TRUE;
+	this->pItemElem = pItemElem;
+	this->pItemElem->SetExtra(pItemElem->GetExtra() + 1);
 }
-void CWndSmeltSafety::SubtractListItem(GENMATDIEINFO* pListItem)
+void CWndSmeltSafety::GENMATDIEINFO::SubtractListItem()
 {
-	assert(pListItem->isUse != FALSE && pListItem->pItemElem != NULL);
-	pListItem->isUse = FALSE;
-	pListItem->pItemElem->SetExtra(pListItem->pItemElem->GetExtra() - 1);
-	pListItem->pItemElem = NULL;
+	assert(this->isUse != FALSE && this->pItemElem != NULL);
+	this->isUse = FALSE;
+	this->pItemElem->SetExtra(this->pItemElem->GetExtra() - 1);
+	this->pItemElem = NULL;
 }
 
 void CWndSmeltSafety::DrawListItem(C2DRender* p2DRender)
@@ -10873,15 +10817,12 @@ void CWndSmeltSafety::DrawListItem(C2DRender* p2DRender)
 	if(m_eWndMode == WND_NORMAL && (m_pItemElem == NULL || m_pItemTexture == NULL))
 		return;
 
-	static const int NORMAL_ALPHA(255);
-	static const int TRANSLUCENT_ALPHA(75);
-	static int nAlphaBlend(NORMAL_ALPHA);
-	ItemProp* pItemProp = NULL;
+	const ItemProp* pItemProp = NULL;
 	CTexture* pTexture = NULL;
 
-	for(int i = m_nCurrentSmeltNumber; i < SMELT_MAX; ++i)
-	{
-		assert(m_Material[i].wndCtrl != NULL);
+	for (GenLine & genLine : GenLinesSinceCurrentSmelt()) {
+		
+		assert(genLine.material.wndCtrl != NULL);
 		switch(m_eWndMode)
 		{
 		case WND_NORMAL:
@@ -10912,16 +10853,8 @@ void CWndSmeltSafety::DrawListItem(C2DRender* p2DRender)
 				break;
 			}
 		}
-		if( m_eWndMode != WND_ELEMENT || pItemProp )
-		{
-			assert(pItemProp != NULL);
-			pTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
-			assert(pTexture != NULL);
-			nAlphaBlend = (m_Material[i].isUse != FALSE) ? NORMAL_ALPHA : TRANSLUCENT_ALPHA;
-			pTexture->Render( p2DRender, CPoint( m_Material[i].wndCtrl->rect.left, m_Material[i].wndCtrl->rect.top ), nAlphaBlend );
-		}
+		genLine.material.Render(p2DRender, pItemProp);
 
-		assert(m_Scroll1[i].wndCtrl != NULL);
 		switch(m_eWndMode)
 		{
 		case WND_NORMAL:
@@ -10945,188 +10878,132 @@ void CWndSmeltSafety::DrawListItem(C2DRender* p2DRender)
 				break;
 			}
 		}
-		assert(pItemProp != NULL);
-		pTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
-		assert(pTexture != NULL);
-		nAlphaBlend = (m_Scroll1[i].isUse != FALSE) ? NORMAL_ALPHA : TRANSLUCENT_ALPHA;
-		pTexture->Render( p2DRender, CPoint( m_Scroll1[i].wndCtrl->rect.left, m_Scroll1[i].wndCtrl->rect.top ), nAlphaBlend );
+		genLine.scroll1.Render(p2DRender, pItemProp);
 
 		if( m_eWndMode == WND_NORMAL && m_pItemElem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE && m_pItemElem->GetAbilityOption() < GENERAL_NON_USING_SCROLL2_LEVEL )
 		{
-			assert(m_Scroll2[i].wndCtrl != NULL);
-			pItemProp = prj.GetItemProp(II_SYS_SYS_SCR_SMELTING);
-			assert(pItemProp != NULL);
-			pTexture = CWndBase::m_textureMng.AddTexture( MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
-			assert(pTexture != NULL);
-			nAlphaBlend = (m_Scroll2[i].isUse != FALSE) ? NORMAL_ALPHA : TRANSLUCENT_ALPHA;
-			pTexture->Render( p2DRender, CPoint( m_Scroll2[i].wndCtrl->rect.left, m_Scroll2[i].wndCtrl->rect.top ), nAlphaBlend );
+			genLine.scroll2.Render(p2DRender, prj.GetItemProp(II_SYS_SYS_SCR_SMELTING));
 		}
 		if( m_eWndMode == WND_ELEMENT && m_pItemElem && m_pItemElem->GetResistAbilityOption() < ELEMENTAL_NON_USING_SCROLL2_LEVEL )
 		{
-			assert( m_Scroll2[ i ].wndCtrl != NULL );
-			pItemProp = prj.GetItemProp( II_SYS_SYS_SCR_SMELTING2 );
-			assert( pItemProp != NULL );
-			pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon ), 0xffff00ff );
-			assert( pTexture != NULL );
-			nAlphaBlend = ( m_Scroll2[ i ].isUse != FALSE ) ? NORMAL_ALPHA : TRANSLUCENT_ALPHA;
-			pTexture->Render( p2DRender, CPoint( m_Scroll2[ i ].wndCtrl->rect.left, m_Scroll2[ i ].wndCtrl->rect.top ), nAlphaBlend );
+			genLine.scroll2.Render(p2DRender, prj.GetItemProp(II_SYS_SYS_SCR_SMELTING2));
 		}
 	}
 }
 
-BOOL CWndSmeltSafety::IsDropMaterialZone(CPoint point)
-{
-	BOOL rtnval = FALSE;
-	for(int i=0; i<SMELT_MAX; i++)
-	{
-		if(m_Material[i].wndCtrl->rect.PtInRect(point))
-		{
-			rtnval = TRUE;
-			i = SMELT_MAX;
-		}
-	}
-	return rtnval;
+void CWndSmeltSafety::GENMATDIEINFO::Render(C2DRender * p2DRender, const ItemProp * pItemProp) {
+	assert(wndCtrl);
+	if (!pItemProp) return;
+
+	static constexpr int NORMAL_ALPHA = 255;
+	static constexpr int TRANSLUCENT_ALPHA = 75;
+
+	CTexture * pTexture = CWndBase::m_textureMng.AddTexture(MakePath(DIR_ITEM, pItemProp->szIcon), 0xffff00ff);
+	assert(pTexture != NULL);
+	const int nAlphaBlend = isUse ? NORMAL_ALPHA : TRANSLUCENT_ALPHA;
+	pTexture->Render(p2DRender, wndCtrl->rect.TopLeft(), nAlphaBlend);
 }
 
-BOOL CWndSmeltSafety::IsDropScroll1Zone(CPoint point)
-{
-	BOOL rtnval = FALSE;
-	for(int i=0; i<SMELT_MAX; i++)
-	{
-		if(m_Scroll1[i].wndCtrl->rect.PtInRect(point))
-		{
-			rtnval = TRUE;
-			i = SMELT_MAX;
+
+bool CWndSmeltSafety::IsDropMaterialZone(CPoint point) const {
+	for (size_t i = 0; i < SMELT_MAX; i++) {
+		if (m_genLines[i].material.wndCtrl->rect.PtInRect(point)) {
+			return true;
 		}
 	}
-	return rtnval;
+	return false;
 }
 
-BOOL CWndSmeltSafety::IsDropScroll2Zone(CPoint point)
-{
-	BOOL rtnval = FALSE;
-	for(int i=0; i<SMELT_MAX; i++)
-	{
-		if(m_Scroll2[i].wndCtrl->rect.PtInRect(point))
-		{
-			rtnval = TRUE;
-			i = SMELT_MAX;
+bool CWndSmeltSafety::IsDropScroll1Zone(CPoint point) const {
+	for (size_t i = 0; i < SMELT_MAX; i++) {
+		if (m_genLines[i].scroll1.wndCtrl->rect.PtInRect(point)) {
+			return true;
 		}
 	}
-	return rtnval;
+	return false;
 }
 
-BOOL CWndSmeltSafety::IsAcceptableMaterial(ItemProp* pItemProp)
+bool CWndSmeltSafety::IsDropScroll2Zone(CPoint point) const {
+	for (size_t i = 0; i < SMELT_MAX; i++) {
+		if (m_genLines[i].scroll2.wndCtrl->rect.PtInRect(point)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CWndSmeltSafety::IsAcceptableMaterial(const ItemProp* pItemProp)
 {
 	assert(m_pItemElem != NULL);
-	BOOL bAcceptableItem(FALSE);
+
 	switch(m_eWndMode)
 	{
 	case WND_NORMAL:
-		{
-			if(m_pItemElem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE)
-			{
-				if(pItemProp->dwID == II_GEN_MAT_ORICHALCUM01 || pItemProp->dwID == II_GEN_MAT_ORICHALCUM01_1)
-					bAcceptableItem = TRUE;
-			}
-			else
-			{
-				if(pItemProp->dwID == II_GEN_MAT_ORICHALCUM02)
-					bAcceptableItem = TRUE;
-			}
-			break;
+		if (m_pItemElem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE) {
+			return ItemProps::IsOrichalcum(*pItemProp);
+		} else {
+			return pItemProp->dwID == II_GEN_MAT_ORICHALCUM02;
 		}
 	case WND_ACCESSARY:
 	case WND_PIERCING:
-		{
-			if(pItemProp->dwID == II_GEN_MAT_MOONSTONE || pItemProp->dwID == II_GEN_MAT_MOONSTONE_1)
-				bAcceptableItem = TRUE;
-			break;
-		}
+		return ItemProps::IsMoonstone(*pItemProp);
 	case WND_ELEMENT:
 		{
 			const auto itemResist = m_pItemElem->GetItemResist();
 
 			if (itemResist != SAI79::NO_PROP) {
 				const DWORD wantedCard = SAI79::GetEleCard(static_cast<SAI79::ePropType>(itemResist));
-				if (pItemProp->dwID == wantedCard) {
-					bAcceptableItem = TRUE;
+				return pItemProp->dwID == wantedCard;
+			} else if (m_nMaterialCount == m_nCurrentSmeltNumber) {
+				if (SAI79::IsElementalCard(pItemProp->dwID)) {
+					m_pSelectedElementalCardItemProp = pItemProp;
+					return TRUE;
 				}
 			} else {
-					if( m_nMaterialCount == m_nCurrentSmeltNumber )
-					{
-						if( SAI79::IsElementalCard( pItemProp->dwID ) )
-						{
-							m_pSelectedElementalCardItemProp = pItemProp;
-							bAcceptableItem = TRUE;
-						}
-					}
-					else
-					{
-						if( pItemProp == m_pSelectedElementalCardItemProp )
-							bAcceptableItem = TRUE;
-					}
-				
+				return pItemProp == m_pSelectedElementalCardItemProp;
 			}
 		}
+		break;
 	}
-	return bAcceptableItem;
+	return false;
 }
 
-BOOL CWndSmeltSafety::IsAcceptableScroll1(ItemProp* pItemProp)
+bool CWndSmeltSafety::IsAcceptableScroll1(const ItemProp* pItemProp) const
 {
 	assert(m_pItemElem != NULL);
-	BOOL bAcceptableItem(FALSE);
-	switch(m_eWndMode)
-	{
+
+	switch (m_eWndMode) {
 	case WND_NORMAL:
-		{
-			if(m_pItemElem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE)
-			{
-				if(pItemProp->dwID == II_SYS_SYS_SCR_SMELPROT)
-					bAcceptableItem = TRUE;
-			}
-			else
-			{
-				if(pItemProp->dwID == II_SYS_SYS_SCR_SMELPROT3)
-					bAcceptableItem = TRUE;
-			}
-			break;
+	{
+		if (m_pItemElem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE) {
+			return pItemProp->dwID == II_SYS_SYS_SCR_SMELPROT;
+		} else {
+			return pItemProp->dwID == II_SYS_SYS_SCR_SMELPROT3;
 		}
-	case WND_ACCESSARY:
-		{
-			if(pItemProp->dwID == II_SYS_SYS_SCR_SMELPROT4)
-				bAcceptableItem = TRUE;
-			break;
-		}
-	case WND_PIERCING:
-		{
-			if(pItemProp->dwID == II_SYS_SYS_SCR_PIEPROT)
-				bAcceptableItem = TRUE;
-			break;
-		}
-	case WND_ELEMENT:
-		{
-			if( pItemProp->dwID == II_SYS_SYS_SCR_SMELPROT )
-				bAcceptableItem = TRUE;
-			break;
-		}
+		break;
 	}
-	return bAcceptableItem;
+	case WND_ACCESSARY:
+		return pItemProp->dwID == II_SYS_SYS_SCR_SMELPROT4;
+	case WND_PIERCING:
+		return pItemProp->dwID == II_SYS_SYS_SCR_PIEPROT;
+	case WND_ELEMENT:
+		return pItemProp->dwID == II_SYS_SYS_SCR_SMELPROT;
+	}
+
+	return false;
 }
 
-BOOL CWndSmeltSafety::IsAcceptableScroll2(ItemProp* pItemProp)
+bool CWndSmeltSafety::IsAcceptableScroll2(const ItemProp* pItemProp) const
 {
 	assert(m_pItemElem != NULL);
-	BOOL bAcceptableItem(FALSE);
+
 	switch( m_eWndMode )
 	{
 	case WND_NORMAL:
 		{
 			if( m_pItemElem->GetAbilityOption() < GENERAL_NON_USING_SCROLL2_LEVEL && m_pItemElem->GetProp()->dwReferStat1 != WEAPON_ULTIMATE )
 			{
-				if( pItemProp->dwID == II_SYS_SYS_SCR_SMELTING )
-					bAcceptableItem = TRUE;
+				return pItemProp->dwID == II_SYS_SYS_SCR_SMELTING;
 			}
 			break;
 		}
@@ -11134,69 +11011,48 @@ BOOL CWndSmeltSafety::IsAcceptableScroll2(ItemProp* pItemProp)
 		{
 			if( m_pItemElem->GetResistAbilityOption() < ELEMENTAL_NON_USING_SCROLL2_LEVEL )
 			{
-				if( pItemProp->dwID == II_SYS_SYS_SCR_SMELTING2 )
-					bAcceptableItem = TRUE;
+				return pItemProp->dwID == II_SYS_SYS_SCR_SMELTING2 ;
 			}
 			break;
 		}
 	}
-	return bAcceptableItem;
+	return false;
 }
 
-int CWndSmeltSafety::GetNowSmeltValue(void)
+int CWndSmeltSafety::GetNowSmeltValue() const
 {
-	int nNowSmeltValue(0);
-	if(m_pItemElem != NULL)
-	{
-		if(m_eWndMode == WND_NORMAL || m_eWndMode == WND_ACCESSARY)
-		{
-			nNowSmeltValue = m_pItemElem->GetAbilityOption();
+	if (m_pItemElem) {
+		if (m_eWndMode == WND_NORMAL || m_eWndMode == WND_ACCESSARY) {
+			return m_pItemElem->GetAbilityOption();
+		} else if (m_eWndMode == WND_PIERCING) {
+			return m_pItemElem->GetPiercingSize();
+		} else if (m_eWndMode == WND_ELEMENT) {
+			return m_pItemElem->GetResistAbilityOption();
 		}
-		else if(m_eWndMode == WND_PIERCING)
-		{
-			nNowSmeltValue = m_pItemElem->GetPiercingSize();
-		}
-		else if( m_eWndMode == WND_ELEMENT )
-			nNowSmeltValue = m_pItemElem->GetResistAbilityOption();
 	}
-	return nNowSmeltValue;
+
+	return 0;
 }
 
-int CWndSmeltSafety::GetDefaultMaxSmeltValue(void)
-{
+int CWndSmeltSafety::GetDefaultMaxSmeltValue() const {
 	assert(m_pItemElem != NULL);
-	int nDefaultMaxSmeltValue(0);
-	switch(m_eWndMode)
-	{
-	case WND_NORMAL:
-		{
-			nDefaultMaxSmeltValue = 10;
-			break;
-		}
-	case WND_ACCESSARY:
-		{
-			nDefaultMaxSmeltValue = 20;
-			break;
-		}
-	case WND_PIERCING:
-		{
-			if(m_pItemElem->GetProp()->dwItemKind3 == IK3_SUIT)
-			{
-				nDefaultMaxSmeltValue = 4;
+
+	switch (m_eWndMode) {
+		case WND_NORMAL:
+			return 10;
+		case WND_ACCESSARY:
+			return 20;
+		case WND_PIERCING:
+			if (m_pItemElem->GetProp()->dwItemKind3 == IK3_SUIT) {
+				return 4;
+			} else {
+				return 10;
 			}
-			else
-			{
-				nDefaultMaxSmeltValue = 10;
-			}
-			break;
-		}
-	case WND_ELEMENT:
-		{
-			nDefaultMaxSmeltValue = 20;
-			break;
-		}
+		case WND_ELEMENT:
+			return 20;
+		default:
+			return 0;
 	}
-	return nDefaultMaxSmeltValue;
 }
 
 CWndSmeltSafetyConfirm::CWndSmeltSafetyConfirm(ErrorMode eErrorMode) : 
