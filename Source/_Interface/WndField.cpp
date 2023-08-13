@@ -6408,16 +6408,6 @@ BOOL CWndGuildCombatResult::CWndTabLog::OnChildNotify( UINT message, UINT nID, L
   WndId : APP_GUILDCOMBAT_RANK_P - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å·Ã¢
   CtrlId : WIDC_TABCTRL1 - TabCtrl
 ****************************************************/
-CWndGuildCombatRank_Person::CWndGuildCombatRank_Person() 
-{ 
-	m_mTotalRanking.clear();
-} 
-CWndGuildCombatRank_Person::~CWndGuildCombatRank_Person() 
-{ 
-} 
-void CWndGuildCombatRank_Person::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
 
 void CWndGuildCombatRank_Person::OnInitialUpdate() 
 { 
@@ -6449,80 +6439,42 @@ BOOL CWndGuildCombatRank_Person::Initialize( CWndBase* pWndParent )
 { 
 	return CWndNeuz::InitDialog( APP_GUILDCOMBAT_RANK_P, pWndParent, 0, CPoint( 0, 0 ) );
 } 
-BOOL CWndGuildCombatRank_Person::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-} 
-void CWndGuildCombatRank_Person::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-} 
-void CWndGuildCombatRank_Person::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-} 
-void CWndGuildCombatRank_Person::OnLButtonDown( UINT nFlags, CPoint point ) 
-{ 
-} 
-BOOL CWndGuildCombatRank_Person::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{ 
-	if( nID == WIDC_CLOSE )
-	{
+
+BOOL CWndGuildCombatRank_Person::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+	if (nID == WIDC_CLOSE) {
 		Destroy();
 	}
 
-	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
-} 
-void CWndGuildCombatRank_Person::OnMouseMove(UINT nFlags, CPoint point )
-{
+	return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
-void CWndGuildCombatRank_Person::InsertRank( int nJob, u_long	uidPlayer, int nPoint )
-{
-	__GUILDCOMBAT_RANK_INFO GcRankInfo;
-	GcRankInfo.nJob      = nJob;
-	GcRankInfo.uidPlayer = uidPlayer;
-	m_mTotalRanking.emplace(nPoint, GcRankInfo);
+void CWndGuildCombatRank_Person::InsertRank(int nJob, u_long uidPlayer, int nPoint) {
+	m_mTotalRanking.emplace(nPoint, GuildCombatRankInfo(nJob, uidPlayer, nPoint));
 }
 
 void CWndGuildCombatRank_Person::DivisionList()
 {
-	if( m_mTotalRanking.size() <= 0 )
-		return;
+	if (m_mTotalRanking.empty()) return;
 	
-	int nPoint;
-
-	__GUILDCOMBAT_RANK_INFO GcRankInfo;
-	CWndGuildCombatRank_Class * pRankTot;
-	CWndGuildCombatRank_Class * pRank;
-
 	// ï¿½ï¿½Ã¼ï¿½ï¿½Ï¿ï¿? ï¿½ï¿½ï¿?
-	pRankTot = &(m_WndGuildCombatTabClass_Tot);
+	CWndGuildCombatRank_Class * pRankTot = &m_WndGuildCombatTabClass_Tot;
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?
-	pRank = NULL;
+	
+
+
 	for( auto i = m_mTotalRanking.rbegin(); i != m_mTotalRanking.rend(); ++i )
 	{ 
-		nPoint			= i->first;
-		GcRankInfo		= i->second;
-		
-		pRank = __GetJobKindWnd( GcRankInfo.nJob );
+		const auto & GcRankInfo		= i->second;
+
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?
+		CWndGuildCombatRank_Class * pRank = __GetJobKindWnd( GcRankInfo.nJob );
 		
 		if( pRank == NULL )
 			continue;
 
-		pRank->InsertRank( GcRankInfo.nJob, GcRankInfo.uidPlayer, nPoint );
-		pRankTot->InsertRank( GcRankInfo.nJob, GcRankInfo.uidPlayer, nPoint );
+		pRank->InsertRank( GcRankInfo );
+		pRankTot->InsertRank( GcRankInfo );
 	}
-}
-
-void CWndGuildCombatRank_Person::UpdateList()
-{
-
-}
-
-void CWndGuildCombatRank_Person::UpdatePlayer(int nJob, u_long idPlayer)
-{
-
 }
 
 CWndGuildCombatRank_Class* CWndGuildCombatRank_Person::__GetJobKindWnd(const int nJob) {
@@ -6531,13 +6483,42 @@ CWndGuildCombatRank_Class* CWndGuildCombatRank_Person::__GetJobKindWnd(const int
 		case Project::ProJob::Acrobat:   return &m_WndGuildCombatTabClass_Acr;
 		case Project::ProJob::Assist:    return &m_WndGuildCombatTabClass_Ass;
 		case Project::ProJob::Magician:  return &m_WndGuildCombatTabClass_Mag;
-		default:                          return nullptr;
+		default:                         return nullptr;
 	}
 }
 
 /****************************************************
   WndId : APP_GUILDCOMBAT_RANKINGCLASS
 ****************************************************/
+
+GuildCombatRankInfo::GuildCombatRankInfo(int nJob, u_long uidPlayer, int nPoint) {
+	this->uidPlayer = uidPlayer;
+
+	const char * name = CPlayerDataCenter::GetInstance()->GetPlayerString(uidPlayer);
+	this->strName = name ? name : "???";
+
+	this->nJob    = nJob;
+	this->nPoint  = nPoint;
+}
+
+void GuildCombatRankInfo::Render(
+	C2DRender * p2DRender,
+	CPoint point, DWORD dwColor, std::optional<size_t> rank
+) const {
+	char buffer[8];
+
+	if (rank) {
+		std::sprintf(buffer, "%3zu", *rank);
+		p2DRender->TextOut(point.x + 4, point.y, buffer, dwColor);
+	}
+
+	p2DRender->TextOut( point.x + 40,  point.y, strName                   , dwColor );
+	p2DRender->TextOut( point.x + 180, point.y, prj.jobs.info[nJob].szName, dwColor );
+
+	std::sprintf(buffer, "%2d", nPoint);
+	p2DRender->TextOut( point.x + 275, point.y, buffer, dwColor );
+}
+
 
 void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender ) 
 { 
@@ -6560,7 +6541,7 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 
 	const size_t nBase = static_cast<size_t>(std::max(m_wndScrollBar.GetScrollPos(), 0));
 
-	const GUILDCOMBAT_RANK_INFO2 * GCRankInfoMy = nullptr;
+	const GuildCombatRankInfo * GCRankInfoMy = nullptr;
 	int	nMyRanking = 0;
 	
 	int sy = 35;
@@ -6569,7 +6550,7 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 	int lastSeenPoints = m_listRank[0].nPoint;
 
 	for (size_t i = 0; i != m_listRank.size(); ++i) {
-		const GUILDCOMBAT_RANK_INFO2 & GCRankInfo = m_listRank[i];
+		const GuildCombatRankInfo & GCRankInfo = m_listRank[i];
 
 		if (lastSeenPoints != GCRankInfo.nPoint) {
 			currentRanking = i + 1;
@@ -6592,7 +6573,7 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 				rank = currentRanking;
 			}
 
-			PrintPlayer(p2DRender, GCRankInfo, CPoint(sx, sy), dwColor, rank);
+			GCRankInfo.Render(p2DRender, CPoint(sx, sy), dwColor, rank);
 
 			sy += 18;
 		}
@@ -6605,27 +6586,10 @@ void CWndGuildCombatRank_Class::OnDraw( C2DRender* p2DRender )
 
 	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å· Ç¥ï¿½ï¿½...
 	if (GCRankInfoMy) {
-		PrintPlayer(p2DRender, *GCRankInfoMy, CPoint(sx, 250), D3DCOLOR_XRGB(0, 0, 255), nMyRanking);
+		GCRankInfoMy->Render(p2DRender, CPoint(sx, 250), D3DCOLOR_XRGB(0, 0, 255), nMyRanking);
 	}
 } 
 
-void CWndGuildCombatRank_Class::PrintPlayer(
-	C2DRender * p2DRender,
-	const GUILDCOMBAT_RANK_INFO2 & info, CPoint point, DWORD dwColor, std::optional<size_t> rank
-) {
-	char buffer[8];
-
-	if (rank) {
-		std::sprintf(buffer, "%3zu", *rank);
-		p2DRender->TextOut(point.x + 4, point.y, buffer, dwColor);
-	}
-
-	p2DRender->TextOut( point.x + 40,  point.y, info.strName,  dwColor );
-	p2DRender->TextOut( point.x + 180, point.y, info.strJob,   dwColor );
-
-	std::sprintf(buffer, "%2d", info.nPoint);
-	p2DRender->TextOut( point.x + 275, point.y, buffer, dwColor );
-}
 
 // ï¿½ï¿½ï¿½Ãµï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Â´ï¿?.
 std::optional<size_t> CWndGuildCombatRank_Class::GetSelectIndex(const CPoint & point) const {
@@ -6673,20 +6637,14 @@ BOOL CWndGuildCombatRank_Class::Initialize(CWndBase * pWndParent) {
 	return CWndNeuz::InitDialog(APP_GUILDCOMBAT_RANKINGCLASS, pWndParent, 0, CPoint(0, 0));
 }
 
-void CWndGuildCombatRank_Class::InsertRank( int nJob, u_long uidPlayer, int nPoint )
+void CWndGuildCombatRank_Class::InsertRank(GuildCombatRankInfo rankInfo)
 {
 	if (m_listRank.size() >= MAX_GUILDCOMBAT_RANK) {
 		Error("CWndGuildCombatRank_Class::InsertRank - range over");
 		return;
 	}
 
-	auto & listRank = m_listRank.emplace_back();
-
-	const char * name = CPlayerDataCenter::GetInstance()->GetPlayerString(uidPlayer);
-	listRank.strName    = name ? name : "???";
-	listRank.strJob     = prj.jobs.info[ nJob ].szName;	
-	listRank.uidPlayer  = uidPlayer;
-	listRank.nPoint     = nPoint;
+	m_listRank.emplace_back(std::move(rankInfo));
 
 	m_wndScrollBar.SetScrollFromSize(static_cast<int>(m_listRank.size()), MAX_GUILDCOMBAT_RANK_PER_PAGE);
 }

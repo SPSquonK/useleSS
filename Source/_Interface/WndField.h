@@ -814,33 +814,31 @@ public:
 }; 
 
 
+struct GuildCombatRankInfo {
+	GuildCombatRankInfo(int nJob, u_long uidPlayer, int nPoint);
 
-typedef struct __GUILDCOMBAT_RANK_INFO
-{
-	u_long	uidPlayer;
-	int		nJob;
-} __GUILDCOMBAT_RANK_INFO;
+	u_long uidPlayer;
+	CString strName;
+	int nJob;
+	int nPoint;
+
+	void Render(C2DRender * p2DRender, CPoint point, DWORD dwColor, std::optional<size_t> rank) const;
+};
 
 // ±æµå ·©Å· ÅÇ- Á÷¾÷º°
 class CWndGuildCombatRank_Class final : public CWndNeuz 
 { 
 public: 
-	struct GUILDCOMBAT_RANK_INFO2 {
-		CString strName;
-		CString strJob;
-		u_long  uidPlayer;
-		int     nPoint;
-	};
 
 	static constexpr size_t MAX_GUILDCOMBAT_RANK_PER_PAGE = 11;
 	static constexpr size_t MAX_GUILDCOMBAT_RANK = 100;
 
 	CWndScrollBar		m_wndScrollBar;
-	std::vector<GUILDCOMBAT_RANK_INFO2> m_listRank;
+	std::vector<GuildCombatRankInfo> m_listRank;
 	std::optional<size_t> m_nSelect;
 
 
-	void		 InsertRank( int nJob, u_long uidPlayer, int nPoint );
+	void InsertRank(GuildCombatRankInfo rankInfo);
 	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
@@ -849,19 +847,14 @@ public:
 
 private:
 	[[nodiscard]] std::optional<size_t> GetSelectIndex(const CPoint & point) const;
-
-	static void PrintPlayer(C2DRender * p2DRender, const GUILDCOMBAT_RANK_INFO2 & info, CPoint point, DWORD dwColor, std::optional<size_t> rank);
 }; 
 
 // ±æµå ·©Å· - Á÷¾÷º°
 class CWndGuildCombatRank_Person final : public CWndNeuz
 { 
 public: 
-	std::multimap< int, __GUILDCOMBAT_RANK_INFO > m_mTotalRanking;
-			
-	CWndGuildCombatRank_Person(); 
-	virtual ~CWndGuildCombatRank_Person(); 
-	
+	std::multimap< int, GuildCombatRankInfo > m_mTotalRanking;
+		
 	CWndGuildCombatRank_Class    m_WndGuildCombatTabClass_Tot;
 	CWndGuildCombatRank_Class    m_WndGuildCombatTabClass_Mer;
 	CWndGuildCombatRank_Class    m_WndGuildCombatTabClass_Mag;
@@ -870,19 +863,11 @@ public:
 	
 	CWndGuildCombatRank_Class*  __GetJobKindWnd( int nJob );
 	void						InsertRank( int nJob, u_long	uidPlayer, int nPoint );
-	void						UpdateList();
 	void						DivisionList();
-	void						UpdatePlayer( int nJob, u_long idPlayer );
 	
 	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point ); 
-	virtual void OnMouseMove(UINT nFlags, CPoint point );
 
 }; 
 
