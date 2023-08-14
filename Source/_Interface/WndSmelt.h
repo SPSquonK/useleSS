@@ -212,12 +212,10 @@ public:
 
 public: 
 	CWndRemoveJewelConfirm(); 
-	virtual ~CWndRemoveJewelConfirm(); 
 	
 	virtual void OnDestroy();
 	BOOL Initialize( CWndBase* pWndParent = nullptr ); 
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
-	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 
 	void SetItem(CItemElem *	m_pItem);
@@ -507,26 +505,25 @@ private:
 	[[nodiscard]] std::span<GenLine> GenLinesSinceCurrentSmelt() { return std::span(m_genLines + m_nCurrentSmeltNumber, m_genLines + SMELT_MAX); }
 };
 
-class CWndSmeltSafetyConfirm final : public CWndNeuz
-{
+class CWndSmeltSafetyConfirm final : public CWndNeuz {
 public:
-	enum ErrorMode { WND_ERROR1, WND_ERROR2, WND_ERROR3 };
+  enum class MissingScroll { SProtect, UProtect, AProtect };
+  [[nodiscard]] static DWORD GetText(MissingScroll eErrorMode);
 
 private:
-	ErrorMode m_eErrorMode;
-	CItemElem* m_pItemElem;
+  MissingScroll m_eErrorMode;
+  CItemElem * m_pItemElem;
 
 public:
-	CWndSmeltSafetyConfirm(ErrorMode eErrorMode);
-	virtual ~CWndSmeltSafetyConfirm();
+  CWndSmeltSafetyConfirm(MissingScroll eErrorMode, CItemElem * pItemElem)
+    : m_eErrorMode(eErrorMode), m_pItemElem(pItemElem) {
+  }
 
 public:
-	BOOL Initialize( CWndBase* pWndParent = nullptr );
-	virtual	void OnInitialUpdate();
-	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult );
-	virtual void OnDestroy( void );
-
-	void SetWndMode(CItemElem* pItemElem);
+  BOOL Initialize(CWndBase * pWndParent = nullptr);
+  void OnInitialUpdate() override;
+  BOOL OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) override;
+  void OnDestroy() override;
 };
 
 

@@ -682,64 +682,47 @@ void CWndItemCtrl::OnLButtonDown( UINT nFlags, CPoint point )
 
 			if(pWndInventory->m_bIsUpgradeMode && pWndInventory->m_pUpgradeMaterialItem != NULL && m_pFocusItem != NULL)
 			{
+        using MissingScroll = CWndSmeltSafetyConfirm::MissingScroll;
+
+        std::optional<MissingScroll> missingScroll;
+
 				if(!g_pPlayer->HasBuff(BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT) && 
-					( pWndInventory->m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_ORICHALCUM01 || pWndInventory->m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_ORICHALCUM01_1 ) && 
+					ItemProps::IsOrichalcum(*pWndInventory->m_pUpgradeMaterialItem) && 
 					m_pFocusItem->GetAbilityOption() >= 3 && CItemElem::IsDiceRefineryAble(m_pFocusItem->GetProp()))
 				{
-					if(g_WndMng.m_pWndSmeltSafetyConfirm)
-						SAFE_DELETE(g_WndMng.m_pWndSmeltSafetyConfirm)
-
-					g_WndMng.m_pWndSmeltSafetyConfirm = new CWndSmeltSafetyConfirm(CWndSmeltSafetyConfirm::WND_ERROR1);
-
-					CWndBase::m_GlobalShortcut.Empty();
-					m_bDrag = FALSE;
-					g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
-					g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
+          missingScroll = MissingScroll::SProtect;
 				}
-				else if(!g_pPlayer->HasBuff(BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT3) && pWndInventory->m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_ORICHALCUM02 &&
+				else if(!g_pPlayer->HasBuff(BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT3)
+          && pWndInventory->m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_ORICHALCUM02 &&
 						m_pFocusItem->GetProp()->dwReferStat1 == WEAPON_ULTIMATE)
 				{
-					if(g_WndMng.m_pWndSmeltSafetyConfirm)
-						SAFE_DELETE(g_WndMng.m_pWndSmeltSafetyConfirm)
-
-					g_WndMng.m_pWndSmeltSafetyConfirm = new CWndSmeltSafetyConfirm(CWndSmeltSafetyConfirm::WND_ERROR2);
-
-					CWndBase::m_GlobalShortcut.Empty();
-					m_bDrag = FALSE;
-					g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
-					g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
+          missingScroll = MissingScroll::UProtect;
 				}
 				else if(!g_pPlayer->HasBuff(BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT4) && m_pFocusItem->GetAbilityOption() >= 3 && 
-						(pWndInventory->m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_MOONSTONE || pWndInventory->m_pUpgradeMaterialItem->m_dwItemId == II_GEN_MAT_MOONSTONE_1) &&
+						ItemProps::IsMoonstone(*pWndInventory->m_pUpgradeMaterialItem) &&
 						m_pFocusItem->GetProp()->dwItemKind2 == IK2_JEWELRY)
 				{
-					if(g_WndMng.m_pWndSmeltSafetyConfirm)
-						SAFE_DELETE(g_WndMng.m_pWndSmeltSafetyConfirm)
-
-					g_WndMng.m_pWndSmeltSafetyConfirm = new CWndSmeltSafetyConfirm(CWndSmeltSafetyConfirm::WND_ERROR3);
-
-					CWndBase::m_GlobalShortcut.Empty();
-					m_bDrag = FALSE;
-					g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode(m_pFocusItem);
-					g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
+          missingScroll = MissingScroll::AProtect;
 				}
 				else if( g_pPlayer->HasBuff( BUFF_ITEM, II_SYS_SYS_SCR_SMELPROT ) == FALSE && 
 						 m_pFocusItem->GetResistAbilityOption() >= 3 && 
 						 SAI79::IsElementalCard( pWndInventory->m_pUpgradeMaterialItem->m_dwItemId ) && 
 						 CItemElem::IsEleRefineryAble( m_pFocusItem->GetProp() ) == TRUE )
 				{
-					if( g_WndMng.m_pWndSmeltSafetyConfirm )
-						SAFE_DELETE( g_WndMng.m_pWndSmeltSafetyConfirm )
-
-					g_WndMng.m_pWndSmeltSafetyConfirm = new CWndSmeltSafetyConfirm( CWndSmeltSafetyConfirm::WND_ERROR1 );
-
-					CWndBase::m_GlobalShortcut.Empty();
-					m_bDrag = FALSE;
-					g_WndMng.m_pWndSmeltSafetyConfirm->SetWndMode( m_pFocusItem );
-					g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
+          missingScroll = MissingScroll::SProtect;
 				}
-				else
-					pWndInventory->RunUpgrade(m_pFocusItem);
+
+
+        if (!missingScroll) {
+          pWndInventory->RunUpgrade(m_pFocusItem);
+        } else {
+          SAFE_DELETE(g_WndMng.m_pWndSmeltSafetyConfirm)
+          g_WndMng.m_pWndSmeltSafetyConfirm = new CWndSmeltSafetyConfirm(*missingScroll, m_pFocusItem);
+
+          CWndBase::m_GlobalShortcut.Empty();
+          m_bDrag = FALSE;
+          g_WndMng.m_pWndSmeltSafetyConfirm->Initialize();
+        }
 			}
 		}
 	}

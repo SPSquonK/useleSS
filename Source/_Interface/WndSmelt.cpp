@@ -3250,83 +3250,63 @@ int CWndSmeltSafety::GetDefaultMaxSmeltValue() const {
 	}
 }
 
-CWndSmeltSafetyConfirm::CWndSmeltSafetyConfirm(ErrorMode eErrorMode) : 
-m_eErrorMode(eErrorMode), 
-m_pItemElem(NULL)
-{
+
+///////////////////////////////////////////////////////////////////////////////
+
+BOOL CWndSmeltSafetyConfirm::Initialize(CWndBase * pWndParent) {
+  return CWndNeuz::InitDialog(APP_SMELT_SAFETY_CONFIRM, pWndParent, 0, CPoint(0, 0));
 }
 
-CWndSmeltSafetyConfirm::~CWndSmeltSafetyConfirm()
-{
+DWORD CWndSmeltSafetyConfirm::GetText(MissingScroll eErrorMode) {
+  switch (eErrorMode) {
+    case MissingScroll::SProtect:
+      return TID_GAME_SMELT_SAFETY_CONFIRM_NORMAL;
+    case MissingScroll::UProtect:
+      return TID_GAME_SMELT_SAFETY_CONFIRM_HIGHEST;
+    case MissingScroll::AProtect:
+      return TID_GAME_SMELT_SAFETY_CONFIRM_ACCESSARY;
+    default:
+      return 0;
+  }
 }
 
-BOOL CWndSmeltSafetyConfirm::Initialize( CWndBase* pWndParent )
-{
-	return CWndNeuz::InitDialog( APP_SMELT_SAFETY_CONFIRM, pWndParent, 0, CPoint( 0, 0 ) );
+void CWndSmeltSafetyConfirm::OnInitialUpdate() {
+  CWndNeuz::OnInitialUpdate();
+
+  CWndText * pWndText = GetDlgItem<CWndText>(WIDC_CONFIRM_TEXT);
+  assert(pWndText);
+
+  const DWORD tid = GetText(m_eErrorMode);
+  if (tid != 0) {
+    pWndText->AddString(prj.GetText(tid));
+  }
+
+  MoveParentCenter();
 }
 
-void CWndSmeltSafetyConfirm::OnInitialUpdate()
-{
-	CWndNeuz::OnInitialUpdate();
+BOOL CWndSmeltSafetyConfirm::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+  if (CWndInventory * pWndInventory = GetWndBase<CWndInventory>(APP_INVENTORY)) {
+    if (nID == WIDC_SMELT_YES) {
+      if (m_pItemElem)
+        pWndInventory->RunUpgrade(m_pItemElem);
 
-	CWndText* pWndText = (CWndText*)GetDlgItem(WIDC_CONFIRM_TEXT);
-	assert(pWndText != NULL);
+      Destroy();
+    } else if (nID == WIDC_SMELT_NO) {
+      pWndInventory->BaseMouseCursor();
+      Destroy();
+    }
+  }
 
-	switch(m_eErrorMode)
-	{
-	case WND_ERROR1:
-		{
-			pWndText->AddString(prj.GetText(TID_GAME_SMELT_SAFETY_CONFIRM_NORMAL));
-			break;
-		}
-	case WND_ERROR2:
-		{
-			pWndText->AddString(prj.GetText(TID_GAME_SMELT_SAFETY_CONFIRM_HIGHEST));
-			break;
-		}
-	case WND_ERROR3:
-		{
-			pWndText->AddString(prj.GetText(TID_GAME_SMELT_SAFETY_CONFIRM_ACCESSARY));
-			break;
-		}
-	}
-
-	MoveParentCenter();
+  return CWndNeuz::OnChildNotify(message, nID, pLResult);
 }
 
-BOOL CWndSmeltSafetyConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
-{
-	CWndInventory* pWndInventory = (CWndInventory*)GetWndBase(APP_INVENTORY);
 
-	if(pWndInventory != NULL)
-	{
-		if(nID == WIDC_SMELT_YES)
-		{
-			if(m_pItemElem != NULL)
-				pWndInventory->RunUpgrade(m_pItemElem);
+///////////////////////////////////////////////////////////////////////////////
 
-			Destroy();
-		}
-		else if(nID == WIDC_SMELT_NO)
-		{
-			pWndInventory->BaseMouseCursor();
-			Destroy();
-		}
-	}
-
-	return CWndNeuz::OnChildNotify( message, nID, pLResult );
-}
-
-void CWndSmeltSafetyConfirm::OnDestroy()
-{
-	CWndInventory* pWndInventory = (CWndInventory*)GetWndBase( APP_INVENTORY );
-	if(pWndInventory != NULL)
-		pWndInventory->BaseMouseCursor();
-}
-
-void CWndSmeltSafetyConfirm::SetWndMode(CItemElem* pItemElem)
-{
-	m_pItemElem = pItemElem;	
+void CWndSmeltSafetyConfirm::OnDestroy() {
+  if (CWndInventory * pWndInventory = GetWndBase<CWndInventory>(APP_INVENTORY)) {
+    pWndInventory->BaseMouseCursor();
+  }
 }
 
 CWndEquipBindConfirm::CWndEquipBindConfirm(EquipAction eEquipAction) : 
