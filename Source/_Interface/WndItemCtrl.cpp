@@ -7,6 +7,7 @@
 #include "DefineText.h"
 #include "DPClient.h"
 #include "WndManager.h"
+#include "WndSmelt.h"
 
 #include "WndText.h"
 #include "MsgHdr.h"

@@ -61,6 +61,7 @@
 #include "WndGuildHouse.h"
 #include "WndCommItem.h"
 #include "WndQuest.h"
+#include "WndSmelt.h"
 
 #include "boost/pfr.hpp"
 

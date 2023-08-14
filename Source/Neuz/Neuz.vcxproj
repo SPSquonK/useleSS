@@ -115,6 +115,7 @@
     <ClCompile Include="..\_Interface\WndRankCmn.cpp" />
     <ClCompile Include="..\_Interface\WndSkill16.cpp" />
     <ClCompile Include="..\_Interface\WndSkillTree.cpp" />
+    <ClCompile Include="..\_Interface\WndSmelt.cpp" />
     <ClCompile Include="..\_Interface\WndSqKComponents.cpp" />
     <ClCompile Include="..\_Network\ListedServer.cpp" />
     <ClCompile Include="CampusHelper.cpp">
@@ -687,6 +688,7 @@
     <ClInclude Include="..\_Interface\WndPost.h" />
     <ClInclude Include="..\_Interface\WndRankCmn.h" />
     <ClInclude Include="..\_Interface\WndSkillTree.h" />
+    <ClInclude Include="..\_Interface\WndSmelt.h" />
     <ClInclude Include="..\_Interface\WndSqKComponents.h" />
     <ClInclude Include="..\_Interface\WndTListBox.hpp" />
     <ClInclude Include="..\_Network\ListedServer.h" />

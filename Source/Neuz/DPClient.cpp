@@ -67,6 +67,7 @@
 #include "Network.h"
 #include "WndSelectVillage.h"
 #include "WndSealChar.h"
+#include "WndSmelt.h"
 
 #include "post.h"
 #include "spevent.h"

@@ -90,6 +90,8 @@ class CWndTradeGold;
 class CWndGuildCombat1to1Offer; class CWndGuildCombat1to1Selection;
 class CWndLvReqDown;
 
+/* WndSmelt.h */ class CWndRandomScrollConfirm; class CWndMixJewel; class CWndExtraction; class CWndSmeltJewel; class CWndChangeWeapon; class CWndHeroSkillUp; class CWndRemovePiercing; class CWndRemoveJewel; class CWndChangeAttribute; class CWndSmeltSafety; class CWndSmeltSafetyConfirm; class CWndEquipBindConfirm; class CWndRemoveAttribute;
+
 #define REG_VERSION 1
 
 #include "WndRankCmn.h"

@@ -1003,6 +1003,9 @@
     <ClCompile Include="..\_Common\ePropType.cpp">
       <Filter>ItemProps</Filter>
     </ClCompile>
+    <ClCompile Include="..\_Interface\WndSmelt.cpp">
+      <Filter>Source Files\_Interface\WndApplet</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CNTREVNT.h">
@@ -1871,6 +1874,9 @@
     </ClInclude>
     <ClInclude Include="..\_Common\ePropType.h">
       <Filter>ItemProps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_Interface\WndSmelt.h">
+      <Filter>Source Files\_Interface\WndApplet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

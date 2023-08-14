@@ -12,6 +12,7 @@
 #include "WndChangeFace.h"
 #include "WndCommItem.h"
 #include "WndSkillTree.h"
+#include "WndSmelt.h"
 #include "dpclient.h"
 #include "timeLimit.h"
 #include "MsgHdr.h"

@@ -25,6 +25,7 @@
 #include "eveschool.h"
 #include "WndSummonFriend.h"
 #include "WndLvReqDown.h"
+#include "WndSmelt.h"
 
 #include "langman.h"
 
