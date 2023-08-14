@@ -1035,7 +1035,6 @@ public:
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
 	virtual BOOL Process ();
 	
-	void SetDescription(CHAR* szChar);
 	void ReceiveResult(int result);
 	void InitializeJewel(CItemElem* pItemElem);
 	void SetJewel(CItemElem* pItemElem);
@@ -1254,7 +1253,6 @@ public:
 	BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) override; 
 	void OnInitialUpdate() override; 
 	
-	void SetDescription(CHAR* szChar);
 	void ReceiveResult(BOOL result);
 	void SetWeapon(CItemElem* pItemElem);
 };
@@ -1279,7 +1277,6 @@ public:
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
 	
-	void SetDescription(CHAR* szChar);
 	void SetItem(CItemElem* pItemElem);
 };
 
