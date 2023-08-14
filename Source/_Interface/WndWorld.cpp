@@ -2254,7 +2254,7 @@ void CWndWorld::RenderSelectObj( C2DRender* p2DRender, CObj* pObj )
 }
 
 std::optional<DWORD> CWndWorld::GetAttrIconIndex(const SAI79::ePropType nAttr) {
-	if (!SAI79::IsValid(nAttr) || nAttr == SAI79::NO_PROP) return 0;
+	if (!SAI79::IsValid(nAttr) || nAttr == SAI79::NO_PROP) return std::nullopt;
 	return static_cast<DWORD>(nAttr) - 1;
 }
 
