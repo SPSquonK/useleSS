@@ -7100,7 +7100,6 @@ CWndSmeltJewel::CWndSmeltJewel()
 	m_pMainItem = NULL;
 	m_pJewelElem = NULL;
 	m_pItemElem = NULL;
-	m_pText = NULL;
 	m_nJewelCount = 0;
 	m_nUsableSlot = -1;
 	m_objJewelId = -1;
@@ -7113,12 +7112,11 @@ CWndSmeltJewel::CWndSmeltJewel()
 	m_fRotate = 0.0f;
 	m_fAddRot = 2.0f;
 	
-	m_nStatus = 0;
+	m_nStatus = Status::Base;
 	m_nCount = 0;
 	m_nDelay = 25;
 	m_nAlpha = 0;
 	m_nEyeYPos = 0.0f;
-	m_bFlash = FALSE;
 }
 
 CWndSmeltJewel::~CWndSmeltJewel()
@@ -7135,7 +7133,7 @@ void CWndSmeltJewel::OnDestroy()
 		if( !g_pPlayer->m_vtInfo.IsTrading( m_pJewelElem ) )
 			m_pJewelElem->SetExtra(0);
 	}
-	if(m_pItemElem != NULL)
+	if(m_pItemElem)
 	{
 		if( !g_pPlayer->m_vtInfo.IsTrading( m_pItemElem ) )
 			m_pItemElem->SetExtra(0);		
@@ -7159,14 +7157,13 @@ void CWndSmeltJewel::OnInitialUpdate()
 		pStatic->EnableWindow(FALSE);
 	}
 
-	CWndButton* pButton = (CWndButton*)GetDlgItem(WIDC_START);
+	CWndButton* pButton = GetDlgItem<CWndButton>(WIDC_START);
 	if(::GetLanguage() == LANG_FRE)
 		pButton->SetTexture(MakePath( DIR_THEME, _T( "ButOk2.bmp" ) ), TRUE);
 
 	pButton->EnableWindow(FALSE);
 
-	m_pText = (CWndText *)GetDlgItem( WIDC_TEXT1 );
-	CWndText::SetupDescription(m_pText, _T("SmeltJewel.inc"));
+	CWndText::SetupDescription(GetDlgItem<CWndText>(WIDC_TEXT1), _T("SmeltJewel.inc"));
 
 	MoveParentCenter();
 } 
@@ -7178,54 +7175,24 @@ BOOL CWndSmeltJewel::Initialize( CWndBase* pWndParent )
 	return CWndNeuz::InitDialog( APP_SMELT_JEWEL, pWndParent, 0, CPoint( 0, 0 ) );
 } 
 
-
-BOOL CWndSmeltJewel::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ) 
-{ 
-	return CWndNeuz::OnCommand( nID, dwMessage, pWndBase ); 
-}
-
-void CWndSmeltJewel::OnSize( UINT nType, int cx, int cy ) \
-{ 
-	CWndNeuz::OnSize( nType, cx, cy ); 
-}
-
-void CWndSmeltJewel::OnLButtonUp( UINT nFlags, CPoint point ) 
-{ 
-}
-
-void CWndSmeltJewel::OnLButtonDown( UINT nFlags, CPoint point ) 
-{
-}
-
 BOOL CWndSmeltJewel::Process()
 {
-	if(m_pItemElem != NULL)
-	{
-		CWndButton* pButton;
-		pButton = (CWndButton*)GetDlgItem(WIDC_START);
-		
-		if(m_nStatus != 1)
-		{
-			if( (m_nUsableSlot >= 0 && m_nUsableSlot < 5) && m_dwJewel[m_nUsableSlot] != -1)
-				pButton->EnableWindow(TRUE);
-			else
-				pButton->EnableWindow(FALSE);
-		}
-		else
-			pButton->EnableWindow(FALSE);
-	}
+  if (m_pItemElem) {
+    CWndBase * pButton = GetDlgItem(WIDC_START);
 
-	if(m_nStatus == 1) //Start!
-	{
-		if(m_nStatus == 1) //Start��ư ���� ���? ��ǻ���� ������ ȸ���ϵ��� ��.
+    const bool canStart =
+      m_nStatus == Status::Base
+      && (m_nUsableSlot >= 0 && m_nUsableSlot < 5)
+      && m_dwJewel[m_nUsableSlot] != -1;
+
+    pButton->EnableWindow(canStart ? TRUE : FALSE);
+  }
+
+		if(m_nStatus == Status::Smelting) //Start��ư ���� ���? ��ǻ���� ������ ȸ���ϵ��� ��.
 		{
 			if(m_nCount > m_nDelay)
 			{
 				m_fAddRot += 4.0f;
-				//( m_fRotate < 1 ) ? m_fRotate = 1 : m_fRotate;
-				
-				if(m_nDelay <= 25 && m_nDelay > 16) //ȸ���� �����? �κп��� �÷����� ����.
-					m_bFlash = TRUE;
 				
 				if(m_nDelay < 10)
 				{
@@ -7237,14 +7204,14 @@ BOOL CWndSmeltJewel::Process()
 				m_nDelay -= 1;				
 				if(m_nDelay < 0)
 				{
-					m_nStatus = 0;
+					m_nStatus = Status::Base;
 					m_nDelay = 25;
 					m_fRotate = 0.0f;
 					m_fAddRot = 2.0f;
 					m_nAlpha = 0;
 					m_nEyeYPos = 0.0f;
 					
-					if(m_pItemElem != NULL && m_objJewelId != -1)
+					if(m_pItemElem && m_objJewelId != -1)
 						g_DPlay.SendUltimateSetGem(m_pItemElem->m_dwObjId, m_objJewelId);
 				}
 				
@@ -7252,103 +7219,25 @@ BOOL CWndSmeltJewel::Process()
 			}
 			m_nCount++;
 		}
-	}
 
 	return TRUE;
 }
 
-void CWndSmeltJewel::OnDraw( C2DRender* p2DRender ) 
-{ 
-	if( m_pItemElem == NULL )
-		return;
+void CWndSmeltJewel::OnDraw( C2DRender* p2DRender ) {
+  if (!m_pItemElem) return;
 
 	ResetRenderState();
 
 	pd3dDevice->SetRenderState( D3DRS_AMBIENT,  D3DCOLOR_ARGB( 255,255,255,255 ) );
 	
-	CRect rect = GetClientRect();
-
-	// ����Ʈ ���� 
-	D3DVIEWPORT9 viewport;
-
-	// ���� 
-	D3DXMATRIXA16 matWorld;
-	D3DXMATRIXA16 matScale;
-	D3DXMATRIXA16 matRot;
-	D3DXMATRIXA16 matTrans;
-
-	// Color
-	D3DXCOLOR color;
-	
 	// �ʱ�ȭ
-	D3DXMatrixIdentity(&matScale);
-	D3DXMatrixIdentity(&matTrans);
-	D3DXMatrixIdentity(&matWorld);
 	
-	D3DXVECTOR3 vEyePt(0.0f, 0.0f, 0.0f);
-	D3DXVECTOR3 vLookatPt(0.0f, 0.0f, 0.0f);
-	D3DXVECTOR3 vUpVec(0.0f, 1.0f, 0.0f);
+	const D3DXVECTOR3 vUpVec(0.0f, 1.0f, 0.0f);
 
 	// ���⿡ ���� Camera Angle����
-	if(m_pItemElem->GetProp()->dwItemKind3 == IK3_AXE ||
-		m_pItemElem->GetProp()->dwItemKind3 == IK3_SWD)
-	{
-		if(m_pItemElem->GetProp()->dwHanded == HD_ONE)
-		{
-			vEyePt.x = 0.0f;
-			vEyePt.y = 3.0f;
-			vEyePt.z = 0.0f;
-			
-			vLookatPt.x = 0.6f;
-			vLookatPt.y = -0.2f;
-			vLookatPt.z = 0.0f;
-		}
-		else if(m_pItemElem->GetProp()->dwHanded == HD_TWO)
-		{
-			vEyePt.x = 1.0f;
-			vEyePt.y = 5.0f;
-			vEyePt.z = 0.0f;
-			
-			vLookatPt.x = 1.2f;
-			vLookatPt.y = -0.2f;
-			vLookatPt.z = 0.0f;
-		}
-	}
-	else if(m_pItemElem->GetProp()->dwItemKind3 == IK3_YOYO ||
-			m_pItemElem->GetProp()->dwItemKind3 == IK3_KNUCKLEHAMMER ||
-			m_pItemElem->GetProp()->dwItemKind3 == IK3_BOW)
-	{
-		vEyePt.x = 0.0f;
-		vEyePt.y = 3.0f;
-		vEyePt.z = 0.0f;
-		
-		vLookatPt.x = 0.01f;
-		vLookatPt.y = -0.2f;
-		vLookatPt.z = 0.0f;
-	}
-	else if(m_pItemElem->GetProp()->dwItemKind3 == IK3_WAND)
-	{
-		vEyePt.x = 0.0f;
-		vEyePt.y = 3.0f;
-		vEyePt.z = 0.0f;
-		
-		vLookatPt.x = 0.4f;
-		vLookatPt.y = -0.2f;
-		vLookatPt.z = 0.0f;
-	}
-	else if(m_pItemElem->GetProp()->dwItemKind3 == IK3_CHEERSTICK ||
-			m_pItemElem->GetProp()->dwItemKind3 == IK3_STAFF)
-	{
-		vEyePt.x = 0.0f;
-		vEyePt.y = 4.0f;
-		vEyePt.z = 0.0f;
-		
-		vLookatPt.x = 0.01f;
-		vLookatPt.y = -0.2f;
-		vLookatPt.z = 0.0f;
-	}
+  auto [vEyePt, vLookatPt] = WeaponCameraAngle(m_pItemElem->GetProp());
 
-	if(m_nStatus == 1) //Start�� �̹��� ȸ�� �� ������ ���� ����.
+	if(m_nStatus == Status::Smelting) //Start�� �̹��� ȸ�� �� ������ ���� ����.
 	{
 		vEyePt.y += m_nEyeYPos;
 	}
@@ -7357,29 +7246,30 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 	D3DXMatrixLookAtLH(&matView, &vEyePt, &vLookatPt, &vUpVec);
 	pd3dDevice->SetTransform(D3DTS_VIEW, &matView);
 	
-    D3DXMATRIXA16 matProj;
-    D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 1.0f, 1.0f, 100.0f );
-    pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
+  D3DXMATRIXA16 matProj;
+  D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI/4, 1.0f, 1.0f, 100.0f );
+  pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 
 	// Rotation
 	m_fRotate += m_fAddRot;
-	D3DXMatrixRotationX(&matRot, D3DXToRadian( m_fRotate ) );
+  D3DXMATRIXA16 matRot; D3DXMatrixRotationX(&matRot, D3DXToRadian( m_fRotate ) );
 	
 	// Scaling
-	D3DXMatrixScaling(&matScale, 1.5f, 1.5f, 1.5f);	
+  D3DXMATRIXA16 matScale; D3DXMatrixScaling(&matScale, 1.5f, 1.5f, 1.5f);
 
 	LPWNDCTRL lpFace = GetWndCtrl( WIDC_CUSTOM1 );
 
 	// ������ ��ġ ����
 
-	viewport = BuildViewport(p2DRender, lpFace);
+  // ����Ʈ ���� 
+  D3DVIEWPORT9 viewport = BuildViewport(p2DRender, lpFace);
 
 
 	pd3dDevice->SetViewport(&viewport);
 	pd3dDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER, 0xffa08080, 1.0f, 0 );
 
 	// Matrix Multiply
-	matWorld = matWorld * matScale * matRot * matTrans;
+  const D3DXMATRIXA16 matWorld = matScale * matRot;
 	pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 	
 	// ������ 
@@ -7396,16 +7286,6 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 	::SetTransformView( matView );
 	::SetTransformProj( matProj );
 	
-/*	if(m_nStatus == 1) //������.
-	{
-		if(m_bFlash)
-		{
-			color =  D3DCOLOR_ARGB( 255, 255, 255, 255 );
-			p2DRender->RenderFillRect( rect, color );
-			m_bFlash = FALSE;
-		}
-	}
-*/
 	m_pMainItem->Render( &matWorld );
 
 	viewport.X      = p2DRender->m_ptOrigin.x;
@@ -7421,9 +7301,7 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 
 	//Jewel Rendering
 	CTexture* pTexture;
-	ItemProp* pItemProp;
-	if(m_pItemElem != NULL)
-	{
+
 		for(int i=0; i<5; i++)
 		{
 			LPWNDCTRL pWndCtrl = GetWndCtrl( m_nJewelSlot[i] );
@@ -7436,10 +7314,9 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 						pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndDisableBlue.bmp"), 0xffff00ff );
 						if(pTexture != NULL)
 							pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
-						//p2DRender->RenderFillRect( pWndCtrl->rect, 0x609370db );
 					}
 
-					pItemProp = prj.GetItemProp( m_dwJewel[i] );
+					const ItemProp * pItemProp = prj.GetItemProp( m_dwJewel[i] );
 					if(pItemProp != NULL)
 					{
 						pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
@@ -7463,27 +7340,50 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender )
 				pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndDisableRed.bmp"), 0xffff00ff );
 				if(pTexture != NULL)
 					pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
-				//p2DRender->RenderFillRect( pWndCtrl->rect, 0xa0ff0000 );
 			}
 		}
-	}
+	
 
-	if(m_nStatus == 1)
-	{
-		color =  D3DCOLOR_ARGB( m_nAlpha, 240, 255, 255 );
-				
-		CRect rect;
-		LPWNDCTRL lpWndCtrl;
-					
-		lpWndCtrl = GetWndCtrl( WIDC_CUSTOM1 );
-		rect = lpWndCtrl->rect;
-		p2DRender->RenderFillRect( rect, color );
-	}
+  if (m_nStatus == Status::Smelting) {
+    const DWORD color = D3DCOLOR_ARGB(m_nAlpha, 240, 255, 255);
+    const CRect rect = GetWndCtrl(WIDC_CUSTOM1)->rect;
+    p2DRender->RenderFillRect(rect, color);
+  }
+}
+
+CWndSmeltJewel::WeaponCameraAngle::WeaponCameraAngle(const ItemProp * pProp) {
+  vEyePt = D3DXVECTOR3(0.f, 0.f, 0.f);
+  vLookatPt = D3DXVECTOR3(0.f, 0.f, 0.f);
+  if (!pProp) return;
+
+  if (pProp->dwItemKind3 == IK3_AXE || pProp->dwItemKind3 == IK3_SWD) {
+    if (pProp->dwHanded == HD_ONE) {
+      vEyePt    = D3DXVECTOR3(0.0f, 3.0f, 0.0f);
+      vLookatPt = D3DXVECTOR3(0.6f, -0.2f, 0.0f);
+    } else if (pProp->dwHanded == HD_TWO) {
+      vEyePt    = D3DXVECTOR3(1.0f, 5.0f, 0.0f);
+      vLookatPt = D3DXVECTOR3(1.2f, -0.2f, 0.0f);
+    }
+
+  } else if (pProp->dwItemKind3 == IK3_YOYO ||
+    pProp->dwItemKind3 == IK3_KNUCKLEHAMMER ||
+    pProp->dwItemKind3 == IK3_BOW) {
+    vEyePt    = D3DXVECTOR3(0.0f, 3.0f, 0.0f);
+    vLookatPt = D3DXVECTOR3(0.01f, -0.2f, 0.0f);
+
+  } else if (pProp->dwItemKind3 == IK3_WAND) {
+    vEyePt    = D3DXVECTOR3(0.0f, 3.0f, 0.0f);
+    vLookatPt = D3DXVECTOR3(0.4f, -0.2f, 0.0f);
+
+  } else if (pProp->dwItemKind3 == IK3_CHEERSTICK || pProp->dwItemKind3 == IK3_STAFF) {
+    vEyePt    = D3DXVECTOR3(0.0f, 4.0f, 0.0f);
+    vLookatPt = D3DXVECTOR3(0.01f, -0.2f, 0.0f);
+  }
 }
 
 BOOL CWndSmeltJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 {
-	if(m_nStatus != 0)
+	if(m_nStatus != Status::Base)
 		return FALSE;
 
 	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_CUSTOM1 );		
@@ -7513,11 +7413,7 @@ BOOL CWndSmeltJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	//SetJewel
 	if(m_pItemElem != NULL && m_pItemElem->GetUltimatePiercingSize() > 0)
 	{
-		if(pItemElem && (pItemElem->m_dwItemId == II_GEN_MAT_RUBY || 
-			pItemElem->m_dwItemId == II_GEN_MAT_DIAMOND ||
-			pItemElem->m_dwItemId == II_GEN_MAT_EMERALD ||
-			pItemElem->m_dwItemId == II_GEN_MAT_SAPPHIRE ||
-			pItemElem->m_dwItemId == II_GEN_MAT_TOPAZ))
+		if(pItemElem && IsJewel(pItemElem->m_dwItemId))
 		{
 			int checkslot = -1;
 			for(int i=0; i<5; i++)
@@ -7542,85 +7438,76 @@ BOOL CWndSmeltJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	return TRUE;
 }
 
-void CWndSmeltJewel::SetJewel(CItemElem* pItemElem)
-{
-	//SetJewel
-	if( m_nStatus == 0 && m_pItemElem != NULL && m_pItemElem->GetUltimatePiercingSize() > 0 )
-	{
-		if(pItemElem && (pItemElem->m_dwItemId == II_GEN_MAT_RUBY || 
-			pItemElem->m_dwItemId == II_GEN_MAT_DIAMOND ||
-			pItemElem->m_dwItemId == II_GEN_MAT_EMERALD ||
-			pItemElem->m_dwItemId == II_GEN_MAT_SAPPHIRE ||
-			pItemElem->m_dwItemId == II_GEN_MAT_TOPAZ))
-		{
-			if(m_nUsableSlot > -1 && m_dwJewel[m_nUsableSlot] == -1)
-			{
-				m_dwJewel[m_nUsableSlot] = pItemElem->m_dwItemId;
-				m_objJewelId = pItemElem->m_dwObjId;
-				pItemElem->SetExtra(pItemElem->GetExtra()+1);
-				m_pJewelElem = pItemElem;
-			}
-		}
-	}
+bool CWndSmeltJewel::IsJewel(DWORD itemId) {
+  return sqktd::is_among(itemId,
+    II_GEN_MAT_RUBY, II_GEN_MAT_DIAMOND, II_GEN_MAT_EMERALD,
+    II_GEN_MAT_SAPPHIRE, II_GEN_MAT_TOPAZ
+  );
 }
 
-void CWndSmeltJewel::OnLButtonDblClk( UINT nFlags, CPoint point )
-{
-	LPWNDCTRL wndCtrl = GetWndCtrl( m_nJewelSlot[m_nUsableSlot] );		
-	if( m_nStatus == 0 && wndCtrl != NULL && wndCtrl->rect.PtInRect( point ) )
-	{
-		if(m_dwJewel[m_nUsableSlot] != -1)
-		{
-			if(m_pJewelElem)
-				m_pJewelElem->SetExtra(0);
-			m_dwJewel[m_nUsableSlot] = -1;
-		}
-	}
+void CWndSmeltJewel::SetJewel(CItemElem * pItemElem) {
+  if (!pItemElem) return;
+  if (m_nStatus != Status::Base) return;
+  if (!m_pItemElem) return;
+
+  if (!IsJewel(pItemElem->m_dwItemId)) return;
+
+  if (m_nUsableSlot == -1) return;
+  if (m_dwJewel[m_nUsableSlot] != -1) return;
+
+  m_dwJewel[m_nUsableSlot] = pItemElem->m_dwItemId;
+  m_objJewelId = pItemElem->m_dwObjId;
+  pItemElem->SetExtra(pItemElem->GetExtra() + 1);
+  m_pJewelElem = pItemElem;
 }
 
-BOOL CWndSmeltJewel::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ) 
-{
-	if(message == WNM_CLICKED)
-	{
-		if(nID == WIDC_START) 
-		{
-			CWndButton* pButton;
-			pButton = (CWndButton*)GetDlgItem( WIDC_START );
-			pButton->EnableWindow(FALSE);
-			
-			m_nStatus = 1;
-			PLAYSND( "PcSkillD-Counter01.wav" );
-		}
-	}
-			
-	return CWndNeuz::OnChildNotify( message, nID, pLResult );
+void CWndSmeltJewel::OnLButtonDblClk(UINT nFlags, CPoint point) {
+  if (m_nStatus != Status::Base) return;
+  if (m_nUsableSlot == -1) return;
+
+  LPWNDCTRL wndCtrl = GetWndCtrl(m_nJewelSlot[m_nUsableSlot]);
+  if (wndCtrl && wndCtrl->rect.PtInRect(point)) {
+    if (m_dwJewel[m_nUsableSlot] != -1) {
+      if (m_pJewelElem)
+        m_pJewelElem->SetExtra(0);
+      m_dwJewel[m_nUsableSlot] = -1;
+    }
+  }
 }
 
-void CWndSmeltJewel::ReceiveResult(int result)
-{
-	//���? ���� ���� ó��
-	//1. ���� : �ʱ�ȭ
-	//2. ���� : �ʱ�ȭ
-	//3. ���? : ��Ÿ.
-	
-	switch(result) 
-	{
-	case CUltimateWeapon::ULTIMATE_SUCCESS:
-		g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_SMELTJEWEL_SUCCESS ) );
-		PLAYSND( "InfUpgradeSuccess.wav" );
-		//�ʱ�ȭ.
-		InitializeJewel(m_pItemElem);
-		Destroy();
-		break;
-	case CUltimateWeapon::ULTIMATE_FAILED:
-		g_WndMng.OpenMessageBox( prj.GetText( TID_GAME_SMELTJEWEL_FAIL ) );
-		//�ʱ�ȭ.
-		InitializeJewel(m_pItemElem);		
-		break;
-	case CUltimateWeapon::ULTIMATE_CANCEL:
-		Destroy();
-		break;			
-	}
+BOOL CWndSmeltJewel::OnChildNotify(UINT message, UINT nID, LRESULT * pLResult) {
+  if (message == WNM_CLICKED) {
+    if (nID == WIDC_START) {
+      GetDlgItem<CWndButton>(WIDC_START)->EnableWindow(FALSE);
+      m_nStatus = Status::Smelting;
+      PLAYSND("PcSkillD-Counter01.wav");
+    }
+  }
+
+  return CWndNeuz::OnChildNotify(message, nID, pLResult);
+}
+
+void CWndSmeltJewel::ReceiveResult(int result) {
+  //���? ���� ���� ó��
+  //1. ���� : �ʱ�ȭ
+  //2. ���� : �ʱ�ȭ
+  //3. ���? : ��Ÿ.
+
+  switch (result) {
+    case CUltimateWeapon::ULTIMATE_SUCCESS:
+      g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_SMELTJEWEL_SUCCESS));
+      PLAYSND("InfUpgradeSuccess.wav");
+      InitializeJewel(m_pItemElem);
+      Destroy();
+      break;
+    case CUltimateWeapon::ULTIMATE_FAILED:
+      g_WndMng.OpenMessageBox(prj.GetText(TID_GAME_SMELTJEWEL_FAIL));
+      InitializeJewel(m_pItemElem);
+      break;
+    case CUltimateWeapon::ULTIMATE_CANCEL:
+      Destroy();
+      break;
+  }
 }
 
 void CWndSmeltJewel::InitializeJewel(CItemElem* pItemElem)

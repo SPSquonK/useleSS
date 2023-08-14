@@ -1000,7 +1000,6 @@ public:
 	CModelObject* m_pMainItem;
 	CItemElem* m_pItemElem;
 	CItemElem* m_pJewelElem;
-	CWndText* m_pText;
 	
 	DWORD m_dwJewel[5];
 	int m_nJewelSlot[5];
@@ -1011,12 +1010,12 @@ public:
 	float m_fRotate;
 	float m_fAddRot;
 
-	int m_nStatus;
+  enum class Status { Base, Smelting };
+	Status m_nStatus;
 	int m_nCount;
 	int m_nDelay;
 	int m_nAlpha;
 	float m_nEyeYPos;
-	BOOL m_bFlash;
 	
 public:
 	CWndSmeltJewel(); 
@@ -1026,10 +1025,6 @@ public:
 	virtual BOOL OnChildNotify( UINT message, UINT nID, LRESULT* pLResult ); 
 	virtual void OnDraw( C2DRender* p2DRender ); 
 	virtual	void OnInitialUpdate(); 
-	virtual BOOL OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase ); 
-	virtual void OnSize( UINT nType, int cx, int cy ); 
-	virtual void OnLButtonUp( UINT nFlags, CPoint point ); 
-	virtual void OnLButtonDown( UINT nFlags, CPoint point );
 	virtual void OnLButtonDblClk( UINT nFlags, CPoint point );
 	virtual	void OnDestroy( void );
 	virtual BOOL OnDropIcon( LPSHORTCUT pShortcut, CPoint point );
@@ -1038,6 +1033,14 @@ public:
 	void ReceiveResult(int result);
 	void InitializeJewel(CItemElem* pItemElem);
 	void SetJewel(CItemElem* pItemElem);
+
+  [[nodiscard]] static bool IsJewel(DWORD itemId);
+
+  struct WeaponCameraAngle {
+    explicit WeaponCameraAngle(const ItemProp * pItemProp);
+    D3DXVECTOR3 vEyePt;
+    D3DXVECTOR3 vLookatPt;
+  };
 };
 
 class CWndChangeWeapon final : public CWndNeuz
