@@ -464,6 +464,10 @@ void CWndSmeltJewel::OnInitialUpdate()
 
 	CWndText::SetupDescription(GetDlgItem<CWndText>(WIDC_TEXT1), _T("SmeltJewel.inc"));
 
+  m_disableTextures.blue  = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, "WndDisableBlue.bmp" ), 0xffff00ff);
+  m_disableTextures.black = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, "WndDisableBlack.bmp"), 0xffff00ff);
+  m_disableTextures.red   = CWndBase::m_textureMng.AddTexture(MakePath(DIR_THEME, "WndDisableRed.bmp"  ), 0xffff00ff);
+
 	MoveParentCenter();
 } 
 
@@ -497,7 +501,7 @@ BOOL CWndSmeltJewel::Process()
 				{
 					m_nEyeYPos -= 0.4f;
 					m_nAlpha += 18;
-					(m_nAlpha > 230 ) ? m_nAlpha = 230 : m_nAlpha;
+          m_nAlpha = std::min(m_nAlpha, 230);
 				}
 
 				m_nDelay -= 1;				
@@ -599,7 +603,6 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender ) {
 	pd3dDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );	
 
 	//Jewel Rendering
-	CTexture* pTexture;
 
 		for(int i=0; i<5; i++)
 		{
@@ -610,35 +613,34 @@ void CWndSmeltJewel::OnDraw( C2DRender* p2DRender ) {
 				{
 					if(i != m_nUsableSlot) //���� ���� ���������� ��ĥ���� ����.
 					{
-						pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndDisableBlue.bmp"), 0xffff00ff );
-						if(pTexture != NULL)
-							pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
+            if (m_disableTextures.blue) {
+              m_disableTextures.blue->Render(p2DRender, pWndCtrl->rect.TopLeft());
+            }
 					}
 
 					const ItemProp * pItemProp = prj.GetItemProp( m_dwJewel[i] );
 					if(pItemProp != NULL)
 					{
-						pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_ITEM, pItemProp->szIcon), 0xffff00ff );
-						if(pTexture != NULL)
-							pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
+            if (CTexture * pTexture = pItemProp->GetTexture()) {
+              pTexture->Render(p2DRender, pWndCtrl->rect.TopLeft());
+            }
 					}
 				}
 				else
 				{
 					if(i != m_nUsableSlot) //�ո� ���� �� ������ ���� �� �ִ� ù��° ���Ը� ���� �������� ȸ������.
 					{
-						pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndDisableBlack.bmp"), 0xffff00ff );
-						if(pTexture != NULL)
-							pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
-						//p2DRender->RenderFillRect( pWndCtrl->rect, 0xa0a8a8a8 );
+            if (m_disableTextures.black) {
+              m_disableTextures.black->Render(p2DRender, pWndCtrl->rect.TopLeft());
+            }
 					}
 				}
 			}
 			else //�� �ո� ����
 			{
-				pTexture = CWndBase::m_textureMng.AddTexture( MakePath( DIR_THEME, "WndDisableRed.bmp"), 0xffff00ff );
-				if(pTexture != NULL)
-					pTexture->Render( p2DRender, CPoint( pWndCtrl->rect.left, pWndCtrl->rect.top ) );
+        if (m_disableTextures.red) {
+          m_disableTextures.red->Render(p2DRender, pWndCtrl->rect.TopLeft());
+        }
 			}
 		}
 	
@@ -687,10 +689,12 @@ BOOL CWndSmeltJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 	LPWNDCTRL wndCtrl = GetWndCtrl( WIDC_CUSTOM1 );		
 
-	//Set Weapon
-	CItemElem* pItemElem = g_pPlayer->GetItemId( pShortcut->m_dwId );
+  CItemElem * pItemElem = g_pPlayer->GetItemId(pShortcut->m_dwId);
+  if (!pItemElem) return TRUE;
 
-	if(pItemElem && (pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_DIRECT || pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_MAGIC) &&
+	//Set Weapon
+
+	if((pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_DIRECT || pItemElem->GetProp()->dwItemKind2 == IK2_WEAPON_MAGIC) &&
 		pItemElem->GetProp()->dwReferStat1 == WEAPON_ULTIMATE)
 	{	
 		if( wndCtrl->rect.PtInRect( point ) )
@@ -710,23 +714,15 @@ BOOL CWndSmeltJewel::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 	} 
 	
 	//SetJewel
-	if(m_pItemElem != NULL && m_pItemElem->GetUltimatePiercingSize() > 0)
+	if(m_pItemElem && m_nUsableSlot != -1)
 	{
-		if(pItemElem && IsJewel(pItemElem->m_dwItemId))
+		if(IsJewel(pItemElem->m_dwItemId))
 		{
-			int checkslot = -1;
-			for(int i=0; i<5; i++)
+      const bool inRect = GetWndCtrl(m_nJewelSlot[m_nUsableSlot])->rect.PtInRect(point);;
+
+			if(inRect && m_dwJewel[m_nUsableSlot] == -1)
 			{
-				LPWNDCTRL wndCtrl = GetWndCtrl( m_nJewelSlot[i] );
-				if(wndCtrl->rect.PtInRect( point ))
-				{
-					checkslot = i;
-					i = 5;
-				}
-			}
-			if(m_nUsableSlot > -1 && m_dwJewel[m_nUsableSlot] == -1 && checkslot == m_nUsableSlot)
-			{
-				m_dwJewel[checkslot] = pItemElem->m_dwItemId;
+				m_dwJewel[m_nUsableSlot] = pItemElem->m_dwItemId;
 				m_objJewelId = pItemElem->m_dwObjId;
 				pItemElem->SetExtra(pItemElem->GetExtra()+1);
 				m_pJewelElem = pItemElem;
@@ -814,7 +810,6 @@ void CWndSmeltJewel::InitializeJewel(CItemElem* pItemElem)
 	//���� ����Ÿ �ʱ�ȭ.
 	m_nJewelCount = 0;
 	m_nUsableSlot = -1;
-	m_dwJewel[m_nUsableSlot] = -1;
 	m_objJewelId = -1;
 
 	m_pItemElem = pItemElem;

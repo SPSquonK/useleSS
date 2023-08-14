@@ -127,6 +127,12 @@ public:
 	int m_nDelay;
 	int m_nAlpha;
 	float m_nEyeYPos;
+
+  struct {
+    CTexture * blue;
+    CTexture * black;
+    CTexture * red;
+  } m_disableTextures;
 	
 public:
 	CWndSmeltJewel(); 
