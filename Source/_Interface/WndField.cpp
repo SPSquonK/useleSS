@@ -2062,12 +2062,10 @@ BOOL CWndInventory::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 			if( pItemElem && pItemElem->GetProp()->dwParts != NULL_ID ) //&& pItemElem->GetProp()->dwParts == i * 3 + j )
 			{
 				//�κ��丮 �׵θ��� �÷����� �������� ������ ���� �ʵ��� ����.
-				CRect rect;
-				LPWNDCTRL lpWndCtrl = GetWndCtrl( WIDC_CUSTOM5 );
-				rect = lpWndCtrl->rect;
-				lpWndCtrl = GetWndCtrl( WIDC_CUSTOM10 );
-				rect.bottom = lpWndCtrl->rect.bottom;
-				rect.right = lpWndCtrl->rect.right;
+        const CRect rect = CRect(
+          GetWndCtrl(WIDC_CUSTOM5)->rect.TopLeft(),
+          GetWndCtrl(WIDC_CUSTOM10)->rect.BottomRight()
+        );
 
 				if(rect.PtInRect( point ))
 				{
