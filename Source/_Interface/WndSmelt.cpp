@@ -1045,33 +1045,23 @@ void CWndChangeWeapon::ReceiveResult(int result)
 //	CWndRemoveJewelConfirm
 //////////////////////////////////////////////////////////////////////////
 
-CWndRemoveJewelConfirm::CWndRemoveJewelConfirm() 
-{
-	m_pInventory = NULL;
-	m_pUpgradeItem = NULL;
-}
- 
-CWndRemoveJewelConfirm::~CWndRemoveJewelConfirm() 
-{
-} 
-
-void CWndRemoveJewelConfirm::OnDestroy()
-{
-	if(m_pInventory != NULL)
-	{
-		m_pInventory->m_pWndRemoveJewelConfirm = NULL;
-		m_pInventory->m_bRemoveJewel = FALSE;
-	}
+CWndRemoveJewelConfirm::CWndRemoveJewelConfirm() {
+  m_pInventory = NULL;
+  m_pUpgradeItem = NULL;
 }
 
-void CWndRemoveJewelConfirm::OnDraw( C2DRender* p2DRender ) 
-{ 
-} 
+void CWndRemoveJewelConfirm::OnDestroy() {
+  if (m_pInventory) {
+    m_pInventory->m_pWndRemoveJewelConfirm = NULL;
+    m_pInventory->m_bRemoveJewel = FALSE;
+  }
+}
+
 void CWndRemoveJewelConfirm::OnInitialUpdate() 
 { 
 	CWndNeuz::OnInitialUpdate(); 
 	// ���⿡ �ڵ��ϼ���
-	CWndText* pText = (CWndText*)GetDlgItem( WIDC_TEXT1 );
+	CWndText* pText = GetDlgItem<CWndText>( WIDC_TEXT1 );
 	pText->m_string.AddParsingString( prj.GetText( TID_GAME_REMOVEJEWEL ) );
 	pText->ResetString();
 	MoveParentCenter();
@@ -1088,7 +1078,7 @@ BOOL CWndRemoveJewelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLR
 { 
 	if( nID == WIDC_YES )
 	{
-		if(m_pInventory != NULL)
+		if(m_pInventory)
 		{
 			// ��þƮ�� �Ǵ� ������ - ���? ���?
 			m_pInventory->m_pUpgradeItem = m_pUpgradeItem;
@@ -1098,8 +1088,7 @@ BOOL CWndRemoveJewelConfirm::OnChildNotify( UINT message, UINT nID, LRESULT* pLR
 	}
 	else if( nID == WIDC_NO || nID == WTBID_CLOSE )
 	{
-		if(m_pInventory != NULL)
-			m_pInventory->BaseMouseCursor();
+		if(m_pInventory) m_pInventory->BaseMouseCursor();
 		Destroy();
 	}
 	return CWndNeuz::OnChildNotify( message, nID, pLResult ); 
