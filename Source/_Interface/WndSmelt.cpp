@@ -2069,56 +2069,20 @@ void CWndSmeltSafety::OnInitialUpdate()
 			rect = pWndStatic->GetWndRect();
 			pWndStatic->Move(rect.left + EXTENSION_PIXEL, rect.top);
 		}
+    
+    static constexpr std::initializer_list<int> widgetsToMove = {
+      WIDC_STATIC1, WIDC_TITLE_NOW_GRADE, WIDC_TITLE_MAX_GRADE,
+      WIDC_NOW_GRADE, WIDC_EDIT_MAX_GRADE, WIDC_BUTTON_PLUS,
+      WIDC_BUTTON_MINUS, WIDC_BUTTON_START, WIDC_BUTTON_STOP,
+      WIDC_BUTTON_RESET
+    };
 
-		CWndStatic* pWndStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC1);
-		assert(pWndStatic != NULL);
-		rect = pWndStatic->GetWndRect();
-		pWndStatic->Move(rect.left + HALF_EXTENSION_PIXEL, rect.top);
-
-		pWndStatic = (CWndStatic*)GetDlgItem(WIDC_TITLE_NOW_GRADE);
-		assert(pWndStatic != NULL);
-		rect = pWndStatic->GetWndRect();
-		pWndStatic->Move(rect.left + HALF_EXTENSION_PIXEL, rect.top);
-
-		pWndStatic = (CWndStatic*)GetDlgItem(WIDC_TITLE_MAX_GRADE);
-		assert(pWndStatic != NULL);
-		rect = pWndStatic->GetWndRect();
-		pWndStatic->Move(rect.left + HALF_EXTENSION_PIXEL, rect.top);
-
-		pWndStatic = (CWndStatic*)GetDlgItem(WIDC_NOW_GRADE);
-		assert(pWndStatic != NULL);
-		rect = pWndStatic->GetWndRect();
-		pWndStatic->Move(rect.left + HALF_EXTENSION_PIXEL, rect.top);
-
-		CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem(WIDC_EDIT_MAX_GRADE);
-		assert(pWndEdit != NULL);
-		rect = pWndEdit->GetWndRect();
-		pWndEdit->Move(rect.left + HALF_EXTENSION_PIXEL, rect.top);
-
-		CWndButton* pWndButton = (CWndButton*)GetDlgItem(WIDC_BUTTON_PLUS);
-		assert(pWndButton != NULL);
-		rect = pWndButton->GetWndRect();
-		pWndButton->Move(rect.left + HALF_EXTENSION_PIXEL, rect.top);
-
-		pWndButton = (CWndButton*)GetDlgItem(WIDC_BUTTON_MINUS);
-		assert(pWndButton != NULL);
-		rect = pWndButton->GetWndRect();
-		pWndButton->Move(rect.left + HALF_EXTENSION_PIXEL, rect.top);
-
-		pWndButton = (CWndButton*)GetDlgItem(WIDC_BUTTON_START);
-		assert(pWndButton != NULL);
-		rect = pWndButton->GetWndRect();
-		pWndButton->Move(rect.left + HALF_EXTENSION_PIXEL, rect.top);
-
-		pWndButton = (CWndButton*)GetDlgItem(WIDC_BUTTON_STOP);
-		assert(pWndButton != NULL);
-		rect = pWndButton->GetWndRect();
-		pWndButton->Move(rect.left + HALF_EXTENSION_PIXEL, rect.top);
-
-		pWndButton = (CWndButton*)GetDlgItem(WIDC_BUTTON_RESET);
-		assert(pWndButton != NULL);
-		rect = pWndButton->GetWndRect();
-		pWndButton->Move(rect.left + HALF_EXTENSION_PIXEL, rect.top);
+    for (const int widgetID : widgetsToMove) {
+      CWndBase * pWndBase = GetDlgItem(widgetID);
+      assert(pWndBase);
+      const CRect rect = pWndBase->GetWndRect();
+      pWndBase->Move(rect.left + HALF_EXTENSION_PIXEL, rect.top);
+    }
 
 		CRect wndrect = GetWndRect();
 		wndrect.right = wndrect.right + EXTENSION_PIXEL;
@@ -2261,16 +2225,14 @@ void CWndSmeltSafety::OnDraw(C2DRender* p2DRender)
 	CPoint pointMouse = GetMousePoint();
 	if(rectSmeltItem.PtInRect(pointMouse) != FALSE)
 	{
+    ClientToScreen(&pointMouse);
+    ClientToScreen(&rectSmeltItem);
 		if(m_pItemElem != NULL)
 		{
-			ClientToScreen( &pointMouse );
-			ClientToScreen( &rectSmeltItem );
 			g_WndMng.PutToolTip_Item(m_pItemElem, pointMouse, &rectSmeltItem);
 		}
 		else
 		{
-			ClientToScreen( &pointMouse );
-			ClientToScreen( &rectSmeltItem );
 			CString strEmptyTooltip = prj.GetText(TID_GAME_TOOLTIP_SMELT_SAFETY_ITEM);
 			g_toolTip.PutToolTip(reinterpret_cast<DWORD>(this), strEmptyTooltip, rectSmeltItem, pointMouse);
 		}
@@ -2321,16 +2283,11 @@ BOOL CWndSmeltSafety::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 
 			if(m_nValidSmeltCounter > 0)
 			{
-				if(m_eWndMode == WND_PIERCING)
+				if(m_eWndMode == WND_PIERCING && g_pPlayer)
 				{
-					CWndInventory* pWndInventory = (CWndInventory*)GetWndBase(APP_INVENTORY);
-					assert(pWndInventory != NULL);
-					CWndStatic* pGoldNumberStatic = (CWndStatic*)pWndInventory->GetDlgItem(WIDC_GOLD_NUM);
-					assert(pGoldNumberStatic != NULL);
-					int nGoldNumber(atoi(pGoldNumberStatic->GetTitle()));
-					if(nGoldNumber < 100000)
+					if(g_pPlayer->GetGold() < 100000)
 					{
-						g_WndMng.PutString(prj.GetText(TID_GAME_LACKMONEY), NULL, prj.GetTextColor(TID_GAME_LACKMONEY));
+						g_WndMng.PutString(TID_GAME_LACKMONEY);
 						break;
 					}
 				}
