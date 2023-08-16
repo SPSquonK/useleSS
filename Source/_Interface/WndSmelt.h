@@ -482,29 +482,33 @@ public:
 
 	void SetItem(CItemElem* pItemElem);
 	void RefreshInformation(void);
-	void RefreshText(void);
 	void RefreshValidSmeltCounter(void);
-	void StopSmelting(void);
 	void DisableScroll2(void);
-	void ResetData(void);
-	void DrawListItem(C2DRender* p2DRender);
-	[[nodiscard]] bool IsDropMaterialZone(CPoint point) const;
-	[[nodiscard]] bool IsDropScroll1Zone(CPoint point) const;
-	[[nodiscard]] bool IsDropScroll2Zone(CPoint point) const;
-	[[nodiscard]] bool IsAcceptableMaterial(const ItemProp * pItemProp);
-	[[nodiscard]] bool IsAcceptableScroll1(const ItemProp * pItemProp) const;
-	[[nodiscard]] bool IsAcceptableScroll2(const ItemProp * pItemProp) const;
-	[[nodiscard]] int GetNowSmeltValue() const;
-	[[nodiscard]] int GetDefaultMaxSmeltValue() const;
 	void SetResultSwitch(bool bResultSwitch) { m_bResultSwitch = bResultSwitch; }
 	void SetCurrentSmeltNumber(int nCurrentSmeltNumber) { m_nCurrentSmeltNumber = nCurrentSmeltNumber; }
 	void SetResultStatic(bool bResultStatic, int nIndex) { m_genLines[nIndex].resultStatic = bResultStatic; }
-	CItemElem* GetItemElement(void) const { return m_pItemElem; }
-	bool GetResultSwitch(void) const { return m_bResultSwitch; }
 	int GetCurrentSmeltNumber(void) const { return m_nCurrentSmeltNumber; }
-	int GetResultStaticID(int nIndex) const { return m_genLines[nIndex].resultStaticId; }
 
 private:
+  void RefreshText(void);
+
+  void StopSmelting(void);
+
+  void ResetData();
+
+  void DrawListItem(C2DRender * p2DRender);
+
+  [[nodiscard]] bool IsDropMaterialZone(CPoint point) const;
+  [[nodiscard]] bool IsDropScroll1Zone(CPoint point) const;
+  [[nodiscard]] bool IsDropScroll2Zone(CPoint point) const;
+  [[nodiscard]] bool IsAcceptableMaterial(const ItemProp * pItemProp);
+  [[nodiscard]] bool IsAcceptableScroll1(const ItemProp * pItemProp) const;
+  [[nodiscard]] bool IsAcceptableScroll2(const ItemProp * pItemProp) const;
+
+  [[nodiscard]] int GetDefaultMaxSmeltValue() const;
+  [[nodiscard]] int GetNowSmeltValue() const;
+
+
 	[[nodiscard]] std::span<GenLine> GenLinesUntilCurrentSmelt() { return std::span(m_genLines, m_nCurrentSmeltNumber); }
 	[[nodiscard]] std::span<GenLine> GenLinesSinceCurrentSmelt() { return std::span(m_genLines + m_nCurrentSmeltNumber, m_genLines + SMELT_MAX); }
   [[nodiscard]] std::expected<WndMode, DWORD> CheckMainItemValidity(CItemElem * pItemElem) const;
