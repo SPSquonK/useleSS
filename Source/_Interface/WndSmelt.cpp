@@ -3115,6 +3115,21 @@ int CWndSmeltSafety::GetDefaultMaxSmeltValue() const {
 	}
 }
 
+void CWndSmeltSafety::OnUpgradeResult(bool isSuccess) {
+
+  m_genLines[m_nCurrentSmeltNumber].resultStatic = isSuccess;
+  m_nCurrentSmeltNumber++;
+
+  if (isSuccess) {
+    RefreshInformation();
+    DisableScroll2();
+  } else {
+    RefreshValidSmeltCounter();
+  }
+
+  m_bResultSwitch = true;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 

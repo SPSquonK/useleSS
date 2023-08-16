@@ -14523,41 +14523,28 @@ void CDPClient::SendSmeltSafety(OBJID objid, OBJID objMaterialId, OBJID objProtS
 	SEND( ar, this, DPID_SERVERPLAYER );
 }
 
-void CDPClient::OnSmeltSafety( CAr & ar )
-{
-	BYTE nResult = 0;
-	ar >> nResult;
+void CDPClient::OnSmeltSafety(CAr & ar) {
+  BYTE nResult = 0;
+  ar >> nResult;
 
-	CWndSmeltSafety* pWndSmeltSafety = g_WndMng.m_pWndSmeltSafety;
-	if(pWndSmeltSafety == NULL)
-		return;
+  CWndSmeltSafety * pWndSmeltSafety = g_WndMng.m_pWndSmeltSafety;
+  if (pWndSmeltSafety == NULL)
+    return;
 
-	switch( nResult )
-	{
-	case 0:			//	안전 제련: 잘못된 재료를 등록했을 때
-		break;
-	case 1:			//	안전 제련: 제련 성공했을 때
-		{
-			int nCurrentSmeltNumber(pWndSmeltSafety->GetCurrentSmeltNumber());
-			pWndSmeltSafety->SetResultStatic(true, nCurrentSmeltNumber);
-			pWndSmeltSafety->SetCurrentSmeltNumber(++nCurrentSmeltNumber);
-			pWndSmeltSafety->RefreshInformation();
-			pWndSmeltSafety->DisableScroll2();
-			pWndSmeltSafety->SetResultSwitch(true);
-			break;
-		}
-	case 2:			//	안전 제련: 제련 실패했을 때
-		{
-			int nCurrentSmeltNumber(pWndSmeltSafety->GetCurrentSmeltNumber());
-			pWndSmeltSafety->SetResultStatic(false, nCurrentSmeltNumber);
-			pWndSmeltSafety->SetCurrentSmeltNumber(++nCurrentSmeltNumber);
-			pWndSmeltSafety->RefreshValidSmeltCounter();
-			pWndSmeltSafety->SetResultSwitch(true);
-			break;
-		}
-	case 3:			//	안전 제련: 최대치까지 제련되어 더 이상 제련할 수 없을 때
-		break;
-	}
+  switch (nResult) {
+    case 0:
+      // Error
+      break;
+    case 1:
+      pWndSmeltSafety->OnUpgradeResult(true);
+      break;
+    case 2:
+      pWndSmeltSafety->OnUpgradeResult(false);
+      break;
+    case 3:
+      // already maxed
+      break;
+  }
 }
 
 #ifdef __MAP_SECURITY

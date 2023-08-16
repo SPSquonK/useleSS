@@ -480,17 +480,16 @@ public:
 	virtual HRESULT InvalidateDeviceObjects();
 	virtual HRESULT DeleteDeviceObjects();
 
+  void OnUpgradeResult(bool isSuccess);
+
 	void SetItem(CItemElem* pItemElem);
-	void RefreshInformation(void);
-	void RefreshValidSmeltCounter(void);
 	void DisableScroll2(void);
-	void SetResultSwitch(bool bResultSwitch) { m_bResultSwitch = bResultSwitch; }
-	void SetCurrentSmeltNumber(int nCurrentSmeltNumber) { m_nCurrentSmeltNumber = nCurrentSmeltNumber; }
-	void SetResultStatic(bool bResultStatic, int nIndex) { m_genLines[nIndex].resultStatic = bResultStatic; }
-	int GetCurrentSmeltNumber(void) const { return m_nCurrentSmeltNumber; }
+	void SetResultStatic(bool bResultStatic, int nIndex) {  }
 
 private:
+  void RefreshInformation(void);
   void RefreshText(void);
+  void RefreshValidSmeltCounter(void);
 
   void StopSmelting(void);
 
