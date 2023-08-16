@@ -1950,11 +1950,7 @@ m_nMaterialCount(0),
 m_nScroll1Count(0), 
 m_nScroll2Count(0), 
 m_nResultCount(0), 
-m_bStart(FALSE), 
-m_bResultSwitch(false), 
-m_dwEnchantTimeStart(0xffffffff), 
-m_dwEnchantTimeEnd(0xffffffff), 
-m_fGaugeRate(0), 
+m_state(StateIdle{}),
 m_nValidSmeltCounter(0), 
 m_nCurrentSmeltNumber(0), 
 m_pVertexBufferGauge(NULL), 
@@ -2127,16 +2123,8 @@ BOOL CWndSmeltSafety::Process()
 		Destroy();
 	}
 
-	if(m_bStart != FALSE && m_pItemElem != NULL)
-	{
-		if(m_bResultSwitch != false)
-		{
-			m_fGaugeRate = static_cast<float>(g_tmCurrent - m_dwEnchantTimeStart) / static_cast<float>(m_dwEnchantTimeEnd - m_dwEnchantTimeStart);
-		}
-		else
-		{
-			m_fGaugeRate = 0.0f;
-		}
+  if (std::holds_alternative<StateGaugeFilling>(m_state)
+    || std::holds_alternative<StateWaitingServer>(m_state)) {
 
 		if(m_nValidSmeltCounter == 0 || GetNowSmeltValue() == GetDefaultMaxSmeltValue())
 		{
@@ -2151,23 +2139,13 @@ BOOL CWndSmeltSafety::Process()
 				StopSmelting();
 			}
 		}
-		if(m_dwEnchantTimeEnd < g_tmCurrent)
-		{
-			m_bResultSwitch = false;
-			m_dwEnchantTimeStart = 0xffffffff;
-			m_dwEnchantTimeEnd = 0xffffffff;
 
-			// Send to Server...
-			m_genLines[m_nCurrentSmeltNumber].SendUpgradeRequestToServer(m_pItemElem);
-
-			m_dwEnchantTimeStart = g_tmCurrent;
-			m_dwEnchantTimeEnd = g_tmCurrent + SEC(ENCHANT_TIME);
+    if (StateGaugeFilling * filling = std::get_if<StateGaugeFilling>(&m_state)) {
+      if (filling->m_dwEnchantTimeEnd < g_tmCurrent) {
+        m_state = StateWaitingServer{};
+        m_genLines[m_nCurrentSmeltNumber].SendUpgradeRequestToServer(m_pItemElem);
+      }
 		}
-	}
-	else
-	{
-		m_dwEnchantTimeStart = 0xffffffff;
-		m_dwEnchantTimeEnd = 0xffffffff;
 	}
 
 	return TRUE;
@@ -2205,12 +2183,13 @@ void CWndSmeltSafety::OnDraw(C2DRender* p2DRender)
 	if(m_pItemElem != NULL && m_pItemTexture != NULL)
 	{
 		// Draw Item
-		m_pItemTexture->Render( p2DRender, CPoint( rectSmeltItem.left, rectSmeltItem.top ) );
+		m_pItemTexture->Render( p2DRender, rectSmeltItem.TopLeft() );
 
 		// Draw Enchant Effect
-		if( m_dwEnchantTimeStart != 0xffffffff && m_dwEnchantTimeEnd != 0xffffffff )
+		if( std::holds_alternative<StateGaugeFilling>(m_state)
+      || std::holds_alternative<StateWaitingServer>(m_state))
 		{
-			RenderEnchant( p2DRender, CPoint(rectSmeltItem.left, rectSmeltItem.top) );
+			RenderEnchant( p2DRender, rectSmeltItem.TopLeft() );
 		}
 	}
 
@@ -2242,19 +2221,33 @@ void CWndSmeltSafety::OnDraw(C2DRender* p2DRender)
 		m_Theme.RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferSuccessImage, pTexture);
 	}
 
-	if(m_bStart != NULL && m_bResultSwitch != false)
+	if (std::holds_alternative<StateGaugeFilling>(m_state)
+    || std::holds_alternative<StateWaitingServer>(m_state))
 	{
-		CRect rectStaticTemp;
 		LPWNDCTRL lpStatic = GetWndCtrl(m_genLines[m_nCurrentSmeltNumber].resultStaticId);
-		rectStaticTemp.TopLeft().y = lpStatic->rect.top;
-		rectStaticTemp.TopLeft().x = lpStatic->rect.left + nExtensionPixel;
-		rectStaticTemp.BottomRight().y = lpStatic->rect.bottom;
-		int nGaugeWidth(lpStatic->rect.left + static_cast<int>(static_cast<float>(lpStatic->rect.right - lpStatic->rect.left) * m_fGaugeRate));
-		nGaugeWidth = nGaugeWidth < lpStatic->rect.right ? nGaugeWidth : lpStatic->rect.right;
-		rectStaticTemp.BottomRight().x = nGaugeWidth + nExtensionPixel;
-		assert(m_pVertexBufferGauge != NULL);
+    CRect rectStaticTemp = lpStatic->rect;
+    rectStaticTemp.OffsetRect(nExtensionPixel, 0);
+
+    if (const StateGaugeFilling * gf = std::get_if<StateGaugeFilling>(&m_state)) {
+      if (gf->m_dwEnchantTimeEnd != gf->m_dwEnchantTimeStart) {
+        const DWORD normalizedCurrent = std::clamp(g_tmCurrent, gf->m_dwEnchantTimeStart, gf->m_dwEnchantTimeEnd);
+        const double t = static_cast<double>(normalizedCurrent) / static_cast<double>(gf->m_dwEnchantTimeEnd - gf->m_dwEnchantTimeStart);
+        const DWORD length = static_cast<DWORD>(std::lerp(rectStaticTemp.left, rectStaticTemp.right, normalizedCurrent));
+        rectStaticTemp.right = rectStaticTemp.left + length;
+      }
+    } else {
+      /* State is StateWaitingServer */
+      /* rectStaticTemp already covers the full length */
+    }
+    
+    assert(m_pVertexBufferGauge != NULL);
 		m_Theme.RenderGauge(p2DRender, &rectStaticTemp, 0xffffffff, m_pVertexBufferGauge, m_pNowGaugeTexture);
 	}
+}
+
+CWndSmeltSafety::StateGaugeFilling::StateGaugeFilling() {
+  m_dwEnchantTimeStart = g_tmCurrent;
+  m_dwEnchantTimeEnd = g_tmCurrent + SEC(ENCHANT_TIME);
 }
 
 BOOL CWndSmeltSafety::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
@@ -2263,7 +2256,7 @@ BOOL CWndSmeltSafety::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 	{
 	case WIDC_BUTTON_START:
 		{
-			if(m_bStart != FALSE)
+			if(!std::holds_alternative<StateIdle>(m_state))
 				break;
 
 			if(m_pItemElem == NULL)
@@ -2282,10 +2275,8 @@ BOOL CWndSmeltSafety::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 						break;
 					}
 				}
-				m_bStart = TRUE;
-				m_bResultSwitch = true;
-				m_dwEnchantTimeStart = g_tmCurrent;
-				m_dwEnchantTimeEnd = g_tmCurrent + SEC(ENCHANT_TIME);
+
+        m_state = StateGaugeFilling();
 				CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem(WIDC_EDIT_MAX_GRADE);
 				assert(pWndEdit != NULL);
 				pWndEdit->EnableWindow(FALSE);
@@ -2335,7 +2326,7 @@ BOOL CWndSmeltSafety::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		}
 	case WIDC_BUTTON_STOP:
 		{
-			if(m_bStart != FALSE)
+			if(std::holds_alternative<StateGaugeFilling>(m_state) || std::holds_alternative<StateWaitingServer>(m_state))
 			{
 				StopSmelting();
 			}
@@ -2343,7 +2334,7 @@ BOOL CWndSmeltSafety::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		}
 	case WIDC_BUTTON_RESET:
 		{
-			if(m_bStart == FALSE)
+			if(std::holds_alternative<StateIdle>(m_state))
 			{
 				ResetData();
 				RefreshInformation();
@@ -2352,7 +2343,7 @@ BOOL CWndSmeltSafety::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		}
 	case WIDC_EDIT_MAX_GRADE:
 		{
-			if(m_bStart == FALSE && m_pItemElem != NULL)
+			if(std::holds_alternative<StateIdle>(m_state) && m_pItemElem != NULL)
 			{
 				CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem(WIDC_EDIT_MAX_GRADE);
 				assert(pWndEdit != NULL);
@@ -2369,7 +2360,7 @@ BOOL CWndSmeltSafety::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem(WIDC_EDIT_MAX_GRADE);
 			assert(pWndEdit != NULL);
-			if(pWndEdit->IsWindowEnabled() != FALSE && m_bStart == FALSE && m_pItemElem != NULL)
+			if(pWndEdit->IsWindowEnabled() != FALSE && std::holds_alternative<StateIdle>(m_state) && m_pItemElem != NULL)
 			{
 				int nMaxSmeltNumber(atoi(pWndEdit->GetString()));
 				nMaxSmeltNumber = (++nMaxSmeltNumber < GetDefaultMaxSmeltValue()) ? nMaxSmeltNumber : GetDefaultMaxSmeltValue();
@@ -2384,7 +2375,7 @@ BOOL CWndSmeltSafety::OnChildNotify( UINT message, UINT nID, LRESULT* pLResult )
 		{
 			CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem(WIDC_EDIT_MAX_GRADE);
 			assert(pWndEdit != NULL);
-			if(pWndEdit->IsWindowEnabled() != FALSE && m_bStart == FALSE && m_pItemElem != NULL)
+			if(pWndEdit->IsWindowEnabled() != FALSE && std::holds_alternative<StateIdle>(m_state) && m_pItemElem != NULL)
 			{
 				int nMaxSmeltNumber(atoi(pWndEdit->GetString()));
 				nMaxSmeltNumber = (--nMaxSmeltNumber > 0) ? nMaxSmeltNumber : 0;
@@ -2430,7 +2421,7 @@ BOOL CWndSmeltSafety::OnDropIcon( LPSHORTCUT pShortcut, CPoint point )
 
 void CWndSmeltSafety::OnLButtonDblClk( UINT nFlags, CPoint point )
 {
-	if(m_bStart != FALSE)
+	if(!std::holds_alternative<StateIdle>(m_state))
 		return;
 
 	CWndStatic* pWndStatic = (CWndStatic*)GetDlgItem(WIDC_STATIC1);
@@ -2597,10 +2588,10 @@ void CWndSmeltSafety::SetItem(CItemElem* pItemElem)
 {
 	assert(pItemElem != NULL);
 
-	if(m_bStart != FALSE)
+	if(!std::holds_alternative<StateIdle>(m_state))
 	{
 		// ���� ���� ���߿��� �������� �����? �� �����ϴ�.
-		g_WndMng.PutString(prj.GetText(TID_GAME_SMELT_SAFETY_ERROR12), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR12));
+		g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR12);
 		return;
 	}
 
@@ -2846,8 +2837,7 @@ void CWndSmeltSafety::RefreshValidSmeltCounter(void)
 
 void CWndSmeltSafety::StopSmelting(void)
 {
-	m_bStart = FALSE;
-	m_bResultSwitch = false;
+  m_state = StateIdle{};
 	CWndEdit* pWndEdit = (CWndEdit*)GetDlgItem(WIDC_EDIT_MAX_GRADE);
 	assert(pWndEdit != NULL);
 	pWndEdit->EnableWindow(TRUE);
@@ -3127,7 +3117,7 @@ void CWndSmeltSafety::OnUpgradeResult(bool isSuccess) {
     RefreshValidSmeltCounter();
   }
 
-  m_bResultSwitch = true;
+  m_state = StateGaugeFilling();
 }
 
 

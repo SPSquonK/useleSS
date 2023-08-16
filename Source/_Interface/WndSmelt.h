@@ -405,6 +405,18 @@ public:
     Normal, Ultimate, Accessory, Piercing, Element
   };
 
+  struct StateIdle {};
+  struct StateGaugeFilling {
+    StateGaugeFilling();
+
+    DWORD m_dwEnchantTimeStart;
+    DWORD m_dwEnchantTimeEnd;
+  };
+  struct StateWaitingServer {};
+
+  using State = std::variant<StateIdle, StateGaugeFilling, StateWaitingServer>;
+
+
   [[nodiscard]] static bool HasScroll2Displayed(WndMode mode);
 
 	struct GENMATDIEINFO {
@@ -450,11 +462,7 @@ private:
 	int m_nScroll1Count;
 	int m_nScroll2Count;
 	int m_nResultCount;
-	BOOL m_bStart;
-	bool m_bResultSwitch;
-	DWORD m_dwEnchantTimeStart;
-	DWORD m_dwEnchantTimeEnd;
-	float m_fGaugeRate;
+  State m_state;
 	int m_nValidSmeltCounter;
 	int m_nCurrentSmeltNumber;
 
@@ -481,18 +489,17 @@ public:
 	virtual HRESULT DeleteDeviceObjects();
 
   void OnUpgradeResult(bool isSuccess);
+  void OnUpgradeError() { StopSmelting(); }
 
 	void SetItem(CItemElem* pItemElem);
-	void DisableScroll2(void);
-	void SetResultStatic(bool bResultStatic, int nIndex) {  }
 
 private:
   void RefreshInformation(void);
   void RefreshText(void);
   void RefreshValidSmeltCounter(void);
 
+  void DisableScroll2(void);
   void StopSmelting(void);
-
   void ResetData();
 
   void DrawListItem(C2DRender * p2DRender);
@@ -506,7 +513,6 @@ private:
 
   [[nodiscard]] int GetDefaultMaxSmeltValue() const;
   [[nodiscard]] int GetNowSmeltValue() const;
-
 
 	[[nodiscard]] std::span<GenLine> GenLinesUntilCurrentSmelt() { return std::span(m_genLines, m_nCurrentSmeltNumber); }
 	[[nodiscard]] std::span<GenLine> GenLinesSinceCurrentSmelt() { return std::span(m_genLines + m_nCurrentSmeltNumber, m_genLines + SMELT_MAX); }

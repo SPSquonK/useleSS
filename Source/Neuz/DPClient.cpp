@@ -14534,6 +14534,7 @@ void CDPClient::OnSmeltSafety(CAr & ar) {
   switch (nResult) {
     case 0:
       // Error
+      pWndSmeltSafety->OnUpgradeError();
       break;
     case 1:
       pWndSmeltSafety->OnUpgradeResult(true);
@@ -14543,6 +14544,7 @@ void CDPClient::OnSmeltSafety(CAr & ar) {
       break;
     case 3:
       // already maxed
+      pWndSmeltSafety->OnUpgradeError();
       break;
   }
 }
