@@ -4099,7 +4099,7 @@ BOOL TextCmd_SmeltSafetyElement( CScanner& s )
 	if( g_WndMng.m_pWndSmeltSafety )
 		SAFE_DELETE( g_WndMng.m_pWndSmeltSafety );
 
-	g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety( CWndSmeltSafety::WND_ELEMENT );
+	g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety( CWndSmeltSafety::WndMode::Element );
 	if( g_WndMng.m_pWndSmeltSafety )
 		g_WndMng.m_pWndSmeltSafety->Initialize();
 #endif // __CLIENT

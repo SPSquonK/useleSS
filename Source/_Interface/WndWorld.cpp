@@ -4786,60 +4786,29 @@ BOOL CWndWorld::OnCommand( UINT nID, DWORD dwMessage, CWndBase* pWndBase )
 			break;
 #endif //__TRADESYS
 		case MMI_SMELT_SAFETY_GENERAL:
+    case MMI_SMELT_SAFETY_ACCESSORY:
+    case MMI_SMELT_SAFETY_PIERCING:
+    case MMI_SMELT_SAFETY_ELEMENT:
 			{
-				if( g_pPlayer->m_vtInfo.GetOther() || g_pPlayer->m_vtInfo.VendorIsVendor() )
-				{
-					g_WndMng.PutString( prj.GetText(TID_GAME_SMELT_SAFETY_ERROR16), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR16) );
-					break;
-				}
+        if (g_pPlayer->m_vtInfo.GetOther() || g_pPlayer->m_vtInfo.VendorIsVendor()) {
+          g_WndMng.PutString(TID_GAME_SMELT_SAFETY_ERROR16);
+          break;
+        }
 
-				if(g_WndMng.m_pWndSmeltSafety != NULL)
-					SAFE_DELETE(g_WndMng.m_pWndSmeltSafety);
-				g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_NORMAL);
-				g_WndMng.m_pWndSmeltSafety->Initialize();
-				break;
-			}
-		case MMI_SMELT_SAFETY_ACCESSORY:
-			{
-				if(g_pPlayer->m_vtInfo.GetOther() || g_pPlayer->m_vtInfo.VendorIsVendor() )
-				{
-					g_WndMng.PutString( prj.GetText(TID_GAME_SMELT_SAFETY_ERROR16), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR16) );
-					break;
-				}
+        const CWndSmeltSafety::WndMode mode =
+          nID == MMI_SMELT_SAFETY_GENERAL   ? CWndSmeltSafety::WndMode::Normal :
+          nID == MMI_SMELT_SAFETY_ACCESSORY ? CWndSmeltSafety::WndMode::Accessory :
+          nID == MMI_SMELT_SAFETY_PIERCING  ? CWndSmeltSafety::WndMode::Piercing :
+          nID == MMI_SMELT_SAFETY_ELEMENT   ? CWndSmeltSafety::WndMode::Element :
+          /* impossible fallthrough case */   CWndSmeltSafety::WndMode::Normal;
 
-				if(g_WndMng.m_pWndSmeltSafety != NULL)
-					SAFE_DELETE(g_WndMng.m_pWndSmeltSafety);
-				g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_ACCESSARY);
-				g_WndMng.m_pWndSmeltSafety->Initialize();
-				break;
-			}
-		case MMI_SMELT_SAFETY_PIERCING:
-			{
-				if(g_pPlayer->m_vtInfo.GetOther() || g_pPlayer->m_vtInfo.VendorIsVendor() )
-				{
-					g_WndMng.PutString( prj.GetText(TID_GAME_SMELT_SAFETY_ERROR16), NULL, prj.GetTextColor(TID_GAME_SMELT_SAFETY_ERROR16) );
-					break;
-				}
 
-				if(g_WndMng.m_pWndSmeltSafety != NULL)
-					SAFE_DELETE(g_WndMng.m_pWndSmeltSafety);
-				g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(CWndSmeltSafety::WND_PIERCING);
+				SAFE_DELETE(g_WndMng.m_pWndSmeltSafety);
+				g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety(mode);
 				g_WndMng.m_pWndSmeltSafety->Initialize();
 				break;
 			}
-		case MMI_SMELT_SAFETY_ELEMENT:
-			{
-				if(g_pPlayer->m_vtInfo.GetOther() || g_pPlayer->m_vtInfo.VendorIsVendor() )
-				{
-					g_WndMng.PutString( prj.GetText( TID_GAME_SMELT_SAFETY_ERROR16 ), NULL, prj.GetTextColor( TID_GAME_SMELT_SAFETY_ERROR16 ) );
-					break;
-				}
-				if( g_WndMng.m_pWndSmeltSafety )
-					SAFE_DELETE( g_WndMng.m_pWndSmeltSafety );
-				g_WndMng.m_pWndSmeltSafety = new CWndSmeltSafety( CWndSmeltSafety::WND_ELEMENT );
-				g_WndMng.m_pWndSmeltSafety->Initialize();
-				break;
-			}
+
 #ifdef __QUIZ
 		case MMI_QUIZ_ENTRANCE:
 			{

@@ -401,7 +401,11 @@ public:
 class CWndSmeltSafety final : public CWndNeuz
 {
 public:
-	enum WndMode { WND_NORMAL, WND_ACCESSARY, WND_PIERCING, WND_ELEMENT };
+  enum class WndMode {
+    Normal, Ultimate, Accessory, Piercing, Element
+  };
+
+  [[nodiscard]] static bool HasScroll2Displayed(WndMode mode);
 
 	struct GENMATDIEINFO {
 		LPWNDCTRL wndCtrl;
@@ -503,6 +507,7 @@ public:
 private:
 	[[nodiscard]] std::span<GenLine> GenLinesUntilCurrentSmelt() { return std::span(m_genLines, m_nCurrentSmeltNumber); }
 	[[nodiscard]] std::span<GenLine> GenLinesSinceCurrentSmelt() { return std::span(m_genLines + m_nCurrentSmeltNumber, m_genLines + SMELT_MAX); }
+  [[nodiscard]] std::expected<WndMode, DWORD> CheckMainItemValidity(CItemElem * pItemElem) const;
 };
 
 class CWndSmeltSafetyConfirm final : public CWndNeuz {
